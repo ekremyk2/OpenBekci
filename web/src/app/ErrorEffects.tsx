@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { onApiEvent } from '@/api/events'
 import { Button } from '@/components/ui/button'
 import {

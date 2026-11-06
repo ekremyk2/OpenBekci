@@ -122,7 +122,7 @@
   }
 }
 
-/* Direction-sensitive icons: <DirIcon> flips them in RTL. */
+/* Direction-sensitive icons: add the rtl-flip class to mirror them in RTL. */
 [dir='rtl'] .rtl-flip {
   transform: scaleX(-1);
 }

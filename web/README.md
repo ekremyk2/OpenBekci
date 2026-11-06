@@ -30,7 +30,7 @@ From the repo root: `task web:dev`, `task web:check` (lint, typecheck, unit test
 - **Logical CSS only.** `ml-`, `mr-`, `pl-`, `pr-`, `left-`, `right-`, `text-left/right`, `border-l/r`, `rounded-l/r`, `float-left/right` fail lint; use `ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `text-start/end`, `border-s/e`, `rounded-s/e`. The rule is `eslint-rules/logical-properties.js` (eslint-plugin-tailwindcss does not support Tailwind v4).
 - **No fetch outside `src/api`.** Everything goes through the typed client in `src/api/client.ts`.
 - **Money and dates** are displayed only through `Money` / `SiteDate` (integer minor units; site timezone passed in) and edited through `MoneyInput`.
-- Direction-sensitive icons go through `DirIcon` so they mirror in RTL.
+- Direction-sensitive icons go get the `rtl-flip` class so they mirror in RTL.
 
 ## API types
 

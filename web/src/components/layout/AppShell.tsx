@@ -3,8 +3,9 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { LogOutIcon, MenuIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { toast } from 'sonner'
+import { toast } from '@/lib/toast'
 import { api } from '@/api/client'
+import { useInstanceName } from '@/app/InstanceEffects'
 import { filterNav, NAV_ITEMS } from '@/app/nav'
 import { clearSession, useSession } from '@/app/session'
 import { Button } from '@/components/ui/button'
@@ -89,6 +90,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
 /** Signed-in frame: permission-filtered sidebar, topbar with org switcher and toggles. */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
+  const instanceName = useInstanceName()
   return (
     <div className="flex min-h-dvh">
       <a
@@ -98,13 +100,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Trans>Skip to content</Trans>
       </a>
       <aside className="hidden w-60 shrink-0 border-e bg-sidebar text-sidebar-foreground md:block">
-        <div className="flex h-14 items-center px-6 text-lg font-semibold">OpenBekci</div>
+        <div className="flex h-14 items-center px-6 text-lg font-semibold">{instanceName}</div>
         <Sidebar />
       </aside>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="start" className="bg-sidebar p-0">
           <SheetHeader>
-            <SheetTitle>OpenBekci</SheetTitle>
+            <SheetTitle>{instanceName}</SheetTitle>
             <SheetDescription className="sr-only">
               <Trans>Navigation</Trans>
             </SheetDescription>

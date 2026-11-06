@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppError } from '@/api/errors'
 import { LocaleProvider } from './locale'
 import type { Locale } from '@/lib/i18n'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster } from '@/components/ui/toaster'
 
 export function createQueryClient() {
   return new QueryClient({
@@ -30,7 +30,7 @@ export function Providers({
     <QueryClientProvider client={queryClient}>
       <LocaleProvider initial={locale}>
         {children}
-        <Toaster position="bottom-center" />
+        <Toaster />
       </LocaleProvider>
     </QueryClientProvider>
   )
