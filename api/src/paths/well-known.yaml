@@ -1,0 +1,16 @@
+get:
+  operationId: instance.getDiscovery
+  summary: Instance discovery document
+  description: Unauthenticated; used by apps to find the API and the available login methods.
+  tags: [instance]
+  security: []
+  x-stability: stable
+  responses:
+    '200':
+      description: The discovery document.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/instance.yaml#/schemas/DiscoveryDocument'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

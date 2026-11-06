@@ -1,0 +1,28 @@
+# Lint ruleset for the OpenBekci API (OpenAPI 3.0.3 subset). See README.md.
+plugins:
+  - ./plugins/openbekci.cjs
+
+extends:
+  - minimal
+
+apis:
+  main:
+    root: src/openapi.yaml
+
+rules:
+  operation-operationId: error
+  operation-operationId-unique: error
+  no-unresolved-refs: error
+  openbekci/operation-id-pattern: error
+  openbekci/snake-case-properties: error
+  openbekci/problem-responses: error
+  openbekci/mutations-declare-idempotency: error
+  # Only 3.0.x is allowed.
+  rule/openapi-version:
+    subject:
+      type: Root
+      property: openapi
+    assertions:
+      pattern: /^3\.0\.3$/
+    message: The API is authored in OpenAPI 3.0.3 only
+    severity: error

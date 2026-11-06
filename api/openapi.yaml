@@ -1,0 +1,326 @@
+openapi: 3.0.3
+info:
+  title: OpenBekci API
+  version: 0.1.0
+  description: |
+    HTTP API of an OpenBekci instance (residential site management).
+    Conventions: see api/README.md. /v1 is not frozen until 1.0.
+  license:
+    name: AGPL-3.0-or-later
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+servers:
+  - url: /
+tags:
+  - name: instance
+    description: Instance discovery and information.
+paths:
+  /.well-known/openbekci.json:
+    get:
+      operationId: instance.getDiscovery
+      summary: Instance discovery document
+      description: Unauthenticated; used by apps to find the API and the available login methods.
+      tags:
+        - instance
+      security: []
+      x-stability: stable
+      responses:
+        '200':
+          description: The discovery document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryDocument'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/instance:
+    get:
+      operationId: instance.getInstance
+      summary: Instance information (authenticated)
+      tags:
+        - instance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-stability: stable
+      x-openbekci-roles:
+        any_authenticated: []
+      responses:
+        '200':
+          description: The discovery document plus policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instance'
+        '401':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: openbekci_session
+      description: Browser session cookie issued by the login endpoints.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token (mobile app sessions, later API keys).
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Page size.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    Cursor:
+      name: cursor
+      in: query
+      description: Opaque cursor from a previous page `next_cursor`.
+      schema:
+        type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: Client-generated unique key; replays within 7 days return the stored response.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+  responses:
+    Problem:
+      description: Error. RFC 9457 problem details with a stable `code`.
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    Problem:
+      type: object
+      description: |
+        RFC 9457 problem details, served as application/problem+json. Clients
+        translate by `code`. `code` is an open enum: clients must tolerate unknown values.
+      required:
+        - type
+        - title
+        - status
+        - code
+        - instance
+      properties:
+        type:
+          type: string
+          description: URI reference identifying the problem type; `about:blank` unless documented.
+          example: about:blank
+        title:
+          type: string
+        status:
+          type: integer
+          description: HTTP status code.
+        code:
+          type: string
+          x-open-enum: true
+          description: Stable machine-readable error code. Open enum.
+          enum:
+            - validation_failed
+            - bad_request
+            - unauthenticated
+            - not_found
+            - conflict
+            - version_conflict
+            - idempotency_mismatch
+            - locked_period
+            - insufficient_permission
+            - reauth_required
+            - mfa_required
+            - invalid_grant
+            - rate_limited
+            - pack_error
+            - site_offboarded
+            - internal_error
+        detail:
+          type: string
+          description: Human-readable explanation, not for machine parsing.
+        instance:
+          type: string
+          description: The request id (also in the `X-Request-Id` response header), for support and logs.
+        errors:
+          type: array
+          description: Per-field errors (with `validation_failed`).
+          items:
+            $ref: '#/components/schemas/ProblemFieldError'
+    ProblemFieldError:
+      type: object
+      required:
+        - field
+        - code
+      properties:
+        field:
+          type: string
+          description: Dotted path of the offending request field, query or header parameter.
+        code:
+          type: string
+          description: Field-level error code, for example `required`, `invalid`, `too_long`.
+        params:
+          type: object
+          additionalProperties: true
+          description: Values for the client message template, such as the maximum length.
+    Money:
+      type: object
+      description: Integer minor units with an ISO 4217 currency code.
+      required:
+        - amount
+        - currency
+      properties:
+        amount:
+          type: integer
+          format: int64
+          example: 123450
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: TRY
+    PageInfo:
+      type: object
+      required:
+        - next_cursor
+      properties:
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` to fetch the next page; null on the last page.
+    DiscoveryDocument:
+      type: object
+      description: Unauthenticated instance discovery document (overview section 6.8).
+      required:
+        - instance_id
+        - instance_name
+        - api_base_url
+        - api_versions
+        - server_version
+        - sdk_version
+        - min_app_version
+        - auth_methods
+        - push
+        - packs
+        - branding
+        - relay_enrollment
+      properties:
+        instance_id:
+          type: string
+          format: uuid
+          description: Stable for the life of the instance.
+        instance_name:
+          type: string
+        api_base_url:
+          type: string
+          example: https://example.org/v1
+        api_versions:
+          type: array
+          items:
+            type: string
+          example:
+            - v1
+        server_version:
+          type: string
+          example: 0.1.0
+        sdk_version:
+          type: string
+          nullable: true
+          description: Pack SDK version, null until packs exist.
+        min_app_version:
+          $ref: '#/components/schemas/MinAppVersion'
+        auth_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthMethod'
+        push:
+          $ref: '#/components/schemas/PushInfo'
+        packs:
+          type: array
+          items:
+            type: string
+        branding:
+          $ref: '#/components/schemas/Branding'
+        relay_enrollment:
+          $ref: '#/components/schemas/RelayEnrollment'
+    MinAppVersion:
+      type: object
+      required:
+        - android
+        - ios
+      properties:
+        android:
+          type: string
+          example: 1.0.0
+        ios:
+          type: string
+          example: 1.0.0
+    AuthMethod:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: |
+            Open string. Known: `password`, `sms_otp`, `magic_link`, `oidc:<provider>`.
+          x-known-values:
+            - password
+            - sms_otp
+            - magic_link
+            - oidc:<provider>
+        label_key:
+          type: string
+        icon:
+          type: string
+    PushInfo:
+      type: object
+      required:
+        - relay_ids
+        - unified_push
+      properties:
+        relay_ids:
+          type: array
+          items:
+            type: string
+        unified_push:
+          type: boolean
+    Branding:
+      type: object
+      properties:
+        logo_url:
+          type: string
+        primary_color:
+          type: string
+          example: '#1a73e8'
+    RelayEnrollment:
+      type: object
+      required:
+        - challenge
+      properties:
+        challenge:
+          type: string
+          nullable: true
+          description: Ephemeral challenge for push relay enrollment; null when not enrolling.
+    InstancePolicies:
+      type: object
+      description: Instance policies. Empty until later phases add some.
+      additionalProperties: true
+    Instance:
+      description: Authenticated twin of the discovery document, with policies.
+      allOf:
+        - $ref: '#/components/schemas/DiscoveryDocument'
+        - type: object
+          required:
+            - policies
+          properties:
+            policies:
+              $ref: '#/components/schemas/InstancePolicies'

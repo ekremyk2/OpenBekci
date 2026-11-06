@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: OpenBekci API
+  version: 0.1.0
+  description: |
+    HTTP API of an OpenBekci instance (residential site management).
+    Conventions: see api/README.md. /v1 is not frozen until 1.0.
+  license:
+    name: AGPL-3.0-or-later
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+servers:
+  - url: /
+tags:
+  - name: instance
+    description: Instance discovery and information.
+paths:
+  /.well-known/openbekci.json:
+    $ref: './paths/well-known.yaml'
+  /v1/instance:
+    $ref: './paths/instance.yaml'
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: openbekci_session
+      description: Browser session cookie issued by the login endpoints.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token (mobile app sessions, later API keys).
+  parameters:
+    Limit:
+      $ref: './components/common.yaml#/parameters/Limit'
+    Cursor:
+      $ref: './components/common.yaml#/parameters/Cursor'
+    IdempotencyKey:
+      $ref: './components/common.yaml#/parameters/IdempotencyKey'
+  responses:
+    Problem:
+      $ref: './components/problem.yaml#/responses/Problem'
+  schemas:
+    Problem:
+      $ref: './components/problem.yaml#/schemas/Problem'
+    ProblemFieldError:
+      $ref: './components/problem.yaml#/schemas/ProblemFieldError'
+    Money:
+      $ref: './components/common.yaml#/schemas/Money'
+    PageInfo:
+      $ref: './components/common.yaml#/schemas/PageInfo'
+    DiscoveryDocument:
+      $ref: './components/instance.yaml#/schemas/DiscoveryDocument'
+    MinAppVersion:
+      $ref: './components/instance.yaml#/schemas/MinAppVersion'
+    AuthMethod:
+      $ref: './components/instance.yaml#/schemas/AuthMethod'
+    PushInfo:
+      $ref: './components/instance.yaml#/schemas/PushInfo'
+    Branding:
+      $ref: './components/instance.yaml#/schemas/Branding'
+    RelayEnrollment:
+      $ref: './components/instance.yaml#/schemas/RelayEnrollment'
+    InstancePolicies:
+      $ref: './components/instance.yaml#/schemas/InstancePolicies'
+    Instance:
+      $ref: './components/instance.yaml#/schemas/Instance'

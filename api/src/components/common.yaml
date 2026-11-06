@@ -1,0 +1,47 @@
+schemas:
+  Money:
+    type: object
+    description: Integer minor units with an ISO 4217 currency code.
+    required: [amount, currency]
+    properties:
+      amount:
+        type: integer
+        format: int64
+        example: 123450
+      currency:
+        type: string
+        minLength: 3
+        maxLength: 3
+        example: TRY
+  PageInfo:
+    type: object
+    required: [next_cursor]
+    properties:
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` to fetch the next page; null on the last page.
+parameters:
+  Limit:
+    name: limit
+    in: query
+    description: Page size.
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 200
+      default: 50
+  Cursor:
+    name: cursor
+    in: query
+    description: Opaque cursor from a previous page `next_cursor`.
+    schema:
+      type: string
+  IdempotencyKey:
+    name: Idempotency-Key
+    in: header
+    description: Client-generated unique key; replays within 7 days return the stored response.
+    schema:
+      type: string
+      minLength: 8
+      maxLength: 128
