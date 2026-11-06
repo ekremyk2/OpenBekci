@@ -9,10 +9,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/pressly/goose/v3"
 )
 
 // Options configures Open.
@@ -34,6 +37,15 @@ type DB struct {
 	app      *pgxpool.Pool
 	platform *pgxpool.Pool
 	migrator *pgxpool.Pool
+
+	// appGoose answers the readiness check; built once in Open and released
+	// in Close.
+	appGoose      *goose.Provider
+	closeAppGoose func()
+
+	readyMu  sync.Mutex
+	readyAt  time.Time
+	readyErr error
 }
 
 // Open creates the pools whose URLs are set. Close must be called when done.
@@ -43,6 +55,10 @@ func Open(ctx context.Context, o Options) (*DB, error) {
 	if o.AppURL != "" {
 		if d.app, err = openPool(ctx, o.AppURL, o.Pooled); err != nil {
 			return nil, fmt.Errorf("open app pool: %w", err)
+		}
+		if d.appGoose, d.closeAppGoose, err = gooseProvider(d.app, false); err != nil {
+			d.Close()
+			return nil, err
 		}
 	}
 	if o.PlatformURL != "" {
@@ -81,6 +97,10 @@ func openPool(ctx context.Context, url string, pooled bool) (*pgxpool.Pool, erro
 
 // Close closes all pools.
 func (d *DB) Close() {
+	if d.closeAppGoose != nil {
+		d.closeAppGoose()
+		d.closeAppGoose = nil
+	}
 	for _, p := range []*pgxpool.Pool{d.app, d.platform, d.migrator} {
 		if p != nil {
 			p.Close()

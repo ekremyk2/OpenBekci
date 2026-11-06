@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -386,5 +387,28 @@ func TestIntegrationDetectPoolerDirectConnection(t *testing.T) {
 	}
 	if info.ServerVersion == "" {
 		t.Error("server version empty")
+	}
+}
+
+// Regression: /readyz used to build a *sql.DB per call and never close it,
+// leaking one goroutine each time.
+func TestIntegrationReadinessDoesNotLeakGoroutines(t *testing.T) {
+	d := newTestDB(t)
+	ctx := context.Background()
+	if err := d.MigrationsCurrent(ctx); err != nil { // warm up
+		t.Fatal(err)
+	}
+	before := runtime.NumGoroutine()
+	for range 200 {
+		if err := d.MigrationsCurrent(ctx); err != nil {
+			t.Fatal(err)
+		}
+		// Bypass the cache so the underlying check is exercised every time.
+		if err := d.checkMigrations(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if grew := runtime.NumGoroutine() - before; grew > 5 {
+		t.Errorf("goroutines grew by %d over 200 readiness checks", grew)
 	}
 }
