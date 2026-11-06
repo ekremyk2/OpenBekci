@@ -18,7 +18,7 @@ api/.redocly.yaml           lint ruleset;  api/plugins/openbekci.cjs  the projec
    and the TypeScript types. `api:lint` runs only the linter.
 3. Commit the source and the generated files together. CI runs `gen:check`, which regenerates and fails on drift.
 
-Tools run through `pnpm dlx` (Redocly CLI pinned to 2.76.0, openapi-typescript 7) and `go tool`
+Tools run through `pnpm dlx` (Redocly CLI pinned to 2.76.0, openapi-typescript 7.13.0) and `go tool`
 (oapi-codegen v2.8.2); nothing is installed globally. Rationale for the generator: `docs/adr/0001-openapi-codegen.md`.
 
 ## Conventions

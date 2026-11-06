@@ -3,9 +3,13 @@ module github.com/openbekci/openbekci/server
 go 1.27
 
 require (
+	github.com/getkin/kin-openapi v0.152.0
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.12.0
+	github.com/oapi-codegen/nethttp-middleware v1.3.1
+	github.com/oapi-codegen/nullable v1.2.0
+	github.com/oapi-codegen/runtime v1.8.0
 	github.com/pressly/goose/v3 v3.29.0
 	github.com/riverqueue/river v0.51.1
 	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.51.1
@@ -65,7 +69,6 @@ require (
 	github.com/alingse/nilnesserr v0.2.0 // indirect
 	github.com/andybalholm/brotli v1.2.6 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
-	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/ashanbrown/forbidigo/v2 v2.3.1 // indirect
 	github.com/ashanbrown/makezero/v2 v2.2.1 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
@@ -136,7 +139,6 @@ require (
 	github.com/firefart/nonamedreturns v1.0.8 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
-	github.com/getkin/kin-openapi v0.152.0 // indirect
 	github.com/ghostiam/protogetter v1.0.1 // indirect
 	github.com/go-critic/go-critic v0.15.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
@@ -145,7 +147,6 @@ require (
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v1.0.0 // indirect
-	github.com/go-openapi/swag/jsonname v0.26.0 // indirect
 	github.com/go-sql-driver/mysql v1.10.1 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/go-task/task/v3 v3.54.0 // indirect
@@ -253,10 +254,7 @@ require (
 	github.com/nishanths/exhaustive v0.15.0 // indirect
 	github.com/nishanths/predeclared v0.3.0 // indirect
 	github.com/nunnatsa/ginkgolinter v0.24.0 // indirect
-	github.com/oapi-codegen/nethttp-middleware v1.3.1 // indirect
-	github.com/oapi-codegen/nullable v1.2.0 // indirect
 	github.com/oapi-codegen/oapi-codegen/v2 v2.8.2 // indirect
-	github.com/oapi-codegen/runtime v1.8.0 // indirect
 	github.com/oasdiff/yaml v0.1.1 // indirect
 	github.com/oasdiff/yaml3 v0.0.14 // indirect
 	github.com/paulmach/orb v0.13.0 // indirect
