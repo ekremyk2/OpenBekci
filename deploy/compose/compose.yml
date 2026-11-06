@@ -1,0 +1,61 @@
+# OpenBekci quickstart: openbekci + PostgreSQL + Caddy (automatic HTTPS).
+#   cp .env.example .env   # then fill it in
+#   docker compose up -d
+services:
+  openbekci:
+    build:
+      context: ../..
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      OPENBEKCI_DATABASE_URL: postgres://openbekci_app:${OPENBEKCI_DB_PASSWORD}@postgres:5432/openbekci
+      OPENBEKCI_PLATFORM_DATABASE_URL: postgres://openbekci_platform:${OPENBEKCI_DB_PASSWORD}@postgres:5432/openbekci
+      OPENBEKCI_MIGRATOR_DATABASE_URL: postgres://openbekci_migrator:${OPENBEKCI_DB_PASSWORD}@postgres:5432/openbekci
+      OPENBEKCI_LISTEN_ADDR: ":8080"
+      OPENBEKCI_AUTO_MIGRATE: "true"
+      OPENBEKCI_TRUSTED_PROXIES: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
+    volumes:
+      - data:/data
+    expose:
+      - "8080"
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${OPENBEKCI_DB_SUPERUSER_PASSWORD}
+      # Passed to the init script, which sets it on the three application roles.
+      OPENBEKCI_DB_PASSWORD: ${OPENBEKCI_DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - openbekci
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      OPENBEKCI_DOMAIN: ${OPENBEKCI_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  data:
+  pgdata:
+  caddy_data:
+  caddy_config:
