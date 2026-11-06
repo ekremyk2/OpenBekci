@@ -224,6 +224,9 @@ func TestSpecConformance(t *testing.T) {
 					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
 				}
 			}
+			if extString(op.Extensions, "x-idempotent") == "required" && authModeOf(spec, op) != authRequired {
+				t.Errorf("%s: x-idempotent: required needs mandatory authentication (keys are scoped by principal)", where)
+			}
 			if op.Security == nil {
 				t.Errorf("%s: no explicit security key (use security: [] for a public operation)", where)
 			}
