@@ -26,6 +26,7 @@ func newAdminCmd(load configLoader) *cobra.Command {
 		newCreatePlatformAdminCmd(load),
 		newCreateOrgCmd(load),
 		newSetPasswordCmd(load),
+		newLoginLinkCmd(load),
 		newDeliveryLogCmd(load),
 	)
 	return cmd
@@ -182,9 +183,10 @@ func newCreateOrgCmd(load configLoader) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-org",
 		Short: "Create an organization with its first administrator",
-		Long: "Creates the organization, a person for the administrator and an org_admin membership.\n" +
-			"If the administrator has no account yet it is created without a password and a one-time\n" +
-			"sign-in link is printed.",
+		Long: "Creates the organization, a person for the administrator and an org_admin membership in one\n" +
+			"transaction (nothing is left behind if any part fails). If the administrator has no account\n" +
+			"yet it is created without a password. A one-time sign-in link is printed for a new and for an\n" +
+			"existing administrator alike; `admin login-link` issues another.",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ident, err := pickContact("admin-", adminEmail, adminPhone)
@@ -202,39 +204,41 @@ func newCreateOrgCmd(load configLoader) *cobra.Command {
 			ctx := cmd.Context()
 			out := cmd.OutOrStdout()
 
-			u, found, err := a.Identity.FindUser(ctx, ident)
+			p := identity.CreateUserParams{Locale: locale}
+			if adminEmail != "" {
+				p.Email = adminEmail
+			} else {
+				p.Phone = adminPhone
+			}
+			resolve, err := a.Identity.PrepareFindOrCreateUser(ident, p)
 			if err != nil {
 				return err
-			}
-			created := false
-			if !found {
-				p := identity.CreateUserParams{Locale: locale}
-				if adminEmail != "" {
-					p.Email = adminEmail
-				} else {
-					p.Phone = adminPhone
-				}
-				if u, err = a.Identity.CreateUser(ctx, p); err != nil {
-					return err
-				}
-				created = true
 			}
 			display := adminName
 			if display == "" {
 				display = ident
 			}
+			// One transaction: the user (when new), the organization, the person and the
+			// membership are committed together or not at all.
 			org, err := a.Platform.CreateOrganization(ctx, platformadmin.CreateOrgParams{
 				Slug: slug, Name: name, CountryCode: strings.ToUpper(country), DefaultLocale: locale, Timezone: tz,
-				AdminUserID: u.ID, AdminName: display,
+				ResolveAdmin: resolve, AdminName: display,
 			})
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(out, "organization %s (%s) created; %s is org_admin\n", org.Slug, org.ID, u.ID)
-			if created {
-				return printLoginLink(cmd, a, u)
+			verb := "existing user"
+			if org.AdminCreated {
+				verb = "new user"
 			}
-			return nil
+			fmt.Fprintf(out, "organization %s (%s) created; %s %s is org_admin\n", org.Slug, org.ID, verb, org.AdminUserID)
+			u, err := a.Identity.GetUser(ctx, org.AdminUserID)
+			if err != nil {
+				return err
+			}
+			// A link for the new and for the existing administrator alike: neither may be
+			// left without a way in.
+			return printLoginLink(cmd, a, u)
 		},
 	}
 	cmd.Flags().StringVar(&slug, "slug", "", "short unique name used in URLs (lowercase letters, digits, hyphens)")
