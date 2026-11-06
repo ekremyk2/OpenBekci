@@ -288,6 +288,33 @@ func (s *apiServer) AuthChangePassword(ctx context.Context, req gen.AuthChangePa
 	return gen.AuthChangePassword204Response{}, nil
 }
 
+// permissionGrants derives the effective permissions of an organization from
+// the caller's active memberships (the same derivation the Resolver applies
+// per request); absent site_ids and block_ids mean organization-wide.
+func (s *apiServer) permissionGrants(o identity.OrgAccess) []gen.PermissionGrant {
+	out := []gen.PermissionGrant{}
+	if s.resolver == nil {
+		return out
+	}
+	ms := make([]authz.Membership, 0, len(o.Roles))
+	for _, r := range o.Roles {
+		ms = append(ms, authz.Membership{Role: authz.Role(r.Role), ScopeType: authz.ScopeType(r.ScopeType), ScopeID: r.ScopeID})
+	}
+	for _, ps := range authz.Summarize(authz.GrantsFromMemberships(s.resolver.Registry(), ms)) {
+		g := gen.PermissionGrant{Permission: gen.Permission(ps.Permission)}
+		if len(ps.SiteIDs) > 0 {
+			ids := ps.SiteIDs
+			g.SiteIds = &ids
+		}
+		if len(ps.BlockIDs) > 0 {
+			ids := ps.BlockIDs
+			g.BlockIds = &ids
+		}
+		out = append(out, g)
+	}
+	return out
+}
+
 func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.MeGetResponseObject, error) {
 	svc, err := s.ident()
 	if err != nil {
@@ -314,8 +341,8 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 		orgs = append(orgs, gen.OrgAccess{
 			Id: o.ID, Slug: o.Slug, Name: o.Name, Roles: roles,
 			DefaultLocale: o.DefaultLocale,
-			Permissions:   []gen.PermissionGrant{}, // A4: effective permissions from the role matrix and scopes
-			Sites:         []gen.MeSite{},          // phase B: sites the caller can see
+			Permissions:   s.permissionGrants(o),
+			Sites:         []gen.MeSite{}, // phase B: sites the caller can see
 		})
 	}
 	return gen.MeGet200JSONResponse(gen.Me{

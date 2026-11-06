@@ -290,6 +290,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Read an organization
+         * @description Needs the `org.read` permission in the organization. Callers without an active membership there get 404.
+         */
+        get: operations["org.get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change an organization's settings
+         * @description Needs the `org.manage` permission. `If-Match` carries the `version` the
+         *     client last read; a stale version is 409 `version_conflict`. The change is
+         *     recorded in the audit trail.
+         */
+        patch: operations["org.update"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the organization's audit events
+         * @description Newest first. Needs `audit.read`. Cursor pagination over `(at, id)`.
+         *     Personal data in a `diff` appears only as hashes.
+         */
+        get: operations["audit.list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -575,7 +628,7 @@ export interface components {
             slug: string;
             name: string;
             roles: components["schemas"]["RoleGrant"][];
-            /** @description Effective permissions in this organization (filled by the authorization module; empty until then). */
+            /** @description Effective permissions in this organization, from the caller's active memberships and the role to permission matrix. */
             permissions: components["schemas"]["PermissionGrant"][];
             /** @description Sites of the organization the caller can see (empty until the tenancy module lands). */
             sites: components["schemas"]["MeSite"][];
@@ -629,9 +682,12 @@ export interface components {
             locale: string;
             is_platform_admin: boolean;
         };
-        /** @description An effective permission, optionally limited to sites or blocks. */
+        /**
+         * @description An effective permission. Without `site_ids` and `block_ids` it holds
+         *     organization-wide; otherwise only for the listed sites and blocks.
+         */
         PermissionGrant: {
-            permission: string;
+            permission: components["schemas"]["Permission"];
             site_ids?: string[];
             block_ids?: string[];
         };
@@ -641,6 +697,84 @@ export interface components {
             name: string;
             timezone: string;
             currency: string;
+        };
+        /**
+         * @description Open enum: every permission a role can hold (backend plan section 7).
+         * @enum {string}
+         */
+        Permission: "audit.read" | "audit.report" | "me.read" | "org.manage" | "org.read" | "platform.manage" | "sessions.manage_own";
+        Organization: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+            /**
+             * @description Open enum: active.
+             * @enum {string}
+             */
+            status: "active";
+            /** @description ISO 3166-1 alpha-2. */
+            country_code: string;
+            default_locale: string;
+            /** @description IANA time zone name. */
+            timezone: string;
+            /** @description Optimistic-locking version; send it as `If-Match` when updating. */
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /** @description Partial update; absent fields stay as they are. */
+        OrganizationUpdate: {
+            name?: string;
+            country_code?: string;
+            default_locale?: string;
+            timezone?: string;
+        };
+        /**
+         * @description One changed field. Personal data carries only `hash_before` and
+         *     `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
+         *     fields carry `before` and `after` (absent when the field did not exist on that side).
+         */
+        AuditChange: {
+            /** @description Previous value (any JSON). */
+            before?: unknown;
+            /** @description New value (any JSON). */
+            after?: unknown;
+            hash_before?: string;
+            hash_after?: string;
+        };
+        AuditEvent: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            at: string;
+            /** Format: uuid */
+            actor_user_id: string | null;
+            /**
+             * @description Open enum: user, system, job.
+             * @enum {string}
+             */
+            actor_kind: "user" | "system" | "job";
+            /** @description `<area>.<verb>`, for example `org.update`. */
+            action: string;
+            target_type: string;
+            /** Format: uuid */
+            target_id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            /** @description Changed fields by (dotted) path. */
+            diff: {
+                [key: string]: components["schemas"]["AuditChange"];
+            };
+            ip: string | null;
+            request_id: string | null;
+        };
+        AuditEventList: {
+            items: components["schemas"]["AuditEvent"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
         };
     };
     responses: {
@@ -666,6 +800,8 @@ export interface components {
         Cursor: string;
         /** @description Client-generated unique key; replays within 7 days return the stored response. */
         IdempotencyKey: string;
+        /** @description The organization id. */
+        OrgId: string;
     };
     requestBodies: never;
     headers: never;
@@ -1049,6 +1185,120 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "org.get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The organization. */
+            200: {
+                headers: {
+                    /** @description The organization's version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organization"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "org.update": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The organization's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. It is declared optional here only so that an unauthenticated caller gets 401 before
+                 *     any validation detail (generated code binds required headers before authentication runs).
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrganizationUpdate"];
+            };
+        };
+        responses: {
+            /** @description The updated organization. */
+            200: {
+                headers: {
+                    /** @description The new version, quoted. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Organization"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "audit.list": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only events with this action, such as `org.update`. */
+                action?: string;
+                /** @description Only events about this kind of target, such as `organization`. */
+                target_type?: string;
+                /** @description Only events caused by this user id. */
+                actor?: string;
+                /** @description Only events at or after this time. */
+                from?: string;
+                /** @description Only events before this time. */
+                to?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of events. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEventList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

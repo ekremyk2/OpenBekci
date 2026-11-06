@@ -1,5 +1,6 @@
 delete:
   operationId: me.revokeSession
+  x-openbekci-roles: [sessions.manage_own]
   summary: Sign out one session
   description: |
     Revokes the session with this id (from `me.listSessions`), or the current

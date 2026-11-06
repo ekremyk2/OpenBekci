@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
@@ -115,6 +118,7 @@ func requestInfo(next gen.StrictHandlerFunc, _ string) gen.StrictHandlerFunc {
 			host = r.RemoteAddr
 		}
 		ctx = context.WithValue(ctx, reqInfoKey{}, &reqInfo{w: w, ip: host, ua: r.UserAgent()})
+		ctx = audit.WithRequestMeta(ctx, audit.RequestMeta{IP: host, RequestID: middleware.GetReqID(r.Context())})
 		return next(ctx, w, r, request)
 	}
 }

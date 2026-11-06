@@ -1,0 +1,61 @@
+parameters:
+  - $ref: '../components/common.yaml#/parameters/OrgId'
+get:
+  operationId: audit.list
+  summary: List the organization's audit events
+  description: |
+    Newest first. Needs `audit.read`. Cursor pagination over `(at, id)`.
+    Personal data in a `diff` appears only as hashes.
+  tags: [audit]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [audit.read]
+  parameters:
+    - $ref: '../components/common.yaml#/parameters/Limit'
+    - $ref: '../components/common.yaml#/parameters/Cursor'
+    - name: action
+      in: query
+      description: Only events with this action, such as `org.update`.
+      schema:
+        type: string
+    - name: target_type
+      in: query
+      description: Only events about this kind of target, such as `organization`.
+      schema:
+        type: string
+    - name: actor
+      in: query
+      description: Only events caused by this user id.
+      schema:
+        type: string
+        format: uuid
+    - name: from
+      in: query
+      description: Only events at or after this time.
+      schema:
+        type: string
+        format: date-time
+    - name: to
+      in: query
+      description: Only events before this time.
+      schema:
+        type: string
+        format: date-time
+  responses:
+    '200':
+      description: One page of events.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/org.yaml#/schemas/AuditEventList'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

@@ -257,11 +257,13 @@ schemas:
         type: boolean
   PermissionGrant:
     type: object
-    description: An effective permission, optionally limited to sites or blocks.
+    description: |
+      An effective permission. Without `site_ids` and `block_ids` it holds
+      organization-wide; otherwise only for the listed sites and blocks.
     required: [permission]
     properties:
       permission:
-        type: string
+        $ref: './permissions.yaml#/schemas/Permission'
       site_ids:
         type: array
         items:
@@ -304,7 +306,7 @@ schemas:
           $ref: '#/schemas/RoleGrant'
       permissions:
         type: array
-        description: Effective permissions in this organization (filled by the authorization module; empty until then).
+        description: Effective permissions in this organization, from the caller's active memberships and the role to permission matrix.
         items:
           $ref: '#/schemas/PermissionGrant'
       sites:

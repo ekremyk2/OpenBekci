@@ -17,6 +17,13 @@ tags:
     description: Sign-in, tokens and re-authentication.
   - name: me
     description: The signed-in user and their sessions.
+  - name: org
+    description: Organizations.
+  - name: audit
+    description: The append-only audit trail.
+# Role to permission matrix, generated from the Go permission registry (task gen:permissions).
+x-openbekci-roles:
+  $ref: './components/permissions.yaml#/x-openbekci-roles'
 paths:
   /.well-known/openbekci.json:
     $ref: './paths/well-known.yaml'
@@ -44,6 +51,10 @@ paths:
     $ref: './paths/me-sessions.yaml'
   /v1/me/sessions/{id}:
     $ref: './paths/me-sessions-id.yaml'
+  /v1/orgs/{org_id}:
+    $ref: './paths/orgs-org-id.yaml'
+  /v1/orgs/{org_id}/audit:
+    $ref: './paths/orgs-org-id-audit.yaml'
 components:
   securitySchemes:
     cookieAuth:
@@ -62,6 +73,8 @@ components:
       $ref: './components/common.yaml#/parameters/Cursor'
     IdempotencyKey:
       $ref: './components/common.yaml#/parameters/IdempotencyKey'
+    OrgId:
+      $ref: './components/common.yaml#/parameters/OrgId'
   responses:
     Problem:
       $ref: './components/problem.yaml#/responses/Problem'
@@ -134,3 +147,15 @@ components:
       $ref: './components/auth.yaml#/schemas/PermissionGrant'
     MeSite:
       $ref: './components/auth.yaml#/schemas/MeSite'
+    Permission:
+      $ref: './components/permissions.yaml#/schemas/Permission'
+    Organization:
+      $ref: './components/org.yaml#/schemas/Organization'
+    OrganizationUpdate:
+      $ref: './components/org.yaml#/schemas/OrganizationUpdate'
+    AuditChange:
+      $ref: './components/org.yaml#/schemas/AuditChange'
+    AuditEvent:
+      $ref: './components/org.yaml#/schemas/AuditEvent'
+    AuditEventList:
+      $ref: './components/org.yaml#/schemas/AuditEventList'

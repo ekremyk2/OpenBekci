@@ -82,7 +82,8 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 
 | Extension | On | Values | Effect |
 |---|---|---|---|
-| `x-openbekci-roles` | operation | map role to a list of permission strings | the authorization matrix (wired with the first business modules) |
+| `x-openbekci-roles` | root | map role (the seven built-in roles and `platform_admin`) to its permission names | the role to permission matrix; **generated** from the Go permission registry into `components/permissions.yaml` by `task gen:permissions`, never edited by hand |
+| `x-openbekci-roles` | operation | list of permission names | the permission(s) the operation requires, all of them. Mandatory under `/v1/orgs/{org_id}`; optional documentation elsewhere. The authz matrix test fails when it is missing or does not match what the handler requires |
 | `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal). A replay sets `Idempotent-Replayed: true` and restores only `Content-Type`, `Location` and `X-OpenBekci-Stability`. Keys need a signed-in caller: a `required` operation must require authentication (conformance test), and an anonymous call to an `optional` one ignores the header |
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |

@@ -10,8 +10,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
 
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -47,7 +50,11 @@ func MountAPI(r chi.Router, deps Deps) {
 		}
 	}
 
-	srv := &apiServer{instance: deps.Instance, identity: deps.Identity, insecureCookies: deps.InsecureCookies}
+	p.resolver = deps.Authz
+	if deps.DB != nil {
+		p.tenantDB = deps.DB
+	}
+	srv := &apiServer{instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -81,6 +88,9 @@ func isAPIPath(path string) bool {
 type apiServer struct {
 	instance        *instance.Service
 	identity        *identity.Service
+	tenancy         *tenancy.Service
+	audit           *audit.Service
+	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie
 }
 

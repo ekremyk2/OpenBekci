@@ -1,0 +1,123 @@
+schemas:
+  Organization:
+    type: object
+    required: [id, slug, name, status, country_code, default_locale, timezone, version, created_at, updated_at]
+    properties:
+      id:
+        type: string
+        format: uuid
+      slug:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: active.'
+        enum: [active]
+      country_code:
+        type: string
+        description: ISO 3166-1 alpha-2.
+      default_locale:
+        type: string
+      timezone:
+        type: string
+        description: IANA time zone name.
+      version:
+        type: integer
+        description: Optimistic-locking version; send it as `If-Match` when updating.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+  OrganizationUpdate:
+    type: object
+    description: Partial update; absent fields stay as they are.
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      name:
+        type: string
+        minLength: 1
+        maxLength: 200
+      country_code:
+        type: string
+        minLength: 2
+        maxLength: 2
+      default_locale:
+        type: string
+        maxLength: 35
+      timezone:
+        type: string
+        maxLength: 64
+  AuditChange:
+    type: object
+    description: |
+      One changed field. Personal data carries only `hash_before` and
+      `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
+      fields carry `before` and `after` (absent when the field did not exist on that side).
+    properties:
+      before:
+        description: Previous value (any JSON).
+      after:
+        description: New value (any JSON).
+      hash_before:
+        type: string
+      hash_after:
+        type: string
+  AuditEvent:
+    type: object
+    required: [id, at, actor_user_id, actor_kind, action, target_type, target_id, site_id, diff, ip, request_id]
+    properties:
+      id:
+        type: string
+        format: uuid
+      at:
+        type: string
+        format: date-time
+      actor_user_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_kind:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: user, system, job.'
+        enum: [user, system, job]
+      action:
+        type: string
+        description: '`<area>.<verb>`, for example `org.update`.'
+      target_type:
+        type: string
+      target_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      diff:
+        type: object
+        description: Changed fields by (dotted) path.
+        additionalProperties:
+          $ref: '#/schemas/AuditChange'
+      ip:
+        type: string
+        nullable: true
+      request_id:
+        type: string
+        nullable: true
+  AuditEventList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/schemas/AuditEvent'
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.

@@ -77,6 +77,7 @@ type opInfo struct {
 	idempotent string // "", optional or required
 	preview    bool   // x-stability: preview
 	auth       authMode
+	orgScoped  bool            // path under /v1/orgs/{org_id}: membership is resolved first
 	query      map[string]bool // declared query parameter names
 }
 
@@ -91,6 +92,10 @@ type pipeline struct {
 	auth              Authenticator
 	idem              idempotency.Store
 	validateResponses bool
+	// resolver and tenantDB are set by MountAPI; nil (unit tests) skips the
+	// authorization context.
+	resolver *authz.Resolver
+	tenantDB tenantRunner
 }
 
 func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem idempotency.Store, validateResponses bool) (*pipeline, error) {
@@ -109,6 +114,7 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				preview:    extString(op.Extensions, "x-stability") == "preview",
 				auth:       authModeOf(spec, op),
 				query:      queryParams(item, op),
+				orgScoped:  isOrgPath(path),
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -193,6 +199,7 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 	chain = append(chain,
 		p.stability,
 		p.authenticate,
+		p.authzContext,
 		p.rejectUnknownQuery,
 		requestValidator(p.spec),
 		p.idempotency,

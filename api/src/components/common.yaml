@@ -37,6 +37,14 @@ parameters:
     description: Opaque cursor from a previous page `next_cursor`.
     schema:
       type: string
+  OrgId:
+    name: org_id
+    in: path
+    required: true
+    description: The organization id.
+    schema:
+      type: string
+      format: uuid
   IdempotencyKey:
     name: Idempotency-Key
     in: header

@@ -1,5 +1,6 @@
 get:
   operationId: me.get
+  x-openbekci-roles: [me.read]
   summary: The signed-in user, organizations, roles and permissions
   tags: [me]
   security:

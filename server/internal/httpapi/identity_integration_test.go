@@ -12,9 +12,14 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/permissions"
+	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/db/dbtest"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
@@ -27,6 +32,7 @@ type idEnv struct {
 	t      *testing.T
 	h      http.Handler
 	svc    *identity.Service
+	db     *db.DB
 	admin  *platformadmin.Service
 	sms    *sms.Recorder
 	mail   *mail.Recorder
@@ -36,7 +42,11 @@ type idEnv struct {
 func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	t.Helper()
 	d := dbtest.New(t)
-	e := &idEnv{t: t, sms: &sms.Recorder{}, mail: &mail.Recorder{}, admin: platformadmin.NewService(d)}
+	e := &idEnv{t: t, db: d, sms: &sms.Recorder{}, mail: &mail.Recorder{}, admin: platformadmin.NewService(d)}
+	reg, err := permissions.NewRegistry()
+	if err != nil {
+		t.Fatal(err)
+	}
 	cfg := identity.Config{InstanceName: "Test", BaseURL: testBase, SecretKey: []byte("0123456789abcdef0123456789abcdef"),
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil))}
 	if withSMS {
@@ -52,6 +62,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		instance.PGIDSource{DB: d}, methods)
 	e.h = NewRouter(Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: tenancy.NewService(d), Audit: audit.NewService(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}, Options{})
 	return e
@@ -455,7 +466,7 @@ func TestIntegrationHTTPMeWithOrganization(t *testing.T) {
 	}
 	o := me.Organizations[0]
 	if o.ID != org.ID.String() || o.Slug != "gul-sitesi" || o.DefaultLocale != "tr" || len(o.Roles) != 1 || o.Roles[0].Role != "org_admin" ||
-		o.Roles[0].ScopeType != "org" || o.Roles[0].ScopeID != nil || o.Permissions == nil || len(o.Permissions) != 0 || o.Sites == nil {
+		o.Roles[0].ScopeType != "org" || o.Roles[0].ScopeID != nil || len(o.Permissions) == 0 || o.Sites == nil {
 		t.Errorf("org = %+v", o)
 	}
 }

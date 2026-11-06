@@ -10,8 +10,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
@@ -35,6 +38,12 @@ type Deps struct {
 	Instance *instance.Service
 	// Identity serves /v1/auth and /v1/me.
 	Identity *identity.Service
+	// Authz resolves effective permissions; with Tenancy and Audit it serves
+	// the /v1/orgs/{org_id} operations. Nil leaves those operations unresolved
+	// (unit tests only).
+	Authz   *authz.Resolver
+	Tenancy *tenancy.Service
+	Audit   *audit.Service
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).

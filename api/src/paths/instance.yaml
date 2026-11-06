@@ -6,8 +6,6 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-stability: stable
-  x-openbekci-roles:
-    any_authenticated: []
   responses:
     '200':
       description: The discovery document plus policies.

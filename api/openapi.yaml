@@ -17,6 +17,10 @@ tags:
     description: Sign-in, tokens and re-authentication.
   - name: me
     description: The signed-in user and their sessions.
+  - name: org
+    description: Organizations.
+  - name: audit
+    description: The append-only audit trail.
 paths:
   /.well-known/openbekci.json:
     get:
@@ -46,8 +50,6 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-stability: stable
-      x-openbekci-roles:
-        any_authenticated: []
       responses:
         '200':
           description: The discovery document plus policies.
@@ -348,6 +350,8 @@ paths:
   /v1/me:
     get:
       operationId: me.get
+      x-openbekci-roles:
+        - me.read
       summary: The signed-in user, organizations, roles and permissions
       tags:
         - me
@@ -368,6 +372,8 @@ paths:
   /v1/me/sessions:
     get:
       operationId: me.listSessions
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: List the caller's open sessions
       tags:
         - me
@@ -387,6 +393,8 @@ paths:
           $ref: '#/components/responses/Problem'
     delete:
       operationId: me.revokeAllSessions
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: Sign out everywhere
       description: Revokes every session of the caller, the current one included.
       tags:
@@ -407,6 +415,8 @@ paths:
   /v1/me/sessions/{id}:
     delete:
       operationId: me.revokeSession
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: Sign out one session
       description: |
         Revokes the session with this id (from `me.listSessions`), or the current
@@ -434,6 +444,160 @@ paths:
         '403':
           $ref: '#/components/responses/Problem'
         '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: org.get
+      summary: Read an organization
+      description: Needs the `org.read` permission in the organization. Callers without an active membership there get 404.
+      tags:
+        - org
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - org.read
+      responses:
+        '200':
+          description: The organization.
+          headers:
+            ETag:
+              description: The organization's version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: org.update
+      summary: Change an organization's settings
+      description: |
+        Needs the `org.manage` permission. `If-Match` carries the `version` the
+        client last read; a stale version is 409 `version_conflict`. The change is
+        recorded in the audit trail.
+      tags:
+        - org
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - org.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The organization's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. It is declared optional here only so that an unauthenticated caller gets 401 before
+            any validation detail (generated code binds required headers before authentication runs).
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationUpdate'
+      responses:
+        '200':
+          description: The updated organization.
+          headers:
+            ETag:
+              description: The new version, quoted.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/audit:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: audit.list
+      summary: List the organization's audit events
+      description: |
+        Newest first. Needs `audit.read`. Cursor pagination over `(at, id)`.
+        Personal data in a `diff` appears only as hashes.
+      tags:
+        - audit
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - audit.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: action
+          in: query
+          description: Only events with this action, such as `org.update`.
+          schema:
+            type: string
+        - name: target_type
+          in: query
+          description: Only events about this kind of target, such as `organization`.
+          schema:
+            type: string
+        - name: actor
+          in: query
+          description: Only events caused by this user id.
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          description: Only events at or after this time.
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Only events before this time.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: One page of events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -472,6 +636,14 @@ components:
         type: string
         minLength: 8
         maxLength: 128
+    OrgId:
+      name: org_id
+      in: path
+      required: true
+      description: The organization id.
+      schema:
+        type: string
+        format: uuid
   responses:
     Problem:
       description: Error. RFC 9457 problem details with a stable `code`.
@@ -1041,7 +1213,7 @@ components:
             $ref: '#/components/schemas/RoleGrant'
         permissions:
           type: array
-          description: Effective permissions in this organization (filled by the authorization module; empty until then).
+          description: Effective permissions in this organization, from the caller's active memberships and the role to permission matrix.
           items:
             $ref: '#/components/schemas/PermissionGrant'
         sites:
@@ -1162,12 +1334,14 @@ components:
           type: boolean
     PermissionGrant:
       type: object
-      description: An effective permission, optionally limited to sites or blocks.
+      description: |
+        An effective permission. Without `site_ids` and `block_ids` it holds
+        organization-wide; otherwise only for the listed sites and blocks.
       required:
         - permission
       properties:
         permission:
-          type: string
+          $ref: '#/components/schemas/Permission'
         site_ids:
           type: array
           items:
@@ -1195,3 +1369,200 @@ components:
           type: string
         currency:
           type: string
+    Permission:
+      type: string
+      x-open-enum: true
+      description: 'Open enum: every permission a role can hold (backend plan section 7).'
+      enum:
+        - audit.read
+        - audit.report
+        - me.read
+        - org.manage
+        - org.read
+        - platform.manage
+        - sessions.manage_own
+    Organization:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - status
+        - country_code
+        - default_locale
+        - timezone
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: active.'
+          enum:
+            - active
+        country_code:
+          type: string
+          description: ISO 3166-1 alpha-2.
+        default_locale:
+          type: string
+        timezone:
+          type: string
+          description: IANA time zone name.
+        version:
+          type: integer
+          description: Optimistic-locking version; send it as `If-Match` when updating.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    OrganizationUpdate:
+      type: object
+      description: Partial update; absent fields stay as they are.
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        country_code:
+          type: string
+          minLength: 2
+          maxLength: 2
+        default_locale:
+          type: string
+          maxLength: 35
+        timezone:
+          type: string
+          maxLength: 64
+    AuditChange:
+      type: object
+      description: |
+        One changed field. Personal data carries only `hash_before` and
+        `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
+        fields carry `before` and `after` (absent when the field did not exist on that side).
+      properties:
+        before:
+          description: Previous value (any JSON).
+        after:
+          description: New value (any JSON).
+        hash_before:
+          type: string
+        hash_after:
+          type: string
+    AuditEvent:
+      type: object
+      required:
+        - id
+        - at
+        - actor_user_id
+        - actor_kind
+        - action
+        - target_type
+        - target_id
+        - site_id
+        - diff
+        - ip
+        - request_id
+      properties:
+        id:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+        actor_user_id:
+          type: string
+          format: uuid
+          nullable: true
+        actor_kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: user, system, job.'
+          enum:
+            - user
+            - system
+            - job
+        action:
+          type: string
+          description: '`<area>.<verb>`, for example `org.update`.'
+        target_type:
+          type: string
+        target_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        diff:
+          type: object
+          description: Changed fields by (dotted) path.
+          additionalProperties:
+            $ref: '#/components/schemas/AuditChange'
+        ip:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
+    AuditEventList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+x-openbekci-roles:
+  org_admin:
+    - audit.read
+    - me.read
+    - org.manage
+    - org.read
+    - sessions.manage_own
+  site_manager:
+    - me.read
+    - org.read
+    - sessions.manage_own
+  board_member:
+    - me.read
+    - org.read
+    - sessions.manage_own
+  auditor:
+    - audit.read
+    - audit.report
+    - me.read
+    - org.read
+    - sessions.manage_own
+  accountant:
+    - me.read
+    - org.read
+    - sessions.manage_own
+  staff:
+    - me.read
+    - org.read
+    - sessions.manage_own
+  guard:
+    - me.read
+    - sessions.manage_own
+  platform_admin:
+    - me.read
+    - platform.manage
+    - sessions.manage_own

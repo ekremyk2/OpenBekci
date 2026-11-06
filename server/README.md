@@ -13,7 +13,7 @@ tools/task.ps1 migrate                                    # goose + River migrat
 tools/task.ps1 run                                        # then: curl localhost:8484/readyz
 ```
 
-`tools/task.ps1` / `tools/task.sh` run the Go-pinned [go-task](https://taskfile.dev) (`go tool task`), so nothing needs installing globally. `tools/task.ps1 --list` shows all tasks: `gen`, `gen:check`, `api:lint`, `lint`, `test`, `test:integration`, `run`, `migrate`, `db:init|start|stop|roles`.
+`tools/task.ps1` / `tools/task.sh` run the Go-pinned [go-task](https://taskfile.dev) (`go tool task`), so nothing needs installing globally. `tools/task.ps1 --list` shows all tasks: `gen`, `gen:permissions`, `gen:check`, `api:lint`, `lint`, `test`, `test:integration`, `run`, `migrate`, `db:init|start|stop|roles`.
 
 ## Commands
 
@@ -96,6 +96,48 @@ The API is contract-first; conventions are in [api/README.md](../api/README.md).
 returns `*problem.Error` (package `internal/problem`) and the HTTP layer renders it. Tools need Node/pnpm for the
 Redocly bundle and TypeScript steps (`pnpm dlx`, nothing global).
 
+## Authorization and audit
+
+Rights come from **memberships** (role, scope org/site/block, validity window); occupancies join them in phase B
+(`authz.CanAccessUnit` is a documented 403 stub until then). Permissions are string constants declared by the module
+that owns them and collected in a registry (`internal/permissions`, an explicit list, no `init()`); the role to
+permission matrix and the `Permission` enum are generated from it into the spec (`task gen:permissions`, part of
+`task gen`; `gen:check` and `TestPermissionsSpecInSync` fail on drift). A platform administrator holds only
+`platform.manage`; to act inside an organization they need a membership there.
+
+For `/v1/orgs/{org_id}/...` the pipeline resolves the caller's active memberships once (`authz.Resolver`, cached in the
+context as `authz.Grants`) and answers `404 not_found` when the caller has none there, so organizations do not leak.
+Handlers call a service; the **service** calls `authz.Require(ctx, perm, authz.Scope{OrgID: ...})` (a grant covers a
+scope when it contains it: org contains site contains block; for a block, also pass its `SiteID`). Handlers that need
+raw SQL use `httpapi.OrgTx(ctx, fn)`, which is `InTenantTx` for the request's organization.
+
+### Adding an endpoint
+
+1. **Permission.** If no existing permission fits, declare it in the module's `permissions.go`
+   (`Permissions() []authz.PermissionDef{Name, Description, Roles, Scopes}`; constants next to it), make sure the module
+   is in `internal/permissions/permissions.go`, and run `tools/task.ps1 gen`.
+2. **Spec.** Add the operation under `api/src/paths/`. Under `/v1/orgs/{org_id}` it **must** carry
+   `x-openbekci-roles: [<permission>, ...]` (all are required). Mutations declare `x-idempotent`.
+3. **Service.** Call `authz.Require(ctx, perm, scope)` first thing in the service method (not in the handler), then
+   work inside `InTenantTx`.
+4. **Audit.** Write changes with `audit.Record(ctx, tx, audit.Event{OrgID, Action: "<area>.<verb>", TargetType, TargetID, Diff})`
+   inside the same transaction. Build the diff with `audit.Diff(entity, before, after)`: fields registered in
+   `internal/platform/pii` (names, contacts, national ids, plates, notes) appear only as hashes. Register any new
+   personal data field in `pii.Registered`; `TestSensitiveStructFieldsAreClassified` fails for a struct field named like
+   email, phone, national id, plate, note, address or IBAN that is neither registered nor in `pii.Allowlist`.
+5. **Matrix row.** Add the operation to `authzMatrixRows` in `internal/httpapi/authzmatrix_test.go`
+   (`perms` = what the service requires, `status` = what a permitted caller gets, `build` = the request). The test
+   runs every operation against every role, a non-member and a platform administrator, in the own and another
+   organization and anonymously, and derives the expected status from the spec; a missing row or a missing
+   `x-openbekci-roles` fails with a message saying what to add. Use `override` only for public or auth endpoints with
+   their own rules.
+
+`internal/authztest` seeds the world (two organizations, a member per role, a non-member, a platform administrator,
+bearer tokens) for module tests that need a signed-in caller. `GET /v1/orgs/{org_id}/audit` (`audit.read`) lists
+`audit_event` (cursor pagination over `(at, id)`); events that belong to no organization (password change, session
+revocation, platform-administrator promotion) go to `platform_audit_event`, readable only through the platform role.
+Both tables are append-only: the application roles have no UPDATE, DELETE or TRUNCATE.
+
 ## Tests
 
 ```powershell
@@ -116,9 +158,12 @@ cmd/openbekci/     cobra commands
 internal/app/      config, startup checks, wiring, lifecycle
 internal/httpapi/  router, middleware, /healthz, /readyz, MountAPI, spec-driven pipeline, gen/ (generated)
 internal/problem/  RFC 9457 problem+json errors
-internal/core/     business modules (instance, authz, identity, platformadmin, ...)
+internal/core/     business modules (instance, authz, identity, tenancy, audit, platformadmin, ...)
+internal/permissions/ the permission registry built from every module (also run by cmd/genpermissions)
+internal/authztest/  seeded world for authorization tests
 internal/platform/ db (pools, tenant tx, migrations), jobs (River), id (UUIDv7), idempotency,
-                   crypto (argon2id, opaque tokens), sms (gateway, netgsm), mail (smtp), ratelimit
+                   crypto (argon2id, opaque tokens), sms (gateway, netgsm), mail (smtp), ratelimit,
+                   pii (personal data registry for audit diffs)
 internal/webassets web app embed; -tags nowebassets serves a placeholder
 db/migrations/     goose SQL        db/queries/  sqlc inputs
 ```

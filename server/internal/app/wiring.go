@@ -5,9 +5,13 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
+	"github.com/openbekci/openbekci/server/internal/permissions"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 )
@@ -39,6 +43,10 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
+	reg, err := permissions.NewRegistry()
+	if err != nil {
+		return httpapi.Deps{}, err
+	}
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(ident) // password always, sms_otp and magic_link when configured
 	return httpapi.Deps{
@@ -46,6 +54,9 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 		DB:          d,
 		Idempotency: idem,
 		Identity:    ident,
+		Authz:       authz.NewResolver(d, reg, nil),
+		Tenancy:     tenancy.NewService(d),
+		Audit:       audit.NewService(d),
 		Authenticator: httpapi.SessionAuthenticator{
 			Identity: ident,
 			Origins:  append([]string{cfg.BaseURL}, cfg.ExtraOrigins...),
