@@ -29,20 +29,42 @@ const (
 	maxLockoutSteps = 6
 )
 
-// gate applies the per-address limiter and the per-identifier lockout before
-// a credential is checked.
-func (s *Service) gate(ctx context.Context, ip, identifier string) error {
+// ipGate applies the per-address limiter to a credential check.
+func (s *Service) ipGate(ip string) error {
 	if ok, wait := s.cfg.Limits.AuthIP.Allow(ip); !ok {
 		return problem.RateLimited(wait)
 	}
-	if identifier == "" {
-		return nil
+	return nil
+}
+
+// lockoutKey names the failure counter of an account: one per user, so email
+// and phone attempts count together. An identifier without an account is
+// counted under the normalised identifier itself, so unknown accounts are
+// locked out like known ones.
+func lockoutKey(u User, found bool, norm string) (string, *uuid.UUID) {
+	if found {
+		return "uid:" + u.ID.String(), &u.ID
 	}
+	return norm, nil
+}
+
+// beginAttempt is the lockout gate of a credential check. Under a per-key
+// Postgres advisory lock it refuses the attempt while the key is locked and
+// otherwise records it as a failure BEFORE the credential is verified, so that
+// parallel guesses cannot all pass a check-then-act race: at most
+// LockoutThreshold attempts are ever evaluated between two successes. A
+// correct credential then calls recordSuccess, which resets the counter.
+func (s *Service) beginAttempt(ctx context.Context, key, method, ip string, userID *uuid.UUID) error {
 	var wait time.Duration
 	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, key); err != nil {
+			return err
+		}
 		var err error
-		wait, err = s.lockedFor(ctx, tx, identifier)
-		return err
+		if wait, err = s.lockedFor(ctx, tx, key); err != nil || wait > 0 {
+			return err
+		}
+		return s.insertAttempt(ctx, tx, key, method, ip, false, userID)
 	})
 	if err != nil {
 		return problem.Internal(fmt.Errorf("check lockout: %w", err))
@@ -53,10 +75,26 @@ func (s *Service) gate(ctx context.Context, ip, identifier string) error {
 	return nil
 }
 
-// lockedFor returns how much longer identifier is locked out. After
+func (s *Service) insertAttempt(ctx context.Context, tx pgx.Tx, key, method, ip string, success bool, userID *uuid.UUID) error {
+	_, err := tx.Exec(ctx, `INSERT INTO login_attempt (id, identifier, method, ip, success, user_id, at) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		id.New(), key, method, clip(ip, 64), success, userID, s.now())
+	return err
+}
+
+// recordSuccess notes a verified credential, which resets the failure count of key.
+func (s *Service) recordSuccess(ctx context.Context, key, method, ip string, userID *uuid.UUID) {
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		return s.insertAttempt(ctx, tx, key, method, ip, true, userID)
+	})
+	if err != nil {
+		s.log.ErrorContext(ctx, "record login attempt", "error", err)
+	}
+}
+
+// lockedFor returns how much longer key is locked out. After
 // LockoutThreshold failures since the last success (within 30 minutes) the
 // lock lasts 30s, doubling with every further failure, up to 30 minutes.
-func (s *Service) lockedFor(ctx context.Context, tx pgx.Tx, identifier string) (time.Duration, error) {
+func (s *Service) lockedFor(ctx context.Context, tx pgx.Tx, key string) (time.Duration, error) {
 	now := s.now()
 	var n int
 	var last *time.Time
@@ -64,7 +102,7 @@ func (s *Service) lockedFor(ctx context.Context, tx pgx.Tx, identifier string) (
 		SELECT count(*), max(at) FROM login_attempt
 		WHERE identifier = $1 AND NOT success AND at > $2
 		  AND at > COALESCE((SELECT max(at) FROM login_attempt WHERE identifier = $1 AND success), '-infinity')`,
-		identifier, now.Add(-lockoutWindow)).Scan(&n, &last)
+		key, now.Add(-lockoutWindow)).Scan(&n, &last)
 	if err != nil {
 		return 0, err
 	}
@@ -79,17 +117,6 @@ func (s *Service) lockedFor(ctx context.Context, tx pgx.Tx, identifier string) (
 	return 0, nil
 }
 
-func (s *Service) recordAttempt(ctx context.Context, identifier, method, ip string, success bool, userID *uuid.UUID) {
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		_, err := tx.Exec(ctx, `INSERT INTO login_attempt (id, identifier, method, ip, success, user_id, at) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-			id.New(), identifier, method, clip(ip, 64), success, userID, s.now())
-		return err
-	})
-	if err != nil {
-		s.log.ErrorContext(ctx, "record login attempt", "error", err)
-	}
-}
-
 func (s *Service) loadUser(ctx context.Context, tx pgx.Tx, userID uuid.UUID) (User, error) {
 	return scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+` FROM "user" WHERE id = $1`, userID))
 }
@@ -99,15 +126,12 @@ func (s *Service) loadUser(ctx context.Context, tx pgx.Tx, userID uuid.UUID) (Us
 // indistinguishable to the caller (400 invalid_grant).
 func (s *Service) PasswordSignIn(ctx context.Context, identifier, password string, m Meta) (User, error) {
 	kind, norm, ok := s.classify(identifier)
+	if err := s.ipGate(m.IP); err != nil {
+		return User{}, err
+	}
 	if !ok {
-		if err := s.gate(ctx, m.IP, ""); err != nil {
-			return User{}, err
-		}
 		crypto.DummyVerify(password)
 		return User{}, errInvalidGrant()
-	}
-	if err := s.gate(ctx, m.IP, norm); err != nil {
-		return User{}, err
 	}
 	var u User
 	var hash *string
@@ -123,9 +147,12 @@ func (s *Service) PasswordSignIn(ctx context.Context, identifier, password strin
 	if err != nil {
 		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
 	}
+	key, uid := lockoutKey(u, found, norm)
+	if err := s.beginAttempt(ctx, key, methodPassword, m.IP, uid); err != nil {
+		return User{}, err
+	}
 	if !found || hash == nil || u.Status != "active" {
 		crypto.DummyVerify(password)
-		s.recordAttempt(ctx, norm, methodPassword, m.IP, false, nil)
 		return User{}, errInvalidGrant()
 	}
 	match, verr := crypto.VerifyPassword(password, *hash)
@@ -133,10 +160,9 @@ func (s *Service) PasswordSignIn(ctx context.Context, identifier, password strin
 		s.log.ErrorContext(ctx, "stored password hash is unreadable", "user_id", u.ID, "error", verr)
 	}
 	if !match {
-		s.recordAttempt(ctx, norm, methodPassword, m.IP, false, &u.ID)
 		return User{}, errInvalidGrant()
 	}
-	s.recordAttempt(ctx, norm, methodPassword, m.IP, true, &u.ID)
+	s.recordSuccess(ctx, key, methodPassword, m.IP, uid)
 	if crypto.NeedsRehash(*hash) {
 		if nh, err := crypto.HashPassword(password); err == nil {
 			_ = s.db.InAppTx(ctx, func(tx pgx.Tx) error {
@@ -246,21 +272,30 @@ func (s *Service) checkOTP(ctx context.Context, phone, code string) (uuid.UUID, 
 // OTPSignIn verifies an SMS code and returns its user.
 func (s *Service) OTPSignIn(ctx context.Context, phoneRaw, code string, m Meta) (User, error) {
 	phone, ok := NormalizePhone(phoneRaw, s.cfg.DefaultCountryCode)
+	if err := s.ipGate(m.IP); err != nil {
+		return User{}, err
+	}
 	if !ok {
-		if err := s.gate(ctx, m.IP, ""); err != nil {
-			return User{}, err
-		}
 		return User{}, errInvalidGrant()
 	}
-	if err := s.gate(ctx, m.IP, phone); err != nil {
+	var owner User
+	var found bool
+	if err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		var err error
+		owner, found, err = findByContact(ctx, tx, byPhone, phone)
+		return err
+	}); err != nil {
+		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
+	}
+	key, kid := lockoutKey(owner, found, phone)
+	if err := s.beginAttempt(ctx, key, methodOTP, m.IP, kid); err != nil {
 		return User{}, err
 	}
 	uid, good, err := s.checkOTP(ctx, phone, code)
 	if err != nil {
 		return User{}, problem.Internal(fmt.Errorf("check otp: %w", err))
 	}
-	if !good {
-		s.recordAttempt(ctx, phone, methodOTP, m.IP, false, nil)
+	if !good || !found || uid != owner.ID {
 		return User{}, errInvalidGrant()
 	}
 	var u User
@@ -272,10 +307,9 @@ func (s *Service) OTPSignIn(ctx context.Context, phoneRaw, code string, m Meta) 
 		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
 	}
 	if u.Status != "active" {
-		s.recordAttempt(ctx, phone, methodOTP, m.IP, false, &u.ID)
 		return User{}, errInvalidGrant()
 	}
-	s.recordAttempt(ctx, phone, methodOTP, m.IP, true, &u.ID)
+	s.recordSuccess(ctx, key, methodOTP, m.IP, kid)
 	return u, nil
 }
 
@@ -372,7 +406,7 @@ func (s *Service) CreateLoginLink(ctx context.Context, userID uuid.UUID, client 
 
 // MagicLinkSignIn consumes a magic-link token (single use) and returns its user.
 func (s *Service) MagicLinkSignIn(ctx context.Context, token string, m Meta) (User, error) {
-	if err := s.gate(ctx, m.IP, ""); err != nil {
+	if err := s.ipGate(m.IP); err != nil {
 		return User{}, err
 	}
 	if len(token) < 20 || len(token) > 200 {

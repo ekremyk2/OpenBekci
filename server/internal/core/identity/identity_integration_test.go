@@ -55,16 +55,20 @@ type env struct {
 
 var meta = identity.Meta{IP: "203.0.113.7", UserAgent: "test/1.0"}
 
-func newEnv(t *testing.T) *env {
+func newEnv(t *testing.T, opts ...func(*identity.Config)) *env {
 	t.Helper()
 	d := dbtest.New(t)
 	e := &env{sms: &sms.Recorder{}, mail: &mail.Recorder{}, clk: &clock{t: time.Now().UTC().Add(time.Hour).Truncate(time.Millisecond)}, db: d}
-	e.svc = identity.NewService(d, identity.Config{
+	cfg := identity.Config{
 		InstanceName: "Test Site", BaseURL: "https://bekci.example.org",
 		SecretKey: []byte("0123456789abcdef0123456789abcdef"),
 		SMS:       e.sms, Mail: e.mail, Now: e.clk.Now,
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil)),
-	})
+	}
+	for _, o := range opts {
+		o(&cfg)
+	}
+	e.svc = identity.NewService(d, cfg)
 	e.admin = platformadmin.NewService(d)
 	return e
 }

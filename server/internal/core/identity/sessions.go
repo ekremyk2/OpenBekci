@@ -118,7 +118,7 @@ func (s *Service) insertPair(ctx context.Context, tx pgx.Tx, userID, family uuid
 // leaked (or the client raced itself): the whole family is revoked and the
 // user must sign in again.
 func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (TokenPair, uuid.UUID, error) {
-	if err := s.gate(ctx, m.IP, ""); err != nil {
+	if err := s.ipGate(m.IP); err != nil {
 		return TokenPair{}, uuid.Nil, err
 	}
 	now := s.now()
@@ -288,7 +288,10 @@ const (
 // on the current session. It returns when the window ends.
 func (s *Service) Reauth(ctx context.Context, p *authz.Principal, method ReauthMethod, secret string, m Meta) (time.Time, error) {
 	ident := "uid:" + p.UserID.String()
-	if err := s.gate(ctx, m.IP, ident); err != nil {
+	if err := s.ipGate(m.IP); err != nil {
+		return time.Time{}, err
+	}
+	if err := s.beginAttempt(ctx, ident, methodReauth, m.IP, &p.UserID); err != nil {
 		return time.Time{}, err
 	}
 	var u User
@@ -320,10 +323,9 @@ func (s *Service) Reauth(ctx context.Context, p *authz.Principal, method ReauthM
 		}
 	}
 	if !good {
-		s.recordAttempt(ctx, ident, methodReauth, m.IP, false, &p.UserID)
 		return time.Time{}, errInvalidGrant()
 	}
-	s.recordAttempt(ctx, ident, methodReauth, m.IP, true, &p.UserID)
+	s.recordSuccess(ctx, ident, methodReauth, m.IP, &p.UserID)
 	until := s.now().Add(s.cfg.ReauthWindow)
 	if err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `UPDATE session SET reauth_until = $2 WHERE id = $1`, p.SessionID, until)
