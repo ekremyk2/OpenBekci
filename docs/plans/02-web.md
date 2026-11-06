@@ -2,9 +2,8 @@
 
 | | |
 |---|---|
-| Status | Draft v0.1 |
-| Date | 2026-11-06 |
-| Parent | [00-overview.md](00-overview.md) — shared contracts there bind this document. API details in [01-backend.md](01-backend.md); the mobile counterpart is [03-mobile.md](03-mobile.md) |
+| Status | **Draft v0.2** — revised on 2026-11-06 against the [plan review](06-review.md) and [`docs/decisions/`](../decisions/) |
+| Parent | [00-overview.md](00-overview.md) (v0.2) — decisions and shared contracts there bind this document. API and domain details come from [01-backend.md](01-backend.md) (v0.2). Product behaviour comes from the decision files (M = money, S = setup & people, O = operations, G = governance, C = community). The mobile counterpart is [03-mobile.md](03-mobile.md) (0.4) |
 
 ---
 
@@ -12,19 +11,19 @@
 
 **Goals**
 
-- The **complete** interface: everything the system can do is reachable from the web app. Managers, accountants, boards and platform admins live here; residents and owners get a portal in the same app, shaped by their permissions.
+- The **complete** interface: everything the system can do is reachable from the web app. Managers, accountants, boards, guards and platform admins live here; residents and owners get a portal in the same app, shaped by their occupancies and permissions. Until the mobile app ships (0.4), residents use the web portal for everything.
 - A single-page app, built by Vite, **embedded in the Go binary** and served from the same origin as the API. No Node server in production.
-- Generated, type-safe API access from the OpenAPI spec; no hand-written request code.
-- i18n with RTL and full keyboard/screen-reader accessibility from the first screen — this app is used by boards of mixed ages and abilities.
-- Schema-driven forms so country packs need no custom React for their settings.
+- Generated, type-safe API access from the committed `clients/ts` types; no hand-written request code.
+- i18n and keyboard/screen-reader accessibility from the first screen — this app is used by boards of mixed ages and abilities. Logical CSS from day one; RTL *testing* is not a release gate before 1.0.
 - Fast on cheap hardware and slow connections: route-level code splitting, small initial bundle, cached queries.
+- Money screens that make the ledger invisible: managers see dues, payments and statements; the double entry underneath never leaks into the UI except in the accountant's journal view.
 
-**Non-goals (v1)**
+**Non-goals (through 1.0)**
 
-- Server-side rendering, SEO, or a marketing site (Astro, separately, if ever).
-- Offline write support (mobile owns that). Offline *reading* of already loaded data is a side effect of query caching, not a feature.
-- Micro-frontends or runtime-loaded pack bundles. Packs are data-driven (schemas, texts, URLs); custom pack React is a last resort behind a feature flag.
-- Native desktop wrappers.
+- Server-side rendering, SEO, or a marketing site.
+- Offline write support (mobile owns retries). Offline *reading* of already loaded data is a side effect of query caching, not a feature.
+- Micro-frontends or runtime-loaded pack bundles. Packs are data-driven (schemas, texts, URLs); pack UI bundles are post-1.0.
+- Native desktop wrappers; in-app chat (O6); approvals workflow (M6); kanban boards, SLAs and priorities on tickets (O1, later).
 
 ---
 
@@ -32,14 +31,14 @@
 
 | User | Area | What they do here |
 |---|---|---|
-| Site manager / management company | **Management** | Units, people, dues plans, charges, payments, bank import and matching, bills, tickets, announcements, documents, bookings, visitors, meetings, reports, settings |
-| Accountant | Management (money) | Journal, periods, trial balance, reports, exports |
-| Board member / auditor | Management (read-mostly) | Oversight dashboards, approvals, meeting records, audit log |
-| Staff / guard | Management (narrow) | Ticket queue, gate console (a large-target layout for a desk tablet/PC) |
-| Owner / resident | **Portal** | Statement, pay, tickets, announcements, documents, bookings, visitors, votes, profile |
-| Platform admin | **Platform** | Organizations, instance settings, packs available, health, usage |
+| Site manager / management company | **Management** | Sites, units, allocation keys, people, onboarding, dues plans, charges, payments, bank matching, expenses, late fees, collections, reports, tickets, announcements, documents, settings; from 0.2 assemblies; from 0.3 facilities and visitors |
+| Accountant | Management (money only, S5) | Journal, lock date, fiscal years, trial balance, reports, exports — across one or several sites; no tickets, contacts or documents |
+| Board member / auditor | Management (read-mostly) | Portfolio and site dashboards, reports, debtor list, audit log, assembly records; the auditor writes audit notes |
+| Staff / guard | Management (narrow) | Assigned tickets; from 0.3 the guard console (tablet-sized, data-minimized per S8) |
+| Owner / tenant / household member | **Portal** | Statement and declared payments, tickets, announcements, documents, household invites, directory opt-in; from 0.2 polls and check-in QR; from 0.3 bookings and visitors |
+| Platform admin | **Platform** | Organizations, instance health and backup status (0.1 minimal; complete in 1.0) |
 
-One app, one navigation component that builds its menu from the effective permissions in `GET /v1/me` (overview §6.4). A manager who is also a resident sees both areas under one login. The server enforces; the client hides.
+One app, one navigation component that builds its menu from the effective permissions and occupancies in `GET /v1/me` (overview §6.4). A manager who is also a resident sees both areas under one login. **Portal rights derive only from occupancies; memberships carry staff and governance roles.** The server enforces; the client hides.
 
 ---
 
@@ -49,27 +48,28 @@ One app, one navigation component that builds its menu from the effective permis
 |---|---|---|
 | Language | TypeScript, `strict`, `noUncheckedIndexedAccess` | |
 | UI library | React 19 | |
-| Build | Vite | Dev server proxies `/v1` and `/.well-known` to the Go server |
-| Routing | **TanStack Router** (file-based routes, typed params/search, loaders) | Search params are typed and validated with zod — filters/pagination live in the URL |
+| Build | Vite | Dev server proxies `/v1` and `/.well-known` to the Go server (files live under `/v1`, so no separate proxy) |
+| Routing | **TanStack Router** (file-based routes, typed params/search, loaders) | Search params typed and validated with zod — filters/pagination live in the URL |
 | Server state | **TanStack Query** | Query keys derived from the generated client's operation ids |
-| API client | `openapi-typescript` (types) + `openapi-fetch` (runtime, ~2 kB) + `openapi-react-query` (TanStack Query bindings) — all generated/driven from `api/openapi.yaml` | Spike `orval` at W0 as the alternative (generates hooks directly); ADR |
-| Forms | `react-hook-form` + `zod` resolvers; zod schemas for request bodies generated from the spec (`openapi-zod-client` or `typed-openapi`) | Field-level server errors (`errors[].field`) are mapped back onto form fields by code |
-| Schema-driven forms | **react-jsonschema-form** (`@rjsf/core` + `@rjsf/validator-ajv8`) with a custom shadcn theme | For pack settings and org settings declared by JSON Schema (backend §10.1) |
+| API client | **`clients/ts`** (committed `openapi-typescript` types generated by `task gen` from `api/openapi.yaml`, Apache-2.0) + `openapi-fetch` (runtime, ~2 kB) + `openapi-react-query` | The web consumes the in-repo package directly; nothing is published to npm for the web's sake. `orval` is spiked in the skeleton phase as the alternative; ADR |
+| Forms | `react-hook-form` + `zod` resolvers; zod schemas for request bodies generated **at build** from the spec (not committed) | Field-level server errors (`errors[].field`) mapped back onto fields by code |
+| Schema-driven forms | **react-jsonschema-form** (`@rjsf/core` + `@rjsf/validator-ajv8`) with a shadcn theme — **0.4**, for pack settings only (§12) | React 19 compatibility verified before 0.4 starts |
 | Components | **shadcn/ui** (Radix primitives + Tailwind) — component source lives in the repo | Owned code: theming, RTL and a11y fixes are ours to make |
 | Styling | Tailwind CSS v4; logical properties (`ms-`, `pe-`, `start-`) only, never `ml/mr/left/right` | Enforced by an ESLint rule |
 | Tables | TanStack Table + TanStack Virtual for long lists; server-side cursor pagination | |
-| Charts | Recharts (reports, dashboards); kept behind a lazy chunk | |
-| Dates/numbers | `Intl.*` for formatting; `date-fns` + `@date-fns/tz` for arithmetic in the site's timezone | Never format with the browser timezone for site-scoped dates |
-| Markdown | `react-markdown` + `remark-gfm` + `rehype-sanitize` for rendering; a lightweight toolbar textarea editor (`@uiw/react-md-editor`) for authoring | Bodies are Markdown per backend §4.8 |
-| i18n | **Lingui** (ICU messages, catalogs per locale, extraction in CI, pseudo-locale) | RTL via `<html dir>` driven by locale |
+| Charts | Recharts (dashboards, budget vs actual); lazy chunk | |
+| Dates/numbers | `Intl.*` for formatting; `date-fns` + `@date-fns/tz` for arithmetic in the site's timezone | Never format a site-scoped date in the browser's timezone |
+| Markdown | `react-markdown` + `remark-gfm` + `rehype-sanitize` for rendering; a toolbar textarea editor (`@uiw/react-md-editor`) for announcements | Bodies are Markdown (backend §4.10) |
+| QR | `qrcode` for generating (site QR, visitor QR, check-in QR, connect-mobile); scanning with the `BarcodeDetector` API and a `@zxing/browser` fallback (0.2 attendance desk, 0.3 guard console) | Lazy chunks |
+| i18n | **Lingui** (ICU messages, catalogs per locale, extraction in CI, pseudo-locale) | `<html dir>` driven by locale |
 | Icons | `lucide-react` | Direction-sensitive icons mirrored in RTL via a wrapper |
-| PDF viewing | Native browser viewer in an `<iframe>` from a signed URL | No PDF.js bundle |
-| Component workshop | Storybook (with interaction tests and a11y addon) | The design system's documentation |
-| Testing | Vitest, Testing Library, MSW (handlers generated from the spec with `openapi-msw`), Playwright (e2e + axe + visual snapshots) | |
-| Lint/format | ESLint flat config (`typescript-eslint`, `react-hooks`, `jsx-a11y`, `tailwindcss`, custom rules), Prettier, `knip` for dead code | |
-| Package manager | pnpm, single `web/` package (no JS monorepo tooling needed; the generated client is published from `clients/ts`) | |
+| PDF viewing | Native browser viewer in an `<iframe>` from a file URL | No PDF.js bundle |
+| Component workshop | Storybook — **optional**; useful for the design system, not a CI gate | |
+| Testing | Vitest, Testing Library, MSW (handlers generated at build with `openapi-msw`), Playwright for a handful of flows with axe | §16 |
+| Lint/format | ESLint flat config (`typescript-eslint`, `react-hooks`, `jsx-a11y`, `tailwindcss`, the logical-properties rule, no `dangerouslySetInnerHTML`), Prettier, `knip` | |
+| Package manager | pnpm; `web/` is a single package that depends on `../clients/ts` by workspace path | |
 
-Deliberately avoided: Next.js/Remix (no SSR need; would break the single binary), Redux/MobX (TanStack Query covers server state; local UI state is React state or small zustand stores where needed), CSS-in-JS, Material UI, moment.
+Deliberately avoided: Next.js/Remix (no SSR need; would break the single binary), Redux/MobX (TanStack Query covers server state; local UI state is React state or small zustand stores where needed), CSS-in-JS, Material UI, moment, JWT handling of any kind (the SPA never sees a token).
 
 ---
 
@@ -78,21 +78,21 @@ Deliberately avoided: Next.js/Remix (no SSR need; would break the single binary)
 ```
 web/
 ├─ src/
-│  ├─ main.tsx                  bootstrap: i18n, query client, router
+│  ├─ main.tsx                  bootstrap: i18n, query client, router, chunk-load recovery
 │  ├─ routes/                   TanStack Router file routes (see §5)
 │  ├─ app/
 │  │  ├─ router.tsx             route tree, guards (auth, org, permission), pending/error components
 │  │  ├─ providers.tsx          QueryClient, I18n, Theme, Toaster, Dialog manager
-│  │  ├─ instance.ts            discovery document (/.well-known/openbekci.json), branding, auth methods
-│  │  ├─ session.ts             current user, orgs, permissions (from /v1/me), re-auth
+│  │  ├─ instance.ts            discovery document (backend §8), branding, auth methods
+│  │  ├─ session.ts             current user, orgs, permissions, occupancies (from /v1/me), re-auth
 │  │  └─ theme/                 tokens, dark mode, density, brand color → CSS variables
 │  ├─ api/
-│  │  ├─ schema.d.ts            generated by openapi-typescript (do not edit)
-│  │  ├─ client.ts              openapi-fetch instance + middleware (headers, problem+json, 401/412 handling, idempotency keys)
+│  │  ├─ client.ts              openapi-fetch instance + middleware (headers, problem+json, 401/403/412, idempotency keys)
 │  │  ├─ query.ts               openapi-react-query binding, query key helpers, invalidation map
-│  │  └─ errors.ts              AppError { code, fieldErrors, status }, code → message lookup
-│  ├─ features/                 one folder per domain (tenancy, people, money, tickets, …)
-│  │  └─ tickets/
+│  │  ├─ codes.ts               open-enum and problem-code labels: catalog first, GET …/codes as fallback
+│  │  └─ errors.ts              AppError { code, fieldErrors, status }
+│  ├─ features/                 one folder per module (tenancy, people, money, tickets, …)
+│  │  └─ money/
 │  │     ├─ components/         feature-specific UI
 │  │     ├─ hooks/              queries/mutations composed from api/query
 │  │     ├─ forms/              zod schemas + form components
@@ -100,16 +100,15 @@ web/
 │  ├─ components/
 │  │  ├─ ui/                    shadcn/ui primitives (owned)
 │  │  ├─ data/                  DataTable, filters, cursor pagination, Money, SiteDate, EmptyState, ErrorState
-│  │  ├─ forms/                 FormField wrappers, MoneyInput, DateInput (site tz), UnitPicker, PersonPicker
-│  │  ├─ schema-form/           RJSF theme for shadcn
-│  │  └─ layout/                AppShell, Sidebar (permission-driven), Topbar, OrgSwitcher, CommandPalette
-│  ├─ lib/                      utils: money, dates, permissions (`can()`), files, markdown
+│  │  ├─ forms/                 FormField wrappers, MoneyInput, DateInput (site tz), UnitPicker, PersonPicker, SidePicker
+│  │  ├─ schema-form/           RJSF theme for shadcn (0.4)
+│  │  └─ layout/                AppShell, Sidebar (permission-driven), Topbar, OrgSwitcher, SiteSwitcher
+│  ├─ lib/                      utils: money, dates, permissions (`can()`), files, markdown, qr
 │  └─ locales/                  Lingui catalogs: en/, tr/, pseudo/
 ├─ public/
-├─ .storybook/
 ├─ e2e/                         Playwright
-├─ index.html                   template; the Go server injects the CSP nonce and instance branding at serve time
-├─ vite.config.ts
+├─ index.html                   template; the Go server renders it with the CSP nonce and instance branding
+├─ vite.config.ts               html.cspNonce; proxy for /v1 and /.well-known
 └─ package.json
 ```
 
@@ -117,192 +116,249 @@ Rules:
 
 - Route components are thin; business UI lives in `features/*`. Features import from `components/`, `api/`, `lib/`, and other features' **hooks** only (never their components' internals).
 - No fetch outside `api/`. Every request goes through the generated client so a spec change fails the type-check, not production.
-- URL is the state for anything a user might bookmark or share: filters, tabs, selected period, page cursor.
+- URL is the state for anything a user might bookmark or share: site, filters, tabs, selected period, page cursor.
 - Every list has loading (skeleton), empty, error and "no permission" states via the shared `DataTable`/`EmptyState` components.
+- **Open enums:** generated unions carry an `(string & {})` escape hatch; every `switch` on an enum has a default branch that renders the raw code through `api/codes.ts`. An unknown status, charge type or notification type must never crash a screen.
 
 ---
 
 ## 5. Routes
 
+There is no `/app/…` prefix: every signed-in screen lives under `/orgs/$orgId/…`, and mobile deep links (0.4) use these same paths. Link URL formats for magic link, invitation and reset are defined in backend §6 and consumed here.
+
 ```
-/login                               methods from the discovery document
-/login/passkey, /login/magic, /login/oidc/callback
-/invite/$token                       accept invitation, create/link account
+/login                               methods from the discovery document (password, SMS code, magic link)
+/login/magic?token=…                 magic-link landing (backend §6)
+/login/link/$token                   0.4: web-login link opened from the mobile app (backend §8)
+/invite/$token                       accept invitation (manager / site-code / household), create or link account
+/join/$code                          site QR sign-up → claim a unit (S4); manager approves
 /reset/$token
 /select-org                          when the user has >1 org and none remembered
 /orgs/$orgId
-   /                                 home: role-aware dashboard (manager KPIs or resident summary)
-   /sites, /sites/$siteId            site settings, buildings, units (+ import wizard), facilities
-   /people                           persons, occupancies, memberships, invitations; /vendors
+   /                                 home: portfolio dashboard (org roles), site dashboard, or resident summary
+   /sites, /sites/$siteId            site settings (timezone, currency, fiscal year, lock date, bank details,
+                                     late-fee policy, transparency, directory), blocks, units (+ appurtenances),
+                                     allocation keys, import wizard, site QR, unit-claim queue, export / offboard
+   /people, /people/$personId        persons, occupancies timeline, memberships (terms), invitations and join
+                                     status, move-out, directory; /vendors
    /money
-      /overview                      receivables, cash, aging, recent payments
-      /plans                         charge plans (dues) and allocation preview
-      /charges                       all charges, filters, bulk actions
-      /payments                      record, allocate, history; /payments/import (bank statement matching)
-      /bills                         vendor bills, bill payments
-      /statements                    per unit statement + PDF
-      /journal, /periods             accountant views, period close
-      /reports                       trial balance, income/expense, aging, budget vs actual (later)
-   /tickets, /tickets/$id            list/board, detail timeline; /tickets/queue (staff)
+      /overview                      receivables by side, cash and bank, aging, collection rate, late fees accrued
+      /plans                         dues plans with effective-dated rates; preview
+      /charges                       all charges (period, unit, side, status), reverse with reason
+      /payments                      cash receipts, transfers, refunds, declared payments to confirm;
+                                     /payments/import (bank statement matching); /cash-boxes
+      /expenses                      light + recurring; /bills (optional per site)
+      /late-fees                     accrued vs booked per unit side; waive; freeze
+      /collections                   stages, reminder runs, ihtarname export, cases
+      /opening-balances              wizard with dry-run (site setup)
+      /budget                        light category budget per fiscal year; budget vs actual
+      /statements                    per unit side or per person; PDF; send
+      /journal, /fiscal-years        accountant views; lock date
+      /reports                       gelir-gider, debtor list, trial balance, aging, reconciliations, funds
+   /tickets, /tickets/$id            list (private / common, +1 counts), detail timeline; /tickets/queue (staff)
    /announcements, /announcements/$id, /announcements/new
-   /documents, /documents/f/$folderId
-   /bookings                         calendar + list; /bookings/facilities
-   /visitors                         list; /visitors/gate (guard console layout)
-   /meetings, /meetings/$id          agenda, attendance, votes (live), decisions, minutes
-   /notifications
+   /documents, /documents/f/$folderId   site folders and per-unit private folders
+   /vehicles                         plate registry + export (D6)
+   /notifications                    center; site defaults for automatic messages (manager)
+   /meetings, /meetings/$id          0.2: agenda, call letter and delivery, polls, attendance desk, decisions, minutes
+   /facilities, /bookings            0.3: rules per facility; calendar + list
+   /visitors                         0.3: pre-registration, recurring visitors, approval requests
+   /gate                             0.3: guard console (tablet-sized); access points and opening log
    /settings
-      /organization, /roles, /notifications (templates & overrides), /packs, /packs/$packId,
-      /api-keys, /webhooks, /audit, /privacy (export/erasure requests)
-   /me                               profile, my units, sessions, security (passkeys, TOTP), consents, preferences
-/platform                            platform admin: /orgs, /settings, /packs, /health, /jobs
+      /organization, /roles (read-only matrix), /audit,
+      /packs, /packs/$packId, /api-keys, /webhooks, /connect-mobile   (0.4),
+      /privacy                                                        (1.0)
+   /me                               profile, contact and password (re-auth), my units, sessions, mutes,
+                                     directory opt-in, gate contact number (0.3), consents
+/platform                            /orgs, /health, /backup-status (0.1); /settings, /jobs (1.0)
 ```
 
-Resident/owner users see the same `/orgs/$orgId/...` tree; routes they can't access are absent from navigation and guarded (`403` page with "ask your manager"). The **portal** is thus a filtered view, not a second app — one set of components to maintain, matching the mobile app's screens one-to-one so support can reason about both.
+Resident, owner and household users see the same `/orgs/$orgId/...` tree filtered by their occupancies; routes they can't access are absent from navigation and guarded (`403` page with "ask your manager"). The **portal** is thus a filtered view, not a second app — one set of components to maintain, matching the mobile app's screens one-to-one so support can reason about both. A former occupant (S7) sees the same statement and document screens bounded to their own period.
 
 ---
 
 ## 6. Data layer
 
-- **Client**: `openapi-fetch` with middleware that adds `Accept-Language`, `X-Requested-With: openbekci-web` (CSRF per backend §6), `Idempotency-Key` for operations tagged `x-idempotent` in the spec (a UUID generated per form submission and reused on retry), and `If-Match` from the entity's `version` for `PATCH/PUT`.
-- **Errors**: `application/problem+json` → `AppError`. `401` → clear session cache and redirect to `/login?next=`; `403` → inline permission state; `412 version_conflict` → "this record changed, reload?" dialog with a diff where feasible; `422 validation_failed` → field errors onto the form by `errors[].field`; `429` → toast with retry-after; network errors → retry button.
-- **Queries**: keys are `[operationId, params]` from `openapi-react-query`; `staleTime` 30 s default, 5 min for reference data (units, people, accounts), `0` for money mutations' targets. An **invalidation map** in `api/query.ts` says which operation ids a mutation invalidates (e.g. `payments.createPayment` → charges, statements, dashboard). Optimistic updates only for trivial toggles (read receipts, pin, ticket status), never for money.
-- **Lists**: cursor pagination (`limit`, `cursor`) with `useInfiniteQuery` for feeds and a page-style `DataTable` for admin grids; sort/filter in the URL search params (typed by the route).
-- **Reference data**: units, people, accounts, categories are fetched once per org and shared by pickers; `updated_since` keeps them fresh.
-- **Polling**: notifications badge polls `GET /v1/me/notifications?unread=1` every 60 s while the tab is visible; a live vote view polls every 5 s. SSE (`/v1/me/events`) replaces polling when the backend ships it (ADR at B3/W3).
-- **Prefetch**: route loaders prefetch the primary query; links prefetch on hover/intent.
+- **Client**: `openapi-fetch` with middleware that adds `Accept-Language`, `X-Requested-With: openbekci-web` (CSRF per backend §6), **`Idempotency-Key` on every `POST` create whose operation is tagged `x-idempotent`** (a UUID generated when the form is opened and reused on retry; the backend *requires* it on money operations — payments, charges, expenses, refunds, transfers, opening balances, bookings), and `If-Match` from the entity's `version` for `PATCH/PUT`.
+- **Errors**: `application/problem+json` → `AppError` keyed by the backend's problem-code enum. `401` → clear session cache, redirect to `/login?next=`; `403 insufficient_permission` → inline permission state; `403 reauth_required` → re-auth modal, then replay (§7); `409 idempotency_mismatch` → "already submitted" state; `412 version_conflict` → "this record changed, reload?" dialog; `422 validation_failed` → field errors by `errors[].field`; `423 locked_period` → explains the lock date; `429` → toast with `Retry-After`; network errors → retry button. Unknown codes fall back to the generic message and show the raw code.
+- **Queries**: keys are `[operationId, params]`; `staleTime` 30 s default, 5 min for reference data (units, people, accounts, allocation keys, ticket workflows), `0` for money mutations' targets. An **invalidation map** in `api/query.ts` says which operation ids a mutation invalidates (e.g. `payments.createPayment` → charges, statements, late fees, dashboards). Optimistic updates only for trivial toggles (read receipts, pin, ticket "+1"), never for money.
+- **Lists**: cursor pagination (`limit`, `cursor` → `next_cursor`) with `useInfiniteQuery` for feeds and a page-style `DataTable` for admin grids; sort/filter in typed URL search params.
+- **No sync protocol.** There is no `updated_since` or ETag in v1 (overview §6.2): reference data is refetched on window focus and after mutations through the invalidation map; lists refetch their first page. Lists are small enough for this.
+- **Polling**: notifications badge polls the unread-count endpoint every 60 s while the tab is visible; the attendance desk and quorum indicator (0.2) poll every 5 s while open; the guard console and visitor approval requests (0.3) poll every 10 s. SSE is **later** (backend §8); polling backs off when the tab is hidden.
+- **Prefetch**: route loaders prefetch the primary query; links prefetch on intent.
 
 ---
 
 ## 7. Authentication and session
 
-- Cookie session (backend §6); the SPA never sees a token. On load the app fetches the discovery document and `GET /v1/me`; a `401` shows the login page.
-- Login page renders the methods the instance supports: password (+ TOTP step), magic link, **passkeys** (WebAuthn via `@simplewebauthn/browser`; conditional UI/autofill on the username field), external providers (redirect flow; the server owns the OAuth dance; the SPA only handles `/login/oidc/callback` by refetching `/v1/me`).
-- Invitation and reset links land on their routes and continue to account creation/linking.
-- **Re-authentication modal** for sensitive actions (backend §16.1 list): the API answers `403 reauth_required`; the modal collects password/passkey, calls `POST /v1/auth/reauth`, then replays the original request.
-- Org context: `/orgs/$orgId` is the source of truth; the switcher navigates. Last org remembered in `localStorage`.
-- Session management under `/me/security`: active sessions, revoke, passkey enrolment, TOTP setup with recovery codes.
-- Idle logout is server-driven (cookie expiry); the app shows a "signed out" banner when a request returns `401` mid-session and preserves unsaved form state in memory for the re-login round trip.
+- Cookie session (backend §6) holding an **opaque** token; the SPA never sees it and never handles a JWT. On load the app fetches the discovery document and `GET /v1/me`; a `401` shows the login page.
+- **Sign-in methods in 0.1**, rendered from the discovery document's `auth_methods`: email + password; magic link (email, lands on `/login/magic`); **SMS one-time code** (phone first; the primary path for residents, D5); invitations (`/invite/$token`, three kinds per S4); site QR sign-up with unit claim (`/join/$code`). The login form offers "phone" first when the instance has SMS configured.
+- **Later** (not 0.1 deliverables): passkeys, TOTP, OIDC. The login page is written so a new `auth_methods` entry adds a button, not a redesign; unknown method ids are ignored.
+- Invitation, reset and magic links land on their routes and continue to account creation or linking; the requests carry `client=web` so the server emits web URLs (backend §6).
+- **Re-authentication modal** for sensitive actions (backend §16 list: contact/password changes, moving the lock date back, opening-balance edits, waivers above the site threshold, erasing a person, removing site-owned memberships, API keys): the API answers `403 reauth_required`; the modal collects a password or an SMS/email code, calls `POST /v1/auth/reauth`, then replays the original request with the same `Idempotency-Key`.
+- Org context: `/orgs/$orgId` is the source of truth; the switcher navigates. Last org and site remembered in `localStorage`.
+- `/me`: profile, change email/phone/password (re-auth), active sessions with revoke (`DELETE /v1/me/sessions/{id|current}`).
+- Idle logout is server-driven (cookie expiry); the app shows a "signed out" banner when a request returns `401` mid-session and keeps unsaved form state in memory for the re-login round trip.
+- Guard console (0.3): shared booth device with a quick PIN switch between guards so each action is attributed to a person (C defaults); the PIN flow is a re-auth variant, not a second session type.
 
 ---
 
 ## 8. Permissions in the UI
 
-- `Permission` is a generated string union from the spec; `can(perm, scope?)` reads the effective permissions in `/v1/me` (per org, with site/building/unit scopes).
+- `Permission` is the generated string union from the spec (`components.schemas.Permission`); `can(perm, scope?)` reads the effective permissions in `/v1/me` (per org, with site/block scopes). Occupancies (`owner` / `tenant` / `household` with `may_see_money`) are read from the same document and drive the portal: which units, which side of the statement, whether money is visible at all.
 - `<Can perm="ledger.post" site={siteId}>…</Can>` and route `beforeLoad` guards. Navigation items declare their permission; the sidebar filters itself.
-- Resource-level rules (own units only) are not re-implemented client-side: the API already returns only what the user may see; the UI just avoids offering actions that would `403`.
-- The authz matrix test in the backend is the contract; a web e2e suite logs in as each built-in role and snapshots the navigation to catch regressions in what is shown.
+- Resource-level rules (own units only, own period only) are not re-implemented client-side: the API already returns only what the user may see; the UI just avoids offering actions that would `403`.
+- Site setting "financial transparency to owners": aggregate gelir-gider and budget are shown to owners; the **debtor list is board-only** and never appears in the portal (M8).
+- Guard screens show only name, unit, plate, time window and the chosen gate contact number (S8); the components for those screens have no access to the person or money hooks.
+- The authz matrix test in the backend is the contract; a web e2e flow logs in as each built-in role and snapshots the navigation to catch regressions in what is shown.
 
 ---
 
-## 9. Feature areas
+## 9. Feature areas by release
 
-Grouped by the project milestone that delivers them.
+Organized by the releases in overview §8. Each item maps to a decision (S/M/O/G/C) or an overview §3 row.
 
-### 9.1 M1 — Manage a site
-- **Onboarding**: create org → first site → buildings → units. **Import wizard** for units and people from CSV/XLSX: upload → server `dry_run` preview with row-level errors → confirm → async job → result report. Column mapping UI with remembered mappings.
-- **Units**: table with inline edit for shares/area/type; merge/split later. Facilities.
-- **People**: persons with occupancies timeline per unit (who lived/owned when), memberships with scope, invitations (email/phone), vendor directory.
-- **Announcements**: Markdown editor with preview, audience and scope pickers, schedule, pinned, attachments, read-receipt counts.
-- **Settings**: organization, site (timezone, currency, fiscal year), roles overview (built-in, read-only in v1), audit log viewer with filters and diff view.
-- **Portal**: home summary, announcements, profile.
+### 9.1 Release 0.1 — "A Turkish site runs on it" (web ≈ 18 engineer-weeks)
 
-### 9.2 M2 — Money
-- **Money overview**: receivables aging, cash/bank balances, collection rate this period, top overdue units.
-- **Charge plans**: create/edit; allocation policy picker with **live preview** (what each unit would pay) before saving; one-off expense sharing wizard from a bill.
-- **Charges**: filterable grid (period, unit, status), cancel/adjust with reason (creates reversal), bulk reminders.
-- **Payments**: record (cash/transfer) with unit/person picker and automatic oldest-first allocation shown and editable; payment history; receipts (PDF).
-- **Bank import**: upload statement → importer (core CSV or pack) → matching screen: auto-matched, suggested, unmatched; keyboard-driven confirm; create matching rules from a match.
-- **Bills/vendors**: bill entry with expense account, due tracking, bill payment, attachments.
-- **Statements**: per unit, period range, running balance, PDF download, "send to resident".
-- **Accountant views**: journal with entry detail (lines, source link, reversal), periods with close/reopen (re-auth), trial balance, income/expense by account and period, exports (CSV/XLSX via API).
-- **Portal**: statement, charges, pay (provider checkout URL or bank details + "I've paid" note).
+**Setup & people (S1–S8)**
 
-### 9.3 M3 — Operations
-- **Tickets**: list and kanban board (status columns), filters by category/assignee/unit/priority, detail with timeline (status history, public/internal comments, attachments with image lightbox), assignment, SLA indicators (later), staff queue view.
-- **Documents**: folder explorer with breadcrumb, drag-drop upload with progress, visibility editor, versions, preview (PDF/images), move/rename.
-- **Bookings**: facility calendar (week/month), slot rules shown, create/approve/reject, fee preview → charge link, conflicts prevented by the server and reflected live.
-- **Visitors**: list by day, pre-registration form, vehicle registry, **gate console**: a full-screen, large-target page for guards (today's expected, search by name/plate, check-in/out, walk-in entry); auto-refresh.
-- **Notifications**: center, per-type channel preferences, org-level template overrides editor with variable help and preview per locale.
-- **Files**: shared upload component (presigned/direct, progress, cancel, mime/size validation mirroring server limits).
+- **Site shape (S1):** organization → site → block → unit. The block list is hidden for a single-building site (its one block is auto-created); multi-block sites manage blocks and use them as allocation scopes.
+- **Units:** table with inline edit; door number and optional legal reference (tapu no); types flat / shop / office / parking / storage / common / other; area; **appurtenances (S2)**: a per-site default ("parking and storage belong to a flat") plus a per-unit override that makes a spot an independent unit with its own owner, share and charges. Vacancy is derived and shown, not set.
+- **Allocation keys editor (M2):** per site, keys `arsa_payi`, `equal`, `area`, and custom tables (upload a per-unit value file, e.g. the heating-meter company's monthly sheet); a value per unit; unit tags for cost groups (lift, pool). Law 634 defaults are pre-selected so a new site needs no configuration.
+- **People:** persons exist before accounts; occupancies timeline per unit (owner with co-owner shares and one correspondent, tenant, household member with a "may see money" toggle set by the unit's owner/tenant, S3); memberships with scope and terms (org admin, site manager, board member, auditor, accountant, staff); board and auditor memberships flagged site-owned (D2) and not removable from the org screens without re-auth; vendor directory (labels for tickets, M6 payees).
+- **National id (S6):** optional, checksum-validated on entry (TCKN validator from the core), stored encrypted, shown masked to managers only.
+- **Onboarding (S4):** **import wizard** for units, people and **opening balances (M7)** from CSV/XLSX: upload → column mapping (remembered per org) → server `dry_run` row-level report → confirm → async job → result. **Invitations** by SMS or email with a "who has joined" status view; **site QR** page (printable poster with the join code) and a **unit-claim approval queue**; **household invites** from the portal by the unit's owner or tenant (household occupancy only, no money access); "add a person by hand".
+- **Move-out / sale (S7):** set the as-of date; the server produces the **closing statement** and the **debt / no-debt certificate** (filed automatically, O8); debt disposition defaults to "stays with the person", overridable with a reason (audited); no pro-rating. Former residents keep a read-only portal bounded to their period.
+- **Directory (S8):** off by default; a site switch enables it; each person opts in under `/me`; managers and board always see the full list.
+- **Portfolio dashboard (S5):** org-level dashboard for management companies (overdue, cash, open tickets per site) **in 0.1**, plus the per-site dashboard and the resident summary — all from the backend's dashboard endpoints.
+- **Site export / import and "offboard site" (D2):** export a site to an archive, import into another organization, and an offboarding flow that revokes the source organization's access; the whole thing is re-auth protected and shown in the audit log.
+- **Settings:** organization; site (timezone, currency, fiscal year start, lock date, bank details shown to payers, late-fee policy with national presets, transparency to owners, directory, ticket archive age); roles overview (read-only matrix from the spec); **audit log viewer** with filters and a PII-safe diff view (hashes shown as "changed").
 
-### 9.4 M4 — Governance
-- **Meetings**: create with agenda builder, invitation dispatch (channels), attendance desk (check-in list, proxy entry with document upload), quorum indicator live (from `LegalRules`), per-item **vote runner** (open/close, live tally polling, eligibility explanation), decisions with sequence numbers, minutes editor (Markdown → PDF via templates), decision-book export.
-- **Portal**: upcoming meetings, proxy declaration, online ballot while open, results.
+**Money (M1–M8 and the Money defaults)**
 
-### 9.5 M5 — Mobile support (small)
-- "Connect the mobile app" page: QR code with server URL and optional invitation; web-login link acceptance route for deep links from the app.
+- **Debtor sides (M1):** every charge type has a default debtor (tenant for regular dues, owner for special assessments) with a per-unit override; every charge and statement line shows "owed by owner / tenant" and the person it was assigned to. A unit has two balances; the owner sees both, the tenant only the tenant side. `SidePicker` is a shared widget.
+- **Dues plans (M3):** amount set directly (per unit, per share or per plan); **effective-dated rates** with a visible history ("₺2,000 from March", `decision_id` attached from 0.2); each plan names its **allocation key and scope** (site / block / unit tag); charge type; fund (operating / reserve). **Live preview** (`charge-plans:preview`) shows what each unit side would pay before saving. One-off expense sharing wizard with the same key/scope choice.
+- **Charges:** filterable grid (period, unit, side, status, plan); catch-up generation status; reverse with a reason (never edit); bulk reminders through the collections stages.
+- **Budget (M3/M8):** optional light **category budget per fiscal year**; **budget vs actual** report and chart.
+- **Late fees (M4):** accrued fee **shown continuously** on statements, the money overview and "what do I owe today"; the monthly **booking** per unit side listed with its reconciliation delta; **waive** (reason; re-auth above the site threshold) and **freeze** (unit in legal collection) actions.
+- **Cash receipts (M5):** record cash with unit/person/side picker and the automatic oldest-first, principal-before-fee allocation shown and editable (manager can pick a specific charge); **gap-free receipt numbers** per site per year; receipt printed as PDF or sent by SMS/email; **collector cash boxes**, hand-over and bank deposit as transfers; collector reconciliation.
+- **Bank statement import (M5):** upload the bank's CSV/XLSX → importer (core CSV in 0.1) → **matching screen**: suggested unit per line (reference text, payer name, amount), unmatched lines, keyboard-driven confirm; **manual matching only** (rules are later); **reconciliation balances** (statement opening/closing vs ledger) shown on the import. Declared transfers from the portal appear here for confirmation.
+- **Expenses (M6):** light entry (what, who was paid, how much, when, from which account, category, fund, receipt photo); **recurring** monthly; optional **vendor bills** with due dates and partial payments for sites that switch them on. **No approvals workflow.**
+- **Transfers, refunds, credits:** asset-to-asset transfers, outgoing refunds, prepayment credits per unit side or person shown on statements.
+- **Opening balances (M7):** wizard with dry-run inside site setup (per unit side principal and known late fee, bank and cash balances); locked once the lock date passes them.
+- **Ledger views (accountant):** journal with entry detail (lines with fund and side, source link, reversal link), **lock date** (moving it back needs re-auth), fiscal years with approval status, exports.
+- **Collections:** per-site **stages** (reminder 1 at N days, reminder 2, ihtarname); reminder runs with channel choice (O5); **ihtarname export** and debt breakdown; **collection cases** (lawyer, file no., costs charged back) that freeze fees and reminders.
+- **Reports (M8 + backend §9.12):** cash-basis **gelir-gider** by category for any period; **debtor list** (manager and board only, never in the portal); **statement PDF per unit side or per person** with running balance and principal/fee split, printable and sendable; **budget vs actual**; trial balance; receivables aging; **collector reconciliation**; **bank reconciliation**; **fund balances**. All downloadable as PDF/CSV/XLSX via API jobs.
+- **Portal money:** statement for my side(s) with accrued late fee; **pay** in 0.1 = the site's **bank details** (IBAN, holder, suggested reference) plus an **"I've paid by transfer"** declared payment (amount, date, note) that the API records with `status = pending_declared` and the manager confirms during matching. Card checkout arrives in 0.4.
 
-### 9.6 M6 — Packs and TR
-- **Packs settings**: `/settings/packs` lists packs from the instance; enable per org; **schema-driven settings form** (RJSF + uiSchema from the pack), validation errors from the server mapped to fields. Secrets fields rendered as write-only.
-- Pack-provided consent texts in the portal; pack identity providers on the login page; pack payment providers in the pay flow; pack importers in bank import; pack templates in document generation — all data-driven, no TR-specific React.
-- API keys and webhooks management screens.
+**Daily operations (O1–O8), notifications, plates**
 
-### 9.7 M7 — 1.0
-- Privacy: export/erasure request handling screens; retention settings.
-- Command palette (`⌘K`) for navigation and quick actions; keyboard shortcuts for the matching and gate screens.
-- Platform admin area complete; health/jobs views.
-- Performance and a11y audit closure; full tr/en catalogs.
+- **Tickets (O1–O3):** **per-site workflow editor** (ordered statuses with names and open-like / closed-like semantics; the default open → in progress → done until edited); categories with default visibility and assignee role; **list view** with filters (category, status, assignee, unit, visibility) — no kanban in 0.1; detail timeline with status history, public comments, **internal notes**, photos (≤ 10, downscaled client-side, lightbox); assignment to staff or a **vendor label** (O2); **private vs common** visibility; **"+1"** on common tickets with the count visible; **merge duplicates** (votes carry over); reopen as a transition; staff queue view. Management can open a ticket on a resident's behalf.
+- **Announcements (O4/O5):** one-way; Markdown editor with preview; audience (site / block / owners / tenants / chosen units); schedule and pin; attachments; **sender-chosen channels** per message with a **recipient count and SMS count preview** shown before "publish"; read-receipt counts (opened in web/app counts; delivery does not). No comments.
+- **Documents (O8):** folder explorer with breadcrumbs; **site folders** with visibility (board only / owners / everyone / chosen units); a **private folder per unit** (visible to that unit's owner/tenant and the manager); **generated documents filed automatically** (statements, receipts, certificates, closing statements) and labelled by source; drag-drop upload with progress; previews; **no versions** — replacing a file overwrites it.
+- **Notifications:** center with unread badge (polled); **site defaults for automatic messages** (manager screen mirroring the O5 table: sign-in codes and invitations always SMS/email, reminders and receipts in-app + SMS with a site switch, ticket updates in-app + email); **per-user mutes** for non-essential types under `/me` (sign-in codes and invitations cannot be muted); per-site SMS monthly counter visible to the manager.
+- **Plate registry (D6):** vehicles per unit with an export for camera operators.
+- **Platform (minimal):** organizations list and create, health, last-backup marker.
+- **Privacy:** CLI only in 0.1 (`admin anonymize-person`, export job); no privacy UI until 1.0.
+
+### 9.2 Release 0.2 — Governance (web ≈ 8 engineer-weeks; G1–G8)
+
+- **Assembly (G1):** create a general or extraordinary assembly with date and second-call date; **agenda builder** (items flagged "will be voted"); **call letter** generated as a document; **attendance desk**; **live quorum indicator** under the site's rules (polled; Law 634 defaults as site settings); **decisions** per item with in-room counts, outcome and dissent notes; **minutes PDF** filed into documents; **decision history** with per-site per-year sequence numbers, searchable.
+- **Polls (G2):** non-binding pre-meeting polls per agenda item in the portal (one answer per unit, open/close dates); the manager sees the temperature. There is no binding online vote; the binding count is recorded in the room ("record the in-room count", not a vote runner).
+- **Delivery tracking (G3):** per-owner checklist for the call: method (registered mail with tracking number, signed by hand, email/SMS where allowed), date, proof upload; a printable signature list. The same screen records the post-meeting notification of absent owners.
+- **Attendance desk (G4):** tick-off screen sized for a laptop or tablet at the door (present / represented by whom, proxies with caps from site settings); **QR check-in** by scanning the owner's code (shown in the portal or printed in the call letter) with the device camera; both paths mark the same record; printable hazirun cetveli.
+- **Decisions with effects (G5):** the "record decision" flow has an optional **"apply" step** that offers to create what the decision describes — a new effective-dated dues rate, a membership with its term, the budget marked final, a one-off owner-paid special-assessment plan — each confirmed by the manager and linked for audit.
+- **Terms and reminders (G6):** memberships show their electing decision and term; a term-expiry reminder appears on the site dashboard and goes out by notification; a new election ends the old terms.
+- **Scope (G7):** site-level assembly only; block assemblies and the representatives' council are later and reserved in the UI (no delegate weighting).
+- **Site settings:** quorum, threshold table per topic, vote-weight and proxy caps — editable with Law 634 presets; `(verify)` items are shown with the preset's source note until the legal maintainer confirms them.
+- **Portal:** upcoming assembly with my call letter, my check-in QR, polls, decisions and minutes (owners; tenants only those marked "concerns residents").
+
+### 9.3 Release 0.3 — Gate & community (web ≈ 6 engineer-weeks; C1–C4, D6)
+
+- **Facilities and bookings (C1):** facility list with a **rules editor** (hours, max duration, lead time, quota per unit per period, fee, who may book); calendar (week/month) and list; bookings **confirm instantly** within the rules; a fee becomes a charge on the booking unit's side; manager cancels and blocks dates; portal booking shows other slots only as "taken".
+- **Visitors (C2):** portal **pre-registration** (name, plate, time window) producing a **QR** the resident shares (copy, WhatsApp/SMS link); **recurring visitors** with a long-lived QR, revocable; **approval requests** answered from the portal (approve / deny, polled while pending); **gate contact number** under `/me`.
+- **Guard console (C2):** a **first-class, tablet-sized web screen** at `/gate` with large targets and auto-refresh: today's expected visitors, search by name or plate, **QR scanning** with the camera (admit directly when valid), walk-in entry → **approval request** to the resident with the phone-call fallback showing the chosen gate number, mark arrived / left, **parcels** (C3: log against a unit, mark collected by whom). Shared device with quick PIN switch. Data-minimized per S8.
+- **Gate control (D6):** access points and credentials, opening log, the guard's "open" button, on-site agent status; driver configuration is server-side.
+- **Settings:** visitor-log retention (default 90 days), facility rules, access points.
+
+### 9.4 Release 0.4 — Mobile & integrations (web part small, ≈ 2 engineer-weeks)
+
+- **Pack settings (§12):** `/settings/packs` lists packs from the instance; enable per org; schema-driven settings form (RJSF) with `x-ui` hints and `x-secret` write-only fields; pack-provided consent texts in the portal, pack importers in bank import, pack SMS providers in notification settings — all data-driven, no TR-specific React.
+- **API keys and webhooks** management screens (re-auth for keys).
+- **"Connect the mobile app"** page: a QR with the server URL (and an optional invitation) for the app's instance discovery; the **web-login link** route `/login/link/$token` that signs the browser in from the app.
+- **Card checkout in the portal:** "pay by card" opens the provider's `checkout_url` as a top-level navigation; on `return_url` the app polls the payment status; the declared-transfer path stays.
+
+### 9.5 Release 1.0 (web share ≈ 3 of the overview's ≈ 12 engineer-weeks)
+
+- **Privacy UI:** per-person export and erasure requests, retention settings, consent records.
+- **Platform admin complete:** organizations, instance settings, health, jobs, backup status.
+- **Command palette** (`⌘K`) for navigation and quick actions; keyboard shortcuts for the matching screen, attendance desk and guard console.
+- **Performance and accessibility audit** closure (manual WCAG 2.2 AA pass, Lighthouse run), full tr/en catalogs, documentation screenshots.
 
 ---
 
 ## 10. Design system
 
 - **shadcn/ui** components live in `components/ui/` and are modified freely; upstream updates are pulled deliberately, not automatically.
-- **Tokens** as CSS variables: brand seed (from the instance's discovery `branding.primary_color`, with safe defaults), semantic colors (success/warning/danger/info), radius, spacing, density (comfortable/compact — managers with big tables want compact).
-- Light/dark by system preference with a manual override; both themes checked in Storybook and Playwright snapshots.
-- **RTL**: `dir` on `<html>` from the locale; only logical Tailwind utilities; mirrored icons; tested with the `pseudo-rtl` locale in Storybook and e2e.
-- **Accessibility** targets: WCAG 2.2 AA. Keyboard-complete (every dialog, menu, table action), focus management on route change, visible focus rings, `aria-live` for toasts and live tallies, form errors associated with fields, `prefers-reduced-motion` respected. `jsx-a11y` lint + axe in e2e + a manual screen-reader pass per milestone.
-- Shared domain widgets with one implementation each: `Money`, `MoneyInput` (minor units ↔ display, currency-aware), `SiteDate`/`DateInput` (site timezone), `UnitPicker`, `PersonPicker`, `PeriodPicker`, `StatusBadge`, `AuditDiff`.
-- Storybook documents every `components/*` item with states, RTL and dark variants; interaction tests run in CI.
+- **Tokens** as CSS variables: brand seed (from the discovery document's `branding.primary_color`, with safe defaults), semantic colors (success / warning / danger / info), radius, spacing, density (comfortable / compact — managers with big tables want compact).
+- Light/dark by system preference with a manual override.
+- **RTL readiness:** `dir` on `<html>` from the locale; only logical Tailwind utilities (lint-enforced); mirrored icons. RTL *testing* is not a gate before 1.0 (overview §6.6); the `pseudo-rtl` locale exists for spot checks.
+- **Accessibility** targets: WCAG 2.2 AA. Keyboard-complete (every dialog, menu, table action), focus management on route change, visible focus rings, `aria-live` for toasts, the quorum indicator and the guard console, form errors associated with fields, `prefers-reduced-motion` respected. Enforced continuously by `jsx-a11y` lint and axe on the Playwright flows; a manual screen-reader pass happens at 1.0, not per release.
+- **Dense, keyboard-first screens** are built as dedicated components, not grid add-ons: bank matching (0.1), attendance desk (0.2), guard console (0.3).
+- Shared domain widgets with one implementation each: `Money`, `MoneyInput` (minor units ↔ display, currency-aware), `SiteDate`/`DateInput` (site timezone), `UnitPicker`, `PersonPicker`, `SidePicker` (owner / tenant), `PeriodPicker`, `StatusBadge` (workflow-aware), `AuditDiff`, `QrCode`, `QrScanner`.
+- Storybook is optional documentation for `components/*`; it is not a CI gate.
 
 ---
 
 ## 11. Internationalization
 
-- Lingui with ICU MessageFormat; `en` source, `tr` complete before each milestone's release; catalogs compiled at build, loaded per locale lazily.
+- Lingui with ICU MessageFormat; `en` source, `tr` complete before each release; catalogs compiled at build, loaded per locale lazily.
 - Extraction (`lingui extract`) runs in CI and fails on untranslated `tr` strings at release time (warning on PRs).
-- Pseudo-locale (`pseudo` and `pseudo-rtl`) for layout testing.
+- Pseudo-locales (`pseudo`, `pseudo-rtl`) for layout checks.
 - Formatting via `Intl.NumberFormat`/`DateTimeFormat` with the user's locale and the **site's timezone** for site-scoped dates; money through `Money` only.
-- API codes (errors, enums like ticket status, charge kind) are mapped in `lib/codes.ts`; adding a code is a single entry plus catalog strings.
-- Locale resolution mirrors the overview: user setting → browser → org default → `en`; the choice is persisted to the user profile when signed in.
+- **Locale resolution** mirrors overview §6.6: user setting → browser `Accept-Language` → **organization default** → `en`; fallback `tr-TR → tr → en`. The choice is persisted to the user profile when signed in.
+- **Codes:** API codes (problem codes, open enums such as charge type, ticket visibility, notification type) are labelled from the catalog first (`api/codes.ts`); anything the catalog does not know — site-defined ticket statuses, and pack labels from 0.4 — is fetched from `GET …/codes?locale=` and cached per org. An unknown code renders as its raw value, never as an error.
 
 ---
 
-## 12. Schema-driven forms (packs and org settings)
+## 12. Schema-driven forms (0.4: pack settings)
 
-- Packs declare settings as JSON Schema (draft 2020-12) plus an optional uiSchema (field order, widgets, groups, help texts with i18n keys). The server serves `GET /v1/orgs/{org}/packs/{pack}/settings/schema`.
-- RJSF renders it with the shadcn theme: text, number, boolean, enum/select, arrays, nested objects, `format: secret` (write-only), `format: money`, `format: date`, `format: unit-ref`/`person-ref` (custom pickers).
+- Packs declare settings as JSON Schema (draft 2020-12) with `x-ui` hints (field order, widgets, groups, help-text i18n keys) and `x-secret` for write-only fields (backend §8 spec extensions). The server serves the schema per pack and org.
+- RJSF renders it with the shadcn theme: text, number, boolean, enum/select, arrays, nested objects, secret (write-only), money, date, unit/person references (custom pickers). The supported subset is small and documented.
 - Client validates with ajv for immediate feedback; the server is authoritative and its field errors are mapped back.
-- The same mechanism renders org/site settings that core declares by schema, so there is one settings-form implementation.
+- Nothing in 0.1–0.3 uses RJSF: core site settings (late-fee policy, quorum tables, ticket workflows) are hand-built forms, because their UX matters more than generality. If RJSF stalls before 0.4, a hand-rolled renderer for the same subset replaces it.
 
 ---
 
 ## 13. Files and documents in the browser
 
-- Upload component handles both backend modes (presigned S3 PUT or direct multipart to the server), parallel uploads with progress, cancellation, client-side mime/size checks matching the server's limits, image downscaling before upload for ticket photos (canvas, ≤2000 px).
-- Downloads always via `GET /files/{id}` → signed URL; the SPA never constructs storage URLs.
-- Previews: images inline, PDFs in an `<iframe>` with the signed URL, others as download cards.
+- One upload component: multipart `POST /v1/orgs/{org_id}/files` **always through the server** (backend §13) — there is no presigned branch, so no bucket CORS, no storage origin in the CSP; progress, cancellation, parallel uploads, client-side mime/size checks mirroring the server's limits, image downscaling before upload for ticket photos (canvas, ≤ 2000 px; the server strips location data).
+- Downloads and previews via `GET /v1/orgs/{org_id}/files/{id}` (streamed or redirected to a short-lived signed URL by the server); the SPA never constructs storage URLs. Images use `?variant=thumb|medium`.
+- Previews: images inline, PDFs in an `<iframe>` from the file URL, others as download cards.
+- Generated documents (statements, receipts, certificates, minutes) are ordinary documents with a "generated from" link back to their record.
 
 ---
 
 ## 14. Performance budget
 
-- Initial route (login or dashboard) ≤ 250 kB gzipped JS; each feature route lazily loaded; charts, markdown editor, RJSF and QR code generation in their own chunks.
+- Initial route (login or dashboard) ≤ 250 kB gzipped JS; each feature route lazily loaded; charts, markdown editor, QR generation and scanning, RJSF (0.4) in their own chunks.
 - `pnpm build` prints bundle sizes; CI fails on budget regression (`size-limit`).
 - TanStack Virtual for tables over ~200 rows; cursor pagination server-side regardless.
-- Images via server variants (`?variant=thumb`), lazy loaded.
-- Lighthouse CI on the dashboard and statement pages: performance ≥ 85, accessibility 100, best practices 100.
+- Images via server variants, lazy loaded.
+- Lighthouse runs are a 1.0 audit item, not a per-PR gate.
 
 ---
 
 ## 15. Security
 
-- Strict CSP from the server with a per-response nonce injected into `index.html` (backend §16.1); no inline scripts/styles except nonce'd; Tailwind's generated CSS is a static file. `connect-src 'self'` plus configured storage origin for presigned uploads.
-- No tokens in JavaScript (cookie auth); `X-Requested-With` + same-origin; CORS not needed.
+- Strict CSP from the server with a per-response nonce: Vite's `html.cspNonce` emits the placeholder, the Go server renders `index.html` with the nonce (backend §16); no inline scripts/styles except nonce'd; Tailwind's CSS is a static file; `connect-src 'self'` only, because uploads and downloads go through the server.
+- **Upgrades:** assets are content-hashed; after a server upgrade a cached SPA may request chunks that no longer exist — chunk-load errors (`vite:preloadError`, dynamic import failures) are caught and force a one-time reload; a `server_version` mismatch between the discovery document and the running bundle shows a "reload to update" banner.
+- No tokens in JavaScript (cookie auth, opaque token); `X-Requested-With` + same-origin `Origin` check; CORS not needed for the SPA.
 - Markdown rendering sanitized (`rehype-sanitize` allowlist); no `dangerouslySetInnerHTML` elsewhere (lint rule).
-- Links to external hosts open with `rel="noopener noreferrer"`; payment checkout and OIDC are top-level navigations, never iframes.
-- Dependency hygiene: `pnpm audit` and Dependabot; lockfile committed; `knip` for unused deps; no `postinstall` scripts from dependencies (`pnpm` config).
-- Sensitive views (statements) are not cached by the browser (`Cache-Control: no-store` from the API).
+- External links open with `rel="noopener noreferrer"`; payment checkout (0.4) is a top-level navigation, never an iframe.
+- Camera access (QR scanning, 0.2/0.3) is requested only on the screens that scan and released on leave.
+- Dependency hygiene: `pnpm audit` and Dependabot; lockfile committed; `knip`; no dependency `postinstall` scripts.
+- Statements and other personal-data responses arrive with `Cache-Control: no-store` (a backend rule, backend §16); the SPA additionally keeps them out of persisted query caches.
 
 ---
 
@@ -310,54 +366,84 @@ Grouped by the project milestone that delivers them.
 
 | Layer | What | Tooling |
 |---|---|---|
-| Unit | `lib/*` (money, dates, permissions, codes), query invalidation map, form schemas | Vitest |
-| Component | Feature components and forms with MSW handlers generated from the spec; all list states; field-error mapping | Vitest + Testing Library + `openapi-msw` |
-| Storybook | Every design-system component with interaction tests and the a11y addon | Storybook test runner in CI |
-| E2E | Against the real backend from `docker compose` seeded with the backend's golden 24-unit site (shared with the mobile plan): onboarding + import, dues cycle (plan → charges → payment → statement), bank matching, ticket lifecycle, booking, meeting with a vote, pack settings form; one login per built-in role with navigation snapshot | Playwright |
-| Accessibility | axe on every e2e page; keyboard-only run of the critical flows | `@axe-core/playwright` |
-| Visual | Snapshots of key pages × {light, dark} × {ltr, rtl} | Playwright snapshots |
-| Contract | `tsc` against regenerated `schema.d.ts` — a breaking spec change fails CI | `task gen` + typecheck |
+| Unit | `lib/*` (money, dates, permissions, codes, allocation preview maths), query invalidation map, form schemas | Vitest |
+| Component | Feature components and forms with MSW handlers **generated at build** from the spec; all list states; field-error mapping; unknown-enum rendering | Vitest + Testing Library + `openapi-msw` |
+| E2E (a handful) | Against the real backend from the dev compose seeded with the backend's golden site (backend §18): onboarding + import with dry-run, dues cycle (plan with preview → charges → cash receipt → statement with accrued fee), bank matching with a declared transfer, ticket lifecycle with "+1" and merge, announcement with channel preview; one login per built-in role with a navigation snapshot. 0.2 adds an assembly with QR check-in and an applied decision; 0.3 a visitor QR admission and a booking | Playwright |
+| Accessibility | axe on every e2e page; keyboard-only run of the matching screen | `@axe-core/playwright` |
+| Contract | `tsc` against regenerated `clients/ts` — a breaking spec change fails CI | `task gen` + typecheck |
 
-PR CI: lint, typecheck, unit/component, Storybook tests, build + size budget (< 8 min). Nightly and release branches: e2e, visual, Lighthouse.
+Lint gates on every PR: `jsx-a11y`, the logical-properties rule, `knip`. PR CI: lint, typecheck, unit/component, build + size budget (< 8 min). Nightly: e2e.
+
+**Cut before 1.0** (review §8): Storybook interaction tests, the visual snapshot matrix ({light, dark} × {ltr, rtl}), Lighthouse CI, per-release manual WCAG passes. They return as 1.0 audit work if the team is there to maintain them.
 
 ---
 
 ## 17. Build, embedding and development workflow
 
-- Dev: `pnpm dev` (Vite on :5173, proxy to Go on :8080 for `/v1`, `/.well-known`, `/files`); the Go server is started with `task run` from `server/`, or the whole stack via `deploy/compose.dev.yml`.
-- `task gen` (repo root) regenerates `schema.d.ts`, zod schemas and MSW handlers from `api/openapi.yaml`; CI's generate-check covers the web output too.
-- Production: `pnpm build` → `web/dist` → copied/embedded by the Go build (`internal/webassets`). `index.html` is a template the Go server renders with the CSP nonce and the instance branding; all other assets are immutable, content-hashed, served with long cache headers.
-- The web app has **no version of its own**: it ships inside the server release (overview §10). A `/v1/instance` version mismatch (stale SPA cached after a server upgrade) triggers a "reload to update" banner.
-- Node LTS pinned via `.nvmrc`/`packageManager`; `corepack` for pnpm.
+- Dev: `pnpm dev` (Vite on :5173, proxy to Go on :8080 for `/v1` and `/.well-known`); the Go server with `task run` from the repo root; Postgres, Mailpit, optional MinIO and the SMS stub via `deploy/compose/compose.dev.yml`. Dev runs CSP in report-only mode.
+- `task gen` (repo root) bundles the spec and regenerates `clients/ts` (committed); the web build then generates zod schemas and MSW handlers from the same bundled spec into `node_modules/.openbekci/` (not committed). CI's generate-check fails on a stale `clients/ts`.
+- Production: `pnpm build` → `web/dist` → embedded by the Go build (`server/internal/webassets`, `go:embed`). `index.html` is a template the Go server renders with the CSP nonce and instance branding; all other assets are immutable, content-hashed, served with long cache headers.
+- Go-only contributors build with `-tags nowebassets` and never need Node; the server then serves a "web not built" page.
+- The web app has **no version of its own**: it ships inside the server release (overview §10).
+- Node LTS pinned via `.nvmrc`/`packageManager`; `corepack` for pnpm. Path-filtered CI: a web PR does not run Go integration tests.
 
 ---
 
 ## 18. Backend requirements driven by this plan
 
-Recorded in the backend plan (§8 and milestones):
+Only what the web needs, with the release the backend delivers it in (backend §8 and §20).
 
-1. `index.html` served as a template with CSP nonce and branding injection; immutable asset caching.
-2. Import endpoints support `dry_run=true` returning a row-level validation report before the async job runs.
-3. Allocation **preview** endpoint for charge plans (`POST …/charge-plans:preview`) returning per-unit amounts without persisting.
-4. Operations tagged `x-idempotent` in the spec so the client knows where to send `Idempotency-Key`.
-5. `403 reauth_required` + `POST /v1/auth/reauth`.
-6. Pack settings schema endpoint and uiSchema conventions (`x-ui` extensions).
-7. Unread count endpoint cheap enough to poll; SSE decided by ADR at B3/W3.
-8. `Cache-Control: no-store` on statement and personal-data responses.
+| Need | Backend delivery |
+|---|---|
+| `index.html` served as a template with CSP nonce and branding; immutable asset caching | 0.1 skeleton |
+| Discovery document (`/.well-known/openbekci.json`, normative in backend §8), `/v1/instance`, `/v1/me` with effective permissions and occupancies | 0.1 skeleton |
+| Link URL formats with `client=web` (magic link, invitation, reset) — backend §6; the site QR join URL needs the same treatment | 0.1 |
+| Operations tagged `x-idempotent`; `Idempotency-Key` required on money operations | 0.1 |
+| `403 reauth_required` + `POST /v1/auth/reauth` (password or code) | 0.1 |
+| Imports with `dry_run=true` returning a row-level report (units, people, opening balances) | 0.1 |
+| `POST …/charge-plans:preview` per unit side without persisting | 0.1 |
+| `GET …/codes?locale=` for labels of open enums and site-defined statuses | 0.1 |
+| Site dashboard, resident summary and the **org-level portfolio dashboard** | 0.1 |
+| Image `?variant=thumb|medium` generated on upload | 0.1 |
+| `recipient_count` / `sms_count` preview for announcements and manual reminders | 0.1 |
+| Declared transfer payments (`status = pending_declared`) and their confirmation during matching | 0.1 |
+| Unread-count endpoint cheap enough to poll; site export/import and offboard endpoints; unit-claim queue | 0.1 |
+| `Cache-Control: no-store` on statements and personal data (backend rule; consumed, not requested) | 0.1 |
+| Attendance QR tokens, poll endpoints, quorum state under site settings, decision effects | 0.2 |
+| Visitor QR tokens, approval requests with expiry, guard endpoints (data-minimized), bookings | 0.3 |
+| Web-login link, pack settings schema with `x-ui`/`x-secret`, `checkout_url`/`return_url` + status poll, API keys, webhooks | 0.4 |
+| Platform endpoints complete (`settings`, `jobs`); privacy UI endpoints | 1.0 |
 
 ---
 
-## 19. Milestones
+## 19. Releases
 
-| # | Name | Deliverables | Exit criteria |
+The W0–W6 milestone scheme from v0.1 is retired with the overview's M-scheme. Estimates are realistic engineer-weeks for one web engineer, running in parallel with the backend phases (backend §20); the web cannot start a phase before the corresponding backend phase has its endpoints in the spec, but it can build against MSW from the spec alone.
+
+### 0.1 (≈ 18 weeks)
+
+| Phase | Weeks | Deliverables | Exit criteria |
 |---|---|---|---|
-| **W0** | Skeleton (≈2 wks, M0) | Vite + TS + TanStack Router/Query, generated client pipeline, openapi-fetch middleware, shadcn baseline + tokens + dark/RTL, Lingui with en/tr/pseudo, AppShell + permission-driven sidebar, login (password) + `/v1/me`, Storybook, Vitest/Playwright/MSW setup, size budget, embedding in the Go build | Login → empty dashboard served from the binary; CI green; ADR on client generator |
-| **W1** | Manage a site (≈4 wks, M1) | Onboarding, sites/units/facilities, import wizard, people/occupancies/memberships/invitations, announcements, org/site settings, audit viewer, portal home/profile, passkeys/TOTP/magic link on login | E2E: onboarding + import + announcement; role navigation snapshots |
-| **W2** | Money (≈6 wks, M2) | Money overview, charge plans with preview, charges, payments + allocation, bank import matching, bills/vendors, statements + PDF, journal/periods/reports/exports, portal statement + pay | E2E dues cycle and matching; accountant keyboard flows |
-| **W3** | Operations (≈5 wks, M3) | Tickets list/board/detail, staff queue, documents explorer, bookings calendar, visitors + gate console, notifications center/preferences/templates, upload component | E2E ticket/booking/visitor; gate console a11y on tablet viewport |
-| **W4** | Governance (≈4 wks, M4) | Meetings, attendance desk, live vote runner, decisions, minutes, portal voting | E2E meeting with a vote; live tally under polling |
-| **W5** | Packs & integrations (≈4 wks, M6) | Packs settings with RJSF theme, consent texts, provider-driven login/pay/import surfaces, API keys, webhooks, "connect mobile" QR page | TR pack configurable end-to-end from the UI without TR-specific code |
-| **W6** | 1.0 (≈3 wks, M7) | Privacy screens, platform admin, command palette, perf/a11y audit closure, full catalogs, docs screenshots | Lighthouse and axe gates; WCAG AA manual pass |
+| **Skeleton** | 2 | Vite + TS + TanStack Router/Query, `clients/ts` consumption and build-time zod/MSW generation, openapi-fetch middleware (idempotency, problem codes, re-auth replay), shadcn baseline + tokens + dark mode, Lingui with en/tr/pseudo, AppShell + permission-driven sidebar, login (password, SMS code, magic link) + `/v1/me`, Vitest/Playwright/MSW setup, size budget, embedding in the Go build, CSP nonce and chunk-load recovery | Login → empty dashboard served from the binary; CI green; ADR on the client generator |
+| **Setup & people** | 5 | Sites, blocks, units with appurtenances, allocation keys editor, people/occupancies/memberships, invitations and join status, site QR + claim queue, household invites, import wizard with dry-run and opening balances, move-out flow, directory, portfolio and site dashboards, site export/import/offboard, settings, audit viewer, portal home/profile/`/me` | E2E: onboarding + import; role navigation snapshots |
+| **Money** | 7 | Money overview, dues plans with rates and preview, charges, cash receipts with cash boxes, bank import and matching with reconciliation balances, declared payments, expenses and optional bills, late fees (accrual, bookings, waive, freeze), collections, opening balances, budget, statements + PDF, journal/lock date/fiscal years, all 0.1 reports, portal statement + pay | E2E dues cycle and matching; keyboard-only matching flow |
+| **Operations** | 4 | Ticket workflow editor, ticket list/detail/queue with +1 and merge, announcements with channel preview, documents with unit folders and generated filing, notifications center, site channel defaults and mutes, plate registry, platform minimal, upload component | E2E ticket lifecycle and announcement; axe clean on all flows |
+
+### 0.2 — Governance (≈ 8 weeks)
+
+Assembly creation and agenda, call letter and per-owner delivery tracking, polls, attendance desk with QR scanning, live quorum, in-room counts, decisions with the "apply" step, minutes and decision history, term reminders, governance site settings, portal screens. Exit: e2e assembly with a QR check-in and an applied dues-rate decision.
+
+### 0.3 — Gate & community (≈ 6 weeks)
+
+Facilities and rules, bookings calendar, visitor pre-registration and recurring visitors with QR, approval requests in the portal, the guard console with scanning and parcels, gate control screens, retention settings. Exit: e2e visitor QR admission and a booking that charges; guard console axe-clean on a tablet viewport.
+
+### 0.4 — Mobile & integrations (web ≈ 2 weeks)
+
+Pack settings forms (RJSF theme), API keys, webhooks, "connect mobile" QR page, `/login/link/$token`, card checkout in the portal. Exit: the Turkish pack is configurable end-to-end from the UI without TR-specific code.
+
+### 1.0 (web ≈ 3 weeks)
+
+Privacy screens, platform admin complete, command palette, performance and accessibility audit closure, full catalogs, documentation screenshots. Exit: manual WCAG AA pass; Lighthouse and axe clean on dashboard, statement and matching pages.
 
 ---
 
@@ -365,11 +451,16 @@ Recorded in the backend plan (§8 and milestones):
 
 | Risk / question | Mitigation / decision needed |
 |---|---|
-| Client generator choice (`openapi-typescript` trio vs `orval`) | W0 spike on: typed search params, mutation ergonomics, MSW generation, bundle size. ADR |
-| RJSF theme effort and RJSF's maintenance pace | Keep the schema subset small and documented; theme ~15 widgets; if RJSF stalls, `@autoform/react` or a hand-rolled renderer for the same subset |
-| Two "apps" (management + portal) drifting in one codebase | Same routes, same components, permission-filtered; e2e per role prevents drift |
-| Bank matching and gate console need keyboard-heavy, dense UIs that generic components don't serve well | Treat them as dedicated screens with their own components and shortcuts from W2/W3, not grid add-ons |
-| Polling costs on large sites (live votes, notifications) | Visible-tab only, backoff when idle; SSE when the backend ships it |
-| CSP nonce and Vite's dev mode | Dev disables nonce enforcement (report-only); production enforces; e2e runs against the production build served by Go |
-| Large tables in older browsers used by management offices | Support evergreen browsers + last 2 versions; virtualization; no IE/legacy builds |
-| Lingui extraction discipline | CI extraction + reviewers' checklist; `pseudo` locale in Storybook makes hard-coded strings obvious |
+| Client generator choice (`openapi-typescript` trio vs `orval`) | Skeleton spike on: typed search params, mutation ergonomics, MSW generation, bundle size, open-enum handling. ADR |
+| Two "apps" (management + portal) drifting in one codebase | Same routes, same components, occupancy/permission-filtered; e2e per role prevents drift |
+| Debtor sides are a new concept for users and for every money screen | `SidePicker` and side-aware `StatementView` built once in the money phase and reused; the golden site has a tenant change and an owner sale so every screen is exercised on both sides |
+| Bank matching, attendance desk and guard console need dense, keyboard- and touch-heavy UIs | Dedicated screens with their own components and shortcuts; the matching screen is the keyboard benchmark in 0.1 |
+| Site-defined ticket statuses and open enums reaching old code paths | `api/codes.ts` fallback and default branches are lint-checked (`switch-exhaustiveness-check` with a default); component tests render unknown values |
+| Camera-based QR scanning across browsers and booth devices (0.2/0.3) | `BarcodeDetector` where available, `@zxing/browser` fallback; manual code entry always offered next to the scanner |
+| Polling costs on large sites (quorum, guard console, approvals) | Visible-tab only, backoff when idle; SSE by ADR when the backend ships it |
+| CSP nonce and Vite's dev mode | Dev runs report-only; production enforces; e2e runs against the production build served by Go |
+| Stale SPA after a server upgrade | Chunk-load error → forced reload; version banner from the discovery document |
+| RJSF and React 19 compatibility (0.4) | Verify before the 0.4 phase; fallback renderer for the small subset |
+| Large tables in older browsers used by management offices | Evergreen browsers + last 2 versions; virtualization; no legacy builds |
+| Lingui extraction discipline | CI extraction + reviewers' checklist; the `pseudo` locale makes hard-coded strings obvious |
+| Who approves a unit claim: manager, board or both (S open point) | Default manager; the queue screen is permission-driven so granting the board the right needs no UI change |

@@ -266,7 +266,7 @@ Sessions (overview §6.3): one `session` table, **opaque tokens everywhere**.
 - **Mobile / integrations:** `POST /v1/auth/token` returns an access token (15 min, opaque, hash stored, checked on every request — instant revocation) and a rotating refresh token (60 days; reuse detection revokes the family). `DELETE /v1/me/sessions/{id|current}`.
 - **Re-authentication:** sensitive operations (§16) answer `403 reauth_required`; `POST /v1/auth/reauth` with password or OTP marks the session for 10 minutes.
 - `GET /v1/me` lists the user's organizations, roles, effective permissions, occupancies (units), policies; served through the platform pool for the cross-org part, then per-org.
-- Link URL formats are defined here and reused by both clients: magic link `{BASE_URL}/login/magic?token=…`, invitation `{BASE_URL}/invite/{token}`, reset `{BASE_URL}/reset/{token}`; requests carry `client=web|mobile` so the server can emit the mobile scheme `openbekci://…` instead.
+- Link URL formats are defined here and reused by both clients: magic link `{BASE_URL}/login/magic?token=…`, invitation `{BASE_URL}/invite/{token}`, reset `{BASE_URL}/reset/{token}`, site QR join `{BASE_URL}/join/{code}` (the QR encodes this URL), web-login link `{BASE_URL}/login/link/{token}` (0.4); requests carry `client=web|mobile` so the server can emit the mobile scheme `openbekci://…` instead.
 
 ---
 
@@ -295,6 +295,7 @@ Conventions from overview §6.2. Backend specifics:
 - **Discovery document** (normative; overview §6.8), unauthenticated `GET /.well-known/openbekci.json`:
   ```json
   {
+    "instance_id": "uuid, stable for the life of the instance",
     "instance_name": "…", "api_base_url": "https://…/v1", "api_versions": ["v1"],
     "server_version": "0.1.0", "sdk_version": null,
     "min_app_version": { "android": "1.0.0", "ios": "1.0.0" },
@@ -307,7 +308,7 @@ Conventions from overview §6.2. Backend specifics:
   }
   ```
   `GET /v1/instance` is the authenticated twin with pack details and policies.
-- **Client-driven endpoints and their releases:** discovery + `/v1/instance` + `/v1/me` (0.1 skeleton); `GET /v1/orgs/{org}/me/dashboard` and the org-level portfolio dashboard (0.1); `POST …/units:import?dry_run=true` and opening-balance import (0.1); `POST …/charge-plans:preview` (0.1); `GET …/codes?locale=` (enum/error labels incl. pack labels, 0.1); platform endpoints `/v1/platform/orgs|settings|health|jobs|backup-status` (0.1 minimal, 1.0 complete); image `?variant=thumb|medium` (0.1, generated on upload); `POST/DELETE /v1/me/devices` (0.4); web-login link (0.4); checkout `checkout_url`/`return_url` + status poll (0.4). **No `updated_since` / ETag** in v1.
+- **Client-driven endpoints and their releases:** discovery + `/v1/instance` + `/v1/me` (0.1 skeleton); `GET /v1/orgs/{org}/me/dashboard` and the org-level portfolio dashboard (0.1); `POST …/units:import?dry_run=true` and opening-balance import (0.1); `POST …/charge-plans:preview` (0.1); `GET …/codes?locale=` (enum/error labels incl. pack labels, 0.1); platform endpoints `/v1/platform/orgs|settings|health|jobs|backup-status` (0.1 minimal, 1.0 complete); image `?variant=thumb|medium` (0.1, generated on upload); `POST/DELETE /v1/me/devices` (0.4); web-login link (0.4); checkout `checkout_url`/`return_url` + status poll (0.4); `GET /v1/orgs/{org}/reference/{dataset}` for pack-registered reference data such as il/ilçe lists (0.4). **No `updated_since` / ETag** in v1.
 - **Bulk:** CSV/XLSX import with `dry_run` returning a row-level report; exports as CSV/XLSX via jobs.
 - **Rate limiting:** in-memory token buckets per instance (per IP on auth/OTP/magic-link/invitation sending; per user elsewhere). `429` with `Retry-After`.
 - **Webhooks / API keys:** 0.4.
@@ -426,6 +427,8 @@ As overview §6.6. Server catalogs for emails, SMS, PDFs and notification bodies
 
 ## 17. Configuration and operations
 
+All variables carry the `OPENBEKCI_` prefix (`OPENBEKCI_DATABASE_URL`, …); the prefix is omitted in the table for brevity. Every secret-bearing variable accepts a `_FILE` variant.
+
 | Variable | Required | Notes |
 |---|---|---|
 | `DATABASE_URL` | yes | app role |
@@ -504,7 +507,7 @@ Facilities and bookings with fees → charges; visitors with QR tokens, approval
 
 ### 0.4 — Mobile & integrations (≈ 10 weeks)
 
-Push relay client and `device` registration; web-login link; `sdk/` module, registry, enablement, `sdktest`; Turkish pack contents moved out of core where they are pack-shaped (templates, presets, validators, bank formats, SMS providers); first `PaymentProvider` (iyzico) with checkout endpoints and settlement accounting; webhooks; API keys.
+Push relay client and `device` registration; web-login link; `sdk/` module, registry, enablement, `sdktest` (official packs only in 0.4 — a binary-driving mode for external packs is a 1.0 item); Turkish pack contents moved out of core where they are pack-shaped (templates, legal presets, bank formats, extra SMS providers, and the vergi numarası / TR IBAN / plate validators — **the TCKN checksum stays core per S6**); reference-data endpoint; first `PaymentProvider` (iyzico) with checkout endpoints and settlement accounting; webhooks; API keys.
 
 ### 1.0 (≈ 6 weeks backend)
 

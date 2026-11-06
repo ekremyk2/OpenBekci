@@ -10,7 +10,7 @@ Open-source residential community management: apartment buildings, gated sites, 
 |---|---|
 | Backend | Go, modular monolith, one binary with the web app embedded, PostgreSQL as the only required dependency |
 | Web | React + Vite + TanStack Router/Query, shadcn/ui, Lingui (RTL from day one) |
-| Mobile | Flutter, connects to any instance (hosted or self-hosted), push via a relay |
+| Mobile | Flutter, in its own repository ([openbekci-mobile](https://github.com/ekremyk2/openbekci-mobile)); connects to any instance, push via a relay |
 | API | OpenAPI 3.1, contract-first; Go server and TypeScript/Dart clients are generated |
 | Country packs | Compile-time Go modules behind a public SDK; the core contains no country logic. First pack: Turkey |
 
@@ -18,13 +18,13 @@ Open-source residential community management: apartment buildings, gated sites, 
 
 | Document | Covers |
 |---|---|
-| [Overview](docs/plans/00-overview.md) | Decisions, product scope, architecture, repository layout, shared contracts, milestones M0–M7 |
-| [Backend](docs/plans/01-backend.md) | Stack, modules, domain model, multi-tenancy (RLS), auth, API, ledger rules, pack SDK, jobs, security, testing, milestones B0–B7 |
-| [Web](docs/plans/02-web.md) | Routes, data layer, permissions in the UI, feature areas, design system, i18n, schema-driven pack forms, milestones W0–W6 |
-| [Mobile](docs/plans/03-mobile.md) | Instance discovery, accounts, auth, features by release, offline, push, release/white-label, milestones MB0–MB5 |
-| [Packs](docs/plans/04-packs.md) | Extension points, SDK lifecycle, authoring, governance, the Turkish pack, milestones P0–P4 |
-| [Infrastructure](docs/plans/05-infra.md) | Deployment targets, push relay, backups, upgrades, observability, release engineering, milestones I0–I5 |
-| [Review](docs/plans/06-review.md) | Critical review of plans 00–05: blocking decisions, money-model gaps, mechanisms that don't work as written, sequencing bugs, a re-baselined 0.1 scope and an action plan. **Read this before the plans; they have not yet been revised against it.** |
+| [Overview](docs/plans/00-overview.md) | Decisions D1–D8, product scope by area with release tags, architecture, repositories, shared contracts, releases 0.1 → 1.0 |
+| [Backend](docs/plans/01-backend.md) | Stack, modules, domain model (from the decision files), multi-tenancy and site portability, auth, API, money rules, pack SDK (0.4), jobs, privacy, testing, phases per release |
+| [Web](docs/plans/02-web.md) | Routes for management, portal and platform, data layer, permissions in the UI, feature areas per release, design system, i18n, testing |
+| [Mobile](docs/plans/03-mobile.md) | The Flutter app (own repository, ships with core 0.4): discovery, auth, features, push via relay, store release |
+| [Packs](docs/plans/04-packs.md) | Pack SDK (0.4), extension points, authoring, the Turkish pack |
+| [Infrastructure](docs/plans/05-infra.md) | Compose/systemd/Helm targets, backups with secrets, upgrades, push relay, on-site access agent, observability, release engineering |
+| [Review](docs/plans/06-review.md) | The critical review that drove v0.2 of the plans (applied; kept for the reasoning) |
 
 ## Decisions
 

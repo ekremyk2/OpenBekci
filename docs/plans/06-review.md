@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | Review of plans 00–05 as committed in `bbb87e8` |
+| Status | **Applied.** Review of plans 00–05 as committed in `bbb87e8`; plans revised to v0.2 on 2026-11-06/07 against this review and `docs/decisions/`. Kept for the reasoning; the findings tables are no longer a to-do list |
 | Date | 2026-11-06 |
 | Method | Three independent reviews (internal consistency; domain and Turkish practice; architecture and delivery) plus the author's own pass. Each reviewer read all six documents. Findings below carry the author's judgment — where a reviewer's claim could not be verified it is marked **(verify)**. |
 
