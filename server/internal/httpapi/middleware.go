@@ -1,14 +1,19 @@
 package httpapi
 
 import (
+	"errors"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
 	"net/netip"
+	"runtime/debug"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 // realIP sets r.RemoteAddr to the client address. X-Forwarded-For is honoured
@@ -88,4 +93,25 @@ func levelFor(status int) slog.Level {
 		return slog.LevelError
 	}
 	return slog.LevelInfo
+}
+
+// recoverer turns a handler panic into a logged 500 problem+json.
+func recoverer(log *slog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				rec := recover()
+				if rec == nil {
+					return
+				}
+				if err, ok := rec.(error); ok && errors.Is(err, http.ErrAbortHandler) {
+					panic(rec)
+				}
+				log.Error("panic in handler", "method", r.Method, "path", r.URL.Path,
+					"panic", fmt.Sprint(rec), "stack", string(debug.Stack()))
+				problem.Write(w, r, problem.Internal(fmt.Errorf("panic: %v", rec)))
+			}()
+			next.ServeHTTP(w, r)
+		})
+	}
 }

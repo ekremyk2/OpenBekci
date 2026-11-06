@@ -12,6 +12,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
+	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 )
 
@@ -27,8 +28,12 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	}
 	defer rt.db.Close()
 
+	idem := idempotency.NewPG(rt.db)
+	go purgeIdempotency(ctx, log, idem)
+	deps := apiDeps(cfg, log, rt.db, idem)
+	deps.Jobs = rt.jobs
 	router := httpapi.NewRouter(
-		httpapi.Deps{Log: log, DB: rt.db, Jobs: rt.jobs},
+		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, Ready: readiness(cfg, rt.db)},
 	)
 	srv := &http.Server{

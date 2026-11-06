@@ -10,7 +10,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
+	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/webassets"
 )
@@ -20,6 +22,18 @@ type Deps struct {
 	Log  *slog.Logger
 	DB   *db.DB
 	Jobs *jobs.Client
+
+	// Authenticator resolves the caller for operations with security
+	// requirements. Nil means NoopAuthenticator (everything is 401 until the
+	// sessions task wires the real one).
+	Authenticator Authenticator
+	// Idempotency stores Idempotency-Key requests. Nil disables enforcement
+	// (the header is still validated).
+	Idempotency idempotency.Store
+	// Instance builds the discovery document.
+	Instance *instance.Service
+	// ValidateResponses checks every response against the spec (dev aid).
+	ValidateResponses bool
 }
 
 // Options configures NewRouter.
@@ -41,7 +55,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 		middleware.RequestID,
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
-		middleware.Recoverer,
+		recoverer(deps.Log),
 		middleware.Timeout(o.RequestTimeout),
 	)
 
@@ -52,12 +66,4 @@ func NewRouter(deps Deps, o Options) http.Handler {
 
 	r.Handle("/*", webassets.Handler())
 	return r
-}
-
-// MountAPI is the mount point for the generated OpenAPI server. The next task
-// attaches the oapi-codegen strict server here (under /v1); phase A adds no
-// business endpoints.
-func MountAPI(r chi.Router, deps Deps) {
-	_ = r
-	_ = deps
 }

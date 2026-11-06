@@ -20,6 +20,7 @@ func newServeCmd(load configLoader) *cobra.Command {
 				return err
 			}
 			log := app.NewLogger(cmd.ErrOrStderr(), cfg.Debug)
+			cfg.ServerVersion = version
 			return app.Serve(cmd.Context(), cfg, log, cfg.Worker && !noWorker)
 		},
 	}

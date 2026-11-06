@@ -40,6 +40,19 @@ type Config struct {
 	AutoMigrate bool
 	InsecureDev bool
 	Debug       bool
+
+	// ValidateResponses checks every API response against the spec (a dev aid).
+	ValidateResponses bool
+
+	// Instance identity and branding for the discovery document.
+	InstanceName         string
+	MinAppVersionAndroid string
+	MinAppVersionIOS     string
+	BrandingLogoURL      string
+	BrandingPrimaryColor string
+
+	// ServerVersion is the build version; set by the command, not by the environment.
+	ServerVersion string
 }
 
 // secretNames are the variables that accept a _FILE variant.
@@ -99,6 +112,18 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 		c.DataDir = "data"
 	}
 
+	if c.InstanceName = l.must("INSTANCE_NAME"); c.InstanceName == "" {
+		c.InstanceName = "OpenBekci"
+	}
+	if c.MinAppVersionAndroid = l.must("MIN_APP_VERSION_ANDROID"); c.MinAppVersionAndroid == "" {
+		c.MinAppVersionAndroid = "1.0.0"
+	}
+	if c.MinAppVersionIOS = l.must("MIN_APP_VERSION_IOS"); c.MinAppVersionIOS == "" {
+		c.MinAppVersionIOS = "1.0.0"
+	}
+	c.BrandingLogoURL = l.must("BRANDING_LOGO_URL")
+	c.BrandingPrimaryColor = l.must("BRANDING_PRIMARY_COLOR")
+
 	if c.TrustedProxies, err = ParseTrustedProxies(l.must("TRUSTED_PROXIES")); err != nil {
 		return Config{}, err
 	}
@@ -113,6 +138,7 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	}
 	for name, dst := range map[string]*bool{
 		"AUTO_MIGRATE": &c.AutoMigrate, "INSECURE_DEV": &c.InsecureDev, "DEBUG": &c.Debug,
+		"API_VALIDATE_RESPONSES": &c.ValidateResponses,
 	} {
 		if *dst, err = parseBool(l.must(name)); err != nil {
 			return Config{}, fmt.Errorf("%s%s: %w", envPrefix, name, err)
