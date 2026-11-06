@@ -23,6 +23,10 @@ Tools run through `pnpm dlx` (Redocly CLI pinned to 2.76.0, openapi-typescript 7
 
 ## Conventions
 
+**Layout notes.** `servers: [{url: /}]` with full paths (`/v1/...`, `/.well-known/openbekci.json`) is the
+convention: the discovery document lives outside `/v1`, so the server root cannot be `/v1`. The generator config
+`oapi-codegen.yaml` lives in `server/` (next to the generated code's module), not in `api/`.
+
 Backend plan section 8 and overview section 6.2 are authoritative; this is the working summary.
 
 - **OpenAPI 3.0.3 only**, in its subset. Nullability is `nullable: true` (never `type: [x, "null"]`). A
@@ -57,7 +61,7 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
   `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
-  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500), `method_not_allowed` (405, with `Allow`), `payload_too_large` (413; JSON request
+  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500), `method_not_allowed` (405, with `Allow`), `unsupported_media_type` (415), `timeout` (504), `payload_too_large` (413; JSON request
   bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `instance` is the request id,
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
@@ -78,7 +82,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | Extension | On | Values | Effect |
 |---|---|---|---|
 | `x-openbekci-roles` | operation | map role to a list of permission strings | the authorization matrix (wired with the first business modules) |
-| `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal) |
+| `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal). A replay sets `Idempotent-Replayed: true` and restores only `Content-Type`, `Location` and `X-OpenBekci-Stability`. Keys need a signed-in caller: a `required` operation must require authentication (conformance test), and an anonymous call to an `optional` one ignores the header |
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |

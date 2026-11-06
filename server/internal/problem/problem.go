@@ -7,6 +7,7 @@
 package problem
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -43,6 +44,8 @@ const (
 	CodeInternalError          Code = "internal_error"
 	CodePayloadTooLarge        Code = "payload_too_large"
 	CodeMethodNotAllowed       Code = "method_not_allowed"
+	CodeUnsupportedMediaType   Code = "unsupported_media_type"
+	CodeTimeout                Code = "timeout"
 )
 
 // Field is one entry of the errors[] array.
@@ -134,6 +137,9 @@ func From(err error) *Error {
 	var pe *Error
 	if errors.As(err, &pe) {
 		return pe
+	}
+	if errors.Is(err, context.DeadlineExceeded) {
+		return Wrap(http.StatusGatewayTimeout, CodeTimeout, "the request took too long", err)
 	}
 	return Internal(err)
 }

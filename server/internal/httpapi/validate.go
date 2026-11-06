@@ -54,6 +54,9 @@ func validationProblem(err error, suggested int) *problem.Error {
 			return problem.Wrap(http.StatusInternalServerError, problem.CodeInternalError, "", e)
 		}
 		fs, bad, detail := requestErrorFields(re)
+		if detail == detailUnsupportedMediaType {
+			return problem.New(http.StatusUnsupportedMediaType, problem.CodeUnsupportedMediaType, "the request Content-Type is not supported for this operation")
+		}
 		if firstDetail == "" {
 			firstDetail = detail
 		}
@@ -84,6 +87,8 @@ func flatten(err error) []error {
 
 var missingProp = regexp.MustCompile(`property "([^"]+)" is missing`)
 
+const detailUnsupportedMediaType = "unsupported Content-Type"
+
 // requestErrorFields describes one RequestError. malformed is true when the
 // request could not be parsed at all (not a per-field problem).
 func requestErrorFields(re *openapi3filter.RequestError) (fields []problem.Field, malformed bool, detail string) {
@@ -112,7 +117,7 @@ func requestErrorFields(re *openapi3filter.RequestError) (fields []problem.Field
 			return []problem.Field{{Field: "body", Code: "required"}}, false, ""
 		}
 		if strings.HasPrefix(re.Reason, "header Content-Type") {
-			return nil, true, "unsupported Content-Type"
+			return nil, true, detailUnsupportedMediaType
 		}
 		ses := schemaErrors(re.Err)
 		if len(ses) == 0 {

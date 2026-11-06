@@ -38,6 +38,8 @@ schemas:
           - internal_error
           - payload_too_large
           - method_not_allowed
+          - unsupported_media_type
+          - timeout
       detail:
         type: string
         description: Human-readable explanation, not for machine parsing.

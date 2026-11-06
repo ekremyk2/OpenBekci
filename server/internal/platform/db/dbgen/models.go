@@ -19,6 +19,8 @@ type IdempotencyKey struct {
 	ResponseBody        []byte
 	CreatedAt           pgtype.Timestamptz
 	ExpiresAt           pgtype.Timestamptz
+	Owner               pgtype.UUID
+	ResponseHeaders     []byte
 }
 
 type InstanceSetting struct {

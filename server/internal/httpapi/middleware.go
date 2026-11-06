@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -95,6 +96,23 @@ func levelFor(status int) slog.Level {
 		return slog.LevelError
 	}
 	return slog.LevelInfo
+}
+
+// requestTimeout bounds each request. A handler that gives up on the expired
+// context and writes nothing gets a problem+json 504 here; one that returns
+// the context error is mapped by problem.From.
+func requestTimeout(d time.Duration) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx, cancel := context.WithTimeout(r.Context(), d)
+			defer cancel()
+			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+			next.ServeHTTP(ww, r.WithContext(ctx))
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) && ww.Status() == 0 && ww.BytesWritten() == 0 {
+				problem.Write(w, r, problem.Wrap(http.StatusGatewayTimeout, problem.CodeTimeout, "the request took too long", ctx.Err()))
+			}
+		})
+	}
 }
 
 // DefaultMaxBodyBytes is the request body cap for JSON API requests (1 MiB).

@@ -7,6 +7,12 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 func TestMaxBodyRefusesBeforeAnythingElse(t *testing.T) {
@@ -44,4 +50,25 @@ func TestMaxBodyDefaultIsOneMiB(t *testing.T) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 	decodeProblem(t, rec, http.StatusRequestEntityTooLarge, "payload_too_large")
+}
+
+func TestRequestTimeoutIsProblem(t *testing.T) {
+	h := chi.NewRouter()
+	h.Use(middleware.RequestID, requestTimeout(20*time.Millisecond))
+	h.Get("/slow", func(_ http.ResponseWriter, r *http.Request) { <-r.Context().Done() }) // gives up silently
+	h.Get("/slow-err", func(w http.ResponseWriter, r *http.Request) {
+		<-r.Context().Done()
+		problem.Write(w, r, r.Context().Err()) // handler reports the context error
+	})
+	h.Get("/fast", func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write([]byte("ok")) })
+	for _, path := range []string{"/slow", "/slow-err"} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		decodeProblem(t, rec, http.StatusGatewayTimeout, "timeout")
+	}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/fast", nil))
+	if rec.Code != http.StatusOK || rec.Body.String() != "ok" {
+		t.Errorf("fast: %d %s", rec.Code, rec.Body)
+	}
 }

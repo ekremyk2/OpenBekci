@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"sort"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
@@ -76,6 +77,7 @@ type opInfo struct {
 	idempotent string // "", optional or required
 	preview    bool   // x-stability: preview
 	auth       authMode
+	query      map[string]bool // declared query parameter names
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -106,11 +108,26 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				idempotent: extString(op.Extensions, "x-idempotent"),
 				preview:    extString(op.Extensions, "x-stability") == "preview",
 				auth:       authModeOf(spec, op),
+				query:      queryParams(item, op),
 			}
 			p.ops[method+" "+path] = info
 		}
 	}
 	return p, nil
+}
+
+// queryParams are the names of the query parameters an operation declares
+// (its own and its path item's).
+func queryParams(item *openapi3.PathItem, op *openapi3.Operation) map[string]bool {
+	names := map[string]bool{}
+	for _, params := range []openapi3.Parameters{item.Parameters, op.Parameters} {
+		for _, ref := range params {
+			if ref.Value != nil && ref.Value.In == openapi3.ParameterInQuery {
+				names[ref.Value.Name] = true
+			}
+		}
+	}
+	return names
 }
 
 // authModeOf reads the operation's `security`. A missing key (and no
@@ -176,6 +193,7 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 	chain = append(chain,
 		p.stability,
 		p.authenticate,
+		p.rejectUnknownQuery,
 		requestValidator(p.spec),
 		p.idempotency,
 	)
@@ -187,6 +205,31 @@ func (p *pipeline) stability(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if p.op(r).preview {
 			w.Header().Set(headerStability, "preview")
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// rejectUnknownQuery answers validation_failed for query parameters the
+// operation does not declare (kin-openapi ignores them), so a misspelt filter
+// is an error instead of silently returning unfiltered data.
+func (p *pipeline) rejectUnknownQuery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		info := p.op(r)
+		var unknown []string
+		for name := range r.URL.Query() {
+			if !info.query[name] {
+				unknown = append(unknown, name)
+			}
+		}
+		if len(unknown) > 0 {
+			sort.Strings(unknown)
+			fields := make([]problem.Field, len(unknown))
+			for i, name := range unknown {
+				fields[i] = problem.Field{Field: name, Code: "unknown_field"}
+			}
+			problem.Write(w, r, problem.Validation(fields...))
+			return
 		}
 		next.ServeHTTP(w, r)
 	})

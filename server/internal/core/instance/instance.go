@@ -5,6 +5,7 @@ package instance
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
@@ -156,12 +157,23 @@ func NewService(cfg Config, ids IDSource, methods *AuthMethodRegistry) *Service 
 	return &Service{cfg: cfg, ids: ids, methods: methods, now: time.Now}
 }
 
-// Discovery returns the discovery document, cached for CacheTTL.
+// clone copies the slices so callers cannot change the cached document.
+func (d Document) clone() Document {
+	d.APIVersions = slices.Clone(d.APIVersions)
+	d.AuthMethods = slices.Clone(d.AuthMethods)
+	d.PushRelayIDs = slices.Clone(d.PushRelayIDs)
+	d.Packs = slices.Clone(d.Packs)
+	return d
+}
+
+// Discovery returns the discovery document, cached for CacheTTL. The cache
+// never holds RelayChallenge: it is ephemeral, so once enrollment exists set it
+// on the returned copy per request (TODO(push-relay): compute it here, outside the cache).
 func (s *Service) Discovery(ctx context.Context) (Document, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if !s.cachedAt.IsZero() && s.now().Sub(s.cachedAt) < CacheTTL {
-		return s.cached, nil
+		return s.cached.clone(), nil
 	}
 	if s.id == uuid.Nil {
 		id, err := s.ids.InstanceID(ctx)
@@ -189,7 +201,7 @@ func (s *Service) Discovery(ctx context.Context) (Document, error) {
 		doc.PrimaryColor = &s.cfg.PrimaryColor
 	}
 	s.cached, s.cachedAt = doc, s.now()
-	return doc, nil
+	return doc.clone(), nil
 }
 
 // Info returns the authenticated instance information.

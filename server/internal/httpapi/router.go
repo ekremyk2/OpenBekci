@@ -62,7 +62,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
 		maxBody(o.MaxBodyBytes),
-		middleware.Timeout(o.RequestTimeout),
+		requestTimeout(o.RequestTimeout),
 	)
 
 	r.Get("/healthz", healthz)

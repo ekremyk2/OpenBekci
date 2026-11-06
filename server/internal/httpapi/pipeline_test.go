@@ -553,3 +553,19 @@ func TestIdempotencyRequiredHeaderMissing(t *testing.T) {
 	// Too short per the spec's minLength.
 	decodeProblem(t, ta.doAuth("POST", "/v1/things", `{"name":"a"}`, "Idempotency-Key", "x"), 422, "validation_failed")
 }
+
+func TestUnknownQueryParameterIsRejected(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	p := decodeProblem(t, ta.do("GET", "/v1/things?bogus=1&limit=5&alsobad=2", ""), 422, "validation_failed")
+	if len(p.Errors) != 2 || p.Errors[0].Field != "alsobad" || p.Errors[1].Field != "bogus" || p.Errors[0].Code != "unknown_field" {
+		t.Errorf("errors = %+v", p.Errors)
+	}
+	if rec := ta.do("GET", "/v1/things?limit=5", ""); rec.Code != 200 {
+		t.Fatalf("declared parameter: %d %s", rec.Code, rec.Body)
+	}
+}
+
+func TestWrongContentTypeIs415(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	decodeProblem(t, ta.doAuth("POST", "/v1/things", `name=a`, "Idempotency-Key", "key-12345678", "Content-Type", "text/plain"), 415, "unsupported_media_type")
+}
