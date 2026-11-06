@@ -75,9 +75,7 @@ describe('LoginPage', () => {
 
   it('shows a form-level message on 401 invalid_grant and stays on the page', async () => {
     sessionServer()
-    server.use(
-      http.post('*/v1/auth/session', () => problem(401, { code: 'invalid_grant' })),
-    )
+    server.use(http.post('*/v1/auth/session', () => problem(401, { code: 'invalid_grant' })))
     await mount()
     await openPasswordTab()
     await userEvent.type(screen.getByLabelText('Email or phone'), 'a@example.com')

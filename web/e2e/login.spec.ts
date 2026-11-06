@@ -34,6 +34,24 @@ test('login page renders sign-in methods from the discovery document', async ({ 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en')
 })
 
+test('discovery branding and instance name reach the page', async ({ page }) => {
+  await page.route('**/.well-known/openbekci.json', (route) =>
+    route.fulfill({
+      json: { ...discovery, instance_name: 'Brand Test', branding: { primary_color: '#b45309' } },
+    }),
+  )
+  await page.route('**/v1/me', (route) =>
+    route.fulfill({ status: 401, contentType: 'application/problem+json', body: '{"status":401}' }),
+  )
+  await page.goto('/login?locale=en')
+  await expect(page).toHaveTitle('Brand Test')
+  await expect(page.getByRole('heading', { name: 'Brand Test' })).toBeVisible()
+  const seed = await page.evaluate(() =>
+    document.documentElement.style.getPropertyValue('--brand-seed'),
+  )
+  expect(seed).toBe('#b45309')
+})
+
 test('unauthenticated visit to an org route redirects to login with next', async ({ page }) => {
   await page.route('**/.well-known/openbekci.json', (route) => route.fulfill({ json: discovery }))
   await page.route('**/v1/me', (route) =>

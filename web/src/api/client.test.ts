@@ -95,7 +95,9 @@ describe('api client middleware', () => {
     const client = setup(() => json(401, { code: 'invalid_grant' }))
     await client.GET('/v1/me').catch(() => {})
     await client
-      .POST('/v1/auth/session', { body: { method: 'password', identifier: 'x', password: 'y', client: 'web' } })
+      .POST('/v1/auth/session', {
+        body: { method: 'password', identifier: 'x', password: 'y', client: 'web' },
+      })
       .catch(() => {})
     expect(events).toHaveLength(0)
   })
