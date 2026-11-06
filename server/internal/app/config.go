@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -34,6 +35,10 @@ type Config struct {
 
 	DataDir        string
 	TrustedProxies []netip.Prefix
+
+	// MaxBodyBytes caps JSON API request bodies (OPENBEKCI_MAX_BODY_BYTES);
+	// zero means the httpapi default (1 MiB). File uploads get their own limit.
+	MaxBodyBytes int64
 
 	// Worker runs the job worker inside serve.
 	Worker      bool
@@ -126,6 +131,14 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 
 	if c.TrustedProxies, err = ParseTrustedProxies(l.must("TRUSTED_PROXIES")); err != nil {
 		return Config{}, err
+	}
+
+	if v := l.must("MAX_BODY_BYTES"); v != "" {
+		n, perr := strconv.ParseInt(v, 10, 64)
+		if perr != nil || n < 1 {
+			return Config{}, fmt.Errorf("%sMAX_BODY_BYTES: %q is not a positive integer", envPrefix, v)
+		}
+		c.MaxBodyBytes = n
 	}
 
 	switch w := strings.ToLower(l.must("WORKER")); w {

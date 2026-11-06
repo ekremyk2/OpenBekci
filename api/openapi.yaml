@@ -144,6 +144,7 @@ components:
             - pack_error
             - site_offboarded
             - internal_error
+            - payload_too_large
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.

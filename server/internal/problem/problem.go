@@ -41,6 +41,7 @@ const (
 	CodePackError              Code = "pack_error"
 	CodeSiteOffboarded         Code = "site_offboarded"
 	CodeInternalError          Code = "internal_error"
+	CodePayloadTooLarge        Code = "payload_too_large"
 )
 
 // Field is one entry of the errors[] array.

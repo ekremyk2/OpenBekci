@@ -57,7 +57,8 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
   `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
-  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500). `instance` is the request id,
+  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500), `payload_too_large` (413; JSON request
+  bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `instance` is the request id,
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
   `too_short`, `too_long`, `too_small`, `too_large`, `unknown_field`.

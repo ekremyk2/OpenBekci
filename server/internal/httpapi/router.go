@@ -41,6 +41,8 @@ type Options struct {
 	TrustedProxies []netip.Prefix
 	// RequestTimeout bounds each request; zero means 30 seconds.
 	RequestTimeout time.Duration
+	// MaxBodyBytes caps request bodies; zero means DefaultMaxBodyBytes.
+	MaxBodyBytes int64
 	// Ready are the probes behind /readyz.
 	Ready []Check
 }
@@ -50,12 +52,16 @@ func NewRouter(deps Deps, o Options) http.Handler {
 	if o.RequestTimeout == 0 {
 		o.RequestTimeout = 30 * time.Second
 	}
+	if o.MaxBodyBytes == 0 {
+		o.MaxBodyBytes = DefaultMaxBodyBytes
+	}
 	r := chi.NewRouter()
 	r.Use(
 		middleware.RequestID,
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
+		maxBody(o.MaxBodyBytes),
 		middleware.Timeout(o.RequestTimeout),
 	)
 

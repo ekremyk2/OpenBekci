@@ -19,11 +19,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
-const (
-	maxIdempotentBody = 16 << 20
-	maxKeyLength      = 255
-	storeTimeout      = 5 * time.Second
-)
+const storeTimeout = 5 * time.Second
 
 // idempotency implements Idempotency-Key for operations tagged x-idempotent
 // in the spec (backend plan, section 8):
@@ -52,20 +48,14 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		if len(key) > maxKeyLength {
-			problem.Write(w, r, problem.Validation(problem.Field{
-				Field: headerIdempotencyKey, Code: "too_long", Params: map[string]any{"max": maxKeyLength},
-			}))
-			return
-		}
 		if p.idem == nil { // not wired (unit tests without a database)
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxIdempotentBody))
+		body, err := io.ReadAll(r.Body) // already capped by maxBody
 		if err != nil {
-			problem.Write(w, r, problem.Wrap(http.StatusRequestEntityTooLarge, problem.CodeBadRequest, "request body too large", err))
+			problem.Write(w, r, bodyReadError(err))
 			return
 		}
 		r.Body = io.NopCloser(bytes.NewReader(body))

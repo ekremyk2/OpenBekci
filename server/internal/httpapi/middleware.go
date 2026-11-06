@@ -1,8 +1,10 @@
 package httpapi
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"net"
 	"net/http"
@@ -93,6 +95,59 @@ func levelFor(status int) slog.Level {
 		return slog.LevelError
 	}
 	return slog.LevelInfo
+}
+
+// DefaultMaxBodyBytes is the request body cap for JSON API requests (1 MiB).
+// File uploads get their own, larger limit when they exist.
+const DefaultMaxBodyBytes = 1 << 20
+
+// maxBody caps request bodies before anything reads them. A declared
+// Content-Length over the limit is refused at once; a body without a length
+// (chunked) is buffered up to the limit so the refusal is deterministic and
+// still happens ahead of validation, authentication and idempotency. Readers
+// further down are also behind http.MaxBytesReader.
+func maxBody(limit int64) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Body == nil || r.Body == http.NoBody {
+				next.ServeHTTP(w, r)
+				return
+			}
+			if r.ContentLength > limit {
+				problem.Write(w, r, tooLarge(limit, nil))
+				return
+			}
+			r.Body = http.MaxBytesReader(w, r.Body, limit)
+			if r.ContentLength < 0 {
+				b, err := io.ReadAll(r.Body)
+				if err != nil {
+					var mbe *http.MaxBytesError
+					if errors.As(err, &mbe) {
+						problem.Write(w, r, tooLarge(limit, err))
+						return
+					}
+					problem.Write(w, r, problem.Wrap(http.StatusBadRequest, problem.CodeBadRequest, "the request body could not be read", err))
+					return
+				}
+				r.Body = io.NopCloser(bytes.NewReader(b))
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// bodyReadError maps a failed body read to a problem.
+func bodyReadError(err error) *problem.Error {
+	var mbe *http.MaxBytesError
+	if errors.As(err, &mbe) {
+		return tooLarge(mbe.Limit, err)
+	}
+	return problem.Wrap(http.StatusBadRequest, problem.CodeBadRequest, "the request body could not be read", err)
+}
+
+func tooLarge(limit int64, cause error) *problem.Error {
+	return problem.Wrap(http.StatusRequestEntityTooLarge, problem.CodePayloadTooLarge,
+		fmt.Sprintf("the request body exceeds the limit of %d bytes", limit), cause)
 }
 
 // recoverer turns a handler panic into a logged 500 problem+json.

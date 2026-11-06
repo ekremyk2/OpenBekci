@@ -42,7 +42,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Jobs = rt.jobs
 	router := httpapi.NewRouter(
 		deps,
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, Ready: readiness(cfg, rt.db)},
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,

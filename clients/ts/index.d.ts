@@ -62,7 +62,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "payload_too_large";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */

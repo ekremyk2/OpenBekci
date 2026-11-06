@@ -35,6 +35,10 @@ func requestValidator(spec *openapi3.T) func(http.Handler) http.Handler {
 
 // validationProblem converts a kin-openapi validation error to a problem.
 func validationProblem(err error, suggested int) *problem.Error {
+	var mbe *http.MaxBytesError
+	if errors.As(err, &mbe) {
+		return tooLarge(mbe.Limit, err)
+	}
 	var fields []problem.Field
 	var firstDetail string
 	malformed := false
