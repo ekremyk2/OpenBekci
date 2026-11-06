@@ -21,3 +21,6 @@ Taskfile.yml text eol=lf
 
 # Generated code
 server/internal/platform/db/dbgen/** linguist-generated
+server/internal/httpapi/gen/** linguist-generated
+clients/ts/index.d.ts linguist-generated
+api/openapi.yaml linguist-generated

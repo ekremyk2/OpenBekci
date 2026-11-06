@@ -5,11 +5,43 @@ version: "3"
 dotenv: [".env"]
 
 tasks:
+  api:bundle:
+    desc: Bundle api/src into api/openapi.yaml
+    dir: api
+    cmds:
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly bundle src/openapi.yaml --config .redocly.yaml -o openapi.yaml
+
+  api:lint:
+    desc: Lint the OpenAPI source (3.0.3, operationId pattern, snake_case, Problem responses)
+    dir: api
+    cmds:
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly lint src/openapi.yaml --config .redocly.yaml --format=stylish
+
   gen:
-    desc: Generate code (sqlc now; the OpenAPI step is added by the API task)
+    desc: "Generate code: bundle spec, lint, oapi-codegen, sqlc, openapi-typescript"
+    cmds:
+      - task: api:bundle
+      - task: api:lint
+      - task: gen:go
+      - task: gen:ts
+
+  gen:go:
+    desc: Generate the Go server (oapi-codegen) and the database code (sqlc)
     dir: server
     cmds:
+      - go tool oapi-codegen -config oapi-codegen.yaml ../api/openapi.yaml
       - go tool sqlc generate -f db/sqlc.yaml
+
+  gen:ts:
+    desc: Generate the TypeScript types
+    cmds:
+      - pnpm dlx openapi-typescript@7 api/openapi.yaml -o clients/ts/index.d.ts
+
+  gen:check:
+    desc: Regenerate and fail if generated files differ from what is committed
+    cmds:
+      - task: gen
+      - git diff --exit-code -- api/openapi.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts
 
   lint:
     desc: Run golangci-lint
