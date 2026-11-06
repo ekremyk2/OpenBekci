@@ -15,7 +15,8 @@ tasks:
     desc: Lint the OpenAPI source (3.0.3, operationId pattern, snake_case, Problem responses)
     dir: api
     cmds:
-      - pnpm --package=@redocly/cli@2.76.0 dlx redocly lint src/openapi.yaml --config .redocly.yaml --format=stylish
+      # Redocly only fails on errors; scripts/lint-strict.cjs fails on warnings too.
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly lint src/openapi.yaml --config .redocly.yaml --format=json | node scripts/lint-strict.cjs
 
   gen:
     desc: "Generate code: bundle spec, lint, oapi-codegen, sqlc, openapi-typescript"
@@ -35,19 +36,24 @@ tasks:
   gen:ts:
     desc: Generate the TypeScript types
     cmds:
-      - pnpm dlx openapi-typescript@7 api/openapi.yaml -o clients/ts/index.d.ts
+      - pnpm dlx openapi-typescript@7.13.0 api/openapi.yaml -o clients/ts/index.d.ts
 
   gen:check:
     desc: Regenerate and fail if generated files differ from what is committed
     cmds:
       - task: gen
       - git diff --exit-code -- api/openapi.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts
+      # git diff ignores files that are new and untracked.
+      - cmd: |
+          out=$(git status --porcelain -- api/openapi.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts)
+          if [ -n "$out" ]; then echo "generated files are not committed:"; echo "$out"; exit 1; fi
 
   lint:
     desc: Run golangci-lint
     dir: server
     cmds:
       - go vet ./...
+      - go mod tidy -diff
       - go tool golangci-lint run ./...
 
   test:

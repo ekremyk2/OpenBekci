@@ -35,6 +35,10 @@ func requestValidator(spec *openapi3.T) func(http.Handler) http.Handler {
 
 // validationProblem converts a kin-openapi validation error to a problem.
 func validationProblem(err error, suggested int) *problem.Error {
+	var mbe *http.MaxBytesError
+	if errors.As(err, &mbe) {
+		return tooLarge(mbe.Limit, err)
+	}
 	var fields []problem.Field
 	var firstDetail string
 	malformed := false
@@ -45,11 +49,14 @@ func validationProblem(err error, suggested int) *problem.Error {
 				return problem.NotFound("no such resource")
 			}
 			if suggested == http.StatusMethodNotAllowed {
-				return problem.New(http.StatusMethodNotAllowed, problem.CodeBadRequest, "method not allowed")
+				return problem.New(http.StatusMethodNotAllowed, problem.CodeMethodNotAllowed, "method not allowed")
 			}
 			return problem.Wrap(http.StatusInternalServerError, problem.CodeInternalError, "", e)
 		}
 		fs, bad, detail := requestErrorFields(re)
+		if detail == detailUnsupportedMediaType {
+			return problem.New(http.StatusUnsupportedMediaType, problem.CodeUnsupportedMediaType, "the request Content-Type is not supported for this operation")
+		}
 		if firstDetail == "" {
 			firstDetail = detail
 		}
@@ -80,6 +87,8 @@ func flatten(err error) []error {
 
 var missingProp = regexp.MustCompile(`property "([^"]+)" is missing`)
 
+const detailUnsupportedMediaType = "unsupported Content-Type"
+
 // requestErrorFields describes one RequestError. malformed is true when the
 // request could not be parsed at all (not a per-field problem).
 func requestErrorFields(re *openapi3filter.RequestError) (fields []problem.Field, malformed bool, detail string) {
@@ -108,7 +117,7 @@ func requestErrorFields(re *openapi3filter.RequestError) (fields []problem.Field
 			return []problem.Field{{Field: "body", Code: "required"}}, false, ""
 		}
 		if strings.HasPrefix(re.Reason, "header Content-Type") {
-			return nil, true, "unsupported Content-Type"
+			return nil, true, detailUnsupportedMediaType
 		}
 		ses := schemaErrors(re.Err)
 		if len(ses) == 0 {

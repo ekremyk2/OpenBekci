@@ -46,6 +46,8 @@ type Options struct {
 	TrustedProxies []netip.Prefix
 	// RequestTimeout bounds each request; zero means 30 seconds.
 	RequestTimeout time.Duration
+	// MaxBodyBytes caps request bodies; zero means DefaultMaxBodyBytes.
+	MaxBodyBytes int64
 	// Ready are the probes behind /readyz.
 	Ready []Check
 }
@@ -55,20 +57,33 @@ func NewRouter(deps Deps, o Options) http.Handler {
 	if o.RequestTimeout == 0 {
 		o.RequestTimeout = 30 * time.Second
 	}
+	if o.MaxBodyBytes == 0 {
+		o.MaxBodyBytes = DefaultMaxBodyBytes
+	}
 	r := chi.NewRouter()
 	r.Use(
 		middleware.RequestID,
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
-		middleware.Timeout(o.RequestTimeout),
+		maxBody(o.MaxBodyBytes),
+		requestTimeout(o.RequestTimeout),
 	)
 
 	r.Get("/healthz", healthz)
 	r.Get("/readyz", readyz(deps.Log, o.Ready))
 
+	r.MethodNotAllowed(methodNotAllowed(r))
 	MountAPI(r, deps)
 
-	r.Handle("/*", webassets.Handler())
+	// Anything no route claims: unknown API paths are problems, the rest is the web app.
+	web := webassets.Handler()
+	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
+		if isAPIPath(req.URL.Path) {
+			notFound(w, req)
+			return
+		}
+		web.ServeHTTP(w, req)
+	})
 	return r
 }

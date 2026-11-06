@@ -60,8 +60,7 @@ export interface paths {
          *     selects the web or `openbekci://` link); both answer 202 whether or not
          *     the account exists. Wrong credentials
          *     of any kind answer 401 `invalid_grant`; repeated failures lock the
-         *     identifier out (429 `rate_limited` with `Retry-After`). Not replayable:
-         *     `Idempotency-Key` is ignored.
+         *     identifier out (429 `rate_limited` with `Retry-After`).
          */
         post: operations["auth.createSession"];
         /**
@@ -87,8 +86,7 @@ export interface paths {
          * Sign in and get access and refresh tokens (mobile, integrations)
          * @description Same credentials as `auth.createSession` (`password`, or `sms_otp` with a `code`; no `magic_link`), but returns opaque tokens
          *     instead of a cookie: an access token (15 minutes) for `Authorization:
-         *     Bearer` and a rotating refresh token (60 days). Not replayable:
-         *     `Idempotency-Key` is ignored.
+         *     Bearer` and a rotating refresh token (60 days).
          */
         post: operations["auth.createToken"];
         delete?: never;
@@ -110,8 +108,7 @@ export interface paths {
          * Exchange a refresh token for a new token pair
          * @description The refresh token is single use: the response carries a new one. Presenting
          *     a refresh token that was already used revokes the whole session (the
-         *     family) and answers 401 `invalid_grant`. Not replayable: `Idempotency-Key`
-         *     is ignored.
+         *     family) and answers 401 `invalid_grant`.
          */
         post: operations["auth.refreshToken"];
         delete?: never;
@@ -180,8 +177,7 @@ export interface paths {
          * Sign in with a magic-link token
          * @description Exchanges the token from a magic link (single use) for a session: a cookie
          *     for `client=web`, tokens for `client=mobile`. An unknown, used or expired
-         *     token answers 401 `invalid_grant`. Not replayable: `Idempotency-Key` is
-         *     ignored.
+         *     token answers 401 `invalid_grant`.
          */
         post: operations["auth.consumeMagicLink"];
         delete?: never;
@@ -203,8 +199,7 @@ export interface paths {
          * Re-authenticate the current session for sensitive operations
          * @description Proves the caller is still the user with the password or a fresh SMS code,
          *     and marks the current session as re-authenticated for 10 minutes. Sensitive
-         *     operations answer 403 `reauth_required` outside that window. Not
-         *     replayable: `Idempotency-Key` is ignored.
+         *     operations answer 403 `reauth_required` outside that window.
          */
         post: operations["auth.reauth"];
         delete?: never;
@@ -316,7 +311,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -653,6 +648,10 @@ export interface components {
         Problem: {
             headers: {
                 "X-Request-Id"?: string;
+                /** @description On 401, the accepted scheme (`Bearer`). */
+                "WWW-Authenticate"?: string;
+                /** @description On 405, the methods the resource supports. */
+                Allow?: string;
                 [name: string]: unknown;
             };
             content: {

@@ -4,11 +4,10 @@ post:
   description: |
     The refresh token is single use: the response carries a new one. Presenting
     a refresh token that was already used revokes the whole session (the
-    family) and answers 401 `invalid_grant`. Not replayable: `Idempotency-Key`
-    is ignored.
+    family) and answers 401 `invalid_grant`.
   tags: [auth]
   security: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:

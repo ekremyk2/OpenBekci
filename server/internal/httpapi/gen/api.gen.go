@@ -107,14 +107,18 @@ const (
 	ProblemCodeInvalidGrant           ProblemCode = "invalid_grant"
 	ProblemCodeLockedPeriod           ProblemCode = "locked_period"
 	ProblemCodeMailUnavailable        ProblemCode = "mail_unavailable"
+	ProblemCodeMethodNotAllowed       ProblemCode = "method_not_allowed"
 	ProblemCodeMfaRequired            ProblemCode = "mfa_required"
 	ProblemCodeNotFound               ProblemCode = "not_found"
 	ProblemCodePackError              ProblemCode = "pack_error"
+	ProblemCodePayloadTooLarge        ProblemCode = "payload_too_large"
 	ProblemCodeRateLimited            ProblemCode = "rate_limited"
 	ProblemCodeReauthRequired         ProblemCode = "reauth_required"
 	ProblemCodeSiteOffboarded         ProblemCode = "site_offboarded"
 	ProblemCodeSmsUnavailable         ProblemCode = "sms_unavailable"
+	ProblemCodeTimeout                ProblemCode = "timeout"
 	ProblemCodeUnauthenticated        ProblemCode = "unauthenticated"
+	ProblemCodeUnsupportedMediaType   ProblemCode = "unsupported_media_type"
 	ProblemCodeValidationFailed       ProblemCode = "validation_failed"
 	ProblemCodeVersionConflict        ProblemCode = "version_conflict"
 )
@@ -140,11 +144,15 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeMailUnavailable:
 		return true
+	case ProblemCodeMethodNotAllowed:
+		return true
 	case ProblemCodeMfaRequired:
 		return true
 	case ProblemCodeNotFound:
 		return true
 	case ProblemCodePackError:
+		return true
+	case ProblemCodePayloadTooLarge:
 		return true
 	case ProblemCodeRateLimited:
 		return true
@@ -154,7 +162,11 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSmsUnavailable:
 		return true
+	case ProblemCodeTimeout:
+		return true
 	case ProblemCodeUnauthenticated:
+		return true
+	case ProblemCodeUnsupportedMediaType:
 		return true
 	case ProblemCodeValidationFailed:
 		return true
@@ -1290,7 +1302,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 }
 
 type ProblemResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 type ProblemApplicationProblemPlusJSONResponse struct {
 	Body Problem
@@ -1332,6 +1346,12 @@ func (response InstanceGetDiscoverydefaultApplicationProblemPlusJSONResponse) Vi
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1367,6 +1387,12 @@ func (response AuthRequestMagicLink422ApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1376,7 +1402,9 @@ func (response AuthRequestMagicLink422ApplicationProblemPlusJSONResponse) VisitA
 }
 
 type AuthRequestMagicLink429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRequestMagicLink429ApplicationProblemPlusJSONResponse struct {
@@ -1391,6 +1419,12 @@ func (response AuthRequestMagicLink429ApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1400,7 +1434,9 @@ func (response AuthRequestMagicLink429ApplicationProblemPlusJSONResponse) VisitA
 }
 
 type AuthRequestMagicLink503ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRequestMagicLink503ApplicationProblemPlusJSONResponse struct {
@@ -1415,6 +1451,12 @@ func (response AuthRequestMagicLink503ApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1424,7 +1466,9 @@ func (response AuthRequestMagicLink503ApplicationProblemPlusJSONResponse) VisitA
 }
 
 type AuthRequestMagicLinkdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRequestMagicLinkdefaultApplicationProblemPlusJSONResponse struct {
@@ -1440,6 +1484,12 @@ func (response AuthRequestMagicLinkdefaultApplicationProblemPlusJSONResponse) Vi
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1481,6 +1531,12 @@ func (response AuthConsumeMagicLink401ApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1490,7 +1546,9 @@ func (response AuthConsumeMagicLink401ApplicationProblemPlusJSONResponse) VisitA
 }
 
 type AuthConsumeMagicLink422ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthConsumeMagicLink422ApplicationProblemPlusJSONResponse struct {
@@ -1505,6 +1563,12 @@ func (response AuthConsumeMagicLink422ApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1514,7 +1578,9 @@ func (response AuthConsumeMagicLink422ApplicationProblemPlusJSONResponse) VisitA
 }
 
 type AuthConsumeMagicLink429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthConsumeMagicLink429ApplicationProblemPlusJSONResponse struct {
@@ -1529,6 +1595,12 @@ func (response AuthConsumeMagicLink429ApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1538,7 +1610,9 @@ func (response AuthConsumeMagicLink429ApplicationProblemPlusJSONResponse) VisitA
 }
 
 type AuthConsumeMagicLinkdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthConsumeMagicLinkdefaultApplicationProblemPlusJSONResponse struct {
@@ -1554,6 +1628,12 @@ func (response AuthConsumeMagicLinkdefaultApplicationProblemPlusJSONResponse) Vi
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1589,6 +1669,12 @@ func (response AuthRequestOtp422ApplicationProblemPlusJSONResponse) VisitAuthReq
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1598,7 +1684,9 @@ func (response AuthRequestOtp422ApplicationProblemPlusJSONResponse) VisitAuthReq
 }
 
 type AuthRequestOtp429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRequestOtp429ApplicationProblemPlusJSONResponse struct {
@@ -1613,6 +1701,12 @@ func (response AuthRequestOtp429ApplicationProblemPlusJSONResponse) VisitAuthReq
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1622,7 +1716,9 @@ func (response AuthRequestOtp429ApplicationProblemPlusJSONResponse) VisitAuthReq
 }
 
 type AuthRequestOtp503ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRequestOtp503ApplicationProblemPlusJSONResponse struct {
@@ -1637,6 +1733,12 @@ func (response AuthRequestOtp503ApplicationProblemPlusJSONResponse) VisitAuthReq
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1646,7 +1748,9 @@ func (response AuthRequestOtp503ApplicationProblemPlusJSONResponse) VisitAuthReq
 }
 
 type AuthRequestOtpdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRequestOtpdefaultApplicationProblemPlusJSONResponse struct {
@@ -1662,6 +1766,12 @@ func (response AuthRequestOtpdefaultApplicationProblemPlusJSONResponse) VisitAut
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1697,6 +1807,12 @@ func (response AuthChangePassword401ApplicationProblemPlusJSONResponse) VisitAut
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1706,7 +1822,9 @@ func (response AuthChangePassword401ApplicationProblemPlusJSONResponse) VisitAut
 }
 
 type AuthChangePassword403ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthChangePassword403ApplicationProblemPlusJSONResponse struct {
@@ -1721,6 +1839,12 @@ func (response AuthChangePassword403ApplicationProblemPlusJSONResponse) VisitAut
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1730,7 +1854,9 @@ func (response AuthChangePassword403ApplicationProblemPlusJSONResponse) VisitAut
 }
 
 type AuthChangePassword422ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthChangePassword422ApplicationProblemPlusJSONResponse struct {
@@ -1745,6 +1871,12 @@ func (response AuthChangePassword422ApplicationProblemPlusJSONResponse) VisitAut
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1754,7 +1886,9 @@ func (response AuthChangePassword422ApplicationProblemPlusJSONResponse) VisitAut
 }
 
 type AuthChangePassworddefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthChangePassworddefaultApplicationProblemPlusJSONResponse struct {
@@ -1770,6 +1904,12 @@ func (response AuthChangePassworddefaultApplicationProblemPlusJSONResponse) Visi
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1811,6 +1951,12 @@ func (response AuthReauth401ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1820,7 +1966,9 @@ func (response AuthReauth401ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 }
 
 type AuthReauth403ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthReauth403ApplicationProblemPlusJSONResponse struct {
@@ -1835,6 +1983,12 @@ func (response AuthReauth403ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1844,7 +1998,9 @@ func (response AuthReauth403ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 }
 
 type AuthReauth422ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthReauth422ApplicationProblemPlusJSONResponse struct {
@@ -1859,6 +2015,12 @@ func (response AuthReauth422ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1868,7 +2030,9 @@ func (response AuthReauth422ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 }
 
 type AuthReauth429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthReauth429ApplicationProblemPlusJSONResponse struct {
@@ -1883,6 +2047,12 @@ func (response AuthReauth429ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1892,7 +2062,9 @@ func (response AuthReauth429ApplicationProblemPlusJSONResponse) VisitAuthReauthR
 }
 
 type AuthReauthdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthReauthdefaultApplicationProblemPlusJSONResponse struct {
@@ -1908,6 +2080,12 @@ func (response AuthReauthdefaultApplicationProblemPlusJSONResponse) VisitAuthRea
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1942,6 +2120,12 @@ func (response AuthDeleteSession401ApplicationProblemPlusJSONResponse) VisitAuth
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1951,7 +2135,9 @@ func (response AuthDeleteSession401ApplicationProblemPlusJSONResponse) VisitAuth
 }
 
 type AuthDeleteSession403ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthDeleteSession403ApplicationProblemPlusJSONResponse struct {
@@ -1966,6 +2152,12 @@ func (response AuthDeleteSession403ApplicationProblemPlusJSONResponse) VisitAuth
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -1975,7 +2167,9 @@ func (response AuthDeleteSession403ApplicationProblemPlusJSONResponse) VisitAuth
 }
 
 type AuthDeleteSessiondefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthDeleteSessiondefaultApplicationProblemPlusJSONResponse struct {
@@ -1991,6 +2185,12 @@ func (response AuthDeleteSessiondefaultApplicationProblemPlusJSONResponse) Visit
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2040,6 +2240,12 @@ func (response AuthCreateSession401ApplicationProblemPlusJSONResponse) VisitAuth
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2049,7 +2255,9 @@ func (response AuthCreateSession401ApplicationProblemPlusJSONResponse) VisitAuth
 }
 
 type AuthCreateSession422ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthCreateSession422ApplicationProblemPlusJSONResponse struct {
@@ -2064,6 +2272,12 @@ func (response AuthCreateSession422ApplicationProblemPlusJSONResponse) VisitAuth
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2073,7 +2287,9 @@ func (response AuthCreateSession422ApplicationProblemPlusJSONResponse) VisitAuth
 }
 
 type AuthCreateSession429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthCreateSession429ApplicationProblemPlusJSONResponse struct {
@@ -2088,6 +2304,12 @@ func (response AuthCreateSession429ApplicationProblemPlusJSONResponse) VisitAuth
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2097,7 +2319,9 @@ func (response AuthCreateSession429ApplicationProblemPlusJSONResponse) VisitAuth
 }
 
 type AuthCreateSessiondefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthCreateSessiondefaultApplicationProblemPlusJSONResponse struct {
@@ -2113,6 +2337,12 @@ func (response AuthCreateSessiondefaultApplicationProblemPlusJSONResponse) Visit
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2154,6 +2384,12 @@ func (response AuthCreateToken401ApplicationProblemPlusJSONResponse) VisitAuthCr
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2163,7 +2399,9 @@ func (response AuthCreateToken401ApplicationProblemPlusJSONResponse) VisitAuthCr
 }
 
 type AuthCreateToken422ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthCreateToken422ApplicationProblemPlusJSONResponse struct {
@@ -2178,6 +2416,12 @@ func (response AuthCreateToken422ApplicationProblemPlusJSONResponse) VisitAuthCr
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2187,7 +2431,9 @@ func (response AuthCreateToken422ApplicationProblemPlusJSONResponse) VisitAuthCr
 }
 
 type AuthCreateToken429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthCreateToken429ApplicationProblemPlusJSONResponse struct {
@@ -2202,6 +2448,12 @@ func (response AuthCreateToken429ApplicationProblemPlusJSONResponse) VisitAuthCr
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2211,7 +2463,9 @@ func (response AuthCreateToken429ApplicationProblemPlusJSONResponse) VisitAuthCr
 }
 
 type AuthCreateTokendefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthCreateTokendefaultApplicationProblemPlusJSONResponse struct {
@@ -2227,6 +2481,12 @@ func (response AuthCreateTokendefaultApplicationProblemPlusJSONResponse) VisitAu
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2268,6 +2528,12 @@ func (response AuthRefreshToken401ApplicationProblemPlusJSONResponse) VisitAuthR
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2277,7 +2543,9 @@ func (response AuthRefreshToken401ApplicationProblemPlusJSONResponse) VisitAuthR
 }
 
 type AuthRefreshToken429ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRefreshToken429ApplicationProblemPlusJSONResponse struct {
@@ -2292,6 +2560,12 @@ func (response AuthRefreshToken429ApplicationProblemPlusJSONResponse) VisitAuthR
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2301,7 +2575,9 @@ func (response AuthRefreshToken429ApplicationProblemPlusJSONResponse) VisitAuthR
 }
 
 type AuthRefreshTokendefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type AuthRefreshTokendefaultApplicationProblemPlusJSONResponse struct {
@@ -2317,6 +2593,12 @@ func (response AuthRefreshTokendefaultApplicationProblemPlusJSONResponse) VisitA
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2357,6 +2639,12 @@ func (response InstanceGetInstance401ApplicationProblemPlusJSONResponse) VisitIn
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2366,7 +2654,9 @@ func (response InstanceGetInstance401ApplicationProblemPlusJSONResponse) VisitIn
 }
 
 type InstanceGetInstancedefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type InstanceGetInstancedefaultApplicationProblemPlusJSONResponse struct {
@@ -2382,6 +2672,12 @@ func (response InstanceGetInstancedefaultApplicationProblemPlusJSONResponse) Vis
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2422,6 +2718,12 @@ func (response MeGet401ApplicationProblemPlusJSONResponse) VisitMeGetResponse(w 
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2431,7 +2733,9 @@ func (response MeGet401ApplicationProblemPlusJSONResponse) VisitMeGetResponse(w 
 }
 
 type MeGetdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeGetdefaultApplicationProblemPlusJSONResponse struct {
@@ -2447,6 +2751,12 @@ func (response MeGetdefaultApplicationProblemPlusJSONResponse) VisitMeGetRespons
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2481,6 +2791,12 @@ func (response MeRevokeAllSessions401ApplicationProblemPlusJSONResponse) VisitMe
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2490,7 +2806,9 @@ func (response MeRevokeAllSessions401ApplicationProblemPlusJSONResponse) VisitMe
 }
 
 type MeRevokeAllSessions403ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeRevokeAllSessions403ApplicationProblemPlusJSONResponse struct {
@@ -2505,6 +2823,12 @@ func (response MeRevokeAllSessions403ApplicationProblemPlusJSONResponse) VisitMe
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2514,7 +2838,9 @@ func (response MeRevokeAllSessions403ApplicationProblemPlusJSONResponse) VisitMe
 }
 
 type MeRevokeAllSessionsdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeRevokeAllSessionsdefaultApplicationProblemPlusJSONResponse struct {
@@ -2530,6 +2856,12 @@ func (response MeRevokeAllSessionsdefaultApplicationProblemPlusJSONResponse) Vis
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2570,6 +2902,12 @@ func (response MeListSessions401ApplicationProblemPlusJSONResponse) VisitMeListS
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2579,7 +2917,9 @@ func (response MeListSessions401ApplicationProblemPlusJSONResponse) VisitMeListS
 }
 
 type MeListSessionsdefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeListSessionsdefaultApplicationProblemPlusJSONResponse struct {
@@ -2595,6 +2935,12 @@ func (response MeListSessionsdefaultApplicationProblemPlusJSONResponse) VisitMeL
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2630,6 +2976,12 @@ func (response MeRevokeSession401ApplicationProblemPlusJSONResponse) VisitMeRevo
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2639,7 +2991,9 @@ func (response MeRevokeSession401ApplicationProblemPlusJSONResponse) VisitMeRevo
 }
 
 type MeRevokeSession403ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeRevokeSession403ApplicationProblemPlusJSONResponse struct {
@@ -2654,6 +3008,12 @@ func (response MeRevokeSession403ApplicationProblemPlusJSONResponse) VisitMeRevo
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2663,7 +3023,9 @@ func (response MeRevokeSession403ApplicationProblemPlusJSONResponse) VisitMeRevo
 }
 
 type MeRevokeSession404ResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeRevokeSession404ApplicationProblemPlusJSONResponse struct {
@@ -2678,6 +3040,12 @@ func (response MeRevokeSession404ApplicationProblemPlusJSONResponse) VisitMeRevo
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -2687,7 +3055,9 @@ func (response MeRevokeSession404ApplicationProblemPlusJSONResponse) VisitMeRevo
 }
 
 type MeRevokeSessiondefaultResponseHeaders struct {
-	XRequestId *string
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
 }
 
 type MeRevokeSessiondefaultApplicationProblemPlusJSONResponse struct {
@@ -2703,6 +3073,12 @@ func (response MeRevokeSessiondefaultApplicationProblemPlusJSONResponse) VisitMe
 		return err
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
 	if response.Headers.XRequestId != nil {
 		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
 	}
@@ -3222,106 +3598,106 @@ func (sh *strictHandler) MeRevokeSession(w http.ResponseWriter, r *http.Request,
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"vwMA",
+	"7H17c9u4tfhXwbCdqTw/Srbz6q49nd94E+8206Tx2NnunYlyJZg8klCTABcALau5/u53DgCSIAlKsvPY",
+	"Pu5foUw8z/vJfIoSkReCA9cqOvkUSVCF4ArMjwsprjPI8TERXAPX+EiLImMJ1Uzww8KO+H9/V4LjO5Ws",
+	"IKf49HsJi+gk+t1hs/6hfasOq3Xv7+/jKAWVSFbgctFJdC6lkBNy+eNL8v2z538kbgOSgqYsU2TN9IpQ",
+	"ojS9zoDME5HCfBLF0QpoCtKc+izLxBof2iu/4+TZ0fOY6BWQHPRKpMo8S1CilAkQVRaFkFrhcs099KaA",
+	"6CRSWjK+jPDAv/zyy/is1CvgGsEAA1sd261okkChISVmSSCj+Q9AJcj5wa59/mt8Cb+WoPT4ddqGbXes",
+	"gaN9bSFQ6tVbc0X8VUhRgNTM4pQlggfWiCOWBi5SACd2yIT8hYs1PyHzgiq1FjKdx2SucjUTusDHnC5Z",
+	"MssYv8FfgqXJybQ8OnqaFFLcshSk+QXzyZRHcWf7OLob3+Dy41ualXjQD1G1DULJ7hLFUbNJFEeDe0Qf",
+	"7+Moo9eQzW5gE4auhF9LJiHFrVgafayPJK7/DolGiCAYL0GVme5Dxv6diAVJBFdlzviSUGKOR/B4E/Kj",
+	"kGSeZAy4/tMarueGGrS4AU6YIozj7ymfi+ubmQKlmOBzkghxw4BQnpI53BVMgppRPccJONuNI+bV5pQs",
+	"hJzyao9cXLMM/G0WDLJUESqBFBIUcD208pQjmSrlJtr1LaLa1GOHzcywEN1nG7Lw7u3ONOkh/D6O7JD+",
+	"Ir+sWLIiN4ynCN3qymuqSCKBIieNBJIl8DI3PIQPiMU1XCOFmC2jj90dkcRw3tgO17KE+zhqQIEHWQiZ",
+	"41OUUg1jzXIIHVzCQoJazdpz94fEw3b5EqB2QJxZFq/3L0uWhoaXCuQuEY688TOO6/KSQ2tr0xac3fpD",
+	"DPez27x93fdI/WzJIR0zjjJVlFyTEeNKU57AeM1SiAkXmhQgiZBLytk/jIo6mPSIGHLKMnzgZZahHrHk",
+	"EA/JxJ0AY2pWZFTjuBlNc+YL2GshMqAch2UioZlRF3BH8wIfIy1DCxYrwQN65Xxy/OIZ3mfHwfviLXaX",
+	"rpauDxM6fAg1P0jKU1y8p1AysRSzUmZBpVJIllO5mSUiE7J9898d0z8+he+i0Ol7279cUb6EC6cSnF7s",
+	"n4XDelbrjZNPUU7v3gBf6lV08uT5izjKGa9+Hx/tAltrsRBMXkpIgWtGMxUSY1QbWZzQLAOJhswtqAmZ",
+	"W9vDSN6gKiVGqHva1Mk7wQnjRalPidGUxGpKkjGlIT2YkDkzh1kwkGZxyqfcIJ3QNJUo3IUklBj8E17m",
+	"1yDJyFAUvuCGWWhGLLEfTLzDTTlTpIKMFTr1u1Nng9Uqit2NU7Zkmly9vSL4ymmp+nojNOFEqQmz8FEg",
+	"b0ESBTxVRHA4mJAfUXERkFJIq74kFEJqSKfc7O7dNPbOYrWbNQkDustXOAtqtLrTGW3MzStNmtMbQDgS",
+	"A0ZIjWInpQJz7jli5RpuEnZyeDh35t3++gg1oEghLOoM3IzCvt4gIHFZj5aPXwRWS+GWJTDjNA8s+gaN",
+	"IdSnvhnBeOsnUlJ3oyffBaViBf4ejz0LDM9rS/TzjT407LYx+HaOdidp3SDE2K+YSsQtyM0rkZR50Er5",
+	"mVPPBUhJpYlIWs0lqZtMRvj7lsGaKEhwPnkx+S6gl2jBZtdUQSVNG1m50rpQJ4eH7i8TIZeHt8chzYFr",
+	"3IJEhKrWGh+i22O8LNOQq6Csdn+gUtKNWarUq5nzlHBCPXOXXeBcj8CS154W2bZKrW2Q2hxkZyEH5cr6",
+	"gSgVkJQztoCKyqt5LZNrUINXm1Ts06dixme0KCrg7rrBW8bPiuJvbrCh2uSmDcadCChKtdrpSpdq9Zov",
+	"hDUZM7qZAZciyyqq3Tb3EsefN8PRUkxv/Bu2gX1Bkxty9eovxI2ICdohpOSaZcTcj8CdEyI7TSsr9v3N",
+	"GnI/mhxPjqKdZo1HGF0Mxm1m6vBFb/f2xfvI7jCDQ02FVI+uA0gICZjX7rCG67Ps3SI6+bAdV32RdB93",
+	"rZ9CZCxxz9vWqna/qMZ3IVsv1D/7x662PGuJQb1mvGLAviSMbfimWn7ig+LCOzxNU2bNkQvvgpaQ2rtX",
+	"s5s1yXle6I0jyoxqNL1WVKEiT1OihNXRPYy8RR3zhvGbl8adh0ETc28rwvj8CnTbdbcePoZLnJEhQZeS",
+	"O89bPch+6Gj8nXq7diV9rXm00w620z5uA9rnQ6ttc1lZvsvYMiIeaFoR3Bquyc+Xbx4Ew9oX3GHGdGBi",
+	"pwVhAn0oiCQpC8or8g7Ye8ZH+IMiJWeaeMPJSKw5yJho4BQZaCVKBSuRpQenBDxKx/sXIIoMSC7SMgOS",
+	"UZ4aeqoVzja26t2jq4x8n3p/c+CdXJ6ZkFFQv+3J8r2z7ROgeAvB8ISZ2r1N3MJQvE3+IYKvmA4gOSml",
+	"BJ5stgRXd5ohg9aHZjn8Q/DQy5Cz73RgPStuThe+0kOiLlSR+U/n78nh7fFhDnOiVmKtCNN9gzZlqkBt",
+	"GPZJcHV8U7FvAVIZN4TfoCYRVfjchnoWTCrdjuzEBDInH6yjK6R1b4NBsN8+6jMc5nlEPKcF288O77TN",
+	"1R5tU55KwdK2lXY8OQpZaXHEhNprZOda1SZ2gdApG2nSO6FTL7Mt0P5cHixA5kzVnlUnNLdYQKLZLRBv",
+	"mPWwmWqRLZJyhtGE642l8FKvhKxeWuHdk+02jLmXyL2o9/9JUh6U5VJksL8MvxQZDC6lmA4pNRSRqmLs",
+	"1u29kFhCOVEAZNRVZEbZJZuWJtsfAE5Ahw6blcs9JagZWgvSDnVVEGzTRAWMIOXqYtBG2hbsDYTmOiGa",
+	"p0928ZVdP3SqLqn0znDGCQQIOyaisGfKNiRjOdNWYCuLdUmuM5HcqL5CMH+fsU48YSdL9gyH+iRBRsVj",
+	"fO4mXRg2OwYB2STKO2nCgTx2bMOeKSrToXz6hLw01rOaci0pV+jMoNBwEU4v8Eo5qVNiJ8Ta3IrkpdJE",
+	"iwwkTiy5HzYOxkeD4UgXYclpsmIcxhJoav5gorMmUDkh76rNfdP7lmYsNbeaLUz4FP1kms6k44M4Ktsx",
+	"tCiOuNCzhSg5PieCLzKW4EDnhs+8P7EU8kJoNGlmOVM51cnKqr0bSGcFSCZcVKBcLFiCEJl5SETsGpe+",
+	"RnIc5Qvq/2Tc3GC2NKwRRwjFmSN25/rPDBAc48/EYnEtqEzdbA2S06wekii5aACBwc2S01vKrN5HlmZZ",
+	"508F3WSCpjMtxCyjcmmGmRDEDAFFsc7BrFZyV7sA6SyHlNGZoVBrAIpS75sNtcTZp4E/lznlHurvioxa",
+	"qWRzbhh+cwRCCioVlgsETTCERUBbXIAcL/yYv8kRkHmPhOYPUIOWk0wqwRSVhAQJ8+IwfePUUSphKRnR",
+	"TIkqYD73KzPmpCqZIbYG5SA28HAYMTmJTCzVJJzkNcuEQ5toGhtuNRZ3ddSBDK+mugxA9s/v318Q+9Ly",
+	"ajMZKXQJFixMD9hM9g+94PflayJhARJ4AsQF0zdYAmHseCfqcO4pmdNrUeqT64xiKqvkGShVB4QgNRKj",
+	"NhS9sTvNxZrEtWEWBwGXVfFQu0Vee8TRd+eC0tDMGGdwC5knAS3G3TXIvDolJqecFMFHw8aCL8MYNPTf",
+	"3/CV0KhcC6pXtTm1WICJNtYEaubG5NcSg21COkJEVqQ5aJDBDc3bB4bb/mZzjlW43WoakoNSdAlEQ46u",
+	"BsRElckKqRYH5fSO5WVOMmOwBIJvHbxaQDg8BpFXhbx7OLOx167m32lOlBxTQemsird3fbjOAZtdOlND",
+	"h700aubCS1m1j9wkxzqWV7amGz9DPIDDz06Fbc1w29N7livGdCXLGadauOxfUVRlAfVhhtINLVA0Gb6t",
+	"469y9U4X5rIWcJu/GgetusF9HAkOe0TQO9vfx/sMr3b/6AHDSvsQ9RmLwrgxAXOe13FKCWPP8DHVTYyn",
+	"Ym3fM1UHi0fHRyRnvNRg3Z99Kod6xOodahjF7p57SsEzL0HdjtP8QRE0Mm2RAdqquPjEyal3ujBkXFCt",
+	"QeJC//3haPz9x08v7n8fbU0ch3mjKimYRHtT+6BQubTlVoNOWq8c62Ex9Pb08AHaybg+KlboNfNlyFUs",
+	"MBwuaUbqQUZGo1QiRlyRJiF1arN26xVwY7zZN85ke1ggqjlS8EZ13CDkV1LrVOaAhShqxYqKO+pYuIsH",
+	"Mt4LIvQdS/THB8pXrVMk5NKGv2Ljpc5yyukSZEyMyT6zx4gJLVOmhYwrejYxd6XpYhGTZUll6ns49ZqV",
+	"B+AWRUfHW9VkD82y+FSva22WxSKKI7Pyvka6SkQRTobbcK2G2gMnLHXYNmUzQi4xdSKKYE58d8bWbBy2",
+	"CIMeoJBLBxmECB5o7zsaf2rNId1HHwtrADbH84DUWitEpVegwtnudxysV11J4xZ9Tshbk1Sq3ipyA1Dg",
+	"ACbRYaCJFHU9rRR6gG6HimCD8HxMgaurmX1QgavNFQRO9V6WTa1FBRaNhW45TcHqLifrPZnsxcI7Gcud",
+	"JPeY8tx9o/dFQCy5Qjn/en7h8UKKfK/ihowqPSvVdrjvXKVUIGd06VDxiBxBXYvrw91cvbV4i0o6h++U",
+	"7laksYWT3rCQ/qyt8b2cd7dUyFjncKdnSSmVkIOWAYLq1CWRlSZMYY7K+eI23w4pWa9EBo8opjXnb59j",
+	"CzR8c7FrRF1LsVam9LFHaqehbgESahboy5THME27QrxTY5EGCge9DOCh+7Oa71Vq9VnV5Y8oKn+PQNyG",
+	"BitQUWmakIi0JrnbaULeuyaeWppX5DTOmIng8nTKkxVg4JEITsCUvDgxeOoMfmP9+doAVDO2VBDbZVyb",
+	"hm0mseNwTVzhVlSFEYZw6/MNN2k8hg66/R17Nj88sqXhcxsVzEK1RdKEkWyH1RcnPm+7DqTiAMy79w3C",
+	"rtMmMUDEBjJJKZneXOEhXTLF3BJP26dqCwFHcCNH4bQoanMldrVRZxevyQ1sVNONZlR2B4ArbV1wK3IG",
+	"tuxIMzuWMKXKJtmZiSXjBHhaCMZtqx3DyXZwlXA7iTxB15yCFuwvsLFdg8wFgALhTrySWGBSBK2oH7Bo",
+	"qCnPHUlQzFXtW2PZGu3oGR1Mpvyl4Lf4VnB1YpKTtGCHl+dnr96eT/J0giIPBYCJekvxD+AubYkpbsOK",
+	"GUvACRp3l7OfLt6Mn06OxkKODdAR0TLzynrX6/VkyUtT1uvmq0O6LDKcNlnpPPOitFFzq7OL1012pK6b",
+	"vI8jUQCnBYtOIlzgqfW5V4ZqDidryDJbeH1YV1VNqgbOJewudj5FiWVQSosCpSJZMJ4a/CLsqXuuUxkO",
+	"6656EnGO0sqI2depV8T3E+i6zNGwi9eK+uToaEsb6sPaTwO1lP1G1PfBCsZJdF9ng4e2qc/t9bk2DByd",
+	"fPgYR6rMsS/Gu3xgsyiONF0qv9YVhcPdGLtfWWYWi5TJz5ktUB0jog5NwfzYFMybslAVwOl5bvppqa2z",
+	"M0FqY9ofP69CTjZEQJvCn5WJ6DJVNZQY3TjllKs1yLoBBNMW6xXolWnEMpzCNEkF2PF2P6amfP7ph7Or",
+	"89nPl2/uDw2F2HP/fyO0/jSZTOYxMW6rV/oXHufaQjqdcOT50VMy7+bV5vZafoW4uRgXtohoyjHLyJal",
+	"JdAJeePy2wXI6uKGxPG33bGGx5T3aPusiZ/W1ZJRnfj5QaSbL0bWvWrM+7YCcx5hh62eBEwi17J8WlEH",
+	"GqYm2MesHViBwbh7S6Y0SMzk3MfRsydPHsAWOP77B41/fvT0QeO/KKue224qgvnNDMalstVxWBvnOpIr",
+	"dkUutKxa56l1dBJVVRND3Hpoe4lhC9feJaYTTvltvlLkrd5jMrInRDF9YJiaVlr5hFCnmNs8g8XKsV1P",
+	"BdtKyRmvSghiK/5NxqtA0ppyexArCBT2vpN5K30+H2INV239zVijU929F4d8OcXjNZQHNM6VqbQkjFtO",
+	"Ojp+ICd9Xc77opyEV0Uv0n3NoeEAUtnKj+IkoYth1rkyDYbU61A0SYyRVX211ovJc0I1pjK1OgipwCk3",
+	"OtDvo3RO4t56cMqNauoUgWzRTNhLuaQa1nTTUkhT7h9jQC2R0bMn35O5X78yP9ihq96ZxruvwYpeJdyX",
+	"0E8Gh1395MDxH6aekMAJrVWSgYxtH30sP/np5TBTXVrsIV9JSBAF/eTmqEoC4j9zV7T97OjplM87RVjz",
+	"A8tJ1b62hG1Fb4FQTTKgSpPjI0xySZpokNjtgxbzlAvDZp1IfaksEdgSdiJKPaiGWu3lX4nywz3sezHB",
+	"s3Cyp4aTiRya5dPHKY8H0u1D+ehz6fxTK/Lw4SMm7/3wx4eP9x1W0ChzLUiI9kD1WFawlDrMCBemvd+v",
+	"bkbC0yzLGlI02s4/jO3It7HBql0+RocqJTmVN245G3KviZuqDo+5nvymVmBCroArhvnVKa+JXVUK6hnq",
+	"ni7nIXcoZpI4VLt6hGEdgXO/Epe0S06+sYHWKfEIGGmXHdD/U7Lbt7btHsqeHSAGyRxJWlVkTBoqfiwD",
+	"Kz/Pm0Hos12XXpC9x3U8JUkGVLrX5r5kZKw8LM98df7m/P15NyNy6Jaxdat9TnplTnIFTVHyLrF/1eiy",
+	"b0F531xwo2MgSh3CwUMwHw+I6X2+vtL6lNlp77sq5nNZvQ+rtN2BH1vfSDHEY5zqehfr+Ey5q+E3HsUt",
+	"SNzFEVjzbRkzfaCRuJ0SnPIRhpTx21AxwfphbIT50xt6F5MrxAmWbqPpjK5XijWsorBx787JRKnroynn",
+	"NnnmpDmQDyQbOauDiSMXPJhPuYIMEq3q9txuPG9uZhyckmuhV5WCenL0pOM5oc/V9AKajwyoCflFCr70",
+	"ITXlJu6/sV8Pq9VdLxpxSiQULqVPWVZKUMTUyxjcNvg2lBjwniz65peg5WZ8ttDma35DpqVJ6Pos/hUs",
+	"ywYE31pjdtPcW+Ma5H0jOr2s9hXo8Uvz17krXTayLez7WUIUciAy2SGRvwpyLdLNf05ExcgKTaUmtFtf",
+	"8FjNWadrB+IqqAJb4kq5ss/EJ/05GfkCNyANXUPTKeGiJV0OYnJd6vpDCaKgv5Yu9qmm3PsGQBXaPHER",
+	"myZlP2qyGjYgOj/zuy5Pptx9lNPAz6XebYW9n7kfvTgiKd2oHcz+vs73/luxeruQ4v8CmBW7LUFX1EZ5",
+	"2iYZVSXfY7+4RB18Fi8eui2GefJ9r+jEhEGqpMBJ9eFbc2OSUCmZieFwWBPsnycXdSHKlNPOUtZDpIrQ",
+	"TAJNNzYdMFihQkZGqy5ozrLNAaG1Zn5QosDVZ39N1uqUgP+zcdeZwU5BmXwke/2G7FKlrUiXlmxyCi9m",
+	"f+P1HsEbfh+fq2AYLDGoHr9mhUG9x96FBaTIStX+MtJDMfytfbXqkoRxW6llmL0VHTkYLGGonYBx/TEC",
+	"yjez1mx7iO31Dvkwzt8itr8mlt8O4rfuYbC+hN78SyC0/bmXUoGMW20XKiYGWVWeyfvyQYXkHL+9XaOm",
+	"joPsE3WxtZDBYvu4FQ4QHEkuycrUto92sW4XPMuyK6jPtzuwcpZlTS3/GmRVc5n+e8dZDNTXK5DQweLW",
+	"4MoAv2Hp9zDQv7jTiduFOPCd17WhYpILpV12KnPGivmY0L8ET+Id221Rfk/KHqx3+Iml9/tGPetKdJup",
+	"YMr0vpsCk3kOk8zDL7plQvqMOeXImbZ4xP5lTkaZWCKdHdiYGK2KrZvmka6hauqgrSxouXCdEnTqMeiU",
+	"D0qBJu5SN0Mrg4WubVWty9KY+DeoK1SxgLKpT2Vp1DUO/f/MwetwHLmV/gdbHel4cTb+8eOn7+7H/s9n",
+	"D/l5/OT+INAuiWSzX9bQbzf4ljLu2dGzB43/zWSi4DWQ9heK9/U3TS2B2QrfQ/PFTLfEp6GPVzbmIGpW",
+	"z5yaeBRXm5RxKCcwZryu37JeaCcN7y2FLwLL9NV/VcrL6hiS8pbJAfui/3cA",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

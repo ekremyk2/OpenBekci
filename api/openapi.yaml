@@ -72,12 +72,11 @@ paths:
         selects the web or `openbekci://` link); both answer 202 whether or not
         the account exists. Wrong credentials
         of any kind answer 401 `invalid_grant`; repeated failures lock the
-        identifier out (429 `rate_limited` with `Retry-After`). Not replayable:
-        `Idempotency-Key` is ignored.
+        identifier out (429 `rate_limited` with `Retry-After`).
       tags:
         - auth
       security: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -127,12 +126,11 @@ paths:
       description: |
         Same credentials as `auth.createSession` (`password`, or `sms_otp` with a `code`; no `magic_link`), but returns opaque tokens
         instead of a cookie: an access token (15 minutes) for `Authorization:
-        Bearer` and a rotating refresh token (60 days). Not replayable:
-        `Idempotency-Key` is ignored.
+        Bearer` and a rotating refresh token (60 days).
       tags:
         - auth
       security: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -161,12 +159,11 @@ paths:
       description: |
         The refresh token is single use: the response carries a new one. Presenting
         a refresh token that was already used revokes the whole session (the
-        family) and answers 401 `invalid_grant`. Not replayable: `Idempotency-Key`
-        is ignored.
+        family) and answers 401 `invalid_grant`.
       tags:
         - auth
       security: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -198,7 +195,7 @@ paths:
       tags:
         - auth
       security: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -229,7 +226,7 @@ paths:
       tags:
         - auth
       security: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -254,12 +251,11 @@ paths:
       description: |
         Exchanges the token from a magic link (single use) for a session: a cookie
         for `client=web`, tokens for `client=mobile`. An unknown, used or expired
-        token answers 401 `invalid_grant`. Not replayable: `Idempotency-Key` is
-        ignored.
+        token answers 401 `invalid_grant`.
       tags:
         - auth
       security: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -288,14 +284,13 @@ paths:
       description: |
         Proves the caller is still the user with the password or a fresh SMS code,
         and marks the current session as re-authenticated for 10 minutes. Sensitive
-        operations answer 403 `reauth_required` outside that window. Not
-        replayable: `Idempotency-Key` is ignored.
+        operations answer 403 `reauth_required` outside that window.
       tags:
         - auth
       security:
         - cookieAuth: []
         - bearerAuth: []
-      x-idempotent: none
+      x-idempotent: optional
       requestBody:
         required: true
         content:
@@ -484,6 +479,14 @@ components:
         X-Request-Id:
           schema:
             type: string
+        WWW-Authenticate:
+          description: On 401, the accepted scheme (`Bearer`).
+          schema:
+            type: string
+        Allow:
+          description: On 405, the methods the resource supports.
+          schema:
+            type: string
       content:
         application/problem+json:
           schema:
@@ -534,6 +537,10 @@ components:
             - csrf_failed
             - sms_unavailable
             - mail_unavailable
+            - payload_too_large
+            - method_not_allowed
+            - unsupported_media_type
+            - timeout
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.

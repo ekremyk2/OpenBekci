@@ -18,8 +18,13 @@ RUN cd server && CGO_ENABLED=0 go build -trimpath -tags nowebassets \
       -ldflags "-s -w -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.date=${DATE}" \
       -o /out/openbekci ./cmd/openbekci
 
+RUN mkdir /data-skel
+
 FROM gcr.io/distroless/static-debian12:nonroot
 COPY --from=build /out/openbekci /usr/local/bin/openbekci
+# /data must exist and be owned by nonroot (65532) before VOLUME, so a fresh
+# named volume inherits writable ownership.
+COPY --from=build --chown=65532:65532 /data-skel /data
 ENV OPENBEKCI_DATA_DIR=/data
 VOLUME /data
 EXPOSE 8080

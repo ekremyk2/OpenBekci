@@ -27,3 +27,21 @@ func TestLoadConfigInstanceSettings(t *testing.T) {
 		t.Errorf("settings wrong: %+v", c)
 	}
 }
+
+func TestLoadConfigMaxBodyBytes(t *testing.T) {
+	c, err := LoadConfig("", env(baseEnv()))
+	if err != nil || c.MaxBodyBytes != 0 {
+		t.Fatalf("default: %v %d", err, c.MaxBodyBytes)
+	}
+	e := baseEnv()
+	e["OPENBEKCI_MAX_BODY_BYTES"] = "2048"
+	if c, err = LoadConfig("", env(e)); err != nil || c.MaxBodyBytes != 2048 {
+		t.Fatalf("set: %v %d", err, c.MaxBodyBytes)
+	}
+	for _, bad := range []string{"0", "-1", "lots"} {
+		e["OPENBEKCI_MAX_BODY_BYTES"] = bad
+		if _, err := LoadConfig("", env(e)); err == nil {
+			t.Errorf("%q accepted", bad)
+		}
+	}
+}

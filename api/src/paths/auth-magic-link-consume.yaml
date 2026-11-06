@@ -4,11 +4,10 @@ post:
   description: |
     Exchanges the token from a magic link (single use) for a session: a cookie
     for `client=web`, tokens for `client=mobile`. An unknown, used or expired
-    token answers 401 `invalid_grant`. Not replayable: `Idempotency-Key` is
-    ignored.
+    token answers 401 `invalid_grant`.
   tags: [auth]
   security: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:

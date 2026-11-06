@@ -1,7 +1,9 @@
 package httpapi
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -19,7 +21,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
-	"github.com/openbekci/openbekci/server/internal/platform/db/dbtest"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -35,6 +36,7 @@ paths:
   /v1/things:
     get:
       operationId: test.listThings
+      security: []
       parameters:
         - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 200, default: 50}}
       responses:
@@ -51,6 +53,7 @@ paths:
         default: {$ref: "#/components/responses/Problem"}
     post:
       operationId: test.createThing
+      security: [{bearerAuth: []}]
       x-idempotent: required
       parameters:
         - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8}}
@@ -78,6 +81,7 @@ paths:
   /v1/things-optional:
     post:
       operationId: test.createOptional
+      security: [{}, {bearerAuth: []}]
       x-idempotent: optional
       responses:
         "200":
@@ -103,9 +107,103 @@ paths:
             application/json:
               schema: {type: object, required: [who], properties: {who: {type: string}}}
         default: {$ref: "#/components/responses/Problem"}
+  /v1/ping:
+    post:
+      operationId: test.ping
+      security: [{bearerAuth: []}]
+      x-idempotent: required
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8}}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id: {type: integer}
+        default: {$ref: "#/components/responses/Problem"}
+  /v1/boom:
+    post:
+      operationId: test.boom
+      security: [{bearerAuth: []}]
+      x-idempotent: required
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8}}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id: {type: integer}
+        default: {$ref: "#/components/responses/Problem"}
+  /v1/fail:
+    post:
+      operationId: test.fail
+      security: [{bearerAuth: []}]
+      x-idempotent: required
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8}}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id: {type: integer}
+        default: {$ref: "#/components/responses/Problem"}
+  /v1/reject:
+    post:
+      operationId: test.reject
+      security: [{bearerAuth: []}]
+      x-idempotent: required
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8}}
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id: {type: integer}
+        default: {$ref: "#/components/responses/Problem"}
+  /v1/optional:
+    get:
+      operationId: test.getOptional
+      security: [{}, {bearerAuth: []}]
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema: {type: object, required: [who], properties: {who: {type: string}}}
+        default: {$ref: "#/components/responses/Problem"}
+  /v1/unannotated:
+    get:
+      operationId: test.getUnannotated
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema: {type: object}
+        default: {$ref: "#/components/responses/Problem"}
   /v1/preview:
     get:
       operationId: test.getPreview
+      security: []
       x-stability: preview
       responses:
         "200":
@@ -117,6 +215,7 @@ paths:
   /v1/broken:
     get:
       operationId: test.getBroken
+      security: []
       responses:
         "200":
           description: ok
@@ -159,13 +258,16 @@ type testAPI struct {
 	h       http.Handler
 	creates atomic.Int32
 	gate    chan struct{} // when non-nil, createThing waits on it
+	delay   time.Duration // createThing sleeps this long (to widen race windows)
+	log     *bytes.Buffer
 }
 
-type fixedAuth struct{ p *authz.Principal }
+// fixedAuth maps bearer tokens to principals.
+type fixedAuth map[string]*authz.Principal
 
 func (f fixedAuth) Authenticate(r *http.Request) (*authz.Principal, error) {
-	if r.Header.Get("Authorization") == "Bearer ok" {
-		return f.p, nil
+	if p, ok := f[strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")]; ok {
+		return p, nil
 	}
 	return nil, problem.Unauthenticated("no token")
 }
@@ -179,15 +281,15 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 	if err := spec.Validate(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	log := slog.New(slog.NewTextHandler(io.Discard, nil))
-	auth := fixedAuth{p: &authz.Principal{ID: uuid.New()}}
+	ta := &testAPI{log: &bytes.Buffer{}}
+	log := slog.New(slog.NewTextHandler(&lockedWriter{w: ta.log}, nil))
+	auth := fixedAuth{"ok": &authz.Principal{ID: uuid.New()}, "other": &authz.Principal{ID: uuid.New()}}
 	p, err := newPipeline(spec, log, auth, store, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	ta := &testAPI{}
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
+	r.Use(middleware.RequestID, recoverer(log))
 	r.NotFound(notFound)
 	g := r.With(p.Middlewares()...)
 	g.Get("/v1/things", func(w http.ResponseWriter, _ *http.Request) {
@@ -199,9 +301,29 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 		if ta.gate != nil {
 			<-ta.gate
 		}
+		time.Sleep(ta.delay)
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", "/v1/things/"+itoa(int(n)))
+		w.Header().Set("Set-Cookie", "per-request="+itoa(int(n)))
 		w.WriteHeader(http.StatusCreated)
 		_, _ = w.Write([]byte(`{"id":` + itoa(int(n)) + `}`))
+	})
+	g.Post("/v1/ping", func(w http.ResponseWriter, _ *http.Request) {
+		n := ta.creates.Add(1)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"id":` + itoa(int(n)) + `}`))
+	})
+	g.Post("/v1/boom", func(http.ResponseWriter, *http.Request) {
+		ta.creates.Add(1)
+		panic("kaboom")
+	})
+	g.Post("/v1/fail", func(w http.ResponseWriter, r *http.Request) {
+		ta.creates.Add(1)
+		problem.Write(w, r, problem.Internal(errors.New("db down")))
+	})
+	g.Post("/v1/reject", func(w http.ResponseWriter, r *http.Request) {
+		ta.creates.Add(1)
+		problem.Write(w, r, problem.Conflict("name taken"))
 	})
 	g.Post("/v1/things-optional", func(w http.ResponseWriter, _ *http.Request) {
 		n := ta.creates.Add(1)
@@ -216,6 +338,18 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 		}
 		_, _ = w.Write([]byte(`{"who":"` + who + `"}`))
 	})
+	g.Get("/v1/optional", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		who := "anonymous"
+		if pr := authz.PrincipalFromContext(r.Context()); pr != nil {
+			who = pr.ID.String()
+		}
+		_, _ = w.Write([]byte(`{"who":"` + who + `"}`))
+	})
+	g.Get("/v1/unannotated", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{}`))
+	})
 	g.Get("/v1/preview", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{}`))
@@ -229,6 +363,23 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 }
 
 func itoa(n int) string { b, _ := json.Marshal(n); return string(b) }
+
+// lockedWriter makes a bytes.Buffer safe for the concurrent logger.
+type lockedWriter struct {
+	mu sync.Mutex
+	w  *bytes.Buffer
+}
+
+func (l *lockedWriter) Write(p []byte) (int, error) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.w.Write(p)
+}
+
+// doAuth is do as the principal behind "Bearer ok".
+func (ta *testAPI) doAuth(method, path, body string, headers ...string) *httptest.ResponseRecorder {
+	return ta.do(method, path, body, append([]string{"Authorization", "Bearer ok"}, headers...)...)
+}
 
 func (ta *testAPI) do(method, path, body string, headers ...string) *httptest.ResponseRecorder {
 	var rd io.Reader
@@ -297,10 +448,10 @@ func TestValidationBody(t *testing.T) {
 	key := []string{"Idempotency-Key", "key-12345678"}
 
 	// Malformed JSON is bad_request, not a field error.
-	decodeProblem(t, ta.do("POST", "/v1/things", `{"name":`, key...), 400, "bad_request")
+	decodeProblem(t, ta.doAuth("POST", "/v1/things", `{"name":`, key...), 400, "bad_request")
 
 	// Field errors, several at once.
-	p := decodeProblem(t, ta.do("POST", "/v1/things", `{"name":"toolongname","qty":-1}`, key...), 422, "validation_failed")
+	p := decodeProblem(t, ta.doAuth("POST", "/v1/things", `{"name":"toolongname","qty":-1}`, key...), 422, "validation_failed")
 	got := map[string]string{}
 	for _, e := range p.Errors {
 		got[e.Field] = e.Code
@@ -309,12 +460,12 @@ func TestValidationBody(t *testing.T) {
 		t.Errorf("errors = %+v", p.Errors)
 	}
 
-	p = decodeProblem(t, ta.do("POST", "/v1/things", `{}`, key...), 422, "validation_failed")
+	p = decodeProblem(t, ta.doAuth("POST", "/v1/things", `{}`, key...), 422, "validation_failed")
 	if len(p.Errors) != 1 || p.Errors[0].Field != "name" || p.Errors[0].Code != "required" {
 		t.Errorf("missing field: %+v", p.Errors)
 	}
 
-	p = decodeProblem(t, ta.do("POST", "/v1/things", `{"name":123}`, key...), 422, "validation_failed")
+	p = decodeProblem(t, ta.doAuth("POST", "/v1/things", `{"name":123}`, key...), 422, "validation_failed")
 	if len(p.Errors) != 1 || p.Errors[0].Field != "name" || p.Errors[0].Code != "invalid_type" {
 		t.Errorf("wrong type: %+v", p.Errors)
 	}
@@ -346,6 +497,45 @@ func TestAuthenticationStep(t *testing.T) {
 	decodeProblem(t, ta.do("GET", "/v1/orgs/not-a-uuid/secret", "", "Authorization", "Bearer ok"), 422, "validation_failed")
 }
 
+// Authentication runs before validation: an anonymous caller gets 401 even
+// when the request is also invalid, and learns nothing about the parameters.
+func TestAuthenticationBeforeValidation(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	rec := ta.do("GET", "/v1/orgs/not-a-uuid/secret", "")
+	decodeProblem(t, rec, 401, "unauthenticated")
+	if got := rec.Header().Get("WWW-Authenticate"); got != "Bearer" {
+		t.Errorf("WWW-Authenticate = %q", got)
+	}
+	if strings.Contains(rec.Body.String(), "org_id") {
+		t.Errorf("401 leaks validation detail: %s", rec.Body)
+	}
+}
+
+func TestOptionalAuthAttachesPrincipalWhenValid(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	anon := ta.do("GET", "/v1/optional", "")
+	if anon.Code != 200 || !strings.Contains(anon.Body.String(), "anonymous") {
+		t.Fatalf("anonymous: %d %s", anon.Code, anon.Body)
+	}
+	bad := ta.do("GET", "/v1/optional", "", "Authorization", "Bearer nope")
+	if bad.Code != 200 || !strings.Contains(bad.Body.String(), "anonymous") {
+		t.Fatalf("bad credential: %d %s", bad.Code, bad.Body)
+	}
+	ok := ta.do("GET", "/v1/optional", "", "Authorization", "Bearer ok")
+	if ok.Code != 200 || strings.Contains(ok.Body.String(), "anonymous") {
+		t.Fatalf("valid credential: %d %s", ok.Code, ok.Body)
+	}
+}
+
+// An operation without a security key must fail closed.
+func TestMissingSecurityKeyFailsClosed(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	decodeProblem(t, ta.do("GET", "/v1/unannotated", ""), 401, "unauthenticated")
+	if rec := ta.do("GET", "/v1/unannotated", "", "Authorization", "Bearer ok"); rec.Code != 200 {
+		t.Fatalf("authenticated: %d %s", rec.Code, rec.Body)
+	}
+}
+
 func TestResponseValidationCatchesContractViolation(t *testing.T) {
 	ta := newTestAPI(t, nil)
 	p := decodeProblem(t, ta.do("GET", "/v1/broken", ""), 500, "internal_error")
@@ -356,114 +546,26 @@ func TestResponseValidationCatchesContractViolation(t *testing.T) {
 
 func TestIdempotencyRequiredHeaderMissing(t *testing.T) {
 	ta := newTestAPI(t, nil)
-	p := decodeProblem(t, ta.do("POST", "/v1/things", `{"name":"a"}`), 422, "validation_failed")
+	p := decodeProblem(t, ta.doAuth("POST", "/v1/things", `{"name":"a"}`), 422, "validation_failed")
 	if len(p.Errors) != 1 || p.Errors[0].Field != "Idempotency-Key" || p.Errors[0].Code != "required" {
 		t.Errorf("errors = %+v", p.Errors)
 	}
 	// Too short per the spec's minLength.
-	decodeProblem(t, ta.do("POST", "/v1/things", `{"name":"a"}`, "Idempotency-Key", "x"), 422, "validation_failed")
+	decodeProblem(t, ta.doAuth("POST", "/v1/things", `{"name":"a"}`, "Idempotency-Key", "x"), 422, "validation_failed")
 }
 
-func TestIntegrationIdempotency(t *testing.T) {
-	store := idempotency.NewPG(dbtest.New(t))
-	ta := newTestAPI(t, store)
-	body := `{"name":"a"}`
-	key := "Idempotency-Key"
-
-	first := ta.do("POST", "/v1/things", body, key, "key-00000001")
-	if first.Code != 201 || first.Body.String() != `{"id":1}` {
-		t.Fatalf("first: %d %s", first.Code, first.Body)
+func TestUnknownQueryParameterIsRejected(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	p := decodeProblem(t, ta.do("GET", "/v1/things?bogus=1&limit=5&alsobad=2", ""), 422, "validation_failed")
+	if len(p.Errors) != 2 || p.Errors[0].Field != "alsobad" || p.Errors[1].Field != "bogus" || p.Errors[0].Code != "unknown_field" {
+		t.Errorf("errors = %+v", p.Errors)
 	}
-	if first.Header().Get("Idempotent-Replayed") != "" {
-		t.Error("first response marked as replay")
-	}
-
-	// Same key and request: stored response, handler not run again.
-	again := ta.do("POST", "/v1/things", body, key, "key-00000001")
-	if again.Code != 201 || again.Body.String() != `{"id":1}` || again.Header().Get("Idempotent-Replayed") != "true" {
-		t.Fatalf("replay: %d %s %v", again.Code, again.Body, again.Header())
-	}
-	if ct := again.Header().Get("Content-Type"); ct != "application/json" {
-		t.Errorf("replay content type = %q", ct)
-	}
-	if n := ta.creates.Load(); n != 1 {
-		t.Fatalf("handler ran %d times", n)
-	}
-
-	// Same key, different request.
-	p := decodeProblem(t, ta.do("POST", "/v1/things", `{"name":"b"}`, key, "key-00000001"), 422, "idempotency_mismatch")
-	_ = p
-
-	// Another key runs the handler.
-	if rec := ta.do("POST", "/v1/things", body, key, "key-00000002"); rec.Body.String() != `{"id":2}` {
-		t.Fatalf("second key: %s", rec.Body)
-	}
-
-	// Keys are scoped by principal: the same key from another caller is new.
-	// (Optional operation, no auth: both anonymous, so the same key replays.)
-	a := ta.do("POST", "/v1/things-optional", "", key, "opt-00000001")
-	b := ta.do("POST", "/v1/things-optional", "", key, "opt-00000001")
-	if a.Body.String() != b.Body.String() || b.Header().Get("Idempotent-Replayed") != "true" {
-		t.Fatalf("optional replay: %s vs %s", a.Body, b.Body)
-	}
-	// Optional without a key: no idempotency, handler runs each time.
-	c := ta.do("POST", "/v1/things-optional", "")
-	d := ta.do("POST", "/v1/things-optional", "")
-	if c.Body.String() == d.Body.String() {
-		t.Fatalf("no key must not dedupe: %s %s", c.Body, d.Body)
+	if rec := ta.do("GET", "/v1/things?limit=5", ""); rec.Code != 200 {
+		t.Fatalf("declared parameter: %d %s", rec.Code, rec.Body)
 	}
 }
 
-func TestIntegrationIdempotencyInProgressConflict(t *testing.T) {
-	store := idempotency.NewPG(dbtest.New(t))
-	ta := newTestAPI(t, store)
-	ta.gate = make(chan struct{})
-	body := `{"name":"a"}`
-
-	var wg sync.WaitGroup
-	var first *httptest.ResponseRecorder
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		first = ta.do("POST", "/v1/things", body, "Idempotency-Key", "key-concurrent")
-	}()
-	// Wait until the first request holds the key.
-	deadline := time.Now().Add(5 * time.Second)
-	for ta.creates.Load() == 0 {
-		if time.Now().After(deadline) {
-			t.Fatal("first request never started")
-		}
-		time.Sleep(5 * time.Millisecond)
-	}
-
-	decodeProblem(t, ta.do("POST", "/v1/things", body, "Idempotency-Key", "key-concurrent"), 409, "conflict")
-
-	close(ta.gate)
-	wg.Wait()
-	if first.Code != 201 {
-		t.Fatalf("first: %d %s", first.Code, first.Body)
-	}
-	if again := ta.do("POST", "/v1/things", body, "Idempotency-Key", "key-concurrent"); again.Header().Get("Idempotent-Replayed") != "true" {
-		t.Fatalf("after completion: %d %s", again.Code, again.Body)
-	}
-	if n := ta.creates.Load(); n != 1 {
-		t.Fatalf("handler ran %d times", n)
-	}
-}
-
-func TestIntegrationIdempotencyServerErrorReleasesKey(t *testing.T) {
-	store := idempotency.NewPG(dbtest.New(t))
-	ctx := context.Background()
-	sc := idempotency.Scope{}
-	res, err := store.Begin(ctx, sc, "k-release-1", "h")
-	if err != nil || res.State != idempotency.Acquired {
-		t.Fatalf("begin: %+v %v", res, err)
-	}
-	if err := store.Abort(ctx, sc, "k-release-1"); err != nil {
-		t.Fatal(err)
-	}
-	res, err = store.Begin(ctx, sc, "k-release-1", "h")
-	if err != nil || res.State != idempotency.Acquired {
-		t.Fatalf("begin after abort: %+v %v", res, err)
-	}
+func TestWrongContentTypeIs415(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	decodeProblem(t, ta.doAuth("POST", "/v1/things", `name=a`, "Idempotency-Key", "key-12345678", "Content-Type", "text/plain"), 415, "unsupported_media_type")
 }

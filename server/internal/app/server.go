@@ -28,10 +28,15 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	}
 	defer rt.db.Close()
 
-	idem := idempotency.NewPG(rt.db)
-	go purgeIdempotency(ctx, log, idem)
-	deps, err := apiDeps(cfg, log, rt.db, idem)
+	ln, err := net.Listen("tcp", cfg.ListenAddr)
 	if err != nil {
+		rt.stopJobs(log)
+		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
+	}
+
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem)
+	if err != nil {
+		_ = ln.Close()
 		rt.stopJobs(log)
 		return err
 	}
@@ -39,7 +44,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Jobs = rt.jobs
 	router := httpapi.NewRouter(
 		deps,
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, Ready: readiness(cfg, rt.db)},
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,
@@ -47,10 +52,6 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       2 * time.Minute,
 		BaseContext:       func(net.Listener) context.Context { return context.WithoutCancel(ctx) },
-	}
-	ln, err := net.Listen("tcp", cfg.ListenAddr)
-	if err != nil {
-		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 	log.Info("http server listening", "addr", ln.Addr().String(), "worker", withWorker)
 
@@ -96,6 +97,7 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
+	idem    *idempotency.PG
 	working bool
 }
 
@@ -140,8 +142,10 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	d.WarnIfPlatformSuperuser(ctx, log)
 
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected})
+	idem := idempotency.NewPG(d)
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -152,7 +156,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, idem: idem, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

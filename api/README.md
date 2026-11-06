@@ -18,10 +18,14 @@ api/.redocly.yaml           lint ruleset;  api/plugins/openbekci.cjs  the projec
    and the TypeScript types. `api:lint` runs only the linter.
 3. Commit the source and the generated files together. CI runs `gen:check`, which regenerates and fails on drift.
 
-Tools run through `pnpm dlx` (Redocly CLI pinned to 2.76.0, openapi-typescript 7) and `go tool`
+Tools run through `pnpm dlx` (Redocly CLI pinned to 2.76.0, openapi-typescript 7.13.0) and `go tool`
 (oapi-codegen v2.8.2); nothing is installed globally. Rationale for the generator: `docs/adr/0001-openapi-codegen.md`.
 
 ## Conventions
+
+**Layout notes.** `servers: [{url: /}]` with full paths (`/v1/...`, `/.well-known/openbekci.json`) is the
+convention: the discovery document lives outside `/v1`, so the server root cannot be `/v1`. The generator config
+`oapi-codegen.yaml` lives in `server/` (next to the generated code's module), not in `api/`.
 
 Backend plan section 8 and overview section 6.2 are authoritative; this is the working summary.
 
@@ -57,11 +61,16 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
   `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
-  `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403), `sms_unavailable` and `mail_unavailable` (503). `invalid_grant` is a 401. 401 responses carry `WWW-Authenticate`. `instance` (also `request_id`) is the request id,
+  `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403, cookie-session mutations without the right `Origin` and `X-Requested-With`), `sms_unavailable` and `mail_unavailable` (503), `method_not_allowed` (405, with `Allow`), `unsupported_media_type` (415), `timeout` (504), `payload_too_large` (413; JSON request
+  bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `invalid_grant` is a 401, and 401 responses carry
+  `WWW-Authenticate`. `instance` (also `request_id`) is the request id,
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
   `too_short`, `too_long`, `too_small`, `too_large`, `unknown_field`.
-- **Security schemes** `cookieAuth` (session cookie) and `bearerAuth`; a public operation says `security: []`.
+- **Security schemes** `cookieAuth` (session cookie) and `bearerAuth`; **every operation declares `security`
+  explicitly** (a lint rule and the conformance test enforce it): a public one says `security: []`, optional
+  authentication is `[{}, {bearerAuth: []}, ...]`. An operation that somehow lacks the key is treated as requiring
+  authentication.
 - **Idempotency.** Every `POST` that creates declares `x-idempotent` (the lint rule and the conformance test
   enforce it), and a required one also declares `Idempotency-Key` as a required header parameter (`IdempotencyKey`).
 - **Discriminated unions:** `oneOf` with `discriminator.propertyName` and an explicit `mapping`; each variant
@@ -74,7 +83,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | Extension | On | Values | Effect |
 |---|---|---|---|
 | `x-openbekci-roles` | operation | map role to a list of permission strings | the authorization matrix (wired with the first business modules) |
-| `x-idempotent` | operation | `optional`, `required` or `none` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it); `none` marks credential endpoints (sign-in, refresh) whose responses carry secrets, so the header is ignored and nothing is stored. Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal) |
+| `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal). A replay sets `Idempotent-Replayed: true` and restores only `Content-Type`, `Location` and `X-OpenBekci-Stability`. Keys need a signed-in caller: a `required` operation must require authentication (conformance test), and an anonymous call to an `optional` one ignores the header |
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |
@@ -83,7 +92,11 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 
 ## Request pipeline
 
-For each operation, in order: response validation (when `OPENBEKCI_API_VALIDATE_RESPONSES=true`; always on in
-tests) wraps stability header, request validation (kin-openapi; problem+json), authentication (only for operations
-with `security`), idempotency, then the generated strict handler. Unknown paths under `/v1/` and
-`/.well-known/` are 404 problems; everything else falls through to the web app.
+Before routing, on every request: request id, logging, panic recovery, the body-size cap (413 `payload_too_large`),
+timeout. Then, for each operation, in order: response validation (when `OPENBEKCI_API_VALIDATE_RESPONSES=true`;
+always on in tests) wraps stability header, authentication, request validation (kin-openapi; problem+json),
+idempotency, then the generated strict handler. Authentication runs first, so an unauthenticated caller gets 401
+(`WWW-Authenticate: Bearer`) and never a validation detail. `Authenticate` is called for every operation whose
+`security` is not `[]`: required ones answer 401 on failure, optional ones (`security: [{}, ...]`) continue
+anonymously when no valid credential is present. Unknown paths under `/v1` and `/.well-known/` are 404 problems,
+a known path with the wrong method is a 405 problem with `Allow`; everything else falls through to the web app.

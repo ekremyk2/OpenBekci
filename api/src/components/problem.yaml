@@ -39,6 +39,10 @@ schemas:
           - csrf_failed
           - sms_unavailable
           - mail_unavailable
+          - payload_too_large
+          - method_not_allowed
+          - unsupported_media_type
+          - timeout
       detail:
         type: string
         description: Human-readable explanation, not for machine parsing.
@@ -72,6 +76,14 @@ responses:
     description: Error. RFC 9457 problem details with a stable `code`.
     headers:
       X-Request-Id:
+        schema:
+          type: string
+      WWW-Authenticate:
+        description: On 401, the accepted scheme (`Bearer`).
+        schema:
+          type: string
+      Allow:
+        description: On 405, the methods the resource supports.
         schema:
           type: string
     content:

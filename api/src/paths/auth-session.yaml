@@ -10,11 +10,10 @@ post:
     selects the web or `openbekci://` link); both answer 202 whether or not
     the account exists. Wrong credentials
     of any kind answer 401 `invalid_grant`; repeated failures lock the
-    identifier out (429 `rate_limited` with `Retry-After`). Not replayable:
-    `Idempotency-Key` is ignored.
+    identifier out (429 `rate_limited` with `Retry-After`).
   tags: [auth]
   security: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:

@@ -19,11 +19,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
-const (
-	maxIdempotentBody = 16 << 20
-	maxKeyLength      = 255
-	storeTimeout      = 5 * time.Second
-)
+const storeTimeout = 5 * time.Second
 
 // idempotency implements Idempotency-Key for operations tagged x-idempotent
 // in the spec (backend plan, section 8):
@@ -36,10 +32,23 @@ const (
 // response; one with a different request gets 422 idempotency_mismatch.
 // Responses with status 5xx are not stored: the key is released so the client
 // can retry.
+//
+// Keys are scoped by the authenticated principal. An anonymous caller has no
+// stored keys: a required operation answers 401, an optional one ignores the
+// header and runs the handler.
 func (p *pipeline) idempotency(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		info := p.op(r)
 		if info.idempotent == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
+		principal := authz.PrincipalFromContext(r.Context())
+		if principal == nil {
+			if info.idempotent == idemRequired {
+				problem.Write(w, r, problem.Unauthenticated("authentication is required"))
+				return
+			}
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -52,25 +61,19 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		if len(key) > maxKeyLength {
-			problem.Write(w, r, problem.Validation(problem.Field{
-				Field: headerIdempotencyKey, Code: "too_long", Params: map[string]any{"max": maxKeyLength},
-			}))
-			return
-		}
 		if p.idem == nil { // not wired (unit tests without a database)
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxIdempotentBody))
+		body, err := io.ReadAll(r.Body) // already capped by maxBody
 		if err != nil {
-			problem.Write(w, r, problem.Wrap(http.StatusRequestEntityTooLarge, problem.CodeBadRequest, "request body too large", err))
+			problem.Write(w, r, bodyReadError(err))
 			return
 		}
 		r.Body = io.NopCloser(bytes.NewReader(body))
 		hash := requestHash(r, body)
-		scope := requestScope(r)
+		scope := requestScope(r, principal)
 
 		ctx, cancel := context.WithTimeout(context.WithoutCancel(r.Context()), storeTimeout)
 		res, err := p.idem.Begin(ctx, scope, key, hash)
@@ -101,11 +104,9 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			defer scancel()
 			var serr error
 			if finished && rec.statusCode() < http.StatusInternalServerError {
-				serr = p.idem.Complete(sctx, scope, key, idempotency.Response{
-					Status: rec.statusCode(), ContentType: rec.Header().Get("Content-Type"), Body: rec.body.Bytes(),
-				})
+				serr = p.idem.Complete(sctx, scope, key, res.Owner, rec.stored())
 			} else {
-				serr = p.idem.Abort(sctx, scope, key)
+				serr = p.idem.Abort(sctx, scope, key, res.Owner)
 			}
 			if serr != nil {
 				p.log.Error("idempotency store", "error", serr, "key_scope_org", scope.OrgID != nil)
@@ -117,6 +118,9 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 }
 
 func replay(w http.ResponseWriter, resp idempotency.Response) {
+	for k, v := range resp.Headers {
+		w.Header()[http.CanonicalHeaderKey(k)] = v
+	}
 	if resp.ContentType != "" {
 		w.Header().Set("Content-Type", resp.ContentType)
 	}
@@ -137,42 +141,69 @@ func requestHash(r *http.Request, body []byte) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// requestScope is (org from the path, principal from the authenticated caller).
-// Both are nil when absent.
-func requestScope(r *http.Request) idempotency.Scope {
-	var s idempotency.Scope
+// requestScope is (org from the path, the authenticated principal).
+func requestScope(r *http.Request, pr *authz.Principal) idempotency.Scope {
+	s := idempotency.Scope{PrincipalID: pr.ID}
 	if v := chi.URLParam(r, "org_id"); v != "" {
 		if id, err := uuid.Parse(v); err == nil {
 			s.OrgID = &id
 		}
 	}
-	if pr := authz.PrincipalFromContext(r.Context()); pr != nil {
-		id := pr.ID
-		s.PrincipalID = &id
-	}
 	return s
 }
+
+// replayHeaders are the response headers a replay restores. Everything else is
+// per-request (dates, request ids, cookies) and must not be replayed.
+var replayHeaders = []string{"Content-Type", "Location", headerStability}
 
 // recorder passes the response through and keeps a copy.
 type recorder struct {
 	http.ResponseWriter
-	status int
-	body   bytes.Buffer
+	status   int
+	body     bytes.Buffer
+	captured http.Header // allow-listed headers, snapshotted when the response starts
+}
+
+// start snapshots the headers as they are when the response begins: later
+// changes are not sent and must not be stored.
+func (rc *recorder) start(code int) {
+	if rc.status != 0 {
+		return
+	}
+	rc.status = code
+	rc.captured = http.Header{}
+	for _, name := range replayHeaders {
+		if v := rc.Header().Values(name); len(v) > 0 {
+			rc.captured[http.CanonicalHeaderKey(name)] = append([]string(nil), v...)
+		}
+	}
 }
 
 func (rc *recorder) WriteHeader(code int) {
-	if rc.status == 0 {
-		rc.status = code
-	}
+	rc.start(code)
 	rc.ResponseWriter.WriteHeader(code)
 }
 
 func (rc *recorder) Write(b []byte) (int, error) {
-	if rc.status == 0 {
-		rc.status = http.StatusOK
-	}
+	rc.start(http.StatusOK)
 	rc.body.Write(b)
 	return rc.ResponseWriter.Write(b)
+}
+
+// stored is the response to keep for replay.
+func (rc *recorder) stored() idempotency.Response {
+	rc.start(http.StatusOK) // handler wrote nothing: an implicit 200
+	resp := idempotency.Response{Status: rc.status, ContentType: rc.captured.Get("Content-Type"), Body: rc.body.Bytes()}
+	for k, v := range rc.captured {
+		if k == "Content-Type" {
+			continue
+		}
+		if resp.Headers == nil {
+			resp.Headers = map[string][]string{}
+		}
+		resp.Headers[k] = v
+	}
+	return resp
 }
 
 func (rc *recorder) statusCode() int {

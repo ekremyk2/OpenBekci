@@ -47,6 +47,7 @@ func newRootCmd() *cobra.Command {
 		newMigrateCmd(load),
 		newAdminCmd(load),
 		newVersionCmd(),
+		newHealthcheckCmd(),
 	)
 	return root
 }

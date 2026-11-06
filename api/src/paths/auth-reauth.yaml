@@ -4,13 +4,12 @@ post:
   description: |
     Proves the caller is still the user with the password or a fresh SMS code,
     and marks the current session as re-authenticated for 10 minutes. Sensitive
-    operations answer 403 `reauth_required` outside that window. Not
-    replayable: `Idempotency-Key` is ignored.
+    operations answer 403 `reauth_required` outside that window.
   tags: [auth]
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:

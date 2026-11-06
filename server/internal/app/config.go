@@ -36,6 +36,10 @@ type Config struct {
 	DataDir        string
 	TrustedProxies []netip.Prefix
 
+	// MaxBodyBytes caps JSON API request bodies (OPENBEKCI_MAX_BODY_BYTES);
+	// zero means the httpapi default (1 MiB). File uploads get their own limit.
+	MaxBodyBytes int64
+
 	// Worker runs the job worker inside serve.
 	Worker      bool
 	AutoMigrate bool
@@ -151,6 +155,14 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 		return Config{}, err
 	}
 
+	if v := l.must("MAX_BODY_BYTES"); v != "" {
+		n, perr := strconv.ParseInt(v, 10, 64)
+		if perr != nil || n < 1 {
+			return Config{}, fmt.Errorf("%sMAX_BODY_BYTES: %q is not a positive integer", envPrefix, v)
+		}
+		c.MaxBodyBytes = n
+	}
+
 	switch w := strings.ToLower(l.must("WORKER")); w {
 	case "", "embedded":
 		c.Worker = true
@@ -250,6 +262,9 @@ func (c Config) ValidateServe() error {
 	if (c.SMSProvider == "log" || c.MailProvider == "log") && !c.InsecureDev {
 		errs = append(errs, fmt.Errorf("%sSMS_PROVIDER=log and %sMAIL_PROVIDER=log are for development only; set %sINSECURE_DEV=true to use them", envPrefix, envPrefix, envPrefix))
 	}
+	if len(c.SecretKey) > 0 && strings.TrimSpace(string(c.SecretKey)) == strings.TrimSpace(string(c.EncryptionKey)) {
+		errs = append(errs, fmt.Errorf("%sSECRET_KEY and %sENCRYPTION_KEY must be different keys", envPrefix, envPrefix))
+	}
 	for name, key := range map[string][]byte{"SECRET_KEY": c.SecretKey, "ENCRYPTION_KEY": c.EncryptionKey} {
 		if err := CheckKey(name, key, c.InsecureDev); err != nil {
 			errs = append(errs, err)
@@ -292,9 +307,12 @@ func CheckKey(name string, raw []byte, insecureDev bool) error {
 			return fmt.Errorf("%s%s looks like a placeholder; generate one with `openssl rand -base64 48`", envPrefix, name)
 		}
 	}
-	key := decodeKey(text)
+	key, encoding := decodeKey(text)
 	if len(key) < 32 {
-		return fmt.Errorf("%s%s must be at least 32 bytes (got %d); generate one with `openssl rand -base64 48`", envPrefix, name, len(key))
+		if encoding == "raw" {
+			return fmt.Errorf("%s%s is too short: %d bytes as a raw passphrase; it must be at least 32 bytes. Generate one with `openssl rand -base64 48`", envPrefix, name, len(key))
+		}
+		return fmt.Errorf("%s%s is too short: it was read as %s and decoded to %d bytes, and as a raw passphrase it has %d bytes; at least 32 bytes are needed either way (hex and base64 are decoded automatically, a raw passphrase of 32 or more bytes is also accepted). Generate one with `openssl rand -base64 48`", envPrefix, name, encoding, len(key), len(text))
 	}
 	if distinct(key) < 8 {
 		return fmt.Errorf("%s%s is not random enough (repeated characters); generate one with `openssl rand -base64 48`", envPrefix, name)
@@ -302,16 +320,29 @@ func CheckKey(name string, raw []byte, insecureDev bool) error {
 	return nil
 }
 
-func decodeKey(s string) []byte {
+// decodeKey returns the key bytes and how they were read. Text that is valid
+// hex or base64 is decoded; if that yields fewer than 32 bytes but the text
+// itself is at least 32 bytes, the text is used as a raw passphrase.
+func decodeKey(s string) ([]byte, string) {
+	var decoded []byte
+	how := ""
 	if b, err := hex.DecodeString(s); err == nil {
-		return b
-	}
-	for _, enc := range []*base64.Encoding{base64.StdEncoding, base64.RawStdEncoding, base64.URLEncoding, base64.RawURLEncoding} {
-		if b, err := enc.DecodeString(s); err == nil {
-			return b
+		decoded, how = b, "hex"
+	} else {
+		for _, e := range []struct {
+			name string
+			enc  *base64.Encoding
+		}{{"base64", base64.StdEncoding}, {"base64", base64.RawStdEncoding}, {"base64url", base64.URLEncoding}, {"base64url", base64.RawURLEncoding}} {
+			if b, err := e.enc.DecodeString(s); err == nil {
+				decoded, how = b, e.name
+				break
+			}
 		}
 	}
-	return []byte(s)
+	if how == "" || (len(decoded) < 32 && len(s) >= 32) {
+		return []byte(s), "raw"
+	}
+	return decoded, how
 }
 
 func distinct(b []byte) int {

@@ -9,7 +9,7 @@ post:
     configuration. Limited per address and per client address.
   tags: [auth]
   security: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:

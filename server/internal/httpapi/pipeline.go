@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"sort"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
@@ -27,7 +28,6 @@ func init() {
 const (
 	idemOptional = "optional"
 	idemRequired = "required"
-	idemNone     = "none"
 )
 
 const (
@@ -38,11 +38,13 @@ const (
 // Authenticator resolves the caller of a request. SessionAuthenticator (auth.go)
 // is the production implementation, supplied through Deps.Authenticator.
 //
-// Authenticate is called only for operations whose spec `security` is not
-// empty. It returns the principal, or an error rendered as a problem
-// (normally problem.Unauthenticated; a nil principal with a nil error is also
-// treated as unauthenticated). The pipeline stores the principal in the
-// request context for authz.PrincipalFromContext.
+// Authenticate is called for every operation whose spec `security` is not
+// the empty list: required for operations that demand credentials, and
+// best-effort for optional-auth operations (`security: [{}, ...]`), where a
+// failure just means the caller is anonymous. It returns the principal, or an
+// error rendered as a problem (normally problem.Unauthenticated; a nil
+// principal with a nil error is also treated as unauthenticated). The pipeline
+// stores the principal in the request context for authz.PrincipalFromContext.
 type Authenticator interface {
 	Authenticate(r *http.Request) (*authz.Principal, error)
 }
@@ -56,21 +58,26 @@ func (NoopAuthenticator) Authenticate(*http.Request) (*authz.Principal, error) {
 	return nil, problem.Unauthenticated("authentication is required")
 }
 
-// idemMode maps the x-idempotent value to the pipeline mode: "none" (credential
-// endpoints whose responses must never be stored or replayed) disables the
-// Idempotency-Key handling like an absent extension.
-func idemMode(v string) string {
-	if v == idemNone {
-		return ""
-	}
-	return v
-}
+// authMode is how an operation treats credentials.
+type authMode int
+
+const (
+	// authRequired is the zero value on purpose: an operation without a
+	// `security` key fails closed. (Every operation must declare one; the
+	// conformance test and the lint rule enforce it.)
+	authRequired authMode = iota
+	// authNone: `security: []`, anonymous callers only.
+	authNone
+	// authOptional: `security: [{}, ...]`, credentials are used when valid.
+	authOptional
+)
 
 // opInfo is what the pipeline reads from one operation of the spec.
 type opInfo struct {
 	idempotent string // "", optional or required
 	preview    bool   // x-stability: preview
-	secured    bool   // needs an authenticated caller
+	auth       authMode
+	query      map[string]bool // declared query parameter names
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -98,9 +105,10 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
 			info := opInfo{
-				idempotent: idemMode(extString(op.Extensions, "x-idempotent")),
+				idempotent: extString(op.Extensions, "x-idempotent"),
 				preview:    extString(op.Extensions, "x-stability") == "preview",
-				secured:    requiresAuth(spec, op),
+				auth:       authModeOf(spec, op),
+				query:      queryParams(item, op),
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -108,22 +116,41 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	return p, nil
 }
 
-// requiresAuth reports whether the operation has security requirements and
-// none of them is the empty (anonymous) alternative.
-func requiresAuth(spec *openapi3.T, op *openapi3.Operation) bool {
-	reqs := spec.Security
-	if op.Security != nil {
+// queryParams are the names of the query parameters an operation declares
+// (its own and its path item's).
+func queryParams(item *openapi3.PathItem, op *openapi3.Operation) map[string]bool {
+	names := map[string]bool{}
+	for _, params := range []openapi3.Parameters{item.Parameters, op.Parameters} {
+		for _, ref := range params {
+			if ref.Value != nil && ref.Value.In == openapi3.ParameterInQuery {
+				names[ref.Value.Name] = true
+			}
+		}
+	}
+	return names
+}
+
+// authModeOf reads the operation's `security`. A missing key (and no
+// top-level default) means authRequired, never anonymous.
+func authModeOf(spec *openapi3.T, op *openapi3.Operation) authMode {
+	var reqs openapi3.SecurityRequirements
+	switch {
+	case op.Security != nil:
 		reqs = *op.Security
+	case len(spec.Security) > 0:
+		reqs = spec.Security
+	default:
+		return authRequired
 	}
 	if len(reqs) == 0 {
-		return false
+		return authNone
 	}
 	for _, r := range reqs {
 		if len(r) == 0 {
-			return false
+			return authOptional
 		}
 	}
-	return true
+	return authRequired
 }
 
 // extString reads a string extension that arrives as json.RawMessage or a decoded value.
@@ -161,10 +188,13 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 	if p.validateResponses {
 		chain = append(chain, p.responseValidator)
 	}
+	// Authentication comes before request validation: a caller who is not
+	// allowed in learns nothing about the parameters or body.
 	chain = append(chain,
 		p.stability,
-		requestValidator(p.spec),
 		p.authenticate,
+		p.rejectUnknownQuery,
+		requestValidator(p.spec),
 		p.idempotency,
 	)
 	return chain
@@ -180,14 +210,47 @@ func (p *pipeline) stability(next http.Handler) http.Handler {
 	})
 }
 
-// authenticate runs the Authenticator for operations that need a caller.
+// rejectUnknownQuery answers validation_failed for query parameters the
+// operation does not declare (kin-openapi ignores them), so a misspelt filter
+// is an error instead of silently returning unfiltered data.
+func (p *pipeline) rejectUnknownQuery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		info := p.op(r)
+		var unknown []string
+		for name := range r.URL.Query() {
+			if !info.query[name] {
+				unknown = append(unknown, name)
+			}
+		}
+		if len(unknown) > 0 {
+			sort.Strings(unknown)
+			fields := make([]problem.Field, len(unknown))
+			for i, name := range unknown {
+				fields[i] = problem.Field{Field: name, Code: "unknown_field"}
+			}
+			problem.Write(w, r, problem.Validation(fields...))
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// authenticate runs the Authenticator for operations that take credentials.
 func (p *pipeline) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !p.op(r).secured {
+		mode := p.op(r).auth
+		if mode == authNone {
 			next.ServeHTTP(w, r)
 			return
 		}
 		pr, err := p.auth.Authenticate(r)
+		if mode == authOptional {
+			if err == nil && pr != nil {
+				r = r.WithContext(authz.WithPrincipal(r.Context(), pr))
+			}
+			next.ServeHTTP(w, r)
+			return
+		}
 		if err != nil {
 			problem.Write(w, r, err)
 			return
@@ -205,6 +268,19 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 	problem.Write(w, r, problem.NotFound("no such resource"))
 }
 
-func methodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	problem.Write(w, r, problem.New(http.StatusMethodNotAllowed, problem.CodeBadRequest, "method not allowed"))
+// methodNotAllowed renders chi's 405 as a problem with an Allow header. chi
+// only sets Allow for its default handler, so the allowed methods are found
+// by matching the path against each method.
+func methodNotAllowed(routes chi.Routes) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		for _, m := range []string{
+			http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut,
+			http.MethodPatch, http.MethodDelete, http.MethodOptions,
+		} {
+			if routes.Match(chi.NewRouteContext(), m, r.URL.Path) {
+				w.Header().Add("Allow", m)
+			}
+		}
+		problem.Write(w, r, problem.New(http.StatusMethodNotAllowed, problem.CodeMethodNotAllowed, "method not allowed"))
+	}
 }

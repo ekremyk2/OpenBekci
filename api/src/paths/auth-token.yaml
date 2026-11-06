@@ -4,11 +4,10 @@ post:
   description: |
     Same credentials as `auth.createSession` (`password`, or `sms_otp` with a `code`; no `magic_link`), but returns opaque tokens
     instead of a cookie: an access token (15 minutes) for `Authorization:
-    Bearer` and a rotating refresh token (60 days). Not replayable:
-    `Idempotency-Key` is ignored.
+    Bearer` and a rotating refresh token (60 days).
   tags: [auth]
   security: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:

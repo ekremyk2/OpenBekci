@@ -8,7 +8,7 @@ post:
     phone number and per client address (429 `rate_limited`).
   tags: [auth]
   security: []
-  x-idempotent: none
+  x-idempotent: optional
   requestBody:
     required: true
     content:
