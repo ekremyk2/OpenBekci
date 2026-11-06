@@ -2,212 +2,240 @@
 
 | | |
 |---|---|
-| Status | Draft v0.1 |
-| Date | 2026-11-06 |
+| Status | **Draft v0.2** — revised on 2026-11-06 against the [plan review](06-review.md) and the decisions in [`docs/decisions/`](../decisions/) |
 | Scope | Whole project. Component plans: [backend](01-backend.md), [web](02-web.md), [mobile](03-mobile.md), [packs](04-packs.md), [infrastructure](05-infra.md) |
 
-This is the top-level plan. It records what OpenBekci is, the decisions that bind every component, the shared contracts between components, and the milestone sequence. Each component has its own plan that must stay consistent with this one; when they conflict, this document wins and the component plan gets fixed.
+This is the top-level plan. It records what OpenBekci is, the decisions that bind every component, the shared contracts between components, and the release sequence. Component plans must stay consistent with it; when they conflict, this document wins and the component plan is fixed. Product behaviour is decided in plain language in `docs/decisions/`; those files are the source for the feature lists below.
 
 ---
 
 ## 1. What OpenBekci is
 
-OpenBekci is an open-source **residential community management** application: apartment buildings, gated sites, housing estates, and mixed-use complexes. It replaces the spreadsheet, the WhatsApp group and the manager's notebook with one system that residents, owners, boards, managers and staff all use.
+OpenBekci is an open-source **residential community management** application: apartment buildings, gated sites (site), housing estates and mixed-use complexes. It replaces the spreadsheet, the WhatsApp group and the manager's notebook with one system that residents, owners, boards, managers and staff all use.
 
 Primary users:
 
 | User | What they need |
 |---|---|
-| **Site manager / management company** | Collect dues, pay expenses, keep books, handle tickets, communicate, keep legally required records |
-| **Board members** (yönetim kurulu, denetçi) | Oversight: statements, approvals, meeting records, audit trail |
-| **Owners** | Their units' statements, payments, voting, documents |
-| **Residents / tenants** | Pay dues, open tickets, read announcements, book facilities, register visitors |
-| **Staff** (guard, concierge, cleaner, technician) | Gate log, assigned tickets, schedules |
+| **Management company / yönetici** | Collect dues, pay expenses, keep trustworthy books, handle tickets, communicate, run the annual assembly, keep legally required records — across one site or fifty |
+| **Board members** (yönetim kurulu, denetçi) | Oversight: statements, reports, meeting records, audit trail |
+| **Owners** | Their units' statements, payments, decisions, documents |
+| **Tenants and household members** | Pay dues (tenants), open tickets, read announcements, book facilities, register visitors |
+| **Site staff** (kapıcı, guard, cleaner) | Gate log, assigned tickets |
 
 Design goals, in priority order:
 
-1. **Core works everywhere.** With zero country packs installed, a site in any country can be fully managed: units, people, money, operations, governance.
-2. **Country packs add, never patch.** Country-specific law, government integrations, payment providers and document formats plug into defined extension points. The core never contains `if country == "TR"`.
-3. **Self-hostable by a non-expert.** One binary plus PostgreSQL. `docker compose up` is a complete installation.
-4. **Money is trustworthy.** A real double-entry ledger underneath a simple "dues and expenses" UI. No floats, no silent rounding, immutable postings.
-5. **Boring, long-lived technology.** The project should still build and run in ten years with a small maintainer team.
+1. **Core works everywhere.** With zero country packs installed, a site in any country can be fully managed. Country-specific law is expressed as **site settings with national defaults**, so a site in a country without a pack can still configure its rules.
+2. **Country packs add, never patch.** Government integrations, payment providers, SMS and bank formats, document templates, legal presets and validators plug into defined extension points. The core never contains `if country == "TR"`.
+3. **The site owns its data.** A site (one kat malikleri kurulu, one ledger) is a self-contained, portable unit that can move between management companies with its history intact (decision D2).
+4. **Self-hostable by a non-expert.** One binary plus PostgreSQL. `docker compose up` is a complete installation.
+5. **Money is trustworthy.** A real double-entry ledger underneath a simple "dues and expenses" UI. Integer money, immutable postings, every correction visible.
+6. **Boring, long-lived technology.** The project should still build and run in ten years with a small maintainer team.
 
-Explicit non-goals for v1: accounting for the management *company* itself (payroll, corporate tax), multi-currency sites, smart-home/IoT device control, a public marketing website inside the app, third-party untrusted plugins (official packs only).
+**Non-goals (through 1.0):** accounting for the management *company* itself (payroll, corporate tax, outbound e-invoices for its fees); multi-currency sites; in-app chat or messaging; contractor/vendor logins; binding online votes; an approvals workflow (boards decide in meetings, the system records); scheduled-maintenance/equipment registry; untrusted third-party plugins; a public marketing site inside the app.
 
 ---
 
 ## 2. Decisions
 
-### 2.1 Decided
+### 2.1 Technology (decided before the review, unchanged)
 
 | Area | Decision |
 |---|---|
 | Backend | **Go**, modular monolith, single binary with embedded web assets |
-| Web | **React + Vite + TanStack Router + TanStack Query**, SPA, shadcn/ui, i18n with RTL support from day one |
-| Mobile | **Flutter**, Riverpod, go_router, must connect to any server instance (self-hosted or hosted) |
-| Database | **PostgreSQL** (only required dependency). Row-level security as the tenant boundary |
-| API | **OpenAPI 3.1, contract-first.** Go server, TypeScript client and Dart client are generated from one spec |
-| Background jobs | **River** (Postgres-backed), no Redis/RabbitMQ requirement |
-| Packs | Compile-time Go modules registered through a public SDK (`pkg/sdk`). WebAssembly sandboxing deferred until a real third-party need exists |
+| Web | **React + Vite + TanStack Router + TanStack Query**, SPA, shadcn/ui, i18n with logical CSS from day one |
+| Mobile | **Flutter**, Riverpod, go_router; connects to any server instance |
+| Database | **PostgreSQL** (only required dependency). Row-level security as the *organization* isolation boundary |
+| API | **OpenAPI**, contract-first, authored in the 3.0.3-compatible subset; Go server, TypeScript and Dart clients generated from one spec |
+| Background jobs | **River** (Postgres-backed); it is also the transactional outbox — no separate outbox tables |
+| Sessions | **Opaque tokens** for web (cookie) and mobile (bearer); no JWT |
+| Packs | Compile-time Go modules behind a public SDK (`sdk/`, its own module and license). SDK arrives in 0.4; until then national rules are core settings |
 | IDs | UUIDv7 everywhere |
-| Money | Integer minor units + ISO 4217 currency code, one currency per site |
+| Money | Integer minor units + ISO 4217 code, one currency per site |
 
-### 2.2 Decided on 2026-11-06, after the plan review
+### 2.2 Blocking decisions (owner, 2026-11-06)
 
-These were open assumptions in v0.1 of this document; the [review](06-review.md) §2 made them blocking and the owner decided them. **Plans 01–05 have not yet been revised to reflect them** — until that pass lands, this table wins over any conflicting text elsewhere.
-
-| # | Decision | Outcome | Affects |
-|---|---|---|---|
-| D4 | **Deployment model** | **Self-host first, SaaS-capable.** One build, multi-organization; self-hosting is the first-class install; a hosted service runs the same build. No open-core gating. Hosted-only concerns (signup, plans, invoicing organizations) live outside this repo | Multi-tenancy (§6.1), push relay (§6.5) |
-| D2 | **Who owns the data** | **The organization is the access boundary; the site is the data-owning, portable unit.** An organization is "the office that runs things" (a management company, or a self-managed building wearing that hat). A site (one kat malikleri kurulu, one ledger) can be exported from one organization and imported into another with its history and ids intact; the site's own board and auditor memberships belong to the site, not the organization; an "offboard site" workflow exists. Designed into B1, not added later | Backend §4/§5/§7, site export/import, roles |
-| D1 | **License** | **AGPL-3.0 for the server and web app, with an explicit pack-linking exception** (so privately written packs compiled into the binary do not become AGPL — stated honestly rather than implied). **MPL-2.0 for the mobile app** (avoids the App Store conflict). **Apache-2.0 for the pack SDK, the OpenAPI spec and the generated clients.** The exception text is a draft until a lawyer has read it; that must happen before the first outside contribution. Contributions under DCO | `LICENSE`, `LICENSING.md`, per-directory license files, `CONTRIBUTING.md` |
-| D3 | **First public release** | **0.1: web-only, money-complete** as scoped in review §9 (~45–50 engineer-weeks). No mobile, meetings, bookings, visitors or pack SDK in 0.1; Turkish legal rules are core settings until the SDK exists. Milestones M0–M7 below are to be re-baselined around it | §8, all component milestone tables |
-| D5 | **Phone-first sign-in** | **A minimal SMS gateway interface in core with one provider (Netgsm) from M1**, so phone OTP and SMS invitations work in 0.1. Other providers arrive through packs later | Backend identity and notifications |
-| D6 | **Gate and automatic door control** | **Concepts in core, hardware in a separate module plus an on-site agent.** In 0.1 the core only *holds* resident vehicle plates per unit (and expected-visitor plates) and can export the list for the site's plate-recognition camera operator; nothing opens a gate. Real-time control — access points, credentials (plate, code, tag, app), opening log, guard "open" button — is an **access-control module** served by a small **on-site agent** (runs on the site LAN, connects outbound to the server, keeps the allow-list locally so gates work offline) with vendor **device drivers** registered the same way packs are. Scheduled as **0.3**, after governance (0.2) and before mobile. App-opened doors come with the mobile app | Overview §3/§4, backend visitors module, a new `agent/` deployable in the infra plan |
-| D7 | **Release order after 0.1** | **0.2 governance** (assemblies, decisions, elections — [decisions/governance.md](../decisions/governance.md)), **0.3 gate and door control (D6) together with Community** (bookings, visitors with QR admission, guard console, parcels — [decisions/community.md](../decisions/community.md)), then **mobile** | §8 milestones, all component roadmaps |
-
-Still assumed (not blocking):
-
-| Decision | Assumption | Affects |
+| # | Decision | Outcome |
 |---|---|---|
-| **First country pack** | **Turkey** (`packs/tr`): Kat Mülkiyeti Kanunu (Law 634) rules, local payment providers, SMS providers, bank formats, KVKK texts. e-Devlet is **out** (no realistic path to the required agreement; TCKN validation + manual verification instead) | Which extension points get validated first |
-| **Name / module path** | `github.com/openbekci/openbekci` (the repository currently lives at `github.com/ekremyk2/OpenBekci`; the module path is set when the GitHub organization exists) | Go module path, image names |
+| D1 | **License** | AGPL-3.0 for server and web **with an explicit pack-linking exception** (draft pending legal review); **MPL-2.0** for the mobile app; **Apache-2.0** for `sdk/`, `api/` and generated clients. DCO, no CLA. See [LICENSING.md](../../LICENSING.md) |
+| D2 | **Who owns the data** | The **organization** is the access boundary ("the office": a management company, or a self-managed building). The **site** is the data-owning, portable unit: export/import between organizations with ids preserved; board and auditor memberships belong to the site; an "offboard site" workflow exists. Designed into 0.1 |
+| D3 | **First public release** | **0.1: web-only, money-complete** (§8). No mobile, meetings, bookings, visitors beyond a plate registry, or pack SDK |
+| D4 | **Deployment model** | **Self-host first, SaaS-capable.** One multi-organization build; hosted-only concerns live outside this repo |
+| D5 | **Phone-first sign-in** | A **minimal SMS gateway in core with one provider (Netgsm)** from 0.1: OTP codes, invitations, receipts, reminders |
+| D6 | **Gate and door control** | Concepts in core (plate registry in 0.1); real-time control in a separate **access-control module + on-site agent** with device drivers, in 0.3 |
+| D7 | **Release order** | 0.1 money + operations (web) → 0.2 governance → 0.3 gate control + community → 0.4 mobile + integrations → 1.0 |
+| D8 | **Repositories** | **Core monorepo** (`OpenBekci`: server, web, API spec, SDK, packs, docs) **plus a separate mobile repository** (`openbekci-mobile`, created 2026-11-06, private until the owner says otherwise). The push relay and the on-site agent get their own repositories when built. Repositories live under `ekremyk2` for now and move to an organization later |
+
+Still assumed: **Turkey** is the first country pack (e-Devlet is out: no realistic path to the agreement; TCKN validation + manual verification instead). Module path `github.com/openbekci/openbekci` once the GitHub organization exists (repository currently `github.com/ekremyk2/OpenBekci`).
+
+### 2.3 Product decisions
+
+Five plain-language files, one per area, each with decisions, defaults set without asking, and open points. They are the source of truth for behaviour; §3 summarizes them.
+
+| Area | File | Release |
+|---|---|---|
+| Money | [decisions/money.md](../decisions/money.md) | 0.1 |
+| Setup & people | [decisions/setup-people.md](../decisions/setup-people.md) | 0.1 |
+| Daily operations | [decisions/daily-operations.md](../decisions/daily-operations.md) | 0.1 |
+| Governance | [decisions/governance.md](../decisions/governance.md) | 0.2 |
+| Community | [decisions/community.md](../decisions/community.md) | 0.3 |
 
 ---
 
-## 3. Product scope (core)
+## 3. Product scope by area
 
-Grouped by domain. Each becomes a module in the backend and a feature area in the clients.
+Tags: **0.1 / 0.2 / 0.3 / 0.4 / later**.
 
-| Domain | Core capability |
+| Area | Capability |
 |---|---|
-| **Tenancy** | Organization → Site → Building → Unit hierarchy. Unit types (flat, shop, parking, storage). Unit shares for cost allocation. Facilities/common areas |
-| **Identity** | Accounts with email and/or phone, password, passkeys, magic link, optional TOTP. External identity providers via packs (e-Devlet). Invitations |
-| **People & roles** | Persons (may exist before they have an account), occupancies (owner / tenant / resident / representative with date ranges and ownership shares), memberships with role and scope (org / site / building / unit) |
-| **Ledger** | Per-site double-entry ledger, chart of accounts, journal entries, periods with closing, unit sub-ledger (receivables), vendor sub-ledger (payables) |
-| **Billing** | Dues plans (aidat): recurring or one-off, allocation policies (equal, by share, by area, by occupant count, fixed per unit), expense sharing, late-fee policy (pluggable), per-unit statements |
-| **Payments** | Manual payment recording (cash, transfer), payment-to-charge allocation, bank statement import and matching (importers via packs), online payment providers (via packs), vendor bills and payments |
-| **Tickets** | Maintenance and requests with workflow, assignment, comments, attachments, resident-visible vs internal notes |
-| **Announcements** | Site/building scoped, audience targeting, scheduling, read receipts, notification fan-out |
-| **Documents** | Folder tree per site, visibility rules, versions. Generated documents (statements, minutes, decision book) land here |
-| **Meetings & voting** | General assemblies and board meetings: agenda, attendance and proxies, quorum rules (pluggable), votes per unit/share/person, decisions, minutes |
-| **Bookings** | Facilities with rules and optional fees; bookings create charges |
-| **Visitors & gate** | Expected visitors, arrivals/departures, vehicle (plate) registry per unit with export for camera operators, guard console. Physical gate/door control is **not core**: it is a separate access-control module with an on-site agent and device drivers (decision D6), after 0.1 |
-| **Notifications** | In-app, email, push (core); SMS and others via packs. Per-user preferences, digests, per-org template overrides |
-| **Audit** | Append-only audit log of every mutation with actor, before/after |
-| **Privacy** | Per-person data export and anonymization that preserves ledger integrity; consent records |
+| **Setup** (0.1) | Organization → Site → Block → Unit. Single buildings and multi-block sites. Unit types; parking/storage as appurtenances of a flat or as independent units (per site); door number vs legal reference; **allocation keys** per site (arsa payı, equal, area, custom) with a value per unit; facilities (0.3). Site export/import between organizations (D2) |
+| **People** (0.1) | Persons exist before accounts. **Occupancies**: owner (co-owners with shares), tenant, household member (no money unless granted), with dates. **Memberships** for roles only: org admin, site manager, board member, auditor, accountant, staff; time-bounded; board/auditor memberships site-owned. Onboarding: spreadsheet import + SMS/email invitations, site QR with unit claim and manager approval, household invites by the unit's owner/tenant. Optional encrypted national ID (TCKN validator). Move-out/sale: closing statement, debt/no-debt certificate, debt stays with the person, former residents keep read access to their period. Directory off by default, opt-in per person |
+| **Money** (0.1) | Light yearly **expense budget by category** (optional). **Dues plans** with a directly set amount, effective-dated rates linked to decisions, each plan naming an allocation key and scope (site/block); charge types with a default **debtor (owner / tenant)**; charge generation with catch-up. **Payments**: cash with gap-free numbered receipts and per-collector cash boxes; bank transfer matched from statement files (manual matching; rules later); card payments designed-for (gross/fee/net) and delivered with the first provider in 0.4. **Late fees**: continuous accrual, monthly crystallization, waivable, freezable. **Expenses**: light entry with receipt photo, recurring; vendor bills optional. Transfers between accounts, refunds, deposits as liabilities, reserve fund as a separate fund. **Opening balances** import with dry-run. **Collections**: reminder stages, ihtarname export, collection cases with freeze. Lock date; fiscal year; corrections only by reversal. **Reports**: cash-basis gelir-gider, debtor list, per-unit/per-person statement PDF, budget vs actual, trial balance, receivables aging |
+| **Tickets** (0.1) | Simple default flow, **per-site configurable statuses** (open-like / closed-like semantics). Categories with default visibility and assignee role. **Private vs common** tickets; "+1" on common tickets; manager merges duplicates. Photos; internal notes; assignment to staff or a vendor label. No contractor logins; no SLAs |
+| **Announcements** (0.1) | One-way, audience targeting (site/block/owners/tenants/units), scheduling, pinning, read receipts. **Sender chooses channels** per message with recipient and SMS count preview |
+| **Documents** (0.1) | Site folders with visibility rules; a private folder per unit; generated documents (statements, receipts, certificates, later minutes) filed automatically. No versions |
+| **Notifications** (0.1) | In-app, email, SMS (core gateway, D5); push with mobile (0.4). Site defaults for automatic messages; per-person mute for non-essential types; sign-in codes and invitations cannot be muted |
+| **Governance** (0.2) | Full assembly paperwork: call letter with agenda and second date, per-owner delivery tracking, pre-meeting non-binding polls, attendance desk with proxies and QR check-in, live quorum under site settings with Law 634 defaults, decisions with counts and dissents, minutes PDF, numbered decision history. **Decisions trigger changes** (dues rate, elected roles with terms, budget approval, special assessments). Term-expiry reminders. Site-level assembly only; block assemblies and representatives' council later |
+| **Gate & access** (0.3) | Access-control module + on-site agent + device drivers; plate recognition and relay drivers first; opening log; guard "open" button. (0.1 has only the plate registry and an export for camera operators) |
+| **Community** (0.3) | Facility bookings with rules per facility, instant confirmation, optional fee → charge. Visitors: pre-registration with a QR for the guest, guard scans and admits; no QR → approve/deny request to the resident with a phone-call fallback; recurring visitors; guard console (web, tablet-sized); parcels log |
+| **Mobile** (0.4) | Resident app: statement and payments, tickets, announcements, documents, bookings, visitors (QR share, approve from notification), notifications; push via relay; instance discovery; single account, multi-org |
+| **Integrations & SDK** (0.4) | Pack SDK; Turkish pack (templates, legal presets, validators, bank formats, SMS providers); first payment provider (iyzico); webhooks and API keys |
+| **Privacy** (0.1 CLI, 1.0 UI) | Per-person data export; erasure that works against append-only tables (§6.9); consent records; retention settings |
+| **Audit** (0.1) | Append-only audit log of every mutation with actor and PII-safe diff |
 
 ---
 
 ## 4. Architecture at a glance
 
 ```
-   Web app (React SPA)      Mobile app (Flutter)      External systems (banks,
-   served by the server     any instance URL          payment providers, e-Devlet…)
+   Web app (React SPA)      Mobile app (Flutter, 0.4)     External systems (banks, SMS,
+   served by the server     any instance URL              payment providers, cameras …)
           │                        │                          ▲
-          │   HTTPS, OpenAPI v1    │                          │ pack adapters
+          │   HTTPS, OpenAPI v1    │                          │ core gateways + pack adapters
           └────────────┬───────────┘                          │
                        ▼                                      │
    ┌──────────────────────────────────────────────────────────┴───┐
    │  openbekci  (one Go binary)                                  │
    │  ├─ HTTP API        generated from api/openapi.yaml          │
-   │  ├─ Core modules    tenancy · identity · people · ledger ·   │
-   │  │                  billing · payments · tickets · …         │
-   │  ├─ Pack registry   compile-time packs (tr, …) enabled       │
-   │  │                  per organization                         │
+   │  ├─ Core modules    tenancy · identity · people · money ·    │
+   │  │                  tickets · announcements · documents ·    │
+   │  │                  governance (0.2) · community (0.3) · …   │
+   │  ├─ SMS gateway     core, one provider (D5)                  │
+   │  ├─ Pack registry   compile-time packs (0.4)                 │
    │  ├─ Job worker      River; same process or `openbekci worker`│
-   │  └─ Embedded web    web/dist via go:embed                    │
+   │  └─ Embedded web    web/dist via go:embed (`nowebassets` tag │
+   │                     builds without it)                       │
    └──────────────────────┬───────────────────────────┬───────────┘
                           ▼                           ▼
-                   PostgreSQL                  Object storage
-             data · RLS · jobs · outbox       local disk (default) or S3-compatible
+                   PostgreSQL                  File storage
+             data · RLS · jobs · sequences    local disk (default) or S3-compatible,
+                                              always through the server
 
-   Optional: SMTP server, push relay (for mobile push), OpenTelemetry collector,
-             pack-specific services (SMS gateway, e-invoice provider, …),
-             on-site access agent (post-0.1: drives gates/doors on the site LAN, D6)
+   Optional: SMTP, push relay (0.4, for mobile push), OpenTelemetry collector,
+             on-site access agent (0.3: drives gates/doors on the site LAN, D6)
 ```
 
 Principles behind this shape:
 
-- **Modular monolith, not microservices.** One deployable, strong module boundaries inside. Modules talk through Go interfaces and domain events, never through each other's tables.
+- **Modular monolith, not microservices.** One deployable, strong module boundaries inside. Modules talk through Go interfaces and River jobs, never through each other's tables.
 - **Contract first.** The OpenAPI spec is the source of truth; nobody hand-writes a client or a route.
-- **Postgres does more than store rows.** Tenant isolation (RLS), job queue (River), event outbox, idempotency keys, rate-limit state. This keeps the required infrastructure to exactly one service.
-- **Packs are first-class but not privileged.** A pack can only reach the core through `pkg/sdk`. If the core needs something a pack can't do through the SDK, the SDK is extended — the pack is never let inside.
+- **Postgres does more than store rows.** Organization isolation (RLS), job queue and outbox (River), idempotency keys, sequences. Exactly one required service.
+- **The site is the unit of ownership; the organization is the unit of access.** RLS isolates organizations; site scoping is enforced in the service layer; a site can be exported and imported whole.
+- **Packs are first-class but not privileged.** A pack reaches the core only through `sdk/`. If the core needs something a pack can't do through the SDK, the SDK is extended.
 
 ---
 
-## 5. Repository layout (monorepo)
+## 5. Repositories and layout (decision D8)
+
+| Repository | Holds | License |
+|---|---|---|
+| **`OpenBekci`** (core monorepo, this one) | server, web, API spec, SDK, official packs, docs, deploy | per directory, below |
+| **`openbekci-mobile`** | the Flutter app (0.4). Consumes the published spec and Dart client; its own release cadence and store process | MPL-2.0 |
+| `openbekci-relay` (0.4), `openbekci-agent` (0.3) | push relay; on-site access agent — created when built | AGPL-3.0 |
+
+Core monorepo:
 
 ```
-openbekci/
-├─ api/                    OpenAPI 3.1 source (split files) + bundled openapi.yaml   [Apache-2.0]
-├─ server/                 Go backend                                              [AGPL-3.0]
+OpenBekci/
+├─ api/                    OpenAPI source (split files) + bundled openapi.yaml       [Apache-2.0]
+├─ sdk/                    public pack SDK — its own Go module and LICENSE           [Apache-2.0]
+├─ server/                 Go backend                                                [AGPL-3.0 + pack exception]
 │  ├─ cmd/openbekci/       main: serve | worker | migrate | admin …
-│  ├─ internal/            core modules, platform adapters, HTTP layer, pack runtime
-│  ├─ pkg/sdk/             public pack SDK                                         [Apache-2.0]
+│  ├─ internal/            core modules, platform adapters, HTTP layer, pack runtime, sdktest (AGPL testkit)
 │  └─ db/                  migrations (goose) + sqlc queries
-├─ web/                    React SPA                                               [AGPL-3.0]
-├─ mobile/                 Flutter app                                             [AGPL-3.0]
+├─ web/                    React SPA                                                 [AGPL-3.0]
 ├─ packs/
-│  └─ tr/                  Turkish country pack (Go module + web/mobile pack assets)
+│  └─ tr/                  Turkish pack (0.4)                                        [AGPL-3.0]
 ├─ clients/
-│  ├─ ts/                  generated TypeScript client (published to npm)           [Apache-2.0]
-│  └─ dart/                generated Dart client (published to pub.dev)             [Apache-2.0]
-├─ relay/                  push relay service (Go; holds FCM/APNs creds for store builds) [AGPL-3.0]
-├─ deploy/                 compose/, systemd/, proxy/, helm/, observe/ (dashboards, alert rules)
-├─ docs/                   this plan set, ADRs, user & admin docs source
+│  ├─ ts/                  generated TypeScript types (committed; consumed by web)   [Apache-2.0]
+│  └─ dart/                generated in CI and published for the mobile repo; not committed [Apache-2.0]
+├─ deploy/                 compose/, systemd/, proxy/, helm/ (later), observe/ (later)
+├─ docs/                   plans/, decisions/, adr/, ops/, user docs source
 ├─ tools/                  codegen scripts, lint configs, dev scripts
 ├─ Taskfile.yml            task gen | lint | test | run | migrate …
-└─ .github/                CI workflows, issue templates
+├─ LICENSE, LICENSING.md
+└─ .github/                CI workflows (path-filtered), issue templates
 ```
 
-Go workspace (`go.work`) ties `server`, `packs/*` and `pkg/sdk` together during development; packs are separately versioned modules.
+`go.work` ties `server`, `sdk` and `packs/*` together in development. A Go-only contributor needs neither Node nor a JVM: `-tags nowebassets` serves a "web not built" page, and Dart generation runs only in CI. The mobile repository pins a spec version and gets the Dart client from the core repo's releases (a published package or a release asset).
 
 ---
 
 ## 6. Shared contracts (every component must follow these)
 
-### 6.1 Multi-tenancy model
+### 6.1 Tenancy model
 
-- **Organization** is the tenant. Every tenant-owned row carries `org_id`. A user may belong to several organizations.
-- The API addresses an organization explicitly in the path: `/v1/orgs/{org_id}/...`. Resource IDs below that are globally unique UUIDs, so paths stay flat (`/v1/orgs/{org}/units/{unit}`), with `site_id` etc. as filters.
-- **Platform administrator** (instance owner) is a separate concept from **organization administrator**. Self-hosters are both; SaaS operators are only the former.
+- **Organization** = access boundary and RLS tenant. Every tenant-owned row carries `org_id`. Users are instance-wide and may belong to several organizations.
+- **Site** = data-owning unit: one ledger, one currency, one timezone, its own board/auditor memberships. **Site scoping is enforced in the service layer, not by RLS** — RLS gives organization isolation only.
+- **Site transfer**: `export-site` produces an archive (people, occupancies, money history, documents, decisions, settings) with identifiers preserved; `import-site` into another organization; residents' logins survive because accounts are instance-wide; the source organization loses access on offboarding.
+- The API addresses the organization in the path: `/v1/orgs/{org_id}/...`; resource ids below are globally unique UUIDs, so paths stay flat with `site_id` as a filter.
+- **Platform administrator** (instance owner) is separate from organization administrator.
 
 ### 6.2 API conventions
 
-- JSON, `snake_case` field names.
-- IDs: UUIDv7 strings. Timestamps: RFC 3339 in UTC. Dates: `YYYY-MM-DD` interpreted in the site's timezone.
-- Money: `{ "amount": 123450, "currency": "TRY" }` — `amount` is an integer in minor units. Never a float, never a string.
-- Lists: cursor pagination (`limit`, `cursor` → `next_cursor`), whitelisted `sort`, filters as query params. No unbounded lists.
-- Errors: RFC 9457 `application/problem+json` with a stable machine-readable `code` and optional `errors[]` for field-level validation. **Clients translate by `code`; the server never sends user-facing prose for errors.**
-- Mutations that create money movements require an `Idempotency-Key` header.
-- Optimistic concurrency with `version` fields / `If-Match` on key resources.
-- Versioning in path (`/v1`). Additive changes don't bump; breaking changes get `/v2` with an overlap period.
+- OpenAPI authored in the **3.0.3-compatible subset**; enums are **open** (clients must tolerate unknown values).
+- JSON, `snake_case`. IDs UUIDv7. Timestamps RFC 3339 UTC; dates `YYYY-MM-DD` in the site's timezone.
+- Money: `{ "amount": 123450, "currency": "TRY" }` — integer minor units.
+- Lists: cursor pagination (`limit`, `cursor` → `next_cursor`), whitelisted `sort`, explicit filters. No `updated_since`/ETag sync in v1.
+- Errors: RFC 9457 `application/problem+json` with a stable `code`; `errors[]` for fields. Clients translate by `code`.
+- **Every `POST` that creates accepts `Idempotency-Key`**; it is *required* on money-moving operations. Keyed by `(org, principal, key)` with an in-progress row.
+- Optimistic concurrency with `version` / `If-Match` on key resources.
+- Spec extensions (defined once in backend §8): `x-openbekci-roles`, `x-idempotent`, `x-ui`, `x-secret`, `x-stability`.
+- Files live under `/v1/orgs/{org_id}/files…`; uploads always go through the server.
+- Versioning in path (`/v1`); `/v1` is **not frozen until 1.0**.
 
 ### 6.3 Authentication surface
 
-- Web SPA (same origin as the server): httpOnly session cookie.
-- Mobile and third parties: short-lived JWT access token + rotating opaque refresh token.
-- Both back onto the same session store, so revocation works uniformly.
+- Web SPA (same origin): httpOnly session cookie holding an **opaque** token.
+- Mobile and integrations: **opaque** bearer access token (short-lived) + rotating refresh token. Same `session` table, instant revocation, one code path.
+- Sign-in methods in 0.1: password, magic link (email), **SMS OTP** (D5), invitations. Passkeys, TOTP, OIDC: later.
 
 ### 6.4 Permissions
 
-- Permission names (`tickets.read`, `ledger.post`, …) and built-in roles are defined once in the backend and **exported through the OpenAPI spec**, so the web and mobile apps hide what the user can't do without duplicating rules. The server always enforces; the client only hides.
+- Permission names and built-in roles are defined once in the backend and **exported through the OpenAPI spec**. **Portal rights derive only from occupancies** (owner / tenant / household member); **memberships** carry staff and governance roles. The server enforces; the client hides.
 
-### 6.5 Mobile push
+### 6.5 Mobile push (0.4)
 
-- Self-hosted servers cannot hold the store builds' FCM/APNs credentials. A small **push relay** service (run by the project for the official app builds, or by anyone for white-label builds) receives signed, minimal notifications from a server and forwards them. Servers register with a relay; devices register with their server. The payload carries no personal data — only an ID the app resolves by calling its server. Details in the infrastructure and mobile plans.
+- Self-hosted servers cannot hold store-build FCM/APNs credentials. A **push relay** forwards content-free notifications; its protocol is specified in the infra plan. Content-free payload; the app fetches details. The official relay is a shared dependency and is documented as such.
 
 ### 6.6 Internationalization
 
-- UI strings live in the clients (web: Lingui catalogs; mobile: ARB files). Backend has its own catalogs only for server-rendered content: emails, PDFs, notification texts.
-- Locale negotiation: user preference → `Accept-Language` → org default → `en`. Fallback chain `tr-TR → tr → en`.
-- RTL is a layout requirement for the web and mobile apps from the first screen.
-- Translation workflow: Weblate (or Crowdin) wired to the repo once strings stabilize (M3+).
+- UI strings live in the clients (web: Lingui; mobile: ARB). Backend catalogs only for server-rendered content (emails, SMS, PDFs). Locale chain: user → `Accept-Language` → org default → `en`; fallback `tr-TR → tr → en`.
+- **Logical CSS properties from day one** (lint rule); RTL *testing* is not a release gate before 1.0.
+- PDFs are generated in pure Go with an **embedded TTF** that covers Turkish glyphs; no HTML-to-PDF sidecar.
 
-### 6.7 Pack contract (summary; full detail in the backend plan)
+### 6.7 Pack contract (0.4; full detail in the packs plan)
 
-A pack is a Go module implementing `sdk.Pack`, registered at compile time, enabled per organization. It may contribute: identity providers, payment providers, notification channels, statement importers, legal rules (quorum, voting weights, late-fee rules), allocation policies, document templates, settings (JSON Schema → generic forms in the clients), HTTP routes under `/v1/orgs/{org}/packs/{pack}/…`, jobs, event subscribers and its own namespaced tables (`pack_tr_*`). Web and mobile packs are optional UI bundles keyed by the same pack ID; most packs need no custom UI thanks to schema-driven settings.
+A pack is a Go module implementing `sdk.Pack`, compiled in through an explicit slice (no `init()` magic), enabled per organization. It may contribute: payment providers, SMS/notification channels, statement importers, legal **presets** (quorum/threshold/weight tables, late-fee rate), allocation policies, document templates, chart-of-accounts names, address formats, validators, reference data, consent texts, settings schemas, namespaced tables, **webhook/callback routes only**, jobs and event subscribers. Event payloads carry ids + type + version, never full records. **Nothing a pack does requires client code**; pack UI bundles are post-1.0.
+
+### 6.8 Instance discovery
+
+`GET /.well-known/openbekci.json` (unauthenticated) and `GET /v1/instance` (authenticated twin) are defined normatively in backend §8 and shipped in 0.1; web and mobile reference that schema and do not restate it.
+
+### 6.9 Privacy
+
+- Erasure must work against append-only tables: audit diffs store **field names and hashes** for PII fields, raw provider/bank payloads are stripped after reconciliation and have retention, and a single owner-side `privacy_erase()` function is the only path that rewrites PII columns in append-only tables (backend §16).
+- Secrets (`SECRET_KEY`, `ENCRYPTION_KEY`) are part of the backup set.
 
 ---
 
@@ -215,53 +243,51 @@ A pack is a Go module implementing `sdk.Pack`, registered at compile time, enabl
 
 | Plan | Covers | Status |
 |---|---|---|
-| [01-backend.md](01-backend.md) | Go server: modules, domain model, multi-tenancy, auth, API, ledger rules, pack SDK, jobs, storage, security, testing, milestones | Draft v0.1 |
-| [02-web.md](02-web.md) | React SPA: routes for management, portal and platform areas, generated client and data layer, cookie auth with passkeys/re-auth, permission-driven UI, feature areas per milestone, design system with RTL/a11y, Lingui i18n, RJSF schema-driven pack forms, embedding in the Go binary, testing, milestones W0–W6 | Draft v0.1 |
-| [03-mobile.md](03-mobile.md) | Flutter: instance discovery, multi-account, auth/token storage, generated Dart client, offline cache and write queue, push via relay (FCM/APNs/UnifiedPush flavors), packs in mobile, release and white-label process | Draft v0.1 |
-| [04-packs.md](04-packs.md) | Extension point catalogue, SDK principles and lifecycle, settings/secrets, data-only client contributions, versioning and conformance testing, authoring guide outline, pack governance, the Turkish pack by area with sequencing TR-1…TR-5, paper packs (DE/NL) as a generality check, milestones P0–P4 | Draft v0.1 |
-| [05-infra.md](05-infra.md) | Artifacts and signing, compose/systemd/Helm/hosted targets, push relay design and operation, TLS/proxy, backups with tested restore, upgrade policy, observability stack with dashboards and alerts, security operations, scaling guidance, CI/CD and environments, docs site, milestones I0–I5 | Draft v0.1 |
+| [01-backend.md](01-backend.md) | Go server: modules, domain model (from the decision files), multi-tenancy, auth, API, money rules, pack SDK, jobs, storage, security, testing, milestones per release | v0.2 |
+| [02-web.md](02-web.md) | React SPA: routes for management, portal and platform, data layer, feature areas per release, design system, i18n, schema-driven pack forms (0.4), testing | v0.2 |
+| [03-mobile.md](03-mobile.md) | Flutter app (0.4): instance discovery, auth, features, push via relay, release and white-label | v0.2 |
+| [04-packs.md](04-packs.md) | Pack SDK (0.4), authoring, governance, the Turkish pack | v0.2 |
+| [05-infra.md](05-infra.md) | Deployment targets, backups with secrets, upgrades, push relay (0.4), on-site agent (0.3), observability, release engineering | v0.2 |
+| [06-review.md](06-review.md) | The review that drove v0.2; kept for the reasoning | applied |
 
 ---
 
-## 8. Milestones
+## 8. Releases
 
-Milestones are cross-component. "Demo" is the sentence that must be true at the end.
+The milestone scheme M0–M7 from v0.1 is retired. Releases are feature cuts; estimates are realistic engineer-weeks (roughly 2× the v0.1 face values), web and backend counted separately.
 
-| # | Name | Demo | Components |
+| Release | Contents | Demo | Estimate |
 |---|---|---|---|
-| **M0** | Foundations | `docker compose up` serves a login page from one binary; CI is green; the OpenAPI spec has auth + health endpoints and generates Go/TS/Dart code | repo, server skeleton, web skeleton, spec pipeline, CI |
-| **M1** | Manage a site | A manager creates an org and site, imports units and residents, assigns roles, publishes an announcement; residents log in and see it | tenancy, identity, people, announcements, web |
-| **M2** | Money | Monthly dues are generated by allocation policy, payments recorded and allocated, every unit has a statement, late fees apply, the board sees a trial balance and expense breakdown | ledger, billing, payments, web |
-| **M3** | Operations | Residents open tickets with photos, staff work them, documents are shared with visibility rules, facilities are booked, guards log visitors; email and in-app notifications flow | tickets, documents, bookings, visitors, notifications, web |
-| **M4** | Governance | A general assembly is scheduled, quorum computed, votes cast (incl. proxies), decisions and minutes recorded and exported | meetings/voting, documents, web |
-| **M5** | Mobile | The Flutter app connects to any instance, shows dues/tickets/announcements/bookings, receives push via the relay, submits tickets with camera photos | mobile, push relay, infra |
-| **M6** | Turkish pack | With `tr` enabled: Law 634 quorum/voting/late-fee rules, decision-book and minutes templates, e-Devlet identity, a payment provider, an SMS channel, a bank statement importer, KVKK consent texts | pack SDK stable, packs/tr, schema-driven pack UI |
-| **M7** | 1.0 | Data export/erasure, API freeze (`/v1` stable), docs site, upgrade path tested, translations for en/tr complete, security review done | all |
+| **0.1 — "A Turkish site runs on it"** | Setup, people, money, tickets, announcements, documents, notifications (in-app/email/SMS), plate registry, audit, privacy CLI, site export/import. **Web only.** Compose install with Caddy, nightly backups incl. secrets, install/backup/restore/upgrade docs | A management company imports a site from Excel with opening balances, sets dues, records cash and bank payments, late fees accrue, every unit has a statement, the assembly gets its gelir-gider and debtor list; residents log in by SMS code, open tickets, read announcements | Backend ≈ 26 wks · Web ≈ 18 wks · Infra ≈ 4 wks → **≈ 48 engineer-weeks** (two people ≈ 6 months) |
+| **0.2 — Governance** | Assemblies end to end, decisions that trigger changes, terms and reminders, call-letter delivery tracking, polls, QR check-in, minutes and decision history | A site runs its January assembly from the system and the elected board and new dues rate come out of the recorded decisions | Backend ≈ 8 wks · Web ≈ 8 wks |
+| **0.3 — Gate & community** | Access-control module, on-site agent, plate-recognition and relay drivers, guard console; bookings, visitors with QR admission and resident approval, recurring visitors, parcels | A guest's QR opens the barrier; an unknown visitor is approved from the resident's portal; the hall is booked and charged | Backend ≈ 8 wks · Agent ≈ 6 wks · Web ≈ 6 wks |
+| **0.4 — Mobile & integrations** | Flutter app, push relay, pack SDK, Turkish pack (templates, presets, validators, bank formats, SMS providers), first payment provider, webhooks, API keys | A resident pays by card from the app and gets a push when the guard logs a parcel | Backend ≈ 10 wks · Mobile ≈ 20 wks · Relay ≈ 4 wks · Packs ≈ 8 wks |
+| **1.0** | Privacy UI, `/v1` freeze, Helm, observability stack, docs site, translations complete, external security review, legal review of the pack exception | A self-hoster migrates to the hosted service with `export-site` and back | ≈ 12 wks |
 
-Milestones M1–M4 are web-first; the mobile app arrives at M5 against an API that has already stabilized. The pack SDK is developed alongside M2–M4 (the extension points are shaped by the core) and declared stable at M6.
+Later (unscheduled): block assemblies and representatives' council, board meetings, passkeys/TOTP/OIDC, scheduled maintenance and equipment, document versions, vendor logins, direct debit and ISO 20022 imports, budget-driven dues and year-end settlement, a second country pack, WebAssembly sandbox.
 
 ---
 
 ## 9. Quality bars (definition of done for any feature)
 
-- Spec first: the OpenAPI change is merged (or in the same PR) before/with the implementation.
-- Server enforces authorization in the service layer; there is an authz matrix test for every new endpoint.
-- Tenant isolation test: the feature's tables have RLS and a cross-tenant access test.
-- Money paths have golden/property tests; ledger invariants never rely on the client.
-- Every mutation writes an audit event.
-- User-facing strings are in catalogs (no hard-coded prose), and RTL has been checked for new screens.
-- Documentation: user-facing docs for the feature, ADR for any non-obvious decision.
+- Spec first: the OpenAPI change is in the same PR as the implementation.
+- Server-side authorization in the service layer; a row in the authz matrix test for every new operation.
+- Organization isolation: the feature's tables have RLS and composite-FK tenant consistency; a cross-tenant negative test exists.
+- Money paths have golden/property tests; invariants never rely on the client.
+- Every mutation writes an audit event with a PII-safe diff.
+- User-facing strings in catalogs; logical CSS only.
 - CI green: lint, generate-check, unit, integration, build matrix.
+
+Not required per feature before 1.0: user docs, an ADR, a manual accessibility pass. Those happen per release.
 
 ---
 
 ## 10. Governance and community
 
-- Repository on GitHub under the `openbekci` organization. `main` protected; squash merges; Conventional Commits; semantic versioning with a single version for server+web (they ship together) and independent versions for mobile, SDK and packs.
-- `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` (private disclosure), `GOVERNANCE.md` (maintainers, decision process) from M0.
-- Contributor License Agreement is **not** required; DCO sign-off is. (If the license split ever needs relicensing, that's an ADR — decide early.)
-- Architecture Decision Records in `docs/adr/`. The first batch (ADR-0001…) records §2 of this document.
-- Releases: GoReleaser builds binaries and images; GitHub Releases with SBOM and signed artifacts; a `latest` and a pinned tag.
+- GitHub, `main` protected, squash merges, Conventional Commits, DCO sign-off. `SECURITY.md` (private disclosure) and `CONTRIBUTING.md` from the first code commit; `CODEOWNERS`, `GOVERNANCE.md` and a translation platform when the second regular contributor appears.
+- Licensing per [LICENSING.md](../../LICENSING.md); the pack-linking exception is reviewed by a lawyer before the first outside contribution.
+- Architecture Decision Records in `docs/adr/` for non-obvious *technical* choices; product behaviour lives in `docs/decisions/`.
+- Releases: GoReleaser binaries and images, SBOM, keyless cosign signatures; one version for server + web; mobile, SDK, packs, relay and agent versioned separately.
 
 ---
 
@@ -269,9 +295,11 @@ Milestones M1–M4 are web-first; the mobile app arrives at M5 against an API th
 
 | Question | Owner | Needed by |
 |---|---|---|
-| Confirm the four assumptions in §2.2 | project owner | before M0 code |
-| `oapi-codegen` vs `ogen` for the Go server (both fit; pick by a two-day spike) | backend | M0 |
-| PDF generation approach (pure Go vs Gotenberg sidecar) | backend | M2 |
-| Who operates the official push relay and under what terms | project owner | M5 |
-| Translation platform (Weblate vs Crowdin) | project owner | M3 |
-| Phone-only accounts in core (needs an OTP channel; core has email only) | backend | M1 |
+| Legal claims marked **(verify)** in [decisions/governance.md](../decisions/governance.md) and review §10.F (quorum bases, vote caps, proxy caps, second-meeting window, tebligat validity, late-fee pro-rating, KVKK 2024 regime) | a Turkish legal/practice maintainer | before 0.2 is encoded |
+| Which banks' statement formats first; anonymized sample files | owner | 0.1 money phase |
+| Apsiyon (or other) export importer — needs a sample export | owner | 0.1, optional |
+| Merchant of record for card payments: site or management company | owner | before the 0.4 provider work |
+| Who operates the official push relay, docs and demo domains | owner | 0.4 |
+| Which plate-recognition camera brand the first sites use (first driver) | owner | before 0.3 |
+| Module path / GitHub organization | owner | before the first code commit |
+| `oapi-codegen` vs `ogen` (two-day spike); TS client generator spike | backend / web | 0.1 skeleton |

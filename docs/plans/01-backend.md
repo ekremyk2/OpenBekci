@@ -2,9 +2,8 @@
 
 | | |
 |---|---|
-| Status | Draft v0.1 |
-| Date | 2026-11-06 |
-| Parent | [00-overview.md](00-overview.md) — decisions and shared contracts there bind this document |
+| Status | **Draft v0.2** — revised on 2026-11-06 against the [plan review](06-review.md) and [`docs/decisions/`](../decisions/) |
+| Parent | [00-overview.md](00-overview.md) — decisions and shared contracts there bind this document. Product behaviour comes from the decision files (M = money, S = setup & people, O = operations, G = governance, C = community) |
 
 ---
 
@@ -13,547 +12,445 @@
 **Goals**
 
 - One Go binary that serves the API, the embedded web app and (by default) the job worker, with PostgreSQL as the only required dependency.
-- A modular monolith whose module boundaries are strong enough that a module could be extracted later, but which never pays the operational cost of microservices.
-- Correct money: double-entry ledger, integer minor units, immutable postings, deterministic rounding, closed periods.
-- Tenant isolation enforced by the database (RLS), not only by application code.
-- Every extension a country pack needs is reachable through `pkg/sdk`; the core contains no country logic.
-- Contract-first API: handlers are generated from the OpenAPI spec and the spec is validated in tests.
+- A modular monolith with module boundaries strong enough to extract later, never paying the cost of microservices.
+- Correct money as decided in M1–M8: debtor-aware receivables, allocation keys, continuous late-fee accrual, opening balances, a lock date, corrections only by reversal.
+- Organization isolation enforced by the database (RLS, composite foreign keys); site scoping enforced in the service layer; a site exportable and importable whole (D2).
+- Privacy that actually works: erasure against append-only tables, PII-safe audit diffs, retention.
+- Contract-first API: handlers generated from the OpenAPI spec; the spec validated in tests.
 
-**Non-goals (v1)**
+**Non-goals (through 1.0)**
 
-- Multi-currency within a site. Multi-region deployment. Sharding.
-- Untrusted/third-party plugins loaded at runtime (WebAssembly sandbox deferred).
-- GraphQL, gRPC, or a public event stream beyond signed webhooks.
-- Full accounting for the management company (only the site's books).
+- Multi-currency within a site; multi-region; sharding.
+- Runtime-loaded or untrusted plugins.
+- GraphQL, gRPC, event streams beyond signed webhooks (0.4).
+- Accounting for the management company itself; in-app chat; approvals workflow; binding online votes.
 
 ---
 
 ## 2. Technology stack
 
-| Concern | Choice | Why |
+| Concern | Choice | Notes |
 |---|---|---|
-| Language | Go, current stable; we support the two latest releases per Go's policy | See overview §2 |
-| HTTP | `net/http` + `chi` v5 for routing/middleware | Standard handlers, mature middleware (request ID, real IP, recoverer, timeout), supported by the codegen |
-| OpenAPI codegen | `oapi-codegen` strict-server mode (spike `ogen` at B0; switch only if validation/perf wins clearly) | Generates typed handlers, request/response structs, and embeds the spec for runtime validation |
-| Request validation | `kin-openapi` validation middleware (dev/test always, prod configurable) + domain validation | Catches contract drift early |
-| Database driver | `pgx` v5 (pool) | Native Postgres types, performance, `LISTEN/NOTIFY` for River |
-| Query layer | `sqlc` | Type-safe SQL, no ORM magic, easy to review |
-| Migrations | `goose` with embedded SQL files; packs ship their own goose filesystems | Simple, widely known, transactional |
-| Jobs | `riverqueue/river` | Transactional enqueue in the same tx as business data; periodic jobs; no Redis |
-| Auth crypto | `golang.org/x/crypto/argon2`, `go-webauthn/webauthn`, `coreos/go-oidc` | Standard choices |
-| Email | `wneessen/go-mail` + `html/template` with MJML-free responsive base template | Pure Go SMTP |
-| Storage | own `storage.Blob` interface; local FS driver, S3 driver via `aws-sdk-go-v2` (works with MinIO, R2, …) | Self-host without S3; scale with it |
-| Logging | `log/slog` JSON | Standard library |
-| Tracing/metrics | OpenTelemetry SDK; OTLP exporter optional; Prometheus `/metrics` | Vendor-neutral |
-| Config | env vars `OPENBEKCI_*`, optional YAML file via `--config`; parsed with `caarlos0/env` or `koanf` | 12-factor, easy in compose/Helm |
-| CLI | `cobra` (or stdlib `flag` subcommands if we stay small) | `serve`, `worker`, `migrate`, `admin` |
-| i18n (server-side) | `nicksnyder/go-i18n` v2 with JSON catalogs | Only for emails/PDFs/notification texts |
-| PDF | Pure Go first (`maroto` v2 / `go-pdf/fpdf`); optional Gotenberg sidecar for rich HTML→PDF | Decide at B2 after a spike |
-| Testing | stdlib `testing`, `go-cmp`, `testcontainers-go` (Postgres), `rapid` for property tests | Real Postgres in integration tests, no mocks of the DB |
-| Lint/security | `golangci-lint`, `govulncheck`, `gosec` | CI gates |
-| Release | GoReleaser; distroless images; cosign signatures; SBOM (syft) | Reproducible, verifiable |
+| Language | Go, current stable; the two latest releases supported | |
+| HTTP | `net/http` + `chi` v5 | Standard handlers, mature middleware |
+| OpenAPI codegen | `oapi-codegen` strict-server mode; spike `ogen` in the skeleton phase | Spec authored in the **3.0.3-compatible subset**; the spike verifies nullable / oneOf / open-enum handling across Go, TS and Dart generators |
+| Request validation | `kin-openapi` middleware (always in dev/test, configurable in prod) + domain validation | |
+| Database | `pgx` v5 pool; `sqlc`; `goose` migrations | Two DB roles plus a BYPASSRLS platform role (§5) |
+| Jobs and outbox | `riverqueue/river` | `InsertTx` in the business transaction **is** the outbox; no `outbox` table |
+| Auth | `golang.org/x/crypto/argon2`; opaque tokens (`crypto/rand`, SHA-256 hashes) | **No JWT.** Passkeys/TOTP/OIDC libraries added when those features are scheduled (later) |
+| SMS | core `sms.Gateway` interface + Netgsm driver (D5) | Other providers via packs (0.4) |
+| Email | `wneessen/go-mail` + `html/template` | |
+| Storage | own `storage.Blob`: local FS (default), S3 driver via `aws-sdk-go-v2` | **Uploads always go through the server** (streamed to S3 when configured); no presigned URLs in v1 |
+| PDF | pure Go (`go-pdf/fpdf` or `maroto` v2) with an **embedded TTF** (Noto Sans) covering `ğ ş İ ı` | Decided; no Gotenberg sidecar |
+| Spreadsheets | `excelize` (XLSX) + `encoding/csv` | Imports and exports |
+| Logging / tracing | `log/slog` JSON; OpenTelemetry (OTLP optional); Prometheus `/metrics` | |
+| Config | env `OPENBEKCI_*` (+ `_FILE` variants), optional YAML | |
+| CLI | `cobra` | |
+| i18n (server) | `nicksnyder/go-i18n` v2 | Emails, SMS, PDFs, notification texts only |
+| Testing | stdlib, `go-cmp`, `testcontainers-go`, `rapid` | Real Postgres in integration tests |
+| Lint / security | `golangci-lint`, `govulncheck`, `gosec` | |
+| Release | GoReleaser; distroless; cosign; SBOM | |
 
-**Deliberately not used:** ORMs (GORM, ent), decimal libraries for money (int64 minor units suffice), Redis, message brokers, dependency-injection frameworks (wiring is explicit Go code in `internal/app`).
+Deliberately not used: ORMs, decimal libraries for money, Redis/brokers, DI frameworks, JWT, a separate outbox, presigned uploads, a Postgres-backed rate limiter (in-memory per instance suffices until hosted multi-replica).
 
 ---
 
-## 3. Repository layout (`server/`)
+## 3. Repository layout (`server/`, `sdk/`)
 
 ```
+sdk/                          PUBLIC pack SDK — separate Go module, Apache-2.0 (0.4)
 server/
 ├─ cmd/openbekci/
-│  ├─ main.go                 subcommand dispatch
-│  ├─ serve.go                HTTP + (default) embedded worker
-│  ├─ worker.go               worker-only process
-│  ├─ migrate.go              up | down | status | create
-│  ├─ admin.go                create-platform-admin, create-org, packs list, …
-│  └─ packs_all.go            imports every official pack for side-effect registration
+│  ├─ main.go                 subcommands
+│  ├─ serve.go · worker.go · migrate.go · admin.go
+│  └─ packs.go                var Official = []sdk.Pack{…} (0.4); `-tags nopacks` leaves it empty
 ├─ internal/
-│  ├─ app/                    config loading, wiring (hand-written DI), lifecycle, graceful shutdown
+│  ├─ app/                    config, wiring (hand-written), lifecycle, startup checks
 │  ├─ httpapi/
 │  │  ├─ gen/                 oapi-codegen output — never edited by hand
-│  │  ├─ server.go            StrictServerInterface implementation composed from module handlers
-│  │  ├─ middleware/          request id, logging, auth, tenant, rate limit, idempotency, problem+json
-│  │  └─ problem/             error → RFC 9457 mapping
+│  │  ├─ server.go            StrictServerInterface composed from module handlers
+│  │  ├─ middleware/          request id, logging, session, org context, rate limit, idempotency, problem+json
+│  │  └─ problem/             error → RFC 9457 mapping, code enum
 │  ├─ platform/               infrastructure adapters, no business rules
-│  │  ├─ db/                  pgx pool, tx helpers, tenant-scoped tx (RLS), sqlc generated package
-│  │  ├─ storage/             Blob interface + local + s3 drivers
-│  │  ├─ mail/                SMTP sender, template rendering
-│  │  ├─ jobs/                River client, job registration helpers
-│  │  ├─ events/              outbox writer + dispatcher
-│  │  ├─ otel/                tracing/metrics setup
-│  │  ├─ clock/               Clock interface (real + fake)
-│  │  ├─ id/                  UUIDv7
-│  │  ├─ i18n/                catalogs + localizer
-│  │  └─ crypto/              field encryption (AES-GCM), token hashing, key rotation
-│  ├─ core/                   one package per domain module (see §4)
-│  │  ├─ tenancy/  identity/  people/  property/  ledger/  billing/  payments/
-│  │  ├─ tickets/  announcements/  documents/  meetings/  bookings/  visitors/
-│  │  ├─ notifications/  audit/  settings/  privacy/
-│  │  └─ authz/               permissions, roles, Check()
-│  ├─ packs/                  pack runtime: registry, per-org enablement, route mounting, migration runner
-│  └─ webassets/              go:embed of ../../web/dist (built by web CI)
-├─ pkg/sdk/                   PUBLIC pack SDK (Apache-2.0) — interfaces, event types, helpers, testkit
+│  │  ├─ db/                  pool(s), tenant tx, platform tx, sqlc output, RLS helpers
+│  │  ├─ storage/  mail/  sms/  jobs/  otel/  clock/  id/  i18n/  crypto/  pdf/  sequence/
+│  ├─ core/                   one package per module (§4); each: domain.go, service.go, repo.go, repo_pg.go, http.go, jobs.go, permissions.go
+│  │  ├─ tenancy/     organizations, sites, blocks, units, allocation keys, site export/import
+│  │  ├─ identity/    users, sessions, credentials, OTP, invitations, unit claims
+│  │  ├─ people/      persons, occupancies, memberships, vendors, directory, move-out
+│  │  ├─ ledger/      accounts, funds, journal, lock date, fiscal years, opening balances
+│  │  ├─ billing/     dues plans and rates, allocation, charges, late fees, budgets
+│  │  ├─ payments/    payments, receipts, cash boxes, allocation, bank import and matching, refunds, transfers
+│  │  ├─ expenses/    light expenses, vendor bills, recurring expenses
+│  │  ├─ collections/ dunning stages, collection cases, ihtarname export
+│  │  ├─ tickets/  announcements/  documents/  notifications/  audit/  settings/  privacy/
+│  │  ├─ governance/  (0.2) meetings, notices, attendance, polls, decisions, effects
+│  │  ├─ community/   (0.3) facilities, bookings, visitors, deliveries; access/ (0.3) agent protocol
+│  │  ├─ authz/       permissions, roles, occupancy-derived rules, Check()
+│  │  └─ platformadmin/ instance endpoints (uses the BYPASSRLS pool)
+│  ├─ packs/                  pack runtime (0.4): registry, per-org enablement, migration runner
+│  ├─ sdktest/                AGPL test harness for packs (boots the core); kept out of `sdk/`
+│  └─ webassets/              go:embed of ../../web/dist; `-tags nowebassets` serves a placeholder
 ├─ db/
-│  ├─ migrations/             goose: 20261106000001_init.sql …
+│  ├─ migrations/             goose SQL
 │  ├─ queries/<module>/*.sql  sqlc inputs
 │  └─ sqlc.yaml
-├─ locales/                   server-side catalogs (en.json, tr.json, …)
-└─ testdata/                  fixtures, golden files
+├─ locales/                   en.json, tr.json
+└─ testdata/                  golden site fixture (§18), golden files
 ```
 
-### 3.1 Module anatomy
-
-Every `internal/core/<module>` follows the same shape so contributors can find their way around any module:
-
-```
-core/ledger/
-├─ ledger.go          domain types + invariants (pure Go; no DB, no HTTP)
-├─ service.go         use cases; depends on Repo, Clock, Events, authz
-├─ repo.go            Repo interface the service needs
-├─ repo_pg.go         sqlc-backed implementation
-├─ http.go            handlers implementing this module's slice of the generated server interface
-├─ events.go          event type definitions this module emits
-├─ jobs.go            River job definitions (if any)
-├─ permissions.go     permission constants this module declares
-└─ *_test.go
-```
-
-Rules:
-
-- A module's `service.go` is the only entry point for other modules and for HTTP. Other modules never call a module's repo.
-- Cross-module dependencies go through narrow interfaces **declared by the consumer** (e.g. `billing` declares `type UnitReader interface { ListUnits(ctx, siteID) }` and `property` satisfies it in wiring). This keeps the import graph acyclic and visible in `internal/app`.
-- Side effects between modules (e.g. "payment received → notify resident") go through **domain events**, not direct calls, unless the operation must be atomic with the caller (then it's a direct service call inside the same transaction).
-- `internal/core/*` never imports `internal/httpapi` or `internal/packs`.
+Module rules (unchanged from v0.1): a module's `service.go` is its only entry point; cross-module needs are declared as narrow interfaces by the consumer and satisfied in wiring; side effects between modules go through River jobs unless they must be atomic with the caller; `internal/core/*` never imports `httpapi` or `packs`.
 
 ---
 
 ## 4. Domain model
 
-Entity lists are indicative; exact columns live in migrations. All tenant tables carry `id uuid (v7)`, `org_id`, `created_at`, `updated_at`, `version int` (optimistic locking) unless noted as append-only.
+All tenant tables carry `id uuid (v7)`, `org_id`, `created_at`, `updated_at`, `version int` unless marked append-only. Tables also scoped to a site carry `site_id`. Release tags mark what is built when.
 
-### 4.1 tenancy
-
-| Entity | Notes |
-|---|---|
-| `organization` | Tenant. `slug`, `name`, `default_locale`, `timezone`, `country_code`, `status`, `settings jsonb`. Created by platform admin (self-host) or signup (SaaS) |
-| `site` | Belongs to org. `name`, `address` (structured: country, admin areas, postal code, lines — pack may refine format), `timezone`, `currency`, `fiscal_year_start_month`, `settings jsonb` |
-| `building` | Block within a site. Optional — a single-building site has one auto-created building |
-| `unit` | `building_id`, `number`, `floor`, `type` (flat / shop / office / parking / storage / other), `area_m2 numeric`, `share_numerator`, `share_denominator` (arsa payı or equivalent), `status` (active / vacant / merged) |
-| `facility` | Common area for bookings: `name`, `capacity`, `rules jsonb` (hours, max duration, advance days), `fee` Money nullable |
-
-### 4.2 identity
+### 4.1 tenancy (0.1)
 
 | Entity | Notes |
 |---|---|
-| `user` | Instance-wide (not org-scoped). `email` (nullable, unique), `phone` (nullable, unique, E.164), `password_hash` (nullable), `locale`, `status`, `mfa_totp_secret` (encrypted), `is_platform_admin` |
-| `external_identity` | `user_id`, `provider` (`google`, `tr.edevlet`, …), `subject`, `claims jsonb`. Providers are registered by core or packs |
-| `passkey` | WebAuthn credentials |
-| `session` | `user_id`, `kind` (web_cookie / refresh_token / api_key), `token_hash`, `expires_at`, `revoked_at`, `last_used_at`, `ip`, `user_agent`, `rotated_from` |
-| `invitation` | `org_id`, `person_id`, `email/phone`, `token_hash`, `expires_at`, `accepted_at` |
-| `login_attempt` | For rate limiting / lockout (append-only, pruned) |
+| `organization` | Access boundary (D2). `slug`, `name`, `default_locale`, `timezone`, `country_code`, `status`, `settings jsonb` |
+| `site` | **Data-owning unit.** `name`, `address jsonb`, `timezone`, `currency`, `fiscal_year_start_month` (default 1), `lock_date` (§9), `settings jsonb` (tenants-are-portal-users, directory enabled, transparency to owners, legal presets …), `bank_details jsonb` (IBAN, holder — shown to payers) |
+| `block` | Building within a site; auto-created and hidden for single buildings (S1) |
+| `unit` | `block_id`, `door_number` ("A-12"), `legal_ref` (tapu bağımsız bölüm no), `type` (flat / shop / office / parking / storage / common / other), `area_m2`, `parent_unit_id` (appurtenance, S2), `status` (active / merged / split). Vacancy is derived |
+| `allocation_key` | Per site: `code` (`arsa_payi`, `equal`, `area`, custom), `name`, `kind` (share / equal / area / table) (M2) |
+| `allocation_key_value` | `(key_id, unit_id) → numeric` weight; `equal` and `area` are computed, `share`/`table` stored |
+| `unit_tag` | Cost-group membership (`lift`, `pool`) for scoped allocations |
+| `facility` | (0.3) bookable thing with `rules jsonb` (C1) |
+| `site_export` | Record of an export/import (D2): `direction`, `archive_file_id`, `source_org`, `target_org`, `at` |
 
-Email and phone are both optional but at least one is required; this is how phone-first markets work. Phone OTP delivery needs an SMS channel, which core doesn't ship; until a pack provides one, phone-only users are created by invitation link and authenticate with password/passkey.
-
-### 4.3 people
-
-| Entity | Notes |
-|---|---|
-| `person` | Org-scoped. `user_id` nullable (a person exists before they sign up). `display_name`, `contact jsonb`, `notes`. National ID numbers are **not** in core; a pack stores them encrypted in its own table |
-| `occupancy` | `person_id`, `unit_id`, `kind` (owner / tenant / resident / representative), `share_pct` (for co-owners), `valid_from`, `valid_to`. Statement visibility and voting eligibility derive from this |
-| `membership` | `person_id`, `role`, `scope_type` (org / site / building / unit), `scope_id`, `valid_from`, `valid_to`. A person can hold several |
-| `vendor` | Suppliers: `name`, `tax_id` (generic string), `contact jsonb`, `default_expense_account_id` |
-
-Built-in roles: `org_admin`, `site_manager`, `board_member`, `auditor` (read-only over money and records), `accountant`, `staff`, `guard`, `owner`, `resident`. Custom roles are post-1.0.
-
-### 4.4 ledger
+### 4.2 identity (0.1)
 
 | Entity | Notes |
 |---|---|
-| `account` | Per site. `code`, `name`, `type` (asset / liability / equity / income / expense), `subtype` (bank, cash, unit_receivable, vendor_payable, dues_income, late_fee_income, …), `is_system`. A default chart is created per site; packs may supply a localized chart |
-| `journal_entry` | **Append-only.** `site_id`, `entry_date`, `period_id`, `memo`, `source_type`, `source_id` (charge, payment, bill, manual, reversal), `posted_by`, `posted_at`, `reverses_entry_id` |
-| `journal_line` | **Append-only.** `entry_id`, `account_id`, `debit` bigint, `credit` bigint (exactly one non-zero), `unit_id` nullable (unit sub-ledger), `vendor_id` nullable, `person_id` nullable |
-| `period` | `site_id`, `year`, `month`, `status` (open / closed), `closed_by`, `closed_at` |
-| `account_balance` | Cache: `account_id`, `unit_id?`, `period_id`, `debit_total`, `credit_total`; updated in the same transaction as the posting. Source of truth remains the lines; a `rebuild-balances` admin command exists |
+| `user` | Instance-wide. `email?`, `phone?` (E.164; at least one), `password_hash?`, `locale`, `status`, `is_platform_admin` |
+| `session` | `user_id`, `kind` (web_cookie / access_token / refresh_token / api_key (0.4)), `token_hash`, `expires_at`, `revoked_at`, `last_used_at`, `ip`, `user_agent`, `rotated_from`. **Opaque tokens for every kind** |
+| `otp_code` | `user_id?`/`phone`, `purpose` (sign_in / verify / visitor_approval), `code_hash`, `expires_at`, `attempts` |
+| `invitation` | `kind` (manager / site_code / household), `org_id`, `site_id`, `person_id?`, `unit_id?` (household), `channel` (sms / email), `token_hash`, `expires_at`, `accepted_at` (S4) |
+| `unit_claim` | From the site QR path: `user_id`, `unit_id`, `claimed_role` (owner / tenant / household), `status` (pending / approved / rejected), `decided_by` (S4) |
+| `login_attempt` | Append-only, pruned; rate limiting and lockout |
 
-Invariants, enforced in Go **and** by a deferred constraint trigger: Σ debit = Σ credit per entry; no lines on closed periods; no `UPDATE`/`DELETE` on `journal_*` (the app role simply has no grant).
+Passkeys, TOTP and external identities are **later**; the tables are not created in 0.1.
 
-### 4.5 billing
-
-| Entity | Notes |
-|---|---|
-| `charge_plan` | Dues definition. `site_id`, `name`, `kind` (recurring / one_off), `frequency` (monthly / quarterly / yearly), `start`, `end`, `due_day`, `amount_mode` (`total` to allocate, or `per_unit`), `amount` Money, `allocation_policy` (`equal` / `by_share` / `by_area` / `by_occupants` / `fixed_table` / pack-provided id), `unit_filter jsonb`, `income_account_id`, `status` |
-| `charge` | One per unit per period: `plan_id?`, `unit_id`, `period_id`, `kind` (dues / expense_share / late_fee / booking_fee / adjustment), `amount`, `due_date`, `description`, `journal_entry_id`, `status` (open / partially_paid / paid / cancelled) |
-| `expense_allocation` | A vendor bill or ad-hoc cost shared to units → produces charges |
-| `late_fee_run` | Idempotency record: `charge_id`, `as_of_date`, `fee_charge_id` |
-| `charge_payment` | Allocation of a payment to a charge: `payment_id`, `charge_id`, `amount` |
-
-### 4.6 payments
+### 4.3 people (0.1)
 
 | Entity | Notes |
 |---|---|
-| `payment` | `site_id`, `payer_person_id?`, `unit_id?`, `method` (cash / bank_transfer / card / provider:<id>), `amount`, `received_at`, `reference`, `status` (pending / confirmed / failed / refunded), `asset_account_id`, `journal_entry_id`, `provider_payload jsonb` |
-| `bank_statement_import` | `importer_id`, `file_id`, `status`, `summary` |
-| `bank_transaction` | Parsed line: `import_id`, `booked_at`, `amount`, `counterparty`, `description`, `raw jsonb`, `match_status`, `payment_id?` |
-| `matching_rule` | Site-defined rules (regex on description → unit) feeding auto-matching |
-| `bill` | Vendor invoice: `vendor_id`, `expense_account_id`, `amount`, `issued_at`, `due_at`, `file_id?`, `status`, `journal_entry_id` |
-| `bill_payment` | Pays a bill from an asset account |
+| `person` | Org-scoped; `user_id?`; `display_name`, `contact jsonb`, `national_id` (encrypted, with `country_code`; TCKN checksum validator; masked in reads; never in audit diffs) (S6), `gate_contact_phone?` (C2), `directory_consent` per site (S8), `notes` |
+| `occupancy` | `person_id`, `unit_id`, `kind` (**owner / tenant / household**), `share_pct` (co-owners), `is_correspondent` (one per unit side), `may_see_money` (household, default false), `valid_from`, `valid_to` (S3). **Portal rights derive from this table only** |
+| `membership` | `person_id`, `role` (org_admin / site_manager / board_member / auditor / accountant / staff / guard), `scope_type` (org / site / block), `scope_id`, `valid_from`, `valid_to`, `decision_id?` (G6), `site_owned` (board/auditor: true — cannot be removed by org admins without a decision, D2) |
+| `move_out` | `occupancy_id`, `as_of`, `closing_statement_file_id`, `certificate_file_id`, `debt_disposition` (stays_with_person / transferred / written_off), `decided_by` (S7) |
+| `vendor` | Suppliers and labels for ticket assignment; `name`, `tax_id`, `contact jsonb`, `default_expense_category_id` |
 
-### 4.7 tickets
-
-`ticket` (`site_id`, `unit_id?`, `reporter_person_id`, `category_id`, `priority`, `status`, `assignee_person_id?`, `title`, `body`, `location`), `ticket_comment` (`visibility`: public / internal), `ticket_attachment` → `file`, `ticket_category` (per site, with default assignee role), `ticket_status_history` (append-only). Workflow: `open → triaged → in_progress → resolved → closed`, with `reopen` from resolved/closed within a window.
-
-### 4.8 announcements
-
-`announcement` (`scope_type` site / building, `scope_id`, `title`, `body_md`, `publish_at`, `expires_at`, `pinned`, `audience` all / owners / residents / board / staff, `notify_channels`), `announcement_read` (person, read_at).
-
-### 4.9 documents
-
-`folder` (tree per site, `visibility` rules inherited), `document` (`folder_id`, `title`, `current_version_id`, `visibility`: board / all / units[] / roles[]), `document_version` (`file_id`, `created_by`, `note`). `file` is the generic blob record (§13).
-
-### 4.10 meetings and voting
+### 4.4 ledger (0.1)
 
 | Entity | Notes |
 |---|---|
-| `meeting` | `site_id`, `kind` (general_assembly / extraordinary / board), `scheduled_at`, `location`, `status`, `quorum_rule_id` (core default or pack), `second_call_at` (some laws have a second meeting without quorum), `minutes_document_id?` |
-| `agenda_item` | ordered, `title`, `body_md`, `requires_vote` |
-| `attendance` | `person_id`, `unit_ids[]` represented, `mode` (in_person / proxy / online), `proxy_for_person_id?`, `checked_in_at` |
-| `vote` | `agenda_item_id`, `method` (per_unit / per_share / per_person / pack rule id), `options[]`, `threshold_rule_id`, `opens_at`, `closes_at`, `status`, `result jsonb` |
-| `ballot` | `vote_id`, `voter_person_id`, `unit_id`, `weight numeric`, `option`, `cast_at` — append-only |
-| `decision` | `meeting_id`, `agenda_item_id`, `text`, `outcome`, `sequence_no` (for a decision book) |
+| `account` | Per site. `code`, `name`, `type` (asset / liability / equity / income / expense), `subtype` (bank, cash_box, receivable_owner, receivable_tenant, person_receivable, prepayment_liability, deposit_liability, dues_contribution, late_fee_income, other_income, expense_category, opening_equity, prior_year_surplus, provision_severance, withholding_receivable …), `fund_id?`, `is_system`. Default chart created per site; packs localize names |
+| `fund` | Per site: `operating` (default), `reserve` (demirbaş / yedek akçe), custom (M defaults) |
+| `cash_box` | An asset account bound to a collector person (M5) |
+| `journal_entry` | **Append-only.** `site_id`, `entry_date`, `document_date`, `fiscal_year_id`, `memo`, `source_type`, `source_id`, `posted_by`, `posted_at`, `reverses_entry_id`. Rejected if `entry_date ≤ site.lock_date` |
+| `journal_line` | **Append-only.** `entry_id`, `account_id`, `fund_id`, `debit`, `credit` (exactly one non-zero), `unit_id?`, `debtor_kind?` (owner / tenant), `person_id?`, `block_id?`, `vendor_id?` |
+| `fiscal_year` | `site_id`, `start`, `end`, `status` (open / closed / approved), `approved_by_decision_id?` |
+| `opening_balance` | `site_id`, `as_of`, `kind` (unit_receivable / bank / cash / vendor), target ids, `principal`, `late_fee`, `journal_entry_id`; locked once `as_of ≤ lock_date` (M7) |
 
-Quorum, weights and thresholds are computed through the `LegalRules` extension point; the core ships a generic implementation (simple majority of represented shares, quorum = 50%+1 of units) that every country can override.
+Invariants: Σ debit = Σ credit per entry (service + deferred constraint trigger); no `UPDATE`/`DELETE` grant on `journal_*` for the app role; `fund_id` on every line; no `account_balance` cache (SUM over an index led by `(org_id, site_id, account_id, entry_date)`).
 
-### 4.11 bookings
-
-`booking` (`facility_id`, `unit_id`, `person_id`, `starts_at`, `ends_at`, `status` requested / confirmed / cancelled / rejected, `charge_id?`), exclusion constraint on `(facility_id, tstzrange)` for confirmed bookings.
-
-### 4.12 visitors
-
-`visitor_entry` (`site_id`, `unit_id`, `visitor_name`, `vehicle_plate?`, `expected_from`, `expected_to`, `status` expected / arrived / left / denied, `registered_by_person_id`, `arrived_at`, `left_at`, `gate_note`), `vehicle` (unit-registered plates), `delivery` (parcel log — optional in v1).
-
-### 4.13 notifications
+### 4.5 billing (0.1)
 
 | Entity | Notes |
 |---|---|
-| `notification` | `user_id`, `org_id`, `type`, `payload jsonb`, `created_at`, `read_at`, `link` |
-| `notification_delivery` | `notification_id`, `channel` (in_app / email / push / `pack:<id>`), `status`, `attempts`, `last_error`, `sent_at` |
-| `notification_preference` | per user per org per type → channels + digest mode |
-| `device` | push registrations: `user_id`, `platform`, `token` (encrypted), `relay_id`, `last_seen_at` |
-| `template_override` | org-level overrides of notification templates per locale |
+| `budget` | Light, optional (M3): `site_id`, `fiscal_year_id`, `status` (draft / final), `decision_id?` |
+| `budget_line` | `budget_id`, `expense_category_account_id`, `fund_id`, `amount` |
+| `charge_plan` | `site_id`, `name`, `kind` (recurring / one_off), `charge_type` (dues / special_assessment / reserve_contribution / utility / booking_fee / legal_cost / deposit / adjustment / settlement), `default_debtor` (owner / tenant) (M1), `frequency`, `due_day`, `start`, `end`, `amount_mode` (per_unit / total_allocated), `allocation_key_id`, `scope` (site / block id / unit_tag), `fund_id`, `income_account_id`, `status` |
+| `charge_plan_rate` | Effective-dated amount: `plan_id`, `from`, `to?`, `amount`, `decision_id?` (M3, G5) |
+| `charge` | `(plan_id, unit_id, period)` unique; `unit_id`, `debtor_kind`, `debtor_person_id` (snapshot of the occupancy in force on the due date), `charge_type`, `amount`, `due_date`, `description`, `allocation_basis jsonb` (key, weight, total — snapshot), `journal_entry_id`, `status` (open / partially_paid / paid / cancelled) — status is derived and rebuildable |
+| `expense_allocation` | A cost shared to units → charges, with the same key/scope/basis fields |
+| `late_fee_policy` | Site settings: `rate_pct_per_month` (default 5, max = statutory via preset), `grace_days`, `simple` |
+| `late_fee_accrual` | Computed, not stored: fee to date per `(unit, debtor_kind)` from open principal and dates |
+| `late_fee_booking` | Monthly crystallization: `(unit_id, debtor_kind, period)` unique, `amount`, `charge_id`; the job reconciles expected-to-date minus booked (M4) |
+| `late_fee_waiver` | `unit_id`, `debtor_kind`, `amount`, `reason`, `by`, `journal_entry_id` (reversal) |
+| `late_fee_freeze` | `unit_id`, `debtor_kind`, `from`, `to?`, `reason` (in legal collection) |
 
-### 4.14 audit
+### 4.6 payments (0.1)
 
-`audit_event` (**append-only**): `org_id`, `actor_user_id?`, `actor_kind` (user / system / pack / job), `action` (`ticket.update`), `target_type`, `target_id`, `before jsonb`, `after jsonb` (diff only), `ip`, `request_id`, `at`. Written inside the business transaction by the service layer via `audit.Record(ctx, …)`.
+| Entity | Notes |
+|---|---|
+| `payment` | `site_id`, `payer_person_id?`, `method` (cash / bank_transfer / card:provider (0.4)), `gross`, `fee` (0 until providers), `net`, `received_at`, `recorded_by`, `asset_account_id` (bank or cash box), `reference`, `status` (pending_declared / confirmed / refunded), `receipt_no` (gap-free per site per year, M5), `provider_txn_id?` (unique per org+provider), `journal_entry_id` |
+| `payment_allocation` | `payment_id`, `charge_id`, `amount`; order policy (M default: oldest first, principal before fee; manual override) |
+| `credit` | Unallocated money per `(unit, debtor_kind)` or person, as a prepayment liability line |
+| `transfer` | Asset → asset (cash handover, bank deposit) |
+| `refund` | Outgoing to a person/unit (overpayment, deposit return) |
+| `bank_statement_import` | `importer` (core_csv / pack id), `file_id`, `opening_balance?`, `closing_balance?`, `status` |
+| `bank_transaction` | `import_id`, `booked_at`, `amount`, `counterparty`, `description`, `raw jsonb` (stripped after reconciliation, §16), `match_status`, `payment_id?` |
+| `matching_rule` | (later) description pattern → unit |
+| `sequence` | Per site per year per kind (receipt, decision …) with row locking |
 
-### 4.15 settings, privacy
+### 4.7 expenses (0.1)
 
-`setting` (`org_id`, `site_id?`, `key`, `value jsonb`, validated against a JSON Schema registered by core or pack), `org_pack` (`org_id`, `pack_id`, `enabled`, `settings jsonb`), `feature_flag`.
+`expense` (light: `site_id`, `category_account_id`, `fund_id`, `amount`, `paid_at`, `paid_from_account_id`, `vendor_id?`, `document_no?`, `file_id?`, `recurrence?` monthly) and, optional per site, `bill` + `bill_payment` (vendor invoice with due date and partial payments). No approvals (O/M6).
 
-`data_export_request` and `erasure_request` (`person_id`, `status`, `requested_by`, `completed_at`, `artifact_file_id?`) back the privacy workflows (§16.5).
+### 4.8 collections (0.1)
+
+`dunning_stage` (site-defined: reminder 1 at N days, reminder 2, ihtarname), `dunning_event` (unit side, stage, sent_at, channel, document file), `collection_case` (`unit_id`, `debtor_person_id`, `opened_at`, `lawyer`, `file_no`, `status`, `costs_charged`, freezes late fees and reminders while open), `debt_breakdown` export (principal and fee per period as of a date).
+
+### 4.9 tickets (0.1)
+
+`ticket_workflow` (per site: ordered statuses with `name`, `semantic` open_like / closed_like; a default workflow until edited) (O1), `ticket_category` (default visibility, default assignee role), `ticket` (`unit_id?`, `reporter_person_id`, `category_id`, `status` (workflow status id), `visibility` private / common (O3), `assignee` person or vendor, `merged_into?`), `ticket_comment` (`visibility` public / internal), `ticket_attachment`, `ticket_vote` (person, ticket — one each), `ticket_status_history` (append-only).
+
+### 4.10 announcements (0.1)
+
+`announcement` (`scope`, `audience`, `title`, `body_md`, `publish_at`, `expires_at`, `pinned`, `channels[]` chosen by the sender, `recipient_count`, `sms_count`) (O4/O5), `announcement_read` (person, read_at).
+
+### 4.11 documents (0.1)
+
+`folder` (site tree, plus one private folder per unit created with the unit), `document` (`folder_id`, `title`, `file_id`, `visibility`, `source` uploaded / generated with `generated_from` type+id) (O8). No versions.
+
+### 4.12 notifications (0.1)
+
+`notification` (user, type, payload, read_at, link), `notification_delivery` (channel in_app / email / sms / push (0.4), status, attempts), `site_channel_default` (automatic message type → channels, O5 table), `notification_mute` (user, type; sign-in and invitations unmutable), `device` (0.4: `push_kind`, `token` encrypted, `relay_id`, `app_version`, `locale`), `template_override` (later).
+
+### 4.13 audit and privacy (0.1)
+
+`audit_event` (**append-only**: `actor`, `action`, `target`, `diff jsonb` where PII fields appear as `{field: {hash_before, hash_after}}`, `ip`, `request_id`, `at`), `consent` (person, text id, version, accepted_at), `data_export_request`, `erasure_request`, `retention_setting` (visitor logs, bank raw payloads, sessions, login attempts).
+
+### 4.14 governance (0.2)
+
+`meeting` (`site_id`, `kind` general_assembly / extraordinary, `scope` site (block/council reserved), `scheduled_at`, `second_call_at`, `status`, `eligibility_snapshot jsonb`, `minutes_document_id?`), `meeting_notice` (person, method registered_mail / signed / email / sms, sent_at, proof file) (G3), `agenda_item`, `poll` + `poll_answer` (non-binding, one per unit) (G2), `attendance` (person, units, mode, proxy_for, checked_in_at, checked_in_by, qr token) (G4), `vote` (in-room counts per item), `decision` (`sequence_no`, text, outcome, `dissents[]`, `notified_at`, `effect` kind + created record id) (G5), `term_reminder` job (G6). Quorum/threshold/weight tables are `site.settings` with presets.
+
+### 4.15 community and access (0.3)
+
+`booking` (facility, unit, person, range, status, `charge_id?`; exclusion constraint) (C1); `visitor_entry` (`unit_id`, name, plate, window, `qr_token`, `recurring_rule?`, `approval_status` pre_approved / requested / approved / denied / expired, `decided_by`, arrived/left) (C2); `visitor_approval_request` (notification with expiry); `delivery` (unit, received, collected) (C3); `vehicle` (0.1: plates per unit with export); `access_point`, `credential`, `access_event` and the agent protocol — specified in the 0.3 design, tables reserved.
 
 ---
 
-## 5. Multi-tenancy
+## 5. Multi-tenancy and data isolation
 
-- Single database, shared schema. Every tenant table has `org_id uuid not null` as the **leading column of every index** that the app queries through.
-- **Row-level security on every tenant table:**
+- Single database, shared schema; every tenant table has `org_id` as the **leading column of every index** the app queries through.
+- **RLS on every tenant table**, generated by a migration helper so the policy text is identical everywhere:
   ```sql
   ALTER TABLE unit ENABLE ROW LEVEL SECURITY;
   ALTER TABLE unit FORCE ROW LEVEL SECURITY;
   CREATE POLICY unit_tenant ON unit
-    USING (org_id = current_setting('app.org_id', true)::uuid)
-    WITH CHECK (org_id = current_setting('app.org_id', true)::uuid);
+    USING      (org_id = (SELECT NULLIF(current_setting('app.org_id', true), '')::uuid))
+    WITH CHECK (org_id = (SELECT NULLIF(current_setting('app.org_id', true), '')::uuid));
   ```
-- The application connects as `openbekci_app`, which does **not** own the tables (migrations run as `openbekci_migrator`). Non-owners can't bypass RLS, so a missing `WHERE org_id = …` in application code returns nothing rather than leaking.
-- Per request: `db.InTenantTx(ctx, orgID, func(tx) error)` does `BEGIN; SET LOCAL app.org_id = $1; … COMMIT`. There is no way to get a tenant connection without going through this helper; `platform/db` doesn't export the raw pool to `core`.
-- Jobs iterate organizations and run each unit of work inside its own tenant transaction. Cross-tenant reads (platform admin screens, metrics) use `db.InPlatformTx`, which sets `app.org_id` to a sentinel and is only callable from `internal/core/platformadmin` (enforced by a lint rule / `depguard`).
-- `user` and `session` are instance-wide (no `org_id`); membership rows link users into orgs.
-- Self-hosting changes nothing: it's an instance with one (or a few) organizations. SaaS-specific org lifecycle (signup, plan limits, billing the org) lives outside this repo and attaches via the SDK's platform hooks.
-
-Migration test: a CI test creates two orgs, inserts rows in each, and asserts every table in `information_schema` either has an RLS policy or is on the explicit instance-wide allowlist.
+  `NULLIF(…, '')` because a custom GUC that was once set returns `''` on that session afterwards; the `(SELECT …)` wrapper makes it an InitPlan evaluated once per query.
+- Tenant context is set with `SELECT set_config('app.org_id', $1, true)` inside the transaction (`SET LOCAL` cannot take bind parameters). `db.InTenantTx(ctx, orgID, fn)` is the only way to a tenant connection; `platform/db` does not export the raw pool to `core`.
+- **Three database roles:** `openbekci_migrator` (owner, **BYPASSRLS** so backfill migrations see all rows), `openbekci_app` (RLS-subject), `openbekci_platform` (**BYPASSRLS**, used by a second small pool that only `platformadmin` and the cross-org parts of `GET /v1/me` may use via `db.InPlatformTx`; enforced by `depguard`).
+- **Composite foreign keys** `(org_id, child_id) REFERENCES parent(org_id, id)` on every tenant-to-tenant reference, so the database refuses cross-organization links at write time (FK checks bypass RLS).
+- **Site scoping is application-level**: `authz` restricts a `site_manager` of site A from site B; RLS does not.
+- Jobs iterate organizations and run each unit of work in its own tenant transaction.
+- **Poolers**: `SET LOCAL`/`set_config(…, true)` inside an explicit transaction is safe under PgBouncer transaction mode. What is not: River's `LISTEN/NOTIFY` (run with `PollOnly` behind a transaction pooler) and pgx's prepared-statement cache (PgBouncer ≥ 1.21 with `max_prepared_statements`, or describe/simple exec mode). A startup check detects a pooler and configures both.
+- **Site export/import (D2):** `admin export-site` / `import-site` and the equivalent API: all site-scoped rows plus the persons, occupancies and memberships that touch the site, documents and files, with ids preserved; persons already present in the target org (same user) are linked, not duplicated; the source org's access is revoked on offboarding.
+- CI test: two orgs, rows in each; every table in `information_schema` has an RLS policy or is on the explicit instance-wide allowlist (`user`, `session`, `otp_code`, `login_attempt`, river tables); cross-org FK insert fails.
 
 ---
 
 ## 6. Authentication
 
-| Method | Core/Pack | Notes |
+| Method | Release | Notes |
 |---|---|---|
-| Email + password | core | argon2id (`t=3, m=64MiB, p=4`, tune at B0), minimum length 10, optional HIBP k-anonymity check |
-| Magic link (email) | core | 15-minute single-use token |
-| Passkeys (WebAuthn) | core | Primary passwordless path for web; mobile via platform authenticators |
-| TOTP second factor | core | Optional per user; org can require it for admin roles |
-| Phone OTP | needs an SMS channel | Core wires the flow; a pack provides the channel |
-| External OIDC (Google, Microsoft, generic) | core | For orgs that want SSO; maps to `external_identity` |
-| e-Devlet, other government IdPs | pack | Pack implements `sdk.IdentityProvider`; core handles session issuance and linking |
+| Email + password | 0.1 | argon2id (`t=3, m=64MiB, p=4`), minimum 10 chars, optional HIBP k-anonymity check |
+| Magic link (email) | 0.1 | 15-minute single-use |
+| **SMS one-time code** | 0.1 | 6 digits, 5 minutes, 5 attempts; via the core `sms.Gateway` (Netgsm) (D5) |
+| Invitation | 0.1 | kinds per S4; accepting links a `user` to the `person` |
+| Site QR + unit claim | 0.1 | sign-up then claim; manager approves |
+| Passkeys, TOTP, OIDC | later | |
 
-Sessions:
+Sessions (overview §6.3): one `session` table, **opaque tokens everywhere**.
 
-- **Web:** `POST /v1/auth/session` sets an httpOnly, Secure, `SameSite=Lax` cookie containing an opaque token (hash stored in `session`). Mutating requests must carry `Origin`/`Sec-Fetch-Site` consistent with the configured base URL, plus the SPA sends `X-Requested-With`; this is sufficient CSRF defense for a JSON-only API without a double-submit token.
-- **Mobile / integrations:** `POST /v1/auth/token` returns an access JWT (15 min, HS256 with instance secret — no external verifiers needed, so no key distribution) and a rotating refresh token (default 60 days, hash stored, old token invalidated on rotation, reuse detection revokes the family).
-- **API keys:** long-lived, scoped to an org and a permission set, for integrations. Prefix `obk_`.
-- One `session` table backs all three; `GET /v1/me/sessions` and revocation work uniformly.
-- Invitation flow: manager creates a `person`, optionally sends an invitation; accepting creates/links a `user` and a `membership`.
-- A user with memberships in several orgs chooses with the `{org_id}` path segment; `GET /v1/me` lists their orgs and roles.
+- **Web:** `POST /v1/auth/session` sets an httpOnly, Secure, `SameSite=Lax` cookie with the token; the hash is stored. Mutations require `Origin` consistent with `BASE_URL` (plus `EXTRA_ORIGINS`) and `X-Requested-With: openbekci-web`.
+- **Mobile / integrations:** `POST /v1/auth/token` returns an access token (15 min, opaque, hash stored, checked on every request — instant revocation) and a rotating refresh token (60 days; reuse detection revokes the family). `DELETE /v1/me/sessions/{id|current}`.
+- **Re-authentication:** sensitive operations (§16) answer `403 reauth_required`; `POST /v1/auth/reauth` with password or OTP marks the session for 10 minutes.
+- `GET /v1/me` lists the user's organizations, roles, effective permissions, occupancies (units), policies; served through the platform pool for the cross-org part, then per-org.
+- Link URL formats are defined here and reused by both clients: magic link `{BASE_URL}/login/magic?token=…`, invitation `{BASE_URL}/invite/{token}`, reset `{BASE_URL}/reset/{token}`; requests carry `client=web|mobile` so the server can emit the mobile scheme `openbekci://…` instead.
 
 ---
 
 ## 7. Authorization
 
-- **Permissions** are string constants declared per module (`tickets.read`, `tickets.write`, `tickets.assign`, `ledger.read`, `ledger.post`, `ledger.close_period`, `billing.manage_plans`, `payments.record`, `meetings.manage`, `votes.cast`, …). The full list, with the role → permission matrix, is generated into the OpenAPI spec (`components.schemas.Permission` enum and `x-openbekci-roles`) so clients can consume it.
-- **Roles** are built-in sets of permissions, assigned through `membership` with a **scope** (org / site / building / unit). A `site_manager` of site A has no rights in site B.
-- **Resource rules** on top of RBAC: a `resident`/`owner` can read their own units' statements, tickets and bookings only; an `owner` can vote only for units they own at the vote's eligibility date; `auditor` is read-only everywhere.
-- Implementation: middleware resolves the caller's memberships for the org (cached per request), puts a `authz.Principal` in the context; services call `authz.Require(ctx, perm, authz.Scope{Site: id})` or `authz.CanAccessUnit(ctx, unitID)`. **Checks live in the service layer**, so jobs, packs and future transports are covered, not only HTTP.
-- `platform_admin` is a flag on `user`, not a membership; it unlocks instance endpoints under `/v1/platform/…` only.
-- Tests: an authz matrix test enumerates every operation in the OpenAPI spec × every role × "own resource / other resource" and asserts the expected 200/403. Adding an endpoint without a row fails the test.
+- **Permissions** are string constants per module; the full list with the role → permission matrix is generated into the spec (`components.schemas.Permission`, `x-openbekci-roles`).
+- **Two sources of rights, no overlap (S3):**
+  - **Occupancies** give portal rights: owner → whole unit (both sides) and site-level owner documents/decisions; tenant → tenant side of the unit; household → tickets, announcements, bookings, visitors, and money only if `may_see_money`. Former occupants keep read access bounded by their occupancy dates (S7).
+  - **Memberships** give role rights: `org_admin`, `site_manager`, `board_member`, `auditor` (read-everything + `audit.report`), `accountant` (money only), `staff`, `guard` (data-minimized endpoints only), scoped to org / site / block, time-bounded.
+- Board and auditor memberships are site-owned (D2): removable only through a decision (0.2) or an audited override with re-auth.
+- Site setting "financial transparency to owners": aggregate gelir-gider and budget always visible to owners; the debtor list is board-only by default and never public.
+- Implementation: middleware resolves memberships and occupancies for the org once per request into `authz.Principal`; services call `authz.Require(ctx, perm, scope)` / `authz.CanAccessUnit(ctx, unitID, side)`. Checks live in the service layer.
+- **Authz matrix test**: every operation × every role × own/other resource → expected status. The harness is a scheduled deliverable (≈ 1.5 weeks) in the skeleton phase.
 
 ---
 
 ## 8. API design
 
-The spec lives in `api/` (split per module, bundled with `redocly bundle` into `api/openapi.yaml`). Conventions from overview §6.2 apply. Additional backend specifics:
+Conventions from overview §6.2. Backend specifics:
 
-- **Path shape:** `/v1/orgs/{org_id}/<resource>` and `/v1/orgs/{org_id}/<resource>/{id}`; sub-resources only where the child cannot exist alone (`/tickets/{id}/comments`). Site scoping via `?site_id=`. Instance endpoints under `/v1/platform/…`; identity/self under `/v1/auth/…` and `/v1/me/…`; packs under `/v1/orgs/{org_id}/packs/{pack_id}/…`.
-- **Operations** are named `<module>.<verb><Noun>` (`tickets.listTickets`) — this becomes the generated method names in all three clients.
-- **Problem details:** every error is `{ type, title, status, code, detail?, instance, errors?: [{ field, code, params? }] }`. `code` values are an enum in the spec (`validation_failed`, `not_found`, `conflict`, `period_closed`, `insufficient_permission`, …). Domain errors map to codes in `httpapi/problem`.
-- **Idempotency:** `Idempotency-Key` required on `POST` for payments, charges, journal entries, bills, bookings; stored in `idempotency_key` (`org_id`, `key`, `request_hash`, `response`, `expires_at` 24h). Same key + different body → `422 idempotency_mismatch`.
-- **Concurrency:** resources with `version` accept `If-Match: "<version>"` on `PATCH`/`PUT`; mismatch → `412 version_conflict`.
-- **Pagination:** opaque base64 cursor encoding `(sort_key, id)`; `limit` max 200, default 50.
-- **Filtering:** explicit query params per list endpoint (no generic query language). Full-text search on tickets/announcements/documents via Postgres `tsvector` with a per-site language config.
-- **Bulk:** unit and person import via `POST …/units:import` accepting CSV/XLSX → async job → result report. Exports similarly.
-- **Rate limiting:** per IP for auth endpoints (strict), per user elsewhere; token bucket in memory per instance, with a Postgres-backed fallback table for multi-replica deployments. `429` with `Retry-After`.
-- **Webhooks (B6):** org-configured endpoints subscribed to event types; HMAC-SHA256 signed; retries with backoff via River.
-- **Realtime:** `GET /v1/me/events` SSE stream for in-app notifications (post-1.0 unless the web plan needs it earlier). Polling is acceptable at 1.0.
-- **Response validation** runs in tests and dev (`OPENBEKCI_API_VALIDATE_RESPONSES=true`) so handlers can't drift from the spec.
-- **Web-driven requirements** (from the [web plan](02-web.md) §18, shipped with the matching backend milestone): `index.html` served as a template with a per-response CSP nonce and instance branding, immutable hashed assets (B0); operations tagged `x-idempotent` in the spec (B0); `403 reauth_required` + `POST /v1/auth/reauth` (B1); import endpoints accept `dry_run=true` and return a row-level validation report (B1); `POST …/charge-plans:preview` returning per-unit allocations without persisting (B2); pack settings schema endpoint with `x-ui` uiSchema conventions (B5); cheap unread-count endpoint (B3); `Cache-Control: no-store` on statements and personal data (B2).
-- **Mobile-driven endpoints** (from the [mobile plan](03-mobile.md) §16, shipped in B5): unauthenticated `GET /.well-known/openbekci.json` discovery document (instance name, API base URL and versions, `min_app_version`, auth methods, push relay id, enabled pack ids, branding) and its authenticated twin `GET /v1/instance`; `GET /v1/me` aggregate (orgs, roles, effective permissions, enabled packs, policies, units); `GET /v1/orgs/{org}/me/dashboard`; `updated_since` + `ETag`/`If-None-Match` on cacheable lists; `POST/DELETE /v1/me/devices` (`push_kind`, `relay_id`); a fast `GET /v1/me/notifications/{id}`; image `?variant=thumb|medium`; a one-time web-login link; URL-based payment checkout (`checkout_url`, `return_url`) with a status poll.
-
----
-
-## 9. Money and ledger rules
-
-1. **Representation:** `Money{Amount int64, Currency string}`; the minor-unit exponent comes from a currency table (`TRY`=2, `JPY`=0, …). Arithmetic helpers refuse to mix currencies (panic in tests, error in prod).
-2. **Double entry always.** Charges, payments, bills, fees, adjustments, booking fees — each posts a balanced `journal_entry`. There is no "balance" column that is not derived from lines.
-3. **Immutability.** Entries are never updated or deleted. A mistake is corrected by posting a **reversal** (`reverses_entry_id`) and a new entry. The app role has no `UPDATE/DELETE` grant on `journal_entry`/`journal_line`/`ballot`/`audit_event`.
-4. **Periods.** Monthly. Closing a period locks postings dated within it; postings for closed periods are rejected with `period_closed`. Reopening requires `ledger.close_period` and writes an audit event.
-5. **Allocation rounding.** When a total is split across units, remainders are distributed by the largest-remainder method in a deterministic order (unit number, then id) so Σ allocations == total exactly. This is tested with property tests.
-6. **Allocation policies** implement `sdk.AllocationPolicy{ Allocate(total Money, units []sdk.UnitWeight) ([]sdk.Allocation, error) }`. Core: `equal`, `by_share`, `by_area`, `by_occupants`, `fixed_table`. Packs may register more (e.g. a legally mandated formula).
-7. **Late fees** implement `sdk.LateFeePolicy{ Fee(charge, asOf, paidSoFar) (Money, error) }`. Core default: configurable % per month after a grace period, simple (not compound). The Turkish pack supplies the Law 634 rate. A daily job computes fees idempotently via `late_fee_run`.
-8. **Payment allocation:** default oldest-due-first across a unit's open charges; manual re-allocation allowed while the period is open; over-payments sit as a credit on the unit sub-ledger.
-9. **Statements:** per unit, per date range: opening balance, charges, payments, fees, closing balance; computed from lines, exported to PDF/CSV; cached per (unit, period) once the period is closed.
-10. **Reports (core):** trial balance, income/expense by account and period, receivables aging, cash/bank book, budget vs actual (budget entity post-1.0).
-11. **Tests:** golden fixtures (a whole year of a 24-unit site), invariant property tests, and a "replay" test that rebuilds `account_balance` from lines and compares.
+- **Paths:** `/v1/orgs/{org_id}/<resource>[/{id}]`; `?site_id=` for site scoping; `/v1/auth/…`, `/v1/me/…`, `/v1/platform/…`; files at `/v1/orgs/{org_id}/files…`; packs (0.4) at `/v1/orgs/{org_id}/packs/{pack_id}/…` for **webhooks/callbacks only**.
+- **Operations** named `<module>.<verb><Noun>`.
+- **Spec extensions** (the single list): `x-openbekci-roles` (role→permission matrix), `x-idempotent` (operation accepts/requires `Idempotency-Key`), `x-ui` (uiSchema hints for schema-driven settings), `x-secret` (write-only setting field), `x-stability` (`stable` / `preview` — clients may depend only on `stable`).
+- **Problem codes** (enum in the spec): `validation_failed`, `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch`, `locked_period`, `insufficient_permission`, `reauth_required`, `mfa_required` (reserved), `invalid_grant`, `rate_limited`, `pack_error` (0.4), `site_offboarded`.
+- **Idempotency:** every `POST` create honours `Idempotency-Key`; required for payments, charges, expenses, refunds, transfers, opening balances, bookings. Store `(org_id, principal_id, key)` with an in-progress row (insert first; unique violation → `409` while in flight), 7-day retention.
+- **Discovery document** (normative; overview §6.8), unauthenticated `GET /.well-known/openbekci.json`:
+  ```json
+  {
+    "instance_name": "…", "api_base_url": "https://…/v1", "api_versions": ["v1"],
+    "server_version": "0.1.0", "sdk_version": null,
+    "min_app_version": { "android": "1.0.0", "ios": "1.0.0" },
+    "auth_methods": [ { "id": "password" }, { "id": "sms_otp" }, { "id": "magic_link" },
+                      { "id": "oidc:google", "label_key": "auth.google", "icon": "google" } ],
+    "push": { "relay_ids": ["official"], "unified_push": false },
+    "packs": ["tr"],
+    "branding": { "logo_url": "…", "primary_color": "#…" },
+    "relay_enrollment": { "challenge": "…ephemeral…" }
+  }
+  ```
+  `GET /v1/instance` is the authenticated twin with pack details and policies.
+- **Client-driven endpoints and their releases:** discovery + `/v1/instance` + `/v1/me` (0.1 skeleton); `GET /v1/orgs/{org}/me/dashboard` and the org-level portfolio dashboard (0.1); `POST …/units:import?dry_run=true` and opening-balance import (0.1); `POST …/charge-plans:preview` (0.1); `GET …/codes?locale=` (enum/error labels incl. pack labels, 0.1); platform endpoints `/v1/platform/orgs|settings|health|jobs|backup-status` (0.1 minimal, 1.0 complete); image `?variant=thumb|medium` (0.1, generated on upload); `POST/DELETE /v1/me/devices` (0.4); web-login link (0.4); checkout `checkout_url`/`return_url` + status poll (0.4). **No `updated_since` / ETag** in v1.
+- **Bulk:** CSV/XLSX import with `dry_run` returning a row-level report; exports as CSV/XLSX via jobs.
+- **Rate limiting:** in-memory token buckets per instance (per IP on auth/OTP/magic-link/invitation sending; per user elsewhere). `429` with `Retry-After`.
+- **Webhooks / API keys:** 0.4.
+- **Realtime:** polling (unread count endpoint, visitor approval requests). SSE later.
 
 ---
 
-## 10. Pack / extension system
+## 9. Money rules (from M1–M8)
 
-### 10.1 SDK surface (`pkg/sdk`, Apache-2.0)
-
-```go
-package sdk
-
-type Pack interface {
-    Manifest() Manifest                  // ID ("tr"), Version, MinSDK, DisplayName, Countries []string
-    Register(ctx context.Context, r *Registry) error
-}
-
-// Registry — what a pack may contribute. Each Register* validates and namespaces.
-func (r *Registry) IdentityProvider(p IdentityProvider)
-func (r *Registry) PaymentProvider(p PaymentProvider)
-func (r *Registry) NotificationChannel(c NotificationChannel)
-func (r *Registry) StatementImporter(i StatementImporter)
-func (r *Registry) LegalRules(l LegalRules)                 // quorum, vote weights, thresholds, late fee defaults
-func (r *Registry) AllocationPolicy(id string, p AllocationPolicy)
-func (r *Registry) LateFeePolicy(id string, p LateFeePolicy)
-func (r *Registry) DocumentTemplate(t DocumentTemplate)     // decision book, minutes, statements, receipts
-func (r *Registry) ChartOfAccounts(c ChartOfAccounts)
-func (r *Registry) AddressFormat(f AddressFormat)
-func (r *Registry) Settings(schema SettingsSchema)          // JSON Schema + UI hints → generic forms in clients
-func (r *Registry) Migrations(fsys fs.FS)                   // goose files; tables must be prefixed pack_<id>_
-func (r *Registry) Routes(fn func(RouteGroup))              // mounted at /v1/orgs/{org}/packs/<id>/
-func (r *Registry) Job(def JobDefinition)                   // River jobs, optionally periodic
-func (r *Registry) Subscribe(eventType string, h EventHandler)
-func (r *Registry) ConsentTexts(c ConsentTexts)             // privacy/legal texts per locale
-func (r *Registry) Validator(id string, v Validator)        // national id, tax id, plate formats … (people, vendors, forms)
-func (r *Registry) ReferenceData(id string, d ReferenceData)// admin areas, banks, holidays (address forms, scheduling)
-// InvoiceIssuer is reserved for post-1.0 (e-invoicing); see 04-packs.md §2.
-
-// Services a pack may call (handed in via Registry.Services()):
-type Services interface {
-    Units() UnitReader; People() PeopleReader; Ledger() LedgerPoster; Payments() PaymentRecorder
-    Notifications() Notifier; Files() FileStore; Settings() SettingsReader
-    DB() TenantDB       // pack-prefixed tables only; same RLS tx
-    Logger() *slog.Logger; Clock() Clock
-}
-```
-
-Design rules:
-
-- Packs import **only** `pkg/sdk`. Go's `internal/` rule enforces this.
-- Everything a pack registers is namespaced by its ID (routes, settings keys, tables, job kinds, event handler names). The registry rejects collisions.
-- A pack is **enabled per organization** (`org_pack`). Disabled packs' routes return 404, their jobs skip the org, their event handlers are not invoked. Settings schemas are still visible so an admin can enable and configure.
-- Packs never modify core tables directly; they post through `LedgerPoster`, which runs the same invariants as the core.
-- **Compile-time linking:** `cmd/openbekci/packs_all.go` imports official packs (`_ "github.com/openbekci/openbekci/packs/tr"`). A `-tags nopacks` build excludes them. Private packs are added by forking that one file or by a tiny custom `main` — documented in the pack authoring guide.
-- **SDK versioning:** semver; `Manifest.MinSDK` is checked at startup. Breaking SDK changes are batched into major versions with migration notes.
-- **Testkit:** `pkg/sdk/testkit` spins up a Postgres (testcontainers), an in-memory core, and lets a pack test its own routes/jobs/policies in isolation.
-
-### 10.2 Extension point ↔ Turkish pack mapping (drives validation of the SDK)
-
-| Extension point | `packs/tr` |
-|---|---|
-| `IdentityProvider` | e-Devlet (OAuth-style flow) → verified TCKN stored encrypted in `pack_tr_person_identity` |
-| `PaymentProvider` | iyzico (first), PayTR |
-| `NotificationChannel` | SMS via Netgsm / İleti Merkezi |
-| `StatementImporter` | CSV/XLSX formats of major banks |
-| `LegalRules` | Law 634: quorum (majority of shares *and* owners), second-meeting rule, decision thresholds by topic, 5%/month late fee |
-| `DocumentTemplate` | Karar defteri, toplantı tutanağı, aidat makbuzu, hesap ekstresi |
-| `ChartOfAccounts` | Localized default chart |
-| `ConsentTexts` | KVKK aydınlatma ve açık rıza metinleri |
-| `Settings` | Tax office, e-Fatura credentials, provider keys |
-| `Validator`, `ReferenceData` | TCKN/vergi no/plate validators; il–ilçe–mahalle lists, public holidays |
-| e-Fatura / e-Arşiv | `InvoiceIssuer` — **not in the first SDK cut**; interface reserved, implemented post-1.0 (packs plan TR-5) |
-
-The full extension-point catalogue, pack lifecycle, governance and the Turkish pack's scope and sequencing are in [04-packs.md](04-packs.md).
+1. **Representation:** `Money{Amount int64, Currency}`; exponent from the currency table; no mixing.
+2. **Double entry always**; every charge, payment, expense, fee, transfer, refund, opening balance posts a balanced entry with a `fund_id` on each line.
+3. **Immutability:** entries are never updated or deleted; corrections are reversals dated **today** with `reverses_entry_id`; `document_date` keeps the original date.
+4. **Lock date** per site instead of period state: postings with `entry_date ≤ lock_date` are rejected (`locked_period`); moving the lock date back requires re-auth and is audited. Fiscal years are reporting groupings with an approval status.
+5. **Debtor sides:** receivables are keyed by `(unit, debtor_kind)`; each charge snapshots its debtor person; a person also has a personal receivable for debt carried after move-out (S7). Statements exist per unit side and per person.
+6. **Allocation:** a plan or expense allocation names an allocation key and a scope; the remainder is distributed by largest-remainder in deterministic order so Σ = total; the basis is snapshotted on each charge.
+7. **Charge generation** is an hourly, idempotent, catch-up job on `(plan, unit, period)`; effective-dated rates decide the amount; a decision id can be attached (G5).
+8. **Late fees:** accrual computed on demand from open principal (fees never compound); monthly crystallization by a reconciling job (`expected − booked = delta`, may post a reversal after a backdated payment); waivers and freezes as first-class operations; policy parameters are site settings with national presets.
+9. **Payment allocation:** default oldest-first, principal before fee; manual override always; over-payment becomes a prepayment liability (credit) on the unit side or the person.
+10. **Receipts and decisions** take gap-free per-site per-year numbers from `sequence` with row locks.
+11. **Opening balances** post against `opening_equity`; locked once the lock date passes them.
+12. **Reports (0.1):** cash-basis gelir-gider, debtor list, statements (unit side / person) as PDF with running balance and principal/fee split, budget vs actual, trial balance, receivables aging, collector reconciliation, bank reconciliation (statement opening/closing vs ledger), fund balances.
+13. **Invariants tested daily on the golden site:** per unit side, Σ open charges − credit == receivable line balance; Σ `payment_allocation` per payment ≤ net; fund totals reconcile; replay rebuilds `charge.status`.
 
 ---
 
-## 11. Events, outbox, jobs
+## 10. Pack / extension system (0.4)
 
-- **Domain events** are Go structs with a stable string type (`ledger.entry_posted`, `billing.charge_created`, `payments.payment_confirmed`, `tickets.status_changed`, `meetings.vote_closed`, …) and a JSON payload defined in `pkg/sdk/events` (so packs can subscribe with types).
-- **Transactional outbox:** `events.Emit(ctx, ev)` inserts into `outbox` in the caller's tenant transaction. Commit → River job `outbox.dispatch` (enqueued in the same tx) → in-process dispatcher fans out to subscribers (notifications, audit projections, pack handlers, webhooks). At-least-once; every handler is idempotent (dedupe on `event_id` in `event_delivery`).
-- **River jobs** (all tenant-scoped and idempotent):
+Unchanged in intent from v0.1 (see [04-packs.md](04-packs.md)), with these corrections:
+
+- `sdk/` is a **top-level Go module** (Apache-2.0); the test harness that boots the core lives in `server/internal/sdktest` (AGPL) and drives packs through the registry.
+- Official packs are listed in an explicit `var Official = []sdk.Pack{…}` — no `init()` registration.
+- Pack `Routes` are **webhook/callback-only** (`Public()` registration sets tenant context from the path and skips session auth; provider signatures are verified by the pack); anything clients call goes through core endpoints.
+- Event payloads are `{type, version, ids}`; handlers fetch details through readers.
+- `LegalRules` is split: `QuorumPreset`, `ThresholdPreset`, `VoteWeightPreset`, `SchedulePreset`, `TransferRule`, `LateFeePreset` — all **presets that fill site settings**, so a site without a pack can still configure them.
+- Additional registrations: `Validator`, `ReferenceData`, `PaymentAllocationOrder`; `InvoiceIssuer` reserved post-1.0.
+- `PaymentProvider` is defined around gross / fee / net settlement, refunds and idempotent webhooks, with a merchant-of-record setting (M5).
+
+Until 0.4, everything Turkish is **core**: `tr` locale, Law 634 presets as default site settings when `country_code = TR`, TCKN validator, Turkish document templates in the core template set.
+
+---
+
+## 11. Jobs (River is the outbox)
+
+- Side effects are River jobs inserted with `InsertTx` in the business transaction, **one job per (event, subscriber)** with River's unique-job option for dedupe. No `outbox`/`event_delivery` tables; `audit_event` is the history.
+- All periodic jobs are **catch-up jobs**: they compute everything missing up to now and are idempotent on natural keys.
 
 | Job | Schedule | Module |
 |---|---|---|
-| `billing.generate_charges` | daily 02:00 site-local; generates for plans whose period starts | billing |
-| `billing.apply_late_fees` | daily | billing |
-| `billing.send_reminders` | daily, per site policy (before due, after due) | billing/notifications |
-| `payments.poll_provider` | provider-defined | packs |
+| `billing.generate_charges` | hourly; all missing `(plan, unit, period)` up to today | billing |
+| `billing.crystallize_late_fees` | hourly; reconciles bookings for the last closed month and corrects after backdated payments | billing |
+| `collections.run_stages` | hourly; sends reminders due per site stage settings in site time | collections |
 | `payments.import_statement` | on upload | payments |
-| `notifications.deliver` | on demand, retries with backoff | notifications |
-| `notifications.digest` | daily/weekly per user preference | notifications |
-| `documents.render` | on demand (PDF generation) | documents |
-| `privacy.export`, `privacy.erase` | on request | privacy |
-| `maintenance.prune` | daily (sessions, login attempts, idempotency keys, old outbox rows) | platform |
-| `webhooks.deliver` | on demand | integrations |
+| `notifications.deliver` / `notifications.sms` | on demand, retries with backoff | notifications |
+| `documents.render` | on demand (PDF) | documents |
+| `people.move_out_documents` | on demand | people |
+| `tenancy.export_site` / `import_site` | on demand | tenancy |
+| `privacy.export` / `privacy.erase` / `maintenance.prune` (retention) | on demand / daily | privacy / platform |
+| `governance.term_reminders`, `governance.notify_absentees` (0.2) | daily / on demand | governance |
+| `community.visitor_request_expiry`, `community.booking_fees` (0.3) | on demand | community |
 
-- Worker placement: `openbekci serve` runs the worker in-process by default (`--no-worker` to disable); `openbekci worker` runs it alone for larger deployments. River's leader election handles periodic jobs across replicas.
+`openbekci serve` runs the worker in-process by default; `openbekci worker` runs it alone. CPU-heavy jobs (PDF, imports) are capped at `max(1, NumCPU/2)`.
 
 ---
 
-## 12. Notifications
+## 12. Notifications and SMS
 
-- Channels: `in_app` (always), `email` (SMTP configured), `push` (relay configured), pack channels (`sms:netgsm`, …). Each implements `sdk.NotificationChannel{ ID(); Send(ctx, Delivery) error; Capabilities() }`.
-- Routing: notification `type` has a default channel set; user preference overrides per type; org can force channels for legally relevant notices (assembly invitations).
-- Templates: per type, per locale, Go templates for subject/body (text + HTML); org overrides via `template_override`. Rendering uses the recipient's locale and the site's timezone.
-- Push payload (via relay): content-free `data` limited to `notification_id`, `org_id`, `type`, `collapse_key`, `badge`; the app fetches the notification. The relay protocol (enrollment with a domain challenge via the discovery document's `relay_enrollment_challenge`, HMAC-signed `POST /v1/send` batches, `invalid_token` feedback that deletes the `device` row) is specified in [05-infra.md §4](05-infra.md); the backend ships the client and `admin push-relay enroll` in B5. UnifiedPush endpoints are posted to directly, without a relay.
-- Digests: users may choose "immediate" or "daily digest" per type.
-- Delivery tracking in `notification_delivery` with errors visible to org admins.
+- Channels in 0.1: `in_app`, `email`, `sms`. `push` in 0.4 via the relay (infra plan §4) with a content-free payload `{instance_id, org_id, notification_id, type, collapse_key, badge}`; UnifiedPush endpoints are posted to directly.
+- **Authored messages** (announcements, manual reminders): the sender picks channels; the API returns `recipient_count` and `sms_count` for preview before publish (O5).
+- **Automatic messages** use `site_channel_default` with the O5 defaults; sign-in codes and invitations always go by SMS when a phone exists and cannot be muted; residents can mute non-essential types.
+- `sms.Gateway` interface in `platform/sms` with a Netgsm driver (D5): send, delivery status callback, sender id, per-site credentials, per-site monthly counter visible to the manager. Packs add providers in 0.4 through the same interface.
+- Templates per type and locale in `locales/`; per-org overrides later.
+- Notification `type` vocabulary is enumerated in the spec (`announcement.published`, `charge.due_soon`, `charge.overdue`, `payment.receipt`, `ticket.updated`, `visitor.approval_requested` (0.3), `meeting.called` (0.2) …) and shared by push titles and Android channels.
 
 ---
 
 ## 13. Files and storage
 
-- `storage.Blob` interface: `Put`, `Get`, `Delete`, `PresignUpload`, `PresignDownload`. Drivers: `local` (default; files under `OPENBEKCI_DATA_DIR/files`, served through the API with signed short-lived URLs) and `s3`.
-- `file` table: `org_id`, `key`, `size`, `mime`, `sha256`, `uploaded_by`, `scope_type/scope_id` (what it's attached to), `status` (pending / ready / quarantined), `retention_until?`.
-- Upload flow: `POST /files` → server returns either a presigned S3 URL or a direct upload URL on the server (local) → client uploads → `POST /files/{id}:finalize` verifies size/hash/mime (sniffed, not trusted from client). Limits: configurable max size (default 25 MB), mime allowlist.
-- Optional ClamAV scan hook (`OPENBEKCI_CLAMAV_ADDR`) sets `quarantined`.
-- Image handling: server generates thumbnails for ticket/announcement images (pure Go `imaging`), strips EXIF location.
-- Downloads: never public; `GET /files/{id}` checks the attached resource's visibility and redirects to a presigned URL (S3) or streams (local).
+- `storage.Blob` with local FS (default) and S3 drivers; **all uploads stream through the server** (`POST /v1/orgs/{org}/files` multipart, size and mime checks by sniffing, EXIF location stripped, thumbnails and `medium` variants generated for images). Downloads via `GET /v1/orgs/{org}/files/{id}` with the attached resource's visibility check, streamed or redirected to a short-lived signed S3 URL.
+- `file` table: `org_id`, `site_id?`, `key`, `size`, `mime`, `sha256`, `uploaded_by`, `scope`, `status` (ready / quarantined), `retention_until?`. Optional ClamAV hook.
+- Generated documents (statements, receipts, certificates, minutes) are files with `document.source = generated` filed into the right folder with the right visibility (O8).
 
 ---
 
-## 14. Internationalization and localization
+## 14. Internationalization
 
-- API errors and enums are codes; clients own the strings.
-- Server-rendered content (emails, SMS texts, PDFs, notification bodies) uses `locales/<lang>.json` catalogs with ICU-style plurals, fallback chain per overview §6.6.
-- Every site has a timezone; dues due-dates, "daily" jobs and statements are computed in site time; storage is always `timestamptz`.
-- Number/currency formatting on the server (PDFs, emails) uses `golang.org/x/text` with the recipient's locale.
-- Address is a structured JSON object with a generic schema; `AddressFormat` from a pack can supply field order, labels and validation.
-- Country and currency reference data ship in core (ISO lists).
+As overview §6.6. Server catalogs for emails, SMS, PDFs and notification bodies; `golang.org/x/text` for numbers and currencies; site timezone for all site-scoped dates; PDFs with an embedded TTF.
 
 ---
 
 ## 15. Observability
 
-- `slog` JSON to stdout; fields: `request_id`, `org_id`, `user_id` (never emails), `route`, `status`, `duration_ms`. Debug level never logs bodies.
-- OpenTelemetry: HTTP server, pgx, River and outgoing HTTP instrumented; OTLP exporter on when `OTEL_EXPORTER_OTLP_ENDPOINT` is set.
-- Prometheus `/metrics` (protected by a bearer token or network policy): request latencies, job queue depth/latency, outbox lag, DB pool stats, notification delivery outcomes.
-- `GET /healthz` (process up), `GET /readyz` (DB reachable, migrations current, storage reachable), `/debug/pprof` behind `OPENBEKCI_DEBUG=true`.
-- Error reporting: optional Sentry-compatible DSN.
+`slog` JSON (never emails or phone numbers), OpenTelemetry (HTTP, pgx, River, outbound), Prometheus `/metrics` behind a token, `/healthz`, `/readyz` (DB, migrations, storage, SMS gateway configured), `/debug/pprof` behind `DEBUG`. Metrics include job lag, SMS sent per site, delivery failures by channel.
 
 ---
 
 ## 16. Security and privacy
 
-### 16.1 Application
-- Password hashing argon2id; constant-time comparisons; login rate limits + progressive delay; lockout notifications.
-- Sessions revocable; refresh-token reuse detection; `Secure`/`HttpOnly`/`SameSite` cookies; CSRF defense per §6.
-- Security headers: strict CSP for the embedded SPA (nonce-based), HSTS, `X-Content-Type-Options`, `Referrer-Policy`. CORS only for explicitly configured extra origins (the embedded SPA needs none; mobile needs none).
-- All SQL via sqlc; no string-built queries. All input validated at the boundary by the generated layer and again by domain rules.
-- Sensitive fields (TOTP secrets, device tokens, pack-stored national IDs, provider credentials) encrypted with AES-256-GCM using a key from `OPENBEKCI_ENCRYPTION_KEY`; key IDs stored with ciphertext to allow rotation (`admin rotate-keys`).
-- Re-authentication required for: changing email/phone/password, disabling MFA, closing periods, erasing a person, managing API keys.
-- Uploaded files: mime sniffing, size limits, no execution, served with `Content-Disposition: attachment` for non-image types.
+- Password hashing, lockout, session rules as §6. Security headers; strict nonce CSP for the embedded SPA (the Go server renders `index.html` with the nonce; Vite's `html.cspNonce`); CORS only for `EXTRA_ORIGINS`.
+- All SQL via sqlc; boundary validation by the generated layer and domain rules.
+- Field encryption (AES-256-GCM, key id stored with ciphertext, `admin rotate-keys`) for national ids, OTP secrets, provider credentials, device tokens; pack tables (0.4) use the same helper.
+- **Re-authentication** for: changing email/phone/password, moving the lock date back, opening-balance edits, waivers above a site threshold, erasing a person, removing site-owned memberships, managing API keys.
+- Abuse limits on OTP, magic-link and invitation sending (per phone/email and per IP); provider webhooks verify provider signatures (0.4); signed file URLs are short-lived.
+- Server **refuses placeholder or short keys** at startup; `_FILE` secret variants; `TRUSTED_PROXIES` required for `X-Forwarded-*`.
+- Uploaded files: sniffing, size limits, `Content-Disposition: attachment` for non-images.
 
-### 16.2 Tenant isolation
-- RLS everywhere (§5) + the "every table has a policy" CI test + cross-tenant negative tests per module.
+**Privacy (KVKK/GDPR-ready):**
 
-### 16.3 Supply chain
-- `govulncheck` and Dependabot in CI; pinned module versions; GoReleaser with SBOM and cosign; distroless image running as non-root.
-
-### 16.4 Audit
-- Every mutation writes `audit_event` in-transaction; admins can browse/export; append-only at the DB grant level.
-
-### 16.5 Privacy (GDPR / KVKK-ready in core)
-- **Export:** a person's data (profile, occupancies, charges, payments, tickets, ballots they cast, files they uploaded) as a JSON + files archive, produced by a job.
-- **Erasure/anonymization:** the ledger cannot lose lines, so erasure anonymizes the `person` (name → "Former resident #…", contacts removed, user unlinked, external identities deleted, pack-stored identifiers deleted via a pack hook) while journal lines keep their `unit_id`. Erasure is blocked while the person has open balances unless an admin overrides (audited).
-- **Consent records:** `consent` (`person_id`, `text_id`, `version`, `accepted_at`, `ip`); texts come from core (generic) or packs.
-- **Retention:** per-org settings for log and visitor-entry retention; `maintenance.prune` honours them.
-- A threat model document (`docs/security/threat-model.md`) is written at B1 and updated per milestone.
+- **Audit diffs are PII-safe**: fields registered as PII (names, contacts, national ids, plates, free-text notes) are stored as hashes before/after; non-PII fields as values.
+- **Erasure** = `privacy_erase(person_id)` — a `SECURITY DEFINER` function owned by the migrator, the only path that rewrites PII columns in append-only tables (`journal_line.person_id` → null, `ballot`/`attendance` names → "Former owner #n", audit hashes untouched). The `person` row is anonymized; the `user` unlinked; occupancies keep unit and dates. Blocked while the person has an open balance unless an admin overrides (re-auth, audited). Backups age out per the retention policy page.
+- **Retention**: `bank_transaction.raw` and `payment.provider_payload` stripped after reconciliation (default 90 days); sessions, login attempts, visitor logs (default 90 days, C) per `retention_setting`; `maintenance.prune` enforces.
+- **Export**: per-person JSON + files archive by job.
+- **Consent**: `consent` records with versioned texts (generic core texts; Turkish texts in 0.4 pack).
+- Secrets (`SECRET_KEY`, `ENCRYPTION_KEY`) are state and part of the backup set (infra plan).
 
 ---
 
 ## 17. Configuration and operations
 
-Environment variables (`OPENBEKCI_` prefix; YAML file optional):
-
 | Variable | Required | Notes |
 |---|---|---|
-| `DATABASE_URL` | yes | pgx URL; app role |
-| `MIGRATOR_DATABASE_URL` | no | defaults to `DATABASE_URL`; used by `migrate` |
-| `BASE_URL` | yes | public URL, used for links, cookies, CORS, OIDC callbacks |
-| `SECRET_KEY` | yes | ≥32 bytes; signs JWTs and cookies |
-| `ENCRYPTION_KEY` | yes | ≥32 bytes; field encryption |
-| `DATA_DIR` | no | local storage root (default `/var/lib/openbekci`) |
-| `STORAGE_*` | no | `s3` driver settings |
-| `SMTP_*` | no | without it, email channel is disabled and the admin UI says so |
-| `PUSH_RELAY_URL`, `PUSH_RELAY_TOKEN` | no | enables push |
-| `OTEL_*`, `METRICS_TOKEN`, `SENTRY_DSN` | no | observability |
+| `DATABASE_URL` | yes | app role |
+| `MIGRATOR_DATABASE_URL`, `PLATFORM_DATABASE_URL` | no | default to `DATABASE_URL` with the respective role; the platform role must have BYPASSRLS |
+| `BASE_URL` | yes | public URL; cookies, links, Origin checks |
+| `EXTRA_ORIGINS` | no | additional accepted origins (LAN name + public domain) |
+| `SECRET_KEY`, `ENCRYPTION_KEY` | yes | ≥ 32 random bytes; placeholders refused; `_FILE` variants accepted |
+| `DATA_DIR` | no | local storage root |
+| `STORAGE_*` | no | S3 driver |
+| `SMTP_*` | no | email channel disabled without it |
+| `SMS_PROVIDER`, `SMS_NETGSM_*` | no (yes for phone-first sites) | core gateway; per-site credentials may override |
+| `PUSH_RELAYS` (0.4) | no | list of `relay_id=url;server_id;secret_file;app_id` |
+| `TRUSTED_PROXIES` | yes behind a proxy | CIDRs |
+| `OTEL_*`, `METRICS_TOKEN`, `SENTRY_DSN` | no | |
 | `WORKER` | no | `embedded` (default) / `off` |
+| `AUTO_MIGRATE` | no | `true` for simple compose setups |
+| `INSECURE_DEV` | no | allows http cookies on localhost only |
+| `CLAMAV_ADDR` | no | upload scanning |
 | `API_VALIDATE_RESPONSES`, `DEBUG` | no | dev aids |
 
-Commands:
+Commands: `serve [--no-worker]`, `worker`, `migrate up|down|status`, `admin create-platform-admin`, `admin create-org`, `admin export-site --site … --out …`, `admin import-site --org … --in …`, `admin anonymize-person --person …`, `admin rotate-keys`, `admin rebuild-charge-status --site …`, `admin backup-marker` (writes the "last backup" marker the platform dashboard reads), `admin packs list|enable|disable|purge` (0.4), `admin push-relay enroll` (0.4), `version`.
 
-```
-openbekci serve [--no-worker]        # HTTP + worker
-openbekci worker                     # worker only
-openbekci migrate up|down|status     # also runs pack migrations
-openbekci admin create-platform-admin --email …
-openbekci admin create-org --slug … --name … --country TR
-openbekci admin packs list|enable|disable --org …
-openbekci admin rotate-keys
-openbekci admin rebuild-balances --site …
-openbekci version
-```
+Startup checks: key strength, `BYPASSRLS` on the platform role, pooler detection (LISTEN support, prepared-statement mode), SMS gateway reachability (warn), storage writable.
 
-Operations:
-
-- Secret-bearing variables accept a `_FILE` variant (`OPENBEKCI_SECRET_KEY_FILE`) for Docker/Kubernetes secret mounts; `OPENBEKCI_TRUSTED_PROXIES` lists CIDRs whose `X-Forwarded-*` headers are honoured. A startup check verifies that `SET LOCAL` survives on the pool's connections (transaction-mode poolers break tenant context) and refuses to run otherwise.
-- `migrate` is run explicitly by default; `OPENBEKCI_AUTO_MIGRATE=true` for simple compose setups. Migrations follow expand/contract so version N+1 can run against N's schema briefly (zero-downtime for SaaS).
-- Backups are plain `pg_dump` + copying `DATA_DIR` (or the S3 bucket); the infra plan documents and tests restore.
-- Upgrades: pull new image, run `migrate up`, start. Downgrades one version are supported by `migrate down` only for migrations marked reversible.
-- Image: distroless, non-root, multi-arch (amd64/arm64); the web `dist` is baked in at build time.
+Operations: migrations expand/contract; `migrate` explicit unless `AUTO_MIGRATE`; images distroless non-root multi-arch; backups = `pg_dump` + `DATA_DIR` + secrets (infra plan).
 
 ---
 
@@ -561,45 +458,57 @@ Operations:
 
 | Layer | What | Tooling |
 |---|---|---|
-| Domain unit | Ledger invariants, allocation rounding, late fee math, quorum/vote math, workflow transitions, permission matrix | `testing`, `rapid` property tests, table tests |
-| Repository/integration | sqlc queries against real Postgres; RLS isolation; triggers; migrations up→down→up | `testcontainers-go`, one DB per package, tx-rollback per test |
-| API | In-process server + generated Go client; request/response validated against the spec; authz matrix; idempotency; pagination | `kin-openapi` validator in test mode |
-| Pack SDK | `testkit` exercising registry validation, namespacing, enable/disable semantics; the TR pack's own tests | `pkg/sdk/testkit` |
-| Jobs | River in test mode (synchronous), fake clock for schedules | `river/rivertest`, `clock.Fake` |
-| Golden | PDFs (text layer compared), emails, statement CSVs, a full-year 24-unit ledger fixture | `testdata/` with an `-update` flag |
-| Performance smoke | k6 scripts for list endpoints and statement generation on a 500-unit site | B6 onwards, nightly |
+| Domain unit | Allocation with keys/scopes/zero weights, rounding, late-fee accrual and reconciliation incl. backdated payments, payment allocation orders, debtor snapshots, workflow transitions, quorum math (0.2) | `testing`, `rapid` |
+| Repository/integration | sqlc queries on real Postgres; RLS isolation; composite FK rejection; triggers; migrations up→down→up | `testcontainers-go` |
+| API | In-process server + generated client; responses validated against the spec; **authz matrix**; idempotency incl. concurrent same-key; dry-run imports | `kin-openapi` |
+| Golden site | **Two-block site with a shop, a co-owned unit, a tenant change and an owner sale mid-year, opening balances, consumption-table allocation, a late-fee waiver, a collection case, a full year of postings** — shared with web e2e and docs | `testdata/golden-site` |
+| Jobs | River in test mode; fake clock; catch-up after simulated downtime | `rivertest` |
+| Golden files | PDFs (text layer, Turkish glyphs), emails, SMS texts, statement CSVs | `-update` flag |
+| Performance | k6 smoke on a 500-unit site before 1.0 | nightly |
 
-Targets: domain packages ≥ 90 % line coverage, overall ≥ 70 %; integration tests run on every PR (Postgres service container), total CI under 10 minutes.
+Targets: domain ≥ 90 %, overall ≥ 70 %; PR CI < 10 min.
 
 ---
 
 ## 19. Development workflow
 
-- `Taskfile.yml`: `task gen` (bundle spec → oapi-codegen → sqlc → permission matrix → TS/Dart clients), `task lint`, `task test`, `task test:integration`, `task run` (with hot reload via `air`), `task migrate:new name=…`, `task db:reset`.
-- `docker compose -f deploy/compose.dev.yml up` provides Postgres (+ MinIO, Mailpit for emails) for local development.
-- CI (GitHub Actions): `generate-check` (regenerate, `git diff --exit-code`), lint, `govulncheck`, unit, integration, build matrix (linux/amd64, linux/arm64, darwin, windows), image build on `main`, GoReleaser on tags.
-- Branching: trunk-based; short-lived PRs; Conventional Commits; squash merge; `CHANGELOG.md` generated by release tooling.
-- Code conventions: errors wrapped with `%w` and context; domain sentinel errors (`ledger.ErrPeriodClosed`) mapped to problem codes in one place; no `panic` on request paths; contexts everywhere; no global state except the pack registry (populated at init, frozen after startup).
-- ADRs for: oapi-codegen vs ogen (B0), PDF approach (B2), SSE vs polling (B3), webhook signing (B6).
+- `Taskfile.yml`: `task gen` (bundle spec → oapi-codegen → sqlc → permission matrix → TS types; Dart only in CI), `task lint`, `task test`, `task test:integration`, `task run` (hot reload), `task migrate:new`, `task db:reset`.
+- `deploy/compose/compose.dev.yml`: Postgres, Mailpit, MinIO (optional), an SMS stub that logs messages.
+- Committed generated code: `httpapi/gen`, `clients/ts` types. Not committed: Dart client, MSW handlers, zod schemas (generated at build). `.gitattributes` marks generated files `linguist-generated`.
+- `-tags nowebassets` for Go-only contributors; path-filtered CI so a web PR doesn't run Go integration tests and vice versa.
+- Trunk-based; Conventional Commits; squash; DCO.
+- ADRs for: codegen choice, PDF library, SSE vs polling (0.2), webhook signing (0.4).
 
 ---
 
-## 20. Backend milestones
+## 20. Backend milestones by release
 
-Each milestone ends with its exit criteria met in CI and a tagged pre-release.
+Estimates are realistic engineer-weeks for one backend engineer; the web plan runs in parallel with its own.
 
-| # | Name | Deliverables | Exit criteria |
+### 0.1 (≈ 26 weeks)
+
+| Phase | Weeks | Deliverables | Exit criteria |
 |---|---|---|---|
-| **B0** | Skeleton (≈2 wks) | Repo layout, config, `serve`/`migrate`, pgx+sqlc+goose, River wired, OpenAPI pipeline (auth + health endpoints), problem+json, slog/otel, RLS helper + "every table has a policy" test, Dockerfile + compose, CI | `docker compose up` → `/readyz` green; generated TS/Dart clients build; ADR-0001 (codegen choice) merged |
-| **B1** | Tenancy, identity, people (≈4 wks) | Orgs/sites/buildings/units/facilities CRUD + CSV import; users, sessions (cookie + token), password/magic link/passkeys/TOTP, invitations; persons, occupancies, memberships; roles & permissions + matrix export; audit log; settings; announcements (simplest end-to-end feature) | Authz matrix test for all endpoints; cross-tenant tests; threat model v1 |
-| **B2** | Ledger, billing, payments (≈6 wks) | Chart of accounts, journal, periods, balances; charge plans, allocation policies, charges, late-fee job; payments, allocation, vendors/bills; statements (CSV + PDF); reports; `Idempotency-Key` | Full-year golden fixture passes; replay test; property tests; PDF ADR |
-| **B3** | Operations (≈5 wks) | Tickets (workflow, comments, attachments), documents/folders/versions, files/storage drivers, bookings (+ fee → charge), visitors/vehicles, notifications (in-app, email, preferences, digests, templates, overrides), outbox + dispatcher, statement import framework + matching rules | Email/notification golden tests; exclusion constraint tests; outbox at-least-once test |
-| **B4** | Governance (≈4 wks) | Meetings, agenda, attendance/proxies, quorum via `LegalRules` (core default), votes/ballots (per unit/share/person), decisions, minutes & decision-book rendering via `DocumentTemplate` (core generic templates) | Vote math property tests; append-only ballot grant test |
-| **B5** | Pack SDK v0 + mobile readiness (≈4 wks) | `pkg/sdk` public surface, registry, per-org enablement, pack migrations/routes/jobs/subscriptions, `testkit`; push relay client + `device` registration; the client-driven endpoints listed in §8 (discovery, `/v1/me`, dashboard, `updated_since`/ETags, image variants, web-login link, checkout shape) | A sample pack in `packs/example` passes `testkit`; every item in mobile plan §16 is in the spec |
-| **B6** | TR pack + integrations (≈6 wks) | `packs/tr`: legal rules, late fee, templates, chart, consent texts, address format; iyzico `PaymentProvider`; Netgsm `NotificationChannel`; one bank `StatementImporter`; e-Devlet `IdentityProvider`; webhooks; API keys | TR pack tests green; SDK declared v1.0 (frozen) |
-| **B7** | 1.0 hardening (≈4 wks) | Privacy export/erasure, retention pruning, rate limits & abuse protections, key rotation, perf pass (500-unit site), docs for admins/operators, `/v1` freeze, security review | k6 budget met; external security review findings closed |
+| **A — Skeleton** | 3 | Layout, config + startup checks, three DB roles, RLS helper + composite-FK convention + "every table has a policy" test, pgx/sqlc/goose, River, OpenAPI pipeline (3.0.3 subset, spec extensions, problem codes), discovery document + `/v1/instance`, sessions (opaque, cookie + bearer), `GET /v1/me`, **authz matrix harness**, audit with PII-safe diffs, slog/otel, Dockerfile + compose, CI | `/readyz` green from compose; TS types generated; authz harness runs against health/me; ADR-0001 codegen |
+| **B — Setup & people** | 7 | Orgs, sites (settings, bank details, lock date), blocks, units (types, appurtenances, legal ref), allocation keys and values, persons (encrypted national id), occupancies (sides, household, correspondent), memberships (site-owned flag), vendors; password / magic link / **SMS OTP (Netgsm gateway)** / invitations (3 kinds) / site QR + unit claims; CSV/XLSX import with dry-run; directory consent; move-out use case with closing statement + certificate (PDF pipeline with embedded TTF); site export/import; `/codes`; platform minimal endpoints | Cross-tenant and composite-FK tests; authz matrix complete for all B endpoints; export→import round-trip of the golden site preserves ids |
+| **C — Money** | 10 | Chart + funds + cash boxes; journal with lock date and fiscal years; opening balances import; dues plans with rates, allocation by key/scope with snapshots, charge generation (catch-up); late-fee accrual, crystallization, waivers, freezes; payments (cash with receipt sequences, transfer), allocation policy + manual override, credits, transfers, refunds; expenses (light, recurring) + optional bills; bank statement CSV import with manual matching and reconciliation balances; collections stages, ihtarname export, collection cases; statements (unit side / person) PDF; reports (cash-basis gelir-gider, debtor list, budget vs actual, trial balance, aging, collector and bank reconciliation, fund balances); charge-plan preview; `Idempotency-Key` required on money ops; re-auth list | Golden year passes with all §9.13 invariants; backdated-payment fee reversal property tests; receipt sequence gap-free under concurrency |
+| **D — Operations** | 6 | Tickets (configurable workflows, categories, private/common, votes, merge, internal notes, photos), announcements (sender channels, counts, read receipts), documents (site folders, unit folders, generated filing), files (server-proxied, variants), notifications (in-app/email/SMS, site defaults, mutes), dashboards (site + org portfolio), privacy CLI (`anonymize-person`, export job), retention pruning | Delivery golden tests; `privacy_erase` test proves no PII remains in any table incl. audit; pruning honours retention |
 
-Total ≈ 35 weeks of backend work for one full-time engineer; parallelizable across modules after B1 since module boundaries are explicit.
+### 0.2 — Governance (≈ 8 weeks)
+
+Meetings, notices with delivery tracking, agenda, polls, attendance with proxies and QR, quorum/threshold/weight site settings with Law 634 presets (`(verify)` items checked by the legal maintainer first), decisions with effects (dues rate, membership with term, budget final, special assessment), minutes and decision history, term reminders, absentee notification.
+
+### 0.3 — Gate & community (≈ 8 weeks backend + agent separately)
+
+Facilities and bookings with fees → charges; visitors with QR tokens, approval requests (notification + OTP-style decision link), recurring visitors, deliveries; guard endpoints (data-minimized); access-control module: access points, credentials, opening log, agent protocol (outbound WebSocket/long-poll, local allow-list sync, offline operation); plate-recognition and relay driver interfaces. Agent design doc precedes the phase.
+
+### 0.4 — Mobile & integrations (≈ 10 weeks)
+
+Push relay client and `device` registration; web-login link; `sdk/` module, registry, enablement, `sdktest`; Turkish pack contents moved out of core where they are pack-shaped (templates, presets, validators, bank formats, SMS providers); first `PaymentProvider` (iyzico) with checkout endpoints and settlement accounting; webhooks; API keys.
+
+### 1.0 (≈ 6 weeks backend)
+
+Privacy UI endpoints, `/v1` freeze, performance pass (500-unit site), key rotation runbook tested, external security review findings closed, documentation.
 
 ---
 
@@ -607,13 +516,12 @@ Total ≈ 35 weeks of backend work for one full-time engineer; parallelizable ac
 
 | Risk / question | Mitigation / decision needed |
 |---|---|
-| A real ledger feels heavy to managers who want "a dues list" | The ledger is invisible by default: the UI talks in charges/payments/statements; accountants and auditors get the journal views. Don't compromise the ledger to simplify the UI |
-| RLS overhead and index misuse | `org_id` leads every index; `EXPLAIN` checks in integration tests for the hot queries; `account_balance` cache for reports |
-| `oapi-codegen` vs `ogen` | Two-day spike at B0 on: strict typing, validation, union/oneOf handling, generated code size. ADR-0001 |
-| Phone-only identity in core | Core supports phone as identifier and invitation-based onboarding; OTP arrives with the first SMS pack. Confirm this is acceptable for the first markets |
-| PDF generation | Pure Go first; Gotenberg sidecar if templates demand HTML/CSS fidelity. ADR at B2 |
-| Co-ownership and share math edge cases (fractional shares, merged units) | Model shares as integer numerator/denominator; property tests; "merged" unit status with successor links |
-| Legal text accuracy in packs | Packs carry a `LEGAL.md` with sources and a disclaimer; rules are data+code reviewed by someone with domain knowledge before release |
-| Scope creep from "ERP" expectations (payroll, corporate accounting) | Non-goals list in overview §1; propose as separate packs/projects |
-| Single-process worker in small installs blocking HTTP | River runs in goroutines with bounded concurrency; CPU-heavy jobs (PDF) are capped at `max(1, NumCPU/2)` |
-| Multi-currency requests from border regions | Explicit non-goal for 1.0; the `Money` type and per-site currency make a later change contained |
+| Legal presets encoded from unverified claims | `(verify)` list in governance decisions; presets are site-editable; legal maintainer reviews before 0.2 |
+| Debtor-side model is new ground for most open-source ledgers | Golden site includes tenant change and sale; invariants per side; statements per side and per person |
+| Late-fee reconciliation after backdated payments | Pure accrual function + reconciling job; property tests are the gate |
+| Bank formats | Need anonymized sample files from two banks before phase C ends |
+| Site export/import completeness | Round-trip test on the golden site in phase B; every new table joins the export manifest (CI check) |
+| Erasure function drifting from new PII columns | PII columns registered in one Go table used by audit, export and `privacy_erase`; CI fails on an unregistered column named like PII |
+| Codegen choice | Spike in phase A; ADR |
+| SMS costs surprising sites | Per-site monthly counter and preview counts; site defaults can turn SMS off for reminders/receipts |
+| Solo-engineer wall clock | Phases are sequential for one person (≈ 26 weeks backend + 18 web); two people run B/C and the web in parallel |
