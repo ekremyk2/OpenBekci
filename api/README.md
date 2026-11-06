@@ -62,7 +62,10 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
   `too_short`, `too_long`, `too_small`, `too_large`, `unknown_field`.
-- **Security schemes** `cookieAuth` (session cookie) and `bearerAuth`; a public operation says `security: []`.
+- **Security schemes** `cookieAuth` (session cookie) and `bearerAuth`; **every operation declares `security`
+  explicitly** (a lint rule and the conformance test enforce it): a public one says `security: []`, optional
+  authentication is `[{}, {bearerAuth: []}, ...]`. An operation that somehow lacks the key is treated as requiring
+  authentication.
 - **Idempotency.** Every `POST` that creates declares `x-idempotent` (the lint rule and the conformance test
   enforce it), and a required one also declares `Idempotency-Key` as a required header parameter (`IdempotencyKey`).
 - **Discriminated unions:** `oneOf` with `discriminator.propertyName` and an explicit `mapping`; each variant
@@ -84,7 +87,11 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 
 ## Request pipeline
 
-For each operation, in order: response validation (when `OPENBEKCI_API_VALIDATE_RESPONSES=true`; always on in
-tests) wraps stability header, request validation (kin-openapi; problem+json), authentication (only for operations
-with `security`), idempotency, then the generated strict handler. Unknown paths under `/v1` and
-`/.well-known/` are 404 problems; everything else falls through to the web app.
+Before routing, on every request: request id, logging, panic recovery, the body-size cap (413 `payload_too_large`),
+timeout. Then, for each operation, in order: response validation (when `OPENBEKCI_API_VALIDATE_RESPONSES=true`;
+always on in tests) wraps stability header, authentication, request validation (kin-openapi; problem+json),
+idempotency, then the generated strict handler. Authentication runs first, so an unauthenticated caller gets 401
+(`WWW-Authenticate: Bearer`) and never a validation detail. `Authenticate` is called for every operation whose
+`security` is not `[]`: required ones answer 401 on failure, optional ones (`security: [{}, ...]`) continue
+anonymously when no valid credential is present. Unknown paths under `/v1` and `/.well-known/` are 404 problems,
+a known path with the wrong method is a 405 problem with `Allow`; everything else falls through to the web app.

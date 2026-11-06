@@ -17,6 +17,17 @@ rules:
   openbekci/snake-case-properties: error
   openbekci/problem-responses: error
   openbekci/mutations-declare-idempotency: error
+  # Every operation declares `security` (public ones say `security: []`); a
+  # missing key would otherwise read as "anonymous" to a human and as
+  # "required" to the server.
+  rule/operation-security-declared:
+    subject:
+      type: Operation
+      property: security
+    assertions:
+      defined: true
+    message: "Every operation must declare security explicitly (security: [] for a public one)"
+    severity: error
   # Only 3.0.x is allowed.
   rule/openapi-version:
     subject:

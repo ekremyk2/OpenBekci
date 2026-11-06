@@ -70,6 +70,14 @@ responses:
       X-Request-Id:
         schema:
           type: string
+      WWW-Authenticate:
+        description: On 401, the accepted scheme (`Bearer`).
+        schema:
+          type: string
+      Allow:
+        description: On 405, the methods the resource supports.
+        schema:
+          type: string
     content:
       application/problem+json:
         schema:

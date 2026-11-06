@@ -35,6 +35,7 @@ paths:
   /v1/things:
     get:
       operationId: test.listThings
+      security: []
       parameters:
         - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 200, default: 50}}
       responses:
@@ -51,6 +52,7 @@ paths:
         default: {$ref: "#/components/responses/Problem"}
     post:
       operationId: test.createThing
+      security: []
       x-idempotent: required
       parameters:
         - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8}}
@@ -78,6 +80,7 @@ paths:
   /v1/things-optional:
     post:
       operationId: test.createOptional
+      security: []
       x-idempotent: optional
       responses:
         "200":
@@ -103,9 +106,31 @@ paths:
             application/json:
               schema: {type: object, required: [who], properties: {who: {type: string}}}
         default: {$ref: "#/components/responses/Problem"}
+  /v1/optional:
+    get:
+      operationId: test.getOptional
+      security: [{}, {bearerAuth: []}]
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema: {type: object, required: [who], properties: {who: {type: string}}}
+        default: {$ref: "#/components/responses/Problem"}
+  /v1/unannotated:
+    get:
+      operationId: test.getUnannotated
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema: {type: object}
+        default: {$ref: "#/components/responses/Problem"}
   /v1/preview:
     get:
       operationId: test.getPreview
+      security: []
       x-stability: preview
       responses:
         "200":
@@ -117,6 +142,7 @@ paths:
   /v1/broken:
     get:
       operationId: test.getBroken
+      security: []
       responses:
         "200":
           description: ok
@@ -215,6 +241,18 @@ func newTestAPI(t *testing.T, store idempotency.Store) *testAPI {
 			who = pr.ID.String()
 		}
 		_, _ = w.Write([]byte(`{"who":"` + who + `"}`))
+	})
+	g.Get("/v1/optional", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		who := "anonymous"
+		if pr := authz.PrincipalFromContext(r.Context()); pr != nil {
+			who = pr.ID.String()
+		}
+		_, _ = w.Write([]byte(`{"who":"` + who + `"}`))
+	})
+	g.Get("/v1/unannotated", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{}`))
 	})
 	g.Get("/v1/preview", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -344,6 +382,45 @@ func TestAuthenticationStep(t *testing.T) {
 		t.Fatalf("authenticated: %d %s", rec.Code, rec.Body)
 	}
 	decodeProblem(t, ta.do("GET", "/v1/orgs/not-a-uuid/secret", "", "Authorization", "Bearer ok"), 422, "validation_failed")
+}
+
+// Authentication runs before validation: an anonymous caller gets 401 even
+// when the request is also invalid, and learns nothing about the parameters.
+func TestAuthenticationBeforeValidation(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	rec := ta.do("GET", "/v1/orgs/not-a-uuid/secret", "")
+	decodeProblem(t, rec, 401, "unauthenticated")
+	if got := rec.Header().Get("WWW-Authenticate"); got != "Bearer" {
+		t.Errorf("WWW-Authenticate = %q", got)
+	}
+	if strings.Contains(rec.Body.String(), "org_id") {
+		t.Errorf("401 leaks validation detail: %s", rec.Body)
+	}
+}
+
+func TestOptionalAuthAttachesPrincipalWhenValid(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	anon := ta.do("GET", "/v1/optional", "")
+	if anon.Code != 200 || !strings.Contains(anon.Body.String(), "anonymous") {
+		t.Fatalf("anonymous: %d %s", anon.Code, anon.Body)
+	}
+	bad := ta.do("GET", "/v1/optional", "", "Authorization", "Bearer nope")
+	if bad.Code != 200 || !strings.Contains(bad.Body.String(), "anonymous") {
+		t.Fatalf("bad credential: %d %s", bad.Code, bad.Body)
+	}
+	ok := ta.do("GET", "/v1/optional", "", "Authorization", "Bearer ok")
+	if ok.Code != 200 || strings.Contains(ok.Body.String(), "anonymous") {
+		t.Fatalf("valid credential: %d %s", ok.Code, ok.Body)
+	}
+}
+
+// An operation without a security key must fail closed.
+func TestMissingSecurityKeyFailsClosed(t *testing.T) {
+	ta := newTestAPI(t, nil)
+	decodeProblem(t, ta.do("GET", "/v1/unannotated", ""), 401, "unauthenticated")
+	if rec := ta.do("GET", "/v1/unannotated", "", "Authorization", "Bearer ok"); rec.Code != 200 {
+		t.Fatalf("authenticated: %d %s", rec.Code, rec.Body)
+	}
 }
 
 func TestResponseValidationCatchesContractViolation(t *testing.T) {

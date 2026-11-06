@@ -164,6 +164,9 @@ func Write(w http.ResponseWriter, r *http.Request, err error) {
 	}
 	h := w.Header()
 	h.Set("Content-Type", ContentType)
+	if status == http.StatusUnauthorized && h.Get("WWW-Authenticate") == "" {
+		h.Set("WWW-Authenticate", "Bearer")
+	}
 	if id != "" {
 		h.Set("X-Request-Id", id)
 	}

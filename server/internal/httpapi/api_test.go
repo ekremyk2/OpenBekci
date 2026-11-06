@@ -151,6 +151,35 @@ func TestAPIPrefixRootIsProblem(t *testing.T) {
 	}
 }
 
+// TestNoopAuthenticatorRejectsEverySecuredOperation walks the real spec: with
+// the default authenticator, every operation that requires credentials is 401
+// before validation (the requests carry no parameters or body at all).
+func TestNoopAuthenticatorRejectsEverySecuredOperation(t *testing.T) {
+	spec := loadSpec(t)
+	h := realRouter(nil)
+	n := 0
+	for path, item := range spec.Paths.Map() {
+		for method, op := range item.Operations() {
+			if authModeOf(spec, op) != authRequired {
+				continue
+			}
+			n++
+			url := pathParam.ReplaceAllString(path, uuid.NewString())
+			rec := httptest.NewRecorder()
+			h.ServeHTTP(rec, httptest.NewRequest(method, url, nil))
+			decodeProblem(t, rec, http.StatusUnauthorized, "unauthenticated")
+			if got := rec.Header().Get("WWW-Authenticate"); got != "Bearer" {
+				t.Errorf("%s %s: WWW-Authenticate = %q", method, path, got)
+			}
+		}
+	}
+	if n == 0 {
+		t.Fatal("no secured operation in the spec")
+	}
+}
+
+var pathParam = regexp.MustCompile(`\{[^}]+\}`)
+
 func TestWebAppStillServed(t *testing.T) {
 	rec := get(realRouter(nil), "/some/ui/route")
 	if rec.Header().Get("Content-Type") == "application/problem+json" {
@@ -194,6 +223,9 @@ func TestSpecConformance(t *testing.T) {
 				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" {
 					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
 				}
+			}
+			if op.Security == nil {
+				t.Errorf("%s: no explicit security key (use security: [] for a public operation)", where)
 			}
 			if v := extString(op.Extensions, "x-stability"); v != "" && v != "stable" && v != "preview" {
 				t.Errorf("%s: x-stability %q", where, v)

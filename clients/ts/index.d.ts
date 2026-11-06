@@ -160,6 +160,10 @@ export interface components {
         Problem: {
             headers: {
                 "X-Request-Id"?: string;
+                /** @description On 401, the accepted scheme (`Bearer`). */
+                "WWW-Authenticate"?: string;
+                /** @description On 405, the methods the resource supports. */
+                Allow?: string;
                 [name: string]: unknown;
             };
             content: {
