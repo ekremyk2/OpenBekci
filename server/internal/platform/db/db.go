@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"sync"
 	"time"
 
@@ -189,4 +190,18 @@ func (d *DB) CheckPlatformRole(ctx context.Context) error {
 		return errors.New("platform database role lacks BYPASSRLS")
 	}
 	return nil
+}
+
+// WarnIfPlatformSuperuser logs a warning when the platform role is a
+// superuser. That still bypasses RLS as required, but is over-privileged: it
+// should be a plain BYPASSRLS role.
+func (d *DB) WarnIfPlatformSuperuser(ctx context.Context, log *slog.Logger) {
+	var super bool
+	if err := d.platform.QueryRow(ctx, `SELECT rolsuper FROM pg_roles WHERE rolname = current_user`).Scan(&super); err != nil {
+		log.Warn("could not check whether the platform role is a superuser", "error", err)
+		return
+	}
+	if super {
+		log.Warn("platform database role is a superuser; use a dedicated BYPASSRLS role (openbekci_platform) instead")
+	}
 }

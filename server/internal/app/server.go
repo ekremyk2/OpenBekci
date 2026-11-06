@@ -132,6 +132,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	d.WarnIfPlatformSuperuser(ctx, log)
 
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected})
 	if err != nil {
