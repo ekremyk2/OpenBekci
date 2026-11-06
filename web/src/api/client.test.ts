@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import createClient from 'openapi-fetch'
 import type { paths } from './schema'
-import { createMiddleware, withVersion } from './client'
+import { createMiddleware, isUnauthorizedExempt, withVersion } from './client'
 import { AppError } from './errors'
 import { onApiEvent, type ApiEvent } from './events'
 
@@ -13,14 +13,7 @@ function setup(
     baseUrl: 'http://localhost',
     fetch: async (req: Request) => fetchImpl(req),
   })
-  let n = 0
-  client.use(
-    createMiddleware({
-      getLocale: () => 'tr',
-      idempotent: new Set(idempotent),
-      newKey: () => `key-${++n}`,
-    }),
-  )
+  client.use(createMiddleware({ getLocale: () => 'tr', idempotent: new Set(idempotent) }))
   return client
 }
 
@@ -49,7 +42,7 @@ describe('api client middleware', () => {
     expect(seen[0]?.headers.get('X-Requested-With')).toBe('openbekci-web')
   })
 
-  it('adds an Idempotency-Key only to POSTs of x-idempotent operations, keeping a caller-supplied key', async () => {
+  it('passes a caller-supplied Idempotency-Key through and never mints one', async () => {
     const seen: Request[] = []
     const client = setup(
       (req) => {
@@ -59,10 +52,14 @@ describe('api client middleware', () => {
       ['POST /v1/auth/session'],
     )
     const body = { method: 'password', identifier: 'a', password: 'b' } as const
-    await client.POST('/v1/auth/session', { body })
-    await client.POST('/v1/auth/session', { body, headers: { 'Idempotency-Key': 'mine' } })
-    expect(seen[0]?.headers.get('Idempotency-Key')).toBe('key-1')
-    expect(seen[1]?.headers.get('Idempotency-Key')).toBe('mine')
+    const headers = { 'Idempotency-Key': 'form-key' }
+    await client.POST('/v1/auth/session', { body, headers })
+    await client.POST('/v1/auth/session', { body, headers }) // retry: same key
+    expect(seen.map((r) => r.headers.get('Idempotency-Key'))).toEqual(['form-key', 'form-key'])
+
+    // an idempotent operation without a key is a programming error, not something to paper over
+    await expect(client.POST('/v1/auth/session', { body })).rejects.toThrow(/Idempotency-Key/)
+    expect(seen).toHaveLength(2)
 
     const other = setup((req) => {
       seen.push(req)
@@ -101,6 +98,28 @@ describe('api client middleware', () => {
       .POST('/v1/auth/session', { body: { method: 'password', identifier: 'x', password: 'y' } })
       .catch(() => {})
     expect(events).toHaveLength(0)
+  })
+
+  it('emits unauthorized for 401 on /v1/me/* sub-resources (exemption is exact for /v1/me)', async () => {
+    expect(isUnauthorizedExempt('/v1/me')).toBe(true)
+    expect(isUnauthorizedExempt('/v1/auth/session')).toBe(true)
+    expect(isUnauthorizedExempt('/v1/me/sessions')).toBe(false)
+    expect(isUnauthorizedExempt('/v1/me/sessions/{id}')).toBe(false)
+    expect(isUnauthorizedExempt('/v1/me/devices')).toBe(false)
+    expect(isUnauthorizedExempt('/v1/authx')).toBe(false)
+
+    const mw = createMiddleware({ getLocale: () => 'en', idempotent: new Set() })
+    const call = (schemaPath: string) =>
+      Promise.resolve(
+        mw.onResponse!({
+          response: json(401, { code: 'invalid_grant' }),
+          schemaPath,
+        } as never),
+      ).catch(() => {})
+    await call('/v1/me')
+    expect(events).toHaveLength(0)
+    await call('/v1/me/sessions')
+    expect(events.map((e) => e.type)).toEqual(['unauthorized'])
   })
 
   it('emits version-conflict (412) and rate-limited (429) events', async () => {

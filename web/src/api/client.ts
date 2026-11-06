@@ -14,12 +14,18 @@ export function withVersion(version: number | string) {
 
 export interface MiddlewareDeps {
   getLocale: () => string
+  /** "METHOD /path/template" keys of operations tagged `x-idempotent` in the OpenAPI spec. */
   idempotent: ReadonlySet<string>
-  newKey: () => string
 }
 
-/** 401s on these paths are expected (bad credentials, "am I signed in?") and handled in place. */
-const NO_REDIRECT_PREFIXES = ['/v1/auth/', '/v1/me']
+/**
+ * 401s on exactly `/v1/me` ("am I signed in?") and under `/v1/auth/` (bad credentials) are expected
+ * and handled in place. Everything else, including `/v1/me/sessions` and `/v1/me/devices`, means the
+ * session ended and triggers the sign-out redirect.
+ */
+export function isUnauthorizedExempt(schemaPath: string): boolean {
+  return schemaPath === '/v1/me' || schemaPath.startsWith('/v1/auth/')
+}
 
 export function createMiddleware(deps: MiddlewareDeps): Middleware {
   return {
@@ -28,9 +34,14 @@ export function createMiddleware(deps: MiddlewareDeps): Middleware {
       headers.set('Accept-Language', deps.getLocale())
       headers.set('X-Requested-With', 'openbekci-web') // CSRF marker (backend §6)
 
-      const method = request.method.toUpperCase()
-      if (method === 'POST' && idempotentOperations_has(deps.idempotent, method, schemaPath)) {
-        if (!headers.has('Idempotency-Key')) headers.set('Idempotency-Key', deps.newKey())
+      // The key belongs to one form submission (see useIdempotencyKey), never to one request:
+      // minting here would give a retry or a double click a new key, which is false safety.
+      if (deps.idempotent.has(`${request.method.toUpperCase()} ${schemaPath}`)) {
+        if (!headers.has('Idempotency-Key')) {
+          throw new Error(
+            `${request.method} ${schemaPath} is idempotent and needs an Idempotency-Key from useIdempotencyKey()`,
+          )
+        }
       }
 
       const version = headers.get(VERSION_HEADER)
@@ -52,7 +63,7 @@ export function createMiddleware(deps: MiddlewareDeps): Middleware {
       }
       const error = appErrorFromResponse(response, body)
 
-      if (error.isUnauthorized && !NO_REDIRECT_PREFIXES.some((p) => schemaPath.startsWith(p))) {
+      if (error.isUnauthorized && !isUnauthorizedExempt(schemaPath)) {
         emitApiEvent({ type: 'unauthorized', error })
       } else if (error.isReauthRequired) {
         emitApiEvent({ type: 'reauth-required', error })
@@ -65,10 +76,6 @@ export function createMiddleware(deps: MiddlewareDeps): Middleware {
       throw error
     },
   }
-}
-
-function idempotentOperations_has(set: ReadonlySet<string>, method: string, path: string) {
-  return set.has(`${method} ${path}`)
 }
 
 let localeProvider: () => string = () => 'en'
@@ -88,7 +95,6 @@ export function createApiClient(baseUrl = globalThis.location?.origin ?? '') {
     createMiddleware({
       getLocale: () => localeProvider(),
       idempotent: idempotentOperations,
-      newKey: () => crypto.randomUUID(),
     }),
   )
   return client
