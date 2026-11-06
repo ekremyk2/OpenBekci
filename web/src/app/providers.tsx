@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppError } from '@/api/errors'
+import { InstanceEffects } from './InstanceEffects'
 import { LocaleProvider } from './locale'
 import type { Locale } from '@/lib/i18n'
 import { Toaster } from '@/components/ui/toaster'
@@ -29,6 +30,7 @@ export function Providers({
   return (
     <QueryClientProvider client={queryClient}>
       <LocaleProvider initial={locale}>
+        <InstanceEffects />
         {children}
         <Toaster />
       </LocaleProvider>

@@ -315,16 +315,24 @@ function MethodLabel({ method }: { method: KnownAuthMethod }) {
   }
 }
 
+/** Only http(s) and same-origin paths are rendered as a logo. */
+function safeLogoUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined
+  return /^(https?:\/\/|\/(?![/\\]))/i.test(url) ? url : undefined
+}
+
 export function LoginPage({ next }: { next?: string }) {
   const instance = useInstance()
   const methods = supportedAuthMethods(instance.data)
   const first = methods[0]
+  const logoUrl = safeLogoUrl(instance.data?.branding?.logo_url)
 
   return (
     <div className="flex min-h-dvh items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-xl">{instance.data?.instance_name ?? 'OpenBekci'}</CardTitle>
+          {logoUrl ? <img src={logoUrl} alt="" className="mb-2 h-12 w-auto self-start" /> : null}
+          <CardTitle className="text-xl">{instance.data?.instance_name || 'OpenBekci'}</CardTitle>
           <CardDescription>
             <Trans>Sign in to manage your building.</Trans>
           </CardDescription>

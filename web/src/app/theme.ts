@@ -78,16 +78,34 @@ function luminance(hex: string): number | null {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
-/** Foreground (white or near-black) that reads best on the given brand color. */
-export function brandForeground(hex: string): string {
-  const l = luminance(hex)
-  return l !== null && l > 0.4 ? '#111827' : '#ffffff'
+const DARK_FOREGROUND = '#111827'
+const LIGHT_FOREGROUND = '#ffffff'
+
+function contrast(l1: number, l2: number): number {
+  const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1]
+  return (hi + 0.05) / (lo + 0.05)
 }
 
-/** Applies `branding.primary_color` from the discovery document; invalid values are ignored. */
+/** Foreground (white or near-black) with the higher WCAG contrast ratio against the brand color. */
+export function brandForeground(hex: string): string {
+  const l = luminance(hex)
+  if (l === null) return LIGHT_FOREGROUND
+  const dark = luminance(DARK_FOREGROUND)!
+  const light = luminance(LIGHT_FOREGROUND)!
+  return contrast(l, dark) > contrast(l, light) ? DARK_FOREGROUND : LIGHT_FOREGROUND
+}
+
+/**
+ * Applies `branding.primary_color` from the discovery document. An absent or invalid value resets
+ * to the stylesheet defaults.
+ */
 export function applyBranding(primaryColor: string | undefined) {
-  if (!primaryColor || luminance(primaryColor) === null) return
   const root = document.documentElement.style
+  if (!primaryColor || luminance(primaryColor) === null) {
+    root.removeProperty('--brand-seed')
+    root.removeProperty('--brand-seed-foreground')
+    return
+  }
   root.setProperty('--brand-seed', primaryColor)
   root.setProperty('--brand-seed-foreground', brandForeground(primaryColor))
 }
