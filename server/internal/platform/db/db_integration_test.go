@@ -155,17 +155,25 @@ func countOrgs(ctx context.Context, q interface {
 	return n, err
 }
 
+// canonicalPolicyExpr is how PostgreSQL deparses the expression emitted by
+// openbekci_enable_rls, for both USING and WITH CHECK.
+const canonicalPolicyExpr = `(org_id = ( SELECT (NULLIF(current_setting('app.org_id'::text, true), ''::text))::uuid AS "nullif"))`
+
 func TestIntegrationEveryTenantTableHasRLSPolicy(t *testing.T) {
 	d := newTestDB(t)
 	ctx := context.Background()
 
 	rows, err := d.platform.Query(ctx, `
 		SELECT c.relname::text, c.relrowsecurity, c.relforcerowsecurity,
-		       EXISTS (SELECT 1 FROM pg_policy p WHERE p.polrelid = c.oid)
+		       EXISTS (SELECT 1 FROM pg_policy p WHERE p.polrelid = c.oid),
+		       (SELECT count(*) FROM pg_policies pp WHERE pp.schemaname = n.nspname AND pp.tablename = c.relname),
+		       (SELECT count(*) FROM pg_policies pp WHERE pp.schemaname = n.nspname AND pp.tablename = c.relname
+		          AND pp.cmd = 'ALL' AND pp.permissive = 'PERMISSIVE'
+		          AND pp.qual = $1 AND pp.with_check = $1)
 		FROM pg_class c
 		JOIN pg_namespace n ON n.oid = c.relnamespace
 		WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
-		ORDER BY 1`)
+		ORDER BY 1`, canonicalPolicyExpr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,7 +183,8 @@ func TestIntegrationEveryTenantTableHasRLSPolicy(t *testing.T) {
 	for rows.Next() {
 		var table string
 		var enabled, forced, hasPolicy bool
-		if err := rows.Scan(&table, &enabled, &forced, &hasPolicy); err != nil {
+		var policies, canonical int
+		if err := rows.Scan(&table, &enabled, &forced, &hasPolicy, &policies, &canonical); err != nil {
 			t.Fatal(err)
 		}
 		seen++
@@ -184,6 +193,11 @@ func TestIntegrationEveryTenantTableHasRLSPolicy(t *testing.T) {
 		}
 		if !enabled || !forced || !hasPolicy {
 			t.Errorf("table %s: rls enabled=%v forced=%v has_policy=%v; tenant tables must call openbekci_enable_rls", table, enabled, forced, hasPolicy)
+			continue
+		}
+		// Exactly one policy, with the canonical USING and WITH CHECK text.
+		if policies != 1 || canonical != 1 {
+			t.Errorf("table %s: %d policies, %d with the canonical USING/WITH CHECK expression; want exactly 1 and 1", table, policies, canonical)
 		}
 	}
 	if err := rows.Err(); err != nil {
