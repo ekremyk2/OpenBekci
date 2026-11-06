@@ -40,7 +40,7 @@ clients/*/dist/
 server/openbekci
 server/openbekci.exe
 server/data/
-data/
+/data/
 *.test
 *.out
 
