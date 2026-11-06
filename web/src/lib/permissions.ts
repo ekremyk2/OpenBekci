@@ -14,7 +14,7 @@ export function findOrg(me: Me | undefined, orgId: string | undefined): MeOrgani
  *  - A grant without site_ids/block_ids is organization-wide.
  *  - With a scope, a scoped grant matches only when it lists that site/block.
  *  - Without a scope, a scoped grant counts ("may do this somewhere") so navigation can show the area.
- * The server enforces; this only decides what to offer.
+ * Exact match only: no wildcard, deny by default. The server enforces; this only decides what to offer.
  */
 export function can(
   me: Me | undefined,
@@ -25,7 +25,7 @@ export function can(
   const org = findOrg(me, orgId)
   if (!org) return false
   return org.permissions.some((g) => {
-    if (g.permission !== permission && g.permission !== '*') return false
+    if (g.permission !== permission) return false
     const scoped = (g.site_ids?.length ?? 0) > 0 || (g.block_ids?.length ?? 0) > 0
     if (!scoped || !scope) return true
     if (scope.siteId && g.site_ids?.includes(scope.siteId)) return true

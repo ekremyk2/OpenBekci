@@ -26,11 +26,11 @@ describe('can()', () => {
     expect(can(undefined, 'org-1', 'site.read')).toBe(false)
   })
 
-  it('honours the wildcard grant', () => {
+  it('treats * as an ordinary string, never as a wildcard', () => {
     const me = {
       ...meFixture,
       organizations: [{ ...meFixture.organizations[0]!, permissions: [{ permission: '*' }] }],
     }
-    expect(can(me, 'org-1', 'anything.at_all')).toBe(true)
+    expect(can(me, 'org-1', 'anything.at_all')).toBe(false)
   })
 })
