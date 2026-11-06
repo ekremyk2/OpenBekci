@@ -12,9 +12,9 @@ services:
         condition: service_healthy
     env_file: .env
     environment:
-      OPENBEKCI_DATABASE_URL: postgres://openbekci_app:${OPENBEKCI_DB_PASSWORD}@postgres:5432/openbekci
-      OPENBEKCI_PLATFORM_DATABASE_URL: postgres://openbekci_platform:${OPENBEKCI_DB_PASSWORD}@postgres:5432/openbekci
-      OPENBEKCI_MIGRATOR_DATABASE_URL: postgres://openbekci_migrator:${OPENBEKCI_DB_PASSWORD}@postgres:5432/openbekci
+      OPENBEKCI_DATABASE_URL: postgres://openbekci_app:${OPENBEKCI_DB_PASSWORD:?set OPENBEKCI_DB_PASSWORD in .env}@postgres:5432/openbekci
+      OPENBEKCI_PLATFORM_DATABASE_URL: postgres://openbekci_platform:${OPENBEKCI_DB_PASSWORD:?set OPENBEKCI_DB_PASSWORD in .env}@postgres:5432/openbekci
+      OPENBEKCI_MIGRATOR_DATABASE_URL: postgres://openbekci_migrator:${OPENBEKCI_DB_PASSWORD:?set OPENBEKCI_DB_PASSWORD in .env}@postgres:5432/openbekci
       OPENBEKCI_LISTEN_ADDR: ":8080"
       OPENBEKCI_AUTO_MIGRATE: "true"
       OPENBEKCI_TRUSTED_PROXIES: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
@@ -22,6 +22,12 @@ services:
       - data:/data
     expose:
       - "8080"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/openbekci", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
 
   postgres:
     image: postgres:17
@@ -34,7 +40,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 10
