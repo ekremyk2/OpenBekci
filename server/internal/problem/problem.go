@@ -10,7 +10,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -41,6 +44,9 @@ const (
 	CodePackError              Code = "pack_error"
 	CodeSiteOffboarded         Code = "site_offboarded"
 	CodeInternalError          Code = "internal_error"
+	CodeCSRFFailed             Code = "csrf_failed"
+	CodeSMSUnavailable         Code = "sms_unavailable"
+	CodeMailUnavailable        Code = "mail_unavailable"
 )
 
 // Field is one entry of the errors[] array.
@@ -58,6 +64,9 @@ type Error struct {
 	Fields []Field
 	// Expose sends Detail to the client even for a 5xx (dev aids only).
 	Expose bool
+	// RetryAfter, when positive, is sent as the Retry-After header (seconds,
+	// rounded up); used with 429 rate_limited and 503.
+	RetryAfter time.Duration
 	// Err is the underlying cause. It is logged, never sent to the client.
 	Err error
 }
@@ -110,6 +119,11 @@ func Forbidden(detail string) *Error {
 // Conflict is a 409 conflict.
 func Conflict(detail string) *Error { return New(http.StatusConflict, CodeConflict, detail) }
 
+// RateLimited is a 429 rate_limited telling the client when to retry.
+func RateLimited(retryAfter time.Duration) *Error {
+	return &Error{Code: CodeRateLimited, Status: http.StatusTooManyRequests, Detail: "too many requests; try again later", RetryAfter: retryAfter}
+}
+
 // Internal is a 500 internal_error that hides the cause from the client.
 func Internal(cause error) *Error {
 	return &Error{Code: CodeInternalError, Status: http.StatusInternalServerError, Err: cause}
@@ -117,13 +131,15 @@ func Internal(cause error) *Error {
 
 // Body is the JSON shape of a problem response.
 type Body struct {
-	Type     string  `json:"type"`
-	Title    string  `json:"title"`
-	Status   int     `json:"status"`
-	Code     Code    `json:"code"`
-	Detail   string  `json:"detail,omitempty"`
-	Instance string  `json:"instance"`
-	Errors   []Field `json:"errors,omitempty"`
+	Type     string `json:"type"`
+	Title    string `json:"title"`
+	Status   int    `json:"status"`
+	Code     Code   `json:"code"`
+	Detail   string `json:"detail,omitempty"`
+	Instance string `json:"instance"`
+	// RequestID repeats Instance under the name web clients look for.
+	RequestID string  `json:"request_id,omitempty"`
+	Errors    []Field `json:"errors,omitempty"`
 }
 
 // From converts any error to a *Error: a *Error anywhere in the chain is used
@@ -145,12 +161,13 @@ func Write(w http.ResponseWriter, r *http.Request, err error) {
 	}
 	id := middleware.GetReqID(r.Context())
 	body := Body{
-		Type:     "about:blank",
-		Title:    http.StatusText(status),
-		Status:   status,
-		Code:     pe.Code,
-		Instance: id,
-		Errors:   pe.Fields,
+		Type:      "about:blank",
+		Title:     http.StatusText(status),
+		Status:    status,
+		Code:      pe.Code,
+		Instance:  id,
+		RequestID: id,
+		Errors:    pe.Fields,
 	}
 	if status < http.StatusInternalServerError || pe.Expose {
 		body.Detail = pe.Detail // never leak internals on 5xx
@@ -164,6 +181,12 @@ func Write(w http.ResponseWriter, r *http.Request, err error) {
 	h.Set("Content-Type", ContentType)
 	if id != "" {
 		h.Set("X-Request-Id", id)
+	}
+	if status == http.StatusUnauthorized {
+		h.Set("WWW-Authenticate", `Bearer realm="openbekci"`)
+	}
+	if pe.RetryAfter > 0 {
+		h.Set("Retry-After", strconv.Itoa(int(math.Ceil(pe.RetryAfter.Seconds()))))
 	}
 	w.WriteHeader(status)
 	_, _ = w.Write(append(b, '\n'))

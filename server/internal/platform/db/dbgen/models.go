@@ -27,14 +27,97 @@ type InstanceSetting struct {
 	CreatedAt  pgtype.Timestamptz
 }
 
+type LoginAttempt struct {
+	ID         pgtype.UUID
+	Identifier string
+	Method     string
+	Ip         pgtype.Text
+	Success    bool
+	UserID     pgtype.UUID
+	At         pgtype.Timestamptz
+}
+
+type Membership struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	PersonID   pgtype.UUID
+	Role       string
+	ScopeType  string
+	ScopeID    pgtype.UUID
+	ValidFrom  pgtype.Timestamptz
+	ValidTo    pgtype.Timestamptz
+	SiteOwned  bool
+	DecisionID pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
+	Version    int32
+}
+
 type Organization struct {
-	ID        pgtype.UUID
-	OrgID     pgtype.UUID
-	Slug      string
-	Name      string
-	Status    string
-	Settings  []byte
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
-	Version   int32
+	ID            pgtype.UUID
+	OrgID         pgtype.UUID
+	Slug          string
+	Name          string
+	Status        string
+	Settings      []byte
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+	Version       int32
+	CountryCode   string
+	DefaultLocale string
+	Timezone      string
+}
+
+type OtpCode struct {
+	ID         pgtype.UUID
+	UserID     pgtype.UUID
+	TargetKind string
+	Target     string
+	Purpose    string
+	CodeHash   []byte
+	CreatedAt  pgtype.Timestamptz
+	ExpiresAt  pgtype.Timestamptz
+	Attempts   int32
+	ConsumedAt pgtype.Timestamptz
+}
+
+type Person struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	UserID      pgtype.UUID
+	DisplayName string
+	Contact     []byte
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+}
+
+type Session struct {
+	ID          pgtype.UUID
+	UserID      pgtype.UUID
+	Kind        string
+	TokenHash   []byte
+	FamilyID    pgtype.UUID
+	RotatedFrom pgtype.UUID
+	DeviceName  pgtype.Text
+	Ip          pgtype.Text
+	UserAgent   pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	ExpiresAt   pgtype.Timestamptz
+	RevokedAt   pgtype.Timestamptz
+	LastUsedAt  pgtype.Timestamptz
+	ReauthUntil pgtype.Timestamptz
+}
+
+type User struct {
+	ID              pgtype.UUID
+	Email           pgtype.Text
+	Phone           pgtype.Text
+	PasswordHash    pgtype.Text
+	Locale          string
+	Status          string
+	IsPlatformAdmin bool
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
 }

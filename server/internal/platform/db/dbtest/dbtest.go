@@ -17,7 +17,7 @@ import (
 )
 
 //nolint:gosec // local development default, overridden by OPENBEKCI_TEST_SUPERUSER_URL
-const defaultSuperuserURL ="postgres://postgres:postgres@localhost:5432/postgres"
+const defaultSuperuserURL = "postgres://postgres:postgres@localhost:5432/postgres"
 
 // New creates a database, creates the three roles if missing, migrates it and
 // returns a DB opened on it as the application roles. The database is dropped
