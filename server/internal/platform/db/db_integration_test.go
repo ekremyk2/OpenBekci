@@ -22,7 +22,8 @@ import (
 const defaultSuperuserURL = "postgres://postgres:postgres@localhost:5432/postgres"
 
 // rlsExempt are tables in public that are intentionally not tenant tables.
-var rlsExempt = []string{"instance_setting", "goose_db_version"}
+// idempotency_key is keyed by org_id and principal_id explicitly and written by the HTTP layer before authorization (see its migration).
+var rlsExempt = []string{"instance_setting", "goose_db_version", "idempotency_key"}
 
 func isRLSExempt(table string) bool {
 	return slices.Contains(rlsExempt, table) || strings.HasPrefix(table, "river_")

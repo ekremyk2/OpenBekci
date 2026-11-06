@@ -8,6 +8,19 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type IdempotencyKey struct {
+	OrgID               pgtype.UUID
+	PrincipalID         pgtype.UUID
+	Key                 string
+	RequestHash         string
+	Status              string
+	ResponseStatus      pgtype.Int4
+	ResponseContentType pgtype.Text
+	ResponseBody        []byte
+	CreatedAt           pgtype.Timestamptz
+	ExpiresAt           pgtype.Timestamptz
+}
+
 type InstanceSetting struct {
 	ID         bool
 	InstanceID pgtype.UUID
