@@ -273,19 +273,29 @@ func (c Config) ValidateServe() error {
 	return errors.Join(errs...)
 }
 
+// isLocalHost reports whether host (without port or brackets) is the loopback
+// name or address a development instance is served on.
+func isLocalHost(host string) bool {
+	return host == "localhost" || host == "127.0.0.1" || host == "::1"
+}
+
 func (c Config) validateBaseURL() error {
 	u, err := url.Parse(c.BaseURL)
 	if err != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") {
 		return fmt.Errorf("%sBASE_URL %q is not an http(s) URL", envPrefix, c.BaseURL)
 	}
+	local := isLocalHost(u.Hostname())
+	// INSECURE_DEV relaxes cookies, key checks and the log drivers; it must
+	// not be possible to leave it on behind a real address.
+	if c.InsecureDev && !local {
+		return fmt.Errorf("%sINSECURE_DEV=true is accepted only when %sBASE_URL is localhost, 127.0.0.1 or [::1] (it is %q); unset it for any other host", envPrefix, envPrefix, u.Hostname())
+	}
 	if u.Scheme == "http" {
-		switch u.Hostname() {
-		case "localhost", "127.0.0.1", "::1":
-			if !c.InsecureDev {
-				return fmt.Errorf("%sBASE_URL uses http; set %sINSECURE_DEV=true for local development", envPrefix, envPrefix)
-			}
-		default:
+		switch {
+		case !local:
 			return fmt.Errorf("%sBASE_URL must be https (http is allowed only for localhost with INSECURE_DEV)", envPrefix)
+		case !c.InsecureDev:
+			return fmt.Errorf("%sBASE_URL uses http; set %sINSECURE_DEV=true for local development", envPrefix, envPrefix)
 		}
 	}
 	return nil

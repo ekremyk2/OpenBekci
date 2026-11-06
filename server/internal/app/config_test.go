@@ -138,6 +138,12 @@ func TestValidateServeBaseURL(t *testing.T) {
 		ok  bool
 	}{
 		{"https://x.example.org", false, true},
+		{"https://x.example.org", true, false}, // INSECURE_DEV behind a real address
+		{"https://bekci.example.org:8443", true, false},
+		{"http://127.0.0.1:8484", true, true},
+		{"http://[::1]:8484", true, true},
+		{"https://localhost:8484", true, true},
+		{"http://localhost.example.org", true, false},
 		{"http://x.example.org", true, false},
 		{"http://localhost:8484", false, false},
 		{"http://localhost:8484", true, true},
