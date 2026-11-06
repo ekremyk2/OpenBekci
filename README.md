@@ -24,6 +24,7 @@ Open-source residential community management: apartment buildings, gated sites, 
 | [Mobile](docs/plans/03-mobile.md) | Instance discovery, accounts, auth, features by release, offline, push, release/white-label, milestones MB0–MB5 |
 | [Packs](docs/plans/04-packs.md) | Extension points, SDK lifecycle, authoring, governance, the Turkish pack, milestones P0–P4 |
 | [Infrastructure](docs/plans/05-infra.md) | Deployment targets, push relay, backups, upgrades, observability, release engineering, milestones I0–I5 |
+| [Review](docs/plans/06-review.md) | Critical review of plans 00–05: blocking decisions, money-model gaps, mechanisms that don't work as written, sequencing bugs, a re-baselined 0.1 scope and an action plan. **Read this before the plans; they have not yet been revised against it.** |
 
 ## Open decisions
 
