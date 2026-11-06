@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"runtime"
 	"slices"
 	"strings"
 	"testing"
@@ -155,17 +156,25 @@ func countOrgs(ctx context.Context, q interface {
 	return n, err
 }
 
+// canonicalPolicyExpr is how PostgreSQL deparses the expression emitted by
+// openbekci_enable_rls, for both USING and WITH CHECK.
+const canonicalPolicyExpr = `(org_id = ( SELECT (NULLIF(current_setting('app.org_id'::text, true), ''::text))::uuid AS "nullif"))`
+
 func TestIntegrationEveryTenantTableHasRLSPolicy(t *testing.T) {
 	d := newTestDB(t)
 	ctx := context.Background()
 
 	rows, err := d.platform.Query(ctx, `
 		SELECT c.relname::text, c.relrowsecurity, c.relforcerowsecurity,
-		       EXISTS (SELECT 1 FROM pg_policy p WHERE p.polrelid = c.oid)
+		       EXISTS (SELECT 1 FROM pg_policy p WHERE p.polrelid = c.oid),
+		       (SELECT count(*) FROM pg_policies pp WHERE pp.schemaname = n.nspname AND pp.tablename = c.relname),
+		       (SELECT count(*) FROM pg_policies pp WHERE pp.schemaname = n.nspname AND pp.tablename = c.relname
+		          AND pp.cmd = 'ALL' AND pp.permissive = 'PERMISSIVE'
+		          AND pp.qual = $1 AND pp.with_check = $1)
 		FROM pg_class c
 		JOIN pg_namespace n ON n.oid = c.relnamespace
 		WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
-		ORDER BY 1`)
+		ORDER BY 1`, canonicalPolicyExpr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,7 +184,8 @@ func TestIntegrationEveryTenantTableHasRLSPolicy(t *testing.T) {
 	for rows.Next() {
 		var table string
 		var enabled, forced, hasPolicy bool
-		if err := rows.Scan(&table, &enabled, &forced, &hasPolicy); err != nil {
+		var policies, canonical int
+		if err := rows.Scan(&table, &enabled, &forced, &hasPolicy, &policies, &canonical); err != nil {
 			t.Fatal(err)
 		}
 		seen++
@@ -184,6 +194,11 @@ func TestIntegrationEveryTenantTableHasRLSPolicy(t *testing.T) {
 		}
 		if !enabled || !forced || !hasPolicy {
 			t.Errorf("table %s: rls enabled=%v forced=%v has_policy=%v; tenant tables must call openbekci_enable_rls", table, enabled, forced, hasPolicy)
+			continue
+		}
+		// Exactly one policy, with the canonical USING and WITH CHECK text.
+		if policies != 1 || canonical != 1 {
+			t.Errorf("table %s: %d policies, %d with the canonical USING/WITH CHECK expression; want exactly 1 and 1", table, policies, canonical)
 		}
 	}
 	if err := rows.Err(); err != nil {
@@ -387,5 +402,28 @@ func TestIntegrationDetectPoolerDirectConnection(t *testing.T) {
 	}
 	if info.ServerVersion == "" {
 		t.Error("server version empty")
+	}
+}
+
+// Regression: /readyz used to build a *sql.DB per call and never close it,
+// leaking one goroutine each time.
+func TestIntegrationReadinessDoesNotLeakGoroutines(t *testing.T) {
+	d := newTestDB(t)
+	ctx := context.Background()
+	if err := d.MigrationsCurrent(ctx); err != nil { // warm up
+		t.Fatal(err)
+	}
+	before := runtime.NumGoroutine()
+	for range 200 {
+		if err := d.MigrationsCurrent(ctx); err != nil {
+			t.Fatal(err)
+		}
+		// Bypass the cache so the underlying check is exercised every time.
+		if err := d.checkMigrations(ctx); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if grew := runtime.NumGoroutine() - before; grew > 5 {
+		t.Errorf("goroutines grew by %d over 200 readiness checks", grew)
 	}
 }

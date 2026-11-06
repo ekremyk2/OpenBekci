@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
+	"github.com/pressly/goose/v3/lock"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/riverqueue/river/rivermigrate"
 
@@ -18,12 +20,27 @@ import (
 
 var errNoMigrator = errors.New("db: migrator pool not open")
 
-func gooseProvider(pool *pgxpool.Pool) (*goose.Provider, error) {
-	p, err := goose.NewProvider(goose.DialectPostgres, stdlib.OpenDBFromPool(pool), migrations.FS)
-	if err != nil {
-		return nil, fmt.Errorf("create goose provider: %w", err)
+// gooseProvider builds a goose provider on pool. The returned close function
+// releases the *sql.DB wrapper (and its opener goroutine) and must be called.
+// With locked set, migrations take a Postgres advisory session lock so that
+// concurrent replicas cannot race.
+func gooseProvider(pool *pgxpool.Pool, locked bool) (*goose.Provider, func(), error) {
+	sqlDB := stdlib.OpenDBFromPool(pool)
+	var opts []goose.ProviderOption
+	if locked {
+		locker, err := lock.NewPostgresSessionLocker()
+		if err != nil {
+			_ = sqlDB.Close()
+			return nil, nil, fmt.Errorf("create goose locker: %w", err)
+		}
+		opts = append(opts, goose.WithSessionLocker(locker))
 	}
-	return p, nil
+	p, err := goose.NewProvider(goose.DialectPostgres, sqlDB, migrations.FS, opts...)
+	if err != nil {
+		_ = sqlDB.Close()
+		return nil, nil, fmt.Errorf("create goose provider: %w", err)
+	}
+	return p, func() { _ = sqlDB.Close() }, nil
 }
 
 func riverMigrator(pool *pgxpool.Pool) (*rivermigrate.Migrator[pgx.Tx], error) {
@@ -40,10 +57,11 @@ func (d *DB) MigrateUp(ctx context.Context) error {
 	if d.migrator == nil {
 		return errNoMigrator
 	}
-	gp, err := gooseProvider(d.migrator)
+	gp, closeGoose, err := gooseProvider(d.migrator, true)
 	if err != nil {
 		return err
 	}
+	defer closeGoose()
 	if _, err := gp.Up(ctx); err != nil {
 		return fmt.Errorf("goose up: %w", err)
 	}
@@ -63,10 +81,11 @@ func (d *DB) MigrateDown(ctx context.Context) error {
 	if d.migrator == nil {
 		return errNoMigrator
 	}
-	gp, err := gooseProvider(d.migrator)
+	gp, closeGoose, err := gooseProvider(d.migrator, true)
 	if err != nil {
 		return err
 	}
+	defer closeGoose()
 	if _, err := gp.Down(ctx); err != nil {
 		return fmt.Errorf("goose down: %w", err)
 	}
@@ -78,10 +97,11 @@ func (d *DB) MigrateStatus(ctx context.Context, w io.Writer) error {
 	if d.migrator == nil {
 		return errNoMigrator
 	}
-	gp, err := gooseProvider(d.migrator)
+	gp, closeGoose, err := gooseProvider(d.migrator, true)
 	if err != nil {
 		return err
 	}
+	defer closeGoose()
 	st, err := gp.Status(ctx)
 	if err != nil {
 		return fmt.Errorf("goose status: %w", err)
@@ -109,14 +129,31 @@ func (d *DB) MigrateStatus(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
+// readyCacheTTL is how long a MigrationsCurrent result is reused. /readyz is
+// unauthenticated, so it must not run queries on every hit.
+const readyCacheTTL = 5 * time.Second
+
 // MigrationsCurrent reports whether every goose migration and River's schema
-// are applied. Used by /readyz; it runs on the app pool.
+// are applied. Used by /readyz; it runs on the app pool. The result is cached
+// for a few seconds.
 func (d *DB) MigrationsCurrent(ctx context.Context) error {
-	gp, err := gooseProvider(d.app)
-	if err != nil {
-		return err
+	d.readyMu.Lock()
+	defer d.readyMu.Unlock()
+	if !d.readyAt.IsZero() && time.Since(d.readyAt) < readyCacheTTL {
+		return d.readyErr
 	}
-	pending, err := gp.HasPending(ctx)
+	err := d.checkMigrations(ctx)
+	if ctx.Err() == nil {
+		d.readyAt, d.readyErr = time.Now(), err
+	}
+	return err
+}
+
+func (d *DB) checkMigrations(ctx context.Context) error {
+	if d.appGoose == nil {
+		return errors.New("db: app pool not open")
+	}
+	pending, err := d.appGoose.HasPending(ctx)
 	if err != nil {
 		return fmt.Errorf("goose pending check: %w", err)
 	}

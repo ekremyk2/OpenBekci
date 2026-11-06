@@ -114,6 +114,7 @@ func TestCheckKey(t *testing.T) {
 		{"random base64", goodKey, false, true},
 		{"random hex", "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", false, true},
 		{"empty", "", false, false},
+		{"32-char alphanumeric passphrase", "Zq8LmVw3NxT6bRk1Yd9HcJf5Gp2Sa7Ue", false, true},
 		{"too short", "abcdefghijklmnopqrstuvwxyz", false, false},
 		{"placeholder", "changeme-changeme-changeme-changeme-changeme", false, false},
 		{"placeholder mixed case", "ChangeMe-" + goodKey, false, false},
@@ -197,5 +198,23 @@ func TestCheckDataDir(t *testing.T) {
 	}
 	if err := CheckDataDir(file); err == nil {
 		t.Error("expected error when DATA_DIR is a file")
+	}
+}
+
+func TestCheckKeyShortErrorExplainsWhatWasTried(t *testing.T) {
+	err := CheckKey("SECRET_KEY", []byte("abcdefghijklmnopqrstuvwxyz"), false)
+	if err == nil || !strings.Contains(err.Error(), "raw passphrase") {
+		t.Errorf("err = %v; want a message that mentions raw passphrases", err)
+	}
+	err = CheckKey("SECRET_KEY", []byte("YWJjZGVmZ2hpamtsbW5vcHFy"), false) // valid base64, 18 bytes, 24 chars
+	if err == nil || !strings.Contains(err.Error(), "base64") || !strings.Contains(err.Error(), "raw passphrase") {
+		t.Errorf("err = %v; want a message naming base64 and raw passphrases", err)
+	}
+}
+
+func TestValidateServeRejectsIdenticalKeys(t *testing.T) {
+	c := Config{DatabaseURL: "postgres://x", BaseURL: "https://x.example.org", SecretKey: []byte(goodKey), EncryptionKey: []byte(goodKey)}
+	if err := c.ValidateServe(); err == nil || !strings.Contains(err.Error(), "must be different") {
+		t.Errorf("err = %v; want identical-keys error", err)
 	}
 }
