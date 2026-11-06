@@ -16,11 +16,21 @@ export class ForbiddenError extends Error {
   }
 }
 
-/** Only same-origin absolute paths may be used as a post-login destination (open-redirect guard). */
+/**
+ * Only same-origin absolute paths may be used as a post-login destination (open-redirect guard).
+ * Rejects absolute URLs, protocol-relative `//host`, backslashes, and control characters (a tab or
+ * newline inside `/<TAB>/host` is stripped by browsers and turns it into `//host`).
+ */
 export function safeNext(next: string | undefined | null): string | undefined {
-  if (!next || !next.startsWith('/') || next.startsWith('//') || next.startsWith('/\\'))
+  if (!next || !next.startsWith('/') || next.startsWith('//')) return undefined
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u001f\u007f\\]/.test(next)) return undefined
+  if (next === '/login' || next.startsWith('/login/') || next.startsWith('/login?')) return undefined
+  try {
+    if (new URL(next, 'http://localhost').origin !== 'http://localhost') return undefined
+  } catch {
     return undefined
-  if (next.startsWith('/login')) return undefined
+  }
   return next
 }
 

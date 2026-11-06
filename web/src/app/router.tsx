@@ -1,4 +1,4 @@
-import { createRouter, type ErrorComponentProps } from '@tanstack/react-router'
+import { createRouter, type ErrorComponentProps, type RouterHistory } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
 import { AppError } from '@/api/errors'
 import { ErrorState } from '@/components/data/ErrorState'
@@ -18,9 +18,10 @@ function RouteError({ error, reset }: ErrorComponentProps) {
   )
 }
 
-export function createAppRouter(queryClient: QueryClient) {
+export function createAppRouter(queryClient: QueryClient, history?: RouterHistory) {
   return createRouter({
     routeTree,
+    history,
     context: { queryClient },
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0, // TanStack Query owns caching

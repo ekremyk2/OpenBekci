@@ -5,6 +5,7 @@ import { LogOutIcon, MenuIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { toast } from '@/lib/toast'
 import { api } from '@/api/client'
+import { AppError } from '@/api/errors'
 import { useInstanceName } from '@/app/InstanceEffects'
 import { filterNav, NAV_ITEMS } from '@/app/nav'
 import { clearSession, useSession } from '@/app/session'
@@ -55,12 +56,14 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   async function signOut() {
     try {
       await api.DELETE('/v1/auth/session')
-    } catch {
-      toast.error(t`Could not sign out. Please try again.`)
-      return
+    } catch (e) {
+      // 401: the session is already gone, which is what the user wanted
+      if (!(e instanceof AppError && e.status === 401)) {
+        toast.error(t`Could not sign out. Please try again.`)
+        return
+      }
     }
     clearSession(queryClient)
-    queryClient.clear()
     await navigate({ to: '/login', search: {} })
   }
 

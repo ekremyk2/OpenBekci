@@ -2,15 +2,26 @@ import { queryOptions, useQuery, type QueryClient } from '@tanstack/react-query'
 import { useParams } from '@tanstack/react-router'
 import { api } from '@/api/client'
 import { AppError } from '@/api/errors'
+import { emitApiEvent } from '@/api/events'
 import type { Me, MeOrganization } from '@/api/schema'
 import { can as canPure, findOrg, type PermissionScope } from '@/lib/permissions'
 
 export const meQueryOptions = queryOptions({
   queryKey: ['me'],
-  queryFn: async (): Promise<Me> => {
-    const { data } = await api.GET('/v1/me')
-    if (!data) throw new Error('Empty /v1/me response')
-    return data
+  queryFn: async ({ client }): Promise<Me> => {
+    try {
+      const { data } = await api.GET('/v1/me')
+      if (!data) throw new Error('Empty /v1/me response')
+      return data
+    } catch (e) {
+      // /v1/me is exempt from the client's automatic 401 handling (loadSession treats it as "no
+      // session"). A 401 on a *refetch* (window focus) means the session ended mid-use, so sign the
+      // shell out instead of leaving stale data on screen.
+      if (e instanceof AppError && e.status === 401 && client.getQueryData(['me']) !== undefined) {
+        emitApiEvent({ type: 'unauthorized', error: e })
+      }
+      throw e
+    }
   },
   retry: false,
   staleTime: 30_000,
@@ -26,8 +37,9 @@ export async function loadSession(queryClient: QueryClient): Promise<Me | null> 
   }
 }
 
+/** Forgets everything cached for the signed-in user (sign-out and 401): nothing may leak to the next user. */
 export function clearSession(queryClient: QueryClient) {
-  queryClient.removeQueries({ queryKey: meQueryOptions.queryKey })
+  queryClient.clear()
 }
 
 const LAST_ORG_KEY = 'ob.lastOrg'
