@@ -46,10 +46,7 @@ test('discovery branding and instance name reach the page', async ({ page }) => 
   await page.goto('/login?locale=en')
   await expect(page).toHaveTitle('Brand Test')
   await expect(page.getByRole('heading', { name: 'Brand Test' })).toBeVisible()
-  const seed = await page.evaluate(() =>
-    document.documentElement.style.getPropertyValue('--brand-seed'),
-  )
-  expect(seed).toBe('#b45309')
+  await expect(page.locator('html')).toHaveAttribute('style', /--brand-seed:\s*#b45309/)
 })
 
 test('unauthenticated visit to an org route redirects to login with next', async ({ page }) => {
