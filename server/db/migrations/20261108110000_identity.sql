@@ -51,14 +51,14 @@ CREATE INDEX session_expires_at ON session (expires_at);
 
 -- One-time codes and links. SMS sign-in codes (6 digits, 5 minutes, 5 attempts)
 -- and magic links (a long random token, 15 minutes, single use) share the
--- table: code_hash is HMAC(SECRET_KEY, purpose, target, code) for a short code
+-- table (purpose 'reauth' is the email code of re-authentication): code_hash is HMAC(SECRET_KEY, purpose, target, code) for a short code
 -- and the SHA-256 of the token for a link (purpose 'magic_link').
 CREATE TABLE otp_code (
     id          uuid        PRIMARY KEY,
     user_id     uuid        REFERENCES "user" (id) ON DELETE CASCADE,
     target_kind text        NOT NULL CHECK (target_kind IN ('phone', 'email')),
     target      text        NOT NULL,
-    purpose     text        NOT NULL CHECK (purpose IN ('sign_in', 'verify', 'magic_link')),
+    purpose     text        NOT NULL CHECK (purpose IN ('sign_in', 'verify', 'magic_link', 'reauth')),
     code_hash   bytea       NOT NULL,
     created_at  timestamptz NOT NULL DEFAULT now(),
     expires_at  timestamptz NOT NULL,

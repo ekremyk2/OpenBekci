@@ -23,6 +23,7 @@ const (
 
 	purposeSignIn   = "sign_in"
 	purposeMagic    = "magic_link"
+	purposeReauth   = "reauth"
 	lockoutWindow   = 30 * time.Minute
 	lockoutBase     = 30 * time.Second
 	lockoutMax      = 30 * time.Minute
@@ -234,9 +235,15 @@ func (s *Service) codeMAC(purpose, target, code string) []byte {
 	return crypto.MAC(s.cfg.SecretKey, purpose, target, code)
 }
 
-// checkOTP verifies code against the newest open sign-in code of phone,
-// counting the attempt. It reports the owning user id when the code is right.
+// checkOTP verifies code against the newest open sign-in code of phone.
 func (s *Service) checkOTP(ctx context.Context, phone, code string) (uuid.UUID, bool, error) {
+	return s.checkCode(ctx, "phone", purposeSignIn, phone, code)
+}
+
+// checkCode verifies code against the newest open code of the purpose sent to
+// target (kind "phone" or "email"), counting the attempt. It reports the
+// owning user id when the code is right.
+func (s *Service) checkCode(ctx context.Context, kind, purpose, target, code string) (uuid.UUID, bool, error) {
 	now := s.now()
 	var uid uuid.UUID
 	good := false
@@ -247,8 +254,8 @@ func (s *Service) checkOTP(ctx context.Context, phone, code string) (uuid.UUID, 
 		var attempts int
 		err := tx.QueryRow(ctx, `
 			SELECT id, user_id, code_hash, attempts FROM otp_code
-			WHERE purpose = $3 AND target_kind = 'phone' AND target = $1 AND consumed_at IS NULL AND expires_at > $2
-			ORDER BY created_at DESC LIMIT 1 FOR UPDATE`, phone, now, purposeSignIn).Scan(&otpID, &owner, &hash, &attempts)
+			WHERE purpose = $3 AND target_kind = $4 AND target = $1 AND consumed_at IS NULL AND expires_at > $2
+			ORDER BY created_at DESC LIMIT 1 FOR UPDATE`, target, now, purpose, kind).Scan(&otpID, &owner, &hash, &attempts)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil
 		}
@@ -258,7 +265,7 @@ func (s *Service) checkOTP(ctx context.Context, phone, code string) (uuid.UUID, 
 		if attempts >= s.cfg.OTPAttempts || owner == nil {
 			return nil
 		}
-		if crypto.Equal(hash, s.codeMAC(purposeSignIn, phone, code)) {
+		if crypto.Equal(hash, s.codeMAC(purpose, target, code)) {
 			good, uid = true, *owner
 			_, err = tx.Exec(ctx, `UPDATE otp_code SET consumed_at = $2, attempts = attempts + 1 WHERE id = $1`, otpID, now)
 			return err

@@ -281,11 +281,15 @@ type ReauthMethod string
 const (
 	ReauthPassword ReauthMethod = "password"
 	ReauthSMSOTP   ReauthMethod = "sms_otp"
+	// ReauthEmailCode is a code mailed to the user's own address by
+	// RequestReauthEmailCode.
+	ReauthEmailCode ReauthMethod = "email_code"
 )
 
-// Reauth verifies the caller's password or a fresh SMS code (sent to the
-// user's own phone through RequestOTP) and opens the re-authentication window
-// on the current session. It returns when the window ends.
+// Reauth verifies the caller's password, a fresh SMS code (sent to the user's
+// own phone through RequestOTP) or a fresh email code (RequestReauthEmailCode)
+// and opens the re-authentication window on the current session. It returns
+// when the window ends.
 func (s *Service) Reauth(ctx context.Context, p *authz.Principal, method ReauthMethod, secret string, m Meta) (time.Time, error) {
 	ident := "uid:" + p.UserID.String()
 	if err := s.ipGate(m.IP); err != nil {
@@ -318,6 +322,14 @@ func (s *Service) Reauth(ctx context.Context, p *authz.Principal, method ReauthM
 			uid, ok, err := s.checkOTP(ctx, *u.Phone, secret)
 			if err != nil {
 				return time.Time{}, problem.Internal(fmt.Errorf("check otp: %w", err))
+			}
+			good = ok && uid == p.UserID
+		}
+	case ReauthEmailCode:
+		if u.Email != nil {
+			uid, ok, err := s.checkCode(ctx, "email", purposeReauth, *u.Email, secret)
+			if err != nil {
+				return time.Time{}, problem.Internal(fmt.Errorf("check email code: %w", err))
 			}
 			good = ok && uid == p.UserID
 		}
