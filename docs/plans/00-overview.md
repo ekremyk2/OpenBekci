@@ -63,6 +63,7 @@ These were open assumptions in v0.1 of this document; the [review](06-review.md)
 | D1 | **License** | **AGPL-3.0 for the server and web app, with an explicit pack-linking exception** (so privately written packs compiled into the binary do not become AGPL — stated honestly rather than implied). **MPL-2.0 for the mobile app** (avoids the App Store conflict). **Apache-2.0 for the pack SDK, the OpenAPI spec and the generated clients.** The exception text is a draft until a lawyer has read it; that must happen before the first outside contribution. Contributions under DCO | `LICENSE`, `LICENSING.md`, per-directory license files, `CONTRIBUTING.md` |
 | D3 | **First public release** | **0.1: web-only, money-complete** as scoped in review §9 (~45–50 engineer-weeks). No mobile, meetings, bookings, visitors or pack SDK in 0.1; Turkish legal rules are core settings until the SDK exists. Milestones M0–M7 below are to be re-baselined around it | §8, all component milestone tables |
 | D5 | **Phone-first sign-in** | **A minimal SMS gateway interface in core with one provider (Netgsm) from M1**, so phone OTP and SMS invitations work in 0.1. Other providers arrive through packs later | Backend identity and notifications |
+| D6 | **Gate and automatic door control** | **Concepts in core, hardware in a separate module plus an on-site agent.** In 0.1 the core only *holds* resident vehicle plates per unit (and expected-visitor plates) and can export the list for the site's plate-recognition camera operator; nothing opens a gate. Real-time control — access points, credentials (plate, code, tag, app), opening log, guard "open" button — is an **access-control module** served by a small **on-site agent** (runs on the site LAN, connects outbound to the server, keeps the allow-list locally so gates work offline) with vendor **device drivers** registered the same way packs are. Scheduled **after 0.1 and before mobile** (0.2). App-opened doors come with the mobile app | Overview §3/§4, backend visitors module, a new `agent/` deployable in the infra plan |
 
 Still assumed (not blocking):
 
@@ -90,7 +91,7 @@ Grouped by domain. Each becomes a module in the backend and a feature area in th
 | **Documents** | Folder tree per site, visibility rules, versions. Generated documents (statements, minutes, decision book) land here |
 | **Meetings & voting** | General assemblies and board meetings: agenda, attendance and proxies, quorum rules (pluggable), votes per unit/share/person, decisions, minutes |
 | **Bookings** | Facilities with rules and optional fees; bookings create charges |
-| **Visitors & gate** | Expected visitors, arrivals/departures, vehicle registry, guard console |
+| **Visitors & gate** | Expected visitors, arrivals/departures, vehicle (plate) registry per unit with export for camera operators, guard console. Physical gate/door control is **not core**: it is a separate access-control module with an on-site agent and device drivers (decision D6), after 0.1 |
 | **Notifications** | In-app, email, push (core); SMS and others via packs. Per-user preferences, digests, per-org template overrides |
 | **Audit** | Append-only audit log of every mutation with actor, before/after |
 | **Privacy** | Per-person data export and anonymization that preserves ledger integrity; consent records |
@@ -121,7 +122,8 @@ Grouped by domain. Each becomes a module in the backend and a feature area in th
              data · RLS · jobs · outbox       local disk (default) or S3-compatible
 
    Optional: SMTP server, push relay (for mobile push), OpenTelemetry collector,
-             pack-specific services (SMS gateway, e-invoice provider, …)
+             pack-specific services (SMS gateway, e-invoice provider, …),
+             on-site access agent (post-0.1: drives gates/doors on the site LAN, D6)
 ```
 
 Principles behind this shape:
