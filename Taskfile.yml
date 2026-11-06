@@ -19,12 +19,19 @@ tasks:
       - pnpm --package=@redocly/cli@2.76.0 dlx redocly lint src/openapi.yaml --config .redocly.yaml --format=json | node scripts/lint-strict.cjs
 
   gen:
-    desc: "Generate code: bundle spec, lint, oapi-codegen, sqlc, openapi-typescript"
+    desc: "Generate code: permissions, bundle spec, lint, oapi-codegen, sqlc, openapi-typescript"
     cmds:
+      - task: gen:permissions
       - task: api:bundle
       - task: api:lint
       - task: gen:go
       - task: gen:ts
+
+  gen:permissions:
+    desc: Render the Go permission registry into api/src/components/permissions.yaml
+    dir: server
+    cmds:
+      - go run ./cmd/genpermissions -out ../api/src/components/permissions.yaml
 
   gen:go:
     desc: Generate the Go server (oapi-codegen) and the database code (sqlc)
@@ -42,10 +49,10 @@ tasks:
     desc: Regenerate and fail if generated files differ from what is committed
     cmds:
       - task: gen
-      - git diff --exit-code -- api/openapi.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts
+      - git diff --exit-code -- api/openapi.yaml api/src/components/permissions.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts
       # git diff ignores files that are new and untracked.
       - cmd: |
-          out=$(git status --porcelain -- api/openapi.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts)
+          out=$(git status --porcelain -- api/openapi.yaml api/src/components/permissions.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts)
           if [ -n "$out" ]; then echo "generated files are not committed:"; echo "$out"; exit 1; fi
 
   lint:

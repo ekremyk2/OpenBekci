@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
@@ -208,8 +209,14 @@ func (s *Service) RevokeSession(ctx context.Context, userID, familyID uuid.UUID)
 	var n int64
 	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
 		tag, err := tx.Exec(ctx, `UPDATE session SET revoked_at = $3 WHERE user_id = $1 AND family_id = $2 AND revoked_at IS NULL`, userID, familyID, s.now())
+		if err != nil {
+			return err
+		}
 		n = tag.RowsAffected()
-		return err
+		if n == 0 {
+			return nil
+		}
+		return audit.Record(ctx, tx, audit.Event{Action: "session.revoke", TargetType: "session", TargetID: familyID})
 	})
 	if err != nil {
 		return false, problem.Internal(fmt.Errorf("revoke session: %w", err))
@@ -220,8 +227,11 @@ func (s *Service) RevokeSession(ctx context.Context, userID, familyID uuid.UUID)
 // RevokeAllSessions revokes every session of the user, the current one included.
 func (s *Service) RevokeAllSessions(ctx context.Context, userID uuid.UUID) error {
 	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		_, err := tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE user_id = $1 AND revoked_at IS NULL`, userID, s.now())
-		return err
+		tag, err := tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE user_id = $1 AND revoked_at IS NULL`, userID, s.now())
+		if err != nil || tag.RowsAffected() == 0 {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{Action: "session.revoke_all", TargetType: "user", TargetID: userID})
 	})
 	if err != nil {
 		return problem.Internal(fmt.Errorf("revoke all sessions: %w", err))
@@ -347,7 +357,7 @@ func (s *Service) ChangePassword(ctx context.Context, p *authz.Principal, newPas
 	if err != nil {
 		return problem.Internal(err)
 	}
-	return s.updatePassword(ctx, p.UserID, hash, p.FamilyID)
+	return s.updatePassword(ctx, p.UserID, hash, p.FamilyID, "user.password_change")
 }
 
 // Prune deletes expired sessions, spent or expired codes and old login

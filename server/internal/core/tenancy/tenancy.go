@@ -1,0 +1,203 @@
+// Package tenancy is the organization module (backend plan 4.1): reading and
+// updating an organization's settings. Sites, blocks and units arrive with
+// phase B.
+package tenancy
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"regexp"
+	"time"
+	_ "time/tzdata" // IANA zones for timezone validation on hosts without a zoneinfo database
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/problem"
+)
+
+// Permissions of the module.
+const (
+	PermOrgRead   authz.Permission = "org.read"
+	PermOrgManage authz.Permission = "org.manage"
+)
+
+// Permissions declares the module's permissions; the wiring registers them.
+func Permissions() []authz.PermissionDef {
+	org := []authz.ScopeType{authz.ScopeOrg}
+	return []authz.PermissionDef{
+		{Name: PermOrgRead, Description: "Read the organization's settings",
+			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleSiteManager, authz.RoleBoardMember, authz.RoleAuditor, authz.RoleAccountant, authz.RoleStaff}, Scopes: org},
+		{Name: PermOrgManage, Description: "Change the organization's settings",
+			Roles: []authz.Role{authz.RoleOrgAdmin}, Scopes: org},
+	}
+}
+
+// TxRunner is the database access the module needs, satisfied by *db.DB.
+type TxRunner interface {
+	InTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error
+}
+
+// Service is the tenancy module.
+type Service struct{ db TxRunner }
+
+// NewService returns a Service.
+func NewService(db TxRunner) *Service { return &Service{db: db} }
+
+// Org is an organization as the API shows it. The JSON tags are the audit
+// field names (see audit.Diff).
+type Org struct {
+	ID            uuid.UUID `json:"id"`
+	Slug          string    `json:"slug"`
+	Name          string    `json:"name"`
+	Status        string    `json:"status"`
+	CountryCode   string    `json:"country_code"`
+	DefaultLocale string    `json:"default_locale"`
+	Timezone      string    `json:"timezone"`
+	Version       int       `json:"version"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
+// auditView is what an org.update diff compares: the editable settings only.
+type auditView struct {
+	Name          string `json:"name"`
+	CountryCode   string `json:"country_code"`
+	DefaultLocale string `json:"default_locale"`
+	Timezone      string `json:"timezone"`
+}
+
+func (o Org) auditView() auditView {
+	return auditView{Name: o.Name, CountryCode: o.CountryCode, DefaultLocale: o.DefaultLocale, Timezone: o.Timezone}
+}
+
+const orgColumns = `id, slug, name, status, country_code, default_locale, timezone, version, created_at, updated_at`
+
+func scanOrg(row pgx.Row) (Org, error) {
+	var o Org
+	err := row.Scan(&o.ID, &o.Slug, &o.Name, &o.Status, &o.CountryCode, &o.DefaultLocale, &o.Timezone, &o.Version, &o.CreatedAt, &o.UpdatedAt)
+	o.CreatedAt, o.UpdatedAt = o.CreatedAt.UTC(), o.UpdatedAt.UTC()
+	return o, err
+}
+
+// Get returns the organization. It needs org.read.
+func (s *Service) Get(ctx context.Context, orgID uuid.UUID) (Org, error) {
+	if err := authz.Require(ctx, PermOrgRead, authz.Scope{OrgID: orgID}); err != nil {
+		return Org{}, err
+	}
+	var o Org
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) (err error) {
+		o, err = scanOrg(tx.QueryRow(ctx, `SELECT `+orgColumns+` FROM organization WHERE id = $1`, orgID))
+		return err
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Org{}, problem.NotFound("no such organization")
+	}
+	if err != nil {
+		return Org{}, problem.Internal(fmt.Errorf("get organization: %w", err))
+	}
+	return o, nil
+}
+
+// Patch is a partial update; nil fields stay as they are.
+type Patch struct {
+	Name          *string
+	CountryCode   *string
+	DefaultLocale *string
+	Timezone      *string
+}
+
+var (
+	localeRE  = regexp.MustCompile(`^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$`)
+	countryRE = regexp.MustCompile(`^[A-Z]{2}$`)
+)
+
+func (p Patch) validate() error {
+	var fields []problem.Field
+	if p.Name != nil {
+		if n := len([]rune(*p.Name)); n < 1 || n > 200 {
+			fields = append(fields, problem.Field{Field: "name", Code: "invalid_value"})
+		}
+	}
+	if p.CountryCode != nil && !countryRE.MatchString(*p.CountryCode) {
+		fields = append(fields, problem.Field{Field: "country_code", Code: "invalid_format"})
+	}
+	if p.DefaultLocale != nil && !localeRE.MatchString(*p.DefaultLocale) {
+		fields = append(fields, problem.Field{Field: "default_locale", Code: "invalid_format"})
+	}
+	if p.Timezone != nil {
+		if _, err := time.LoadLocation(*p.Timezone); err != nil || *p.Timezone == "" || *p.Timezone == "Local" {
+			fields = append(fields, problem.Field{Field: "timezone", Code: "invalid_value"})
+		}
+	}
+	if len(fields) > 0 {
+		return problem.Validation(fields...)
+	}
+	return nil
+}
+
+// Update applies p if the organization is still at expectedVersion (the
+// If-Match value) and records org.update with the diff in the same
+// transaction. It answers 409 version_conflict otherwise. A patch that changes
+// nothing returns the current organization without writing. It needs org.manage.
+func (s *Service) Update(ctx context.Context, orgID uuid.UUID, expectedVersion int, p Patch) (Org, error) {
+	if err := authz.Require(ctx, PermOrgManage, authz.Scope{OrgID: orgID}); err != nil {
+		return Org{}, err
+	}
+	if err := p.validate(); err != nil {
+		return Org{}, err
+	}
+	var out Org
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		before, err := scanOrg(tx.QueryRow(ctx, `SELECT `+orgColumns+` FROM organization WHERE id = $1 FOR UPDATE`, orgID))
+		if err != nil {
+			return err
+		}
+		if before.Version != expectedVersion {
+			return errVersion
+		}
+		next := before
+		if p.Name != nil {
+			next.Name = *p.Name
+		}
+		if p.CountryCode != nil {
+			next.CountryCode = *p.CountryCode
+		}
+		if p.DefaultLocale != nil {
+			next.DefaultLocale = *p.DefaultLocale
+		}
+		if p.Timezone != nil {
+			next.Timezone = *p.Timezone
+		}
+		diff, err := audit.Diff("organization", before.auditView(), next.auditView())
+		if err != nil {
+			return err
+		}
+		if len(diff) == 0 {
+			out = before
+			return nil
+		}
+		out, err = scanOrg(tx.QueryRow(ctx, `
+			UPDATE organization SET name = $2, country_code = $3, default_locale = $4, timezone = $5,
+			       updated_at = now(), version = version + 1
+			WHERE id = $1 RETURNING `+orgColumns, orgID, next.Name, next.CountryCode, next.DefaultLocale, next.Timezone))
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, Action: "org.update", TargetType: "organization", TargetID: orgID, Diff: diff})
+	})
+	switch {
+	case errors.Is(err, errVersion):
+		return Org{}, problem.New(409, problem.CodeVersionConflict, "the organization was changed by someone else; reload and try again")
+	case errors.Is(err, pgx.ErrNoRows):
+		return Org{}, problem.NotFound("no such organization")
+	case err != nil:
+		return Org{}, problem.Internal(fmt.Errorf("update organization: %w", err))
+	}
+	return out, nil
+}
+
+var errVersion = errors.New("version mismatch")

@@ -5,8 +5,25 @@
 package dbgen
 
 import (
+	"net/netip"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type AuditEvent struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	ActorUserID pgtype.UUID
+	ActorKind   string
+	Action      string
+	TargetType  string
+	TargetID    pgtype.UUID
+	Diff        []byte
+	Ip          *netip.Addr
+	RequestID   pgtype.Text
+	At          pgtype.Timestamptz
+}
 
 type IdempotencyKey struct {
 	OrgID               pgtype.UUID
@@ -92,6 +109,19 @@ type Person struct {
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
 	Version     int32
+}
+
+type PlatformAuditEvent struct {
+	ID          pgtype.UUID
+	ActorUserID pgtype.UUID
+	ActorKind   string
+	Action      string
+	TargetType  string
+	TargetID    pgtype.UUID
+	Diff        []byte
+	Ip          *netip.Addr
+	RequestID   pgtype.Text
+	At          pgtype.Timestamptz
 }
 
 type Session struct {
