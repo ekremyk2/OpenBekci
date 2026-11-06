@@ -28,7 +28,7 @@ Open-source residential community management: apartment buildings, gated sites, 
 
 ## Decisions
 
-The blocking decisions (deployment model, data ownership, license, first-release scope, phone-first sign-in, gate control) were made on 2026-11-06 and are recorded in the [overview, §2.2](docs/plans/00-overview.md). Feature areas are being decided one at a time in plain language under [docs/decisions/](docs/decisions/) — so far: [Money](docs/decisions/money.md), [Setup & people](docs/decisions/setup-people.md), [Daily operations](docs/decisions/daily-operations.md). A decision file wins over conflicting text in the plans until the plans are revised. Licensing is per directory — see [LICENSING.md](LICENSING.md); the pack-linking exception is a draft pending legal review.
+The blocking decisions (deployment model, data ownership, license, first-release scope, phone-first sign-in, gate control) were made on 2026-11-06 and are recorded in the [overview, §2.2](docs/plans/00-overview.md). Feature areas are being decided one at a time in plain language under [docs/decisions/](docs/decisions/) — so far: [Money](docs/decisions/money.md), [Setup & people](docs/decisions/setup-people.md), [Daily operations](docs/decisions/daily-operations.md), [Governance](docs/decisions/governance.md). A decision file wins over conflicting text in the plans until the plans are revised. Licensing is per directory — see [LICENSING.md](LICENSING.md); the pack-linking exception is a draft pending legal review.
 
 ## Contributing
 
