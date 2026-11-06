@@ -1,0 +1,93 @@
+import { useSyncExternalStore } from 'react'
+
+export type ThemePreference = 'system' | 'light' | 'dark'
+const KEY = 'ob.theme' // keep in sync with public/theme-init.js
+
+const listeners = new Set<() => void>()
+const media =
+  typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null
+
+function readPreference(): ThemePreference {
+  try {
+    const v = localStorage.getItem(KEY)
+    return v === 'light' || v === 'dark' ? v : 'system'
+  } catch {
+    return 'system'
+  }
+}
+
+let preference: ThemePreference = readPreference()
+
+function resolve(p: ThemePreference): 'light' | 'dark' {
+  return p === 'system' ? (media?.matches ? 'dark' : 'light') : p
+}
+
+function apply() {
+  document.documentElement.classList.toggle('dark', resolve(preference) === 'dark')
+}
+
+export function setThemePreference(next: ThemePreference) {
+  preference = next
+  try {
+    if (next === 'system') localStorage.removeItem(KEY)
+    else localStorage.setItem(KEY, next)
+  } catch {
+    /* storage blocked: preference lasts for this page load */
+  }
+  apply()
+  listeners.forEach((l) => l())
+}
+
+media?.addEventListener('change', () => {
+  apply()
+  listeners.forEach((l) => l())
+})
+
+let snapshotKey = ''
+let snapshot = { preference, resolved: resolve(preference) }
+function getSnapshot() {
+  const key = `${preference}:${resolve(preference)}`
+  if (key !== snapshotKey) {
+    snapshotKey = key
+    snapshot = { preference, resolved: resolve(preference) }
+  }
+  return snapshot
+}
+
+export function useTheme() {
+  const s = useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb)
+      return () => listeners.delete(cb)
+    },
+    getSnapshot,
+    getSnapshot,
+  )
+  return { ...s, setPreference: setThemePreference }
+}
+
+/** Relative luminance of #rgb / #rrggbb, or null when the string is not a hex color. */
+function luminance(hex: string): number | null {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim())
+  if (!m) return null
+  const h = m[1]!.length === 3 ? [...m[1]!].map((c) => c + c).join('') : m[1]!
+  const [r, g, b] = [0, 2, 4].map((i) => {
+    const c = parseInt(h.slice(i, i + 2), 16) / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  }) as [number, number, number]
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** Foreground (white or near-black) that reads best on the given brand color. */
+export function brandForeground(hex: string): string {
+  const l = luminance(hex)
+  return l !== null && l > 0.4 ? '#111827' : '#ffffff'
+}
+
+/** Applies `branding.primary_color` from the discovery document; invalid values are ignored. */
+export function applyBranding(primaryColor: string | undefined) {
+  if (!primaryColor || luminance(primaryColor) === null) return
+  const root = document.documentElement.style
+  root.setProperty('--brand-seed', primaryColor)
+  root.setProperty('--brand-seed-foreground', brandForeground(primaryColor))
+}
