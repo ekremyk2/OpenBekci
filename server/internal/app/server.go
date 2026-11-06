@@ -27,6 +27,12 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	}
 	defer rt.db.Close()
 
+	ln, err := net.Listen("tcp", cfg.ListenAddr)
+	if err != nil {
+		rt.stopJobs(log)
+		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
+	}
+
 	router := httpapi.NewRouter(
 		httpapi.Deps{Log: log, DB: rt.db, Jobs: rt.jobs},
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, Ready: readiness(cfg, rt.db)},
@@ -37,10 +43,6 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       2 * time.Minute,
 		BaseContext:       func(net.Listener) context.Context { return context.WithoutCancel(ctx) },
-	}
-	ln, err := net.Listen("tcp", cfg.ListenAddr)
-	if err != nil {
-		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 	log.Info("http server listening", "addr", ln.Addr().String(), "worker", withWorker)
 
