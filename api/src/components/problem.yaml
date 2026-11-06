@@ -36,12 +36,18 @@ schemas:
           - pack_error
           - site_offboarded
           - internal_error
+          - csrf_failed
+          - sms_unavailable
+          - mail_unavailable
       detail:
         type: string
         description: Human-readable explanation, not for machine parsing.
       instance:
         type: string
         description: The request id (also in the `X-Request-Id` response header), for support and logs.
+      request_id:
+        type: string
+        description: Same value as `instance`.
       errors:
         type: array
         description: Per-field errors (with `validation_failed`).

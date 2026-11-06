@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
 
+	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -45,7 +46,8 @@ func MountAPI(r chi.Router, deps Deps) {
 		}
 	}
 
-	strict := gen.NewStrictHandlerWithOptions(&apiServer{instance: deps.Instance}, nil, gen.StrictHTTPServerOptions{
+	srv := &apiServer{instance: deps.Instance, identity: deps.Identity, insecureCookies: deps.InsecureCookies}
+	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
 		},
@@ -70,7 +72,9 @@ func MountAPI(r chi.Router, deps Deps) {
 
 // apiServer implements gen.StrictServerInterface by delegating to the modules.
 type apiServer struct {
-	instance *instance.Service
+	instance        *instance.Service
+	identity        *identity.Service
+	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie
 }
 
 var _ gen.StrictServerInterface = (*apiServer)(nil)

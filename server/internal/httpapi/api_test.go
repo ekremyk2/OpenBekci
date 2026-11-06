@@ -174,8 +174,8 @@ func TestSpecConformance(t *testing.T) {
 			}
 			seen[op.OperationID] = true
 			if method != http.MethodGet && method != http.MethodHead {
-				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" {
-					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
+				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" && v != "none" {
+					t.Errorf("%s: mutation without x-idempotent optional|required|none (got %q)", where, v)
 				}
 			}
 			if v := extString(op.Extensions, "x-stability"); v != "" && v != "stable" && v != "preview" {
@@ -209,6 +209,7 @@ func TestProblemCodesMatchSpec(t *testing.T) {
 		problem.CodeConflict, problem.CodeVersionConflict, problem.CodeIdempotencyMismatch, problem.CodeLockedPeriod,
 		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant,
 		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError,
+		problem.CodeCSRFFailed, problem.CodeSMSUnavailable, problem.CodeMailUnavailable,
 	} {
 		if !inSpec[string(c)] {
 			t.Errorf("code %q is not in the spec enum", c)

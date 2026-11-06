@@ -57,7 +57,7 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
   `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
-  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500). `instance` is the request id,
+  `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403), `sms_unavailable` and `mail_unavailable` (503). `invalid_grant` is a 401. 401 responses carry `WWW-Authenticate`. `instance` (also `request_id`) is the request id,
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
   `too_short`, `too_long`, `too_small`, `too_large`, `unknown_field`.
@@ -74,7 +74,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | Extension | On | Values | Effect |
 |---|---|---|---|
 | `x-openbekci-roles` | operation | map role to a list of permission strings | the authorization matrix (wired with the first business modules) |
-| `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal) |
+| `x-idempotent` | operation | `optional`, `required` or `none` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it); `none` marks credential endpoints (sign-in, refresh) whose responses carry secrets, so the header is ignored and nothing is stored. Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal) |
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |

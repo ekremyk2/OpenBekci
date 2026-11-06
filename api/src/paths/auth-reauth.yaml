@@ -1,0 +1,36 @@
+post:
+  operationId: auth.reauth
+  summary: Re-authenticate the current session for sensitive operations
+  description: |
+    Proves the caller is still the user with the password or a fresh SMS code,
+    and marks the current session as re-authenticated for 10 minutes. Sensitive
+    operations answer 403 `reauth_required` outside that window. Not
+    replayable: `Idempotency-Key` is ignored.
+  tags: [auth]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: none
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/auth.yaml#/schemas/ReauthRequest'
+  responses:
+    '200':
+      description: Re-authenticated.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/auth.yaml#/schemas/ReauthResponse'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

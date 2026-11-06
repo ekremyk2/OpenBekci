@@ -30,7 +30,12 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 
 	idem := idempotency.NewPG(rt.db)
 	go purgeIdempotency(ctx, log, idem)
-	deps := apiDeps(cfg, log, rt.db, idem)
+	deps, err := apiDeps(cfg, log, rt.db, idem)
+	if err != nil {
+		rt.stopJobs(log)
+		return err
+	}
+	go pruneIdentity(ctx, log, deps.Identity)
 	deps.Jobs = rt.jobs
 	router := httpapi.NewRouter(
 		deps,

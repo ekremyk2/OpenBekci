@@ -27,6 +27,7 @@ func init() {
 const (
 	idemOptional = "optional"
 	idemRequired = "required"
+	idemNone     = "none"
 )
 
 const (
@@ -34,8 +35,8 @@ const (
 	headerStability      = "X-OpenBekci-Stability"
 )
 
-// Authenticator resolves the caller of a request. The sessions task (A3)
-// supplies the real implementation through Deps.Authenticator.
+// Authenticator resolves the caller of a request. SessionAuthenticator (auth.go)
+// is the production implementation, supplied through Deps.Authenticator.
 //
 // Authenticate is called only for operations whose spec `security` is not
 // empty. It returns the principal, or an error rendered as a problem
@@ -47,12 +48,22 @@ type Authenticator interface {
 }
 
 // NoopAuthenticator rejects every request as unauthenticated. It is the
-// default until sessions are wired.
+// default when no Authenticator is configured (unit tests).
 type NoopAuthenticator struct{}
 
 // Authenticate implements Authenticator.
 func (NoopAuthenticator) Authenticate(*http.Request) (*authz.Principal, error) {
 	return nil, problem.Unauthenticated("authentication is required")
+}
+
+// idemMode maps the x-idempotent value to the pipeline mode: "none" (credential
+// endpoints whose responses must never be stored or replayed) disables the
+// Idempotency-Key handling like an absent extension.
+func idemMode(v string) string {
+	if v == idemNone {
+		return ""
+	}
+	return v
 }
 
 // opInfo is what the pipeline reads from one operation of the spec.
@@ -87,7 +98,7 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
 			info := opInfo{
-				idempotent: extString(op.Extensions, "x-idempotent"),
+				idempotent: idemMode(extString(op.Extensions, "x-idempotent")),
 				preview:    extString(op.Extensions, "x-stability") == "preview",
 				secured:    requiresAuth(spec, op),
 			}

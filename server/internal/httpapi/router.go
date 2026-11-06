@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
@@ -24,14 +25,18 @@ type Deps struct {
 	Jobs *jobs.Client
 
 	// Authenticator resolves the caller for operations with security
-	// requirements. Nil means NoopAuthenticator (everything is 401 until the
-	// sessions task wires the real one).
+	// requirements. Nil means NoopAuthenticator (everything is 401); the
+	// server wires SessionAuthenticator.
 	Authenticator Authenticator
 	// Idempotency stores Idempotency-Key requests. Nil disables enforcement
 	// (the header is still validated).
 	Idempotency idempotency.Store
 	// Instance builds the discovery document.
 	Instance *instance.Service
+	// Identity serves /v1/auth and /v1/me.
+	Identity *identity.Service
+	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
+	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).
 	ValidateResponses bool
 }

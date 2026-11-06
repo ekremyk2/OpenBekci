@@ -9,33 +9,111 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
+	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// Defines values for AuthResultClient.
+const (
+	AuthResultClientMobile AuthResultClient = "mobile"
+	AuthResultClientWeb    AuthResultClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the AuthResultClient enum.
+func (e AuthResultClient) Valid() bool {
+	switch e {
+	case AuthResultClientMobile:
+		return true
+	case AuthResultClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CredentialsClient.
+const (
+	CredentialsClientMobile CredentialsClient = "mobile"
+	CredentialsClientWeb    CredentialsClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the CredentialsClient enum.
+func (e CredentialsClient) Valid() bool {
+	switch e {
+	case CredentialsClientMobile:
+		return true
+	case CredentialsClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MagicLinkConsumeRequestClient.
+const (
+	MagicLinkConsumeRequestClientMobile MagicLinkConsumeRequestClient = "mobile"
+	MagicLinkConsumeRequestClientWeb    MagicLinkConsumeRequestClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the MagicLinkConsumeRequestClient enum.
+func (e MagicLinkConsumeRequestClient) Valid() bool {
+	switch e {
+	case MagicLinkConsumeRequestClientMobile:
+		return true
+	case MagicLinkConsumeRequestClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MagicLinkRequestClient.
+const (
+	MagicLinkRequestClientMobile MagicLinkRequestClient = "mobile"
+	MagicLinkRequestClientWeb    MagicLinkRequestClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the MagicLinkRequestClient enum.
+func (e MagicLinkRequestClient) Valid() bool {
+	switch e {
+	case MagicLinkRequestClientMobile:
+		return true
+	case MagicLinkRequestClientWeb:
+		return true
+	default:
+		return false
+	}
+}
 
 // Defines values for ProblemCode.
 const (
 	ProblemCodeBadRequest             ProblemCode = "bad_request"
 	ProblemCodeConflict               ProblemCode = "conflict"
+	ProblemCodeCsrfFailed             ProblemCode = "csrf_failed"
 	ProblemCodeIdempotencyMismatch    ProblemCode = "idempotency_mismatch"
 	ProblemCodeInsufficientPermission ProblemCode = "insufficient_permission"
 	ProblemCodeInternalError          ProblemCode = "internal_error"
 	ProblemCodeInvalidGrant           ProblemCode = "invalid_grant"
 	ProblemCodeLockedPeriod           ProblemCode = "locked_period"
+	ProblemCodeMailUnavailable        ProblemCode = "mail_unavailable"
 	ProblemCodeMfaRequired            ProblemCode = "mfa_required"
 	ProblemCodeNotFound               ProblemCode = "not_found"
 	ProblemCodePackError              ProblemCode = "pack_error"
 	ProblemCodeRateLimited            ProblemCode = "rate_limited"
 	ProblemCodeReauthRequired         ProblemCode = "reauth_required"
 	ProblemCodeSiteOffboarded         ProblemCode = "site_offboarded"
+	ProblemCodeSmsUnavailable         ProblemCode = "sms_unavailable"
 	ProblemCodeUnauthenticated        ProblemCode = "unauthenticated"
 	ProblemCodeValidationFailed       ProblemCode = "validation_failed"
 	ProblemCodeVersionConflict        ProblemCode = "version_conflict"
@@ -48,6 +126,8 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeConflict:
 		return true
+	case ProblemCodeCsrfFailed:
+		return true
 	case ProblemCodeIdempotencyMismatch:
 		return true
 	case ProblemCodeInsufficientPermission:
@@ -57,6 +137,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeInvalidGrant:
 		return true
 	case ProblemCodeLockedPeriod:
+		return true
+	case ProblemCodeMailUnavailable:
 		return true
 	case ProblemCodeMfaRequired:
 		return true
@@ -70,11 +152,85 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeSiteOffboarded:
 		return true
+	case ProblemCodeSmsUnavailable:
+		return true
 	case ProblemCodeUnauthenticated:
 		return true
 	case ProblemCodeValidationFailed:
 		return true
 	case ProblemCodeVersionConflict:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RoleGrantRole.
+const (
+	RoleGrantRoleAccountant  RoleGrantRole = "accountant"
+	RoleGrantRoleAuditor     RoleGrantRole = "auditor"
+	RoleGrantRoleBoardMember RoleGrantRole = "board_member"
+	RoleGrantRoleGuard       RoleGrantRole = "guard"
+	RoleGrantRoleOrgAdmin    RoleGrantRole = "org_admin"
+	RoleGrantRoleSiteManager RoleGrantRole = "site_manager"
+	RoleGrantRoleStaff       RoleGrantRole = "staff"
+)
+
+// Valid indicates whether the value is a known member of the RoleGrantRole enum.
+func (e RoleGrantRole) Valid() bool {
+	switch e {
+	case RoleGrantRoleAccountant:
+		return true
+	case RoleGrantRoleAuditor:
+		return true
+	case RoleGrantRoleBoardMember:
+		return true
+	case RoleGrantRoleGuard:
+		return true
+	case RoleGrantRoleOrgAdmin:
+		return true
+	case RoleGrantRoleSiteManager:
+		return true
+	case RoleGrantRoleStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RoleGrantScopeType.
+const (
+	RoleGrantScopeTypeBlock RoleGrantScopeType = "block"
+	RoleGrantScopeTypeOrg   RoleGrantScopeType = "org"
+	RoleGrantScopeTypeSite  RoleGrantScopeType = "site"
+)
+
+// Valid indicates whether the value is a known member of the RoleGrantScopeType enum.
+func (e RoleGrantScopeType) Valid() bool {
+	switch e {
+	case RoleGrantScopeTypeBlock:
+		return true
+	case RoleGrantScopeTypeOrg:
+		return true
+	case RoleGrantScopeTypeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SessionClient.
+const (
+	SessionClientMobile SessionClient = "mobile"
+	SessionClientWeb    SessionClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the SessionClient enum.
+func (e SessionClient) Valid() bool {
+	switch e {
+	case SessionClientMobile:
+		return true
+	case SessionClientWeb:
 		return true
 	default:
 		return false
@@ -90,6 +246,45 @@ type AuthMethod struct {
 	LabelKey *string `json:"label_key,omitempty"`
 }
 
+// AuthResult Result of consuming a magic link. For `client=web` the token is in the
+// `obk_session` cookie and `expires_at` is the session expiry; for
+// `client=mobile` the token fields are present and `expires_at` is the
+// access token expiry.
+type AuthResult struct {
+	// AccessToken Only for `client=mobile`.
+	AccessToken *string `json:"access_token,omitempty"`
+
+	// Client Which kind of session was created (open enum).
+	Client    AuthResultClient `json:"client"`
+	ExpiresAt time.Time        `json:"expires_at"`
+
+	// RefreshExpiresAt Only for `client=mobile`.
+	RefreshExpiresAt *time.Time `json:"refresh_expires_at,omitempty"`
+
+	// RefreshToken Only for `client=mobile`.
+	RefreshToken *string            `json:"refresh_token,omitempty"`
+	SessionId    openapi_types.UUID `json:"session_id"`
+
+	// User The signed-in account (instance-wide, not per organization).
+	User AuthUser `json:"user"`
+}
+
+// AuthResultClient Which kind of session was created (open enum).
+type AuthResultClient string
+
+// AuthUser The signed-in account (instance-wide, not per organization).
+type AuthUser struct {
+	Email           nullable.Nullable[string] `json:"email"`
+	Id              openapi_types.UUID        `json:"id"`
+	IsPlatformAdmin bool                      `json:"is_platform_admin"`
+
+	// Locale Example: tr
+	Locale string `json:"locale"`
+
+	// Phone E.164.
+	Phone nullable.Nullable[string] `json:"phone"`
+}
+
 // Branding defines model for Branding.
 type Branding struct {
 	LogoUrl *string `json:"logo_url,omitempty"`
@@ -97,6 +292,34 @@ type Branding struct {
 	// PrimaryColor Example: #1a73e8
 	PrimaryColor *string `json:"primary_color,omitempty"`
 }
+
+// ChangePasswordRequest defines model for ChangePasswordRequest.
+type ChangePasswordRequest struct {
+	NewPassword string `json:"new_password"`
+}
+
+// Credentials What the caller proves. `method` is `password`, `sms_otp` or
+// `magic_link` (open on input; known values listed). `identifier` is an
+// email address or a phone number (E.164 or national format). `password`
+// is required for `password`; `code` is the six-digit SMS code for
+// `sms_otp` (without it the server sends one). Field errors are reported
+// for `identifier`, `password` and `code`.
+type Credentials struct {
+	// Client `mobile` makes an emailed link use the `openbekci://` scheme.
+	Client *CredentialsClient `json:"client,omitempty"`
+
+	// Code The code sent by SMS.
+	Code *string `json:"code,omitempty"`
+
+	// DeviceName Label of the session in the session list.
+	DeviceName *string `json:"device_name,omitempty"`
+	Identifier string  `json:"identifier"`
+	Method     string  `json:"method"`
+	Password   *string `json:"password,omitempty"`
+}
+
+// CredentialsClient `mobile` makes an emailed link use the `openbekci://` scheme.
+type CredentialsClient string
 
 // DiscoveryDocument Unauthenticated instance discovery document (overview section 6.8).
 type DiscoveryDocument struct {
@@ -154,6 +377,57 @@ type Instance struct {
 // InstancePolicies Instance policies. Empty until later phases add some.
 type InstancePolicies map[string]interface{}
 
+// MagicLinkConsumeRequest defines model for MagicLinkConsumeRequest.
+type MagicLinkConsumeRequest struct {
+	// Client `web` sets the session cookie, `mobile` returns tokens.
+	Client     *MagicLinkConsumeRequestClient `json:"client,omitempty"`
+	DeviceName *string                        `json:"device_name,omitempty"`
+	Token      string                         `json:"token"`
+}
+
+// MagicLinkConsumeRequestClient `web` sets the session cookie, `mobile` returns tokens.
+type MagicLinkConsumeRequestClient string
+
+// MagicLinkRequest defines model for MagicLinkRequest.
+type MagicLinkRequest struct {
+	// Client `mobile` makes the link use the `openbekci://` scheme instead of the web URL.
+	Client *MagicLinkRequestClient `json:"client,omitempty"`
+	Email  string                  `json:"email"`
+}
+
+// MagicLinkRequestClient `mobile` makes the link use the `openbekci://` scheme instead of the web URL.
+type MagicLinkRequestClient string
+
+// Me defines model for Me.
+type Me struct {
+	// Occupancies The caller's unit occupancies (owner, tenant, household); empty until the people module lands.
+	Occupancies   []map[string]interface{} `json:"occupancies"`
+	Organizations []OrgAccess              `json:"organizations"`
+	Policies      map[string]interface{}   `json:"policies"`
+
+	// User The signed-in account as `GET /v1/me` shows it.
+	User MeUser `json:"user"`
+}
+
+// MeSite defines model for MeSite.
+type MeSite struct {
+	Currency string             `json:"currency"`
+	Id       openapi_types.UUID `json:"id"`
+	Name     string             `json:"name"`
+	Timezone string             `json:"timezone"`
+}
+
+// MeUser The signed-in account as `GET /v1/me` shows it.
+type MeUser struct {
+	// DisplayName The name of the person linked to the account (first organization), else the email or phone.
+	DisplayName     string                    `json:"display_name"`
+	Email           nullable.Nullable[string] `json:"email"`
+	Id              openapi_types.UUID        `json:"id"`
+	IsPlatformAdmin bool                      `json:"is_platform_admin"`
+	Locale          string                    `json:"locale"`
+	Phone           nullable.Nullable[string] `json:"phone"`
+}
+
 // MinAppVersion defines model for MinAppVersion.
 type MinAppVersion struct {
 	// Android Example: 1.0.0
@@ -161,6 +435,34 @@ type MinAppVersion struct {
 
 	// Ios Example: 1.0.0
 	Ios string `json:"ios"`
+}
+
+// OrgAccess defines model for OrgAccess.
+type OrgAccess struct {
+	DefaultLocale string             `json:"default_locale"`
+	Id            openapi_types.UUID `json:"id"`
+	Name          string             `json:"name"`
+
+	// Permissions Effective permissions in this organization (filled by the authorization module; empty until then).
+	Permissions []PermissionGrant `json:"permissions"`
+	Roles       []RoleGrant       `json:"roles"`
+
+	// Sites Sites of the organization the caller can see (empty until the tenancy module lands).
+	Sites []MeSite `json:"sites"`
+	Slug  string   `json:"slug"`
+}
+
+// OtpRequest defines model for OtpRequest.
+type OtpRequest struct {
+	// Phone E.164 or national format.
+	Phone string `json:"phone"`
+}
+
+// PermissionGrant An effective permission, optionally limited to sites or blocks.
+type PermissionGrant struct {
+	BlockIds   *[]openapi_types.UUID `json:"block_ids,omitempty"`
+	Permission string                `json:"permission"`
+	SiteIds    *[]openapi_types.UUID `json:"site_ids,omitempty"`
 }
 
 // Problem RFC 9457 problem details, served as application/problem+json. Clients
@@ -177,6 +479,9 @@ type Problem struct {
 
 	// Instance The request id (also in the `X-Request-Id` response header), for support and logs.
 	Instance string `json:"instance"`
+
+	// RequestId Same value as `instance`.
+	RequestId *string `json:"request_id,omitempty"`
 
 	// Status HTTP status code.
 	Status int    `json:"status"`
@@ -209,10 +514,243 @@ type PushInfo struct {
 	UnifiedPush bool     `json:"unified_push"`
 }
 
+// ReauthPassword defines model for ReauthPassword.
+type ReauthPassword struct {
+	// Method Always `password`.
+	Method   string `json:"method"`
+	Password string `json:"password"`
+}
+
+// ReauthRequest defines model for ReauthRequest.
+type ReauthRequest struct {
+	union json.RawMessage
+}
+
+// ReauthResponse defines model for ReauthResponse.
+type ReauthResponse struct {
+	// ReauthUntil End of the re-authentication window of this session (10 minutes).
+	ReauthUntil time.Time `json:"reauth_until"`
+}
+
+// ReauthSmsOtp defines model for ReauthSmsOtp.
+type ReauthSmsOtp struct {
+	// Code A code sent to the account's own phone by `auth.requestOtp`.
+	Code string `json:"code"`
+
+	// Method Always `sms_otp`.
+	Method string `json:"method"`
+}
+
+// RefreshRequest defines model for RefreshRequest.
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
 // RelayEnrollment defines model for RelayEnrollment.
 type RelayEnrollment struct {
 	// Challenge Ephemeral challenge for push relay enrollment; null when not enrolling.
 	Challenge nullable.Nullable[string] `json:"challenge"`
+}
+
+// RoleGrant An active membership of the caller's person in the organization.
+type RoleGrant struct {
+	// Role Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.
+	Role RoleGrantRole `json:"role"`
+
+	// ScopeId The site or block id; null for `org` scope.
+	ScopeId nullable.Nullable[openapi_types.UUID] `json:"scope_id"`
+
+	// ScopeType Open enum.
+	ScopeType RoleGrantScopeType `json:"scope_type"`
+	SiteOwned bool               `json:"site_owned"`
+}
+
+// RoleGrantRole Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.
+type RoleGrantRole string
+
+// RoleGrantScopeType Open enum.
+type RoleGrantScopeType string
+
+// Session One open session of the caller. Mobile sessions keep their id across token rotation.
+type Session struct {
+	// Client Open enum.
+	Client    SessionClient `json:"client"`
+	CreatedAt time.Time     `json:"created_at"`
+
+	// Current True for the session that made this request.
+	Current    bool                      `json:"current"`
+	DeviceName nullable.Nullable[string] `json:"device_name"`
+	ExpiresAt  time.Time                 `json:"expires_at"`
+	Id         openapi_types.UUID        `json:"id"`
+
+	// Ip Address the session was created from.
+	Ip         nullable.Nullable[string]    `json:"ip"`
+	LastUsedAt nullable.Nullable[time.Time] `json:"last_used_at"`
+	UserAgent  nullable.Nullable[string]    `json:"user_agent"`
+}
+
+// SessionClient Open enum.
+type SessionClient string
+
+// SessionList defines model for SessionList.
+type SessionList struct {
+	Items []Session `json:"items"`
+
+	// NextCursor Always null; the list is short and returned whole.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// SessionResponse A browser session was created; the token is in the `obk_session` cookie.
+type SessionResponse struct {
+	ExpiresAt time.Time `json:"expires_at"`
+
+	// SessionId Id of the session in `GET /v1/me/sessions`.
+	SessionId openapi_types.UUID `json:"session_id"`
+
+	// User The signed-in account (instance-wide, not per organization).
+	User AuthUser `json:"user"`
+}
+
+// TokenResponse A mobile or integration session. The access token is short-lived and
+// checked on every request; the refresh token rotates on every use, and
+// presenting a rotated one revokes the whole session.
+type TokenResponse struct {
+	AccessExpiresAt  time.Time          `json:"access_expires_at"`
+	AccessToken      string             `json:"access_token"`
+	RefreshExpiresAt time.Time          `json:"refresh_expires_at"`
+	RefreshToken     string             `json:"refresh_token"`
+	SessionId        openapi_types.UUID `json:"session_id"`
+
+	// TokenType Example: Bearer
+	TokenType string `json:"token_type"`
+
+	// User The signed-in account (instance-wide, not per organization).
+	User AuthUser `json:"user"`
+}
+
+// AuthRequestMagicLinkJSONRequestBody defines body for AuthRequestMagicLink for application/json ContentType.
+type AuthRequestMagicLinkJSONRequestBody = MagicLinkRequest
+
+// AuthConsumeMagicLinkJSONRequestBody defines body for AuthConsumeMagicLink for application/json ContentType.
+type AuthConsumeMagicLinkJSONRequestBody = MagicLinkConsumeRequest
+
+// AuthRequestOtpJSONRequestBody defines body for AuthRequestOtp for application/json ContentType.
+type AuthRequestOtpJSONRequestBody = OtpRequest
+
+// AuthChangePasswordJSONRequestBody defines body for AuthChangePassword for application/json ContentType.
+type AuthChangePasswordJSONRequestBody = ChangePasswordRequest
+
+// AuthReauthJSONRequestBody defines body for AuthReauth for application/json ContentType.
+type AuthReauthJSONRequestBody = ReauthRequest
+
+// AuthCreateSessionJSONRequestBody defines body for AuthCreateSession for application/json ContentType.
+type AuthCreateSessionJSONRequestBody = Credentials
+
+// AuthCreateTokenJSONRequestBody defines body for AuthCreateToken for application/json ContentType.
+type AuthCreateTokenJSONRequestBody = Credentials
+
+// AuthRefreshTokenJSONRequestBody defines body for AuthRefreshToken for application/json ContentType.
+type AuthRefreshTokenJSONRequestBody = RefreshRequest
+
+// AsReauthPassword returns the union data inside the ReauthRequest as a ReauthPassword
+func (t ReauthRequest) AsReauthPassword() (ReauthPassword, error) {
+	var body ReauthPassword
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromReauthPassword overwrites any union data inside the ReauthRequest as the provided ReauthPassword
+func (t *ReauthRequest) FromReauthPassword(v ReauthPassword) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"method":"password"}`))
+	t.union = b
+	return err
+}
+
+// MergeReauthPassword performs a merge with any union data inside the ReauthRequest, using the provided ReauthPassword
+func (t *ReauthRequest) MergeReauthPassword(v ReauthPassword) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"method":"password"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsReauthSmsOtp returns the union data inside the ReauthRequest as a ReauthSmsOtp
+func (t ReauthRequest) AsReauthSmsOtp() (ReauthSmsOtp, error) {
+	var body ReauthSmsOtp
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromReauthSmsOtp overwrites any union data inside the ReauthRequest as the provided ReauthSmsOtp
+func (t *ReauthRequest) FromReauthSmsOtp(v ReauthSmsOtp) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"method":"sms_otp"}`))
+	t.union = b
+	return err
+}
+
+// MergeReauthSmsOtp performs a merge with any union data inside the ReauthRequest, using the provided ReauthSmsOtp
+func (t *ReauthRequest) MergeReauthSmsOtp(v ReauthSmsOtp) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"method":"sms_otp"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ReauthRequest) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"method"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t ReauthRequest) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "password":
+		return t.AsReauthPassword()
+	case "sms_otp":
+		return t.AsReauthSmsOtp()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t ReauthRequest) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ReauthRequest) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }
 
 // ServerInterface represents all server handlers.
@@ -220,9 +758,48 @@ type ServerInterface interface {
 	// InstanceGetDiscovery Instance discovery document
 	// (GET /.well-known/openbekci.json)
 	InstanceGetDiscovery(w http.ResponseWriter, r *http.Request)
+	// AuthRequestMagicLink Email a single-use sign-in link
+	// (POST /v1/auth/magic-link)
+	AuthRequestMagicLink(w http.ResponseWriter, r *http.Request)
+	// AuthConsumeMagicLink Sign in with a magic-link token
+	// (POST /v1/auth/magic-link/consume)
+	AuthConsumeMagicLink(w http.ResponseWriter, r *http.Request)
+	// AuthRequestOtp Send a sign-in code by SMS
+	// (POST /v1/auth/otp)
+	AuthRequestOtp(w http.ResponseWriter, r *http.Request)
+	// AuthChangePassword Set or change the password
+	// (POST /v1/auth/password)
+	AuthChangePassword(w http.ResponseWriter, r *http.Request)
+	// AuthReauth Re-authenticate the current session for sensitive operations
+	// (POST /v1/auth/reauth)
+	AuthReauth(w http.ResponseWriter, r *http.Request)
+	// AuthDeleteSession Sign out the current session
+	// (DELETE /v1/auth/session)
+	AuthDeleteSession(w http.ResponseWriter, r *http.Request)
+	// AuthCreateSession Sign in and start a browser session
+	// (POST /v1/auth/session)
+	AuthCreateSession(w http.ResponseWriter, r *http.Request)
+	// AuthCreateToken Sign in and get access and refresh tokens (mobile, integrations)
+	// (POST /v1/auth/token)
+	AuthCreateToken(w http.ResponseWriter, r *http.Request)
+	// AuthRefreshToken Exchange a refresh token for a new token pair
+	// (POST /v1/auth/token/refresh)
+	AuthRefreshToken(w http.ResponseWriter, r *http.Request)
 	// InstanceGetInstance Instance information (authenticated)
 	// (GET /v1/instance)
 	InstanceGetInstance(w http.ResponseWriter, r *http.Request)
+	// MeGet The signed-in user, organizations, roles and permissions
+	// (GET /v1/me)
+	MeGet(w http.ResponseWriter, r *http.Request)
+	// MeRevokeAllSessions Sign out everywhere
+	// (DELETE /v1/me/sessions)
+	MeRevokeAllSessions(w http.ResponseWriter, r *http.Request)
+	// MeListSessions List the caller's open sessions
+	// (GET /v1/me/sessions)
+	MeListSessions(w http.ResponseWriter, r *http.Request)
+	// MeRevokeSession Sign out one session
+	// (DELETE /v1/me/sessions/{id})
+	MeRevokeSession(w http.ResponseWriter, r *http.Request, id string)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -235,9 +812,87 @@ func (_ Unimplemented) InstanceGetDiscovery(w http.ResponseWriter, r *http.Reque
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// AuthRequestMagicLink Email a single-use sign-in link
+// (POST /v1/auth/magic-link)
+func (_ Unimplemented) AuthRequestMagicLink(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthConsumeMagicLink Sign in with a magic-link token
+// (POST /v1/auth/magic-link/consume)
+func (_ Unimplemented) AuthConsumeMagicLink(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthRequestOtp Send a sign-in code by SMS
+// (POST /v1/auth/otp)
+func (_ Unimplemented) AuthRequestOtp(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthChangePassword Set or change the password
+// (POST /v1/auth/password)
+func (_ Unimplemented) AuthChangePassword(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthReauth Re-authenticate the current session for sensitive operations
+// (POST /v1/auth/reauth)
+func (_ Unimplemented) AuthReauth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthDeleteSession Sign out the current session
+// (DELETE /v1/auth/session)
+func (_ Unimplemented) AuthDeleteSession(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthCreateSession Sign in and start a browser session
+// (POST /v1/auth/session)
+func (_ Unimplemented) AuthCreateSession(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthCreateToken Sign in and get access and refresh tokens (mobile, integrations)
+// (POST /v1/auth/token)
+func (_ Unimplemented) AuthCreateToken(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AuthRefreshToken Exchange a refresh token for a new token pair
+// (POST /v1/auth/token/refresh)
+func (_ Unimplemented) AuthRefreshToken(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // InstanceGetInstance Instance information (authenticated)
 // (GET /v1/instance)
 func (_ Unimplemented) InstanceGetInstance(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MeGet The signed-in user, organizations, roles and permissions
+// (GET /v1/me)
+func (_ Unimplemented) MeGet(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MeRevokeAllSessions Sign out everywhere
+// (DELETE /v1/me/sessions)
+func (_ Unimplemented) MeRevokeAllSessions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MeListSessions List the caller's open sessions
+// (GET /v1/me/sessions)
+func (_ Unimplemented) MeListSessions(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MeRevokeSession Sign out one session
+// (DELETE /v1/me/sessions/{id})
+func (_ Unimplemented) MeRevokeSession(w http.ResponseWriter, r *http.Request, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -264,11 +919,205 @@ func (siw *ServerInterfaceWrapper) InstanceGetDiscovery(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
+// AuthRequestMagicLink operation middleware
+func (siw *ServerInterfaceWrapper) AuthRequestMagicLink(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthRequestMagicLink(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthConsumeMagicLink operation middleware
+func (siw *ServerInterfaceWrapper) AuthConsumeMagicLink(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthConsumeMagicLink(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthRequestOtp operation middleware
+func (siw *ServerInterfaceWrapper) AuthRequestOtp(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthRequestOtp(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthChangePassword operation middleware
+func (siw *ServerInterfaceWrapper) AuthChangePassword(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthChangePassword(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthReauth operation middleware
+func (siw *ServerInterfaceWrapper) AuthReauth(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthReauth(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthDeleteSession operation middleware
+func (siw *ServerInterfaceWrapper) AuthDeleteSession(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthDeleteSession(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthCreateSession operation middleware
+func (siw *ServerInterfaceWrapper) AuthCreateSession(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthCreateSession(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthCreateToken operation middleware
+func (siw *ServerInterfaceWrapper) AuthCreateToken(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthCreateToken(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AuthRefreshToken operation middleware
+func (siw *ServerInterfaceWrapper) AuthRefreshToken(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AuthRefreshToken(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // InstanceGetInstance operation middleware
 func (siw *ServerInterfaceWrapper) InstanceGetInstance(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.InstanceGetInstance(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MeGet operation middleware
+func (siw *ServerInterfaceWrapper) MeGet(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MeGet(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MeRevokeAllSessions operation middleware
+func (siw *ServerInterfaceWrapper) MeRevokeAllSessions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MeRevokeAllSessions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MeListSessions operation middleware
+func (siw *ServerInterfaceWrapper) MeListSessions(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MeListSessions(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MeRevokeSession operation middleware
+func (siw *ServerInterfaceWrapper) MeRevokeSession(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MeRevokeSession(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -397,6 +1246,45 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/instance", wrapper.InstanceGetInstance)
 	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/auth/session", wrapper.AuthDeleteSession)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/session", wrapper.AuthCreateSession)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/token", wrapper.AuthCreateToken)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/token/refresh", wrapper.AuthRefreshToken)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/otp", wrapper.AuthRequestOtp)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/magic-link", wrapper.AuthRequestMagicLink)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/magic-link/consume", wrapper.AuthConsumeMagicLink)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/reauth", wrapper.AuthReauth)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/password", wrapper.AuthChangePassword)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/me", wrapper.MeGet)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/me/sessions", wrapper.MeRevokeAllSessions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/me/sessions", wrapper.MeListSessions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/me/sessions/{id}", wrapper.MeRevokeSession)
+	})
 
 	return r
 }
@@ -438,6 +1326,991 @@ type InstanceGetDiscoverydefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response InstanceGetDiscoverydefaultApplicationProblemPlusJSONResponse) VisitInstanceGetDiscoveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestMagicLinkRequestObject struct {
+	Body *AuthRequestMagicLinkJSONRequestBody
+}
+
+type AuthRequestMagicLinkResponseObject interface {
+	VisitAuthRequestMagicLinkResponse(w http.ResponseWriter) error
+}
+
+type AuthRequestMagicLink202Response struct {
+}
+
+func (response AuthRequestMagicLink202Response) VisitAuthRequestMagicLinkResponse(w http.ResponseWriter) error {
+	w.WriteHeader(202)
+	return nil
+}
+
+type AuthRequestMagicLink422ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthRequestMagicLink422ApplicationProblemPlusJSONResponse) VisitAuthRequestMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestMagicLink429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRequestMagicLink429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthRequestMagicLink429ResponseHeaders
+}
+
+func (response AuthRequestMagicLink429ApplicationProblemPlusJSONResponse) VisitAuthRequestMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestMagicLink503ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRequestMagicLink503ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthRequestMagicLink503ResponseHeaders
+}
+
+func (response AuthRequestMagicLink503ApplicationProblemPlusJSONResponse) VisitAuthRequestMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestMagicLinkdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRequestMagicLinkdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthRequestMagicLinkdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthRequestMagicLinkdefaultApplicationProblemPlusJSONResponse) VisitAuthRequestMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthConsumeMagicLinkRequestObject struct {
+	Body *AuthConsumeMagicLinkJSONRequestBody
+}
+
+type AuthConsumeMagicLinkResponseObject interface {
+	VisitAuthConsumeMagicLinkResponse(w http.ResponseWriter) error
+}
+
+type AuthConsumeMagicLink200JSONResponse AuthResult
+
+func (response AuthConsumeMagicLink200JSONResponse) VisitAuthConsumeMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthConsumeMagicLink401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthConsumeMagicLink401ApplicationProblemPlusJSONResponse) VisitAuthConsumeMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthConsumeMagicLink422ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthConsumeMagicLink422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthConsumeMagicLink422ResponseHeaders
+}
+
+func (response AuthConsumeMagicLink422ApplicationProblemPlusJSONResponse) VisitAuthConsumeMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthConsumeMagicLink429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthConsumeMagicLink429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthConsumeMagicLink429ResponseHeaders
+}
+
+func (response AuthConsumeMagicLink429ApplicationProblemPlusJSONResponse) VisitAuthConsumeMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthConsumeMagicLinkdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthConsumeMagicLinkdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthConsumeMagicLinkdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthConsumeMagicLinkdefaultApplicationProblemPlusJSONResponse) VisitAuthConsumeMagicLinkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestOtpRequestObject struct {
+	Body *AuthRequestOtpJSONRequestBody
+}
+
+type AuthRequestOtpResponseObject interface {
+	VisitAuthRequestOtpResponse(w http.ResponseWriter) error
+}
+
+type AuthRequestOtp202Response struct {
+}
+
+func (response AuthRequestOtp202Response) VisitAuthRequestOtpResponse(w http.ResponseWriter) error {
+	w.WriteHeader(202)
+	return nil
+}
+
+type AuthRequestOtp422ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthRequestOtp422ApplicationProblemPlusJSONResponse) VisitAuthRequestOtpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestOtp429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRequestOtp429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthRequestOtp429ResponseHeaders
+}
+
+func (response AuthRequestOtp429ApplicationProblemPlusJSONResponse) VisitAuthRequestOtpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestOtp503ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRequestOtp503ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthRequestOtp503ResponseHeaders
+}
+
+func (response AuthRequestOtp503ApplicationProblemPlusJSONResponse) VisitAuthRequestOtpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRequestOtpdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRequestOtpdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthRequestOtpdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthRequestOtpdefaultApplicationProblemPlusJSONResponse) VisitAuthRequestOtpResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthChangePasswordRequestObject struct {
+	Body *AuthChangePasswordJSONRequestBody
+}
+
+type AuthChangePasswordResponseObject interface {
+	VisitAuthChangePasswordResponse(w http.ResponseWriter) error
+}
+
+type AuthChangePassword204Response struct {
+}
+
+func (response AuthChangePassword204Response) VisitAuthChangePasswordResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type AuthChangePassword401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthChangePassword401ApplicationProblemPlusJSONResponse) VisitAuthChangePasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthChangePassword403ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthChangePassword403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthChangePassword403ResponseHeaders
+}
+
+func (response AuthChangePassword403ApplicationProblemPlusJSONResponse) VisitAuthChangePasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthChangePassword422ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthChangePassword422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthChangePassword422ResponseHeaders
+}
+
+func (response AuthChangePassword422ApplicationProblemPlusJSONResponse) VisitAuthChangePasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthChangePassworddefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthChangePassworddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthChangePassworddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthChangePassworddefaultApplicationProblemPlusJSONResponse) VisitAuthChangePasswordResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthReauthRequestObject struct {
+	Body *AuthReauthJSONRequestBody
+}
+
+type AuthReauthResponseObject interface {
+	VisitAuthReauthResponse(w http.ResponseWriter) error
+}
+
+type AuthReauth200JSONResponse ReauthResponse
+
+func (response AuthReauth200JSONResponse) VisitAuthReauthResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthReauth401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthReauth401ApplicationProblemPlusJSONResponse) VisitAuthReauthResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthReauth403ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthReauth403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthReauth403ResponseHeaders
+}
+
+func (response AuthReauth403ApplicationProblemPlusJSONResponse) VisitAuthReauthResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthReauth422ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthReauth422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthReauth422ResponseHeaders
+}
+
+func (response AuthReauth422ApplicationProblemPlusJSONResponse) VisitAuthReauthResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthReauth429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthReauth429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthReauth429ResponseHeaders
+}
+
+func (response AuthReauth429ApplicationProblemPlusJSONResponse) VisitAuthReauthResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthReauthdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthReauthdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthReauthdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthReauthdefaultApplicationProblemPlusJSONResponse) VisitAuthReauthResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthDeleteSessionRequestObject struct {
+}
+
+type AuthDeleteSessionResponseObject interface {
+	VisitAuthDeleteSessionResponse(w http.ResponseWriter) error
+}
+
+type AuthDeleteSession204Response struct {
+}
+
+func (response AuthDeleteSession204Response) VisitAuthDeleteSessionResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type AuthDeleteSession401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthDeleteSession401ApplicationProblemPlusJSONResponse) VisitAuthDeleteSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthDeleteSession403ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthDeleteSession403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthDeleteSession403ResponseHeaders
+}
+
+func (response AuthDeleteSession403ApplicationProblemPlusJSONResponse) VisitAuthDeleteSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthDeleteSessiondefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthDeleteSessiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthDeleteSessiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthDeleteSessiondefaultApplicationProblemPlusJSONResponse) VisitAuthDeleteSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateSessionRequestObject struct {
+	Body *AuthCreateSessionJSONRequestBody
+}
+
+type AuthCreateSessionResponseObject interface {
+	VisitAuthCreateSessionResponse(w http.ResponseWriter) error
+}
+
+type AuthCreateSession200JSONResponse SessionResponse
+
+func (response AuthCreateSession200JSONResponse) VisitAuthCreateSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateSession202Response struct {
+}
+
+func (response AuthCreateSession202Response) VisitAuthCreateSessionResponse(w http.ResponseWriter) error {
+	w.WriteHeader(202)
+	return nil
+}
+
+type AuthCreateSession401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthCreateSession401ApplicationProblemPlusJSONResponse) VisitAuthCreateSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateSession422ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthCreateSession422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthCreateSession422ResponseHeaders
+}
+
+func (response AuthCreateSession422ApplicationProblemPlusJSONResponse) VisitAuthCreateSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateSession429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthCreateSession429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthCreateSession429ResponseHeaders
+}
+
+func (response AuthCreateSession429ApplicationProblemPlusJSONResponse) VisitAuthCreateSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateSessiondefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthCreateSessiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthCreateSessiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthCreateSessiondefaultApplicationProblemPlusJSONResponse) VisitAuthCreateSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateTokenRequestObject struct {
+	Body *AuthCreateTokenJSONRequestBody
+}
+
+type AuthCreateTokenResponseObject interface {
+	VisitAuthCreateTokenResponse(w http.ResponseWriter) error
+}
+
+type AuthCreateToken200JSONResponse TokenResponse
+
+func (response AuthCreateToken200JSONResponse) VisitAuthCreateTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateToken401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthCreateToken401ApplicationProblemPlusJSONResponse) VisitAuthCreateTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateToken422ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthCreateToken422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthCreateToken422ResponseHeaders
+}
+
+func (response AuthCreateToken422ApplicationProblemPlusJSONResponse) VisitAuthCreateTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateToken429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthCreateToken429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthCreateToken429ResponseHeaders
+}
+
+func (response AuthCreateToken429ApplicationProblemPlusJSONResponse) VisitAuthCreateTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthCreateTokendefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthCreateTokendefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthCreateTokendefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthCreateTokendefaultApplicationProblemPlusJSONResponse) VisitAuthCreateTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRefreshTokenRequestObject struct {
+	Body *AuthRefreshTokenJSONRequestBody
+}
+
+type AuthRefreshTokenResponseObject interface {
+	VisitAuthRefreshTokenResponse(w http.ResponseWriter) error
+}
+
+type AuthRefreshToken200JSONResponse TokenResponse
+
+func (response AuthRefreshToken200JSONResponse) VisitAuthRefreshTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRefreshToken401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AuthRefreshToken401ApplicationProblemPlusJSONResponse) VisitAuthRefreshTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRefreshToken429ResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRefreshToken429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AuthRefreshToken429ResponseHeaders
+}
+
+func (response AuthRefreshToken429ApplicationProblemPlusJSONResponse) VisitAuthRefreshTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AuthRefreshTokendefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type AuthRefreshTokendefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AuthRefreshTokendefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AuthRefreshTokendefaultApplicationProblemPlusJSONResponse) VisitAuthRefreshTokenResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -517,14 +2390,374 @@ func (response InstanceGetInstancedefaultApplicationProblemPlusJSONResponse) Vis
 	return err
 }
 
+type MeGetRequestObject struct {
+}
+
+type MeGetResponseObject interface {
+	VisitMeGetResponse(w http.ResponseWriter) error
+}
+
+type MeGet200JSONResponse Me
+
+func (response MeGet200JSONResponse) VisitMeGetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeGet401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MeGet401ApplicationProblemPlusJSONResponse) VisitMeGetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeGetdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeGetdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MeGetdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MeGetdefaultApplicationProblemPlusJSONResponse) VisitMeGetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeAllSessionsRequestObject struct {
+}
+
+type MeRevokeAllSessionsResponseObject interface {
+	VisitMeRevokeAllSessionsResponse(w http.ResponseWriter) error
+}
+
+type MeRevokeAllSessions204Response struct {
+}
+
+func (response MeRevokeAllSessions204Response) VisitMeRevokeAllSessionsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type MeRevokeAllSessions401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MeRevokeAllSessions401ApplicationProblemPlusJSONResponse) VisitMeRevokeAllSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeAllSessions403ResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeRevokeAllSessions403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MeRevokeAllSessions403ResponseHeaders
+}
+
+func (response MeRevokeAllSessions403ApplicationProblemPlusJSONResponse) VisitMeRevokeAllSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeAllSessionsdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeRevokeAllSessionsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MeRevokeAllSessionsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MeRevokeAllSessionsdefaultApplicationProblemPlusJSONResponse) VisitMeRevokeAllSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeListSessionsRequestObject struct {
+}
+
+type MeListSessionsResponseObject interface {
+	VisitMeListSessionsResponse(w http.ResponseWriter) error
+}
+
+type MeListSessions200JSONResponse SessionList
+
+func (response MeListSessions200JSONResponse) VisitMeListSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeListSessions401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MeListSessions401ApplicationProblemPlusJSONResponse) VisitMeListSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeListSessionsdefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeListSessionsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MeListSessionsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MeListSessionsdefaultApplicationProblemPlusJSONResponse) VisitMeListSessionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeSessionRequestObject struct {
+	Id string `json:"id"`
+}
+
+type MeRevokeSessionResponseObject interface {
+	VisitMeRevokeSessionResponse(w http.ResponseWriter) error
+}
+
+type MeRevokeSession204Response struct {
+}
+
+func (response MeRevokeSession204Response) VisitMeRevokeSessionResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type MeRevokeSession401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MeRevokeSession401ApplicationProblemPlusJSONResponse) VisitMeRevokeSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeSession403ResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeRevokeSession403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MeRevokeSession403ResponseHeaders
+}
+
+func (response MeRevokeSession403ApplicationProblemPlusJSONResponse) VisitMeRevokeSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeSession404ResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeRevokeSession404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MeRevokeSession404ResponseHeaders
+}
+
+func (response MeRevokeSession404ApplicationProblemPlusJSONResponse) VisitMeRevokeSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MeRevokeSessiondefaultResponseHeaders struct {
+	XRequestId *string
+}
+
+type MeRevokeSessiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MeRevokeSessiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MeRevokeSessiondefaultApplicationProblemPlusJSONResponse) VisitMeRevokeSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// InstanceGetDiscovery Instance discovery document
 	// (GET /.well-known/openbekci.json)
 	InstanceGetDiscovery(ctx context.Context, request InstanceGetDiscoveryRequestObject) (InstanceGetDiscoveryResponseObject, error)
+	// AuthRequestMagicLink Email a single-use sign-in link
+	// (POST /v1/auth/magic-link)
+	AuthRequestMagicLink(ctx context.Context, request AuthRequestMagicLinkRequestObject) (AuthRequestMagicLinkResponseObject, error)
+	// AuthConsumeMagicLink Sign in with a magic-link token
+	// (POST /v1/auth/magic-link/consume)
+	AuthConsumeMagicLink(ctx context.Context, request AuthConsumeMagicLinkRequestObject) (AuthConsumeMagicLinkResponseObject, error)
+	// AuthRequestOtp Send a sign-in code by SMS
+	// (POST /v1/auth/otp)
+	AuthRequestOtp(ctx context.Context, request AuthRequestOtpRequestObject) (AuthRequestOtpResponseObject, error)
+	// AuthChangePassword Set or change the password
+	// (POST /v1/auth/password)
+	AuthChangePassword(ctx context.Context, request AuthChangePasswordRequestObject) (AuthChangePasswordResponseObject, error)
+	// AuthReauth Re-authenticate the current session for sensitive operations
+	// (POST /v1/auth/reauth)
+	AuthReauth(ctx context.Context, request AuthReauthRequestObject) (AuthReauthResponseObject, error)
+	// AuthDeleteSession Sign out the current session
+	// (DELETE /v1/auth/session)
+	AuthDeleteSession(ctx context.Context, request AuthDeleteSessionRequestObject) (AuthDeleteSessionResponseObject, error)
+	// AuthCreateSession Sign in and start a browser session
+	// (POST /v1/auth/session)
+	AuthCreateSession(ctx context.Context, request AuthCreateSessionRequestObject) (AuthCreateSessionResponseObject, error)
+	// AuthCreateToken Sign in and get access and refresh tokens (mobile, integrations)
+	// (POST /v1/auth/token)
+	AuthCreateToken(ctx context.Context, request AuthCreateTokenRequestObject) (AuthCreateTokenResponseObject, error)
+	// AuthRefreshToken Exchange a refresh token for a new token pair
+	// (POST /v1/auth/token/refresh)
+	AuthRefreshToken(ctx context.Context, request AuthRefreshTokenRequestObject) (AuthRefreshTokenResponseObject, error)
 	// InstanceGetInstance Instance information (authenticated)
 	// (GET /v1/instance)
 	InstanceGetInstance(ctx context.Context, request InstanceGetInstanceRequestObject) (InstanceGetInstanceResponseObject, error)
+	// MeGet The signed-in user, organizations, roles and permissions
+	// (GET /v1/me)
+	MeGet(ctx context.Context, request MeGetRequestObject) (MeGetResponseObject, error)
+	// MeRevokeAllSessions Sign out everywhere
+	// (DELETE /v1/me/sessions)
+	MeRevokeAllSessions(ctx context.Context, request MeRevokeAllSessionsRequestObject) (MeRevokeAllSessionsResponseObject, error)
+	// MeListSessions List the caller's open sessions
+	// (GET /v1/me/sessions)
+	MeListSessions(ctx context.Context, request MeListSessionsRequestObject) (MeListSessionsResponseObject, error)
+	// MeRevokeSession Sign out one session
+	// (DELETE /v1/me/sessions/{id})
+	MeRevokeSession(ctx context.Context, request MeRevokeSessionRequestObject) (MeRevokeSessionResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -590,6 +2823,278 @@ func (sh *strictHandler) InstanceGetDiscovery(w http.ResponseWriter, r *http.Req
 	}
 }
 
+// AuthRequestMagicLink operation middleware
+func (sh *strictHandler) AuthRequestMagicLink(w http.ResponseWriter, r *http.Request) {
+	var request AuthRequestMagicLinkRequestObject
+
+	var body AuthRequestMagicLinkJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthRequestMagicLink(ctx, request.(AuthRequestMagicLinkRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthRequestMagicLink")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthRequestMagicLinkResponseObject); ok {
+		if err := validResponse.VisitAuthRequestMagicLinkResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthConsumeMagicLink operation middleware
+func (sh *strictHandler) AuthConsumeMagicLink(w http.ResponseWriter, r *http.Request) {
+	var request AuthConsumeMagicLinkRequestObject
+
+	var body AuthConsumeMagicLinkJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthConsumeMagicLink(ctx, request.(AuthConsumeMagicLinkRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthConsumeMagicLink")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthConsumeMagicLinkResponseObject); ok {
+		if err := validResponse.VisitAuthConsumeMagicLinkResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthRequestOtp operation middleware
+func (sh *strictHandler) AuthRequestOtp(w http.ResponseWriter, r *http.Request) {
+	var request AuthRequestOtpRequestObject
+
+	var body AuthRequestOtpJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthRequestOtp(ctx, request.(AuthRequestOtpRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthRequestOtp")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthRequestOtpResponseObject); ok {
+		if err := validResponse.VisitAuthRequestOtpResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthChangePassword operation middleware
+func (sh *strictHandler) AuthChangePassword(w http.ResponseWriter, r *http.Request) {
+	var request AuthChangePasswordRequestObject
+
+	var body AuthChangePasswordJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthChangePassword(ctx, request.(AuthChangePasswordRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthChangePassword")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthChangePasswordResponseObject); ok {
+		if err := validResponse.VisitAuthChangePasswordResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthReauth operation middleware
+func (sh *strictHandler) AuthReauth(w http.ResponseWriter, r *http.Request) {
+	var request AuthReauthRequestObject
+
+	var body AuthReauthJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthReauth(ctx, request.(AuthReauthRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthReauth")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthReauthResponseObject); ok {
+		if err := validResponse.VisitAuthReauthResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthDeleteSession operation middleware
+func (sh *strictHandler) AuthDeleteSession(w http.ResponseWriter, r *http.Request) {
+	var request AuthDeleteSessionRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthDeleteSession(ctx, request.(AuthDeleteSessionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthDeleteSession")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthDeleteSessionResponseObject); ok {
+		if err := validResponse.VisitAuthDeleteSessionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthCreateSession operation middleware
+func (sh *strictHandler) AuthCreateSession(w http.ResponseWriter, r *http.Request) {
+	var request AuthCreateSessionRequestObject
+
+	var body AuthCreateSessionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthCreateSession(ctx, request.(AuthCreateSessionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthCreateSession")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthCreateSessionResponseObject); ok {
+		if err := validResponse.VisitAuthCreateSessionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthCreateToken operation middleware
+func (sh *strictHandler) AuthCreateToken(w http.ResponseWriter, r *http.Request) {
+	var request AuthCreateTokenRequestObject
+
+	var body AuthCreateTokenJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthCreateToken(ctx, request.(AuthCreateTokenRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthCreateToken")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthCreateTokenResponseObject); ok {
+		if err := validResponse.VisitAuthCreateTokenResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AuthRefreshToken operation middleware
+func (sh *strictHandler) AuthRefreshToken(w http.ResponseWriter, r *http.Request) {
+	var request AuthRefreshTokenRequestObject
+
+	var body AuthRefreshTokenJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AuthRefreshToken(ctx, request.(AuthRefreshTokenRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AuthRefreshToken")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AuthRefreshTokenResponseObject); ok {
+		if err := validResponse.VisitAuthRefreshTokenResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // InstanceGetInstance operation middleware
 func (sh *strictHandler) InstanceGetInstance(w http.ResponseWriter, r *http.Request) {
 	var request InstanceGetInstanceRequestObject
@@ -614,46 +3119,209 @@ func (sh *strictHandler) InstanceGetInstance(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// MeGet operation middleware
+func (sh *strictHandler) MeGet(w http.ResponseWriter, r *http.Request) {
+	var request MeGetRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MeGet(ctx, request.(MeGetRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MeGet")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MeGetResponseObject); ok {
+		if err := validResponse.VisitMeGetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MeRevokeAllSessions operation middleware
+func (sh *strictHandler) MeRevokeAllSessions(w http.ResponseWriter, r *http.Request) {
+	var request MeRevokeAllSessionsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MeRevokeAllSessions(ctx, request.(MeRevokeAllSessionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MeRevokeAllSessions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MeRevokeAllSessionsResponseObject); ok {
+		if err := validResponse.VisitMeRevokeAllSessionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MeListSessions operation middleware
+func (sh *strictHandler) MeListSessions(w http.ResponseWriter, r *http.Request) {
+	var request MeListSessionsRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MeListSessions(ctx, request.(MeListSessionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MeListSessions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MeListSessionsResponseObject); ok {
+		if err := validResponse.VisitMeListSessionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MeRevokeSession operation middleware
+func (sh *strictHandler) MeRevokeSession(w http.ResponseWriter, r *http.Request, id string) {
+	var request MeRevokeSessionRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MeRevokeSession(ctx, request.(MeRevokeSessionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MeRevokeSession")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MeRevokeSessionResponseObject); ok {
+		if err := validResponse.VisitMeRevokeSessionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.
 // Stored as a slice of fixed-width chunks rather than one concatenated
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"6tpe+OmRkQ/hPtw9/GcA",
+	"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",
+	"vwMA",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

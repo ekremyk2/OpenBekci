@@ -1,0 +1,30 @@
+post:
+  operationId: auth.refreshToken
+  summary: Exchange a refresh token for a new token pair
+  description: |
+    The refresh token is single use: the response carries a new one. Presenting
+    a refresh token that was already used revokes the whole session (the
+    family) and answers 401 `invalid_grant`. Not replayable: `Idempotency-Key`
+    is ignored.
+  tags: [auth]
+  security: []
+  x-idempotent: none
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/auth.yaml#/schemas/RefreshRequest'
+  responses:
+    '200':
+      description: A new pair.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/auth.yaml#/schemas/TokenResponse'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'
