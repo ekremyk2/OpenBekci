@@ -11,6 +11,7 @@ import { api } from '@/api/client'
 import type { SessionRequest } from '@/api/schema'
 import { useInstance, supportedAuthMethods, type KnownAuthMethod } from '@/app/instance'
 import { defaultLanding, meQueryOptions } from '@/app/session'
+import { problemMessage } from '@/lib/labels'
 import { safeNext } from '@/app/guards'
 import { ErrorState } from '@/components/data/ErrorState'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -21,14 +22,12 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 /*
- * PROVISIONAL CONTRACT — `POST /v1/auth/session` is defined by a later backend task. These forms are
- * built against the shape in the web plan:
- *   { method: 'password' | 'sms_otp' | 'magic_link', identifier, password?, code?, client: 'web' }
- *   200            session cookie set (password, or sms_otp with a code)
- *   202            a one-time code / link was sent (sms_otp without code; magic_link)
+ * CONTRACT (agreed with the backend) — `POST /v1/auth/session`:
+ *   body  { method: 'password' | 'sms_otp' | 'magic_link', identifier, password?, code?, client: 'web' }
+ *   200   session cookie set (password, or sms_otp with a code)
+ *   202   { status: 'sent' } a one-time code / link was sent (sms_otp without code; magic_link)
  *   401 invalid_grant   wrong credentials or code      422 validation_failed + errors[].field
- *   429 rate_limited    handled globally (toast)
- * Adjust here (and only here) when the generated client lands.
+ *   429 rate_limited    handled globally (toast); `DELETE /v1/auth/session` signs out.
  */
 
 type SignInResult = 'signed-in' | 'code-sent'
@@ -52,7 +51,7 @@ function useSignIn() {
 
 /** Maps an API failure onto the form: field errors where the server named them, else a form message. */
 function useApplyError() {
-  const { t } = useLingui()
+  const { t, i18n } = useLingui()
   return <T extends FieldValues>(form: UseFormReturn<T>, error: unknown) => {
     if (error instanceof AppError) {
       if (error.isValidation && Object.keys(error.fieldErrors).length > 0) {
@@ -69,6 +68,11 @@ function useApplyError() {
       }
       if (error.isRateLimited) {
         form.setError('root', { message: t`Too many attempts. Please wait and try again.` })
+        return
+      }
+      const known = problemMessage(error.code, i18n)
+      if (known) {
+        form.setError('root', { message: known })
         return
       }
     }

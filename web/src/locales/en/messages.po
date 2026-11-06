@@ -10,17 +10,26 @@ msgstr ""
 msgid "Accept your invitation"
 msgstr "Accept your invitation"
 
+msgid "Accountant"
+msgstr "Accountant"
+
 msgid "Ask your building manager to invite you."
 msgstr "Ask your building manager to invite you."
 
 msgid "Ask your manager if you think you should."
 msgstr "Ask your manager if you think you should."
 
+msgid "Auditor"
+msgstr "Auditor"
+
 msgid "Back to sign in"
 msgstr "Back to sign in"
 
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Balances, open requests and announcements will appear here."
+
+msgid "Board member"
+msgstr "Board member"
 
 msgid "Choose an organization"
 msgstr "Choose an organization"
@@ -67,8 +76,14 @@ msgstr "Enter your phone number"
 msgid "Go home"
 msgstr "Go home"
 
+msgid "Guard"
+msgstr "Guard"
+
 msgid "Home"
 msgstr "Home"
+
+msgid "Household member"
+msgstr "Household member"
 
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "If that address is registered, a sign-in link is on its way. It works once."
@@ -100,11 +115,20 @@ msgstr "My units"
 msgid "Navigation"
 msgstr "Navigation"
 
+msgid "Notifications"
+msgstr "Notifications"
+
 msgid "Open menu"
 msgstr "Open menu"
 
+msgid "Organization admin"
+msgstr "Organization admin"
+
 msgid "Organizations, health and backup status will appear here."
 msgstr "Organizations, health and backup status will appear here."
+
+msgid "Owner"
+msgstr "Owner"
 
 msgid "Page not found"
 msgstr "Page not found"
@@ -149,6 +173,9 @@ msgstr "Sign out"
 msgid "Signing you in"
 msgstr "Signing you in"
 
+msgid "Site manager"
+msgstr "Site manager"
+
 msgid "Sites"
 msgstr "Sites"
 
@@ -157,6 +184,9 @@ msgstr "Skip to content"
 
 msgid "SMS code"
 msgstr "SMS code"
+
+msgid "Someone else changed this record. Reload to see the latest version."
+msgstr "Someone else changed this record. Reload to see the latest version."
 
 msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
 msgstr "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
@@ -167,11 +197,17 @@ msgstr "Something went wrong"
 msgid "Something went wrong. Please try again."
 msgstr "Something went wrong. Please try again."
 
+msgid "Staff"
+msgstr "Staff"
+
 msgid "Switch organization"
 msgstr "Switch organization"
 
 msgid "System"
 msgstr "System"
+
+msgid "Tenant"
+msgstr "Tenant"
 
 msgid "That did not work. Check your details and try again."
 msgstr "That did not work. Check your details and try again."
@@ -185,8 +221,14 @@ msgstr "The request failed. Please try again."
 msgid "Theme"
 msgstr "Theme"
 
+msgid "This accounting period is closed and can no longer be changed."
+msgstr "This accounting period is closed and can no longer be changed."
+
 msgid "This record changed"
 msgstr "This record changed"
+
+msgid "This request was already sent with different details. Reload the form and try again."
+msgstr "This request was already sent with different details. Reload the form and try again."
 
 msgid "This server offers no sign-in method this app can use."
 msgstr "This server offers no sign-in method this app can use."
@@ -227,6 +269,9 @@ msgstr "You do not have access to this"
 
 msgid "You do not have access to this page"
 msgstr "You do not have access to this page"
+
+msgid "You do not have permission to do this."
+msgstr "You do not have permission to do this."
 
 msgid "You will be able to choose a new password here."
 msgstr "You will be able to choose a new password here."

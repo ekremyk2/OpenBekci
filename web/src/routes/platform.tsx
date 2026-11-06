@@ -9,7 +9,7 @@ import { buttonVariants } from '@/components/ui/button'
 export const Route = createFileRoute('/platform')({
   beforeLoad: async ({ context, location }) => {
     const me = await requireSession(context, location)
-    if (!me.user.platform_admin) throw new ForbiddenError()
+    if (!me.user.is_platform_admin) throw new ForbiddenError()
   },
   component: () => (
     <div className="mx-auto flex min-h-dvh max-w-xl items-center p-4">

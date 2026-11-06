@@ -1,5 +1,6 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
+import { roleLabel } from '@/lib/labels'
 import { Building2Icon } from 'lucide-react'
 import { requireSession } from '@/app/guards'
 import { useSession } from '@/app/session'
@@ -11,12 +12,13 @@ export const Route = createFileRoute('/select-org')({
     const me = await requireSession(context, location)
     const only = me.organizations.length === 1 ? me.organizations[0] : undefined
     if (only) throw redirect({ to: '/orgs/$orgId', params: { orgId: only.id }, replace: true })
-    if (me.organizations.length === 0 && me.user.platform_admin) {
+    if (me.organizations.length === 0 && me.user.is_platform_admin) {
       throw redirect({ to: '/platform', replace: true })
     }
   },
   component: function SelectOrg() {
     const { organizations } = useSession()
+    const { i18n } = useLingui()
     return (
       <div className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center gap-4 p-4">
         <h1 className="text-2xl font-semibold">
@@ -42,7 +44,9 @@ export const Route = createFileRoute('/select-org')({
                       <CardTitle>{org.name}</CardTitle>
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
-                      {org.roles.join(', ')}
+                      {[...new Set(org.roles.map((r) => r.role))]
+                        .map((r) => roleLabel(r, i18n))
+                        .join(', ')}
                     </CardContent>
                   </Card>
                 </Link>

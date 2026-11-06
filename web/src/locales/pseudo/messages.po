@@ -10,16 +10,25 @@ msgstr ""
 msgid "Accept your invitation"
 msgstr ""
 
+msgid "Accountant"
+msgstr ""
+
 msgid "Ask your building manager to invite you."
 msgstr ""
 
 msgid "Ask your manager if you think you should."
 msgstr ""
 
+msgid "Auditor"
+msgstr ""
+
 msgid "Back to sign in"
 msgstr ""
 
 msgid "Balances, open requests and announcements will appear here."
+msgstr ""
+
+msgid "Board member"
 msgstr ""
 
 msgid "Choose an organization"
@@ -67,7 +76,13 @@ msgstr ""
 msgid "Go home"
 msgstr ""
 
+msgid "Guard"
+msgstr ""
+
 msgid "Home"
+msgstr ""
+
+msgid "Household member"
 msgstr ""
 
 msgid "If that address is registered, a sign-in link is on its way. It works once."
@@ -100,10 +115,19 @@ msgstr ""
 msgid "Navigation"
 msgstr ""
 
+msgid "Notifications"
+msgstr ""
+
 msgid "Open menu"
 msgstr ""
 
+msgid "Organization admin"
+msgstr ""
+
 msgid "Organizations, health and backup status will appear here."
+msgstr ""
+
+msgid "Owner"
 msgstr ""
 
 msgid "Page not found"
@@ -149,6 +173,9 @@ msgstr ""
 msgid "Signing you in"
 msgstr ""
 
+msgid "Site manager"
+msgstr ""
+
 msgid "Sites"
 msgstr ""
 
@@ -156,6 +183,9 @@ msgid "Skip to content"
 msgstr ""
 
 msgid "SMS code"
+msgstr ""
+
+msgid "Someone else changed this record. Reload to see the latest version."
 msgstr ""
 
 msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
@@ -167,10 +197,16 @@ msgstr ""
 msgid "Something went wrong. Please try again."
 msgstr ""
 
+msgid "Staff"
+msgstr ""
+
 msgid "Switch organization"
 msgstr ""
 
 msgid "System"
+msgstr ""
+
+msgid "Tenant"
 msgstr ""
 
 msgid "That did not work. Check your details and try again."
@@ -185,7 +221,13 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
+msgid "This accounting period is closed and can no longer be changed."
+msgstr ""
+
 msgid "This record changed"
+msgstr ""
+
+msgid "This request was already sent with different details. Reload the form and try again."
 msgstr ""
 
 msgid "This server offers no sign-in method this app can use."
@@ -226,6 +268,9 @@ msgid "You do not have access to this"
 msgstr ""
 
 msgid "You do not have access to this page"
+msgstr ""
+
+msgid "You do not have permission to do this."
 msgstr ""
 
 msgid "You will be able to choose a new password here."

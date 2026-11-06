@@ -51,7 +51,7 @@ describe('api client middleware', () => {
       },
       ['POST /v1/auth/session'],
     )
-    const body = { method: 'password', identifier: 'a', password: 'b' } as const
+    const body = { method: 'password', identifier: 'a', password: 'b', client: 'web' } as const
     const headers = { 'Idempotency-Key': 'form-key' }
     await client.POST('/v1/auth/session', { body, headers })
     await client.POST('/v1/auth/session', { body, headers }) // retry: same key
@@ -85,7 +85,7 @@ describe('api client middleware', () => {
       json(422, { code: 'validation_failed', errors: [{ field: 'identifier', code: 'required' }] }),
     )
     const err = await client
-      .POST('/v1/auth/session', { body: { method: 'password', identifier: '' } })
+      .POST('/v1/auth/session', { body: { method: 'password', identifier: '', client: 'web' } })
       .catch((e: unknown) => e)
     expect(err).toBeInstanceOf(AppError)
     expect((err as AppError).fieldErrors.identifier?.[0]?.code).toBe('required')
@@ -95,7 +95,7 @@ describe('api client middleware', () => {
     const client = setup(() => json(401, { code: 'invalid_grant' }))
     await client.GET('/v1/me').catch(() => {})
     await client
-      .POST('/v1/auth/session', { body: { method: 'password', identifier: 'x', password: 'y' } })
+      .POST('/v1/auth/session', { body: { method: 'password', identifier: 'x', password: 'y', client: 'web' } })
       .catch(() => {})
     expect(events).toHaveLength(0)
   })

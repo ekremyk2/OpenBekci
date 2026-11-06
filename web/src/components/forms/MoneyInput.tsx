@@ -33,6 +33,13 @@ export function MoneyInput({
     }
   }, [value, currency, intl])
 
+  // A locale or currency switch changes the separators: re-render the parsed amount in the new
+  // format (text that does not parse yet is left for the user to finish).
+  useEffect(() => {
+    const minor = lastEmitted.current
+    if (minor !== null) setText(formatMoneyPlain(minor, currency, intl))
+  }, [currency, intl])
+
   const invalid = text.trim() !== '' && parseMoneyInput(text, currency, intl) === null
 
   return (

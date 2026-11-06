@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
+import { occupancyKindLabel } from '@/lib/labels'
 import { useSession } from '@/app/session'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export const Route = createFileRoute('/orgs/$orgId/me')({
   component: function MyAccount() {
     const { me, org } = useSession()
+    const { i18n } = useLingui()
     if (!me) return null
     const units = me.occupancies.filter((o) => o.organization_id === org?.id)
     return (
@@ -39,7 +41,7 @@ export const Route = createFileRoute('/orgs/$orgId/me')({
                 {units.map((o) => (
                   <li key={o.id} className="flex items-center gap-2 text-sm">
                     <span>{o.unit_label}</span>
-                    <Badge variant="secondary">{o.kind}</Badge>
+                    <Badge variant="secondary">{occupancyKindLabel(o.kind, i18n)}</Badge>
                   </li>
                 ))}
               </ul>

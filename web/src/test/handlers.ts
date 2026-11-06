@@ -27,13 +27,15 @@ export const meFixture: Me = {
     email: 'ayse@example.com',
     phone: '+905551112233',
     locale: 'tr',
+    is_platform_admin: false,
   },
   organizations: [
     {
       id: 'org-1',
+      slug: 'gunes',
       name: 'Güneş Sitesi Yönetimi',
       default_locale: 'tr',
-      roles: ['site_manager'],
+      roles: [{ role: 'site_manager', scope_type: 'org' }],
       permissions: [
         { permission: 'site.read' },
         { permission: 'ledger.read', site_ids: ['site-a'] },
@@ -52,9 +54,12 @@ export const meFixture: Me = {
       may_see_money: true,
     },
   ],
+  policies: { app_lock_required: false },
 }
 
 export const handlers = [
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
+  http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),
+  http.delete('*/v1/auth/session', () => new HttpResponse(null, { status: 204 })),
 ]

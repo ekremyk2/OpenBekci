@@ -12,7 +12,7 @@ import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
 import { setLocaleProvider } from '@/api/client'
 import { intlLocale, isLocale, loadLocale, resolveLocale, type Locale } from '@/lib/i18n'
-import { meQueryOptions } from './session'
+import { meQueryOptions, useLastOrgId } from './session'
 
 const KEY = 'ob.locale'
 
@@ -59,7 +59,9 @@ export function LocaleProvider({
   const me = useQuery(meQueryOptions).data
 
   const userSetting = explicit ?? me?.user.locale
-  const orgDefault = me?.organizations[0]?.default_locale
+  const selectedOrgId = useLastOrgId()
+  const orgs = me?.organizations
+  const orgDefault = (orgs?.find((o) => o.id === selectedOrgId) ?? orgs?.[0])?.default_locale
   useEffect(() => {
     if (new URLSearchParams(location.search).has('locale')) return
     const next = resolveLocale({ user: userSetting, browser: navigator.languages, orgDefault })

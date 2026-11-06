@@ -9,6 +9,7 @@ import { server } from '@/test/setup'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
+import { useLocale } from './locale'
 import { Providers, createQueryClient } from './providers'
 import { instanceQueryOptions, supportedAuthMethods } from './instance'
 import { defaultLanding, loadSession } from './session'
@@ -93,5 +94,23 @@ describe('display components', () => {
     expect(screen.getByTestId('minor')).toHaveTextContent('123450')
     await userEvent.tab()
     expect(input).toHaveValue('1234,50')
+  })
+
+  it('MoneyInput reformats the amount when the locale changes', async () => {
+    function Harness() {
+      const [v, setV] = useState<bigint | null>(123456n)
+      const { locale, setLocale } = useLocale()
+      return (
+        <>
+          <MoneyInput aria-label="Amount" value={v} onChange={setV} currency="TRY" />
+          <button onClick={() => setLocale(locale === 'tr' ? 'en' : 'tr')}>toggle</button>
+        </>
+      )
+    }
+    renderIn(<Harness />, 'tr')
+    const input = screen.getByLabelText('Amount')
+    await waitFor(() => expect(input).toHaveValue('1234,56'))
+    await userEvent.click(screen.getByText('toggle'))
+    await waitFor(() => expect(input).toHaveValue('1234.56'))
   })
 })

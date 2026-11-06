@@ -3,8 +3,8 @@
  * api/openapi.yaml, task A2) LANDS. Then change the one line in `./schema.ts` to re-export from the
  * generated file and fix whatever the compiler reports.
  *
- * Hand-written from backend plan §6/§8 and web plan §7. Everything here is PROVISIONAL; the OpenAPI
- * spec is authoritative. Field names marked (assumed) are not specified anywhere yet.
+ * Hand-written from backend plan §6/§8 and web plan §7, converged with the backend's agreed `/v1/me`
+ * and `/v1/auth/session` shapes. The OpenAPI spec is authoritative once it exists.
  */
 
 /** Open enum: unknown strings must never crash a screen (web plan §4). */
@@ -34,20 +34,32 @@ export interface components {
       branding?: { logo_url?: string; primary_color?: string }
     }
     Permission: string
-    /** One effective permission; absent site_ids/block_ids means organization-wide. (assumed shape) */
+    /**
+     * One effective permission. AGREED SEMANTICS (backend contract): absent `site_ids` / `block_ids`
+     * means the permission holds organization-wide; present lists restrict it to those sites/blocks.
+     */
     EffectivePermission: {
       permission: components['schemas']['Permission']
       site_ids?: string[]
       block_ids?: string[]
     }
     Site: { id: string; name: string; timezone: string; currency: string }
+    /** A membership: `role` held at `scope_type` (org / site / block), `scope_id` absent for org. */
+    RoleGrant: {
+      role: OpenEnum<
+        'org_admin' | 'site_manager' | 'board_member' | 'auditor' | 'accountant' | 'staff' | 'guard'
+      >
+      scope_type: OpenEnum<'org' | 'site' | 'block'>
+      scope_id?: string
+    }
     MeOrganization: {
       id: string
+      slug: string
       name: string
-      default_locale?: string // (assumed) organization default for locale resolution
-      roles: string[]
+      default_locale?: string // organization default for locale resolution
+      roles: components['schemas']['RoleGrant'][]
       permissions: components['schemas']['EffectivePermission'][]
-      sites?: components['schemas']['Site'][] // (assumed) convenience for tz/currency
+      sites: components['schemas']['Site'][]
     }
     Occupancy: {
       id: string
@@ -66,10 +78,12 @@ export interface components {
         email?: string | null
         phone?: string | null
         locale?: string | null
-        platform_admin?: boolean // (assumed) gates /platform
+        is_platform_admin?: boolean // gates /platform
       }
       organizations: components['schemas']['MeOrganization'][]
       occupancies: components['schemas']['Occupancy'][]
+      /** Effective policy flags (e.g. `app_lock_required`, which the web app ignores). */
+      policies: Record<string, unknown>
     }
     /** RFC 9457 problem+json as the backend emits it (code enum: backend §8). */
     Problem: {
@@ -95,7 +109,7 @@ export interface components {
       errors?: { field: string; code: string; message?: string }[]
       request_id?: string
     }
-    /** PROVISIONAL: POST /v1/auth/session is defined by a later backend task. */
+    /** POST /v1/auth/session (agreed with the backend). */
     SessionRequest: {
       method: 'password' | 'sms_otp' | 'magic_link'
       /** email or phone */
@@ -103,8 +117,10 @@ export interface components {
       password?: string
       /** SMS one-time code; omitted on the first step, which asks the server to send one */
       code?: string
-      client?: 'web'
+      client: 'web'
     }
+    /** 202 body: a code or link was sent. */
+    SessionSent: { status: 'sent' }
   }
 }
 
@@ -134,9 +150,10 @@ export interface paths {
       parameters: { query?: never; header?: never; path?: never; cookie?: never }
       requestBody: Json<components['schemas']['SessionRequest']>
       responses: {
-        /** 204/200: session cookie set. 202: a code was sent, ask for it. */
+        /** Session cookie set. */
         200: { headers: object; content?: never }
-        202: { headers: object; content?: never }
+        /** A code or link was sent (`{status:'sent'}`); ask for the code. */
+        202: Json<components['schemas']['SessionSent']> & { headers: object }
         401: ProblemResponse & { headers: object }
         422: ProblemResponse & { headers: object }
         429: ProblemResponse & { headers: object }

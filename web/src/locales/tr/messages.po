@@ -10,17 +10,26 @@ msgstr ""
 msgid "Accept your invitation"
 msgstr "Davetinizi kabul edin"
 
+msgid "Accountant"
+msgstr "Muhasebeci"
+
 msgid "Ask your building manager to invite you."
 msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
 
 msgid "Ask your manager if you think you should."
 msgstr "Erişmeniz gerektiğini düşünüyorsanız yöneticinize danışın."
 
+msgid "Auditor"
+msgstr "Denetçi"
+
 msgid "Back to sign in"
 msgstr "Girişe dön"
 
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Bakiyeler, açık talepler ve duyurular burada görünecek."
+
+msgid "Board member"
+msgstr "Yönetim kurulu üyesi"
 
 msgid "Choose an organization"
 msgstr "Bir kuruluş seçin"
@@ -67,8 +76,14 @@ msgstr "Telefon numaranızı girin"
 msgid "Go home"
 msgstr "Ana sayfaya git"
 
+msgid "Guard"
+msgstr "Güvenlik görevlisi"
+
 msgid "Home"
 msgstr "Ana sayfa"
+
+msgid "Household member"
+msgstr "Hane halkı üyesi"
 
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "Bu adres kayıtlıysa giriş bağlantısı yolda. Bağlantı yalnızca bir kez çalışır."
@@ -100,11 +115,20 @@ msgstr "Bağımsız bölümlerim"
 msgid "Navigation"
 msgstr "Gezinme"
 
+msgid "Notifications"
+msgstr "Bildirimler"
+
 msgid "Open menu"
 msgstr "Menüyü aç"
 
+msgid "Organization admin"
+msgstr "Kurum yöneticisi"
+
 msgid "Organizations, health and backup status will appear here."
 msgstr "Kuruluşlar, sistem durumu ve yedekleme durumu burada görünecek."
+
+msgid "Owner"
+msgstr "Mal sahibi"
 
 msgid "Page not found"
 msgstr "Sayfa bulunamadı"
@@ -149,6 +173,9 @@ msgstr "Çıkış yap"
 msgid "Signing you in"
 msgstr "Giriş yapılıyor"
 
+msgid "Site manager"
+msgstr "Site yöneticisi"
+
 msgid "Sites"
 msgstr "Siteler"
 
@@ -157,6 +184,9 @@ msgstr "İçeriğe geç"
 
 msgid "SMS code"
 msgstr "SMS kodu"
+
+msgid "Someone else changed this record. Reload to see the latest version."
+msgstr "Bu kaydı başka biri değiştirdi. En güncel sürümü görmek için yenileyin."
 
 msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
 msgstr "Siz düzenlerken başka biri güncelledi. En son sürümü görmek için yeniden yükleyin; kaydedilmemiş değişiklikleriniz kaybolacak."
@@ -167,11 +197,17 @@ msgstr "Bir şeyler ters gitti"
 msgid "Something went wrong. Please try again."
 msgstr "Bir şeyler ters gitti. Lütfen tekrar deneyin."
 
+msgid "Staff"
+msgstr "Personel"
+
 msgid "Switch organization"
 msgstr "Kuruluş değiştir"
 
 msgid "System"
 msgstr "Sistem"
+
+msgid "Tenant"
+msgstr "Kiracı"
 
 msgid "That did not work. Check your details and try again."
 msgstr "Olmadı. Bilgilerinizi kontrol edip tekrar deneyin."
@@ -185,8 +221,14 @@ msgstr "İstek başarısız oldu. Lütfen tekrar deneyin."
 msgid "Theme"
 msgstr "Tema"
 
+msgid "This accounting period is closed and can no longer be changed."
+msgstr "Bu muhasebe dönemi kapatıldı ve artık değiştirilemez."
+
 msgid "This record changed"
 msgstr "Bu kayıt değişti"
+
+msgid "This request was already sent with different details. Reload the form and try again."
+msgstr "Bu istek daha önce farklı bilgilerle gönderilmişti. Formu yenileyip tekrar deneyin."
 
 msgid "This server offers no sign-in method this app can use."
 msgstr "Bu sunucu, uygulamanın kullanabileceği bir giriş yöntemi sunmuyor."
@@ -227,6 +269,9 @@ msgstr "Buna erişim yetkiniz yok"
 
 msgid "You do not have access to this page"
 msgstr "Bu sayfaya erişim yetkiniz yok"
+
+msgid "You do not have permission to do this."
+msgstr "Bunu yapma yetkiniz yok."
 
 msgid "You will be able to choose a new password here."
 msgstr "Yeni parolanızı burada seçebileceksiniz."

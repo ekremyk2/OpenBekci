@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react'
 import { queryOptions, useQuery, type QueryClient } from '@tanstack/react-query'
 import { useParams } from '@tanstack/react-router'
 import { api } from '@/api/client'
@@ -43,12 +44,25 @@ export function clearSession(queryClient: QueryClient) {
 }
 
 const LAST_ORG_KEY = 'ob.lastOrg'
+const orgListeners = new Set<() => void>()
 export function rememberOrg(orgId: string) {
   try {
     localStorage.setItem(LAST_ORG_KEY, orgId)
   } catch {
     /* ignore */
   }
+  for (const l of orgListeners) l()
+}
+/** The organization the user last opened (the "selected" one outside of an /orgs/$orgId route). */
+export function useLastOrgId(): string | null {
+  return useSyncExternalStore(
+    (cb) => {
+      orgListeners.add(cb)
+      return () => orgListeners.delete(cb)
+    },
+    lastOrgId,
+    () => null,
+  )
 }
 export function lastOrgId(): string | null {
   try {
@@ -67,7 +81,7 @@ export function defaultLanding(
   const only = orgs.length === 1 ? orgs[0] : undefined
   const pick = remembered ?? only
   if (pick) return { to: '/orgs/$orgId', params: { orgId: pick.id } }
-  if (orgs.length === 0 && me.user.platform_admin) return { to: '/platform' }
+  if (orgs.length === 0 && me.user.is_platform_admin) return { to: '/platform' }
   return { to: '/select-org' }
 }
 
