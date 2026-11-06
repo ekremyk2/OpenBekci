@@ -1,0 +1,20 @@
+# Normalize line endings: LF in the repository, native on checkout
+* text=auto eol=lf
+
+# Keep shell scripts and Unix configs LF even on Windows
+*.sh text eol=lf
+Taskfile.yml text eol=lf
+
+# Windows-specific files stay CRLF
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

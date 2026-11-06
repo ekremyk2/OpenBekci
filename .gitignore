@@ -1,0 +1,34 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Go
+server/bin/
+server/dist/
+coverage.out
+
+# Node / web
+node_modules/
+web/dist/
+.pnpm-store/
+
+# Flutter / Dart
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/ios/Pods/
+mobile/android/.gradle/
+mobile/android/local.properties
+
+# Generated artifacts kept out of the repo until codegen is set up
+clients/*/dist/
