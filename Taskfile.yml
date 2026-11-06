@@ -1,0 +1,75 @@
+# Run via tools/task.ps1 or tools/task.sh (they use the pinned `go tool task`),
+# or with a global `task` binary.
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  gen:
+    desc: Generate code (sqlc now; the OpenAPI step is added by the API task)
+    dir: server
+    cmds:
+      - go tool sqlc generate -f db/sqlc.yaml
+
+  lint:
+    desc: Run golangci-lint
+    dir: server
+    cmds:
+      - go vet ./...
+      - go tool golangci-lint run ./...
+
+  test:
+    desc: Unit tests (integration tests skip in -short mode)
+    dir: server
+    cmds:
+      - go test -short ./...
+
+  test:integration:
+    desc: Integration tests against local PostgreSQL (OPENBEKCI_TEST_SUPERUSER_URL)
+    dir: server
+    cmds:
+      - go test -count=1 -run Integration ./...
+
+  run:
+    desc: Run the server with the settings from .env
+    dir: server
+    cmds:
+      - go run ./cmd/openbekci serve
+
+  migrate:
+    desc: Apply database migrations (as the migrator role)
+    dir: server
+    cmds:
+      - go run ./cmd/openbekci migrate up
+
+  db:init:
+    desc: Create the local PostgreSQL data directory
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 init
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh init
+        platforms: [linux, darwin]
+
+  db:start:
+    desc: Start the local PostgreSQL
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 start
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh start
+        platforms: [linux, darwin]
+
+  db:stop:
+    desc: Stop the local PostgreSQL
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 stop
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh stop
+        platforms: [linux, darwin]
+
+  db:roles:
+    desc: Create the three database roles and the openbekci database
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 roles
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh roles
+        platforms: [linux, darwin]
