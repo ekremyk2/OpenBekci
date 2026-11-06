@@ -11,6 +11,35 @@ tasks:
     cmds:
       - go tool sqlc generate -f db/sqlc.yaml
 
+  web:install:
+    desc: Install web dependencies (pnpm, lockfile enforced)
+    dir: web
+    cmds:
+      - pnpm install --frozen-lockfile
+
+  web:dev:
+    desc: Vite dev server on :5173, proxying /v1 and /.well-known to the Go server on :8484
+    dir: web
+    cmds:
+      - pnpm dev
+
+  web:build:
+    desc: Build the web app and copy it into server/internal/webassets/dist for go:embed
+    dir: web
+    cmds:
+      - pnpm install --frozen-lockfile
+      - pnpm build
+      - pnpm size
+      - node scripts/embed.mjs
+
+  web:check:
+    desc: Web lint, typecheck and unit tests
+    dir: web
+    cmds:
+      - pnpm lint
+      - pnpm typecheck
+      - pnpm test
+
   lint:
     desc: Run golangci-lint
     dir: server

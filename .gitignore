@@ -18,7 +18,10 @@ coverage.out
 
 # Node / web
 node_modules/
+web/node_modules/
 web/dist/
+web/test-results/
+web/playwright-report/
 .pnpm-store/
 
 # Flutter / Dart
