@@ -49,7 +49,7 @@ func validationProblem(err error, suggested int) *problem.Error {
 				return problem.NotFound("no such resource")
 			}
 			if suggested == http.StatusMethodNotAllowed {
-				return problem.New(http.StatusMethodNotAllowed, problem.CodeBadRequest, "method not allowed")
+				return problem.New(http.StatusMethodNotAllowed, problem.CodeMethodNotAllowed, "method not allowed")
 			}
 			return problem.Wrap(http.StatusInternalServerError, problem.CodeInternalError, "", e)
 		}

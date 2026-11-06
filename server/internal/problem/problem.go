@@ -42,6 +42,7 @@ const (
 	CodeSiteOffboarded         Code = "site_offboarded"
 	CodeInternalError          Code = "internal_error"
 	CodePayloadTooLarge        Code = "payload_too_large"
+	CodeMethodNotAllowed       Code = "method_not_allowed"
 )
 
 // Field is one entry of the errors[] array.

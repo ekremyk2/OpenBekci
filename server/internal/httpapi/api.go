@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
@@ -58,14 +59,20 @@ func MountAPI(r chi.Router, deps Deps) {
 		},
 	})
 	r.NotFound(notFound)
-	r.MethodNotAllowed(methodNotAllowed)
+	r.MethodNotAllowed(methodNotAllowed(r))
 	gen.HandlerWithOptions(strict, gen.ChiServerOptions{
 		BaseRouter:       r,
 		Middlewares:      genMiddlewares(p.Middlewares()),
 		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) { problem.Write(w, r, requestBindError(err)) },
 	})
-	r.Handle("/v1/*", http.HandlerFunc(notFound))
-	r.Handle("/.well-known/*", http.HandlerFunc(notFound))
+	// No catch-all route for /v1/* or /.well-known/*: a catch-all matches every
+	// method and would hide chi's 405. Unknown paths reach NotFound instead
+	// (NewRouter sends API prefixes there to a problem, the rest to the web app).
+}
+
+// isAPIPath reports whether path belongs to the API: /v1, /v1/... and /.well-known/...
+func isAPIPath(path string) bool {
+	return path == "/v1" || strings.HasPrefix(path, "/v1/") || strings.HasPrefix(path, "/.well-known/")
 }
 
 // apiServer implements gen.StrictServerInterface by delegating to the modules.

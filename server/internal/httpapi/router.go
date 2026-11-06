@@ -68,8 +68,17 @@ func NewRouter(deps Deps, o Options) http.Handler {
 	r.Get("/healthz", healthz)
 	r.Get("/readyz", readyz(deps.Log, o.Ready))
 
+	r.MethodNotAllowed(methodNotAllowed(r))
 	MountAPI(r, deps)
 
-	r.Handle("/*", webassets.Handler())
+	// Anything no route claims: unknown API paths are problems, the rest is the web app.
+	web := webassets.Handler()
+	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
+		if isAPIPath(req.URL.Path) {
+			notFound(w, req)
+			return
+		}
+		web.ServeHTTP(w, req)
+	})
 	return r
 }

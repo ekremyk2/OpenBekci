@@ -127,10 +127,27 @@ func TestAPIUnknownPathsAreProblems(t *testing.T) {
 }
 
 func TestAPIWrongMethodIsProblem(t *testing.T) {
+	h := realRouter(nil)
+	for path, allow := range map[string]string{"/v1/instance": "GET", "/.well-known/openbekci.json": "GET"} {
+		for _, method := range []string{http.MethodPost, http.MethodDelete, http.MethodPut} {
+			rec := httptest.NewRecorder()
+			h.ServeHTTP(rec, httptest.NewRequest(method, path, nil))
+			decodeProblem(t, rec, http.StatusMethodNotAllowed, "method_not_allowed")
+			if got := rec.Header().Get("Allow"); got != allow {
+				t.Errorf("%s %s: Allow = %q, want %q", method, path, got, allow)
+			}
+		}
+	}
+	// A wrong method on a health probe is a problem too.
 	rec := httptest.NewRecorder()
-	realRouter(nil).ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/v1/instance", nil))
-	if ct := rec.Header().Get("Content-Type"); ct != "application/problem+json" {
-		t.Errorf("POST /v1/instance: %d %s %s", rec.Code, ct, rec.Body)
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/healthz", nil))
+	decodeProblem(t, rec, http.StatusMethodNotAllowed, "method_not_allowed")
+}
+
+func TestAPIPrefixRootIsProblem(t *testing.T) {
+	h := realRouter(nil)
+	for _, path := range []string{"/v1", "/v1/", "/v1/instance/extra"} {
+		decodeProblem(t, get(h, path), http.StatusNotFound, "not_found")
 	}
 }
 
@@ -208,7 +225,7 @@ func TestProblemCodesMatchSpec(t *testing.T) {
 		problem.CodeValidationFailed, problem.CodeBadRequest, problem.CodeUnauthenticated, problem.CodeNotFound,
 		problem.CodeConflict, problem.CodeVersionConflict, problem.CodeIdempotencyMismatch, problem.CodeLockedPeriod,
 		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant,
-		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError, problem.CodePayloadTooLarge,
+		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError, problem.CodePayloadTooLarge, problem.CodeMethodNotAllowed,
 	} {
 		if !inSpec[string(c)] {
 			t.Errorf("code %q is not in the spec enum", c)

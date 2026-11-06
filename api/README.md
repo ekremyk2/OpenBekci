@@ -57,7 +57,7 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
   `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
-  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500), `payload_too_large` (413; JSON request
+  `rate_limited` (429), `pack_error`, `site_offboarded`, `internal_error` (500), `method_not_allowed` (405, with `Allow`), `payload_too_large` (413; JSON request
   bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `instance` is the request id,
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
@@ -86,5 +86,5 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 
 For each operation, in order: response validation (when `OPENBEKCI_API_VALIDATE_RESPONSES=true`; always on in
 tests) wraps stability header, request validation (kin-openapi; problem+json), authentication (only for operations
-with `security`), idempotency, then the generated strict handler. Unknown paths under `/v1/` and
+with `security`), idempotency, then the generated strict handler. Unknown paths under `/v1` and
 `/.well-known/` are 404 problems; everything else falls through to the web app.

@@ -194,6 +194,19 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 	problem.Write(w, r, problem.NotFound("no such resource"))
 }
 
-func methodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	problem.Write(w, r, problem.New(http.StatusMethodNotAllowed, problem.CodeBadRequest, "method not allowed"))
+// methodNotAllowed renders chi's 405 as a problem with an Allow header. chi
+// only sets Allow for its default handler, so the allowed methods are found
+// by matching the path against each method.
+func methodNotAllowed(routes chi.Routes) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		for _, m := range []string{
+			http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut,
+			http.MethodPatch, http.MethodDelete, http.MethodOptions,
+		} {
+			if routes.Match(chi.NewRouteContext(), m, r.URL.Path) {
+				w.Header().Add("Allow", m)
+			}
+		}
+		problem.Write(w, r, problem.New(http.StatusMethodNotAllowed, problem.CodeMethodNotAllowed, "method not allowed"))
+	}
 }
