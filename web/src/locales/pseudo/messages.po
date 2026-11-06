@@ -1,0 +1,244 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-07 01:54+0300\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: pseudo\n"
+
+msgid "Accept your invitation"
+msgstr ""
+
+msgid "Ask your building manager to invite you."
+msgstr ""
+
+msgid "Ask your manager if you think you should."
+msgstr ""
+
+msgid "Back to sign in"
+msgstr ""
+
+msgid "Balances, open requests and announcements will appear here."
+msgstr ""
+
+msgid "Choose an organization"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Code from the SMS"
+msgstr ""
+
+msgid "Could not sign out. Please try again."
+msgstr ""
+
+msgid "Dark"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Email link"
+msgstr ""
+
+msgid "Email me a link"
+msgstr ""
+
+msgid "Email or phone"
+msgstr ""
+
+msgid "Enter the code from the SMS"
+msgstr ""
+
+msgid "Enter your email"
+msgstr ""
+
+msgid "Enter your email or phone number"
+msgstr ""
+
+msgid "Enter your password"
+msgstr ""
+
+msgid "Enter your phone number"
+msgstr ""
+
+msgid "Go home"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "If that address is registered, a sign-in link is on its way. It works once."
+msgstr ""
+
+msgid "Join your building"
+msgstr ""
+
+msgid "Keep editing"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Light"
+msgstr ""
+
+msgid "Main"
+msgstr ""
+
+msgid "Money"
+msgstr ""
+
+msgid "My account"
+msgstr ""
+
+msgid "My units"
+msgstr ""
+
+msgid "Navigation"
+msgstr ""
+
+msgid "Open menu"
+msgstr ""
+
+msgid "Organizations, health and backup status will appear here."
+msgstr ""
+
+msgid "Page not found"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "People"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
+
+msgid "Platform administration"
+msgstr ""
+
+msgid "Please confirm it is you before continuing."
+msgstr ""
+
+#. placeholder {0}: app.requestId
+msgid "Reference: {0}"
+msgstr ""
+
+msgid "Reload"
+msgstr ""
+
+msgid "Reset your password"
+msgstr ""
+
+msgid "Send me a code"
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "Sign in to manage your building."
+msgstr ""
+
+msgid "Sign out"
+msgstr ""
+
+msgid "Signing you in"
+msgstr ""
+
+msgid "Sites"
+msgstr ""
+
+msgid "Skip to content"
+msgstr ""
+
+msgid "SMS code"
+msgstr ""
+
+msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
+msgstr ""
+
+msgid "Something went wrong"
+msgstr ""
+
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+msgid "Switch organization"
+msgstr ""
+
+msgid "System"
+msgstr ""
+
+msgid "That did not work. Check your details and try again."
+msgstr ""
+
+msgid "The page you are looking for does not exist or has moved."
+msgstr ""
+
+msgid "The request failed. Please try again."
+msgstr ""
+
+msgid "Theme"
+msgstr ""
+
+msgid "This record changed"
+msgstr ""
+
+msgid "This server offers no sign-in method this app can use."
+msgstr ""
+
+msgid "This step is not available in this build yet."
+msgstr ""
+
+msgid "This value is not valid"
+msgstr ""
+
+msgid "Tickets"
+msgstr ""
+
+msgid "Too many attempts. Please wait and try again."
+msgstr ""
+
+msgid "Too many requests. Please wait a moment and try again."
+msgstr ""
+
+#. placeholder {0}: Math.ceil(wait)
+msgid "Too many requests. Try again in {0} seconds."
+msgstr ""
+
+msgid "Try again"
+msgstr ""
+
+msgid "We could not find that."
+msgstr ""
+
+msgid "You are not linked to a unit in this organization."
+msgstr ""
+
+msgid "You are not part of any organization yet"
+msgstr ""
+
+msgid "You do not have access to this"
+msgstr ""
+
+msgid "You do not have access to this page"
+msgstr ""
+
+msgid "You will be able to choose a new password here."
+msgstr ""
+
+msgid "You will be able to claim your unit here. Your manager approves the request."
+msgstr ""
+
+msgid "You will be able to create or link your account here."
+msgstr ""
+
+msgid "Your dashboard is on its way"
+msgstr ""
+
+msgid "Your sign-in link will be completed here."
+msgstr ""

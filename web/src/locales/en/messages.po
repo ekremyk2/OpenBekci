@@ -1,0 +1,244 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-07 01:54+0300\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+
+msgid "Accept your invitation"
+msgstr "Accept your invitation"
+
+msgid "Ask your building manager to invite you."
+msgstr "Ask your building manager to invite you."
+
+msgid "Ask your manager if you think you should."
+msgstr "Ask your manager if you think you should."
+
+msgid "Back to sign in"
+msgstr "Back to sign in"
+
+msgid "Balances, open requests and announcements will appear here."
+msgstr "Balances, open requests and announcements will appear here."
+
+msgid "Choose an organization"
+msgstr "Choose an organization"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Code from the SMS"
+msgstr "Code from the SMS"
+
+msgid "Could not sign out. Please try again."
+msgstr "Could not sign out. Please try again."
+
+msgid "Dark"
+msgstr "Dark"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Email link"
+msgstr "Email link"
+
+msgid "Email me a link"
+msgstr "Email me a link"
+
+msgid "Email or phone"
+msgstr "Email or phone"
+
+msgid "Enter the code from the SMS"
+msgstr "Enter the code from the SMS"
+
+msgid "Enter your email"
+msgstr "Enter your email"
+
+msgid "Enter your email or phone number"
+msgstr "Enter your email or phone number"
+
+msgid "Enter your password"
+msgstr "Enter your password"
+
+msgid "Enter your phone number"
+msgstr "Enter your phone number"
+
+msgid "Go home"
+msgstr "Go home"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "If that address is registered, a sign-in link is on its way. It works once."
+msgstr "If that address is registered, a sign-in link is on its way. It works once."
+
+msgid "Join your building"
+msgstr "Join your building"
+
+msgid "Keep editing"
+msgstr "Keep editing"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Light"
+msgstr "Light"
+
+msgid "Main"
+msgstr "Main"
+
+msgid "Money"
+msgstr "Money"
+
+msgid "My account"
+msgstr "My account"
+
+msgid "My units"
+msgstr "My units"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "Open menu"
+msgstr "Open menu"
+
+msgid "Organizations, health and backup status will appear here."
+msgstr "Organizations, health and backup status will appear here."
+
+msgid "Page not found"
+msgstr "Page not found"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "People"
+msgstr "People"
+
+msgid "Phone number"
+msgstr "Phone number"
+
+msgid "Platform administration"
+msgstr "Platform administration"
+
+msgid "Please confirm it is you before continuing."
+msgstr "Please confirm it is you before continuing."
+
+#. placeholder {0}: app.requestId
+msgid "Reference: {0}"
+msgstr "Reference: {0}"
+
+msgid "Reload"
+msgstr "Reload"
+
+msgid "Reset your password"
+msgstr "Reset your password"
+
+msgid "Send me a code"
+msgstr "Send me a code"
+
+msgid "Sign in"
+msgstr "Sign in"
+
+msgid "Sign in to manage your building."
+msgstr "Sign in to manage your building."
+
+msgid "Sign out"
+msgstr "Sign out"
+
+msgid "Signing you in"
+msgstr "Signing you in"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Skip to content"
+msgstr "Skip to content"
+
+msgid "SMS code"
+msgstr "SMS code"
+
+msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
+msgstr "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
+
+msgid "Something went wrong"
+msgstr "Something went wrong"
+
+msgid "Something went wrong. Please try again."
+msgstr "Something went wrong. Please try again."
+
+msgid "Switch organization"
+msgstr "Switch organization"
+
+msgid "System"
+msgstr "System"
+
+msgid "That did not work. Check your details and try again."
+msgstr "That did not work. Check your details and try again."
+
+msgid "The page you are looking for does not exist or has moved."
+msgstr "The page you are looking for does not exist or has moved."
+
+msgid "The request failed. Please try again."
+msgstr "The request failed. Please try again."
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "This record changed"
+msgstr "This record changed"
+
+msgid "This server offers no sign-in method this app can use."
+msgstr "This server offers no sign-in method this app can use."
+
+msgid "This step is not available in this build yet."
+msgstr "This step is not available in this build yet."
+
+msgid "This value is not valid"
+msgstr "This value is not valid"
+
+msgid "Tickets"
+msgstr "Tickets"
+
+msgid "Too many attempts. Please wait and try again."
+msgstr "Too many attempts. Please wait and try again."
+
+msgid "Too many requests. Please wait a moment and try again."
+msgstr "Too many requests. Please wait a moment and try again."
+
+#. placeholder {0}: Math.ceil(wait)
+msgid "Too many requests. Try again in {0} seconds."
+msgstr "Too many requests. Try again in {0} seconds."
+
+msgid "Try again"
+msgstr "Try again"
+
+msgid "We could not find that."
+msgstr "We could not find that."
+
+msgid "You are not linked to a unit in this organization."
+msgstr "You are not linked to a unit in this organization."
+
+msgid "You are not part of any organization yet"
+msgstr "You are not part of any organization yet"
+
+msgid "You do not have access to this"
+msgstr "You do not have access to this"
+
+msgid "You do not have access to this page"
+msgstr "You do not have access to this page"
+
+msgid "You will be able to choose a new password here."
+msgstr "You will be able to choose a new password here."
+
+msgid "You will be able to claim your unit here. Your manager approves the request."
+msgstr "You will be able to claim your unit here. Your manager approves the request."
+
+msgid "You will be able to create or link your account here."
+msgstr "You will be able to create or link your account here."
+
+msgid "Your dashboard is on its way"
+msgstr "Your dashboard is on its way"
+
+msgid "Your sign-in link will be completed here."
+msgstr "Your sign-in link will be completed here."

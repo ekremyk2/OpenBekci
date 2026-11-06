@@ -1,0 +1,244 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-07 01:54+0300\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: tr\n"
+
+msgid "Accept your invitation"
+msgstr "Davetinizi kabul edin"
+
+msgid "Ask your building manager to invite you."
+msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
+
+msgid "Ask your manager if you think you should."
+msgstr "Erişmeniz gerektiğini düşünüyorsanız yöneticinize danışın."
+
+msgid "Back to sign in"
+msgstr "Girişe dön"
+
+msgid "Balances, open requests and announcements will appear here."
+msgstr "Bakiyeler, açık talepler ve duyurular burada görünecek."
+
+msgid "Choose an organization"
+msgstr "Bir kuruluş seçin"
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Code from the SMS"
+msgstr "SMS ile gelen kod"
+
+msgid "Could not sign out. Please try again."
+msgstr "Çıkış yapılamadı. Lütfen tekrar deneyin."
+
+msgid "Dark"
+msgstr "Koyu"
+
+msgid "Email"
+msgstr "E-posta"
+
+msgid "Email link"
+msgstr "E-posta bağlantısı"
+
+msgid "Email me a link"
+msgstr "Bana bağlantı gönder"
+
+msgid "Email or phone"
+msgstr "E-posta veya telefon"
+
+msgid "Enter the code from the SMS"
+msgstr "SMS ile gelen kodu girin"
+
+msgid "Enter your email"
+msgstr "E-posta adresinizi girin"
+
+msgid "Enter your email or phone number"
+msgstr "E-posta adresinizi veya telefon numaranızı girin"
+
+msgid "Enter your password"
+msgstr "Parolanızı girin"
+
+msgid "Enter your phone number"
+msgstr "Telefon numaranızı girin"
+
+msgid "Go home"
+msgstr "Ana sayfaya git"
+
+msgid "Home"
+msgstr "Ana sayfa"
+
+msgid "If that address is registered, a sign-in link is on its way. It works once."
+msgstr "Bu adres kayıtlıysa giriş bağlantısı yolda. Bağlantı yalnızca bir kez çalışır."
+
+msgid "Join your building"
+msgstr "Binanıza katılın"
+
+msgid "Keep editing"
+msgstr "Düzenlemeye devam et"
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "Light"
+msgstr "Açık"
+
+msgid "Main"
+msgstr "Ana"
+
+msgid "Money"
+msgstr "Para"
+
+msgid "My account"
+msgstr "Hesabım"
+
+msgid "My units"
+msgstr "Bağımsız bölümlerim"
+
+msgid "Navigation"
+msgstr "Gezinme"
+
+msgid "Open menu"
+msgstr "Menüyü aç"
+
+msgid "Organizations, health and backup status will appear here."
+msgstr "Kuruluşlar, sistem durumu ve yedekleme durumu burada görünecek."
+
+msgid "Page not found"
+msgstr "Sayfa bulunamadı"
+
+msgid "Password"
+msgstr "Parola"
+
+msgid "People"
+msgstr "Kişiler"
+
+msgid "Phone number"
+msgstr "Telefon numarası"
+
+msgid "Platform administration"
+msgstr "Platform yönetimi"
+
+msgid "Please confirm it is you before continuing."
+msgstr "Devam etmeden önce lütfen kimliğinizi doğrulayın."
+
+#. placeholder {0}: app.requestId
+msgid "Reference: {0}"
+msgstr "Referans: {0}"
+
+msgid "Reload"
+msgstr "Yeniden yükle"
+
+msgid "Reset your password"
+msgstr "Parolanızı sıfırlayın"
+
+msgid "Send me a code"
+msgstr "Bana kod gönder"
+
+msgid "Sign in"
+msgstr "Giriş yap"
+
+msgid "Sign in to manage your building."
+msgstr "Binanızı yönetmek için giriş yapın."
+
+msgid "Sign out"
+msgstr "Çıkış yap"
+
+msgid "Signing you in"
+msgstr "Giriş yapılıyor"
+
+msgid "Sites"
+msgstr "Siteler"
+
+msgid "Skip to content"
+msgstr "İçeriğe geç"
+
+msgid "SMS code"
+msgstr "SMS kodu"
+
+msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
+msgstr "Siz düzenlerken başka biri güncelledi. En son sürümü görmek için yeniden yükleyin; kaydedilmemiş değişiklikleriniz kaybolacak."
+
+msgid "Something went wrong"
+msgstr "Bir şeyler ters gitti"
+
+msgid "Something went wrong. Please try again."
+msgstr "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+
+msgid "Switch organization"
+msgstr "Kuruluş değiştir"
+
+msgid "System"
+msgstr "Sistem"
+
+msgid "That did not work. Check your details and try again."
+msgstr "Olmadı. Bilgilerinizi kontrol edip tekrar deneyin."
+
+msgid "The page you are looking for does not exist or has moved."
+msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
+
+msgid "The request failed. Please try again."
+msgstr "İstek başarısız oldu. Lütfen tekrar deneyin."
+
+msgid "Theme"
+msgstr "Tema"
+
+msgid "This record changed"
+msgstr "Bu kayıt değişti"
+
+msgid "This server offers no sign-in method this app can use."
+msgstr "Bu sunucu, uygulamanın kullanabileceği bir giriş yöntemi sunmuyor."
+
+msgid "This step is not available in this build yet."
+msgstr "Bu adım henüz bu sürümde kullanılamıyor."
+
+msgid "This value is not valid"
+msgstr "Bu değer geçerli değil"
+
+msgid "Tickets"
+msgstr "Talepler"
+
+msgid "Too many attempts. Please wait and try again."
+msgstr "Çok fazla deneme yapıldı. Lütfen bekleyip tekrar deneyin."
+
+msgid "Too many requests. Please wait a moment and try again."
+msgstr "Çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin."
+
+#. placeholder {0}: Math.ceil(wait)
+msgid "Too many requests. Try again in {0} seconds."
+msgstr "Çok fazla istek gönderildi. {0} saniye sonra tekrar deneyin."
+
+msgid "Try again"
+msgstr "Tekrar dene"
+
+msgid "We could not find that."
+msgstr "Bulunamadı."
+
+msgid "You are not linked to a unit in this organization."
+msgstr "Bu kuruluşta bir bağımsız bölümle ilişkiniz yok."
+
+msgid "You are not part of any organization yet"
+msgstr "Henüz hiçbir kuruluşa bağlı değilsiniz"
+
+msgid "You do not have access to this"
+msgstr "Buna erişim yetkiniz yok"
+
+msgid "You do not have access to this page"
+msgstr "Bu sayfaya erişim yetkiniz yok"
+
+msgid "You will be able to choose a new password here."
+msgstr "Yeni parolanızı burada seçebileceksiniz."
+
+msgid "You will be able to claim your unit here. Your manager approves the request."
+msgstr "Bağımsız bölümünüzü burada talep edebileceksiniz. Talebi yöneticiniz onaylar."
+
+msgid "You will be able to create or link your account here."
+msgstr "Hesabınızı burada oluşturabilir veya bağlayabileceksiniz."
+
+msgid "Your dashboard is on its way"
+msgstr "Panonuz hazırlanıyor"
+
+msgid "Your sign-in link will be completed here."
+msgstr "Giriş bağlantınız burada tamamlanacak."
