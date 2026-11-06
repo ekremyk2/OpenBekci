@@ -52,16 +52,24 @@ Explicit non-goals for v1: accounting for the management *company* itself (payro
 | IDs | UUIDv7 everywhere |
 | Money | Integer minor units + ISO 4217 currency code, one currency per site |
 
-### 2.2 Assumed — confirm or change
+### 2.2 Decided on 2026-11-06, after the plan review
 
-These shape the plans below. They are written as if decided so the plans are concrete; flip any of them and the affected sections are marked.
+These were open assumptions in v0.1 of this document; the [review](06-review.md) §2 made them blocking and the owner decided them. **Plans 01–05 have not yet been revised to reflect them** — until that pass lands, this table wins over any conflicting text elsewhere.
+
+| # | Decision | Outcome | Affects |
+|---|---|---|---|
+| D4 | **Deployment model** | **Self-host first, SaaS-capable.** One build, multi-organization; self-hosting is the first-class install; a hosted service runs the same build. No open-core gating. Hosted-only concerns (signup, plans, invoicing organizations) live outside this repo | Multi-tenancy (§6.1), push relay (§6.5) |
+| D2 | **Who owns the data** | **The organization is the access boundary; the site is the data-owning, portable unit.** An organization is "the office that runs things" (a management company, or a self-managed building wearing that hat). A site (one kat malikleri kurulu, one ledger) can be exported from one organization and imported into another with its history and ids intact; the site's own board and auditor memberships belong to the site, not the organization; an "offboard site" workflow exists. Designed into B1, not added later | Backend §4/§5/§7, site export/import, roles |
+| D1 | **License** | **AGPL-3.0 for the server and web app, with an explicit pack-linking exception** (so privately written packs compiled into the binary do not become AGPL — stated honestly rather than implied). **MPL-2.0 for the mobile app** (avoids the App Store conflict). **Apache-2.0 for the pack SDK, the OpenAPI spec and the generated clients.** The exception text is a draft until a lawyer has read it; that must happen before the first outside contribution. Contributions under DCO | `LICENSE`, `LICENSING.md`, per-directory license files, `CONTRIBUTING.md` |
+| D3 | **First public release** | **0.1: web-only, money-complete** as scoped in review §9 (~45–50 engineer-weeks). No mobile, meetings, bookings, visitors or pack SDK in 0.1; Turkish legal rules are core settings until the SDK exists. Milestones M0–M7 below are to be re-baselined around it | §8, all component milestone tables |
+| D5 | **Phone-first sign-in** | **A minimal SMS gateway interface in core with one provider (Netgsm) from M1**, so phone OTP and SMS invitations work in 0.1. Other providers arrive through packs later | Backend identity and notifications |
+
+Still assumed (not blocking):
 
 | Decision | Assumption | Affects |
 |---|---|---|
-| **Deployment model** | Self-hosting is the first-class target; the same build is multi-organization so a hosted SaaS can run from it unchanged. No open-core gating: every feature in the repo works self-hosted. Hosted-only concerns (org billing, signup funnels) live outside the OSS repo and use the pack SDK | Multi-tenancy design (§6.1), push relay (§6.5), licensing |
-| **License** | **AGPL-3.0** for server, web and mobile. **Apache-2.0** for `pkg/sdk` (pack SDK), the OpenAPI spec and generated client libraries, so companies can write private packs and integrations without AGPL obligations | `LICENSE` files, contributor agreement |
-| **First country pack** | **Turkey** (`packs/tr`): Kat Mülkiyeti Kanunu (Law 634) rules, e-Devlet identity, e-Fatura/e-Arşiv, local payment providers, SMS providers, KVKK texts | Order of extension points in the backend plan; which interfaces get validated first |
-| **Name / module path** | `github.com/openbekci/openbekci` | Go module path, image names |
+| **First country pack** | **Turkey** (`packs/tr`): Kat Mülkiyeti Kanunu (Law 634) rules, local payment providers, SMS providers, bank formats, KVKK texts. e-Devlet is **out** (no realistic path to the required agreement; TCKN validation + manual verification instead) | Which extension points get validated first |
+| **Name / module path** | `github.com/openbekci/openbekci` (the repository currently lives at `github.com/ekremyk2/OpenBekci`; the module path is set when the GitHub organization exists) | Go module path, image names |
 
 ---
 

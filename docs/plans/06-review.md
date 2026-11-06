@@ -22,6 +22,8 @@ None of this changes the stack choices. It changes the domain model, a dozen mec
 
 ## 2. Decisions the owner must make (blocking)
 
+> **Decided 2026-11-06** — all five as recommended: D1 AGPL + pack exception / MPL-2.0 mobile / Apache SDK-spec-clients; D2 organization = access boundary, site owns the data and is portable; D3 0.1 web-only money-complete; D4 self-host first, SaaS-capable; D5 minimal SMS gateway in core with one provider. Recorded in [00-overview.md §2.2](00-overview.md#22-decided-on-2026-11-06-after-the-plan-review). The table below is kept for the reasoning.
+
 | # | Decision | Why it blocks | Recommendation |
 |---|---|---|---|
 | D1 | **License** (currently "assumed AGPL core / Apache SDK") | A Go pack compiled into the AGPL binary is a combined work; AGPL §13 then applies to anyone running the pack-added server over a network. The plan's promise "private packs without AGPL obligations" is at best contested. Separately, AGPL and Apple's App Store terms are widely treated as incompatible; the usual fix (a copyright-holder exception) is impossible once DCO-only outside contributions exist. | Get a licensing opinion before the first external PR. Likely shape: AGPL-3.0 server + web **with an explicit pack-linking exception** (or accept and state that deployed packs are AGPL); **MPL-2.0 or Apache-2.0 for `mobile/`**; Apache-2.0 for `sdk/`, `api/`, clients. Decide CLA vs DCO with that in mind. |

@@ -26,9 +26,9 @@ Open-source residential community management: apartment buildings, gated sites, 
 | [Infrastructure](docs/plans/05-infra.md) | Deployment targets, push relay, backups, upgrades, observability, release engineering, milestones I0–I5 |
 | [Review](docs/plans/06-review.md) | Critical review of plans 00–05: blocking decisions, money-model gaps, mechanisms that don't work as written, sequencing bugs, a re-baselined 0.1 scope and an action plan. **Read this before the plans; they have not yet been revised against it.** |
 
-## Open decisions
+## Decisions
 
-Recorded in the [overview, §2.2](docs/plans/00-overview.md#22-assumed--confirm-or-change): deployment model, license (assumed AGPL-3.0 core / Apache-2.0 SDK, spec and clients — no `LICENSE` file is committed until confirmed), first country pack, module path.
+The five blocking decisions (deployment model, data ownership, license, first-release scope, phone-first sign-in) were made on 2026-11-06 and are recorded in the [overview, §2.2](docs/plans/00-overview.md). Licensing is per directory — see [LICENSING.md](LICENSING.md); the pack-linking exception is a draft pending legal review.
 
 ## Contributing
 
