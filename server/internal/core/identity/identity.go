@@ -112,6 +112,8 @@ type Service struct {
 	cfg Config
 	log *slog.Logger
 	now func() time.Time
+
+	send *sender
 }
 
 // NewService returns a Service.
@@ -146,7 +148,7 @@ func NewService(db TxRunner, cfg Config) *Service {
 	if cfg.InstanceName == "" {
 		cfg.InstanceName = "OpenBekci"
 	}
-	s := &Service{db: db, cfg: cfg, log: cfg.Log, now: cfg.Now}
+	s := &Service{db: db, cfg: cfg, log: cfg.Log, now: cfg.Now, send: newSender()}
 	if s.log == nil {
 		s.log = slog.Default()
 	}

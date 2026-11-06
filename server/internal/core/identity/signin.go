@@ -175,62 +175,6 @@ func (s *Service) PasswordSignIn(ctx context.Context, identifier, password strin
 	return u, nil
 }
 
-// RequestOTP sends a six-digit sign-in code by SMS. It answers the same
-// whether or not an account has the number, so it cannot be used to find out
-// who is registered.
-func (s *Service) RequestOTP(ctx context.Context, phoneRaw string, m Meta) error {
-	if s.cfg.SMS == nil {
-		return problem.New(503, problem.CodeSMSUnavailable, "sign-in by SMS is not available on this instance")
-	}
-	phone, ok := NormalizePhone(phoneRaw, s.cfg.DefaultCountryCode)
-	if !ok {
-		return problem.Validation(problem.Field{Field: "phone", Code: "invalid_format"})
-	}
-	if ok, wait := s.cfg.Limits.OTPSendIP.Allow(m.IP); !ok {
-		return problem.RateLimited(wait)
-	}
-	if ok, wait := s.cfg.Limits.OTPSendTarget.Allow(phone); !ok {
-		return problem.RateLimited(wait)
-	}
-	now := s.now()
-	var u User
-	var found bool
-	var code string
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		var err error
-		if u, found, err = findByContact(ctx, tx, byPhone, phone); err != nil {
-			return err
-		}
-		if !found || u.Status != "active" {
-			found = false
-			return nil
-		}
-		if code, err = crypto.RandomDigits(6); err != nil {
-			return err
-		}
-		if _, err = tx.Exec(ctx, `UPDATE otp_code SET consumed_at = $2 WHERE purpose = $3 AND target = $1 AND consumed_at IS NULL`,
-			phone, now, purposeSignIn); err != nil {
-			return err
-		}
-		_, err = tx.Exec(ctx, `
-			INSERT INTO otp_code (id, user_id, target_kind, target, purpose, code_hash, created_at, expires_at)
-			VALUES ($1, $2, 'phone', $3, $4, $5, $6, $7)`,
-			id.New(), u.ID, phone, purposeSignIn, s.codeMAC(purposeSignIn, phone, code), now, now.Add(s.cfg.OTPTTL))
-		return err
-	})
-	if err != nil {
-		return problem.Internal(fmt.Errorf("create otp: %w", err))
-	}
-	if !found {
-		return nil
-	}
-	if _, err := s.cfg.SMS.Send(ctx, phone, s.otpText(u.Locale, code)); err != nil {
-		s.log.ErrorContext(ctx, "send sign-in code", "user_id", u.ID, "error", err)
-		return problem.Wrap(503, problem.CodeSMSUnavailable, "the SMS could not be sent; try again later", err)
-	}
-	return nil
-}
-
 func (s *Service) codeMAC(purpose, target, code string) []byte {
 	return crypto.MAC(s.cfg.SecretKey, purpose, target, code)
 }
@@ -318,52 +262,6 @@ func (s *Service) OTPSignIn(ctx context.Context, phoneRaw, code string, m Meta) 
 	}
 	s.recordSuccess(ctx, key, methodOTP, m.IP, kid)
 	return u, nil
-}
-
-// RequestMagicLink e-mails a single-use sign-in link (15 minutes). Like
-// RequestOTP it answers the same for unknown addresses.
-func (s *Service) RequestMagicLink(ctx context.Context, emailRaw string, client Client, m Meta) error {
-	if s.cfg.Mail == nil {
-		return problem.New(503, problem.CodeMailUnavailable, "sign-in by email link is not available on this instance")
-	}
-	email, ok := NormalizeEmail(emailRaw)
-	if !ok {
-		return problem.Validation(problem.Field{Field: "email", Code: "invalid_format"})
-	}
-	if ok, wait := s.cfg.Limits.LinkSendIP.Allow(m.IP); !ok {
-		return problem.RateLimited(wait)
-	}
-	if ok, wait := s.cfg.Limits.LinkSendTarget.Allow(email); !ok {
-		return problem.RateLimited(wait)
-	}
-	var u User
-	var found bool
-	var token string
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		var err error
-		if u, found, err = findByContact(ctx, tx, byEmail, email); err != nil {
-			return err
-		}
-		if !found || u.Status != "active" {
-			found = false
-			return nil
-		}
-		token, err = s.insertLink(ctx, tx, u.ID, "email", email)
-		return err
-	})
-	if err != nil {
-		return problem.Internal(fmt.Errorf("create magic link: %w", err))
-	}
-	if !found {
-		return nil
-	}
-	link := LinkURL(s.cfg.BaseURL, client, LinkMagic, token)
-	msg := s.linkMail(u.Locale, email, link)
-	if err := s.cfg.Mail.Send(ctx, msg); err != nil {
-		s.log.ErrorContext(ctx, "send magic link", "user_id", u.ID, "error", err)
-		return problem.Wrap(503, problem.CodeMailUnavailable, "the email could not be sent; try again later", err)
-	}
-	return nil
 }
 
 // insertLink stores a new magic-link token for the user, voiding earlier

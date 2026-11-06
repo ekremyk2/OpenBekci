@@ -83,7 +83,24 @@ CREATE TABLE login_attempt (
 CREATE INDEX login_attempt_identifier_at ON login_attempt (identifier, at DESC);
 CREATE INDEX login_attempt_at ON login_attempt (at);
 
+-- What was sent (or failed to send) through the SMS and mail gateways. The
+-- code and link requests answer the same for known and unknown accounts, so a
+-- gateway failure cannot be reported to the requester; it lands here, and in
+-- the log, for the operator. target is masked. Pruned with the other logs.
+CREATE TABLE delivery_log (
+    id      uuid        PRIMARY KEY,
+    at      timestamptz NOT NULL DEFAULT now(),
+    channel text        NOT NULL CHECK (channel IN ('sms', 'email')),
+    purpose text        NOT NULL,
+    target  text        NOT NULL,
+    user_id uuid,
+    status  text        NOT NULL CHECK (status IN ('sent', 'failed', 'dropped')),
+    detail  text
+);
+CREATE INDEX delivery_log_at ON delivery_log (at DESC);
+
 -- +goose Down
+DROP TABLE delivery_log;
 DROP TABLE login_attempt;
 DROP TABLE otp_code;
 DROP TABLE session;

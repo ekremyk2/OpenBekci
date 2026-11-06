@@ -224,7 +224,7 @@ func TestIntegrationSMSOTP(t *testing.T) {
 	ctx := context.Background()
 	u := e.user(t, identity.CreateUserParams{Phone: "+905321234567", Locale: "en"})
 
-	if err := e.svc.RequestOTP(ctx, "0532 123 45 67", meta); err != nil {
+	if err := e.requestOTP(ctx, "0532 123 45 67", meta); err != nil {
 		t.Fatalf("RequestOTP: %v", err)
 	}
 	msg, _ := e.sms.Last()
@@ -248,7 +248,7 @@ func TestIntegrationSMSOTP(t *testing.T) {
 	wantProblem(t, err, 401, problem.CodeInvalidGrant)
 
 	// expiry (5 minutes)
-	if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 		t.Fatal(err)
 	}
 	code = lastCode(t, e.sms)
@@ -258,11 +258,11 @@ func TestIntegrationSMSOTP(t *testing.T) {
 
 	// a new request voids the previous code
 	e.clk.Advance(time.Hour) // let the abuse buckets refill
-	if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 		t.Fatal(err)
 	}
 	first := lastCode(t, e.sms)
-	if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 		t.Fatal(err)
 	}
 	second := lastCode(t, e.sms)
@@ -279,7 +279,7 @@ func TestIntegrationOTPAttemptsAndUnknownPhone(t *testing.T) {
 	e := newEnv(t)
 	ctx := context.Background()
 	e.user(t, identity.CreateUserParams{Phone: "+905321234567"})
-	if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 		t.Fatal(err)
 	}
 	right := lastCode(t, e.sms)
@@ -305,14 +305,14 @@ func TestIntegrationOTPAttemptsAndUnknownPhone(t *testing.T) {
 
 	// unknown number: same answer, nothing sent
 	before := len(e.sms.Messages())
-	if err := e.svc.RequestOTP(ctx, "+905559998877", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905559998877", meta); err != nil {
 		t.Fatalf("unknown phone: %v", err)
 	}
 	if len(e.sms.Messages()) != before {
 		t.Error("an SMS went to an unknown number")
 	}
 	// malformed number
-	wantProblem(t, e.svc.RequestOTP(ctx, "12", meta), 422, problem.CodeValidationFailed)
+	wantProblem(t, e.requestOTP(ctx, "12", meta), 422, problem.CodeValidationFailed)
 }
 
 func TestIntegrationOTPSendLimitsAndDisabled(t *testing.T) {
@@ -320,11 +320,11 @@ func TestIntegrationOTPSendLimitsAndDisabled(t *testing.T) {
 	ctx := context.Background()
 	e.user(t, identity.CreateUserParams{Phone: "+905321234567"})
 	for i := range 3 {
-		if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+		if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 			t.Fatalf("request %d: %v", i, err)
 		}
 	}
-	pe := wantProblemPE(t, e.svc.RequestOTP(ctx, "+905321234567", meta), 429, problem.CodeRateLimited)
+	pe := wantProblemPE(t, e.requestOTP(ctx, "+905321234567", meta), 429, problem.CodeRateLimited)
 	if pe.RetryAfter <= 0 {
 		t.Error("no retry-after")
 	}
@@ -339,11 +339,18 @@ func TestIntegrationOTPSendLimitsAndDisabled(t *testing.T) {
 		t.Errorf("methods with sms and mail = %+v", m)
 	}
 
-	// a gateway failure is a 503, not a silent success
+	// a gateway failure is never reported to the requester (it would reveal
+	// that the account exists); the operator sees it in the delivery log
 	e2 := newEnv(t)
 	e2.user(t, identity.CreateUserParams{Phone: "+905321234567"})
 	e2.sms.Err = sms.ErrUnavailable
-	wantProblem(t, e2.svc.RequestOTP(ctx, "+905321234567", meta), 503, problem.CodeSMSUnavailable)
+	if err := e2.requestOTP(ctx, "+905321234567", meta); err != nil {
+		t.Fatalf("gateway failure surfaced to the requester: %v", err)
+	}
+	ds, err := e2.svc.RecentDeliveries(ctx, 10, true)
+	if err != nil || len(ds) != 1 || ds[0].Status != "failed" || ds[0].Channel != "sms" || ds[0].Target != "+90********67" {
+		t.Fatalf("delivery log = %+v, %v", ds, err)
+	}
 }
 
 func tokenOf(t *testing.T, link string) string {
@@ -370,7 +377,7 @@ func TestIntegrationMagicLink(t *testing.T) {
 	ctx := context.Background()
 	u := e.user(t, identity.CreateUserParams{Email: "link@example.org"})
 
-	if err := e.svc.RequestMagicLink(ctx, "Link@Example.org", identity.ClientWeb, meta); err != nil {
+	if err := e.requestLink(ctx, "Link@Example.org", identity.ClientWeb, meta); err != nil {
 		t.Fatal(err)
 	}
 	m, _ := e.mail.Last()
@@ -390,7 +397,7 @@ func TestIntegrationMagicLink(t *testing.T) {
 	wantProblem(t, err, 401, problem.CodeInvalidGrant)
 
 	// mobile form of the link, and a newer link voids the older one
-	if err := e.svc.RequestMagicLink(ctx, "link@example.org", identity.ClientMobile, meta); err != nil {
+	if err := e.requestLink(ctx, "link@example.org", identity.ClientMobile, meta); err != nil {
 		t.Fatal(err)
 	}
 	m, _ = e.mail.Last()
@@ -398,7 +405,7 @@ func TestIntegrationMagicLink(t *testing.T) {
 	if !strings.HasPrefix(old, "openbekci://login/magic?token=") {
 		t.Errorf("mobile link = %q", old)
 	}
-	if err := e.svc.RequestMagicLink(ctx, "link@example.org", identity.ClientWeb, meta); err != nil {
+	if err := e.requestLink(ctx, "link@example.org", identity.ClientWeb, meta); err != nil {
 		t.Fatal(err)
 	}
 	m, _ = e.mail.Last()
@@ -413,7 +420,7 @@ func TestIntegrationMagicLink(t *testing.T) {
 
 	// unknown address: accepted, nothing sent; garbage token rejected
 	n := len(e.mail.Messages())
-	if err := e.svc.RequestMagicLink(ctx, "nobody@example.org", identity.ClientWeb, meta); err != nil {
+	if err := e.requestLink(ctx, "nobody@example.org", identity.ClientWeb, meta); err != nil {
 		t.Fatal(err)
 	}
 	if len(e.mail.Messages()) != n {
@@ -678,7 +685,7 @@ func TestIntegrationReauthGateAndPasswordChange(t *testing.T) {
 	wantProblem(t, e.svc.ChangePassword(ctx, p, "yet another password"), 403, problem.CodeReauthRequired)
 
 	// re-auth by SMS code to the account's own phone
-	if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := e.svc.Reauth(ctx, p, identity.ReauthSMSOTP, lastCode(t, e.sms), meta); err != nil {
@@ -694,7 +701,7 @@ func TestIntegrationSetFirstPasswordNeedsReauthByOTP(t *testing.T) {
 	p, _ := e.svc.Authenticate(ctx, identity.KindWebCookie, ws.Token)
 	_, err := e.svc.Reauth(ctx, p, identity.ReauthPassword, "anything at all", meta)
 	wantProblem(t, err, 401, problem.CodeInvalidGrant)
-	if err := e.svc.RequestOTP(ctx, "+905321234567", meta); err != nil {
+	if err := e.requestOTP(ctx, "+905321234567", meta); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := e.svc.Reauth(ctx, p, identity.ReauthSMSOTP, lastCode(t, e.sms), meta); err != nil {

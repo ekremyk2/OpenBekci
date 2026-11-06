@@ -26,6 +26,7 @@ func newAdminCmd(load configLoader) *cobra.Command {
 		newCreatePlatformAdminCmd(load),
 		newCreateOrgCmd(load),
 		newSetPasswordCmd(load),
+		newDeliveryLogCmd(load),
 	)
 	return cmd
 }

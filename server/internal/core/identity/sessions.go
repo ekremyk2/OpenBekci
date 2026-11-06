@@ -379,6 +379,7 @@ func (s *Service) Prune(ctx context.Context) (int64, error) {
 			{`DELETE FROM session WHERE COALESCE(revoked_at, expires_at) < $1`, now.Add(-7 * 24 * time.Hour)},
 			{`DELETE FROM otp_code WHERE expires_at < $1`, now.Add(-24 * time.Hour)},
 			{`DELETE FROM login_attempt WHERE at < $1`, now.Add(-90 * 24 * time.Hour)},
+			{`DELETE FROM delivery_log WHERE at < $1`, now.Add(-90 * 24 * time.Hour)},
 		} {
 			tag, err := tx.Exec(ctx, q.sql, q.arg)
 			if err != nil {

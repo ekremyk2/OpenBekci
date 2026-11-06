@@ -55,10 +55,13 @@ func (s *Service) RequestReauthEmailCode(ctx context.Context, p *authz.Principal
 	if err != nil {
 		return problem.Internal(fmt.Errorf("create reauth code: %w", err))
 	}
-	if err := s.cfg.Mail.Send(ctx, s.reauthMail(u.Locale, email, code)); err != nil {
+	msg := s.reauthMail(u.Locale, email, code)
+	if err := s.cfg.Mail.Send(ctx, msg); err != nil {
 		s.log.ErrorContext(ctx, "send reauth code", "user_id", u.ID, "error", err)
+		s.recordDelivery(ctx, channelEmail, purposeReauth, &u.ID, email, deliveryFailed, err.Error())
 		return problem.Wrap(503, problem.CodeMailUnavailable, "the email could not be sent; try again later", err)
 	}
+	s.recordDelivery(ctx, channelEmail, purposeReauth, &u.ID, email, deliverySent, "")
 	return nil
 }
 

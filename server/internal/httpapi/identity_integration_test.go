@@ -87,6 +87,10 @@ func (e *idEnv) do(method, path, body string, withCookie bool, headers ...string
 	}
 	rec := httptest.NewRecorder()
 	e.h.ServeHTTP(rec, r)
+	// code and link requests send in the background; let them finish
+	if err := e.svc.Drain(e.t.Context()); err != nil {
+		e.t.Fatal(err)
+	}
 	return rec
 }
 
