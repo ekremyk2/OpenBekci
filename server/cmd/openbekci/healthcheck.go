@@ -29,11 +29,11 @@ func newHealthcheckCmd() *cobra.Command {
 			}
 			ctx, cancel := context.WithTimeout(cmd.Context(), 3*time.Second)
 			defer cancel()
-			req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://"+net.JoinHostPort("127.0.0.1", port)+"/healthz", nil)
+			req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://"+net.JoinHostPort("127.0.0.1", port)+"/healthz", nil) //nolint:gosec // G704: loopback URL, only the port comes from our own config
 			if err != nil {
 				return fmt.Errorf("build request: %w", err)
 			}
-			resp, err := http.DefaultClient.Do(req)
+			resp, err := http.DefaultClient.Do(req) //nolint:gosec // G704: loopback URL, see above
 			if err != nil {
 				return fmt.Errorf("probe /healthz: %w", err)
 			}
