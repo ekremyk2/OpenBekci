@@ -1,0 +1,42 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: move_out_id
+    in: path
+    required: true
+    description: Id of the move out.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.getMoveOut
+  summary: Get a move-out
+  description: |-
+    **Release 0.1.** Get a move-out.
+
+    Permission: `people.move_out`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.move_out
+    site_manager:
+      - people.move_out
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/MoveOut
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

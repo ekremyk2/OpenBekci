@@ -1,0 +1,42 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: claim_id
+    in: path
+    required: true
+    description: Id of the claim.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.getUnitClaim
+  summary: Get a unit claim
+  description: |-
+    **Release 0.1.** Get a unit claim.
+
+    Permission: `claims.decide`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - claims.decide
+    site_manager:
+      - claims.decide
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/UnitClaim
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

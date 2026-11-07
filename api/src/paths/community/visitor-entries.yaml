@@ -1,0 +1,145 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: community.listVisitorEntries
+  summary: List visitor entries
+  description: |-
+    **Release 0.3.** Cursor-paginated list of visitor entrys.
+
+    Permission (any one of): `visitors.read`, `visitors.manage`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.read
+      - visitors.manage
+    site_manager:
+      - visitors.read
+      - visitors.manage
+    board_member:
+      - visitors.read
+      - visitors.manage
+    auditor:
+      - visitors.read
+    owner:
+      - visitors.manage
+    tenant:
+      - visitors.manage
+    household:
+      - visitors.manage
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: approval_status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - pre_approved
+          - requested
+          - approved
+          - denied
+          - expired
+      description: Filter by `approval_status`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: End of the range (inclusive).
+    - name: arrived
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `arrived`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/VisitorEntryList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: community.createVisitorEntry
+  summary: Create visitor entry
+  description: |-
+    **Release 0.3.** Pre-registration: the response carries the QR token the resident shares with the guest.
+
+    Permission: `visitors.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.manage
+    site_manager:
+      - visitors.manage
+    board_member:
+      - visitors.manage
+    owner:
+      - visitors.manage
+    tenant:
+      - visitors.manage
+    household:
+      - visitors.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/VisitorEntryCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/VisitorEntry
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

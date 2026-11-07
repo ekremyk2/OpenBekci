@@ -1,0 +1,48 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: community.searchGatePlates
+  summary: Look up a plate
+  description: |-
+    **Release 0.3.** Registered resident plates: plate and door number only.
+
+    Permission: `gate.operate`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - gate.operate
+    site_manager:
+      - gate.operate
+    guard:
+      - gate.operate
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+      required: true
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+    - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/GatePlateList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

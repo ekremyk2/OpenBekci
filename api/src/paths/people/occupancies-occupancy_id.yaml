@@ -1,0 +1,142 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: occupancy_id
+    in: path
+    required: true
+    description: Id of the occupancy.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.getOccupancy
+  summary: Get occupancy
+  description: |-
+    **Release 0.1.** Get occupancy.
+
+    Permission: `occupancies.read`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.read
+    site_manager:
+      - occupancies.read
+    board_member:
+      - occupancies.read
+    auditor:
+      - occupancies.read
+    owner:
+      - occupancies.read
+    tenant:
+      - occupancies.read
+    household:
+      - occupancies.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Occupancy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: people.updateOccupancy
+  summary: Update occupancy
+  description: |-
+    **Release 0.1.** Update occupancy.
+
+    Permission: `occupancies.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.manage
+    site_manager:
+      - occupancies.manage
+    board_member:
+      - occupancies.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/OccupancyUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Occupancy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: people.deleteOccupancy
+  summary: Delete occupancy
+  description: |-
+    **Release 0.1.** Only an occupancy without history can be deleted; otherwise end it with `valid_to` or `people.moveOut`.
+
+    Permission: `occupancies.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.manage
+    site_manager:
+      - occupancies.manage
+    board_member:
+      - occupancies.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,41 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: people.listMyOccupancies
+  summary: My occupancies (current and former)
+  description: |-
+    **Release 0.1.** Former occupancies are bounded by their dates (S7).
+
+    Permission: `me.manage`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - me.manage
+  x-stability: stable
+  parameters:
+    - name: active
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `active`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/OccupancyList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

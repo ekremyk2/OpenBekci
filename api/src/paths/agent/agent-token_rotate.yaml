@@ -1,0 +1,30 @@
+post:
+  operationId: agent.rotateToken
+  summary: Rotate the agent token
+  description: |-
+    **Release 0.3.** The old token stays valid for 10 minutes so a crash between steps recovers. The server hello carries `rotate_by` (default 180 days).
+
+    Problems: `rate_limited` (429), `conflict` (409).
+  tags:
+    - agent
+  security:
+    - agentAuth: []
+  x-idempotent: optional
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentTokenRotated
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

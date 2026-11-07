@@ -1,0 +1,29 @@
+get:
+  operationId: platform.getHealth
+  summary: Instance health
+  description: |-
+    **Release 0.1.** Minimal in 0.1; complete in 1.0.
+
+    Permission: `platform.read`.
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/PlatformHealth
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

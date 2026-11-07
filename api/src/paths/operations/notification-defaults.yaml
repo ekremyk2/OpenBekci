@@ -1,0 +1,83 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.getNotificationDefaults
+  summary: Get the site defaults for automatic messages
+  description: |-
+    **Release 0.1.** Get the site defaults for automatic messages.
+
+    Permission: `notifications.manage`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - notifications.manage
+    site_manager:
+      - notifications.manage
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/NotificationDefaults
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: operations.setNotificationDefaults
+  summary: Set the site defaults for automatic messages
+  description: |-
+    **Release 0.1.** Set the site defaults for automatic messages.
+
+    Permission: `notifications.manage`.
+
+    Problems: `validation_failed` (422), `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - notifications.manage
+    site_manager:
+      - notifications.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/NotificationDefaultsSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/NotificationDefaults
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

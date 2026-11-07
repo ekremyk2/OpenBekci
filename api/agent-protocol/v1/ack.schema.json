@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/ack.schema.json",
+  "title": "ack payload: acknowledges a message by ref; for event batches detail is {accepted, duplicates, rejected: [{id, code}]}",
+  "type": "object",
+  "required": [
+    "ref",
+    "status"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "ref": {
+      "$ref": "defs.schema.json#/$defs/uuid"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "duplicate",
+        "gap",
+        "done",
+        "failed",
+        "expired",
+        "refused",
+        "unknown_point",
+        "unsupported",
+        "error"
+      ]
+    },
+    "detail": {
+      "type": "object"
+    }
+  }
+}

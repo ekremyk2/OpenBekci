@@ -1,0 +1,1740 @@
+openapi: 3.0.3
+info:
+  title: "OpenBekci API (draft: releases 0.1 to 0.3)"
+  version: 0.1.0
+  description: "DRAFT contract for releases 0.1, 0.2 and 0.3. Builders move path references from this root into `openapi.yaml` as they implement them; nothing here is served until then. Conventions: api/README.md."
+  license:
+    name: AGPL-3.0-or-later
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+servers:
+  - url: /
+tags:
+  - name: instance
+    description: Instance discovery and information.
+  - name: auth
+    description: Sign-in, tokens and re-authentication.
+  - name: me
+    description: The signed-in user and their sessions.
+  - name: tenancy
+    description: Organizations, sites, blocks, units, allocation keys, imports, site transfer, vehicles.
+  - name: people
+    description: Persons, occupancies, memberships, invitations, join codes and claims, move-out, directory, vendors.
+  - name: money
+    description: Chart of accounts, funds, plans, charges, payments, bank import, expenses, collections, statements and reports.
+  - name: operations
+    description: Tickets, announcements, documents, notifications, files, jobs and exports.
+  - name: audit
+    description: Audit log and audit notes.
+  - name: governance
+    description: Assemblies, notices, agenda, polls, attendance, decisions, minutes, term reminders (release 0.2).
+  - name: community
+    description: Facilities, bookings, visitors, deliveries and the guard console (release 0.3).
+  - name: access
+    description: Agents, access points, credentials, access events and manual open (release 0.3).
+  - name: agent
+    description: "Agent transport: enrolment, WebSocket, long-poll, token rotation (release 0.3; message schemas in api/agent-protocol/v1)."
+  - name: dashboards
+    description: Site, portfolio and resident dashboards.
+  - name: codes
+    description: Labels for open enums and site-defined statuses.
+  - name: platform
+    description: Instance operator endpoints (platform administrators).
+paths:
+  /.well-known/openbekci.json:
+    $ref: ./paths/well-known.yaml
+  /v1/instance:
+    $ref: ./paths/instance.yaml
+  /v1/auth/session:
+    $ref: ./paths/auth-session.yaml
+  /v1/auth/token:
+    $ref: ./paths/auth-token.yaml
+  /v1/auth/token/refresh:
+    $ref: ./paths/auth-token-refresh.yaml
+  /v1/auth/otp:
+    $ref: ./paths/auth-otp.yaml
+  /v1/auth/magic-link:
+    $ref: ./paths/auth-magic-link.yaml
+  /v1/auth/magic-link/consume:
+    $ref: ./paths/auth-magic-link-consume.yaml
+  /v1/auth/reauth:
+    $ref: ./paths/auth-reauth.yaml
+  /v1/auth/password:
+    $ref: ./paths/auth-password.yaml
+  /v1/me:
+    $ref: ./paths/me.yaml
+  /v1/me/sessions:
+    $ref: ./paths/me-sessions.yaml
+  /v1/me/sessions/{id}:
+    $ref: ./paths/me-sessions-id.yaml
+  /v1/orgs/{org_id}:
+    $ref: ./paths/tenancy/orgs-org_id.yaml
+  /v1/orgs/{org_id}/sites:
+    $ref: ./paths/tenancy/sites.yaml
+  /v1/orgs/{org_id}/sites/{site_id}:
+    $ref: ./paths/tenancy/sites-site_id.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/settings:
+    $ref: ./paths/tenancy/sites-site_id-settings.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/bank-details:
+    $ref: ./paths/tenancy/sites-site_id-bank-details.yaml
+  /v1/orgs/{org_id}/blocks:
+    $ref: ./paths/tenancy/blocks.yaml
+  /v1/orgs/{org_id}/blocks/{block_id}:
+    $ref: ./paths/tenancy/blocks-block_id.yaml
+  /v1/orgs/{org_id}/units:
+    $ref: ./paths/tenancy/units.yaml
+  /v1/orgs/{org_id}/units/{unit_id}:
+    $ref: ./paths/tenancy/units-unit_id.yaml
+  /v1/orgs/{org_id}/units:import:
+    $ref: ./paths/tenancy/units_import.yaml
+  /v1/orgs/{org_id}/persons:import:
+    $ref: ./paths/tenancy/persons_import.yaml
+  /v1/orgs/{org_id}/allocation-keys:
+    $ref: ./paths/tenancy/allocation-keys.yaml
+  /v1/orgs/{org_id}/allocation-keys/{key_id}:
+    $ref: ./paths/tenancy/allocation-keys-key_id.yaml
+  /v1/orgs/{org_id}/allocation-keys/{key_id}/values:
+    $ref: ./paths/tenancy/allocation-keys-key_id-values.yaml
+  /v1/orgs/{org_id}/allocation-keys/{key_id}/values:import:
+    $ref: ./paths/tenancy/allocation-keys-key_id-values_import.yaml
+  /v1/orgs/{org_id}/unit-tags:
+    $ref: ./paths/tenancy/unit-tags.yaml
+  /v1/orgs/{org_id}/unit-tags/{tag_id}:
+    $ref: ./paths/tenancy/unit-tags-tag_id.yaml
+  /v1/orgs/{org_id}/unit-tags/{tag_id}/units:
+    $ref: ./paths/tenancy/unit-tags-tag_id-units.yaml
+  /v1/orgs/{org_id}/sites/{site_id}:export:
+    $ref: ./paths/tenancy/sites-site_id_export.yaml
+  /v1/orgs/{org_id}/sites:import:
+    $ref: ./paths/tenancy/sites_import.yaml
+  /v1/orgs/{org_id}/sites/{site_id}:offboard:
+    $ref: ./paths/tenancy/sites-site_id_offboard.yaml
+  /v1/orgs/{org_id}/site-transfers:
+    $ref: ./paths/tenancy/site-transfers.yaml
+  /v1/orgs/{org_id}/site-transfers/{transfer_id}:
+    $ref: ./paths/tenancy/site-transfers-transfer_id.yaml
+  /v1/orgs/{org_id}/vehicles:
+    $ref: ./paths/tenancy/vehicles.yaml
+  /v1/orgs/{org_id}/vehicles/{vehicle_id}:
+    $ref: ./paths/tenancy/vehicles-vehicle_id.yaml
+  /v1/orgs/{org_id}/vehicles:export:
+    $ref: ./paths/tenancy/vehicles_export.yaml
+  /v1/orgs/{org_id}/persons:
+    $ref: ./paths/people/persons.yaml
+  /v1/orgs/{org_id}/persons/{person_id}:
+    $ref: ./paths/people/persons-person_id.yaml
+  /v1/orgs/{org_id}/persons/{person_id}/national-id:
+    $ref: ./paths/people/persons-person_id-national-id.yaml
+  /v1/orgs/{org_id}/occupancies:
+    $ref: ./paths/people/occupancies.yaml
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}:
+    $ref: ./paths/people/occupancies-occupancy_id.yaml
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access:
+    $ref: ./paths/people/occupancies-occupancy_id-money-access.yaml
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out:preview:
+    $ref: ./paths/people/occupancies-occupancy_id-move-out_preview.yaml
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out:
+    $ref: ./paths/people/occupancies-occupancy_id-move-out.yaml
+  /v1/orgs/{org_id}/move-outs:
+    $ref: ./paths/people/move-outs.yaml
+  /v1/orgs/{org_id}/move-outs/{move_out_id}:
+    $ref: ./paths/people/move-outs-move_out_id.yaml
+  /v1/orgs/{org_id}/memberships:
+    $ref: ./paths/people/memberships.yaml
+  /v1/orgs/{org_id}/memberships/{membership_id}:
+    $ref: ./paths/people/memberships-membership_id.yaml
+  /v1/orgs/{org_id}/invitations:
+    $ref: ./paths/people/invitations.yaml
+  /v1/orgs/{org_id}/invitations/{invitation_id}:
+    $ref: ./paths/people/invitations-invitation_id.yaml
+  /v1/orgs/{org_id}/invitations/{invitation_id}:resend:
+    $ref: ./paths/people/invitations-invitation_id_resend.yaml
+  /v1/orgs/{org_id}/units/{unit_id}/household-invitations:
+    $ref: ./paths/people/units-unit_id-household-invitations.yaml
+  /v1/invitations/{token}:
+    $ref: ./paths/people/invitations-token.yaml
+  /v1/invitations/{token}:accept:
+    $ref: ./paths/people/invitations-token_accept.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/join-code:
+    $ref: ./paths/people/sites-site_id-join-code.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/join-code:rotate:
+    $ref: ./paths/people/sites-site_id-join-code_rotate.yaml
+  /v1/join/{code}:
+    $ref: ./paths/people/join-code.yaml
+  /v1/join/{code}/units:
+    $ref: ./paths/people/join-code-units.yaml
+  /v1/join/{code}/claims:
+    $ref: ./paths/people/join-code-claims.yaml
+  /v1/orgs/{org_id}/unit-claims:
+    $ref: ./paths/people/unit-claims.yaml
+  /v1/orgs/{org_id}/unit-claims/{claim_id}:
+    $ref: ./paths/people/unit-claims-claim_id.yaml
+  /v1/orgs/{org_id}/unit-claims/{claim_id}:approve:
+    $ref: ./paths/people/unit-claims-claim_id_approve.yaml
+  /v1/orgs/{org_id}/unit-claims/{claim_id}:reject:
+    $ref: ./paths/people/unit-claims-claim_id_reject.yaml
+  /v1/me/unit-claims:
+    $ref: ./paths/people/me-unit-claims.yaml
+  /v1/orgs/{org_id}/directory:
+    $ref: ./paths/people/directory.yaml
+  /v1/orgs/{org_id}/vendors:
+    $ref: ./paths/people/vendors.yaml
+  /v1/orgs/{org_id}/vendors/{vendor_id}:
+    $ref: ./paths/people/vendors-vendor_id.yaml
+  /v1/orgs/{org_id}/roles:
+    $ref: ./paths/people/roles.yaml
+  /v1/orgs/{org_id}/me/person:
+    $ref: ./paths/people/me-person.yaml
+  /v1/orgs/{org_id}/me/directory-consent:
+    $ref: ./paths/people/me-directory-consent.yaml
+  /v1/orgs/{org_id}/me/occupancies:
+    $ref: ./paths/people/me-occupancies.yaml
+  /v1/orgs/{org_id}/accounts:
+    $ref: ./paths/money/accounts.yaml
+  /v1/orgs/{org_id}/accounts/{account_id}:
+    $ref: ./paths/money/accounts-account_id.yaml
+  /v1/orgs/{org_id}/funds:
+    $ref: ./paths/money/funds.yaml
+  /v1/orgs/{org_id}/funds/{fund_id}:
+    $ref: ./paths/money/funds-fund_id.yaml
+  /v1/orgs/{org_id}/cash-boxes:
+    $ref: ./paths/money/cash-boxes.yaml
+  /v1/orgs/{org_id}/cash-boxes/{cash_box_id}:
+    $ref: ./paths/money/cash-boxes-cash_box_id.yaml
+  /v1/orgs/{org_id}/fiscal-years:
+    $ref: ./paths/money/fiscal-years.yaml
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:
+    $ref: ./paths/money/fiscal-years-fiscal_year_id.yaml
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:close:
+    $ref: ./paths/money/fiscal-years-fiscal_year_id_close.yaml
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:approve:
+    $ref: ./paths/money/fiscal-years-fiscal_year_id_approve.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/lock-date:
+    $ref: ./paths/money/sites-site_id-lock-date.yaml
+  /v1/orgs/{org_id}/journal-entries:
+    $ref: ./paths/money/journal-entries.yaml
+  /v1/orgs/{org_id}/journal-entries/{entry_id}:
+    $ref: ./paths/money/journal-entries-entry_id.yaml
+  /v1/orgs/{org_id}/journal-entries/{entry_id}:reverse:
+    $ref: ./paths/money/journal-entries-entry_id_reverse.yaml
+  /v1/orgs/{org_id}/opening-balances:
+    $ref: ./paths/money/opening-balances.yaml
+  /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:
+    $ref: ./paths/money/opening-balances-opening_balance_id.yaml
+  /v1/orgs/{org_id}/opening-balances:import:
+    $ref: ./paths/money/opening-balances_import.yaml
+  /v1/orgs/{org_id}/budgets:
+    $ref: ./paths/money/budgets.yaml
+  /v1/orgs/{org_id}/budgets/{budget_id}:
+    $ref: ./paths/money/budgets-budget_id.yaml
+  /v1/orgs/{org_id}/budgets/{budget_id}/lines:
+    $ref: ./paths/money/budgets-budget_id-lines.yaml
+  /v1/orgs/{org_id}/budgets/{budget_id}:finalize:
+    $ref: ./paths/money/budgets-budget_id_finalize.yaml
+  /v1/orgs/{org_id}/charge-plans:
+    $ref: ./paths/money/charge-plans.yaml
+  /v1/orgs/{org_id}/charge-plans/{plan_id}:
+    $ref: ./paths/money/charge-plans-plan_id.yaml
+  /v1/orgs/{org_id}/charge-plans/{plan_id}/rates:
+    $ref: ./paths/money/charge-plans-plan_id-rates.yaml
+  /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}:
+    $ref: ./paths/money/charge-plans-plan_id-rates-rate_id.yaml
+  /v1/orgs/{org_id}/charge-plans:preview:
+    $ref: ./paths/money/charge-plans_preview.yaml
+  /v1/orgs/{org_id}/charge-generation:
+    $ref: ./paths/money/charge-generation.yaml
+  /v1/orgs/{org_id}/expense-allocations:preview:
+    $ref: ./paths/money/expense-allocations_preview.yaml
+  /v1/orgs/{org_id}/expense-allocations:
+    $ref: ./paths/money/expense-allocations.yaml
+  /v1/orgs/{org_id}/charges:
+    $ref: ./paths/money/charges.yaml
+  /v1/orgs/{org_id}/charges/{charge_id}:
+    $ref: ./paths/money/charges-charge_id.yaml
+  /v1/orgs/{org_id}/charges/{charge_id}:cancel:
+    $ref: ./paths/money/charges-charge_id_cancel.yaml
+  /v1/orgs/{org_id}/charges/{charge_id}:adjust:
+    $ref: ./paths/money/charges-charge_id_adjust.yaml
+  /v1/orgs/{org_id}/late-fee-policy:
+    $ref: ./paths/money/late-fee-policy.yaml
+  /v1/orgs/{org_id}/late-fee-accruals:
+    $ref: ./paths/money/late-fee-accruals.yaml
+  /v1/orgs/{org_id}/late-fee-bookings:
+    $ref: ./paths/money/late-fee-bookings.yaml
+  /v1/orgs/{org_id}/late-fee-waivers:
+    $ref: ./paths/money/late-fee-waivers.yaml
+  /v1/orgs/{org_id}/late-fee-freezes:
+    $ref: ./paths/money/late-fee-freezes.yaml
+  /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}:
+    $ref: ./paths/money/late-fee-freezes-freeze_id.yaml
+  /v1/orgs/{org_id}/payments:
+    $ref: ./paths/money/payments.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}:
+    $ref: ./paths/money/payments-payment_id.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}:void:
+    $ref: ./paths/money/payments-payment_id_void.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}/receipt:
+    $ref: ./paths/money/payments-payment_id-receipt.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}:send-receipt:
+    $ref: ./paths/money/payments-payment_id_send-receipt.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}/allocations:
+    $ref: ./paths/money/payments-payment_id-allocations.yaml
+  /v1/orgs/{org_id}/payments:preview-allocation:
+    $ref: ./paths/money/payments_preview-allocation.yaml
+  /v1/orgs/{org_id}/payments:declare:
+    $ref: ./paths/money/payments_declare.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}:confirm:
+    $ref: ./paths/money/payments-payment_id_confirm.yaml
+  /v1/orgs/{org_id}/payments/{payment_id}:reject:
+    $ref: ./paths/money/payments-payment_id_reject.yaml
+  /v1/orgs/{org_id}/credits:
+    $ref: ./paths/money/credits.yaml
+  /v1/orgs/{org_id}/credits/{credit_id}:apply:
+    $ref: ./paths/money/credits-credit_id_apply.yaml
+  /v1/orgs/{org_id}/transfers:
+    $ref: ./paths/money/transfers.yaml
+  /v1/orgs/{org_id}/transfers/{transfer_id}:
+    $ref: ./paths/money/transfers-transfer_id.yaml
+  /v1/orgs/{org_id}/refunds:
+    $ref: ./paths/money/refunds.yaml
+  /v1/orgs/{org_id}/refunds/{refund_id}:
+    $ref: ./paths/money/refunds-refund_id.yaml
+  /v1/orgs/{org_id}/bank-importers:
+    $ref: ./paths/money/bank-importers.yaml
+  /v1/orgs/{org_id}/bank-statement-imports:
+    $ref: ./paths/money/bank-statement-imports.yaml
+  /v1/orgs/{org_id}/bank-statement-imports/{import_id}:
+    $ref: ./paths/money/bank-statement-imports-import_id.yaml
+  /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation:
+    $ref: ./paths/money/bank-statement-imports-import_id-reconciliation.yaml
+  /v1/orgs/{org_id}/bank-transactions:
+    $ref: ./paths/money/bank-transactions.yaml
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:
+    $ref: ./paths/money/bank-transactions-transaction_id.yaml
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match:
+    $ref: ./paths/money/bank-transactions-transaction_id_match.yaml
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch:
+    $ref: ./paths/money/bank-transactions-transaction_id_unmatch.yaml
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore:
+    $ref: ./paths/money/bank-transactions-transaction_id_ignore.yaml
+  /v1/orgs/{org_id}/expenses:
+    $ref: ./paths/money/expenses.yaml
+  /v1/orgs/{org_id}/expenses/{expense_id}:
+    $ref: ./paths/money/expenses-expense_id.yaml
+  /v1/orgs/{org_id}/expenses/{expense_id}:void:
+    $ref: ./paths/money/expenses-expense_id_void.yaml
+  /v1/orgs/{org_id}/recurring-expenses:
+    $ref: ./paths/money/recurring-expenses.yaml
+  /v1/orgs/{org_id}/recurring-expenses/{recurring_expense_id}:
+    $ref: ./paths/money/recurring-expenses-recurring_expense_id.yaml
+  /v1/orgs/{org_id}/bills:
+    $ref: ./paths/money/bills.yaml
+  /v1/orgs/{org_id}/bills/{bill_id}:
+    $ref: ./paths/money/bills-bill_id.yaml
+  /v1/orgs/{org_id}/bills/{bill_id}:cancel:
+    $ref: ./paths/money/bills-bill_id_cancel.yaml
+  /v1/orgs/{org_id}/bills/{bill_id}/payments:
+    $ref: ./paths/money/bills-bill_id-payments.yaml
+  /v1/orgs/{org_id}/dunning-stages:
+    $ref: ./paths/money/dunning-stages.yaml
+  /v1/orgs/{org_id}/dunning-stages/{stage_id}:
+    $ref: ./paths/money/dunning-stages-stage_id.yaml
+  /v1/orgs/{org_id}/dunning-runs:preview:
+    $ref: ./paths/money/dunning-runs_preview.yaml
+  /v1/orgs/{org_id}/dunning-runs:
+    $ref: ./paths/money/dunning-runs.yaml
+  /v1/orgs/{org_id}/dunning-events:
+    $ref: ./paths/money/dunning-events.yaml
+  /v1/orgs/{org_id}/collection-cases:
+    $ref: ./paths/money/collection-cases.yaml
+  /v1/orgs/{org_id}/collection-cases/{case_id}:
+    $ref: ./paths/money/collection-cases-case_id.yaml
+  /v1/orgs/{org_id}/collection-cases/{case_id}:close:
+    $ref: ./paths/money/collection-cases-case_id_close.yaml
+  /v1/orgs/{org_id}/debt-breakdown:
+    $ref: ./paths/money/debt-breakdown.yaml
+  /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}:
+    $ref: ./paths/money/units-unit_id-statements-debtor_kind.yaml
+  /v1/orgs/{org_id}/persons/{person_id}/statement:
+    $ref: ./paths/money/persons-person_id-statement.yaml
+  /v1/orgs/{org_id}/statements:send:
+    $ref: ./paths/money/statements_send.yaml
+  /v1/orgs/{org_id}/me/balances:
+    $ref: ./paths/money/me-balances.yaml
+  /v1/orgs/{org_id}/reports/income-expense:
+    $ref: ./paths/money/reports-income-expense.yaml
+  /v1/orgs/{org_id}/reports/debtors:
+    $ref: ./paths/money/reports-debtors.yaml
+  /v1/orgs/{org_id}/reports/budget-vs-actual:
+    $ref: ./paths/money/reports-budget-vs-actual.yaml
+  /v1/orgs/{org_id}/reports/trial-balance:
+    $ref: ./paths/money/reports-trial-balance.yaml
+  /v1/orgs/{org_id}/reports/receivables-aging:
+    $ref: ./paths/money/reports-receivables-aging.yaml
+  /v1/orgs/{org_id}/reports/collector-reconciliation:
+    $ref: ./paths/money/reports-collector-reconciliation.yaml
+  /v1/orgs/{org_id}/reports/bank-reconciliation:
+    $ref: ./paths/money/reports-bank-reconciliation.yaml
+  /v1/orgs/{org_id}/reports/fund-balances:
+    $ref: ./paths/money/reports-fund-balances.yaml
+  /v1/orgs/{org_id}/money/overview:
+    $ref: ./paths/money/money-overview.yaml
+  /v1/orgs/{org_id}/ticket-workflow:
+    $ref: ./paths/operations/ticket-workflow.yaml
+  /v1/orgs/{org_id}/ticket-categories:
+    $ref: ./paths/operations/ticket-categories.yaml
+  /v1/orgs/{org_id}/ticket-categories/{category_id}:
+    $ref: ./paths/operations/ticket-categories-category_id.yaml
+  /v1/orgs/{org_id}/tickets:
+    $ref: ./paths/operations/tickets.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}:
+    $ref: ./paths/operations/tickets-ticket_id.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}:transition:
+    $ref: ./paths/operations/tickets-ticket_id_transition.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}:merge:
+    $ref: ./paths/operations/tickets-ticket_id_merge.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/vote:
+    $ref: ./paths/operations/tickets-ticket_id-vote.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/comments:
+    $ref: ./paths/operations/tickets-ticket_id-comments.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/attachments:
+    $ref: ./paths/operations/tickets-ticket_id-attachments.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}:
+    $ref: ./paths/operations/tickets-ticket_id-attachments-attachment_id.yaml
+  /v1/orgs/{org_id}/tickets/{ticket_id}/history:
+    $ref: ./paths/operations/tickets-ticket_id-history.yaml
+  /v1/orgs/{org_id}/announcements:
+    $ref: ./paths/operations/announcements.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}:
+    $ref: ./paths/operations/announcements-announcement_id.yaml
+  /v1/orgs/{org_id}/announcements:preview:
+    $ref: ./paths/operations/announcements_preview.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}:publish:
+    $ref: ./paths/operations/announcements-announcement_id_publish.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}:archive:
+    $ref: ./paths/operations/announcements-announcement_id_archive.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}/reads:
+    $ref: ./paths/operations/announcements-announcement_id-reads.yaml
+  /v1/orgs/{org_id}/announcements/{announcement_id}/read:
+    $ref: ./paths/operations/announcements-announcement_id-read.yaml
+  /v1/orgs/{org_id}/folders:
+    $ref: ./paths/operations/folders.yaml
+  /v1/orgs/{org_id}/folders/{folder_id}:
+    $ref: ./paths/operations/folders-folder_id.yaml
+  /v1/orgs/{org_id}/documents:
+    $ref: ./paths/operations/documents.yaml
+  /v1/orgs/{org_id}/documents/{document_id}:
+    $ref: ./paths/operations/documents-document_id.yaml
+  /v1/orgs/{org_id}/me/notifications:
+    $ref: ./paths/operations/me-notifications.yaml
+  /v1/orgs/{org_id}/me/notifications/unread-count:
+    $ref: ./paths/operations/me-notifications-unread-count.yaml
+  /v1/orgs/{org_id}/me/notifications/{notification_id}:read:
+    $ref: ./paths/operations/me-notifications-notification_id_read.yaml
+  /v1/orgs/{org_id}/me/notifications:read-all:
+    $ref: ./paths/operations/me-notifications_read-all.yaml
+  /v1/orgs/{org_id}/notification-defaults:
+    $ref: ./paths/operations/notification-defaults.yaml
+  /v1/orgs/{org_id}/me/notification-mutes:
+    $ref: ./paths/operations/me-notification-mutes.yaml
+  /v1/orgs/{org_id}/sms-usage:
+    $ref: ./paths/operations/sms-usage.yaml
+  /v1/orgs/{org_id}/files:
+    $ref: ./paths/operations/files.yaml
+  /v1/orgs/{org_id}/files/{file_id}/meta:
+    $ref: ./paths/operations/files-file_id-meta.yaml
+  /v1/orgs/{org_id}/files/{file_id}:
+    $ref: ./paths/operations/files-file_id.yaml
+  /v1/orgs/{org_id}/jobs:
+    $ref: ./paths/operations/jobs.yaml
+  /v1/orgs/{org_id}/jobs/{job_id}:
+    $ref: ./paths/operations/jobs-job_id.yaml
+  /v1/orgs/{org_id}/exports:
+    $ref: ./paths/operations/exports.yaml
+  /v1/orgs/{org_id}/audit-events:
+    $ref: ./paths/audit/audit-events.yaml
+  /v1/orgs/{org_id}/audit-events/{event_id}:
+    $ref: ./paths/audit/audit-events-event_id.yaml
+  /v1/orgs/{org_id}/audit-notes:
+    $ref: ./paths/audit/audit-notes.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/governance-settings:
+    $ref: ./paths/governance/sites-site_id-governance-settings.yaml
+  /v1/orgs/{org_id}/governance-presets:
+    $ref: ./paths/governance/governance-presets.yaml
+  /v1/orgs/{org_id}/meetings:
+    $ref: ./paths/governance/meetings.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:
+    $ref: ./paths/governance/meetings-meeting_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:call:
+    $ref: ./paths/governance/meetings-meeting_id_call.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:start:
+    $ref: ./paths/governance/meetings-meeting_id_start.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:close:
+    $ref: ./paths/governance/meetings-meeting_id_close.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:cancel:
+    $ref: ./paths/governance/meetings-meeting_id_cancel.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/quorum:
+    $ref: ./paths/governance/meetings-meeting_id-quorum.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter:
+    $ref: ./paths/governance/meetings-meeting_id-call-letter.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet:
+    $ref: ./paths/governance/meetings-meeting_id-attendance-sheet.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/me:
+    $ref: ./paths/governance/meetings-meeting_id-me.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate:
+    $ref: ./paths/governance/meetings-meeting_id-minutes_generate.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:
+    $ref: ./paths/governance/meetings-meeting_id-minutes.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices:
+    $ref: ./paths/governance/meetings-meeting_id-notices.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}:
+    $ref: ./paths/governance/meetings-meeting_id-notices-person_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk:
+    $ref: ./paths/governance/meetings-meeting_id-notices_bulk.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions:
+    $ref: ./paths/governance/meetings-meeting_id_notify-decisions.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:
+    $ref: ./paths/governance/meetings-meeting_id-agenda-items.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}:
+    $ref: ./paths/governance/agenda-items-agenda_item_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order:
+    $ref: ./paths/governance/meetings-meeting_id-agenda-items_order.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll-answer.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll-results.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll-answers.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-vote-counts.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:
+    $ref: ./paths/governance/meetings-meeting_id-attendance.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id}:
+    $ref: ./paths/governance/meetings-meeting_id-attendance-attendance_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin:
+    $ref: ./paths/governance/meetings-meeting_id-attendance_checkin.yaml
+  /v1/orgs/{org_id}/decisions:
+    $ref: ./paths/governance/decisions.yaml
+  /v1/orgs/{org_id}/decisions/{decision_id}:
+    $ref: ./paths/governance/decisions-decision_id.yaml
+  /v1/orgs/{org_id}/decisions/{decision_id}:apply:
+    $ref: ./paths/governance/decisions-decision_id_apply.yaml
+  /v1/orgs/{org_id}/term-reminders:
+    $ref: ./paths/governance/term-reminders.yaml
+  /v1/orgs/{org_id}/facilities:
+    $ref: ./paths/community/facilities.yaml
+  /v1/orgs/{org_id}/facilities/{facility_id}:
+    $ref: ./paths/community/facilities-facility_id.yaml
+  /v1/orgs/{org_id}/facilities/{facility_id}/blocks:
+    $ref: ./paths/community/facilities-facility_id-blocks.yaml
+  /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id}:
+    $ref: ./paths/community/facilities-facility_id-blocks-block_id.yaml
+  /v1/orgs/{org_id}/facilities/{facility_id}/availability:
+    $ref: ./paths/community/facilities-facility_id-availability.yaml
+  /v1/orgs/{org_id}/bookings:
+    $ref: ./paths/community/bookings.yaml
+  /v1/orgs/{org_id}/bookings/{booking_id}:
+    $ref: ./paths/community/bookings-booking_id.yaml
+  /v1/orgs/{org_id}/bookings/{booking_id}:cancel:
+    $ref: ./paths/community/bookings-booking_id_cancel.yaml
+  /v1/orgs/{org_id}/visitor-entries:
+    $ref: ./paths/community/visitor-entries.yaml
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:
+    $ref: ./paths/community/visitor-entries-entry_id.yaml
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel:
+    $ref: ./paths/community/visitor-entries-entry_id_cancel.yaml
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}/qr:
+    $ref: ./paths/community/visitor-entries-entry_id-qr.yaml
+  /v1/orgs/{org_id}/recurring-visitors:
+    $ref: ./paths/community/recurring-visitors.yaml
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:
+    $ref: ./paths/community/recurring-visitors-recurring_visitor_id.yaml
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke:
+    $ref: ./paths/community/recurring-visitors-recurring_visitor_id_revoke.yaml
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}/qr:
+    $ref: ./paths/community/recurring-visitors-recurring_visitor_id-qr.yaml
+  /v1/orgs/{org_id}/visitor-approval-requests:
+    $ref: ./paths/community/visitor-approval-requests.yaml
+  /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide:
+    $ref: ./paths/community/visitor-approval-requests-request_id_decide.yaml
+  /v1/orgs/{org_id}/deliveries:
+    $ref: ./paths/community/deliveries.yaml
+  /v1/orgs/{org_id}/gate/console:
+    $ref: ./paths/community/gate-console.yaml
+  /v1/orgs/{org_id}/gate/visitors:
+    $ref: ./paths/community/gate-visitors.yaml
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:
+    $ref: ./paths/community/gate-visitors-entry_id.yaml
+  /v1/orgs/{org_id}/gate/visitors:scan:
+    $ref: ./paths/community/gate-visitors_scan.yaml
+  /v1/orgs/{org_id}/gate/visitors:walk-in:
+    $ref: ./paths/community/gate-visitors_walk-in.yaml
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive:
+    $ref: ./paths/community/gate-visitors-entry_id_arrive.yaml
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:leave:
+    $ref: ./paths/community/gate-visitors-entry_id_leave.yaml
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact:
+    $ref: ./paths/community/gate-visitors-entry_id-call-contact.yaml
+  /v1/orgs/{org_id}/gate/plates:
+    $ref: ./paths/community/gate-plates.yaml
+  /v1/orgs/{org_id}/gate/deliveries:
+    $ref: ./paths/community/gate-deliveries.yaml
+  /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect:
+    $ref: ./paths/community/gate-deliveries-delivery_id_collect.yaml
+  /v1/orgs/{org_id}/gate/sessions:
+    $ref: ./paths/community/gate-sessions.yaml
+  /v1/orgs/{org_id}/persons/{person_id}/gate-pin:
+    $ref: ./paths/community/persons-person_id-gate-pin.yaml
+  /v1/orgs/{org_id}/access-points:
+    $ref: ./paths/access/access-points.yaml
+  /v1/orgs/{org_id}/access-points/{point_id}:
+    $ref: ./paths/access/access-points-point_id.yaml
+  /v1/orgs/{org_id}/agents:
+    $ref: ./paths/access/agents.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:
+    $ref: ./paths/access/agents-agent_id.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:reenrol:
+    $ref: ./paths/access/agents-agent_id_reenrol.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:revoke:
+    $ref: ./paths/access/agents-agent_id_revoke.yaml
+  /v1/orgs/{org_id}/agents/{agent_id}:rotate-token:
+    $ref: ./paths/access/agents-agent_id_rotate-token.yaml
+  /v1/orgs/{org_id}/access/allowlist:rebuild:
+    $ref: ./paths/access/access-allowlist_rebuild.yaml
+  /v1/orgs/{org_id}/credentials:
+    $ref: ./paths/access/credentials.yaml
+  /v1/orgs/{org_id}/credentials/{credential_id}:
+    $ref: ./paths/access/credentials-credential_id.yaml
+  /v1/orgs/{org_id}/access/events:
+    $ref: ./paths/access/access-events.yaml
+  /v1/orgs/{org_id}/gate/events:
+    $ref: ./paths/access/gate-events.yaml
+  /v1/orgs/{org_id}/access-points/{point_id}:open:
+    $ref: ./paths/access/access-points-point_id_open.yaml
+  /v1/orgs/{org_id}/access/commands/{command_id}:
+    $ref: ./paths/access/access-commands-command_id.yaml
+  /v1/agent/enrol:
+    $ref: ./paths/agent/agent-enrol.yaml
+  /v1/agent/poll:
+    $ref: ./paths/agent/agent-poll.yaml
+  /v1/agent/token:rotate:
+    $ref: ./paths/agent/agent-token_rotate.yaml
+  /v1/agent/ws:
+    $ref: ./paths/agent/agent-ws.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/dashboard:
+    $ref: ./paths/dashboards/sites-site_id-dashboard.yaml
+  /v1/orgs/{org_id}/dashboard/portfolio:
+    $ref: ./paths/dashboards/dashboard-portfolio.yaml
+  /v1/orgs/{org_id}/me/dashboard:
+    $ref: ./paths/dashboards/me-dashboard.yaml
+  /v1/orgs/{org_id}/codes:
+    $ref: ./paths/codes/codes.yaml
+  /v1/platform/orgs:
+    $ref: ./paths/platform/platform-orgs.yaml
+  /v1/platform/orgs/{org_id}:
+    $ref: ./paths/platform/platform-orgs-org_id.yaml
+  /v1/platform/settings:
+    $ref: ./paths/platform/platform-settings.yaml
+  /v1/platform/health:
+    $ref: ./paths/platform/platform-health.yaml
+  /v1/platform/backup-status:
+    $ref: ./paths/platform/platform-backup-status.yaml
+  /v1/platform/jobs:
+    $ref: ./paths/platform/platform-jobs.yaml
+  /v1/me/profile:
+    $ref: ./paths/me/me-profile.yaml
+  /v1/me/contact-changes:
+    $ref: ./paths/me/me-contact-changes.yaml
+  /v1/me/contact-changes/{change_id}:confirm:
+    $ref: ./paths/me/me-contact-changes-change_id_confirm.yaml
+  /v1/auth/password-reset:
+    $ref: ./paths/auth/auth-password-reset.yaml
+  /v1/auth/password-reset/consume:
+    $ref: ./paths/auth/auth-password-reset-consume.yaml
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: obk_session
+      description: Browser session cookie issued by the login endpoints.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token (mobile app sessions, later API keys).
+    agentAuth:
+      type: http
+      scheme: bearer
+      description: On-site access agent token (`obk_agt_<agent_id>.<secret>`), scoped to one site. Used by `/v1/agent/*`.
+  parameters:
+    Limit:
+      $ref: ./components/common.yaml#/parameters/Limit
+    Cursor:
+      $ref: ./components/common.yaml#/parameters/Cursor
+    IdempotencyKey:
+      $ref: ./components/common.yaml#/parameters/IdempotencyKey
+    OrgId:
+      $ref: ./components/draft-common.yaml#/parameters/OrgId
+    SiteId:
+      $ref: ./components/draft-common.yaml#/parameters/SiteId
+    SiteIdRequired:
+      $ref: ./components/draft-common.yaml#/parameters/SiteIdRequired
+    IfMatch:
+      $ref: ./components/draft-common.yaml#/parameters/IfMatch
+    IdempotencyKeyRequired:
+      $ref: ./components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+    DryRun:
+      $ref: ./components/draft-common.yaml#/parameters/DryRun
+    Format:
+      $ref: ./components/draft-common.yaml#/parameters/Format
+    AsOfDate:
+      $ref: ./components/draft-common.yaml#/parameters/AsOfDate
+    Locale:
+      $ref: ./components/draft-common.yaml#/parameters/Locale
+    GuardSession:
+      $ref: ./components/draft-common.yaml#/parameters/GuardSession
+  responses:
+    Problem:
+      $ref: ./components/problem.yaml#/responses/Problem
+  schemas:
+    Problem:
+      $ref: ./components/problem.yaml#/schemas/Problem
+    ProblemFieldError:
+      $ref: ./components/problem.yaml#/schemas/ProblemFieldError
+    Money:
+      $ref: ./components/common.yaml#/schemas/Money
+    PageInfo:
+      $ref: ./components/common.yaml#/schemas/PageInfo
+    DiscoveryDocument:
+      $ref: ./components/instance.yaml#/schemas/DiscoveryDocument
+    MinAppVersion:
+      $ref: ./components/instance.yaml#/schemas/MinAppVersion
+    AuthMethod:
+      $ref: ./components/instance.yaml#/schemas/AuthMethod
+    PushInfo:
+      $ref: ./components/instance.yaml#/schemas/PushInfo
+    Branding:
+      $ref: ./components/instance.yaml#/schemas/Branding
+    RelayEnrollment:
+      $ref: ./components/instance.yaml#/schemas/RelayEnrollment
+    InstancePolicies:
+      $ref: ./components/instance.yaml#/schemas/InstancePolicies
+    Instance:
+      $ref: ./components/instance.yaml#/schemas/Instance
+    AuthUser:
+      $ref: ./components/auth.yaml#/schemas/AuthUser
+    Credentials:
+      $ref: ./components/auth.yaml#/schemas/Credentials
+    SessionResponse:
+      $ref: ./components/auth.yaml#/schemas/SessionResponse
+    TokenResponse:
+      $ref: ./components/auth.yaml#/schemas/TokenResponse
+    AuthResult:
+      $ref: ./components/auth.yaml#/schemas/AuthResult
+    RefreshRequest:
+      $ref: ./components/auth.yaml#/schemas/RefreshRequest
+    OtpRequest:
+      $ref: ./components/auth.yaml#/schemas/OtpRequest
+    MagicLinkRequest:
+      $ref: ./components/auth.yaml#/schemas/MagicLinkRequest
+    MagicLinkConsumeRequest:
+      $ref: ./components/auth.yaml#/schemas/MagicLinkConsumeRequest
+    ReauthPassword:
+      $ref: ./components/auth.yaml#/schemas/ReauthPassword
+    ReauthSmsOtp:
+      $ref: ./components/auth.yaml#/schemas/ReauthSmsOtp
+    ReauthRequest:
+      $ref: ./components/auth.yaml#/schemas/ReauthRequest
+    ReauthResponse:
+      $ref: ./components/auth.yaml#/schemas/ReauthResponse
+    ChangePasswordRequest:
+      $ref: ./components/auth.yaml#/schemas/ChangePasswordRequest
+    RoleGrant:
+      $ref: ./components/auth.yaml#/schemas/RoleGrant
+    OrgAccess:
+      $ref: ./components/auth.yaml#/schemas/OrgAccess
+    Me:
+      $ref: ./components/auth.yaml#/schemas/Me
+    Session:
+      $ref: ./components/auth.yaml#/schemas/Session
+    SessionList:
+      $ref: ./components/auth.yaml#/schemas/SessionList
+    MeUser:
+      $ref: ./components/auth.yaml#/schemas/MeUser
+    PermissionGrant:
+      $ref: ./components/auth.yaml#/schemas/PermissionGrant
+    MeSite:
+      $ref: ./components/auth.yaml#/schemas/MeSite
+    Address:
+      $ref: ./components/draft-common.yaml#/schemas/Address
+    ImportRowError:
+      $ref: ./components/draft-common.yaml#/schemas/ImportRowError
+    ImportRowResult:
+      $ref: ./components/draft-common.yaml#/schemas/ImportRowResult
+    ImportReport:
+      $ref: ./components/draft-common.yaml#/schemas/ImportReport
+    ColumnMapping:
+      $ref: ./components/draft-common.yaml#/schemas/ColumnMapping
+    Job:
+      $ref: ./components/draft-common.yaml#/schemas/Job
+    JobList:
+      $ref: ./components/draft-common.yaml#/schemas/JobList
+    Permission:
+      $ref: ./components/draft-common.yaml#/schemas/Permission
+    Role:
+      $ref: ./components/draft-common.yaml#/schemas/Role
+    Organization:
+      $ref: ./components/tenancy.yaml#/schemas/Organization
+    OrganizationCreate:
+      $ref: ./components/tenancy.yaml#/schemas/OrganizationCreate
+    OrganizationUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/OrganizationUpdate
+    AccessSettings:
+      $ref: ./components/tenancy.yaml#/schemas/AccessSettings
+    SiteSettings:
+      $ref: ./components/tenancy.yaml#/schemas/SiteSettings
+    SiteSettingsUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/SiteSettingsUpdate
+    Site:
+      $ref: ./components/tenancy.yaml#/schemas/Site
+    SiteCreate:
+      $ref: ./components/tenancy.yaml#/schemas/SiteCreate
+    SiteUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/SiteUpdate
+    SiteList:
+      $ref: ./components/tenancy.yaml#/schemas/SiteList
+    BankDetails:
+      $ref: ./components/tenancy.yaml#/schemas/BankDetails
+    BankDetailsUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/BankDetailsUpdate
+    Block:
+      $ref: ./components/tenancy.yaml#/schemas/Block
+    BlockCreate:
+      $ref: ./components/tenancy.yaml#/schemas/BlockCreate
+    BlockUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/BlockUpdate
+    BlockList:
+      $ref: ./components/tenancy.yaml#/schemas/BlockList
+    OccupancySummary:
+      $ref: ./components/tenancy.yaml#/schemas/OccupancySummary
+    Unit:
+      $ref: ./components/tenancy.yaml#/schemas/Unit
+    UnitCreate:
+      $ref: ./components/tenancy.yaml#/schemas/UnitCreate
+    UnitUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/UnitUpdate
+    UnitList:
+      $ref: ./components/tenancy.yaml#/schemas/UnitList
+    AllocationKey:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKey
+    AllocationKeyCreate:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyCreate
+    AllocationKeyUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyUpdate
+    AllocationKeyList:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyList
+    AllocationKeyValue:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyValue
+    AllocationKeyValueList:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyValueList
+    AllocationKeyValuesPut:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyValuesPut
+    AllocationKeyValuesSummary:
+      $ref: ./components/tenancy.yaml#/schemas/AllocationKeyValuesSummary
+    UnitTag:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTag
+    UnitTagCreate:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTagCreate
+    UnitTagUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTagUpdate
+    UnitTagList:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTagList
+    UnitTagMembers:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTagMembers
+    Vehicle:
+      $ref: ./components/tenancy.yaml#/schemas/Vehicle
+    VehicleCreate:
+      $ref: ./components/tenancy.yaml#/schemas/VehicleCreate
+    VehicleUpdate:
+      $ref: ./components/tenancy.yaml#/schemas/VehicleUpdate
+    VehicleList:
+      $ref: ./components/tenancy.yaml#/schemas/VehicleList
+    SiteTransfer:
+      $ref: ./components/tenancy.yaml#/schemas/SiteTransfer
+    SiteTransferList:
+      $ref: ./components/tenancy.yaml#/schemas/SiteTransferList
+    SiteExportRequest:
+      $ref: ./components/tenancy.yaml#/schemas/SiteExportRequest
+    SiteOffboardRequest:
+      $ref: ./components/tenancy.yaml#/schemas/SiteOffboardRequest
+    PersonContact:
+      $ref: ./components/people.yaml#/schemas/PersonContact
+    DirectoryConsent:
+      $ref: ./components/people.yaml#/schemas/DirectoryConsent
+    Person:
+      $ref: ./components/people.yaml#/schemas/Person
+    PersonCreate:
+      $ref: ./components/people.yaml#/schemas/PersonCreate
+    PersonUpdate:
+      $ref: ./components/people.yaml#/schemas/PersonUpdate
+    PersonList:
+      $ref: ./components/people.yaml#/schemas/PersonList
+    NationalId:
+      $ref: ./components/people.yaml#/schemas/NationalId
+    NationalIdSet:
+      $ref: ./components/people.yaml#/schemas/NationalIdSet
+    Occupancy:
+      $ref: ./components/people.yaml#/schemas/Occupancy
+    OccupancyCreate:
+      $ref: ./components/people.yaml#/schemas/OccupancyCreate
+    OccupancyUpdate:
+      $ref: ./components/people.yaml#/schemas/OccupancyUpdate
+    OccupancyList:
+      $ref: ./components/people.yaml#/schemas/OccupancyList
+    MoneyAccessSet:
+      $ref: ./components/people.yaml#/schemas/MoneyAccessSet
+    MoveOutPreview:
+      $ref: ./components/people.yaml#/schemas/MoveOutPreview
+    MoveOut:
+      $ref: ./components/people.yaml#/schemas/MoveOut
+    MoveOutList:
+      $ref: ./components/people.yaml#/schemas/MoveOutList
+    MoveOutCreate:
+      $ref: ./components/people.yaml#/schemas/MoveOutCreate
+    Membership:
+      $ref: ./components/people.yaml#/schemas/Membership
+    MembershipCreate:
+      $ref: ./components/people.yaml#/schemas/MembershipCreate
+    MembershipUpdate:
+      $ref: ./components/people.yaml#/schemas/MembershipUpdate
+    MembershipList:
+      $ref: ./components/people.yaml#/schemas/MembershipList
+    Invitation:
+      $ref: ./components/people.yaml#/schemas/Invitation
+    InvitationList:
+      $ref: ./components/people.yaml#/schemas/InvitationList
+    InvitationCreate:
+      $ref: ./components/people.yaml#/schemas/InvitationCreate
+    HouseholdInvitationCreate:
+      $ref: ./components/people.yaml#/schemas/HouseholdInvitationCreate
+    InvitationPreview:
+      $ref: ./components/people.yaml#/schemas/InvitationPreview
+    InvitationAccept:
+      $ref: ./components/people.yaml#/schemas/InvitationAccept
+    JoinCode:
+      $ref: ./components/people.yaml#/schemas/JoinCode
+    JoinCodeSet:
+      $ref: ./components/people.yaml#/schemas/JoinCodeSet
+    JoinInfo:
+      $ref: ./components/people.yaml#/schemas/JoinInfo
+    JoinBlock:
+      $ref: ./components/people.yaml#/schemas/JoinBlock
+    JoinUnit:
+      $ref: ./components/people.yaml#/schemas/JoinUnit
+    JoinUnitList:
+      $ref: ./components/people.yaml#/schemas/JoinUnitList
+    UnitClaimCreate:
+      $ref: ./components/people.yaml#/schemas/UnitClaimCreate
+    UnitClaim:
+      $ref: ./components/people.yaml#/schemas/UnitClaim
+    UnitClaimList:
+      $ref: ./components/people.yaml#/schemas/UnitClaimList
+    UnitClaimApprove:
+      $ref: ./components/people.yaml#/schemas/UnitClaimApprove
+    UnitClaimReject:
+      $ref: ./components/people.yaml#/schemas/UnitClaimReject
+    DirectoryUnit:
+      $ref: ./components/people.yaml#/schemas/DirectoryUnit
+    DirectoryEntry:
+      $ref: ./components/people.yaml#/schemas/DirectoryEntry
+    DirectoryEntryList:
+      $ref: ./components/people.yaml#/schemas/DirectoryEntryList
+    Vendor:
+      $ref: ./components/people.yaml#/schemas/Vendor
+    VendorCreate:
+      $ref: ./components/people.yaml#/schemas/VendorCreate
+    VendorUpdate:
+      $ref: ./components/people.yaml#/schemas/VendorUpdate
+    VendorList:
+      $ref: ./components/people.yaml#/schemas/VendorList
+    RoleDefinition:
+      $ref: ./components/people.yaml#/schemas/RoleDefinition
+    RoleMatrix:
+      $ref: ./components/people.yaml#/schemas/RoleMatrix
+    MyPersonUpdate:
+      $ref: ./components/people.yaml#/schemas/MyPersonUpdate
+    ProfileUpdate:
+      $ref: ./components/people.yaml#/schemas/ProfileUpdate
+    ContactChangeCreate:
+      $ref: ./components/people.yaml#/schemas/ContactChangeCreate
+    ContactChange:
+      $ref: ./components/people.yaml#/schemas/ContactChange
+    ContactChangeConfirm:
+      $ref: ./components/people.yaml#/schemas/ContactChangeConfirm
+    PasswordResetRequest:
+      $ref: ./components/people.yaml#/schemas/PasswordResetRequest
+    PasswordResetConsume:
+      $ref: ./components/people.yaml#/schemas/PasswordResetConsume
+    ChargeScope:
+      $ref: ./components/money.yaml#/schemas/ChargeScope
+    AllocationInput:
+      $ref: ./components/money.yaml#/schemas/AllocationInput
+    AllocationBasis:
+      $ref: ./components/money.yaml#/schemas/AllocationBasis
+    Account:
+      $ref: ./components/money.yaml#/schemas/Account
+    AccountCreate:
+      $ref: ./components/money.yaml#/schemas/AccountCreate
+    AccountUpdate:
+      $ref: ./components/money.yaml#/schemas/AccountUpdate
+    AccountList:
+      $ref: ./components/money.yaml#/schemas/AccountList
+    Fund:
+      $ref: ./components/money.yaml#/schemas/Fund
+    FundCreate:
+      $ref: ./components/money.yaml#/schemas/FundCreate
+    FundUpdate:
+      $ref: ./components/money.yaml#/schemas/FundUpdate
+    FundList:
+      $ref: ./components/money.yaml#/schemas/FundList
+    CashBox:
+      $ref: ./components/money.yaml#/schemas/CashBox
+    CashBoxCreate:
+      $ref: ./components/money.yaml#/schemas/CashBoxCreate
+    CashBoxUpdate:
+      $ref: ./components/money.yaml#/schemas/CashBoxUpdate
+    CashBoxList:
+      $ref: ./components/money.yaml#/schemas/CashBoxList
+    FiscalYear:
+      $ref: ./components/money.yaml#/schemas/FiscalYear
+    FiscalYearCreate:
+      $ref: ./components/money.yaml#/schemas/FiscalYearCreate
+    FiscalYearUpdate:
+      $ref: ./components/money.yaml#/schemas/FiscalYearUpdate
+    FiscalYearList:
+      $ref: ./components/money.yaml#/schemas/FiscalYearList
+    FiscalYearClose:
+      $ref: ./components/money.yaml#/schemas/FiscalYearClose
+    LockDate:
+      $ref: ./components/money.yaml#/schemas/LockDate
+    LockDateSet:
+      $ref: ./components/money.yaml#/schemas/LockDateSet
+    JournalLine:
+      $ref: ./components/money.yaml#/schemas/JournalLine
+    JournalEntry:
+      $ref: ./components/money.yaml#/schemas/JournalEntry
+    JournalEntryList:
+      $ref: ./components/money.yaml#/schemas/JournalEntryList
+    JournalReverse:
+      $ref: ./components/money.yaml#/schemas/JournalReverse
+    OpeningBalance:
+      $ref: ./components/money.yaml#/schemas/OpeningBalance
+    OpeningBalanceCreate:
+      $ref: ./components/money.yaml#/schemas/OpeningBalanceCreate
+    OpeningBalanceUpdate:
+      $ref: ./components/money.yaml#/schemas/OpeningBalanceUpdate
+    OpeningBalanceList:
+      $ref: ./components/money.yaml#/schemas/OpeningBalanceList
+    Budget:
+      $ref: ./components/money.yaml#/schemas/Budget
+    BudgetCreate:
+      $ref: ./components/money.yaml#/schemas/BudgetCreate
+    BudgetUpdate:
+      $ref: ./components/money.yaml#/schemas/BudgetUpdate
+    BudgetList:
+      $ref: ./components/money.yaml#/schemas/BudgetList
+    BudgetLine:
+      $ref: ./components/money.yaml#/schemas/BudgetLine
+    BudgetLines:
+      $ref: ./components/money.yaml#/schemas/BudgetLines
+    BudgetFinalize:
+      $ref: ./components/money.yaml#/schemas/BudgetFinalize
+    ChargePlanRate:
+      $ref: ./components/money.yaml#/schemas/ChargePlanRate
+    ChargePlanRateCreate:
+      $ref: ./components/money.yaml#/schemas/ChargePlanRateCreate
+    ChargePlanRateUpdate:
+      $ref: ./components/money.yaml#/schemas/ChargePlanRateUpdate
+    ChargePlanRateList:
+      $ref: ./components/money.yaml#/schemas/ChargePlanRateList
+    ChargePlan:
+      $ref: ./components/money.yaml#/schemas/ChargePlan
+    ChargePlanCreate:
+      $ref: ./components/money.yaml#/schemas/ChargePlanCreate
+    ChargePlanUpdate:
+      $ref: ./components/money.yaml#/schemas/ChargePlanUpdate
+    ChargePlanList:
+      $ref: ./components/money.yaml#/schemas/ChargePlanList
+    ChargePlanPreviewRequest:
+      $ref: ./components/money.yaml#/schemas/ChargePlanPreviewRequest
+    ChargePreviewLine:
+      $ref: ./components/money.yaml#/schemas/ChargePreviewLine
+    ChargePlanPreview:
+      $ref: ./components/money.yaml#/schemas/ChargePlanPreview
+    ChargeGenerationPending:
+      $ref: ./components/money.yaml#/schemas/ChargeGenerationPending
+    ChargeGenerationStatus:
+      $ref: ./components/money.yaml#/schemas/ChargeGenerationStatus
+    ExpenseAllocationRequest:
+      $ref: ./components/money.yaml#/schemas/ExpenseAllocationRequest
+    ExpenseAllocation:
+      $ref: ./components/money.yaml#/schemas/ExpenseAllocation
+    Charge:
+      $ref: ./components/money.yaml#/schemas/Charge
+    ChargeCreate:
+      $ref: ./components/money.yaml#/schemas/ChargeCreate
+    ChargeUpdate:
+      $ref: ./components/money.yaml#/schemas/ChargeUpdate
+    ChargeList:
+      $ref: ./components/money.yaml#/schemas/ChargeList
+    ChargeCancel:
+      $ref: ./components/money.yaml#/schemas/ChargeCancel
+    ChargeAdjust:
+      $ref: ./components/money.yaml#/schemas/ChargeAdjust
+    LateFeePolicy:
+      $ref: ./components/money.yaml#/schemas/LateFeePolicy
+    LateFeePolicySet:
+      $ref: ./components/money.yaml#/schemas/LateFeePolicySet
+    LateFeeAccrual:
+      $ref: ./components/money.yaml#/schemas/LateFeeAccrual
+    LateFeeAccrualList:
+      $ref: ./components/money.yaml#/schemas/LateFeeAccrualList
+    LateFeeBooking:
+      $ref: ./components/money.yaml#/schemas/LateFeeBooking
+    LateFeeBookingList:
+      $ref: ./components/money.yaml#/schemas/LateFeeBookingList
+    LateFeeWaiver:
+      $ref: ./components/money.yaml#/schemas/LateFeeWaiver
+    LateFeeWaiverCreate:
+      $ref: ./components/money.yaml#/schemas/LateFeeWaiverCreate
+    LateFeeWaiverUpdate:
+      $ref: ./components/money.yaml#/schemas/LateFeeWaiverUpdate
+    LateFeeWaiverList:
+      $ref: ./components/money.yaml#/schemas/LateFeeWaiverList
+    LateFeeFreeze:
+      $ref: ./components/money.yaml#/schemas/LateFeeFreeze
+    LateFeeFreezeCreate:
+      $ref: ./components/money.yaml#/schemas/LateFeeFreezeCreate
+    LateFeeFreezeUpdate:
+      $ref: ./components/money.yaml#/schemas/LateFeeFreezeUpdate
+    LateFeeFreezeList:
+      $ref: ./components/money.yaml#/schemas/LateFeeFreezeList
+    PaymentAllocation:
+      $ref: ./components/money.yaml#/schemas/PaymentAllocation
+    Payment:
+      $ref: ./components/money.yaml#/schemas/Payment
+    PaymentList:
+      $ref: ./components/money.yaml#/schemas/PaymentList
+    ReceiptDelivery:
+      $ref: ./components/money.yaml#/schemas/ReceiptDelivery
+    PaymentCreate:
+      $ref: ./components/money.yaml#/schemas/PaymentCreate
+    PaymentVoid:
+      $ref: ./components/money.yaml#/schemas/PaymentVoid
+    PaymentAllocationsSet:
+      $ref: ./components/money.yaml#/schemas/PaymentAllocationsSet
+    AllocationPreviewRequest:
+      $ref: ./components/money.yaml#/schemas/AllocationPreviewRequest
+    AllocationPreview:
+      $ref: ./components/money.yaml#/schemas/AllocationPreview
+    PaymentDeclare:
+      $ref: ./components/money.yaml#/schemas/PaymentDeclare
+    PaymentConfirm:
+      $ref: ./components/money.yaml#/schemas/PaymentConfirm
+    PaymentReject:
+      $ref: ./components/money.yaml#/schemas/PaymentReject
+    Credit:
+      $ref: ./components/money.yaml#/schemas/Credit
+    CreditList:
+      $ref: ./components/money.yaml#/schemas/CreditList
+    CreditApply:
+      $ref: ./components/money.yaml#/schemas/CreditApply
+    Transfer:
+      $ref: ./components/money.yaml#/schemas/Transfer
+    TransferCreate:
+      $ref: ./components/money.yaml#/schemas/TransferCreate
+    TransferUpdate:
+      $ref: ./components/money.yaml#/schemas/TransferUpdate
+    TransferList:
+      $ref: ./components/money.yaml#/schemas/TransferList
+    Refund:
+      $ref: ./components/money.yaml#/schemas/Refund
+    RefundCreate:
+      $ref: ./components/money.yaml#/schemas/RefundCreate
+    RefundUpdate:
+      $ref: ./components/money.yaml#/schemas/RefundUpdate
+    RefundList:
+      $ref: ./components/money.yaml#/schemas/RefundList
+    BankImporter:
+      $ref: ./components/money.yaml#/schemas/BankImporter
+    BankImporterList:
+      $ref: ./components/money.yaml#/schemas/BankImporterList
+    BankStatementImport:
+      $ref: ./components/money.yaml#/schemas/BankStatementImport
+    BankStatementImportList:
+      $ref: ./components/money.yaml#/schemas/BankStatementImportList
+    ImportReconciliation:
+      $ref: ./components/money.yaml#/schemas/ImportReconciliation
+    MatchSuggestion:
+      $ref: ./components/money.yaml#/schemas/MatchSuggestion
+    BankTransaction:
+      $ref: ./components/money.yaml#/schemas/BankTransaction
+    BankTransactionList:
+      $ref: ./components/money.yaml#/schemas/BankTransactionList
+    BankTransactionMatch:
+      $ref: ./components/money.yaml#/schemas/BankTransactionMatch
+    BankTransactionReason:
+      $ref: ./components/money.yaml#/schemas/BankTransactionReason
+    Expense:
+      $ref: ./components/money.yaml#/schemas/Expense
+    ExpenseCreate:
+      $ref: ./components/money.yaml#/schemas/ExpenseCreate
+    ExpenseUpdate:
+      $ref: ./components/money.yaml#/schemas/ExpenseUpdate
+    ExpenseList:
+      $ref: ./components/money.yaml#/schemas/ExpenseList
+    ExpenseVoid:
+      $ref: ./components/money.yaml#/schemas/ExpenseVoid
+    RecurringExpense:
+      $ref: ./components/money.yaml#/schemas/RecurringExpense
+    RecurringExpenseCreate:
+      $ref: ./components/money.yaml#/schemas/RecurringExpenseCreate
+    RecurringExpenseUpdate:
+      $ref: ./components/money.yaml#/schemas/RecurringExpenseUpdate
+    RecurringExpenseList:
+      $ref: ./components/money.yaml#/schemas/RecurringExpenseList
+    Bill:
+      $ref: ./components/money.yaml#/schemas/Bill
+    BillCreate:
+      $ref: ./components/money.yaml#/schemas/BillCreate
+    BillUpdate:
+      $ref: ./components/money.yaml#/schemas/BillUpdate
+    BillList:
+      $ref: ./components/money.yaml#/schemas/BillList
+    BillPayment:
+      $ref: ./components/money.yaml#/schemas/BillPayment
+    BillPaymentCreate:
+      $ref: ./components/money.yaml#/schemas/BillPaymentCreate
+    BillPaymentUpdate:
+      $ref: ./components/money.yaml#/schemas/BillPaymentUpdate
+    BillPaymentList:
+      $ref: ./components/money.yaml#/schemas/BillPaymentList
+    DunningStage:
+      $ref: ./components/money.yaml#/schemas/DunningStage
+    DunningStageCreate:
+      $ref: ./components/money.yaml#/schemas/DunningStageCreate
+    DunningStageUpdate:
+      $ref: ./components/money.yaml#/schemas/DunningStageUpdate
+    DunningStageList:
+      $ref: ./components/money.yaml#/schemas/DunningStageList
+    DunningRunRequest:
+      $ref: ./components/money.yaml#/schemas/DunningRunRequest
+    DunningRunPreview:
+      $ref: ./components/money.yaml#/schemas/DunningRunPreview
+    DunningRun:
+      $ref: ./components/money.yaml#/schemas/DunningRun
+    DunningEvent:
+      $ref: ./components/money.yaml#/schemas/DunningEvent
+    DunningEventList:
+      $ref: ./components/money.yaml#/schemas/DunningEventList
+    CollectionCase:
+      $ref: ./components/money.yaml#/schemas/CollectionCase
+    CollectionCaseCreate:
+      $ref: ./components/money.yaml#/schemas/CollectionCaseCreate
+    CollectionCaseUpdate:
+      $ref: ./components/money.yaml#/schemas/CollectionCaseUpdate
+    CollectionCaseList:
+      $ref: ./components/money.yaml#/schemas/CollectionCaseList
+    CollectionCaseClose:
+      $ref: ./components/money.yaml#/schemas/CollectionCaseClose
+    DebtBreakdownLine:
+      $ref: ./components/money.yaml#/schemas/DebtBreakdownLine
+    DebtBreakdown:
+      $ref: ./components/money.yaml#/schemas/DebtBreakdown
+    StatementLine:
+      $ref: ./components/money.yaml#/schemas/StatementLine
+    Statement:
+      $ref: ./components/money.yaml#/schemas/Statement
+    StatementSend:
+      $ref: ./components/money.yaml#/schemas/StatementSend
+    StatementSent:
+      $ref: ./components/money.yaml#/schemas/StatementSent
+    MySide:
+      $ref: ./components/money.yaml#/schemas/MySide
+    MyBalances:
+      $ref: ./components/money.yaml#/schemas/MyBalances
+    ReportAmountRow:
+      $ref: ./components/money.yaml#/schemas/ReportAmountRow
+    IncomeExpenseReport:
+      $ref: ./components/money.yaml#/schemas/IncomeExpenseReport
+    DebtorRow:
+      $ref: ./components/money.yaml#/schemas/DebtorRow
+    DebtorReport:
+      $ref: ./components/money.yaml#/schemas/DebtorReport
+    BudgetActualRow:
+      $ref: ./components/money.yaml#/schemas/BudgetActualRow
+    BudgetVsActualReport:
+      $ref: ./components/money.yaml#/schemas/BudgetVsActualReport
+    TrialBalanceRow:
+      $ref: ./components/money.yaml#/schemas/TrialBalanceRow
+    TrialBalanceReport:
+      $ref: ./components/money.yaml#/schemas/TrialBalanceReport
+    AgingRow:
+      $ref: ./components/money.yaml#/schemas/AgingRow
+    ReceivablesAgingReport:
+      $ref: ./components/money.yaml#/schemas/ReceivablesAgingReport
+    CollectorRow:
+      $ref: ./components/money.yaml#/schemas/CollectorRow
+    CollectorReconciliationReport:
+      $ref: ./components/money.yaml#/schemas/CollectorReconciliationReport
+    BankReconciliationReport:
+      $ref: ./components/money.yaml#/schemas/BankReconciliationReport
+    FundBalanceRow:
+      $ref: ./components/money.yaml#/schemas/FundBalanceRow
+    FundBalancesReport:
+      $ref: ./components/money.yaml#/schemas/FundBalancesReport
+    MoneyOverview:
+      $ref: ./components/money.yaml#/schemas/MoneyOverview
+    NotificationType:
+      $ref: ./components/operations.yaml#/schemas/NotificationType
+    TicketStatus:
+      $ref: ./components/operations.yaml#/schemas/TicketStatus
+    TicketWorkflow:
+      $ref: ./components/operations.yaml#/schemas/TicketWorkflow
+    TicketStatusInput:
+      $ref: ./components/operations.yaml#/schemas/TicketStatusInput
+    TicketWorkflowUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketWorkflowUpdate
+    TicketCategory:
+      $ref: ./components/operations.yaml#/schemas/TicketCategory
+    TicketCategoryCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketCategoryCreate
+    TicketCategoryUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketCategoryUpdate
+    TicketCategoryList:
+      $ref: ./components/operations.yaml#/schemas/TicketCategoryList
+    TicketAssignee:
+      $ref: ./components/operations.yaml#/schemas/TicketAssignee
+    TicketAttachment:
+      $ref: ./components/operations.yaml#/schemas/TicketAttachment
+    TicketAttachmentList:
+      $ref: ./components/operations.yaml#/schemas/TicketAttachmentList
+    TicketAttachmentCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketAttachmentCreate
+    Ticket:
+      $ref: ./components/operations.yaml#/schemas/Ticket
+    TicketCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketCreate
+    TicketUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketUpdate
+    TicketList:
+      $ref: ./components/operations.yaml#/schemas/TicketList
+    TicketTransition:
+      $ref: ./components/operations.yaml#/schemas/TicketTransition
+    TicketMerge:
+      $ref: ./components/operations.yaml#/schemas/TicketMerge
+    TicketVote:
+      $ref: ./components/operations.yaml#/schemas/TicketVote
+    TicketComment:
+      $ref: ./components/operations.yaml#/schemas/TicketComment
+    TicketCommentCreate:
+      $ref: ./components/operations.yaml#/schemas/TicketCommentCreate
+    TicketCommentUpdate:
+      $ref: ./components/operations.yaml#/schemas/TicketCommentUpdate
+    TicketCommentList:
+      $ref: ./components/operations.yaml#/schemas/TicketCommentList
+    TicketStatusChange:
+      $ref: ./components/operations.yaml#/schemas/TicketStatusChange
+    TicketStatusChangeList:
+      $ref: ./components/operations.yaml#/schemas/TicketStatusChangeList
+    AnnouncementAudience:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementAudience
+    Announcement:
+      $ref: ./components/operations.yaml#/schemas/Announcement
+    AnnouncementCreate:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementCreate
+    AnnouncementUpdate:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementUpdate
+    AnnouncementList:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementList
+    AnnouncementPreviewRequest:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementPreviewRequest
+    AnnouncementPreview:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementPreview
+    AnnouncementPublish:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementPublish
+    AnnouncementRead:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementRead
+    AnnouncementReadList:
+      $ref: ./components/operations.yaml#/schemas/AnnouncementReadList
+    DocumentVisibility:
+      $ref: ./components/operations.yaml#/schemas/DocumentVisibility
+    FolderCrumb:
+      $ref: ./components/operations.yaml#/schemas/FolderCrumb
+    Folder:
+      $ref: ./components/operations.yaml#/schemas/Folder
+    FolderCreate:
+      $ref: ./components/operations.yaml#/schemas/FolderCreate
+    FolderUpdate:
+      $ref: ./components/operations.yaml#/schemas/FolderUpdate
+    FolderList:
+      $ref: ./components/operations.yaml#/schemas/FolderList
+    GeneratedFrom:
+      $ref: ./components/operations.yaml#/schemas/GeneratedFrom
+    Document:
+      $ref: ./components/operations.yaml#/schemas/Document
+    DocumentCreate:
+      $ref: ./components/operations.yaml#/schemas/DocumentCreate
+    DocumentUpdate:
+      $ref: ./components/operations.yaml#/schemas/DocumentUpdate
+    DocumentList:
+      $ref: ./components/operations.yaml#/schemas/DocumentList
+    Notification:
+      $ref: ./components/operations.yaml#/schemas/Notification
+    NotificationList:
+      $ref: ./components/operations.yaml#/schemas/NotificationList
+    UnreadCount:
+      $ref: ./components/operations.yaml#/schemas/UnreadCount
+    NotificationsReadAll:
+      $ref: ./components/operations.yaml#/schemas/NotificationsReadAll
+    NotificationDefault:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefault
+    NotificationDefaults:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefaults
+    NotificationDefaultsSet:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefaultsSet
+    NotificationDefaultInput:
+      $ref: ./components/operations.yaml#/schemas/NotificationDefaultInput
+    NotificationMutes:
+      $ref: ./components/operations.yaml#/schemas/NotificationMutes
+    NotificationMutesSet:
+      $ref: ./components/operations.yaml#/schemas/NotificationMutesSet
+    SmsUsage:
+      $ref: ./components/operations.yaml#/schemas/SmsUsage
+    File:
+      $ref: ./components/operations.yaml#/schemas/File
+    FileList:
+      $ref: ./components/operations.yaml#/schemas/FileList
+    ExportRequest:
+      $ref: ./components/operations.yaml#/schemas/ExportRequest
+    AuditEvent:
+      $ref: ./components/operations.yaml#/schemas/AuditEvent
+    AuditEventList:
+      $ref: ./components/operations.yaml#/schemas/AuditEventList
+    AuditNote:
+      $ref: ./components/operations.yaml#/schemas/AuditNote
+    AuditNoteCreate:
+      $ref: ./components/operations.yaml#/schemas/AuditNoteCreate
+    AuditNoteUpdate:
+      $ref: ./components/operations.yaml#/schemas/AuditNoteUpdate
+    AuditNoteList:
+      $ref: ./components/operations.yaml#/schemas/AuditNoteList
+    QuorumRule:
+      $ref: ./components/governance.yaml#/schemas/QuorumRule
+    DecisionThreshold:
+      $ref: ./components/governance.yaml#/schemas/DecisionThreshold
+    PresetNote:
+      $ref: ./components/governance.yaml#/schemas/PresetNote
+    GovernanceSettingsSet:
+      $ref: ./components/governance.yaml#/schemas/GovernanceSettingsSet
+    GovernanceSettings:
+      $ref: ./components/governance.yaml#/schemas/GovernanceSettings
+    GovernancePreset:
+      $ref: ./components/governance.yaml#/schemas/GovernancePreset
+    GovernancePresetList:
+      $ref: ./components/governance.yaml#/schemas/GovernancePresetList
+    Meeting:
+      $ref: ./components/governance.yaml#/schemas/Meeting
+    MeetingCreate:
+      $ref: ./components/governance.yaml#/schemas/MeetingCreate
+    MeetingUpdate:
+      $ref: ./components/governance.yaml#/schemas/MeetingUpdate
+    MeetingList:
+      $ref: ./components/governance.yaml#/schemas/MeetingList
+    MeetingCall:
+      $ref: ./components/governance.yaml#/schemas/MeetingCall
+    MeetingCancel:
+      $ref: ./components/governance.yaml#/schemas/MeetingCancel
+    Quorum:
+      $ref: ./components/governance.yaml#/schemas/Quorum
+    MyPoll:
+      $ref: ./components/governance.yaml#/schemas/MyPoll
+    MyMeeting:
+      $ref: ./components/governance.yaml#/schemas/MyMeeting
+    MinutesResult:
+      $ref: ./components/governance.yaml#/schemas/MinutesResult
+    MeetingNotice:
+      $ref: ./components/governance.yaml#/schemas/MeetingNotice
+    MeetingNoticeList:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeList
+    MeetingNoticeRecord:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeRecord
+    MeetingNoticeBulk:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeBulk
+    MeetingNoticeBulkResult:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeBulkResult
+    DecisionNotify:
+      $ref: ./components/governance.yaml#/schemas/DecisionNotify
+    DecisionNotifyResult:
+      $ref: ./components/governance.yaml#/schemas/DecisionNotifyResult
+    AgendaItem:
+      $ref: ./components/governance.yaml#/schemas/AgendaItem
+    AgendaItemCreate:
+      $ref: ./components/governance.yaml#/schemas/AgendaItemCreate
+    AgendaItemUpdate:
+      $ref: ./components/governance.yaml#/schemas/AgendaItemUpdate
+    AgendaItemList:
+      $ref: ./components/governance.yaml#/schemas/AgendaItemList
+    AgendaOrder:
+      $ref: ./components/governance.yaml#/schemas/AgendaOrder
+    Poll:
+      $ref: ./components/governance.yaml#/schemas/Poll
+    PollSet:
+      $ref: ./components/governance.yaml#/schemas/PollSet
+    PollAnswerSet:
+      $ref: ./components/governance.yaml#/schemas/PollAnswerSet
+    PollAnswer:
+      $ref: ./components/governance.yaml#/schemas/PollAnswer
+    PollAnswerList:
+      $ref: ./components/governance.yaml#/schemas/PollAnswerList
+    PollResults:
+      $ref: ./components/governance.yaml#/schemas/PollResults
+    VoteCountSet:
+      $ref: ./components/governance.yaml#/schemas/VoteCountSet
+    VoteCount:
+      $ref: ./components/governance.yaml#/schemas/VoteCount
+    Attendance:
+      $ref: ./components/governance.yaml#/schemas/Attendance
+    AttendanceList:
+      $ref: ./components/governance.yaml#/schemas/AttendanceList
+    AttendanceCreate:
+      $ref: ./components/governance.yaml#/schemas/AttendanceCreate
+    AttendanceCheckin:
+      $ref: ./components/governance.yaml#/schemas/AttendanceCheckin
+    Dissent:
+      $ref: ./components/governance.yaml#/schemas/Dissent
+    DissentInput:
+      $ref: ./components/governance.yaml#/schemas/DissentInput
+    DecisionEffect:
+      $ref: ./components/governance.yaml#/schemas/DecisionEffect
+    Decision:
+      $ref: ./components/governance.yaml#/schemas/Decision
+    DecisionCreate:
+      $ref: ./components/governance.yaml#/schemas/DecisionCreate
+    DecisionUpdate:
+      $ref: ./components/governance.yaml#/schemas/DecisionUpdate
+    DecisionList:
+      $ref: ./components/governance.yaml#/schemas/DecisionList
+    DecisionApplyDuesRate:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyDuesRate
+    DecisionApplyMembership:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyMembership
+    DecisionApplyBudget:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyBudget
+    DecisionApplySpecialAssessment:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplySpecialAssessment
+    DecisionApply:
+      $ref: ./components/governance.yaml#/schemas/DecisionApply
+    DecisionApplyResult:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyResult
+    TermReminder:
+      $ref: ./components/governance.yaml#/schemas/TermReminder
+    TermReminderList:
+      $ref: ./components/governance.yaml#/schemas/TermReminderList
+    OpeningHours:
+      $ref: ./components/community.yaml#/schemas/OpeningHours
+    FacilityRules:
+      $ref: ./components/community.yaml#/schemas/FacilityRules
+    Facility:
+      $ref: ./components/community.yaml#/schemas/Facility
+    FacilityCreate:
+      $ref: ./components/community.yaml#/schemas/FacilityCreate
+    FacilityUpdate:
+      $ref: ./components/community.yaml#/schemas/FacilityUpdate
+    FacilityList:
+      $ref: ./components/community.yaml#/schemas/FacilityList
+    TimeRange:
+      $ref: ./components/community.yaml#/schemas/TimeRange
+    FacilityBlock:
+      $ref: ./components/community.yaml#/schemas/FacilityBlock
+    FacilityBlockCreate:
+      $ref: ./components/community.yaml#/schemas/FacilityBlockCreate
+    FacilityBlockUpdate:
+      $ref: ./components/community.yaml#/schemas/FacilityBlockUpdate
+    FacilityBlockList:
+      $ref: ./components/community.yaml#/schemas/FacilityBlockList
+    Availability:
+      $ref: ./components/community.yaml#/schemas/Availability
+    Booking:
+      $ref: ./components/community.yaml#/schemas/Booking
+    BookingList:
+      $ref: ./components/community.yaml#/schemas/BookingList
+    BookingCreate:
+      $ref: ./components/community.yaml#/schemas/BookingCreate
+    BookingCancel:
+      $ref: ./components/community.yaml#/schemas/BookingCancel
+    VisitorEntry:
+      $ref: ./components/community.yaml#/schemas/VisitorEntry
+    VisitorEntryCreate:
+      $ref: ./components/community.yaml#/schemas/VisitorEntryCreate
+    VisitorEntryUpdate:
+      $ref: ./components/community.yaml#/schemas/VisitorEntryUpdate
+    VisitorEntryList:
+      $ref: ./components/community.yaml#/schemas/VisitorEntryList
+    RecurringVisitor:
+      $ref: ./components/community.yaml#/schemas/RecurringVisitor
+    RecurringVisitorCreate:
+      $ref: ./components/community.yaml#/schemas/RecurringVisitorCreate
+    RecurringVisitorUpdate:
+      $ref: ./components/community.yaml#/schemas/RecurringVisitorUpdate
+    RecurringVisitorList:
+      $ref: ./components/community.yaml#/schemas/RecurringVisitorList
+    VisitorApprovalRequest:
+      $ref: ./components/community.yaml#/schemas/VisitorApprovalRequest
+    VisitorApprovalRequestList:
+      $ref: ./components/community.yaml#/schemas/VisitorApprovalRequestList
+    VisitorDecision:
+      $ref: ./components/community.yaml#/schemas/VisitorDecision
+    Delivery:
+      $ref: ./components/community.yaml#/schemas/Delivery
+    DeliveryCreate:
+      $ref: ./components/community.yaml#/schemas/DeliveryCreate
+    DeliveryUpdate:
+      $ref: ./components/community.yaml#/schemas/DeliveryUpdate
+    DeliveryList:
+      $ref: ./components/community.yaml#/schemas/DeliveryList
+    DeliveryCollect:
+      $ref: ./components/community.yaml#/schemas/DeliveryCollect
+    GuardVisitor:
+      $ref: ./components/community.yaml#/schemas/GuardVisitor
+    GuardVisitorList:
+      $ref: ./components/community.yaml#/schemas/GuardVisitorList
+    GateAgentStatus:
+      $ref: ./components/community.yaml#/schemas/GateAgentStatus
+    GatePoint:
+      $ref: ./components/community.yaml#/schemas/GatePoint
+    GateConsole:
+      $ref: ./components/community.yaml#/schemas/GateConsole
+    GateDelivery:
+      $ref: ./components/community.yaml#/schemas/GateDelivery
+    GateDeliveryList:
+      $ref: ./components/community.yaml#/schemas/GateDeliveryList
+    GatePlate:
+      $ref: ./components/community.yaml#/schemas/GatePlate
+    GatePlateList:
+      $ref: ./components/community.yaml#/schemas/GatePlateList
+    ScanRequest:
+      $ref: ./components/community.yaml#/schemas/ScanRequest
+    ScanResult:
+      $ref: ./components/community.yaml#/schemas/ScanResult
+    WalkInCreate:
+      $ref: ./components/community.yaml#/schemas/WalkInCreate
+    VisitorArrive:
+      $ref: ./components/community.yaml#/schemas/VisitorArrive
+    CallContact:
+      $ref: ./components/community.yaml#/schemas/CallContact
+    GuardSessionCreate:
+      $ref: ./components/community.yaml#/schemas/GuardSessionCreate
+    GuardSession:
+      $ref: ./components/community.yaml#/schemas/GuardSession
+    GatePinSet:
+      $ref: ./components/community.yaml#/schemas/GatePinSet
+    DriverRef:
+      $ref: ./components/access.yaml#/schemas/DriverRef
+    DriverState:
+      $ref: ./components/access.yaml#/schemas/DriverState
+    AccessPoint:
+      $ref: ./components/access.yaml#/schemas/AccessPoint
+    AccessPointCreate:
+      $ref: ./components/access.yaml#/schemas/AccessPointCreate
+    AccessPointUpdate:
+      $ref: ./components/access.yaml#/schemas/AccessPointUpdate
+    AccessPointList:
+      $ref: ./components/access.yaml#/schemas/AccessPointList
+    Agent:
+      $ref: ./components/access.yaml#/schemas/Agent
+    AgentCreate:
+      $ref: ./components/access.yaml#/schemas/AgentCreate
+    AgentUpdate:
+      $ref: ./components/access.yaml#/schemas/AgentUpdate
+    AgentList:
+      $ref: ./components/access.yaml#/schemas/AgentList
+    AgentEnrolment:
+      $ref: ./components/access.yaml#/schemas/AgentEnrolment
+    AllowlistRebuild:
+      $ref: ./components/access.yaml#/schemas/AllowlistRebuild
+    RecurringWindow:
+      $ref: ./components/access.yaml#/schemas/RecurringWindow
+    Credential:
+      $ref: ./components/access.yaml#/schemas/Credential
+    CredentialList:
+      $ref: ./components/access.yaml#/schemas/CredentialList
+    AccessEvent:
+      $ref: ./components/access.yaml#/schemas/AccessEvent
+    AccessEventList:
+      $ref: ./components/access.yaml#/schemas/AccessEventList
+    GuardEventPoint:
+      $ref: ./components/access.yaml#/schemas/GuardEventPoint
+    GuardEventWho:
+      $ref: ./components/access.yaml#/schemas/GuardEventWho
+    GuardAccessEvent:
+      $ref: ./components/access.yaml#/schemas/GuardAccessEvent
+    GuardAccessEventList:
+      $ref: ./components/access.yaml#/schemas/GuardAccessEventList
+    OpenPointRequest:
+      $ref: ./components/access.yaml#/schemas/OpenPointRequest
+    AgentCommand:
+      $ref: ./components/access.yaml#/schemas/AgentCommand
+    AgentEnvelope:
+      $ref: ./components/access.yaml#/schemas/AgentEnvelope
+    AgentEnrolRequest:
+      $ref: ./components/access.yaml#/schemas/AgentEnrolRequest
+    AgentEnrolResponse:
+      $ref: ./components/access.yaml#/schemas/AgentEnrolResponse
+    AgentPollRequest:
+      $ref: ./components/access.yaml#/schemas/AgentPollRequest
+    AgentPollResponse:
+      $ref: ./components/access.yaml#/schemas/AgentPollResponse
+    AgentTokenRotated:
+      $ref: ./components/access.yaml#/schemas/AgentTokenRotated
+    DashboardMeeting:
+      $ref: ./components/dashboards.yaml#/schemas/DashboardMeeting
+    DashboardTerm:
+      $ref: ./components/dashboards.yaml#/schemas/DashboardTerm
+    SiteDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/SiteDashboard
+    PortfolioSite:
+      $ref: ./components/dashboards.yaml#/schemas/PortfolioSite
+    PortfolioTotals:
+      $ref: ./components/dashboards.yaml#/schemas/PortfolioTotals
+    PortfolioDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/PortfolioDashboard
+    MeDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/MeDashboard
+    CodeLabel:
+      $ref: ./components/codes.yaml#/schemas/CodeLabel
+    Codes:
+      $ref: ./components/codes.yaml#/schemas/Codes
+    PlatformOrg:
+      $ref: ./components/platform.yaml#/schemas/PlatformOrg
+    PlatformOrgList:
+      $ref: ./components/platform.yaml#/schemas/PlatformOrgList
+    PlatformOrgCreate:
+      $ref: ./components/platform.yaml#/schemas/PlatformOrgCreate
+    PlatformOrgUpdate:
+      $ref: ./components/platform.yaml#/schemas/PlatformOrgUpdate
+    PlatformSettings:
+      $ref: ./components/platform.yaml#/schemas/PlatformSettings
+    PlatformSettingsUpdate:
+      $ref: ./components/platform.yaml#/schemas/PlatformSettingsUpdate
+    HealthCheck:
+      $ref: ./components/platform.yaml#/schemas/HealthCheck
+    PlatformHealth:
+      $ref: ./components/platform.yaml#/schemas/PlatformHealth
+    BackupStatus:
+      $ref: ./components/platform.yaml#/schemas/BackupStatus
+    PlatformJob:
+      $ref: ./components/platform.yaml#/schemas/PlatformJob
+    PlatformJobList:
+      $ref: ./components/platform.yaml#/schemas/PlatformJobList

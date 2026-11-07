@@ -1,0 +1,37 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: people.listRoles
+  summary: The role to permission matrix
+  description: |-
+    **Release 0.1.** Read-only; the same data as the spec extension `x-openbekci-roles`.
+
+    Permission: `roles.read`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - roles.read
+    site_manager:
+      - roles.read
+    board_member:
+      - roles.read
+    auditor:
+      - roles.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/RoleMatrix
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

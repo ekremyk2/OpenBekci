@@ -1,0 +1,48 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: access.rebuildAllowlist
+  summary: Rebuild the allow-list of a site
+  description: |-
+    **Release 0.3.** Re-projects every vehicle and visitor entry into credentials and repairs drift (`access.reconcile`).
+
+    Permission: `access.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - access.manage
+    site_manager:
+      - access.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/access.yaml#/schemas/AllowlistRebuild
+  responses:
+    "202":
+      description: Accepted; the work continues as a job.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/Job
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

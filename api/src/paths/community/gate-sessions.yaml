@@ -1,0 +1,52 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: community.createGuardSession
+  summary: Switch guard with a quick PIN
+  description: |-
+    **Release 0.3.** The console is a shared booth device: the PIN identifies the guard so every action is attributed to a person.
+
+    Permission: `gate.operate`.
+
+    Problems: `rate_limited` (429), `invalid_grant` (401), `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - gate.operate
+    site_manager:
+      - gate.operate
+    guard:
+      - gate.operate
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/GuardSessionCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/GuardSession
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -35,17 +36,52 @@ type Config struct {
 	DataDir        string
 	TrustedProxies []netip.Prefix
 
+	// MaxBodyBytes caps JSON API request bodies (OPENBEKCI_MAX_BODY_BYTES);
+	// zero means the httpapi default (1 MiB). File uploads get their own limit.
+	MaxBodyBytes int64
+
 	// Worker runs the job worker inside serve.
 	Worker      bool
 	AutoMigrate bool
 	InsecureDev bool
 	Debug       bool
+
+	// ValidateResponses checks every API response against the spec (a dev aid).
+	ValidateResponses bool
+
+	// Instance identity and branding for the discovery document.
+	InstanceName         string
+	MinAppVersionAndroid string
+	MinAppVersionIOS     string
+	BrandingLogoURL      string
+	BrandingPrimaryColor string
+
+	// SMSProvider selects the SMS gateway: "netgsm", "log" (development) or ""
+	// (SMS disabled: sign-in by SMS reports sms_unavailable).
+	SMSProvider        string
+	SMSNetgsmUsercode  string
+	SMSNetgsmPassword  string
+	SMSNetgsmMsgHeader string
+
+	// MailProvider selects outgoing email: "smtp", "log" (development) or "".
+	// Empty means smtp when SMTP_HOST is set and disabled otherwise.
+	MailProvider string
+	SMTPHost     string
+	SMTPPort     int
+	SMTPUsername string
+	SMTPPassword string
+	SMTPFrom     string
+	// SMTPTLS is starttls (default), tls or none.
+	SMTPTLS string
+
+	// ServerVersion is the build version; set by the command, not by the environment.
+	ServerVersion string
 }
 
 // secretNames are the variables that accept a _FILE variant.
 var secretNames = map[string]bool{
 	"DATABASE_URL": true, "MIGRATOR_DATABASE_URL": true, "PLATFORM_DATABASE_URL": true,
-	"SECRET_KEY": true, "ENCRYPTION_KEY": true,
+	"SECRET_KEY": true, "ENCRYPTION_KEY": true, "SMS_NETGSM_PASSWORD": true, "SMTP_PASSWORD": true,
 }
 
 // devKeys are the throwaway keys shipped in the repository's .env.example. They
@@ -99,8 +135,32 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 		c.DataDir = "data"
 	}
 
+	if c.InstanceName = l.must("INSTANCE_NAME"); c.InstanceName == "" {
+		c.InstanceName = "OpenBekci"
+	}
+	if c.MinAppVersionAndroid = l.must("MIN_APP_VERSION_ANDROID"); c.MinAppVersionAndroid == "" {
+		c.MinAppVersionAndroid = "1.0.0"
+	}
+	if c.MinAppVersionIOS = l.must("MIN_APP_VERSION_IOS"); c.MinAppVersionIOS == "" {
+		c.MinAppVersionIOS = "1.0.0"
+	}
+	c.BrandingLogoURL = l.must("BRANDING_LOGO_URL")
+	c.BrandingPrimaryColor = l.must("BRANDING_PRIMARY_COLOR")
+
+	if err = c.loadMessaging(l); err != nil {
+		return Config{}, err
+	}
+
 	if c.TrustedProxies, err = ParseTrustedProxies(l.must("TRUSTED_PROXIES")); err != nil {
 		return Config{}, err
+	}
+
+	if v := l.must("MAX_BODY_BYTES"); v != "" {
+		n, perr := strconv.ParseInt(v, 10, 64)
+		if perr != nil || n < 1 {
+			return Config{}, fmt.Errorf("%sMAX_BODY_BYTES: %q is not a positive integer", envPrefix, v)
+		}
+		c.MaxBodyBytes = n
 	}
 
 	switch w := strings.ToLower(l.must("WORKER")); w {
@@ -113,6 +173,7 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	}
 	for name, dst := range map[string]*bool{
 		"AUTO_MIGRATE": &c.AutoMigrate, "INSECURE_DEV": &c.InsecureDev, "DEBUG": &c.Debug,
+		"API_VALIDATE_RESPONSES": &c.ValidateResponses,
 	} {
 		if *dst, err = parseBool(l.must(name)); err != nil {
 			return Config{}, fmt.Errorf("%s%s: %w", envPrefix, name, err)
@@ -133,6 +194,51 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	return c, nil
 }
 
+// loadMessaging reads the SMS and email settings.
+func (c *Config) loadMessaging(l lookup) error {
+	var err error
+	c.SMSProvider = strings.ToLower(l.must("SMS_PROVIDER"))
+	switch c.SMSProvider {
+	case "", "log", "netgsm":
+	default:
+		return fmt.Errorf("%sSMS_PROVIDER: %q is not one of netgsm, log (or empty to disable SMS)", envPrefix, c.SMSProvider)
+	}
+	c.SMSNetgsmUsercode = l.must("SMS_NETGSM_USERCODE")
+	if c.SMSNetgsmPassword, err = l.get("SMS_NETGSM_PASSWORD"); err != nil {
+		return err
+	}
+	c.SMSNetgsmMsgHeader = l.must("SMS_NETGSM_MSGHEADER")
+	if c.SMSProvider == "netgsm" && (c.SMSNetgsmUsercode == "" || c.SMSNetgsmPassword == "" || c.SMSNetgsmMsgHeader == "") {
+		return fmt.Errorf("%sSMS_PROVIDER=netgsm needs SMS_NETGSM_USERCODE, SMS_NETGSM_PASSWORD and SMS_NETGSM_MSGHEADER", envPrefix)
+	}
+
+	c.MailProvider = strings.ToLower(l.must("MAIL_PROVIDER"))
+	c.SMTPHost = l.must("SMTP_HOST")
+	if c.MailProvider == "" && c.SMTPHost != "" {
+		c.MailProvider = "smtp"
+	}
+	switch c.MailProvider {
+	case "", "log", "smtp":
+	default:
+		return fmt.Errorf("%sMAIL_PROVIDER: %q is not one of smtp, log (or empty to disable email)", envPrefix, c.MailProvider)
+	}
+	if p := l.must("SMTP_PORT"); p != "" {
+		if c.SMTPPort, err = strconv.Atoi(p); err != nil || c.SMTPPort < 1 || c.SMTPPort > 65535 {
+			return fmt.Errorf("%sSMTP_PORT: %q is not a port number", envPrefix, p)
+		}
+	}
+	c.SMTPUsername = l.must("SMTP_USERNAME")
+	if c.SMTPPassword, err = l.get("SMTP_PASSWORD"); err != nil {
+		return err
+	}
+	c.SMTPFrom = l.must("SMTP_FROM")
+	c.SMTPTLS = strings.ToLower(l.must("SMTP_TLS"))
+	if c.MailProvider == "smtp" && (c.SMTPHost == "" || c.SMTPFrom == "") {
+		return fmt.Errorf("%sMAIL_PROVIDER=smtp needs SMTP_HOST and SMTP_FROM", envPrefix)
+	}
+	return nil
+}
+
 // ValidateMigrate checks what the migrate command needs.
 func (c Config) ValidateMigrate() error {
 	if c.MigratorDatabaseURL == "" {
@@ -151,6 +257,10 @@ func (c Config) ValidateServe() error {
 		errs = append(errs, fmt.Errorf("%sBASE_URL is required", envPrefix))
 	} else if err := c.validateBaseURL(); err != nil {
 		errs = append(errs, err)
+	}
+	// The log drivers write sign-in codes and links to the log.
+	if (c.SMSProvider == "log" || c.MailProvider == "log") && !c.InsecureDev {
+		errs = append(errs, fmt.Errorf("%sSMS_PROVIDER=log and %sMAIL_PROVIDER=log are for development only; set %sINSECURE_DEV=true to use them", envPrefix, envPrefix, envPrefix))
 	}
 	if len(c.SecretKey) > 0 && strings.TrimSpace(string(c.SecretKey)) == strings.TrimSpace(string(c.EncryptionKey)) {
 		errs = append(errs, fmt.Errorf("%sSECRET_KEY and %sENCRYPTION_KEY must be different keys", envPrefix, envPrefix))

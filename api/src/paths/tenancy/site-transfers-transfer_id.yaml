@@ -1,0 +1,40 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: transfer_id
+    in: path
+    required: true
+    description: Id of the transfer.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.getSiteTransfer
+  summary: Get a site transfer record
+  description: |-
+    **Release 0.1.** Get a site transfer record.
+
+    Permission: `sites.export`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.export
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/SiteTransfer
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

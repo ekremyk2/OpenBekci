@@ -1,0 +1,142 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: recurring_expense_id
+    in: path
+    required: true
+    description: Id of the recurring expense.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getRecurringExpense
+  summary: Get recurring expense
+  description: |-
+    **Release 0.1.** Get recurring expense.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/RecurringExpense
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: money.updateRecurringExpense
+  summary: Update recurring expense
+  description: |-
+    **Release 0.1.** Update recurring expense.
+
+    Permission: `money.post`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/RecurringExpenseUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/RecurringExpense
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: money.deleteRecurringExpense
+  summary: Delete recurring expense
+  description: |-
+    **Release 0.1.** Ends the series; posted expenses stay.
+
+    Permission: `money.post`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

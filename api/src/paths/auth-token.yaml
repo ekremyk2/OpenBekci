@@ -1,0 +1,31 @@
+post:
+  operationId: auth.createToken
+  summary: Sign in and get access and refresh tokens (mobile, integrations)
+  description: |
+    Same credentials as `auth.createSession` (`password`, or `sms_otp` with a `code`; no `magic_link`), but returns opaque tokens
+    instead of a cookie: an access token (15 minutes) for `Authorization:
+    Bearer` and a rotating refresh token (60 days).
+  tags: [auth]
+  security: []
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/auth.yaml#/schemas/Credentials'
+  responses:
+    '200':
+      description: Signed in.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/auth.yaml#/schemas/TokenResponse'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

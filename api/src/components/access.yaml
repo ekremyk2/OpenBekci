@@ -1,0 +1,933 @@
+schemas:
+  DriverRef:
+    type: object
+    required:
+      - instance
+    properties:
+      instance:
+        type: string
+        description: Names a driver instance in the agent's local config file; hardware details and secrets never live on the server.
+      channel:
+        type: string
+        description: Relay or lane within the instance.
+  DriverState:
+    type: object
+    required:
+      - instance
+      - state
+      - mock
+    properties:
+      instance:
+        type: string
+      state:
+        type: string
+        description: Open enum.
+        enum:
+          - ok
+          - degraded
+          - down
+          - missing
+        x-open-enum: true
+      detail:
+        type: string
+      mock:
+        type: boolean
+        description: A mock driver is configured; the UI shows it.
+  AccessPoint:
+    type: object
+    description: A gate or door driven by an agent.
+    required:
+      - id
+      - org_id
+      - site_id
+      - name
+      - kind
+      - direction
+      - agent_id
+      - driver_ref
+      - enabled
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - vehicle_gate
+          - pedestrian_door
+        x-open-enum: true
+      direction:
+        type: string
+        description: Informational and for filtering the guard feed; no anti-passback. Open enum.
+        enum:
+          - in
+          - out
+          - both
+        x-open-enum: true
+      agent_id:
+        type: string
+        format: uuid
+        nullable: true
+      driver_ref:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DriverRef"
+        nullable: true
+      enabled:
+        type: boolean
+        description: Disabled points are omitted from snapshots and refuse open.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+  AccessPointCreate:
+    type: object
+    required:
+      - site_id
+      - name
+      - kind
+      - direction
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - vehicle_gate
+          - pedestrian_door
+        x-open-enum: true
+      direction:
+        type: string
+        description: Open enum.
+        enum:
+          - in
+          - out
+          - both
+        x-open-enum: true
+      agent_id:
+        type: string
+        format: uuid
+        nullable: true
+      driver_ref:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DriverRef"
+        nullable: true
+      enabled:
+        type: boolean
+  AccessPointUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - vehicle_gate
+          - pedestrian_door
+        x-open-enum: true
+      direction:
+        type: string
+        description: Open enum.
+        enum:
+          - in
+          - out
+          - both
+        x-open-enum: true
+      agent_id:
+        type: string
+        format: uuid
+        nullable: true
+      driver_ref:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DriverRef"
+        nullable: true
+      enabled:
+        type: boolean
+  AccessPointList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AccessPoint"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  Agent:
+    type: object
+    description: An on-site agent. The agent token is scoped to this one site; the server stores only its hash.
+    required:
+      - id
+      - org_id
+      - site_id
+      - name
+      - status
+      - connected
+      - version
+      - platform
+      - protocol_version
+      - last_seen
+      - snapshot_version
+      - queue_depth
+      - drivers
+      - clock_offset_ms
+      - clock_suspect
+      - rotate_by
+      - enrol_expires_at
+      - revoked_at
+      - created_by
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - active
+          - revoked
+        x-open-enum: true
+      connected:
+        type: boolean
+        description: A live session exists or a frame arrived within 90 seconds.
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+      platform:
+        type: string
+        nullable: true
+      protocol_version:
+        type: integer
+        format: int64
+        nullable: true
+      last_seen:
+        type: string
+        format: date-time
+        nullable: true
+      snapshot_version:
+        type: integer
+        format: int64
+        nullable: true
+      queue_depth:
+        type: integer
+        format: int64
+        nullable: true
+      drivers:
+        type: array
+        items:
+          $ref: "#/schemas/DriverState"
+      clock_offset_ms:
+        type: integer
+        format: int64
+        nullable: true
+      clock_suspect:
+        type: boolean
+        description: True when the offset exceeds 120 seconds; a manual open is refused beyond 24 hours.
+      rotate_by:
+        type: string
+        format: date-time
+        nullable: true
+      enrol_expires_at:
+        type: string
+        format: date-time
+        nullable: true
+      revoked_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      name: Main gate Pi
+      status: active
+      connected: true
+      version: 1
+      platform: null
+      protocol_version: null
+      last_seen: null
+      snapshot_version: null
+      queue_depth: null
+      drivers:
+        - instance: instance
+          state: ok
+          mock: false
+      clock_offset_ms: null
+      clock_suspect: false
+      rotate_by: null
+      enrol_expires_at: null
+      revoked_at: null
+      created_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AgentCreate:
+    type: object
+    required:
+      - site_id
+      - name
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+  AgentUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+  AgentList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Agent"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  AgentEnrolment:
+    type: object
+    required:
+      - agent
+      - enrolment_token
+      - enrolment_expires_at
+    properties:
+      agent:
+        $ref: "#/schemas/Agent"
+      enrolment_token:
+        type: string
+        description: "`obk_enr_...`, shown once; valid 15 minutes, single use."
+      enrolment_expires_at:
+        type: string
+        format: date-time
+  AllowlistRebuild:
+    type: object
+    required:
+      - site_id
+    properties:
+      site_id:
+        type: string
+        format: uuid
+  RecurringWindow:
+    type: object
+    required:
+      - days
+      - start
+      - end
+    properties:
+      days:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: ISO weekdays, 1 = Monday.
+      start:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      end:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+        description: "`start > end` crosses midnight and belongs to the start day."
+  Credential:
+    type: object
+    description: Derived view of a vehicle or visitor entry; never edited by hand in 0.3. Unit and person are for display and are never sent to the agent.
+    required:
+      - id
+      - org_id
+      - site_id
+      - kind
+      - value
+      - source_type
+      - source_id
+      - unit_id
+      - unit_door_number
+      - person_id
+      - point_scope
+      - point_ids
+      - valid_from
+      - valid_to
+      - recurring
+      - max_uses
+      - uses
+      - status
+      - status_reason
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - plate
+          - visitor_qr
+          - tag
+          - pin
+        x-open-enum: true
+      value:
+        type: string
+        description: Normalized plate; for `visitor_qr` the sha-256 of the token, for tag and pin a salted hash. Never the secret itself.
+      source_type:
+        type: string
+        description: Open enum.
+        enum:
+          - vehicle
+          - visitor_entry
+          - manual
+        x-open-enum: true
+      source_id:
+        type: string
+        format: uuid
+        nullable: true
+      unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      unit_door_number:
+        type: string
+        nullable: true
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+      point_scope:
+        type: string
+        description: Open enum.
+        enum:
+          - all_vehicle
+          - all_pedestrian
+          - all
+          - ids
+        x-open-enum: true
+      point_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      valid_from:
+        type: string
+        format: date-time
+      valid_to:
+        type: string
+        format: date-time
+        nullable: true
+      recurring:
+        type: object
+        allOf:
+          - $ref: "#/schemas/RecurringWindow"
+        nullable: true
+      max_uses:
+        type: integer
+        format: int64
+        nullable: true
+      uses:
+        type: integer
+        format: int64
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - active
+          - suspended
+          - revoked
+          - expired
+        x-open-enum: true
+      status_reason:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+  CredentialList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Credential"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  AccessEvent:
+    type: object
+    description: Append-only. Retention follows the site visitor-log setting (default 90 days).
+    required:
+      - id
+      - org_id
+      - site_id
+      - point_id
+      - point_name
+      - agent_id
+      - credential_id
+      - decision
+      - reason
+      - presented_kind
+      - observed_plate
+      - unit_door_number
+      - actor_user_id
+      - actor_display_name
+      - command_id
+      - visitor_entry_id
+      - occurred_at
+      - synced_at
+      - sync_seq
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      point_id:
+        type: string
+        format: uuid
+      point_name:
+        type: string
+        nullable: true
+      agent_id:
+        type: string
+        format: uuid
+        nullable: true
+      credential_id:
+        type: string
+        format: uuid
+        nullable: true
+      decision:
+        type: string
+        description: Open enum.
+        enum:
+          - allow
+          - deny
+          - manual_open
+        x-open-enum: true
+      reason:
+        type: string
+        description: Open enum.
+        enum:
+          - match
+          - unknown
+          - outside_window
+          - wrong_point
+          - revoked
+          - used_up
+          - agent_stopped
+          - guard
+          - manager
+          - remote
+          - driver_error
+        x-open-enum: true
+      presented_kind:
+        type: string
+        nullable: true
+      observed_plate:
+        type: string
+        nullable: true
+        description: Normalized; QR and tag values are never stored.
+      unit_door_number:
+        type: string
+        nullable: true
+      actor_user_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_display_name:
+        type: string
+        nullable: true
+      command_id:
+        type: string
+        format: uuid
+        nullable: true
+      visitor_entry_id:
+        type: string
+        format: uuid
+        nullable: true
+      occurred_at:
+        type: string
+        format: date-time
+        description: Agent clock, corrected for the reported offset.
+      synced_at:
+        type: string
+        format: date-time
+      sync_seq:
+        type: integer
+        format: int64
+        description: Feed cursor.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      point_id: 0192a3f0-1000-7000-8000-000000000003
+      point_name: null
+      agent_id: null
+      credential_id: null
+      decision: allow
+      reason: match
+      presented_kind: null
+      observed_plate: 34ABC123
+      unit_door_number: null
+      actor_user_id: null
+      actor_display_name: null
+      command_id: null
+      visitor_entry_id: null
+      occurred_at: 2026-03-01T09:00:00Z
+      synced_at: 2026-03-01T09:00:00Z
+      sync_seq: 1
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AccessEventList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AccessEvent"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  GuardEventPoint:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+  GuardEventWho:
+    type: object
+    required:
+      - kind
+      - unit_label
+      - visitor_name
+    properties:
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - resident
+          - visitor
+          - unknown
+        x-open-enum: true
+      unit_label:
+        type: string
+        nullable: true
+      visitor_name:
+        type: string
+        nullable: true
+  GuardAccessEvent:
+    type: object
+    description: "Data-minimized for the guard console: door number and visitor name only, never contacts or balances."
+    required:
+      - sync_seq
+      - occurred_at
+      - point
+      - decision
+      - reason
+      - plate
+      - who
+    properties:
+      sync_seq:
+        type: integer
+        format: int64
+      occurred_at:
+        type: string
+        format: date-time
+      point:
+        $ref: "#/schemas/GuardEventPoint"
+      decision:
+        type: string
+        description: Open enum.
+        enum:
+          - allow
+          - deny
+          - manual_open
+        x-open-enum: true
+      reason:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      who:
+        $ref: "#/schemas/GuardEventWho"
+  GuardAccessEventList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GuardAccessEvent"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  OpenPointRequest:
+    type: object
+    properties:
+      visitor_entry_id:
+        type: string
+        format: uuid
+        description: Links the opening to an expected visitor.
+      credential_id:
+        type: string
+        format: uuid
+  AgentCommand:
+    type: object
+    required:
+      - id
+      - point_id
+      - command
+      - status
+      - reason
+      - issued_at
+      - expires_at
+      - completed_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      point_id:
+        type: string
+        format: uuid
+        nullable: true
+      command:
+        type: string
+        description: Open enum.
+        enum:
+          - open_point
+          - revoke_credential
+          - request_snapshot
+          - update_config
+          - revoked
+        x-open-enum: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - delivered
+          - done
+          - failed
+          - expired
+        x-open-enum: true
+      reason:
+        type: string
+        nullable: true
+        description: For example driver_error.
+      issued_at:
+        type: string
+        format: date-time
+      expires_at:
+        type: string
+        format: date-time
+      completed_at:
+        type: string
+        format: date-time
+        nullable: true
+  AgentEnvelope:
+    type: object
+    description: "One JSON message of the agent protocol. Payload schemas per type: api/agent-protocol/v1/*.schema.json."
+    required:
+      - v
+      - type
+      - id
+      - ts
+      - payload
+    properties:
+      v:
+        type: integer
+        format: int64
+        description: Protocol version, 1.
+      type:
+        type: string
+        description: hello, snapshot, delta, event, ack, command or heartbeat; unknown types are answered with an ack `unsupported`.
+      id:
+        type: string
+        format: uuid
+        description: UUIDv7, referenced by `ack.ref`.
+      ts:
+        type: string
+        format: date-time
+        description: Sender clock.
+      payload:
+        type: object
+        additionalProperties: true
+  AgentEnrolRequest:
+    type: object
+    required:
+      - enrolment_token
+      - hostname
+      - platform
+      - agent_version
+    properties:
+      enrolment_token:
+        type: string
+      hostname:
+        type: string
+      platform:
+        type: string
+      agent_version:
+        type: string
+  AgentEnrolResponse:
+    type: object
+    required:
+      - agent_id
+      - agent_token
+      - org_id
+      - site_id
+      - server_time
+      - ws_url
+      - poll_url
+      - protocol_versions
+    properties:
+      agent_id:
+        type: string
+        format: uuid
+      agent_token:
+        type: string
+        description: "`obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success."
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      server_time:
+        type: string
+        format: date-time
+      ws_url:
+        type: string
+        description: wss only.
+      poll_url:
+        type: string
+        description: https only.
+      protocol_versions:
+        type: array
+        items:
+          type: integer
+          format: int64
+  AgentPollRequest:
+    type: object
+    required:
+      - messages
+      - wait_seconds
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: "#/schemas/AgentEnvelope"
+      wait_seconds:
+        type: integer
+        format: int64
+        description: 0 to 30.
+  AgentPollResponse:
+    type: object
+    required:
+      - messages
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: "#/schemas/AgentEnvelope"
+  AgentTokenRotated:
+    type: object
+    required:
+      - agent_token
+    properties:
+      agent_token:
+        type: string
+        description: The previous token stays valid 10 minutes.
