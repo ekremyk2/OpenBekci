@@ -47,6 +47,10 @@ type Response struct {
 	ContentType string
 	Headers     map[string][]string
 	Body        []byte
+	// Digest is the SHA-256 (hex) of the content of a streamed request body, or
+	// empty when the request body is part of the request hash. A replay of a
+	// streamed request must present the same digest.
+	Digest string
 }
 
 // State is the outcome of Begin.
@@ -122,15 +126,16 @@ func (s *PG) Begin(ctx context.Context, sc Scope, key, hash string) (Result, err
 				respStatus         *int
 				respType           *string
 				respHeaders        []byte
+				respDigest         *string
 				respBody           []byte
 				expired, stale     bool
 			)
 			err = tx.QueryRow(ctx, `
-				SELECT request_hash, status, response_status, response_content_type, response_headers, response_body,
+				SELECT request_hash, status, response_status, response_content_type, response_headers, response_body, content_digest,
 				       expires_at < now(), created_at < now() - make_interval(secs => $4)
 				FROM idempotency_key WHERE `+scopeMatch,
 				sc.OrgID, sc.PrincipalID, key, StaleAfter.Seconds()).
-				Scan(&storedHash, &status, &respStatus, &respType, &respHeaders, &respBody, &expired, &stale)
+				Scan(&storedHash, &status, &respStatus, &respType, &respHeaders, &respBody, &respDigest, &expired, &stale)
 			if errors.Is(err, pgx.ErrNoRows) {
 				retry = true // deleted between insert and select
 				return nil
@@ -153,6 +158,9 @@ func (s *PG) Begin(ctx context.Context, sc Scope, key, hash string) (Result, err
 			default:
 				res.State = Replay
 				res.Response.Body = respBody
+				if respDigest != nil {
+					res.Response.Digest = *respDigest
+				}
 				if respStatus != nil {
 					res.Response.Status = *respStatus
 				}
@@ -190,9 +198,9 @@ func (s *PG) Complete(ctx context.Context, sc Scope, key string, owner uuid.UUID
 		tag, err := tx.Exec(ctx, `
 			UPDATE idempotency_key
 			SET status = 'done', response_status = $4, response_content_type = $5, response_headers = $6,
-			    response_body = $7, expires_at = now() + make_interval(secs => $8)
+			    response_body = $7, expires_at = now() + make_interval(secs => $8), content_digest = NULLIF($10::text, '')
 			WHERE `+scopeMatch+` AND owner = $9 AND status = 'in_progress'`,
-			sc.OrgID, sc.PrincipalID, key, resp.Status, resp.ContentType, headers, resp.Body, Retention.Seconds(), owner)
+			sc.OrgID, sc.PrincipalID, key, resp.Status, resp.ContentType, headers, resp.Body, Retention.Seconds(), owner, resp.Digest)
 		if err != nil {
 			return fmt.Errorf("complete idempotency key: %w", err)
 		}

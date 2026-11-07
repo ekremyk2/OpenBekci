@@ -70,6 +70,7 @@ type IdempotencyKey struct {
 	ExpiresAt           pgtype.Timestamptz
 	Owner               pgtype.UUID
 	ResponseHeaders     []byte
+	ContentDigest       pgtype.Text
 }
 
 type InstanceSetting struct {

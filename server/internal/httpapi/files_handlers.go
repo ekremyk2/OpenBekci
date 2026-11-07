@@ -118,6 +118,7 @@ func (s *apiServer) FilesUpload(ctx context.Context, req gen.FilesUploadRequestO
 		scopeType, name string
 		scopeID, siteID *uuid.UUID
 		stored          *files.File
+		fh              = newFormHasher()
 	)
 	for {
 		part, err := req.Body.NextPart()
@@ -137,7 +138,7 @@ func (s *apiServer) FilesUpload(ctx context.Context, req gen.FilesUploadRequestO
 			if fname == "" {
 				fname = name
 			}
-			up := files.UploadParams{OrgID: req.OrgId, SiteID: siteID, Name: fname, Content: part}
+			up := files.UploadParams{OrgID: req.OrgId, SiteID: siteID, Name: fname, Content: fh.filePart(fname, part)}
 			switch {
 			case scopeType != "" && scopeID == nil:
 				return nil, problem.Validation(problem.Field{Field: "scope_id", Code: "required"})
@@ -147,6 +148,7 @@ func (s *apiServer) FilesUpload(ctx context.Context, req gen.FilesUploadRequestO
 				up.Scope = &files.ScopeRef{Type: scopeType, ID: *scopeID}
 			}
 			f, err := s.files.Upload(ctx, up)
+			recordUploadDigest(ctx, fh.sum())
 			if err != nil {
 				return nil, err
 			}
@@ -156,6 +158,7 @@ func (s *apiServer) FilesUpload(ctx context.Context, req gen.FilesUploadRequestO
 			if err != nil {
 				return nil, err
 			}
+			fh.field(field, v)
 			if field == "scope_type" {
 				scopeType = v
 			} else {
@@ -166,6 +169,7 @@ func (s *apiServer) FilesUpload(ctx context.Context, req gen.FilesUploadRequestO
 			if err != nil {
 				return nil, err
 			}
+			fh.field(field, v)
 			id, perr := uuid.Parse(v)
 			if perr != nil {
 				return nil, problem.Validation(problem.Field{Field: field, Code: "invalid_format"})
