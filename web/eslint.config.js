@@ -38,6 +38,20 @@ export default tseslint.config(
     },
   },
   {
+    // our own form primitives wrap native controls: count them as controls for label association
+    files: ['src/**/*.tsx'],
+    rules: {
+      'jsx-a11y/label-has-associated-control': [
+        'error',
+        {
+          controlComponents: ['Input', 'Select', 'Checkbox', 'Textarea'],
+          assert: 'either',
+          depth: 3,
+        },
+      ],
+    },
+  },
+  {
     // generated-style primitives export variants next to components
     files: ['src/components/ui/**/*.tsx'],
     rules: { 'jsx-a11y/heading-has-content': 'off' },

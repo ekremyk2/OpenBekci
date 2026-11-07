@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { ReauthDialog } from '@/components/forms/ReauthDialog'
+import { hasPendingReplays, requestReauth } from './reauth'
 import { clearSession } from './session'
 
 /** Reacts to cross-cutting API conditions (web plan §6 error table). Mounted once in the root route. */
@@ -51,8 +53,14 @@ export function ErrorEffects() {
             break
           }
           case 'reauth-required':
-            // The re-authentication modal arrives with the first sensitive action (web plan §7).
-            toast.info(t`Please confirm it is you before continuing.`)
+            // Shared modal (web plan §7). Callers wrapped in runWithReauth replay their request;
+            // for the rest the user is told to repeat the action.
+            requestReauth().then(
+              () => {
+                if (!hasPendingReplays()) toast.info(t`Confirmed. Please repeat the action.`)
+              },
+              () => {},
+            )
             break
           default:
             break
@@ -62,28 +70,31 @@ export function ErrorEffects() {
   )
 
   return (
-    <Dialog open={conflictOpen} onOpenChange={setConflictOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            <Trans>This record changed</Trans>
-          </DialogTitle>
-          <DialogDescription>
-            <Trans>
-              Someone else updated it while you were editing. Reload to see the latest version; your
-              unsaved changes will be lost.
-            </Trans>
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setConflictOpen(false)}>
-            <Trans>Keep editing</Trans>
-          </Button>
-          <Button onClick={() => globalThis.location.reload()}>
-            <Trans>Reload</Trans>
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <>
+      <ReauthDialog />
+      <Dialog open={conflictOpen} onOpenChange={setConflictOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              <Trans>This record changed</Trans>
+            </DialogTitle>
+            <DialogDescription>
+              <Trans>
+                Someone else updated it while you were editing. Reload to see the latest version;
+                your unsaved changes will be lost.
+              </Trans>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConflictOpen(false)}>
+              <Trans>Keep editing</Trans>
+            </Button>
+            <Button onClick={() => globalThis.location.reload()}>
+              <Trans>Reload</Trans>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

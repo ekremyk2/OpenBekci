@@ -5,4 +5,7 @@
  */
 export const idempotentOperations: ReadonlySet<string> = new Set<string>([
   // 'POST /v1/orgs/{org_id}/payments',
+  // draft contract, `x-idempotent: required` (setup and people screens)
+  'POST /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out',
+  'POST /v1/orgs/{org_id}/opening-balances:import',
 ])

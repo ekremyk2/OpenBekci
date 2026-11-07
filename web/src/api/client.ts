@@ -84,8 +84,10 @@ export function setLocaleProvider(fn: () => string) {
   localeProvider = fn
 }
 
-export function createApiClient(baseUrl = globalThis.location?.origin ?? '') {
-  const client = createClient<paths>({
+export function createApiClient<P extends object = paths>(
+  baseUrl = globalThis.location?.origin ?? '',
+) {
+  const client = createClient<P>({
     baseUrl,
     credentials: 'include',
     // resolved per call so test doubles (MSW) installed after import are honoured
