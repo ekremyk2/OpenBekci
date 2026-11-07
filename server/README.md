@@ -108,7 +108,11 @@ permission matrix and the `Permission` enum are generated from it into the spec 
 For `/v1/orgs/{org_id}/...` the pipeline resolves the caller's active memberships once (`authz.Resolver`, cached in the
 context as `authz.Grants`) and answers `404 not_found` when the caller has none there, so organizations do not leak.
 Handlers call a service; the **service** calls `authz.Require(ctx, perm, authz.Scope{OrgID: ...})` (a grant covers a
-scope when it contains it: org contains site contains block; for a block, also pass its `SiteID`). Handlers that need
+scope when it contains it: org contains site contains block). A site or block scope is **never written by hand**:
+`authz.ScopeOfSite(ctx, tx, siteID)` and `authz.ScopeOfBlock(ctx, tx, blockID)` load the parents under RLS through an
+`authz.ScopeLoader` that phase B supplies (`authz.SetScopeLoader` in the wiring; the default answers
+`ErrScopeUnavailable`), and `TestNoScopeLiteralsOutsideAuthz` fails for an `authz.Scope{... SiteID/BlockID ...}`
+literal outside `internal/core/authz` (otherwise a caller could pair their own site with another site's block). Handlers that need
 raw SQL use `httpapi.OrgTx(ctx, fn)`, which is `InTenantTx` for the request's organization.
 
 ### Adding an endpoint

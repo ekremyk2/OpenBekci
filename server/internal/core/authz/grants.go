@@ -16,7 +16,9 @@ import (
 // Scope is the part of an organization a permission is requested for. With
 // only OrgID set the request is organization-wide. A request for a block must
 // also name the block's site (a site grant is matched against SiteID; the
-// hierarchy is not looked up). The zero Scope is the instance (platform.manage).
+// hierarchy is not looked up here). Never build a Scope with SiteID or BlockID
+// by hand: use ScopeOfSite / ScopeOfBlock, which load the parents from storage
+// (a lint test enforces it). The zero Scope is the instance (platform.manage).
 type Scope struct {
 	OrgID   uuid.UUID
 	SiteID  *uuid.UUID
