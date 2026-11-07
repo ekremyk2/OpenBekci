@@ -1,0 +1,41 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: command_id
+    in: path
+    required: true
+    description: Id of the command.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: access.getAgentCommand
+  summary: Status of an open command
+  description: |-
+    **Release 0.3.** The console polls every 500 ms for up to 10 seconds.
+
+    Permission: `access.open` (every holder of `access.manage` holds it too).
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - access.open
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/access.yaml#/parameters/GuardSession
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentCommand
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

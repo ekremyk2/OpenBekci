@@ -26,6 +26,264 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AccessEventDecision.
+const (
+	AccessEventDecisionAllow      AccessEventDecision = "allow"
+	AccessEventDecisionDeny       AccessEventDecision = "deny"
+	AccessEventDecisionManualOpen AccessEventDecision = "manual_open"
+)
+
+// Valid indicates whether the value is a known member of the AccessEventDecision enum.
+func (e AccessEventDecision) Valid() bool {
+	switch e {
+	case AccessEventDecisionAllow:
+		return true
+	case AccessEventDecisionDeny:
+		return true
+	case AccessEventDecisionManualOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessEventReason.
+const (
+	AccessEventReasonAgentStopped  AccessEventReason = "agent_stopped"
+	AccessEventReasonDriverError   AccessEventReason = "driver_error"
+	AccessEventReasonGuard         AccessEventReason = "guard"
+	AccessEventReasonManager       AccessEventReason = "manager"
+	AccessEventReasonMatch         AccessEventReason = "match"
+	AccessEventReasonOutsideWindow AccessEventReason = "outside_window"
+	AccessEventReasonRemote        AccessEventReason = "remote"
+	AccessEventReasonRevoked       AccessEventReason = "revoked"
+	AccessEventReasonUnknown       AccessEventReason = "unknown"
+	AccessEventReasonUsedUp        AccessEventReason = "used_up"
+	AccessEventReasonWrongPoint    AccessEventReason = "wrong_point"
+)
+
+// Valid indicates whether the value is a known member of the AccessEventReason enum.
+func (e AccessEventReason) Valid() bool {
+	switch e {
+	case AccessEventReasonAgentStopped:
+		return true
+	case AccessEventReasonDriverError:
+		return true
+	case AccessEventReasonGuard:
+		return true
+	case AccessEventReasonManager:
+		return true
+	case AccessEventReasonMatch:
+		return true
+	case AccessEventReasonOutsideWindow:
+		return true
+	case AccessEventReasonRemote:
+		return true
+	case AccessEventReasonRevoked:
+		return true
+	case AccessEventReasonUnknown:
+		return true
+	case AccessEventReasonUsedUp:
+		return true
+	case AccessEventReasonWrongPoint:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessPointDirection.
+const (
+	AccessPointDirectionBoth AccessPointDirection = "both"
+	AccessPointDirectionIn   AccessPointDirection = "in"
+	AccessPointDirectionOut  AccessPointDirection = "out"
+)
+
+// Valid indicates whether the value is a known member of the AccessPointDirection enum.
+func (e AccessPointDirection) Valid() bool {
+	switch e {
+	case AccessPointDirectionBoth:
+		return true
+	case AccessPointDirectionIn:
+		return true
+	case AccessPointDirectionOut:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessPointKind.
+const (
+	AccessPointKindPedestrianDoor AccessPointKind = "pedestrian_door"
+	AccessPointKindVehicleGate    AccessPointKind = "vehicle_gate"
+)
+
+// Valid indicates whether the value is a known member of the AccessPointKind enum.
+func (e AccessPointKind) Valid() bool {
+	switch e {
+	case AccessPointKindPedestrianDoor:
+		return true
+	case AccessPointKindVehicleGate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessPointCreateDirection.
+const (
+	AccessPointCreateDirectionBoth AccessPointCreateDirection = "both"
+	AccessPointCreateDirectionIn   AccessPointCreateDirection = "in"
+	AccessPointCreateDirectionOut  AccessPointCreateDirection = "out"
+)
+
+// Valid indicates whether the value is a known member of the AccessPointCreateDirection enum.
+func (e AccessPointCreateDirection) Valid() bool {
+	switch e {
+	case AccessPointCreateDirectionBoth:
+		return true
+	case AccessPointCreateDirectionIn:
+		return true
+	case AccessPointCreateDirectionOut:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessPointCreateKind.
+const (
+	AccessPointCreateKindPedestrianDoor AccessPointCreateKind = "pedestrian_door"
+	AccessPointCreateKindVehicleGate    AccessPointCreateKind = "vehicle_gate"
+)
+
+// Valid indicates whether the value is a known member of the AccessPointCreateKind enum.
+func (e AccessPointCreateKind) Valid() bool {
+	switch e {
+	case AccessPointCreateKindPedestrianDoor:
+		return true
+	case AccessPointCreateKindVehicleGate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessPointUpdateDirection.
+const (
+	AccessPointUpdateDirectionBoth AccessPointUpdateDirection = "both"
+	AccessPointUpdateDirectionIn   AccessPointUpdateDirection = "in"
+	AccessPointUpdateDirectionOut  AccessPointUpdateDirection = "out"
+)
+
+// Valid indicates whether the value is a known member of the AccessPointUpdateDirection enum.
+func (e AccessPointUpdateDirection) Valid() bool {
+	switch e {
+	case AccessPointUpdateDirectionBoth:
+		return true
+	case AccessPointUpdateDirectionIn:
+		return true
+	case AccessPointUpdateDirectionOut:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AccessPointUpdateKind.
+const (
+	AccessPointUpdateKindPedestrianDoor AccessPointUpdateKind = "pedestrian_door"
+	AccessPointUpdateKindVehicleGate    AccessPointUpdateKind = "vehicle_gate"
+)
+
+// Valid indicates whether the value is a known member of the AccessPointUpdateKind enum.
+func (e AccessPointUpdateKind) Valid() bool {
+	switch e {
+	case AccessPointUpdateKindPedestrianDoor:
+		return true
+	case AccessPointUpdateKindVehicleGate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AgentStatus.
+const (
+	AgentStatusActive  AgentStatus = "active"
+	AgentStatusPending AgentStatus = "pending"
+	AgentStatusRevoked AgentStatus = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the AgentStatus enum.
+func (e AgentStatus) Valid() bool {
+	switch e {
+	case AgentStatusActive:
+		return true
+	case AgentStatusPending:
+		return true
+	case AgentStatusRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AgentCommandCommand.
+const (
+	AgentCommandCommandOpenPoint        AgentCommandCommand = "open_point"
+	AgentCommandCommandRequestSnapshot  AgentCommandCommand = "request_snapshot"
+	AgentCommandCommandRevokeCredential AgentCommandCommand = "revoke_credential"
+	AgentCommandCommandRevoked          AgentCommandCommand = "revoked"
+	AgentCommandCommandUpdateConfig     AgentCommandCommand = "update_config"
+)
+
+// Valid indicates whether the value is a known member of the AgentCommandCommand enum.
+func (e AgentCommandCommand) Valid() bool {
+	switch e {
+	case AgentCommandCommandOpenPoint:
+		return true
+	case AgentCommandCommandRequestSnapshot:
+		return true
+	case AgentCommandCommandRevokeCredential:
+		return true
+	case AgentCommandCommandRevoked:
+		return true
+	case AgentCommandCommandUpdateConfig:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AgentCommandStatus.
+const (
+	AgentCommandStatusDelivered AgentCommandStatus = "delivered"
+	AgentCommandStatusDone      AgentCommandStatus = "done"
+	AgentCommandStatusExpired   AgentCommandStatus = "expired"
+	AgentCommandStatusFailed    AgentCommandStatus = "failed"
+	AgentCommandStatusPending   AgentCommandStatus = "pending"
+)
+
+// Valid indicates whether the value is a known member of the AgentCommandStatus enum.
+func (e AgentCommandStatus) Valid() bool {
+	switch e {
+	case AgentCommandStatusDelivered:
+		return true
+	case AgentCommandStatusDone:
+		return true
+	case AgentCommandStatusExpired:
+		return true
+	case AgentCommandStatusFailed:
+		return true
+	case AgentCommandStatusPending:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AllocationKeyKind.
 const (
 	AllocationKeyKindArea  AllocationKeyKind = "area"
@@ -176,6 +434,99 @@ func (e ClaimCreateKind) Valid() bool {
 	}
 }
 
+// Defines values for CredentialKind.
+const (
+	CredentialKindPin       CredentialKind = "pin"
+	CredentialKindPlate     CredentialKind = "plate"
+	CredentialKindTag       CredentialKind = "tag"
+	CredentialKindVisitorQr CredentialKind = "visitor_qr"
+)
+
+// Valid indicates whether the value is a known member of the CredentialKind enum.
+func (e CredentialKind) Valid() bool {
+	switch e {
+	case CredentialKindPin:
+		return true
+	case CredentialKindPlate:
+		return true
+	case CredentialKindTag:
+		return true
+	case CredentialKindVisitorQr:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CredentialPointScope.
+const (
+	CredentialPointScopeAll           CredentialPointScope = "all"
+	CredentialPointScopeAllPedestrian CredentialPointScope = "all_pedestrian"
+	CredentialPointScopeAllVehicle    CredentialPointScope = "all_vehicle"
+	CredentialPointScopeIds           CredentialPointScope = "ids"
+)
+
+// Valid indicates whether the value is a known member of the CredentialPointScope enum.
+func (e CredentialPointScope) Valid() bool {
+	switch e {
+	case CredentialPointScopeAll:
+		return true
+	case CredentialPointScopeAllPedestrian:
+		return true
+	case CredentialPointScopeAllVehicle:
+		return true
+	case CredentialPointScopeIds:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CredentialSourceType.
+const (
+	CredentialSourceTypeManual       CredentialSourceType = "manual"
+	CredentialSourceTypeVehicle      CredentialSourceType = "vehicle"
+	CredentialSourceTypeVisitorEntry CredentialSourceType = "visitor_entry"
+)
+
+// Valid indicates whether the value is a known member of the CredentialSourceType enum.
+func (e CredentialSourceType) Valid() bool {
+	switch e {
+	case CredentialSourceTypeManual:
+		return true
+	case CredentialSourceTypeVehicle:
+		return true
+	case CredentialSourceTypeVisitorEntry:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CredentialStatus.
+const (
+	CredentialStatusActive    CredentialStatus = "active"
+	CredentialStatusExpired   CredentialStatus = "expired"
+	CredentialStatusRevoked   CredentialStatus = "revoked"
+	CredentialStatusSuspended CredentialStatus = "suspended"
+)
+
+// Valid indicates whether the value is a known member of the CredentialStatus enum.
+func (e CredentialStatus) Valid() bool {
+	switch e {
+	case CredentialStatusActive:
+		return true
+	case CredentialStatusExpired:
+		return true
+	case CredentialStatusRevoked:
+		return true
+	case CredentialStatusSuspended:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CredentialsClient.
 const (
 	CredentialsClientMobile CredentialsClient = "mobile"
@@ -188,6 +539,30 @@ func (e CredentialsClient) Valid() bool {
 	case CredentialsClientMobile:
 		return true
 	case CredentialsClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DriverStateState.
+const (
+	DriverStateStateDegraded DriverStateState = "degraded"
+	DriverStateStateDown     DriverStateState = "down"
+	DriverStateStateMissing  DriverStateState = "missing"
+	DriverStateStateOk       DriverStateState = "ok"
+)
+
+// Valid indicates whether the value is a known member of the DriverStateState enum.
+func (e DriverStateState) Valid() bool {
+	switch e {
+	case DriverStateStateDegraded:
+		return true
+	case DriverStateStateDown:
+		return true
+	case DriverStateStateMissing:
+		return true
+	case DriverStateStateOk:
 		return true
 	default:
 		return false
@@ -856,6 +1231,10 @@ func (e OrganizationStatus) Valid() bool {
 
 // Defines values for Permission.
 const (
+	PermissionAccessManage        Permission = "access.manage"
+	PermissionAccessOpen          Permission = "access.open"
+	PermissionAccessRead          Permission = "access.read"
+	PermissionAccessViewEvents    Permission = "access.view_events"
 	PermissionAllocationManage    Permission = "allocation.manage"
 	PermissionAllocationRead      Permission = "allocation.read"
 	PermissionAuditRead           Permission = "audit.read"
@@ -897,6 +1276,14 @@ const (
 // Valid indicates whether the value is a known member of the Permission enum.
 func (e Permission) Valid() bool {
 	switch e {
+	case PermissionAccessManage:
+		return true
+	case PermissionAccessOpen:
+		return true
+	case PermissionAccessRead:
+		return true
+	case PermissionAccessViewEvents:
+		return true
 	case PermissionAllocationManage:
 		return true
 	case PermissionAllocationRead:
@@ -976,6 +1363,8 @@ func (e Permission) Valid() bool {
 
 // Defines values for ProblemCode.
 const (
+	ProblemCodeAgentOffline           ProblemCode = "agent_offline"
+	ProblemCodeAgentSessionExpired    ProblemCode = "agent_session_expired"
 	ProblemCodeBadRequest             ProblemCode = "bad_request"
 	ProblemCodeConflict               ProblemCode = "conflict"
 	ProblemCodeCsrfFailed             ProblemCode = "csrf_failed"
@@ -1004,6 +1393,10 @@ const (
 // Valid indicates whether the value is a known member of the ProblemCode enum.
 func (e ProblemCode) Valid() bool {
 	switch e {
+	case ProblemCodeAgentOffline:
+		return true
+	case ProblemCodeAgentSessionExpired:
+		return true
 	case ProblemCodeBadRequest:
 		return true
 	case ProblemCodeConflict:
@@ -1427,6 +1820,239 @@ type AcceptResult struct {
 	UserId         openapi_types.UUID `json:"user_id"`
 }
 
+// AccessEvent Append-only. Retention follows the site visitor-log setting (default 90 days).
+//
+// Example: {"actor_display_name":null,"actor_user_id":null,"agent_id":null,"command_id":null,"created_at":"2026-03-01T09:00:00Z","credential_id":null,"decision":"allow","id":"0192a3f0-1000-7000-8000-000000000003","observed_plate":"34ABC123","occurred_at":"2026-03-01T09:00:00Z","org_id":"0192a3f0-1000-7000-8000-000000000001","point_id":"0192a3f0-1000-7000-8000-000000000003","point_name":null,"presented_kind":null,"reason":"match","site_id":"0192a3f0-1000-7000-8000-000000000002","sync_seq":1,"synced_at":"2026-03-01T09:00:00Z","unit_door_number":null,"updated_at":"2026-03-01T09:00:00Z","visitor_entry_id":null}
+type AccessEvent struct {
+	ActorDisplayName nullable.Nullable[string]             `json:"actor_display_name"`
+	ActorUserId      nullable.Nullable[openapi_types.UUID] `json:"actor_user_id"`
+	AgentId          nullable.Nullable[openapi_types.UUID] `json:"agent_id"`
+	CommandId        nullable.Nullable[openapi_types.UUID] `json:"command_id"`
+	CreatedAt        time.Time                             `json:"created_at"`
+	CredentialId     nullable.Nullable[openapi_types.UUID] `json:"credential_id"`
+
+	// Decision Open enum.
+	Decision AccessEventDecision `json:"decision"`
+	Id       openapi_types.UUID  `json:"id"`
+
+	// ObservedPlate Normalized; QR and tag values are never stored.
+	ObservedPlate nullable.Nullable[string] `json:"observed_plate"`
+
+	// OccurredAt Agent clock, corrected for the reported offset.
+	OccurredAt    time.Time                 `json:"occurred_at"`
+	OrgId         openapi_types.UUID        `json:"org_id"`
+	PointId       openapi_types.UUID        `json:"point_id"`
+	PointName     nullable.Nullable[string] `json:"point_name"`
+	PresentedKind nullable.Nullable[string] `json:"presented_kind"`
+
+	// Reason Open enum.
+	Reason AccessEventReason  `json:"reason"`
+	SiteId openapi_types.UUID `json:"site_id"`
+
+	// SyncSeq Feed cursor.
+	SyncSeq        int64                                 `json:"sync_seq"`
+	SyncedAt       time.Time                             `json:"synced_at"`
+	UnitDoorNumber nullable.Nullable[string]             `json:"unit_door_number"`
+	UpdatedAt      time.Time                             `json:"updated_at"`
+	VisitorEntryId nullable.Nullable[openapi_types.UUID] `json:"visitor_entry_id"`
+}
+
+// AccessEventDecision Open enum.
+type AccessEventDecision string
+
+// AccessEventReason Open enum.
+type AccessEventReason string
+
+// AccessEventList Example: {"items":[{"actor_display_name":null,"actor_user_id":null,"agent_id":null,"command_id":null,"created_at":"2026-03-01T09:00:00Z","credential_id":null,"decision":"allow","id":"0192a3f0-1000-7000-8000-000000000003","observed_plate":"34ABC123","occurred_at":"2026-03-01T09:00:00Z","org_id":"0192a3f0-1000-7000-8000-000000000001","point_id":"0192a3f0-1000-7000-8000-000000000003","point_name":null,"presented_kind":null,"reason":"match","site_id":"0192a3f0-1000-7000-8000-000000000002","sync_seq":1,"synced_at":"2026-03-01T09:00:00Z","unit_door_number":null,"updated_at":"2026-03-01T09:00:00Z","visitor_entry_id":null}],"next_cursor":null}
+type AccessEventList struct {
+	Items []AccessEvent `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// AccessPoint A gate or door driven by an agent.
+//
+// Example: {"agent_id":null,"created_at":"2026-03-01T09:00:00Z","direction":"in","driver_ref":{"channel":"channel","instance":"instance"},"enabled":false,"id":"0192a3f0-1000-7000-8000-000000000002","kind":"vehicle_gate","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}
+type AccessPoint struct {
+	AgentId   nullable.Nullable[openapi_types.UUID] `json:"agent_id"`
+	CreatedAt time.Time                             `json:"created_at"`
+
+	// Direction Informational and for filtering the guard feed; no anti-passback. Open enum.
+	Direction AccessPointDirection         `json:"direction"`
+	DriverRef nullable.Nullable[DriverRef] `json:"driver_ref"`
+
+	// Enabled Disabled points are omitted from snapshots and refuse open.
+	Enabled bool               `json:"enabled"`
+	Id      openapi_types.UUID `json:"id"`
+
+	// Kind Open enum.
+	Kind      AccessPointKind    `json:"kind"`
+	Name      string             `json:"name"`
+	OrgId     openapi_types.UUID `json:"org_id"`
+	SiteId    openapi_types.UUID `json:"site_id"`
+	UpdatedAt time.Time          `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// AccessPointDirection Informational and for filtering the guard feed; no anti-passback. Open enum.
+type AccessPointDirection string
+
+// AccessPointKind Open enum.
+type AccessPointKind string
+
+// AccessPointCreate defines model for AccessPointCreate.
+type AccessPointCreate struct {
+	AgentId nullable.Nullable[openapi_types.UUID] `json:"agent_id,omitempty"`
+
+	// Direction Open enum.
+	Direction AccessPointCreateDirection   `json:"direction"`
+	DriverRef nullable.Nullable[DriverRef] `json:"driver_ref,omitempty"`
+	Enabled   *bool                        `json:"enabled,omitempty"`
+
+	// Kind Open enum.
+	Kind   AccessPointCreateKind `json:"kind"`
+	Name   string                `json:"name"`
+	SiteId openapi_types.UUID    `json:"site_id"`
+}
+
+// AccessPointCreateDirection Open enum.
+type AccessPointCreateDirection string
+
+// AccessPointCreateKind Open enum.
+type AccessPointCreateKind string
+
+// AccessPointList Example: {"items":[{"agent_id":null,"created_at":"2026-03-01T09:00:00Z","direction":"in","driver_ref":{"channel":"channel","instance":"instance"},"enabled":false,"id":"0192a3f0-1000-7000-8000-000000000002","kind":"vehicle_gate","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type AccessPointList struct {
+	Items []AccessPoint `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// AccessPointUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type AccessPointUpdate struct {
+	AgentId nullable.Nullable[openapi_types.UUID] `json:"agent_id,omitempty"`
+
+	// Direction Open enum.
+	Direction *AccessPointUpdateDirection  `json:"direction,omitempty"`
+	DriverRef nullable.Nullable[DriverRef] `json:"driver_ref,omitempty"`
+	Enabled   *bool                        `json:"enabled,omitempty"`
+
+	// Kind Open enum.
+	Kind *AccessPointUpdateKind `json:"kind,omitempty"`
+	Name *string                `json:"name,omitempty"`
+}
+
+// AccessPointUpdateDirection Open enum.
+type AccessPointUpdateDirection string
+
+// AccessPointUpdateKind Open enum.
+type AccessPointUpdateKind string
+
+// Agent An on-site agent. The agent token is scoped to this one site; the server stores only its hash.
+//
+// Example: {"clock_offset_ms":null,"clock_suspect":false,"connected":true,"created_at":"2026-03-01T09:00:00Z","created_by":null,"dead_letters":null,"drivers":[{"instance":"instance","mock":false,"state":"ok"}],"enrol_expires_at":null,"id":"0192a3f0-1000-7000-8000-000000000003","last_seen":null,"lost_events":null,"name":"Main gate Pi","org_id":"0192a3f0-1000-7000-8000-000000000001","platform":null,"protocol_version":null,"queue_depth":null,"revoked_at":null,"rotate_by":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","snapshot_version":null,"status":"active","store_error":null,"updated_at":"2026-03-01T09:00:00Z","version":1}
+type Agent struct {
+	ClockOffsetMs nullable.Nullable[int64] `json:"clock_offset_ms"`
+
+	// ClockSuspect True when the offset exceeds 120 seconds or the agent reports a clock jump; a manual open is refused beyond 24 hours.
+	ClockSuspect bool `json:"clock_suspect"`
+
+	// Connected A live session exists or a frame arrived within 90 seconds.
+	Connected bool                                  `json:"connected"`
+	CreatedAt time.Time                             `json:"created_at"`
+	CreatedBy nullable.Nullable[openapi_types.UUID] `json:"created_by"`
+
+	// DeadLetters From the last heartbeat: events set aside after final rejection.
+	DeadLetters    nullable.Nullable[int64]     `json:"dead_letters"`
+	Drivers        []DriverState                `json:"drivers"`
+	EnrolExpiresAt nullable.Nullable[time.Time] `json:"enrol_expires_at"`
+	Id             openapi_types.UUID           `json:"id"`
+	LastSeen       nullable.Nullable[time.Time] `json:"last_seen"`
+
+	// LostEvents From the last heartbeat: events the agent had to discard.
+	LostEvents      nullable.Nullable[int64]     `json:"lost_events"`
+	Name            string                       `json:"name"`
+	OrgId           openapi_types.UUID           `json:"org_id"`
+	Platform        nullable.Nullable[string]    `json:"platform"`
+	ProtocolVersion nullable.Nullable[int64]     `json:"protocol_version"`
+	QueueDepth      nullable.Nullable[int64]     `json:"queue_depth"`
+	RevokedAt       nullable.Nullable[time.Time] `json:"revoked_at"`
+	RotateBy        nullable.Nullable[time.Time] `json:"rotate_by"`
+	SiteId          openapi_types.UUID           `json:"site_id"`
+	SnapshotVersion nullable.Nullable[int64]     `json:"snapshot_version"`
+
+	// Status Open enum.
+	Status AgentStatus `json:"status"`
+
+	// StoreError From the last heartbeat: the agent's local store error, null when healthy.
+	StoreError nullable.Nullable[string] `json:"store_error"`
+	UpdatedAt  time.Time                 `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// AgentStatus Open enum.
+type AgentStatus string
+
+// AgentCommand defines model for AgentCommand.
+type AgentCommand struct {
+	// Command Open enum.
+	Command     AgentCommandCommand                   `json:"command"`
+	CompletedAt nullable.Nullable[time.Time]          `json:"completed_at"`
+	ExpiresAt   time.Time                             `json:"expires_at"`
+	Id          openapi_types.UUID                    `json:"id"`
+	IssuedAt    time.Time                             `json:"issued_at"`
+	PointId     nullable.Nullable[openapi_types.UUID] `json:"point_id"`
+
+	// Reason For example driver_error.
+	Reason nullable.Nullable[string] `json:"reason"`
+
+	// Status Open enum.
+	Status AgentCommandStatus `json:"status"`
+}
+
+// AgentCommandCommand Open enum.
+type AgentCommandCommand string
+
+// AgentCommandStatus Open enum.
+type AgentCommandStatus string
+
+// AgentCreate defines model for AgentCreate.
+type AgentCreate struct {
+	Name   string             `json:"name"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+// AgentEnrolment defines model for AgentEnrolment.
+type AgentEnrolment struct {
+	// Agent An on-site agent. The agent token is scoped to this one site; the server stores only its hash.
+	//
+	// Example: {"clock_offset_ms":null,"clock_suspect":false,"connected":true,"created_at":"2026-03-01T09:00:00Z","created_by":null,"dead_letters":null,"drivers":[{"instance":"instance","mock":false,"state":"ok"}],"enrol_expires_at":null,"id":"0192a3f0-1000-7000-8000-000000000003","last_seen":null,"lost_events":null,"name":"Main gate Pi","org_id":"0192a3f0-1000-7000-8000-000000000001","platform":null,"protocol_version":null,"queue_depth":null,"revoked_at":null,"rotate_by":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","snapshot_version":null,"status":"active","store_error":null,"updated_at":"2026-03-01T09:00:00Z","version":1}
+	Agent              Agent     `json:"agent"`
+	EnrolmentExpiresAt time.Time `json:"enrolment_expires_at"`
+
+	// EnrolmentToken `obk_enr_...`, shown once; valid 15 minutes, single use.
+	EnrolmentToken string `json:"enrolment_token"`
+}
+
+// AgentList Example: {"items":[{"clock_offset_ms":null,"clock_suspect":false,"connected":true,"created_at":"2026-03-01T09:00:00Z","created_by":null,"dead_letters":null,"drivers":[{"instance":"instance","mock":false,"state":"ok"}],"enrol_expires_at":null,"id":"0192a3f0-1000-7000-8000-000000000003","last_seen":null,"lost_events":null,"name":"Main gate Pi","org_id":"0192a3f0-1000-7000-8000-000000000001","platform":null,"protocol_version":null,"queue_depth":null,"revoked_at":null,"rotate_by":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","snapshot_version":null,"status":"active","store_error":null,"updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type AgentList struct {
+	Items []Agent `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// AgentUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type AgentUpdate struct {
+	Name *string `json:"name,omitempty"`
+}
+
 // AllocationKey defines model for AllocationKey.
 type AllocationKey struct {
 	// Code For example `arsa_payi`, `equal`, `area` or a custom code.
@@ -1686,6 +2312,63 @@ type Codes struct {
 	Sections map[string]map[string]string `json:"sections"`
 }
 
+// Credential A credential the agent can match. Plates and visitor QR codes are derived from vehicles and visitor entries and never edited by hand; `tag` and `pin` credentials are created manually (`access.createCredential`, `source_type: manual`).
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","kind":"plate","max_uses":null,"org_id":"0192a3f0-1000-7000-8000-000000000003","person_id":null,"point_ids":["0192a3f0-1000-7000-8000-000000000005"],"point_scope":"all_vehicle","recurring":{"days":[1],"end":"09:00","start":"09:00"},"site_id":"0192a3f0-1000-7000-8000-000000000004","source_id":null,"source_type":"vehicle","status":"active","status_reason":null,"unit_door_number":null,"unit_id":null,"updated_at":"2026-03-01T09:00:00Z","uses":1,"valid_from":"2026-03-01T09:00:00Z","valid_to":null,"value":"value"}
+type Credential struct {
+	CreatedAt time.Time          `json:"created_at"`
+	Id        openapi_types.UUID `json:"id"`
+
+	// Kind Open enum.
+	Kind     CredentialKind                        `json:"kind"`
+	MaxUses  nullable.Nullable[int64]              `json:"max_uses"`
+	OrgId    openapi_types.UUID                    `json:"org_id"`
+	PersonId nullable.Nullable[openapi_types.UUID] `json:"person_id"`
+	PointIds []openapi_types.UUID                  `json:"point_ids"`
+
+	// PointScope Open enum.
+	PointScope CredentialPointScope                  `json:"point_scope"`
+	Recurring  nullable.Nullable[RecurringWindow]    `json:"recurring"`
+	SiteId     openapi_types.UUID                    `json:"site_id"`
+	SourceId   nullable.Nullable[openapi_types.UUID] `json:"source_id"`
+
+	// SourceType Open enum.
+	SourceType CredentialSourceType `json:"source_type"`
+
+	// Status Open enum.
+	Status         CredentialStatus                      `json:"status"`
+	StatusReason   nullable.Nullable[string]             `json:"status_reason"`
+	UnitDoorNumber nullable.Nullable[string]             `json:"unit_door_number"`
+	UnitId         nullable.Nullable[openapi_types.UUID] `json:"unit_id"`
+	UpdatedAt      time.Time                             `json:"updated_at"`
+	Uses           int64                                 `json:"uses"`
+	ValidFrom      time.Time                             `json:"valid_from"`
+	ValidTo        nullable.Nullable[time.Time]          `json:"valid_to"`
+
+	// Value Normalized plate; for `visitor_qr` the sha-256 of the token, for tag and pin a salted hash. Never the secret itself.
+	Value string `json:"value"`
+}
+
+// CredentialKind Open enum.
+type CredentialKind string
+
+// CredentialPointScope Open enum.
+type CredentialPointScope string
+
+// CredentialSourceType Open enum.
+type CredentialSourceType string
+
+// CredentialStatus Open enum.
+type CredentialStatus string
+
+// CredentialList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","kind":"plate","max_uses":null,"org_id":"0192a3f0-1000-7000-8000-000000000003","person_id":null,"point_ids":["0192a3f0-1000-7000-8000-000000000005"],"point_scope":"all_vehicle","recurring":{"days":[1],"end":"09:00","start":"09:00"},"site_id":"0192a3f0-1000-7000-8000-000000000004","source_id":null,"source_type":"vehicle","status":"active","status_reason":null,"unit_door_number":null,"unit_id":null,"updated_at":"2026-03-01T09:00:00Z","uses":1,"valid_from":"2026-03-01T09:00:00Z","valid_to":null,"value":"value"}],"next_cursor":null}
+type CredentialList struct {
+	Items []Credential `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
 // Credentials What the caller proves. `method` is `password`, `sms_otp` or
 // `magic_link` (open on input; known values listed). `identifier` is an
 // email address or a phone number (E.164 or national format). `password`
@@ -1769,6 +2452,30 @@ type DiscoveryDocument struct {
 	// ServerVersion Example: 0.1.0
 	ServerVersion string `json:"server_version"`
 }
+
+// DriverRef defines model for DriverRef.
+type DriverRef struct {
+	// Channel Relay or lane within the instance.
+	Channel *string `json:"channel,omitempty"`
+
+	// Instance Names a driver instance in the agent's local config file; hardware details and secrets never live on the server.
+	Instance string `json:"instance"`
+}
+
+// DriverState defines model for DriverState.
+type DriverState struct {
+	Detail   *string `json:"detail,omitempty"`
+	Instance string  `json:"instance"`
+
+	// Mock A mock driver is configured; the UI shows it.
+	Mock bool `json:"mock"`
+
+	// State Open enum.
+	State DriverStateState `json:"state"`
+}
+
+// DriverStateState Open enum.
+type DriverStateState string
 
 // HouseholdInvitationCreate Invite a household member to this unit. They get no money access.
 type HouseholdInvitationCreate struct {
@@ -2326,6 +3033,14 @@ type OccupancyUpdate struct {
 	ValidTo         nullable.Nullable[openapi_types.Date] `json:"valid_to,omitempty"`
 }
 
+// OpenPointRequest defines model for OpenPointRequest.
+type OpenPointRequest struct {
+	CredentialId *openapi_types.UUID `json:"credential_id,omitempty"`
+
+	// VisitorEntryId Links the opening to an expected visitor.
+	VisitorEntryId *openapi_types.UUID `json:"visitor_entry_id,omitempty"`
+}
+
 // OrgAccess defines model for OrgAccess.
 type OrgAccess struct {
 	DefaultLocale string             `json:"default_locale"`
@@ -2540,6 +3255,20 @@ type ReauthSmsOtp struct {
 
 	// Method Always `sms_otp`.
 	Method string `json:"method"`
+}
+
+// RecurringWindow defines model for RecurringWindow.
+type RecurringWindow struct {
+	// Days ISO weekdays, 1 = Monday.
+	Days []int64 `json:"days"`
+
+	// End `start > end` crosses midnight and belongs to the start day.
+	//
+	// Example: 09:00
+	End string `json:"end"`
+
+	// Start Example: 09:00
+	Start string `json:"start"`
 }
 
 // RefreshRequest defines model for RefreshRequest.
@@ -2952,11 +3681,26 @@ type VendorUpdate struct {
 // Cursor defines model for Cursor.
 type Cursor = string
 
+// GuardSession defines model for GuardSession.
+type GuardSession = string
+
+// IdempotencyKey defines model for IdempotencyKey.
+type IdempotencyKey = string
+
+// IdempotencyKeyRequired defines model for IdempotencyKeyRequired.
+type IdempotencyKeyRequired = string
+
+// IfMatch Example: "3"
+type IfMatch = string
+
 // Limit defines model for Limit.
 type Limit = int
 
 // OrgId defines model for OrgId.
 type OrgId = openapi_types.UUID
+
+// SiteIdRequired defines model for SiteIdRequired.
+type SiteIdRequired = openapi_types.UUID
 
 // InstanceGetCodesParams defines parameters for InstanceGetCodes.
 type InstanceGetCodesParams struct {
@@ -2970,6 +3714,171 @@ type OrgUpdateParams struct {
 	// `validation_failed`. It is declared optional here only so that an unauthenticated caller gets 401 before
 	// any validation detail (generated code binds required headers before authentication runs).
 	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// AccessListAccessPointsParams defines parameters for AccessListAccessPoints.
+type AccessListAccessPointsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// AgentId Filter by `agent_id`.
+	AgentId *openapi_types.UUID `form:"agent_id,omitempty" json:"agent_id,omitempty"`
+
+	// Enabled Filter by `enabled`.
+	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// AccessCreateAccessPointParams defines parameters for AccessCreateAccessPoint.
+type AccessCreateAccessPointParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// AccessDeleteAccessPointParams defines parameters for AccessDeleteAccessPoint.
+type AccessDeleteAccessPointParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// AccessUpdateAccessPointParams defines parameters for AccessUpdateAccessPoint.
+type AccessUpdateAccessPointParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// AccessOpenAccessPointParams defines parameters for AccessOpenAccessPoint.
+type AccessOpenAccessPointParams struct {
+	// XGuardSession Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor.
+	XGuardSession *GuardSession `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// AccessGetAgentCommandParams defines parameters for AccessGetAgentCommand.
+type AccessGetAgentCommandParams struct {
+	// XGuardSession Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor.
+	XGuardSession *GuardSession `json:"X-Guard-Session,omitempty"`
+}
+
+// AccessListCredentialsParams defines parameters for AccessListCredentials.
+type AccessListCredentialsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Kind Filter by `kind`.
+	Kind *string `form:"kind,omitempty" json:"kind,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// SourceType Filter by `source_type`.
+	SourceType *string `form:"source_type,omitempty" json:"source_type,omitempty"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// PointId Filter by `point_id`.
+	PointId *openapi_types.UUID `form:"point_id,omitempty" json:"point_id,omitempty"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// AccessRevokeCredentialParams defines parameters for AccessRevokeCredential.
+type AccessRevokeCredentialParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// AccessListAccessEventsParams defines parameters for AccessListAccessEvents.
+type AccessListAccessEventsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// PointId Filter by `point_id`.
+	PointId *openapi_types.UUID `form:"point_id,omitempty" json:"point_id,omitempty"`
+
+	// Decision Filter by `decision`.
+	Decision *string `form:"decision,omitempty" json:"decision,omitempty"`
+
+	// Reason Filter by `reason`.
+	Reason *string `form:"reason,omitempty" json:"reason,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Plate Filter by `plate`.
+	Plate *string `form:"plate,omitempty" json:"plate,omitempty"`
+
+	// After Filter by `after`.
+	After *int64 `form:"after,omitempty" json:"after,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// AccessListAgentsParams defines parameters for AccessListAgents.
+type AccessListAgentsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// AccessCreateAgentParams defines parameters for AccessCreateAgent.
+type AccessCreateAgentParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// AccessUpdateAgentParams defines parameters for AccessUpdateAgent.
+type AccessUpdateAgentParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// AccessReenrolAgentParams defines parameters for AccessReenrolAgent.
+type AccessReenrolAgentParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// AccessRevokeAgentParams defines parameters for AccessRevokeAgent.
+type AccessRevokeAgentParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// AccessRotateAgentTokenParams defines parameters for AccessRotateAgentToken.
+type AccessRotateAgentTokenParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
 }
 
 // TenancyUpdateAllocationKeyParams defines parameters for TenancyUpdateAllocationKey.
@@ -3272,6 +4181,21 @@ type PeopleCreateClaimJSONRequestBody = ClaimCreate
 
 // OrgUpdateJSONRequestBody defines body for OrgUpdate for application/json ContentType.
 type OrgUpdateJSONRequestBody = OrganizationUpdate
+
+// AccessCreateAccessPointJSONRequestBody defines body for AccessCreateAccessPoint for application/json ContentType.
+type AccessCreateAccessPointJSONRequestBody = AccessPointCreate
+
+// AccessUpdateAccessPointJSONRequestBody defines body for AccessUpdateAccessPoint for application/json ContentType.
+type AccessUpdateAccessPointJSONRequestBody = AccessPointUpdate
+
+// AccessOpenAccessPointJSONRequestBody defines body for AccessOpenAccessPoint for application/json ContentType.
+type AccessOpenAccessPointJSONRequestBody = OpenPointRequest
+
+// AccessCreateAgentJSONRequestBody defines body for AccessCreateAgent for application/json ContentType.
+type AccessCreateAgentJSONRequestBody = AgentCreate
+
+// AccessUpdateAgentJSONRequestBody defines body for AccessUpdateAgent for application/json ContentType.
+type AccessUpdateAgentJSONRequestBody = AgentUpdate
 
 // TenancyUpdateAllocationKeyJSONRequestBody defines body for TenancyUpdateAllocationKey for application/json ContentType.
 type TenancyUpdateAllocationKeyJSONRequestBody = AllocationKeyUpdate
@@ -3675,6 +4599,60 @@ type ServerInterface interface {
 	// OrgUpdate Change an organization's settings
 	// (PATCH /v1/orgs/{org_id})
 	OrgUpdate(w http.ResponseWriter, r *http.Request, orgId OrgId, params OrgUpdateParams)
+	// AccessListAccessPoints List access points
+	// (GET /v1/orgs/{org_id}/access-points)
+	AccessListAccessPoints(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAccessPointsParams)
+	// AccessCreateAccessPoint Create access point
+	// (POST /v1/orgs/{org_id}/access-points)
+	AccessCreateAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessCreateAccessPointParams)
+	// AccessDeleteAccessPoint Delete access point
+	// (DELETE /v1/orgs/{org_id}/access-points/{point_id})
+	AccessDeleteAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessDeleteAccessPointParams)
+	// AccessGetAccessPoint Get access point
+	// (GET /v1/orgs/{org_id}/access-points/{point_id})
+	AccessGetAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID)
+	// AccessUpdateAccessPoint Update access point
+	// (PATCH /v1/orgs/{org_id}/access-points/{point_id})
+	AccessUpdateAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessUpdateAccessPointParams)
+	// AccessOpenAccessPoint Open an access point manually
+	// (POST /v1/orgs/{org_id}/access-points/{point_id}:open)
+	AccessOpenAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessOpenAccessPointParams)
+	// AccessGetAgentCommand Status of an open command
+	// (GET /v1/orgs/{org_id}/access/commands/{command_id})
+	AccessGetAgentCommand(w http.ResponseWriter, r *http.Request, orgId OrgId, commandId openapi_types.UUID, params AccessGetAgentCommandParams)
+	// AccessListCredentials List credentials (derived, read-only)
+	// (GET /v1/orgs/{org_id}/access/credentials)
+	AccessListCredentials(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListCredentialsParams)
+	// AccessRevokeCredential Revoke a manual credential
+	// (DELETE /v1/orgs/{org_id}/access/credentials/{credential_id})
+	AccessRevokeCredential(w http.ResponseWriter, r *http.Request, orgId OrgId, credentialId openapi_types.UUID, params AccessRevokeCredentialParams)
+	// AccessGetCredential Get a credential
+	// (GET /v1/orgs/{org_id}/access/credentials/{credential_id})
+	AccessGetCredential(w http.ResponseWriter, r *http.Request, orgId OrgId, credentialId openapi_types.UUID)
+	// AccessListAccessEvents List access events
+	// (GET /v1/orgs/{org_id}/access/events)
+	AccessListAccessEvents(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAccessEventsParams)
+	// AccessListAgents List agents
+	// (GET /v1/orgs/{org_id}/agents)
+	AccessListAgents(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAgentsParams)
+	// AccessCreateAgent Create an agent and its enrolment token
+	// (POST /v1/orgs/{org_id}/agents)
+	AccessCreateAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessCreateAgentParams)
+	// AccessGetAgent Get an agent
+	// (GET /v1/orgs/{org_id}/agents/{agent_id})
+	AccessGetAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID)
+	// AccessUpdateAgent Rename an agent
+	// (PATCH /v1/orgs/{org_id}/agents/{agent_id})
+	AccessUpdateAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessUpdateAgentParams)
+	// AccessReenrolAgent Issue a new enrolment token
+	// (POST /v1/orgs/{org_id}/agents/{agent_id}:reenrol)
+	AccessReenrolAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessReenrolAgentParams)
+	// AccessRevokeAgent Revoke an agent
+	// (POST /v1/orgs/{org_id}/agents/{agent_id}:revoke)
+	AccessRevokeAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessRevokeAgentParams)
+	// AccessRotateAgentToken Force token rotation
+	// (POST /v1/orgs/{org_id}/agents/{agent_id}:rotate-token)
+	AccessRotateAgentToken(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessRotateAgentTokenParams)
 	// TenancyGetAllocationKey Read an allocation key with its values
 	// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
 	TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID)
@@ -4002,6 +4980,114 @@ func (_ Unimplemented) OrgGet(w http.ResponseWriter, r *http.Request, orgId OrgI
 // OrgUpdate Change an organization's settings
 // (PATCH /v1/orgs/{org_id})
 func (_ Unimplemented) OrgUpdate(w http.ResponseWriter, r *http.Request, orgId OrgId, params OrgUpdateParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessListAccessPoints List access points
+// (GET /v1/orgs/{org_id}/access-points)
+func (_ Unimplemented) AccessListAccessPoints(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAccessPointsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessCreateAccessPoint Create access point
+// (POST /v1/orgs/{org_id}/access-points)
+func (_ Unimplemented) AccessCreateAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessCreateAccessPointParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessDeleteAccessPoint Delete access point
+// (DELETE /v1/orgs/{org_id}/access-points/{point_id})
+func (_ Unimplemented) AccessDeleteAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessDeleteAccessPointParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessGetAccessPoint Get access point
+// (GET /v1/orgs/{org_id}/access-points/{point_id})
+func (_ Unimplemented) AccessGetAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessUpdateAccessPoint Update access point
+// (PATCH /v1/orgs/{org_id}/access-points/{point_id})
+func (_ Unimplemented) AccessUpdateAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessUpdateAccessPointParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessOpenAccessPoint Open an access point manually
+// (POST /v1/orgs/{org_id}/access-points/{point_id}:open)
+func (_ Unimplemented) AccessOpenAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessOpenAccessPointParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessGetAgentCommand Status of an open command
+// (GET /v1/orgs/{org_id}/access/commands/{command_id})
+func (_ Unimplemented) AccessGetAgentCommand(w http.ResponseWriter, r *http.Request, orgId OrgId, commandId openapi_types.UUID, params AccessGetAgentCommandParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessListCredentials List credentials (derived, read-only)
+// (GET /v1/orgs/{org_id}/access/credentials)
+func (_ Unimplemented) AccessListCredentials(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListCredentialsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessRevokeCredential Revoke a manual credential
+// (DELETE /v1/orgs/{org_id}/access/credentials/{credential_id})
+func (_ Unimplemented) AccessRevokeCredential(w http.ResponseWriter, r *http.Request, orgId OrgId, credentialId openapi_types.UUID, params AccessRevokeCredentialParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessGetCredential Get a credential
+// (GET /v1/orgs/{org_id}/access/credentials/{credential_id})
+func (_ Unimplemented) AccessGetCredential(w http.ResponseWriter, r *http.Request, orgId OrgId, credentialId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessListAccessEvents List access events
+// (GET /v1/orgs/{org_id}/access/events)
+func (_ Unimplemented) AccessListAccessEvents(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAccessEventsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessListAgents List agents
+// (GET /v1/orgs/{org_id}/agents)
+func (_ Unimplemented) AccessListAgents(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAgentsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessCreateAgent Create an agent and its enrolment token
+// (POST /v1/orgs/{org_id}/agents)
+func (_ Unimplemented) AccessCreateAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessCreateAgentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessGetAgent Get an agent
+// (GET /v1/orgs/{org_id}/agents/{agent_id})
+func (_ Unimplemented) AccessGetAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessUpdateAgent Rename an agent
+// (PATCH /v1/orgs/{org_id}/agents/{agent_id})
+func (_ Unimplemented) AccessUpdateAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessUpdateAgentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessReenrolAgent Issue a new enrolment token
+// (POST /v1/orgs/{org_id}/agents/{agent_id}:reenrol)
+func (_ Unimplemented) AccessReenrolAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessReenrolAgentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessRevokeAgent Revoke an agent
+// (POST /v1/orgs/{org_id}/agents/{agent_id}:revoke)
+func (_ Unimplemented) AccessRevokeAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessRevokeAgentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AccessRotateAgentToken Force token rotation
+// (POST /v1/orgs/{org_id}/agents/{agent_id}:rotate-token)
+func (_ Unimplemented) AccessRotateAgentToken(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessRotateAgentTokenParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4826,6 +5912,1257 @@ func (siw *ServerInterfaceWrapper) OrgUpdate(w http.ResponseWriter, r *http.Requ
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.OrgUpdate(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessListAccessPoints operation middleware
+func (siw *ServerInterfaceWrapper) AccessListAccessPoints(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessListAccessPointsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "agent_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "agent_id", r.URL.Query(), &params.AgentId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "agent_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agent_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "enabled" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "enabled", r.URL.Query(), &params.Enabled, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "enabled"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "enabled", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessListAccessPoints(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessCreateAccessPoint operation middleware
+func (siw *ServerInterfaceWrapper) AccessCreateAccessPoint(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessCreateAccessPointParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessCreateAccessPoint(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessDeleteAccessPoint operation middleware
+func (siw *ServerInterfaceWrapper) AccessDeleteAccessPoint(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "point_id" -------------
+	var pointId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "point_id", chi.URLParam(r, "point_id"), &pointId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "point_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessDeleteAccessPointParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessDeleteAccessPoint(w, r, orgId, pointId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessGetAccessPoint operation middleware
+func (siw *ServerInterfaceWrapper) AccessGetAccessPoint(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "point_id" -------------
+	var pointId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "point_id", chi.URLParam(r, "point_id"), &pointId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "point_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessGetAccessPoint(w, r, orgId, pointId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessUpdateAccessPoint operation middleware
+func (siw *ServerInterfaceWrapper) AccessUpdateAccessPoint(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "point_id" -------------
+	var pointId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "point_id", chi.URLParam(r, "point_id"), &pointId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "point_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessUpdateAccessPointParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessUpdateAccessPoint(w, r, orgId, pointId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessOpenAccessPoint operation middleware
+func (siw *ServerInterfaceWrapper) AccessOpenAccessPoint(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "point_id" -------------
+	var pointId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "point_id", chi.URLParam(r, "point_id"), &pointId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "point_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessOpenAccessPointParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var XGuardSession GuardSession
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &XGuardSession, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.XGuardSession = &XGuardSession
+
+	}
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessOpenAccessPoint(w, r, orgId, pointId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessGetAgentCommand operation middleware
+func (siw *ServerInterfaceWrapper) AccessGetAgentCommand(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "command_id" -------------
+	var commandId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "command_id", chi.URLParam(r, "command_id"), &commandId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "command_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessGetAgentCommandParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var XGuardSession GuardSession
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &XGuardSession, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.XGuardSession = &XGuardSession
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessGetAgentCommand(w, r, orgId, commandId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessListCredentials operation middleware
+func (siw *ServerInterfaceWrapper) AccessListCredentials(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessListCredentialsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "source_type" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "source_type", r.URL.Query(), &params.SourceType, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "source_type"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "source_type", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "point_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "point_id", r.URL.Query(), &params.PointId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "point_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "point_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessListCredentials(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessRevokeCredential operation middleware
+func (siw *ServerInterfaceWrapper) AccessRevokeCredential(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "credential_id" -------------
+	var credentialId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "credential_id", chi.URLParam(r, "credential_id"), &credentialId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "credential_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessRevokeCredentialParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessRevokeCredential(w, r, orgId, credentialId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessGetCredential operation middleware
+func (siw *ServerInterfaceWrapper) AccessGetCredential(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "credential_id" -------------
+	var credentialId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "credential_id", chi.URLParam(r, "credential_id"), &credentialId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "credential_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessGetCredential(w, r, orgId, credentialId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessListAccessEvents operation middleware
+func (siw *ServerInterfaceWrapper) AccessListAccessEvents(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessListAccessEventsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "point_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "point_id", r.URL.Query(), &params.PointId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "point_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "point_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "decision" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "decision", r.URL.Query(), &params.Decision, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "decision"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "decision", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "reason" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "reason", r.URL.Query(), &params.Reason, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "reason"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "reason", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "plate" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "plate", r.URL.Query(), &params.Plate, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "plate"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "plate", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "after" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "after", r.URL.Query(), &params.After, runtime.BindQueryParameterOptions{Type: "integer", Format: "int64"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "after"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "after", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessListAccessEvents(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessListAgents operation middleware
+func (siw *ServerInterfaceWrapper) AccessListAgents(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessListAgentsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessListAgents(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessCreateAgent operation middleware
+func (siw *ServerInterfaceWrapper) AccessCreateAgent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessCreateAgentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessCreateAgent(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessGetAgent operation middleware
+func (siw *ServerInterfaceWrapper) AccessGetAgent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agent_id" -------------
+	var agentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agent_id", chi.URLParam(r, "agent_id"), &agentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agent_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessGetAgent(w, r, orgId, agentId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessUpdateAgent operation middleware
+func (siw *ServerInterfaceWrapper) AccessUpdateAgent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agent_id" -------------
+	var agentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agent_id", chi.URLParam(r, "agent_id"), &agentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agent_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessUpdateAgentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessUpdateAgent(w, r, orgId, agentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessReenrolAgent operation middleware
+func (siw *ServerInterfaceWrapper) AccessReenrolAgent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agent_id" -------------
+	var agentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agent_id", chi.URLParam(r, "agent_id"), &agentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agent_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessReenrolAgentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessReenrolAgent(w, r, orgId, agentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessRevokeAgent operation middleware
+func (siw *ServerInterfaceWrapper) AccessRevokeAgent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agent_id" -------------
+	var agentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agent_id", chi.URLParam(r, "agent_id"), &agentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agent_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessRevokeAgentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessRevokeAgent(w, r, orgId, agentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AccessRotateAgentToken operation middleware
+func (siw *ServerInterfaceWrapper) AccessRotateAgentToken(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agent_id" -------------
+	var agentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agent_id", chi.URLParam(r, "agent_id"), &agentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agent_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AccessRotateAgentTokenParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AccessRotateAgentToken(w, r, orgId, agentId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8206,6 +10543,60 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/platform/audit", wrapper.PlatformListAudit)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/access-points", wrapper.AccessListAccessPoints)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/access-points", wrapper.AccessCreateAccessPoint)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/access-points/{point_id}", wrapper.AccessDeleteAccessPoint)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/access-points/{point_id}", wrapper.AccessGetAccessPoint)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/access-points/{point_id}", wrapper.AccessUpdateAccessPoint)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/access-points/{point_id}:open", wrapper.AccessOpenAccessPoint)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/agents", wrapper.AccessListAgents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/agents", wrapper.AccessCreateAgent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/agents/{agent_id}", wrapper.AccessGetAgent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/agents/{agent_id}", wrapper.AccessUpdateAgent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/agents/{agent_id}:reenrol", wrapper.AccessReenrolAgent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/agents/{agent_id}:revoke", wrapper.AccessRevokeAgent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/agents/{agent_id}:rotate-token", wrapper.AccessRotateAgentToken)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/access/credentials", wrapper.AccessListCredentials)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/access/credentials/{credential_id}", wrapper.AccessRevokeCredential)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/access/credentials/{credential_id}", wrapper.AccessGetCredential)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/access/events", wrapper.AccessListAccessEvents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/access/commands/{command_id}", wrapper.AccessGetAgentCommand)
+	})
 
 	return r
 }
@@ -11369,6 +13760,3098 @@ type OrgUpdatedefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response OrgUpdatedefaultApplicationProblemPlusJSONResponse) VisitOrgUpdateResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessPointsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params AccessListAccessPointsParams
+}
+
+type AccessListAccessPointsResponseObject interface {
+	VisitAccessListAccessPointsResponse(w http.ResponseWriter) error
+}
+
+type AccessListAccessPoints200JSONResponse AccessPointList
+
+func (response AccessListAccessPoints200JSONResponse) VisitAccessListAccessPointsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessPoints401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessListAccessPoints401ApplicationProblemPlusJSONResponse) VisitAccessListAccessPointsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessPoints403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAccessPoints403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListAccessPoints403ResponseHeaders
+}
+
+func (response AccessListAccessPoints403ApplicationProblemPlusJSONResponse) VisitAccessListAccessPointsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessPoints422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAccessPoints422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListAccessPoints422ResponseHeaders
+}
+
+func (response AccessListAccessPoints422ApplicationProblemPlusJSONResponse) VisitAccessListAccessPointsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessPointsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAccessPointsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessListAccessPointsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessListAccessPointsdefaultApplicationProblemPlusJSONResponse) VisitAccessListAccessPointsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAccessPointRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params AccessCreateAccessPointParams
+	Body   *AccessCreateAccessPointJSONRequestBody
+}
+
+type AccessCreateAccessPointResponseObject interface {
+	VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error
+}
+
+type AccessCreateAccessPoint201JSONResponse AccessPoint
+
+func (response AccessCreateAccessPoint201JSONResponse) VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAccessPoint401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessCreateAccessPoint401ApplicationProblemPlusJSONResponse) VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAccessPoint403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAccessPoint403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessCreateAccessPoint403ResponseHeaders
+}
+
+func (response AccessCreateAccessPoint403ApplicationProblemPlusJSONResponse) VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAccessPoint409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAccessPoint409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessCreateAccessPoint409ResponseHeaders
+}
+
+func (response AccessCreateAccessPoint409ApplicationProblemPlusJSONResponse) VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAccessPoint422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAccessPoint422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessCreateAccessPoint422ResponseHeaders
+}
+
+func (response AccessCreateAccessPoint422ApplicationProblemPlusJSONResponse) VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAccessPointdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAccessPointdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessCreateAccessPointdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessCreateAccessPointdefaultApplicationProblemPlusJSONResponse) VisitAccessCreateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessDeleteAccessPointRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	PointId openapi_types.UUID `json:"point_id"`
+	Params  AccessDeleteAccessPointParams
+}
+
+type AccessDeleteAccessPointResponseObject interface {
+	VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error
+}
+
+type AccessDeleteAccessPoint204Response struct {
+}
+
+func (response AccessDeleteAccessPoint204Response) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type AccessDeleteAccessPoint401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessDeleteAccessPoint401ApplicationProblemPlusJSONResponse) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessDeleteAccessPoint403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessDeleteAccessPoint403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessDeleteAccessPoint403ResponseHeaders
+}
+
+func (response AccessDeleteAccessPoint403ApplicationProblemPlusJSONResponse) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessDeleteAccessPoint404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessDeleteAccessPoint404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessDeleteAccessPoint404ResponseHeaders
+}
+
+func (response AccessDeleteAccessPoint404ApplicationProblemPlusJSONResponse) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessDeleteAccessPoint409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessDeleteAccessPoint409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessDeleteAccessPoint409ResponseHeaders
+}
+
+func (response AccessDeleteAccessPoint409ApplicationProblemPlusJSONResponse) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessDeleteAccessPoint422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessDeleteAccessPoint422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessDeleteAccessPoint422ResponseHeaders
+}
+
+func (response AccessDeleteAccessPoint422ApplicationProblemPlusJSONResponse) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessDeleteAccessPointdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessDeleteAccessPointdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessDeleteAccessPointdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessDeleteAccessPointdefaultApplicationProblemPlusJSONResponse) VisitAccessDeleteAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAccessPointRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	PointId openapi_types.UUID `json:"point_id"`
+}
+
+type AccessGetAccessPointResponseObject interface {
+	VisitAccessGetAccessPointResponse(w http.ResponseWriter) error
+}
+
+type AccessGetAccessPoint200JSONResponse AccessPoint
+
+func (response AccessGetAccessPoint200JSONResponse) VisitAccessGetAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAccessPoint401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessGetAccessPoint401ApplicationProblemPlusJSONResponse) VisitAccessGetAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAccessPoint403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAccessPoint403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetAccessPoint403ResponseHeaders
+}
+
+func (response AccessGetAccessPoint403ApplicationProblemPlusJSONResponse) VisitAccessGetAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAccessPoint404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAccessPoint404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetAccessPoint404ResponseHeaders
+}
+
+func (response AccessGetAccessPoint404ApplicationProblemPlusJSONResponse) VisitAccessGetAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAccessPointdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAccessPointdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessGetAccessPointdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessGetAccessPointdefaultApplicationProblemPlusJSONResponse) VisitAccessGetAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPointRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	PointId openapi_types.UUID `json:"point_id"`
+	Params  AccessUpdateAccessPointParams
+	Body    *AccessUpdateAccessPointJSONRequestBody
+}
+
+type AccessUpdateAccessPointResponseObject interface {
+	VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error
+}
+
+type AccessUpdateAccessPoint200JSONResponse AccessPoint
+
+func (response AccessUpdateAccessPoint200JSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPoint401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessUpdateAccessPoint401ApplicationProblemPlusJSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPoint403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAccessPoint403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAccessPoint403ResponseHeaders
+}
+
+func (response AccessUpdateAccessPoint403ApplicationProblemPlusJSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPoint404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAccessPoint404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAccessPoint404ResponseHeaders
+}
+
+func (response AccessUpdateAccessPoint404ApplicationProblemPlusJSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPoint409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAccessPoint409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAccessPoint409ResponseHeaders
+}
+
+func (response AccessUpdateAccessPoint409ApplicationProblemPlusJSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPoint422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAccessPoint422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAccessPoint422ResponseHeaders
+}
+
+func (response AccessUpdateAccessPoint422ApplicationProblemPlusJSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAccessPointdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAccessPointdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessUpdateAccessPointdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessUpdateAccessPointdefaultApplicationProblemPlusJSONResponse) VisitAccessUpdateAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPointRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	PointId openapi_types.UUID `json:"point_id"`
+	Params  AccessOpenAccessPointParams
+	Body    *AccessOpenAccessPointJSONRequestBody
+}
+
+type AccessOpenAccessPointResponseObject interface {
+	VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error
+}
+
+type AccessOpenAccessPoint202JSONResponse AgentCommand
+
+func (response AccessOpenAccessPoint202JSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPoint401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessOpenAccessPoint401ApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPoint403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessOpenAccessPoint403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessOpenAccessPoint403ResponseHeaders
+}
+
+func (response AccessOpenAccessPoint403ApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPoint404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessOpenAccessPoint404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessOpenAccessPoint404ResponseHeaders
+}
+
+func (response AccessOpenAccessPoint404ApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPoint409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessOpenAccessPoint409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessOpenAccessPoint409ResponseHeaders
+}
+
+func (response AccessOpenAccessPoint409ApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPoint422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessOpenAccessPoint422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessOpenAccessPoint422ResponseHeaders
+}
+
+func (response AccessOpenAccessPoint422ApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPoint429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessOpenAccessPoint429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessOpenAccessPoint429ResponseHeaders
+}
+
+func (response AccessOpenAccessPoint429ApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessOpenAccessPointdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessOpenAccessPointdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessOpenAccessPointdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessOpenAccessPointdefaultApplicationProblemPlusJSONResponse) VisitAccessOpenAccessPointResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentCommandRequestObject struct {
+	OrgId     OrgId              `json:"org_id"`
+	CommandId openapi_types.UUID `json:"command_id"`
+	Params    AccessGetAgentCommandParams
+}
+
+type AccessGetAgentCommandResponseObject interface {
+	VisitAccessGetAgentCommandResponse(w http.ResponseWriter) error
+}
+
+type AccessGetAgentCommand200JSONResponse AgentCommand
+
+func (response AccessGetAgentCommand200JSONResponse) VisitAccessGetAgentCommandResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentCommand401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessGetAgentCommand401ApplicationProblemPlusJSONResponse) VisitAccessGetAgentCommandResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentCommand403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAgentCommand403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetAgentCommand403ResponseHeaders
+}
+
+func (response AccessGetAgentCommand403ApplicationProblemPlusJSONResponse) VisitAccessGetAgentCommandResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentCommand404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAgentCommand404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetAgentCommand404ResponseHeaders
+}
+
+func (response AccessGetAgentCommand404ApplicationProblemPlusJSONResponse) VisitAccessGetAgentCommandResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentCommanddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAgentCommanddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessGetAgentCommanddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessGetAgentCommanddefaultApplicationProblemPlusJSONResponse) VisitAccessGetAgentCommandResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListCredentialsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params AccessListCredentialsParams
+}
+
+type AccessListCredentialsResponseObject interface {
+	VisitAccessListCredentialsResponse(w http.ResponseWriter) error
+}
+
+type AccessListCredentials200JSONResponse CredentialList
+
+func (response AccessListCredentials200JSONResponse) VisitAccessListCredentialsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListCredentials401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessListCredentials401ApplicationProblemPlusJSONResponse) VisitAccessListCredentialsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListCredentials403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListCredentials403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListCredentials403ResponseHeaders
+}
+
+func (response AccessListCredentials403ApplicationProblemPlusJSONResponse) VisitAccessListCredentialsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListCredentials422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListCredentials422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListCredentials422ResponseHeaders
+}
+
+func (response AccessListCredentials422ApplicationProblemPlusJSONResponse) VisitAccessListCredentialsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListCredentialsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListCredentialsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessListCredentialsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessListCredentialsdefaultApplicationProblemPlusJSONResponse) VisitAccessListCredentialsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeCredentialRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	CredentialId openapi_types.UUID `json:"credential_id"`
+	Params       AccessRevokeCredentialParams
+}
+
+type AccessRevokeCredentialResponseObject interface {
+	VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error
+}
+
+type AccessRevokeCredential204Response struct {
+}
+
+func (response AccessRevokeCredential204Response) VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type AccessRevokeCredential401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessRevokeCredential401ApplicationProblemPlusJSONResponse) VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeCredential403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeCredential403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRevokeCredential403ResponseHeaders
+}
+
+func (response AccessRevokeCredential403ApplicationProblemPlusJSONResponse) VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeCredential404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeCredential404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRevokeCredential404ResponseHeaders
+}
+
+func (response AccessRevokeCredential404ApplicationProblemPlusJSONResponse) VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeCredential409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeCredential409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRevokeCredential409ResponseHeaders
+}
+
+func (response AccessRevokeCredential409ApplicationProblemPlusJSONResponse) VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeCredentialdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeCredentialdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessRevokeCredentialdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessRevokeCredentialdefaultApplicationProblemPlusJSONResponse) VisitAccessRevokeCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetCredentialRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	CredentialId openapi_types.UUID `json:"credential_id"`
+}
+
+type AccessGetCredentialResponseObject interface {
+	VisitAccessGetCredentialResponse(w http.ResponseWriter) error
+}
+
+type AccessGetCredential200JSONResponse Credential
+
+func (response AccessGetCredential200JSONResponse) VisitAccessGetCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetCredential401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessGetCredential401ApplicationProblemPlusJSONResponse) VisitAccessGetCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetCredential403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetCredential403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetCredential403ResponseHeaders
+}
+
+func (response AccessGetCredential403ApplicationProblemPlusJSONResponse) VisitAccessGetCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetCredential404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetCredential404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetCredential404ResponseHeaders
+}
+
+func (response AccessGetCredential404ApplicationProblemPlusJSONResponse) VisitAccessGetCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetCredentialdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetCredentialdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessGetCredentialdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessGetCredentialdefaultApplicationProblemPlusJSONResponse) VisitAccessGetCredentialResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessEventsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params AccessListAccessEventsParams
+}
+
+type AccessListAccessEventsResponseObject interface {
+	VisitAccessListAccessEventsResponse(w http.ResponseWriter) error
+}
+
+type AccessListAccessEvents200JSONResponse AccessEventList
+
+func (response AccessListAccessEvents200JSONResponse) VisitAccessListAccessEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessEvents401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessListAccessEvents401ApplicationProblemPlusJSONResponse) VisitAccessListAccessEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessEvents403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAccessEvents403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListAccessEvents403ResponseHeaders
+}
+
+func (response AccessListAccessEvents403ApplicationProblemPlusJSONResponse) VisitAccessListAccessEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessEvents422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAccessEvents422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListAccessEvents422ResponseHeaders
+}
+
+func (response AccessListAccessEvents422ApplicationProblemPlusJSONResponse) VisitAccessListAccessEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAccessEventsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAccessEventsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessListAccessEventsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessListAccessEventsdefaultApplicationProblemPlusJSONResponse) VisitAccessListAccessEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAgentsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params AccessListAgentsParams
+}
+
+type AccessListAgentsResponseObject interface {
+	VisitAccessListAgentsResponse(w http.ResponseWriter) error
+}
+
+type AccessListAgents200JSONResponse AgentList
+
+func (response AccessListAgents200JSONResponse) VisitAccessListAgentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAgents401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessListAgents401ApplicationProblemPlusJSONResponse) VisitAccessListAgentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAgents403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAgents403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListAgents403ResponseHeaders
+}
+
+func (response AccessListAgents403ApplicationProblemPlusJSONResponse) VisitAccessListAgentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAgents422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAgents422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessListAgents422ResponseHeaders
+}
+
+func (response AccessListAgents422ApplicationProblemPlusJSONResponse) VisitAccessListAgentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessListAgentsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessListAgentsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessListAgentsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessListAgentsdefaultApplicationProblemPlusJSONResponse) VisitAccessListAgentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAgentRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params AccessCreateAgentParams
+	Body   *AccessCreateAgentJSONRequestBody
+}
+
+type AccessCreateAgentResponseObject interface {
+	VisitAccessCreateAgentResponse(w http.ResponseWriter) error
+}
+
+type AccessCreateAgent201JSONResponse AgentEnrolment
+
+func (response AccessCreateAgent201JSONResponse) VisitAccessCreateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAgent401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessCreateAgent401ApplicationProblemPlusJSONResponse) VisitAccessCreateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAgent403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAgent403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessCreateAgent403ResponseHeaders
+}
+
+func (response AccessCreateAgent403ApplicationProblemPlusJSONResponse) VisitAccessCreateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAgent409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAgent409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessCreateAgent409ResponseHeaders
+}
+
+func (response AccessCreateAgent409ApplicationProblemPlusJSONResponse) VisitAccessCreateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAgent422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAgent422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessCreateAgent422ResponseHeaders
+}
+
+func (response AccessCreateAgent422ApplicationProblemPlusJSONResponse) VisitAccessCreateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessCreateAgentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessCreateAgentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessCreateAgentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessCreateAgentdefaultApplicationProblemPlusJSONResponse) VisitAccessCreateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	AgentId openapi_types.UUID `json:"agent_id"`
+}
+
+type AccessGetAgentResponseObject interface {
+	VisitAccessGetAgentResponse(w http.ResponseWriter) error
+}
+
+type AccessGetAgent200JSONResponse Agent
+
+func (response AccessGetAgent200JSONResponse) VisitAccessGetAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgent401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessGetAgent401ApplicationProblemPlusJSONResponse) VisitAccessGetAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgent403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAgent403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetAgent403ResponseHeaders
+}
+
+func (response AccessGetAgent403ApplicationProblemPlusJSONResponse) VisitAccessGetAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgent404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAgent404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessGetAgent404ResponseHeaders
+}
+
+func (response AccessGetAgent404ApplicationProblemPlusJSONResponse) VisitAccessGetAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessGetAgentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessGetAgentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessGetAgentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessGetAgentdefaultApplicationProblemPlusJSONResponse) VisitAccessGetAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgentRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	AgentId openapi_types.UUID `json:"agent_id"`
+	Params  AccessUpdateAgentParams
+	Body    *AccessUpdateAgentJSONRequestBody
+}
+
+type AccessUpdateAgentResponseObject interface {
+	VisitAccessUpdateAgentResponse(w http.ResponseWriter) error
+}
+
+type AccessUpdateAgent200JSONResponse Agent
+
+func (response AccessUpdateAgent200JSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgent401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessUpdateAgent401ApplicationProblemPlusJSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgent403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAgent403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAgent403ResponseHeaders
+}
+
+func (response AccessUpdateAgent403ApplicationProblemPlusJSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgent404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAgent404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAgent404ResponseHeaders
+}
+
+func (response AccessUpdateAgent404ApplicationProblemPlusJSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgent409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAgent409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAgent409ResponseHeaders
+}
+
+func (response AccessUpdateAgent409ApplicationProblemPlusJSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgent422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAgent422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessUpdateAgent422ResponseHeaders
+}
+
+func (response AccessUpdateAgent422ApplicationProblemPlusJSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessUpdateAgentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessUpdateAgentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessUpdateAgentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessUpdateAgentdefaultApplicationProblemPlusJSONResponse) VisitAccessUpdateAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessReenrolAgentRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	AgentId openapi_types.UUID `json:"agent_id"`
+	Params  AccessReenrolAgentParams
+}
+
+type AccessReenrolAgentResponseObject interface {
+	VisitAccessReenrolAgentResponse(w http.ResponseWriter) error
+}
+
+type AccessReenrolAgent200JSONResponse AgentEnrolment
+
+func (response AccessReenrolAgent200JSONResponse) VisitAccessReenrolAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessReenrolAgent401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessReenrolAgent401ApplicationProblemPlusJSONResponse) VisitAccessReenrolAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessReenrolAgent403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessReenrolAgent403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessReenrolAgent403ResponseHeaders
+}
+
+func (response AccessReenrolAgent403ApplicationProblemPlusJSONResponse) VisitAccessReenrolAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessReenrolAgent404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessReenrolAgent404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessReenrolAgent404ResponseHeaders
+}
+
+func (response AccessReenrolAgent404ApplicationProblemPlusJSONResponse) VisitAccessReenrolAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessReenrolAgent409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessReenrolAgent409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessReenrolAgent409ResponseHeaders
+}
+
+func (response AccessReenrolAgent409ApplicationProblemPlusJSONResponse) VisitAccessReenrolAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessReenrolAgentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessReenrolAgentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessReenrolAgentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessReenrolAgentdefaultApplicationProblemPlusJSONResponse) VisitAccessReenrolAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeAgentRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	AgentId openapi_types.UUID `json:"agent_id"`
+	Params  AccessRevokeAgentParams
+}
+
+type AccessRevokeAgentResponseObject interface {
+	VisitAccessRevokeAgentResponse(w http.ResponseWriter) error
+}
+
+type AccessRevokeAgent200JSONResponse Agent
+
+func (response AccessRevokeAgent200JSONResponse) VisitAccessRevokeAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeAgent401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessRevokeAgent401ApplicationProblemPlusJSONResponse) VisitAccessRevokeAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeAgent403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeAgent403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRevokeAgent403ResponseHeaders
+}
+
+func (response AccessRevokeAgent403ApplicationProblemPlusJSONResponse) VisitAccessRevokeAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeAgent404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeAgent404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRevokeAgent404ResponseHeaders
+}
+
+func (response AccessRevokeAgent404ApplicationProblemPlusJSONResponse) VisitAccessRevokeAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeAgent409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeAgent409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRevokeAgent409ResponseHeaders
+}
+
+func (response AccessRevokeAgent409ApplicationProblemPlusJSONResponse) VisitAccessRevokeAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRevokeAgentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRevokeAgentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessRevokeAgentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessRevokeAgentdefaultApplicationProblemPlusJSONResponse) VisitAccessRevokeAgentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRotateAgentTokenRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	AgentId openapi_types.UUID `json:"agent_id"`
+	Params  AccessRotateAgentTokenParams
+}
+
+type AccessRotateAgentTokenResponseObject interface {
+	VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error
+}
+
+type AccessRotateAgentToken200JSONResponse Agent
+
+func (response AccessRotateAgentToken200JSONResponse) VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRotateAgentToken401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response AccessRotateAgentToken401ApplicationProblemPlusJSONResponse) VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRotateAgentToken403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRotateAgentToken403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRotateAgentToken403ResponseHeaders
+}
+
+func (response AccessRotateAgentToken403ApplicationProblemPlusJSONResponse) VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRotateAgentToken404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRotateAgentToken404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRotateAgentToken404ResponseHeaders
+}
+
+func (response AccessRotateAgentToken404ApplicationProblemPlusJSONResponse) VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRotateAgentToken409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRotateAgentToken409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers AccessRotateAgentToken409ResponseHeaders
+}
+
+func (response AccessRotateAgentToken409ApplicationProblemPlusJSONResponse) VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AccessRotateAgentTokendefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type AccessRotateAgentTokendefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    AccessRotateAgentTokendefaultResponseHeaders
+	StatusCode int
+}
+
+func (response AccessRotateAgentTokendefaultApplicationProblemPlusJSONResponse) VisitAccessRotateAgentTokenResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -24453,6 +29936,60 @@ type StrictServerInterface interface {
 	// OrgUpdate Change an organization's settings
 	// (PATCH /v1/orgs/{org_id})
 	OrgUpdate(ctx context.Context, request OrgUpdateRequestObject) (OrgUpdateResponseObject, error)
+	// AccessListAccessPoints List access points
+	// (GET /v1/orgs/{org_id}/access-points)
+	AccessListAccessPoints(ctx context.Context, request AccessListAccessPointsRequestObject) (AccessListAccessPointsResponseObject, error)
+	// AccessCreateAccessPoint Create access point
+	// (POST /v1/orgs/{org_id}/access-points)
+	AccessCreateAccessPoint(ctx context.Context, request AccessCreateAccessPointRequestObject) (AccessCreateAccessPointResponseObject, error)
+	// AccessDeleteAccessPoint Delete access point
+	// (DELETE /v1/orgs/{org_id}/access-points/{point_id})
+	AccessDeleteAccessPoint(ctx context.Context, request AccessDeleteAccessPointRequestObject) (AccessDeleteAccessPointResponseObject, error)
+	// AccessGetAccessPoint Get access point
+	// (GET /v1/orgs/{org_id}/access-points/{point_id})
+	AccessGetAccessPoint(ctx context.Context, request AccessGetAccessPointRequestObject) (AccessGetAccessPointResponseObject, error)
+	// AccessUpdateAccessPoint Update access point
+	// (PATCH /v1/orgs/{org_id}/access-points/{point_id})
+	AccessUpdateAccessPoint(ctx context.Context, request AccessUpdateAccessPointRequestObject) (AccessUpdateAccessPointResponseObject, error)
+	// AccessOpenAccessPoint Open an access point manually
+	// (POST /v1/orgs/{org_id}/access-points/{point_id}:open)
+	AccessOpenAccessPoint(ctx context.Context, request AccessOpenAccessPointRequestObject) (AccessOpenAccessPointResponseObject, error)
+	// AccessGetAgentCommand Status of an open command
+	// (GET /v1/orgs/{org_id}/access/commands/{command_id})
+	AccessGetAgentCommand(ctx context.Context, request AccessGetAgentCommandRequestObject) (AccessGetAgentCommandResponseObject, error)
+	// AccessListCredentials List credentials (derived, read-only)
+	// (GET /v1/orgs/{org_id}/access/credentials)
+	AccessListCredentials(ctx context.Context, request AccessListCredentialsRequestObject) (AccessListCredentialsResponseObject, error)
+	// AccessRevokeCredential Revoke a manual credential
+	// (DELETE /v1/orgs/{org_id}/access/credentials/{credential_id})
+	AccessRevokeCredential(ctx context.Context, request AccessRevokeCredentialRequestObject) (AccessRevokeCredentialResponseObject, error)
+	// AccessGetCredential Get a credential
+	// (GET /v1/orgs/{org_id}/access/credentials/{credential_id})
+	AccessGetCredential(ctx context.Context, request AccessGetCredentialRequestObject) (AccessGetCredentialResponseObject, error)
+	// AccessListAccessEvents List access events
+	// (GET /v1/orgs/{org_id}/access/events)
+	AccessListAccessEvents(ctx context.Context, request AccessListAccessEventsRequestObject) (AccessListAccessEventsResponseObject, error)
+	// AccessListAgents List agents
+	// (GET /v1/orgs/{org_id}/agents)
+	AccessListAgents(ctx context.Context, request AccessListAgentsRequestObject) (AccessListAgentsResponseObject, error)
+	// AccessCreateAgent Create an agent and its enrolment token
+	// (POST /v1/orgs/{org_id}/agents)
+	AccessCreateAgent(ctx context.Context, request AccessCreateAgentRequestObject) (AccessCreateAgentResponseObject, error)
+	// AccessGetAgent Get an agent
+	// (GET /v1/orgs/{org_id}/agents/{agent_id})
+	AccessGetAgent(ctx context.Context, request AccessGetAgentRequestObject) (AccessGetAgentResponseObject, error)
+	// AccessUpdateAgent Rename an agent
+	// (PATCH /v1/orgs/{org_id}/agents/{agent_id})
+	AccessUpdateAgent(ctx context.Context, request AccessUpdateAgentRequestObject) (AccessUpdateAgentResponseObject, error)
+	// AccessReenrolAgent Issue a new enrolment token
+	// (POST /v1/orgs/{org_id}/agents/{agent_id}:reenrol)
+	AccessReenrolAgent(ctx context.Context, request AccessReenrolAgentRequestObject) (AccessReenrolAgentResponseObject, error)
+	// AccessRevokeAgent Revoke an agent
+	// (POST /v1/orgs/{org_id}/agents/{agent_id}:revoke)
+	AccessRevokeAgent(ctx context.Context, request AccessRevokeAgentRequestObject) (AccessRevokeAgentResponseObject, error)
+	// AccessRotateAgentToken Force token rotation
+	// (POST /v1/orgs/{org_id}/agents/{agent_id}:rotate-token)
+	AccessRotateAgentToken(ctx context.Context, request AccessRotateAgentTokenRequestObject) (AccessRotateAgentTokenResponseObject, error)
 	// TenancyGetAllocationKey Read an allocation key with its values
 	// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
 	TenancyGetAllocationKey(ctx context.Context, request TenancyGetAllocationKeyRequestObject) (TenancyGetAllocationKeyResponseObject, error)
@@ -25319,6 +30856,539 @@ func (sh *strictHandler) OrgUpdate(w http.ResponseWriter, r *http.Request, orgId
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(OrgUpdateResponseObject); ok {
 		if err := validResponse.VisitOrgUpdateResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessListAccessPoints operation middleware
+func (sh *strictHandler) AccessListAccessPoints(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAccessPointsParams) {
+	var request AccessListAccessPointsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessListAccessPoints(ctx, request.(AccessListAccessPointsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessListAccessPoints")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessListAccessPointsResponseObject); ok {
+		if err := validResponse.VisitAccessListAccessPointsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessCreateAccessPoint operation middleware
+func (sh *strictHandler) AccessCreateAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessCreateAccessPointParams) {
+	var request AccessCreateAccessPointRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body AccessCreateAccessPointJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessCreateAccessPoint(ctx, request.(AccessCreateAccessPointRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessCreateAccessPoint")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessCreateAccessPointResponseObject); ok {
+		if err := validResponse.VisitAccessCreateAccessPointResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessDeleteAccessPoint operation middleware
+func (sh *strictHandler) AccessDeleteAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessDeleteAccessPointParams) {
+	var request AccessDeleteAccessPointRequestObject
+
+	request.OrgId = orgId
+	request.PointId = pointId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessDeleteAccessPoint(ctx, request.(AccessDeleteAccessPointRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessDeleteAccessPoint")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessDeleteAccessPointResponseObject); ok {
+		if err := validResponse.VisitAccessDeleteAccessPointResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessGetAccessPoint operation middleware
+func (sh *strictHandler) AccessGetAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID) {
+	var request AccessGetAccessPointRequestObject
+
+	request.OrgId = orgId
+	request.PointId = pointId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessGetAccessPoint(ctx, request.(AccessGetAccessPointRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessGetAccessPoint")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessGetAccessPointResponseObject); ok {
+		if err := validResponse.VisitAccessGetAccessPointResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessUpdateAccessPoint operation middleware
+func (sh *strictHandler) AccessUpdateAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessUpdateAccessPointParams) {
+	var request AccessUpdateAccessPointRequestObject
+
+	request.OrgId = orgId
+	request.PointId = pointId
+	request.Params = params
+
+	var body AccessUpdateAccessPointJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessUpdateAccessPoint(ctx, request.(AccessUpdateAccessPointRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessUpdateAccessPoint")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessUpdateAccessPointResponseObject); ok {
+		if err := validResponse.VisitAccessUpdateAccessPointResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessOpenAccessPoint operation middleware
+func (sh *strictHandler) AccessOpenAccessPoint(w http.ResponseWriter, r *http.Request, orgId OrgId, pointId openapi_types.UUID, params AccessOpenAccessPointParams) {
+	var request AccessOpenAccessPointRequestObject
+
+	request.OrgId = orgId
+	request.PointId = pointId
+	request.Params = params
+
+	var body AccessOpenAccessPointJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessOpenAccessPoint(ctx, request.(AccessOpenAccessPointRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessOpenAccessPoint")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessOpenAccessPointResponseObject); ok {
+		if err := validResponse.VisitAccessOpenAccessPointResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessGetAgentCommand operation middleware
+func (sh *strictHandler) AccessGetAgentCommand(w http.ResponseWriter, r *http.Request, orgId OrgId, commandId openapi_types.UUID, params AccessGetAgentCommandParams) {
+	var request AccessGetAgentCommandRequestObject
+
+	request.OrgId = orgId
+	request.CommandId = commandId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessGetAgentCommand(ctx, request.(AccessGetAgentCommandRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessGetAgentCommand")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessGetAgentCommandResponseObject); ok {
+		if err := validResponse.VisitAccessGetAgentCommandResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessListCredentials operation middleware
+func (sh *strictHandler) AccessListCredentials(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListCredentialsParams) {
+	var request AccessListCredentialsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessListCredentials(ctx, request.(AccessListCredentialsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessListCredentials")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessListCredentialsResponseObject); ok {
+		if err := validResponse.VisitAccessListCredentialsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessRevokeCredential operation middleware
+func (sh *strictHandler) AccessRevokeCredential(w http.ResponseWriter, r *http.Request, orgId OrgId, credentialId openapi_types.UUID, params AccessRevokeCredentialParams) {
+	var request AccessRevokeCredentialRequestObject
+
+	request.OrgId = orgId
+	request.CredentialId = credentialId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessRevokeCredential(ctx, request.(AccessRevokeCredentialRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessRevokeCredential")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessRevokeCredentialResponseObject); ok {
+		if err := validResponse.VisitAccessRevokeCredentialResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessGetCredential operation middleware
+func (sh *strictHandler) AccessGetCredential(w http.ResponseWriter, r *http.Request, orgId OrgId, credentialId openapi_types.UUID) {
+	var request AccessGetCredentialRequestObject
+
+	request.OrgId = orgId
+	request.CredentialId = credentialId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessGetCredential(ctx, request.(AccessGetCredentialRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessGetCredential")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessGetCredentialResponseObject); ok {
+		if err := validResponse.VisitAccessGetCredentialResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessListAccessEvents operation middleware
+func (sh *strictHandler) AccessListAccessEvents(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAccessEventsParams) {
+	var request AccessListAccessEventsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessListAccessEvents(ctx, request.(AccessListAccessEventsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessListAccessEvents")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessListAccessEventsResponseObject); ok {
+		if err := validResponse.VisitAccessListAccessEventsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessListAgents operation middleware
+func (sh *strictHandler) AccessListAgents(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessListAgentsParams) {
+	var request AccessListAgentsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessListAgents(ctx, request.(AccessListAgentsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessListAgents")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessListAgentsResponseObject); ok {
+		if err := validResponse.VisitAccessListAgentsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessCreateAgent operation middleware
+func (sh *strictHandler) AccessCreateAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, params AccessCreateAgentParams) {
+	var request AccessCreateAgentRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body AccessCreateAgentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessCreateAgent(ctx, request.(AccessCreateAgentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessCreateAgent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessCreateAgentResponseObject); ok {
+		if err := validResponse.VisitAccessCreateAgentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessGetAgent operation middleware
+func (sh *strictHandler) AccessGetAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID) {
+	var request AccessGetAgentRequestObject
+
+	request.OrgId = orgId
+	request.AgentId = agentId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessGetAgent(ctx, request.(AccessGetAgentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessGetAgent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessGetAgentResponseObject); ok {
+		if err := validResponse.VisitAccessGetAgentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessUpdateAgent operation middleware
+func (sh *strictHandler) AccessUpdateAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessUpdateAgentParams) {
+	var request AccessUpdateAgentRequestObject
+
+	request.OrgId = orgId
+	request.AgentId = agentId
+	request.Params = params
+
+	var body AccessUpdateAgentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessUpdateAgent(ctx, request.(AccessUpdateAgentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessUpdateAgent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessUpdateAgentResponseObject); ok {
+		if err := validResponse.VisitAccessUpdateAgentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessReenrolAgent operation middleware
+func (sh *strictHandler) AccessReenrolAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessReenrolAgentParams) {
+	var request AccessReenrolAgentRequestObject
+
+	request.OrgId = orgId
+	request.AgentId = agentId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessReenrolAgent(ctx, request.(AccessReenrolAgentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessReenrolAgent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessReenrolAgentResponseObject); ok {
+		if err := validResponse.VisitAccessReenrolAgentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessRevokeAgent operation middleware
+func (sh *strictHandler) AccessRevokeAgent(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessRevokeAgentParams) {
+	var request AccessRevokeAgentRequestObject
+
+	request.OrgId = orgId
+	request.AgentId = agentId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessRevokeAgent(ctx, request.(AccessRevokeAgentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessRevokeAgent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessRevokeAgentResponseObject); ok {
+		if err := validResponse.VisitAccessRevokeAgentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AccessRotateAgentToken operation middleware
+func (sh *strictHandler) AccessRotateAgentToken(w http.ResponseWriter, r *http.Request, orgId OrgId, agentId openapi_types.UUID, params AccessRotateAgentTokenParams) {
+	var request AccessRotateAgentTokenRequestObject
+
+	request.OrgId = orgId
+	request.AgentId = agentId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AccessRotateAgentToken(ctx, request.(AccessRotateAgentTokenRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AccessRotateAgentToken")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AccessRotateAgentTokenResponseObject); ok {
+		if err := validResponse.VisitAccessRotateAgentTokenResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -27202,337 +33272,422 @@ func (sh *strictHandler) PlatformListAudit(w http.ResponseWriter, r *http.Reques
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"7L19c9s2tjD+VTB67kztfWjZTtLu1pmdO26S7uZu0uRJ0u7O1LkSRMISagpQAdCOml+++2/OAUCCFChR",
-	"smS7rf5JLBLE63nDef3cS+V0JgUTRvfOPvdmVNEpM0zhr2eF0lLBXxnTqeIzw6XonfXezOivBSMpviaX",
-	"Sk4JJTPFrrksNJnRMSNDwT6ZgW0x7PeSHocPfy2YmveSnqBT1jvr2de9pKfTCZtSGMjMZ/BGG8XFuPfl",
-	"S9J7xafcLM7hLYyi+W+srfMcvwv7ztglLXLTO/v6JOlN6Sc+Laa9s0cn8IsL++s08VPgwrAxUziHN2r8",
-	"Mlucw4cJI1KNqeC/UXhEeFbOZkbNpJqMVOMBz3pJT7FfC65Y1jszqmDh7C6lmlLTO+sVBbZs7sQX+FjP",
-	"pNAMD+etkqOcTeHPVArDBG4Snc1ynuJsjme2xf/9RcNsPwdj/Zdil72z3v85rk7/2L7Vx75fHLG+3hdK",
-	"SdUn775/Rr598vVfiRuAZMxQnmtyw82EUKINHeWMDFOZMTz7CaOZA6nzPJc3EYgS5MnJ1wkxE0amzExk",
-	"pvFvxbQsVMqILmYzqYzur4CWf//730fnhZkwYWAbWMtQp3YomqZsZlhGsEtGDobfMaqYGh6uGuc/R+/Y",
-	"rwXT5sgCRntb3Ee3ubgDOOZLcc0NtVP63KNZxuFvmr9VcsaU4XDGlzTXLOnNgkefe7lMaY7LmtJPr5gY",
-	"m0nv7PHXC/CS9GZU6xupshj+2sGIb0IupSKUCHaTz0mqGIU9oWkqC2HIgUMOcnpC0glVNDVMadyhYAqP",
-	"vv4mieyTeyJHv7DUwKzs8t8xjZj4ubE6mabFjIp0DtgSQQpR5DkAl0efhUU7RFuNT0lvxpSWomtrzcdi",
-	"wMWgQuAFaqAKRgqRM21hN6V5zhS5oZrQXDGazQl0wjLCxVP8k3DhcEbMHdiTg/ev3xPAnIRM6ZinJOfi",
-	"KilP6rBfTW4kZc6osLMzrOtKCs3UwB1yALBBb9iiU29fQor2c0Xm/HzCXa76Tern3JhSZK8/xgApB1SA",
-	"vf8Xmy9CEmzh4hl9LxVhn+h0BvSJKk0HMzrnw4QM2a8FzeEPqhgdEsSHtNBGTvE0+rGddDMeUFPbqowa",
-	"dmT4lMW+6XhIXA9KdrVIwRiRlwhjr+gN+ebxE3LF5rpEXAQpeAunEIeXKy6idIEJwkQxPSN6QhUjB9pI",
-	"BT0yPp4YfZgQ3CZyIAUjM6ZIIbg5TAjsGTmYPjpMiKX9/kM6BRJiiQV0DECCXcNv6KqX9OBjmCR82PvY",
-	"3Iuk9+lIzpg4sp8D2n/xbPVzDE3XQIRZtvbxXdO8YAMkjMH4payQ9K6Z0o6qRwSJEFkaiIIA61bmDqgG",
-	"BvWxq4FqYFhb1EqseYYfrsmAPGLNqDFMid5Z739/pke/fYR/To6+HXz8fJI8/vbLf8V2z4PdZqAQnHvA",
-	"eE6d/Fb+XkWkIhu9cqeeo4TTTmXujzRsitsOlS3uOrT9E2EpNMAT5IZN9SqZ+F9s/hN80askGqoUna9A",
-	"+KR3Q5XgYqwXz+MHKY5GuUyvuBiTSy4yaJYQXaQTAhKDo8BXbE7MhBqSSaaJkIbQLCPFjBhJpLCXn44r",
-	"+Ledy+Ia7pouldsf7M9KDHzFdUReLNfeaRNqHcbOMri0Lp7YeX5D55qACNpfLYo2NxXnVx9h5Zp/xD1b",
-	"kz5vg0RiHyun91OJRGtM7xaYN6WfXtpvvj45OSlnF4diN050ESqd8Gv24yyXNFuEqUueRyTHc5SmCLXf",
-	"wtU3K1KWkdGcUPuKfYIbKoBGSaRGXFDUSSzfbhwxOtMi4+bZhIoxi4uBKb7LyCVnedYnb1HYpjnJqKEk",
-	"pUpxpokU+ZwMJ1RPBiN2KRUbEiqyC2Ef0UvD1JAcDK9Oz/AFefyITNgnkvExN/qMUCBCLCP/fH3+zMud",
-	"KRVS8JTm5H/ev/mB4GYnREvCzYXgmsBJUoWiIEijXACxIlxoQ0XKcBScMs7tsE/emAlT9pHGec/JsD5X",
-	"P0060kwYcjNhAmdiu8l4hsSRfeLaECkszdQ8Y4d98mHiNwqmT/3Il4SKC8GE4WaOs5SFAT1WbQ8VG3Nt",
-	"lFPvaEIFYdOZmRN7SGd2c83EUmp3HP0L0WvCPc4/wgbYjd09cgCXQNjNwz4cvV19RO/l1WzRr6oTjfLd",
-	"AAbiao04BL64dtqlxpJSr7+oT3F4UZycPE6pYhT/Yn374JqpkX0wTMhleBOTaty3DGIYvWjR1Eg1WCnY",
-	"FJqphOi5NmyakF/kKBRo4GUv6dm3vaT3ixx1lWPs8EtuxSvVEusILxm/vGwnqis4XEAwFtR3z0JioYFy",
-	"HWTSGJYdEtBW9nuR8+8qk86g2cptUFZn5nZxZfMlYuLKbw1VY2a6CpmutX3+eRUvhy5QjqkDRg1OE48e",
-	"9c7DiYVSFh467mNtlz4uRcmtyERlb2sLRG+p1iCrDp2aH3EaSCF8hWaApygtWXrMSE61fbxD8akwk9eo",
-	"SIvsS1qT0pv3rghVsU365F9C3ogzMvRKOFAT6akeSDODP1FPNwA9HfySPEvPLMGbKXnNM6Yc0bNsYZHg",
-	"XEH3R14w+rlS3CY9NwqqWv0gvaTXOkbv45ekl9MRywdXViu2EpTbtrFS0dZ3xj4H9plKoYsp3F9ooKvs",
-	"E1CyDdOcM2H+fsNGQzx8I68YclCOwHAhhnJ0NdBMw2VhSFIpr7gVDIbs04wrpgfUDOED+Nq1I/hq/hQg",
-	"7UL4MaZyxHMWDuMoHFWMzBRDgaGl5wsBNgCt3Ye2/yj/xmYDbBaTxfI5gn9jTnG1ITZZ7OTfE55OCFAP",
-	"2F2/ZNAfe83egfTMrqZRu2EjgBAcsitPq7aiO2dS7FIxPRnUv+2+E+uNso2tdpu4jmp8NcE0kx91RJ/n",
-	"jrU2aG2fXf9tCPejjgmIHybMmQ2OuKhsMl6UPrrhGUtQ9p0xVbNGHvYXgJhNnRZrJfvsroua5dRAuwHN",
-	"plzEVVKV0cqJfL2znlGxDmcTKSJS74v+6TdPNmAbeAK4aN91OZnY5GNH8x0oaSKavw0UfBOeZUzEz5gW",
-	"Rk6p4SlBrZC9qWguxjkjo4LnoB96SiyMaZJJPHI9kTeEm7iOv+MRbkVJp6UyA6kypuJ6sI2UeJtq0p2q",
-	"yu12bXKbqs0RCDZSl1dnvnhCG6lqVm12V1UOLmkbEiR2dBtt2lOvQZlQTS7ZjcUAvTspEWfcUbk25SJ8",
-	"evoQzndxQYqiAnnxKHM5loNC5VEMnyk+pWo+SGUuVZ06/59T+tfH7G+9TjZ9e7F868RW5xixOBfBbgah",
-	"U0LTeyDclpNVZ13rLHbIz3LKp+czkI/XxVmuB6lU1tsmY6LFziKkiZzuSYe7Kar2B7PULGHFopiOLO3U",
-	"3NqYvLQnbwRSMsMEFSZqJrumOc8G4Ji1QG47nihs3kb0LuN6ltP5IAL7j05OOtgEG8tLehNZaDaReRZd",
-	"6pRpTcfxg1hoXAhuNnJs8B8usRfilr1j+HO9LdsUkKIHJzPbaZvX0KLkYd+5G/qI5fbexAU5YILAjV4d",
-	"tsjWqODQy3RVbc8XOltYSH2e7+1YBKCKHAyVzJmGyzaeC3yLvyqvEjglfERLgwVciKvnvPS/qp6lcIID",
-	"bagptO0wYyMzAIiWGpeBD53X2wAMY/gAb5sDppRU5cN+v38INjr4Df/jzkY0bA04K2XTcnOjoKZYxoTh",
-	"NNexWyQ1of8REkDdJ0PrYIQX36gmg+CdOlBmuOumFISLWWGeElRUWMWzJjnXoDrskyHHyVxy0M+jivxC",
-	"oMwNpkoFd2t0pkHxm1iyRg5QoIcXgjpfNIuQh/1gcmhK8Ntj73zlu6fOv7DUEPBPR2ixIN6ByikJyuUd",
-	"eB0/t/ujmbpmimgmMrCRgKXge7QM4ElaLFBsJpVh2YXA0YOVJsFcrHLBujtGVAfhfd/Z7d2VvaE394qM",
-	"Kb1iztRAec4y1KuQQlskHcKpjNhVys+Oj4fOdbG7OuBL0uIbhWYS2DfUl4zmsJENJ7/TbyK9Zeyap6wk",
-	"+PVOXwHce6uRV2lwUfsJkNQc6NHfopdSv/0L4sOTKGvwisDb69w+NhwqV3s+hmjtZlJbQQyxn3PFQIU8",
-	"fyaFjtpcrOjQuLOFjoD4vrxF38ZTsLGG6n4VzKE+YJclbWTTXnPVTRMbyzQZVn0MY/flL8vm/kIYFfEx",
-	"bMo6i6ghpRo4SS723ss+Cy/kjRgAb4vZoa2BsrLEApX/ShMgzfDJU0Lt1eqaaw4GWCOh4TSuJFjPCbbc",
-	"4ZUi7saSVugvWtvfSoFTCWPh/pa+KeXeLQXHbdx8G/DxIB1KnnOdymum5s9lWkyjeucfBQ085rPKTJ/5",
-	"b0nmPiYH8PuasxviJBTyTf9vEU0jnfHBiGrm757VzXJizEyfHR+7J32pxsfXp1Gr74wPnLpG1/r4uXd9",
-	"CostD6lNnCzPARY4cIEFa5jGSmNSpMtRcOdeqh7x7YCBuZ0dxExO763rrDei5fyydPP139WU6K06WT9I",
-	"K1macjGgs9kg0LAtW8FrLs5ns59cY2SE6VV9G1cewKzQk5WRJ4WevBSXsoegDojPhJJ57qF22bfvoP2L",
-	"qjkwhewqXGHTdplekffP/0Vci8RaKgthOIRFpFfa+pL0u9iarSQZDlaB+0n/tH+ykuqFgNE8waSOTA28",
-	"WBi9vvDFw24ggzsaf6gBXEcOIUZg/umv51VIS0fFQf1E8HNGKCnv+2TK8LKADIxr5G7ozTMnY2aIkGQq",
-	"BZsTa5pbpEHgjSNYXnM4RprpLQJWsltqoessU6+t9yhtMSvlWG9C4mKQ0bl239h4tW9XBK8l6wQMbSYL",
-	"hN0+ijRUTPOsdu2viaN3r9x6OYVL3etKcdTVp1vmxTTuQpCz6zqg4R2ycnCNLgSDLZeoSWrUpk1hgAOX",
-	"c3N3u4+tq36HF9rFRWPcYCyq6XvAVRcflqk5UYWw7nv4BDwXbbyJuzQfCGkmXIzhWn6juDHWTU+0xC2N",
-	"qEknXSHOrnE9vVLDA6p0W7R9OdmY2ABFwg1a2xWjGUa1Rj2iMjUfqKJF46/kTXf5wp2IvIkxTKuGCkHK",
-	"D5yUh5X0LlE/EIUuXUxBud9htwJisRzYytNKopNxU66Gro7M7cwSuJQ3EaAsHQz9HlibXWmvgz+Ec7qE",
-	"ca/4bNayHauuYk6PvO7peSoSOUEVC3R9xdEP1rmuQqRUCH+gVROMnIbYEpzOIkzIq4DGJI7qfFwlbcDM",
-	"mpen8vBKt7VyR9pPrc2FOsCRUuUVZfo/AS2nxjr+WGUbetQ+JYt0JE5B2ry1n73/iRykcjqlCdFsysHG",
-	"ZdXZdEQ0A9prWJaQHz98f/S3Q3jxn1fv/4Nn8tSdjtKGKHnjNYz2kDr5d4PqaDZzl4P6zNBf2u4jcY0g",
-	"0rBJmA6GwfGAshFtoj4+cTB9NEwaAYzIOa1+o1I/B8BlwCkvgLz+5m7pL518ijia528ue2c/r7opN2+h",
-	"X5Im0MxkztMOPq5+9Le+fXPeZUeLc//YBMDz2s3X3PBSsbJ4+U0sp/Pd98OteBtMfhk3b8q89uuqT/IC",
-	"vcvtPSSnhikym1DNNMb9aDllUaZUDydf9FybrXC+WHnFCWTp9riyqU6syjqxnoC9ZC3BO+6otomjTcZy",
-	"Dke3fLp4pJaDJkRANBWGCsjCpHLKKqW1yMiUZgxU4ngPcf65teVZzy/bGexnXR26dIENzrTyKLo7cXXw",
-	"8duWI9hK3/wpFXTMVFJd7xJ0+hj46Gq/la5hzfCb9MqmXXcVnI0HcCy3Wj0CatRSUhkQyY/vXj21cSCO",
-	"vPo8HTYKxTtvSkUUO4Ip1V22qtHq9stOR7z0zrb66876XMCCZQGVazmLlWJMK7TMGOogkjJDR0IUu5ZX",
-	"8IeF6iyEGdccpRfbvpf03AelD2bWFXRaHE+RNggLO6D9VMyseeymBjdREFiiN1+tc9dtYv3GrnROpd6m",
-	"cQ+V9Q3grVjGogdmKWvWnGMDEGugr1taUmNlAZVv+PL51X5cyig3UlK94BioNiwXPrRxZFZZCLKcfVPF",
-	"k5U+uwlAwjBUEw2xFRnitqAR+Ria4G4Nl6qz6pN6bkVs4L9lXJxiaIq3VveEMLjEY8dPydAa9+2Waadr",
-	"FlfllLVFJkekNtacLbVtl4Nuz6j9YBVw3bzJuqvpFrnEhq5T96LvC13ftuHqtlYqgc5GyfW1jHFTeUU4",
-	"G6e2nDZtwzhZ9dbBMLkb22M1BYxaZREVT0DUIvo+YWhqBhMuTJwdIzNlmfMtksrfPqZUX1kJYZUe6G5k",
-	"aDvNdoNcux/A+hIh5GBa7tPf8rZxyN6a7rsLP27KAQu8v7biUBSonWltd2MA9D+Si2c+38zuEq+sRUNU",
-	"hAMPP393/v7F4Md3r74c/yK5OP4M8/sytJqk//fO+lUxAf/pNum/TXxrJS4uM4c1CjoJKVh+24a24uLG",
-	"kGPpnI7jKL5yIjEVZMQI+lmy7KmLpA9SpoHLipGoCC1TpXVOcQJr+1FwszLBSQtI2zW07dqPzhunvmWo",
-	"ldvc/6cjzK0RllzHy2B6rpfY8socG+s5Za3JTYuomlZ598+Di97po2Pwe77oHVqP0YylfGpfnfRPTh9d",
-	"9BJy0Xv8NbTor+GybQdvWbnPirNJAjkrzOhiOphyPQXjSDwKcRuGvla73mtwUnzFxdUzDMdlreEXnd1Q",
-	"MWZXM1MPvbURuhDu7CR5xUyhhIuc1evJ6nWX0ZWOn+WNfIVQ39gz+9nSTbv9bm1ysUGHHkYzr2O8YSPQ",
-	"Iq21h12vL409sZ9F94S15+N0PyMOw979ENCNBM3JAQrvCbGye6D3O0xIWijlg7KBdoBHuPtfCqbJSBZo",
-	"D6KZc+6wulfGFQFGrg87M4XX7I2XTWJicBgv2120fqPG5zitWJezjpaAhf3vEnz8mkVDj/HT5mqS2ukl",
-	"y8wiSS/cp3jCSf+67niaYAKIf7z4QI6vT49Bp5FzbbyMsxazdECx3AXBQ0k5m4MalADc2KRMIHRUsLJ4",
-	"Ee3GmiMawHJkm+y5S4h0h+v/Sv15GzaFNGOd+39c9Tml84FmbICOVXHu13TP0k/t3DRisx1aex9kzZjD",
-	"W80z9pW2HlvxE1kjdW8nl6JuW7lk/zru2Vqq75VS9Fq6DIwqahe7ATdnTIKsAmMSbqy7AcC+i8Q57N9a",
-	"+eGbGxlrvEHAfrC0JJZSuCm0D1ZJvu5SioARQcgm2FfwVduJYJ0VsYrT0vfcxO6s+E06v81VoBV2DJ+y",
-	"36SIvYztsb8T+K+SanbxJa2TnaLJEiBNQZwlNJW2i73DG89ynG4d5CuWefeGMiWGddioZcBwim9oZiPS",
-	"pLK6oijU3392jI0NdNGrYD164pZpMF5bYj+xmb5unwsj4PYR5sxSHuRtWYQKqjWbjvI58S2tgmGsqMAI",
-	"BkMOxuC8IahIWUJO+o8OY8x6Wwe9pibdtm5FZSXzFQxMje1JORN6aVsfSaqygeXLCaFFxo1UiUcRFBy0",
-	"oZeXCRkXVNVlB9+nJ7CVHT7sFd3HsVtrjnP9WqMepjDDnjvzzlTONk7xZj/2ypFlu2X3KbGJJRqrduv1",
-	"PGMtrg8CQwRCv4MNQ3HI7ZUXlSZ8psmI5VKMPfmCfp4SZ3LDCFkMV1PsKAjKAQCH7ri2PdZ02wHeLOHb",
-	"y3Ilx5l3Z/X2mtbl0GgcooID/Nq5BhDSzouDo6iTjorKtOR9WU7oNst/UCdd67tkrEVKPKm4KyzeJcp6",
-	"MzYkA10TRe8J9JeELuLBLAevbRj5qt7uzchXjw5bWA8VmZIWWqqgqNP+SSwoKulxqTu1bMzVD2I7iM4S",
-	"JHuntFkPoReuxJHI4XAu9fbxuVyzN0Xk7KkeyMtONy6b2jkb2PoagykXsQDT73meW20I1lWCCZGpzIqc",
-	"neET+7XLE10K1BaMvwIelDJ+bet54AjWllOXpLgw3zxpR5XAD8LPObwGrfY7hd25BB7IBuCPvCnhCftZ",
-	"x/8M6/ZYv9CMjQwJ+iEHI6lSkhWqmAJTHzPND+NeadhLZ4fXXGouxjhNNmXC3G7hC71tuPwQfMCBPHfm",
-	"Ad/vNla+katvyjOWDUbzjban67VbGouiKztcVcFq8YMZEwOoqzVmyw8F06IPjBxYBE3IFWOzgbTB7glG",
-	"SbCBvLwMD6LxDehCgo96Sa/8qusZrVs1aw3dWIHkWarBrauArWWa3NQ3slnDqtREhXKAJemNU26h3xES",
-	"uQR/lxGKKL2LE9PWfa+hlseAdeRoy+UCA9saTLfkhItXf6vmyeg8VAlxTYQkcK9iGD2v2FMXH2wm8HKm",
-	"5BEG/CykoY2BBBPZoFKdR/I2aEmYyHACC+rwMm4AFFeaZ4wcOAsiAWhtMUeUBCaw5j3plk1uOQHBdFAT",
-	"OpsxNNVaAyWj15WvKuQOASrjujhryANcYWqRUBhw6zkEEjQzPr03apxrKcAdPFnXVx8NukUKVSMaNcLU",
-	"ODBiFBX6EsyMmubs8MwGcjjgMWi5BXVRdXCgMk7s8cHF2xbjwUqn0AQAZwN9UlNqRSCP4U7NFrdrXdt2",
-	"fFRiZq6o/7zfdV8+zm7yzUQ6ELNljnjK9Ial6x6Epeyfi2QBwxq9htLJ5LABNncPJm8ObFK3TtWzSslY",
-	"mdCaEapwBLzC6T75iabW4qlJxhS/ZplHBd5ySDU33yYypvIIF/yVtnhlveTwT6SeUtiBiS6mQISoIVOp",
-	"DTk9OVmSjmPRi7ijAZCU5jKERFMz8lplHVDOuzUUrmUK3KxC2qYWvkZExKc0LzS/rkXNruTOMTa8bT1j",
-	"zAu7PXylromsWwwraN6y9XDTdNQlf9hIRbmeR8KdBBd0jxnYEPvj9PjMqeAt2s8JxBPZoBwv49gWds2e",
-	"U7FA3plgrT77/nAdErGAg3FlqJEZnXcSWrdnhA/RojVYoQTBbagxl/po3YkWs5zBltKCd8OxLYL9nbps",
-	"LG5f6RG3AAkOkQZLrNy39X2YMTXluswT12BQl5csNYDYQTMr33BdcxdIKgG/dGuk9tPQfkfdzU9Jm1yx",
-	"6pZMqVH8U2fnxLfll/9QNF6ACQbpjkfvZM5au9LcxOQ98FUpL63hdgQbgZ771pdLyWIMRf6rHUFnbVHJ",
-	"TGv4ZsLY0anmxbijIws2Lf1ZGsDm968OIn4rPsYBudyAmE94IQwmzI/xmJfv35DHp998c3RKaD6b0KNH",
-	"W6safgdI1LLnncK1LZaE7M8+6RxxHTgvNfb0/IdzAq/Jb2gcp9O4784tC4w0V2b4lGvD0yNfode1fWrT",
-	"QVjXuuHLy6PX6PVvhQKcAxQMiyTvWQ26lZYuBLIISAc+WxtKjwGMd2R3zeSJynCa2wWzp8TV5HRVt7Sh",
-	"c9gelKiolfVXscsmYoU+7bXCEI86IceqENq2GOEVhTlCMA0+/eZJNx5pZq3RBsvKHkWypDeyZUfCcJsi",
-	"XWt+5ooHLcVwhplwAlZHLf8DxoBi9cGIpleAG7MceYVNDvvXmkxcJePvW7+EXhI+U4xm3jOh+QOz1oHK",
-	"m/Jp9XHmE/D2U5cwO3zmuuCYqqpvs5UF6RfC9CLB47LzKfM9VLwufFs+863kNZOFCZq4B+59xSBRCVRe",
-	"F6vn5ZfVI/+tGgdv1dg/t6J69cr99m+dW1/13gXzaPcEvGYcO+yXqdXwly1m7H/xafir6g1+yctLdC3x",
-	"v93YqDkqW+Iv9+aaTXiaB934B+V7kUkVvsbf+LYjP2kKVotKKEFYRC7sk3+7JAhDpz3QLrm/9SfG33Dr",
-	"k3mmL0QoLWEhtqdEmglTN1wzmxmkSuarDcvQ2csKkK7EUaRaQDlSTerrGCMYhKHU8LqbFBpY7G41+uJ9",
-	"0g/QQoF0VNjaRE5alZG9u4/vmGLGIRuu3EKf0UHZVrSAU4ZPUGLWePAumlW7aheHnXIJT6geOI+s+LWw",
-	"s5xnOUbcIGKjM2yYPNyFALk0ORj+5S9/+ctf/vKX00ePnwwPnxJtpGIZYSJVc5uFRwAjgC+QMBMoW6s7",
-	"rSuYz8Bx+y4S9FMy/PBu6DbZ1uRIJyy90sX06NolD8y6TaCzCf+WNQhrit6Yu7xxGYJsbXEGO1wpSzdy",
-	"U95E+g3KWcd9+kOP/rrLvXdA4JD6Zr7RjNfU5VYllld4tUewto4LcUis7NuV1jjExE1FbUvbdlJIa4Ws",
-	"2hoeuiHha4ib6+D7gll7c3Kx1r3gFjb1FhLwUhimGrL4U/KhUFdcT8jJ158+1SiVgAY5/81SqHV3sJWK",
-	"vHN0IzSxYM0nTJsAjmmCsYz5HM3w6AgdbzOfhe/w9sbrGni2g/42tMO2p3tTDdvht6QX/mNhddOyK9iN",
-	"l4cUm+U0Zd5JEOUIKXxFeMXgcuRjwn6vxGG93YvpBN7aWnIRHP/+Gfn2ydd/Ja7aHMmYoTzXiS1bloGC",
-	"BTNv27vzsWv2f38BEYI8s2WCLwT6veTUYPJSV6EsKJwGatvAwdB+RaaFNsTInCn4sBBh2bdofbOoNtSV",
-	"M5nSdMIFO1KMZviAKSUVJsTpk1LBEGoJnFjHpRiU+VRHNBu4tKt4m6wVrLHce3ApC5t3UIrLnKcB0x4E",
-	"j3jGpjNpGHi5+awdNhruimWDGVNcuhIcxeUlT2FHBsEFBj1aoX5GSUmS3vSShj+5sMYVvOXDB4B5OZ9y",
-	"O1WoszHw5QG0823CG7T7GllMXjZJtbqsNgKKkxWCXlNuQQ2Qh+eNRzM6h7zcAyPlIKfK6SvMRGYD2ChQ",
-	"udwwe0nXxcxWuBtMWcapj7oxfMpk0dmzwQJnxOpaTKkIjv4TKIecrUVI6y3mAITMqNJ15WlA9mAvIiro",
-	"t0wdXYY1+w5sRsUFEBp2zxjhUBJLAb7AM4gwHh5kwF6Unh2kEp6RAwrOgs6bZvifI6cBPHqZDat8oTZD",
-	"92GC++FOBLUEuRzrftxejt3E6wjRKbPYikpqP9WWAvktyv1/fvjwltiXxGfojZQL4KbFGhEP8fnx3Uui",
-	"2CVTTKSMuGJ4c9CvoyjjSB18+5QM6UgW5myUU8hW6ZJE+VTcVqKqwkSCtiuDRUoQN3lD727Dw/3Rfmyn",
-	"1wFwdM0bBF8cYbWOgALaEy/zCflZugKlAMTwJ6KxFOP4CSL8RxwIpMHMeNRMSuPe5aWLM/QAit8m5NeC",
-	"qTmomS0gEsxXxAxT0QG7ZTNayPNfMF2qwyynIa7CADFsCqpKlhBdpBNnOyAuxSbJkcWurp1qN2JJBZSy",
-	"vtTCmdlCR02t10odWyH4JQeu4YpbrYgMqkZpfBqb7DtkMy+Aui/PgLfoXedLeNYD5F2JwHplVpAKYJy+",
-	"g4jGqAhxM2oMU9D5//58cvTtx8/ffPmv3tJym1Flk81rO0h9tx0rZraepp3q26AmZyNua8V0yuqtLUB+",
-	"61qfS6uT29kH9qCMwySnXFAjXXnTsoJEtXPt5c/q0BIuYNkXbxfLni5t/36q3xiMNXSbPf8BLzJ+1V+S",
-	"nhSsQ0GIxvBfki7Ny9G7NK4248vHYMMty42RAHg/wMILEd2fKHN1LUZm33CRyRv7Hq7gLmHawekJmXJR",
-	"+BxEXdRyCxQjmFQ7GLl92RaJsNlUm6ThjZltlRz4uszboQWXiulJq3lV2feDDfPI1T+PT6BefjCW5zYH",
-	"RhbTK88mbMoU1H7xjZBRAmsgyDNIVYLP3Z/R3wAkaPvGyc3r6T+qKUVXVLoSxYxnC25RC+VoveuvWPAr",
-	"WswC8ydNeNFiG5DKWgcJz9xpY+1xqcaQPlDO2EYK907JMnaRGmOVULQ850PQVwxK37M21wXBrGrDU+Ma",
-	"fPbJa0ys6N9qjKV00U4c0skpqV1mS6KkaYHbtmT30f1cntBxewGxrWn0Pqiiqi7rtwUNUVjdplnaJpaV",
-	"p5a1cxupszeONppFyJKTacPlQTk/t4llRb+V88baE4W+ZcUkNFnRsTuKDfI3Oeiq7zsuvdZ5wyBVm3yj",
-	"wsaypGUOk7ahr3dd3aYe9tPSawJzQU+8QsTmnGUZxIvZEma70fm7JYTiYlOIGkFFQ6ZioGZnb6kHL2Op",
-	"hnJ0NXCthy6d7iJN2QRpXKdRtvIyqwpZ2YlyEWZnO3aP9bBTNssuSUqhplo0TWkwzwZkYrfRg4hm0nPX",
-	"1/V0EG+lNrS8+oKzN2NHsGByxeaaHFiJheYko4Y2XBwOo1XXRlRcDZxifs3Cb9+d/4AA7Q3s4FHEVIKp",
-	"8rAs6YzOGSg0h3xEBWiBbIthfCabM4q0xQ3jyaPTv7bom3RK88GcUQWR5Qod2cykVhTl9NHKoijd6Dz6",
-	"QnnD2+JxcgjNy2yZJSzuOGKXUjleBkFoVDFQOAI9JAdhBovDjSLQ2p2nmcHJrCSN3LD3vu06vtUJqawE",
-	"5GBCMc0thCw/da6ZAG/2OgooDtRS3wAAPTl57JzZqg6GhxFX7aRXNfjd+G138R3xRdQdzYgnvWyH6xAI",
-	"g4NuYH+gR97MUwQgYyM/kY608FbEa/Fj2JMI3II2qAwmsY3gFyXTIjf8CJ+4lHdyyk3poSDGOSOjgueo",
-	"nj4AkJnwLGPCX4VK3lo35ISZ4zuYz6f000v76enJyaJ0ElLE0LZb6/fxzmhijdhtTJvW9CjYlHKt5Qsf",
-	"4mSrwwiM8OJTS3nytXxAFSsLR7eSVevgnBDnHR7Qw9L12b7qSgvRXUylE6Clt3HcXBIl3s1lqPP9TMtC",
-	"pWzQnnd7dQ+r2ZcqhMBUUhkWorPm2HC7XQMMzkaa3FbTvEXZsKrMeUz8egf5iGcMi0Hn8Yq6hqoxM5tv",
-	"Tjwjr4fMtnTW9SNpziJaYj2Eu6RHzQrc2soFr+zt3pyyYArbWsq9LuJ9QH+7A/CH+cyFExBPwJ+Wnjp4",
-	"naGKYXaexRsmnc0KhWHpKRuUxU0W8wYxLHU5owoD4DALjpEK7LW2pBNV9obOMlKIjGF1hpyaKj0QBoYq",
-	"RrjI2IxhGLT9tCZ9BrNB63vZtqXKo4vuGTABBxJ1j9ToWaCDqFVG5MyAQ3P5fTlNglJVS1omV85ggJHY",
-	"Uhmag24l5orywbYkY2aIbemLUjgbS5hDwApI3CXA6ZIfCh25ZhTFE8iWZEsuRCgvPi9XTcdjxTAsgQss",
-	"ag3HyD7NmNCsDGQeFdmYBdNo35AvLUC8lSjCoYfkoYXgKVNjRg6o1YFbhxbvN0ihyWGXyMJ7EY//7ILk",
-	"Wpt1u6jKD6BlW6ansxp3oEW4Q+6S7FRRNvlPiahOYYf6xqMcEx1RkV0IDDmxSgZ723Z68qfOIozmwdBc",
-	"wHTVttAssd3MFNNMGCSnrl2G2Y5sqWqrukbNZjm/iLulne1gE0Wh+7Q0gy408JbOTTpfMLKu0FOuDiqD",
-	"jkqTVeXs9R2jyuZW2ap2MhiusVNJZM+b643uXVJXebZqOePFBWuMGnQ9KpraBpwgbfUt16RU+HIDJXeG",
-	"MYY/LE2L4Ayqy/bdWfNKOkIVo4Ppo07ZS3zQYye4WFVHapO4wXoSvEgKRVdHR9N53Wnvond+BKUJ+7ex",
-	"ZgU7G8kEhBnX+gTtd4vZh7LChZTSKhcvQACIaCANHoBQplGzPNOoRuQp00+jgt3MBZVUkKSskOlFurhw",
-	"krMxzQeIcwvZ5OBV4PN5YOisICM65lPNfyMjmRdTImS32EiUf8wgyI0WSQ8KIigtV6dn0uAq3AqVlNMg",
-	"qRs5CIF8sxohqKkv8XMJ/1urrnULjuNg5fmcuaSd6DJbVZTIXIDhDMxp3CQuGMP72YYnSg5KsatvF+Je",
-	"6OFhn7zAAq0xGrFAwtbK9Ntd641CYJYQPct99SqwcBJzI51y38ZDxDXa9ute0sPPO2u16XhNR9CVNUgA",
-	"Ki0KegxMPIgmHjYTksrpVIrEBpGHC4LPYRUTObN6ep5aHz/sAd7YLtBHCvqAVtBJ1yVvlkIwpUsIlk2m",
-	"FJQgDCmYkCOZzX0dyNxmXqtnnYwXONk0BWDJYBqlweoJAStClng3cc/FFqhP0sKfFwlCoLYJKX25gw7i",
-	"NrUcgPDwDPJibCmE3mV9vo3vQ1kERUjTTRe5pSy0DyU5rHVs30rC+C1XjFmVF3bLdLysJEBnMyWvgZQr",
-	"BpBbVwJXBQN8OxSobcPORKxzztRdpQv1aO7Pv4ZNTbRYyCC/IqF6iefb0HuWnd2b8hNnsJHBs+1adM/3",
-	"lqYW0m5JJbGj2AUSu2bX6O7rcsB0cbtpkMdGwOwKzUxNPG9aTDcQuh+IhLyoSIpLYQIvxHXV9Aay2Ipw",
-	"+OCA2qB9W3h7ryj7gY7XraC0IE+vB76V0f7RyYpMQzhS28y3FMH/UMnPnoZsk4Z00Dz/ZNOWbUnq3o78",
-	"WxaEXr2fedSr7ocyZUkjNvXxk/Pvnp0+etwSRryj1PbbT/meWyuILy/duZyNO+2NJJbyVNZHnPgpnWtf",
-	"TqWpjHz8hNBRSk4fPb7olfm7WvPQPFoZ+mQnsGRDtsHUXFf3xtd+wgyDsfg5TJeyvvnvFhl+nXF2kFLD",
-	"xmDn3pBe3jodcFv2oR98RBIlNjOjrdxRljQJQ72+sgmJ9EZ6VUM/uQnsJP/ZxqTFl06300tKKFl+hptq",
-	"dyxsbkR2NgXfbYPipgblWzjCVbCzXm6hrr6K9lS2Q/ugp3smfVsSjX/nAHcLoFnMTKFZWihu5u/hnF1m",
-	"V7Rbg/05UjIc3zkXggPns0BnszJCMSHAiRU5f/sS3WPQ4IFAhCryhkl8YmyUvo0yahmyEcBk2xKudVFR",
-	"81yOuSBMZDPJhfXc4vCxbeyp4VkviG2qZkFn/F8Mbmlo47yULWlmYEngJC4wH9R37CrlxGdhIQfKuXOB",
-	"qxCqUGyc7pRBwZUL8UyKa3grhT5Dtyc648fvXpw/f/2iP836EOVk6w8ZMEj8xgTBaHoChYXRuSLnKXOu",
-	"I24t5/94++rocf/kSKoj3PRe0itU7rZVnx0f39zc9Mei6Es1Pnbf62M6nuXwWX9ipnmQHadXrer87cuA",
-	"EZz1Tvqn/RNfw4/OeO+sBx08tmH2E4Sa4/4Ny/MjdO07hnYj6Kr/i8uZO2YRE8yP9QRZTwkGwIzmAFFo",
-	"9rzkzvcL9t77gZUppNyp27h7PPMyuuRlhmkQ7eH8g5nnXKdwKXN1j9ALB6f96OTEkwRn1g7TlfnZWyq4",
-	"ikaWgzx36X8sSC0afzPfsEwU1A/oS9sw5bx97qcaAvfOfv4YuBmXi48M5i05QH+DLEKfjrShI55jZz2N",
-	"Psc4BETgwUEdT+kYag1wcYXsROrImWI+C/B8g2YEkwOhGHb6tc8yYVWNtMraOsFMOlz7mDf0droQNjQI",
-	"sKIsd3jjvD2lQkzhhmSS2fZ2PK4vxPDzd+fvXwx+fPfqyzFCiJ33fyPR+nu/3x9iocdhCaRnxy3tLgSG",
-	"tNsI179bajfsk68hVqmZz2xYaVBLogALE9LmsrkQkN2NjwsLoH3yyqZaQ2cGt3AEcfhtRyz340IswPZ5",
-	"lZblNcz6FceUUs7h6zuZzbcG1mX/bjwL1RUXd2aNBlo9ilwH05TNEM8ddNygllkYyNCLmO22ASO8fdJh",
-	"RI0njx6tgRbQ/tu12n998nit9ltF1Rc215GLLzoqdJXYOLfH6tEVsNCiapkf0PTOenJmZZg2bD1OpdDF",
-	"lC3B2k/phIqx8+2z7B0N45RgN/a8DuwMgUwf+pgoy0zPCHWMuY4zN2w0TGx/moQvSmQ6F94hPLHkH/UE",
-	"MwCtC2EnUsUInpJhLW3hsA01ntkF3xlquPHWwpDtMR5LDHSRu5GblZPGAtOnW0w6OV0Tk3aLeVvFJFgq",
-	"4cLWxqOkwgDivR83wiRpZu2o856JTCP2fjrK+Jgbm7fowLK+kusl5GtCjWHTmdGHMRZ4IWyxX8xqZBWB",
-	"zu23Mx+8EMiaGsk3l3Cm96/fYzWAGzqvMaQLEU6jhS2RgyePviXDMG/o8HAFr4L8T7tBxaBszTb4E55h",
-	"kz+57fiTsScAcEJLloQ7M5oD7GyKT2HWujhSObM04JViKRzBYj6zA5/3C/4bJoTlmkEc+YUYNpLfDg8t",
-	"JvlxbergCb1mhBqSM4pVe9FJkaaGKd0nL0BivhBoVm0m5ym0BQJtCSvUzmljQ8hUg+x1u4D8+iBrIcGT",
-	"uHNquU+YLAS7zzZjHmvC7bp4dFs4/1zTPPz88UtSV3/8/PFLAxXQS9duCTHBVm2KChZS2xHhrcJAoqDG",
-	"IQCe4XlegSJyu3AyCcS4YawHEHhA2AtxsJAlzwa+uYY236blXEtTbR4mcDODFP3qys3LekeWWEJ1A1ld",
-	"iv8qz2CfnOPMLwROHUsQ0WbOTxhEyAoWG31iUtBq1v0L8Z4JzTHfW4mI2jNPTC/RpAqAuZUXsk2P2M6/",
-	"4NsdYXA9y+YdC4+NjJMRAfJd4zQfJCm4a7lzXdLR2MQo5gCW6AgU3464HCOWHPksm1uUYp0nfx1v5SVI",
-	"ssxxx6A6D9wDychSKVukp8bALRkbWm3eGQnT8F6IDyAaOwl4URJQsjDoPYVBrxCaZpm7YBz5N62oiJDq",
-	"QtCGlP3k0aNYMvZKbg41VZVCp0zRtDOFUBITu700DhW3l0vbi+l21xGCEUJDMfhB3h/vWjReF++9cmcR",
-	"anFvy2AYjywAwpviuw7TTOYs5pLxLgjhXGDcIiNpzqhyr3Gd5ABvnJCi//mLVy8+vGgmZDt23dhsTYuw",
-	"+Bxn8p5VhSlWiaDvK7n6LjjNnQuRoKSQhYmdwTonn7SQckdCsXJKlT48qVIZo/YbdSMD0I0Mn5Khq3HA",
-	"mRo6MnshGmRdNYjm91IF3SPwoIKvHMUqYS6Eq+OC2o1rpmAUB2CKOYuZJWqamXpaTAeBtYyEF+IAzFtv",
-	"RD5PCNSQgMD+v7+inxLyHs6EEfYJKBjhgmTsmuVyZm1wjZnJwpRT0475BVdbW04z2CRLtEvDxoFTZA4v",
-	"hGY5S93Mb9howbYwxC8On5KRNBMvkD46edTQ4lyIkNOwT1wb3Sf/VlKMw526EGiDnBNw5q/E2wXN6FOi",
-	"2MxlFKU8LxTTBHNU4dlW542QGNHkOHb8jhk1Pzq/NJjTr+2ai24fIYrv4JZbbcFdS8jNLJtLdayoaCht",
-	"1GVSzffMHD3Dp0NXvgJpW5wFW0CUqsVK0gCRHySBKLU/j3bXhgJTZQhtpjfdlHOWyQBapGNggTVypZ3w",
-	"moagPyQHIcGNUENX1OopSIEhdTlMyKgwLm+sJnJGfy2cHUZfCC60YTSzKeosbJ057XGVEOKgsrBa48wQ",
-	"UFMq5+N2diGs88bQRWHbfNFYZSXMC3HwzQlIlnoFsn8oswn8oVC9nqZjb0zx6DZmxkMbFVkdZLR3BErC",
-	"1CX68Fa4eOyGaMfJDwspTVAl6w2UZ+6uaFdMUqoUR30yFP+TgvXJ2zLNCdwI611ZjRDVhOaK0WxuTZOt",
-	"+U8w4vtCXNIpz+eHhJaceS2jpSsPsUvUalSgeGjYZUszzihXG6LXPaKLN6GTJixZQzkszP6G5W2AG8A4",
-	"dKsrFZawI+jBbw3tTBRTi6xVHS9NDpTMmU5sWg5wf9NJGftuRUqdECi85+6oV6x8ysU1N+6pfeILoWHX",
-	"Cen3+4de3nGwy6A2XEpt7sJW56xn0oafl/W8NN6q6gtkmDjZqCr/FxOHpZ8flgar3PzsoL0kgMumM+TH",
-	"HcK5XVCMexRIQx1wP/nj8o5XFhCdwez87cuvbH2+UJVpY8/mvY8ewsNqhQ7IW2HG/7lLf75yjM5ufGSW",
-	"F5rMZM4xk8QmNOyutRF+kYQL68CM7Kym7z/cxGGwIhf6+DMSvi+txAszFwGg2OTxzsu26sHegzRj2mdO",
-	"p6ilhHpCeN8q+b/VHqSKmUWK8xZTI71V7Jqzm5dl57uFID+KG/ZPTRTcHtTPNoAtm7uq9/HLClbwoTxk",
-	"d/COvVmPNeN8QUveAC7KFWswgXRVST0hp1hVdOtjO4QfW7iEXh70CtpUh2+LUc7Ts3IGZFaZn3G5LCMu",
-	"eiIhOb9iNf/AMkshqidsCR9q/AeAnlj7GBfrit0clLZrL++UpprDBDu1lqJwAjanRVL6g1fyS5V+Haci",
-	"UK1e+YOJufMVb6MN1vbRIA3bF8IXhrlrd0Ecf4nD4J+FINmNWEmPVsvmv0gujj8DBrczubJwGhVZLfoQ",
-	"q07op96diANo51qWKaa0QyMqwHqaQjYUlq1gb/8j+U4ZG/TfmaWtafhfF+JOvv1jORZ8SdaV4TxjLdO3",
-	"jNgErQMEAJO4itF3ymZTb2++LZcNUOsYYV/vlrvefuJtzPUHxpyLRcMxwtkMYHHkhgLCW5WBq/T4lXZZ",
-	"qWjehvVWJ2sTJe1IJwt922G6savTrQ0d5IBaRWlO95Rmh1dFPARCnfJoomQxnqygMatZ57T9uv8aLvq7",
-	"5GKvW6/2ZX1Yayg189/FXf7DgidJUpM0dEJQ/+ddiKbcunAEBzd1h1YasI/wC/sKXLWySl8TOIF0cTmx",
-	"acajhU6Tmi+EFFgHIC+ymJzzmtkOz/P8PSvnv9qr5DzPqzqqN0z5dObZH9vJBHf9ZsIUi5xyHDVbzt9v",
-	"Xt/yJajtgEJEC+5C1oH2A9q6dR6Gi2Hzm6C6rk7IVGrjQgpyZ9W55Eqb3wV+wxrr5avD2sEd0Th+jIso",
-	"ffyZZ1+6upKV1UXtdZ4D4SQHKG8Np6yfB7AAtm6pQoS/EIDxNjrQPhmSg1yOAX4PraMR9fURqoLATesf",
-	"li6wNKZmF2+UFaUB4l+IVupSObMsFTXPy355lpBwBS3iJc+WCpdB1foD19P/B+Xr6dHl+dH3Hz//7ctR",
-	"+PPJOj9PH305jJTA//KxC/X80KhWfJe0c1057d5orRTlJu2G2DoslWqsjz/balvtCgd737AlfdUYefcw",
-	"4PrRmvfkGVIW7V3krJdJs4i+AXaCPgFPTp4scug3arxjwe1NMOc2Ea5Zy996XeFUXnyg4ziIN7JCuRQY",
-	"Cfm1kOgTrZnIsGypJsOXl0evqUknztEbEySBRWKp2fHLHl9678CXiYraZgf4ItW4lXl5QI5pL2Jzr5oA",
-	"zLzMeng9h1NbiS8W8UKM6Ydn7h1KsL2Dk6F1rnT++lgAACb71Na8yJmHJ1BUPzn5tvxuAJEAOU/N0KkC",
-	"rCMBJLNQLJVYTNdhqy32bBTleYx9vVFjlySpg3KnAezVKg5Kj0NBhoAsyLMdxcrnDhv6xCcPPivJBbfy",
-	"SRWy/OTRowsRia3ok5doEchYmmNaNt89QdqCIWGoA6VIg4p6phgfCzdmxnrYWLMgRKbNSTUYsYWxyMGY",
-	"Cabsh+jiy0WmiefCzh+zsi02gksK4Z3hkJ/b1hVH9yDRa+HjF73/Bi788fNp8u2Xi95/t7LgHcREBwfs",
-	"wOKOTQ1dCLXLLLcZwQa3mgaV/v0R4F0rlu5cUeQcoUSTxARlqReo/VriUUWgW6Si48qJ6QjykB1/vmLz",
-	"hrhUJ50frDvKP5g5Lz+FtGC7NMSFAz1HWrVUx9kRJ/4cUssfDWm8VNTwvsMbNTfaVpaM+k+14EjV0S1F",
-	"piQGZDA3nrXcci2uLb3prip9EcppUUS1DK2JqyuFHsVs8eK7F3ieL4g6XsrpIOBYJdXvUgqpHdH9iCF1",
-	"KNmT2D8tiRUYy9oksm1EdS2RJCC3m0kmx47CL5q3HziZLiLKp59wLVbbSu3GaXIwPH10fHpycmJzj2Qs",
-	"5VOau/yNC6Eamgpu5uSGKgEyYz2FPLXpvHF9eEnMJLPpU2mWkWJGjMQoj14S5x7vG2LeT5677hnIw2Yg",
-	"7qDuk4F0kNT3xPwOiDkUC60ogVQEPdCBJHy1SlzeEWUH5dwSffwN08YhIrHaxiF+YnXzffIME6CTGR1z",
-	"YZkThBeQ4QE1CeHZIUSOvUXvV5qTjBqK4XlkmPHLyyE4CWHuBptOSZMJ1RPWkjw2c2We1r0RYI4SZDUr",
-	"GtqlRJgSBO6DUVoYHVgLwcYA4pQu0gnKUHDBt4qhYVuQj/1mqVC1dHQ6skkYuLax9GAopGrMTH0apf6i",
-	"dSL2K1+Se8PZpNQnv8YZ2Rxz2ZK1S9Vbh1Ev3wpMa0YvDRZW5poYPmVtY4NVNz70kkIWy8d3mteVQxu5",
-	"/sAfd5p4NePmBayh1f1AMMBnzE5kF/swmcMDJ/al50NDoWjNIXZjazGVma2jHKfnJc29hRkpygBsqcTj",
-	"z77g2ZftCvPYbbs4HxQP3rne5TsYay8uP0RxGY/mfvQsOPRev/Ln1q8kZMJt+hrFpMow/97IkYvbC+NY",
-	"2X+5GB4E5rVae6zfPLCVl0HrexKHUe7BhbXIPVVVr1sIfFWNa5fiL/FeXEHO/dYZ+JrR9xNRXx1Sm6C1",
-	"v3rfsTTGa3gTc/yPYG/1UYXDt3DkicbZnGfOjccGilomIRgDLxqbZs5me5PC3hlspKtL+waYAIneWnSS",
-	"VXUM6Ak/lCJly+Nydh5QWg1wPxE6zVDWPWbeXzaHawwx9bBvpIvXWSs2Zw3kXcWAjz9XPwYLDuUxnLH+",
-	"18vyM0Tck5+jrn8PYHcg4sHpIIChNLFp5PTu+UP0Bl31336NrgHs7e7S62IHnBcT2Xa1Bne85ootx7Eb",
-	"FnjX2Vf2bOm+62ZgRrwQFOmYVoWawIuzUeps91yqCmjock18HbS+z2uiZext1zT79tZXRRwu2B+iUznz",
-	"mVjcXRVEZW60vdrrbd5cP+405Ncvan+RfCAXScDcENi63yarj7YQFBLPpT6SVGUDO5DNnGtNthJ+KZtu",
-	"40jeCHe3xMJSIxbgCy2RBRFl+U2xgs5dFSwsB7ifm2KwwD3q3Svq/UNRYTANdM62wXYDXOzMdo8/Vz8G",
-	"K6KNX4jsKKPG6WCC0ch5iIRSMHKASOvaJMTh6yHqgJZWlAMMxuJ+LuaKaoxhuGZK8YzZiigY1VVL30Sz",
-	"KRdcG0WNVCSlQkikAUxk7XmaXoisgez7K+5DqdiCmZOm4ensBDu2ea+t+m+/49VwbQf32qm8ZkeyMIDW",
-	"8poNZGGWBtxYRPgHM6/lNXtT7DbTixtiz3QeQIwL8ZCyhqQnrxnUA9pBIAt0jdH77YhTQfMO0Manr+Ss",
-	"yzX0TdD6D22trIYC9XXbUPBui0Pd3eU6OHXCMUd8yoiRUNOtZXSXDiRmgh1JmTMqdnx19qA339+cH8jN",
-	"WdaIQUdS6j+a78QDLpjS8edyqO27wgVJf9vIdjj6jlziLF22vlYleuy94h5kLgR/PPeUCMEPv/eO22dF",
-	"kAGpuPXVsqLny/Uu7ZT5eCoFmx/ZrGm/bzIdC0WE/HF2a5ROyqzakDzvRjBV5ZFHn0Sft778qXnW6t7z",
-	"Hu6ugs3P7c7t6f4DpPvhAT1Imr+nvLsXlhlouiey0AwqzDhtGdGMkQOpiDZyBj+4GB+G9AHJ4nZJNBaA",
-	"G9iON6HTTm/yu6bRUUPbC+GcNqvZUG0LXoK4llhPAYz4dEWC0lxqcEDShhqGxZeAkGdsZEjKFBS3xTr7",
-	"VpmvMQebRTkMFIXEpRhcaVOta5q3UvlQPbkL+oS9r1WR73SvF/2j6UUBSAPNqK11R4W+ZGobFMjrT5eL",
-	"iFbB1UUN+da1vHsV5A8YYWJLkXtnbXKp6BhIQJvu7NcN4nLtXhPDG34vvxdPF3tEe13dA9HVOdTtrKZz",
-	"quit+bW0O51YQNkRe7Od34+ziVvYHvrvFfrPs6yMR9gGK3OI0YmTHX8ubTYd7NABIuyUJu9VgH9y+/dS",
-	"ZNgVL4je/WzP7Re/0OS5awNKiX57LdqD06LZs7kf08meaO7tJmN29zIEepWyTzOpjF6VNRqLHXHDXrjm",
-	"O78X7/LmWC1kf3t8ILdHjCFwsGjdlKce0Lqmg0bdhe1i204fIaYcf7Z/4Auq0gm/Zktr4ro2WPtdE+GS",
-	"hRKeATunOcvColKu+vxXmjCRqvnMZ3BtzfP5XN6IXNKsgun15HuZGmaOtFGMTusYVAo9Iy4oKoIWmMMe",
-	"be4PbfzBg2BmIfIr7WHtrrEmKnrbTttF7xKNduBzigjrScimxqRWW47V9uiqHHFZ5N1W07zkTGlfl80d",
-	"SZ/YqwC5mUhCc7jqzMmEXttsza6kPNbA4boRfqGYKxSfYP7frLDYy7JWovASVw4k4bwEiHapeVrkhs+o",
-	"Msew2RCEQtfIEGgH+HEGsHjXCrCA6O2p0f3m5UCI88GAnuVxYeRCVsPtZcmyCL5MvNUrq9XroN4klqAH",
-	"zDyD/OkOgacuhrte6+XoBlKAobU7IdJMmLrhmmFf+JBltvdWFPUC9R9AlN4L0Q9IiF5bYt5RYHGcR3Kj",
-	"IXlexoTL9XngnNFAJsjsM31YeazdSPKK3pBvHj9pVDSAzNJK08GMzvmQHGCGbPvdkP1a0HzYinh2YgC3",
-	"O7IIQdf3Yw96z/2Ye0S8N2UOnrxjhNtjdSl2u5TVHX92FvouJcBK+N8hX9hrNP/kZqBlKLAbdpS0iXnt",
-	"19DKrWU79p8GvLuCgAkZUXHl6nXqhCDzs45/NMsU0zrBxPDkN4iCb6vDiispLUKtLM6aMRyK741ND87Y",
-	"BCdzP6amPVneG5ocYY5XK91p3uqGmNIsFNbFBlWrU6TvrHbp/or7QK64Jew2roMPpmzo3QgbUrejib2B",
-	"LNb43XHdsvu58nYvfLnH0DvyhEwLbeT0XitQNhmN1St14S/f2Za7LiGy5ycPjZ+M/MH/OW6rqxmIL4C0",
-	"swo+98MwVlfw2aPeHTGKO62Z02QJGVcsNVLNWy2Er8uQeptuEYwLLtUiRtaya6bmUlTWf65s2NZTTMGo",
-	"0RcAWmr3Ut4IH3nrYq+oyBJ7SS61O0xAjU9r/ijnCFH9UlvfgRROQpj2zItA156Xq1uhAIJoMyxVLKUi",
-	"osCw4dsFm+3S2lgua88/7x+JS2aVBcDW0eG//OR3ykHXIzFHDme3G9Z+N4JC0RpQ9J5VZOaZW+BuxIXm",
-	"MPejO11Y7J7+3LM2U1qeSE2dWxI9kTe+/PF0K8mfK3rlUbmjmOE8K88+/15vCA34hqEnVGRHmFviIGMp",
-	"13DFf/7o8MxJNUmYti9BiUcnqKRLyDWb8DSHx2HxBecpievCJPNSsaTmSzlTTDN1DRan0u+VGyt5DZ3c",
-	"2M8WXKHbTWT2fdwKvvdP/APmvP7k/BNvJjJ3oGbQzrjCZXr9e0jpTN2JQPDpH4pAPHv/E1wn/vPq/X+e",
-	"kmrvoPpgcMXok38j5mZqPlCF+DsMP7TGXyAESt4c5eya5UQxPDYOFEBmRQoE4JwoBvET1uPUO2cypaSC",
-	"L8mNQrdOIc0E0ufgtQ2N0ZoMbZXPM1KaoN/MmOBifDSiORUpI6nMi6nQ6HTtTNa+qqKRYKr22dMwxRGZ",
-	"yqzIWSuVsV6xPwIF3J0HthtkDQfsLVagwrHfsT2JezAu2MhvEWKdkuFSgTae6BlctfSEMbMVWmfxr68K",
-	"0ZXU/SK5OEpltjxcChqQEZtw5wPq9LP/790ZGX7+7vz9i8GP717Zzo4/Q+MvwzZNyD+Y+R/JxTMYcodI",
-	"UI6xR4D79zoLQAZABMHpXsr3PjTODMPPFLvmstAWybSRM01upLpCPmmWVvp9Jw01rB2dTvfo9Mf0ZMYy",
-	"95iXcB3c2k1FwyZHkZeXqJv/w4jPP7gKTjPFbcl6vLSIbElRpz4pU0u6s6HoiudNml+FV21fEV8TOIaw",
-	"xDl+leZSB66mZ9bGQUp6QKRAJz8nTj85eUyGuB/+IECmbhOG37g29+56vqcdO6cd/qzLgMBLw2w1zVJ5",
-	"tL0Ld0kFOlINlJBbZdBzizdHrsKhcztGM155QZ0xNeXGlBFLX1mpe2mwn78F3ktJG3spQD0b11Whxph1",
-	"D19upwZMfVT4pm1Q7G+tFJbPt2awjM/9mqZUYJpSWZazgUyZdk0HGVP8mmWHbUPaz5fXsokPTGezQlmM",
-	"YNXmLasRNKOKCTPYpFTQLo21APB7O+1D83MqHBnq6uaEgPcHdnMCKN2R2RK6vh8nJ1zUHu0egI9TYcHr",
-	"9pIO4uF6tyNvbOvi9/qTb3ufNfecc5Sf905r4r3N4XL7cF2d3IHsGehDY6DXFaZ05aHukz+yr5PflcDh",
-	"IXq7eubsa8MZ4F+SSakGVopP8OKR5HTE8mFpZkvplCnqNBBSrbDnB1RsBWIa9skcp/q6jpD7BGcPz2Qf",
-	"KLYQZjTEmD57/9OfG/+ABx6lOeXTLtUsntmGf+h6ujMmMrBjHDg4PUzgKq3kNeRNU+wXloK+RioITGqd",
-	"CLoH3BvPxwsDHNWe6z8Qrg9oRlKPPR2NiNj+1vbDlXh//Bn/x8cO0rdrB8Hu24mbH31HjkRB/qiqZJax",
-	"+SpsaAXVV9Yhp81meW53BVFqR3d87NuNc9fONyW52JOKe77q2/N3132LN9uwizYIyToEwTK83zU9iHoh",
-	"4LJ2jtB2mD0+/2kdieD47w2d9fFnp+LqksmtVGDvECr3KYP+5Jnclqmx79BohPjYyoAqvfAuKvnUcqs5",
-	"pNvnVntwudXgZO4nPnBPKPe51e7Y4teQFo7LCuBHgWdfqy7+e6djd2Y3eSOYwrq8MGVDDjAUzyVBOFyW",
-	"beCfftiXwai7jDoph9kryh6MecxBUVWEnteAYX0H/LKn36UQIfWtMY54HVhY2r/ShUlRWc2RuSelnGCD",
-	"02jJd9pr40ZQd0cX68hI9+McE6x0TznuN2INToLVwNv6qmNobpOTbiO8IKQpm3PU48/VD39Lz1jODGvX",
-	"W4HXfRuy1QD9ySLZeC4F2wPkndx24ZhqAMnDo9oVKP6+2Ft02Gpl7YPXsGZHRvEo8h5/LtnmIr7GtzDG",
-	"nsF47PnzIWEi0xHaBXmVDZ0Tap23ZUbnbSz4hchKkvDGT3BPER6UE4rI4mcsg/Pak4VWslCJq61jh6h5",
-	"B0QhSE6zXfPYPd4r3gClSjydkmoBYPvkmTyy9AxLJZU5d3DSupiixAUXB23I6ckJpDAU7IakUlmUymzs",
-	"IcaB+gDBDH2yfEgxUqRlV406hdv+BaPs/36uFdXy9reK+3e8F6HTyDYvE2W3a6rm7MC/P3pTxFIJ0LHN",
-	"kJNKbY7GShazWj4vXaQT1Fbn/NIMgR4NZ1Iuqcn23poxod+9VeWhWlXwdB6aTWVPT+/gUmyzP5QqXkO3",
-	"VDJmAwtHGNP0hxDdYHj0awfCI6CXnP/GMnIwhJqXo5ScPno8JCOWyinTZPj4yfl3z+CRLXZZCP5rgfHo",
-	"pYP1klhHFx6xI/nL9X4/0pdf2p5W3DOtGHNtGOhJLFBfos5kazZRH8mxnGiUwUif3V+rlLQOS57j6xBL",
-	"9nqYBwNYU+the12ezg6gaZsKF9d5O1upYHMHWo9rJjKpusQG/eRa/q7LkNtF7L0BHog3wHUJUx3N/vaD",
-	"7dUib9dCWUjZmQgEnd+XBIQL24P/A8j6cO2B7NbqJocYq+QdaITiDvzRzSTthZ0SHfayzsOTdXYFRsky",
-	"qeAfzLSBxcldkqu9v+wfP7BgKYjvSlBokdeh52XiuqOtO4ovsLhnXddL9Nurwh+cKtyezf2EGOyJ5j7I",
-	"YMzuQsAE7R3QsmOseNgaQvDiGhZKDNRgGrFcijFYW4UkUo2p4L8hkJ+RGdX6RqqMpLgAnRDNNNYNUuza",
-	"lfRNLoQf9IhmUy64Npjzh8yUnEqb6vgHdsO0ceSD2GzJQLCG/lO3kOGFwBytdpAD/5bUOrYJXcHPGjUU",
-	"ZEbHXLg8x1DdaHhADZQhOhz2L8SFeMuURjqXUUOBtFIyzPjl5RDyjDDqugMEmlA9gUWChn7IZ0MgpEYV",
-	"wtJCIy8wh+jxoyfk4OXb6yeHYCE9fvI3/PXNIRHMQFL2PnmhqMbU7KDg11KQTNrCJm4fYemaXQiGp3AG",
-	"P+fEei1mNqGzn4mQrguaQ1mTgum+y9zMM5wezW/oXBNR5Lklyw3m5DYQS/AjRNxTLhm7VF9yEyaeGqRj",
-	"pc3ZQVbfJroetqV6sd9tkBjWzSClhYb8vz51nWY12WFxNKlqg22WUdcNTtHJxyZVxuENn7Zm17lUchof",
-	"GljYEXy67vgjdikVWz20kesPvEs1IYIu0qw2VeEbwYAOMPCPsou9myvv70GrZ9DNVxsqUubqMyF3cBsV",
-	"ciNHLlrF+Aa5Br6DE1TXnpwUKu+d9Y5Rq+e6bULkSzcXknGdSsxUj6nvhYUzIAKh77FtHCEs7/lYHHGR",
-	"ECOvmMuEv5hmP0Bm2KK2dGBjwSBWwBIEamvYcOX5nQ66mcbm8ibgm2FjqcYtQwLzgZTqyHvwOIyiPK/N",
-	"N+Mm8jUkyofqxpjCvCzUV6/bX6vZF5QQ8uW3YIW6VhQwGNhbZhaHfhurFFirUxCEWyRVtQlXpYDyqU7C",
-	"8sigMDmCCwy8d+qwYCJOOvqStIJQVeKgTVg4DPtzTXpf4gD+uUfTVBbCUGEA3Ks99QCfhM9gV3tJpMhk",
-	"0psy/xaWKAvjf1Z+aP6BGvs/S2Czgw3kDTK6smB9EgToJw0JMKlfsZOeK3ndWIb7Fl82fwBgtCynUfe3",
-	"tr7y9DdYsRVuNl1/kB1wYflYWWBgJxffgz/GOscF1lH5eQUUxoesdf0RZzxA7OkO/DVIqmVK6bjDQT2y",
-	"JO5Qn0QKzbScTPC27bSqJm3HN1ZUmAHGYtael19GT7p6u3Ds5avOYJBaU1RSq0zpfvFp+Kvsu15SIwJO",
-	"ZcsYcAVUJAZtbUTGE9QKaqpjacoK8QV/tDMd2EeqO+D9mWHttuBVB5pdA4k29PJyNYm6BSNsJ5Bfvvz/",
-	"AwA=",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

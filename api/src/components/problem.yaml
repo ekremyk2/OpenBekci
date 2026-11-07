@@ -43,6 +43,8 @@ schemas:
           - method_not_allowed
           - unsupported_media_type
           - timeout
+          - agent_offline
+          - agent_session_expired
       detail:
         type: string
         description: Human-readable explanation, not for machine parsing.

@@ -1556,6 +1556,468 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/access-points": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List access points
+         * @description **Release 0.3.** Cursor-paginated list of access points.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.listAccessPoints"];
+        put?: never;
+        /**
+         * Create access point
+         * @description **Release 0.3.** Creates a access point.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["access.createAccessPoint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access-points/{point_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the point. */
+                point_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get access point
+         * @description **Release 0.3.** Get access point.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.getAccessPoint"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete access point
+         * @description **Release 0.3.** Re-projects the allow-list.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["access.deleteAccessPoint"];
+        options?: never;
+        head?: never;
+        /**
+         * Update access point
+         * @description **Release 0.3.** Update access point.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["access.updateAccessPoint"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access-points/{point_id}:open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the point. */
+                point_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open an access point manually
+         * @description **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds (`expires_at - issued_at` is at most 60 seconds for every `open_point`; the agent refuses a longer lifetime with `ack: refused`, reason `ttl`, and a failed or interrupted result is never retried); there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
+         *
+         *     Permission: `access.open`.
+         *
+         *     Problems: `agent_offline` (409), `conflict` (409), `rate_limited` (429), `idempotency_mismatch` (422).
+         */
+        post: operations["access.openAccessPoint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List agents
+         * @description **Release 0.3.** List agents.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.listAgents"];
+        put?: never;
+        /**
+         * Create an agent and its enrolment token
+         * @description **Release 0.3.** The agent starts `pending`; the token is shown once.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["access.createAgent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agents/{agent_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get an agent
+         * @description **Release 0.3.** Get an agent.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.getAgent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Rename an agent
+         * @description **Release 0.3.** Rename an agent.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["access.updateAgent"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agents/{agent_id}:reenrol": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue a new enrolment token
+         * @description **Release 0.3.** Also invalidates the current agent token.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["access.reenrolAgent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agents/{agent_id}:revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke an agent
+         * @description **Release 0.3.** A connected agent receives `command revoked` and the socket closes with 4401; any later call is 401.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["access.revokeAgent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agents/{agent_id}:rotate-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Force token rotation
+         * @description **Release 0.3.** Sets `rotate_now` in the agent's next hello; the agent rotates through `agent.rotateToken`.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["access.rotateAgentToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List credentials (derived, read-only)
+         * @description **Release 0.3.** List credentials (derived, read-only).
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.listCredentials"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/credentials/{credential_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a credential
+         * @description **Release 0.3.** Get a credential.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.getCredential"];
+        put?: never;
+        post?: never;
+        /**
+         * Revoke a manual credential
+         * @description **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["access.revokeCredential"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List access events
+         * @description **Release 0.3.** Newest first. `after` (a `sync_seq`, exclusive) switches to feed order (oldest first) for pollers; `next_cursor` then continues the feed.
+         *
+         *     Permission: `access.view_events`.
+         */
+        get: operations["access.listAccessEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/commands/{command_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the command. */
+                command_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Status of an open command
+         * @description **Release 0.3.** The console polls every 500 ms for up to 10 seconds.
+         *
+         *     Permission: `access.open` (every holder of `access.manage` holds it too).
+         */
+        get: operations["access.getAgentCommand"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agent/enrol": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enrol an agent with a one-time token
+         * @description **Release 0.3.** The one-time token is the credential (10 per minute per IP). An unknown, expired or already used token answers one identical 404 body, so the three cases cannot be told apart. Re-enrolling needs a new token (`access.reenrolAgent`).
+         *
+         *     Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429).
+         */
+        post: operations["agent.enrol"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agent/poll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Long-poll transport (WebSocket fallback)
+         * @description **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with a `hello` call (no `session`); the server hello carries the `session` handle that every later call sends. Each response has a per-session `seq` (ordered delivery, see `AgentPollResponse`). An empty poll is 200 with an empty `messages` array, never 204.
+         *
+         *     A session ends after 60 seconds without a request: the next call fails with 410 `agent_session_expired` and the agent starts a new session with `hello`. A bare 401 means an unknown token only (the agent quarantines itself and does not wipe); a revoked agent receives the `revoked` command (the WebSocket closes with 4401) and wipes. Idempotency is built into the protocol (events by id, commands by id, deltas by version); `Idempotency-Key` is ignored.
+         *
+         *     Problems: `agent_session_expired` (410), `rate_limited` (429), `conflict` (409).
+         */
+        post: operations["agent.poll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agent/token:rotate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate the agent token
+         * @description **Release 0.3.** Returns a new token. The retired token stays valid for 10 minutes (`previous_valid_until`) so a crash between steps recovers, and calling again with the retired token inside that window is idempotent: it returns the same new token. After the window the retired token is 401. `rotate_by` is also in the server hello (default 180 days); the hello may set `rotate_now`.
+         *
+         *     Problems: `rate_limited` (429), `conflict` (409).
+         */
+        post: operations["agent.rotateToken"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agent/ws": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * WebSocket transport
+         * @description **Release 0.3.** Upgrade with subprotocol `openbekci.agent.v1` and `Authorization: Bearer <agent token>`. One JSON envelope per text frame, at most 1 MiB. Close codes: 4401 revoked or unauthorized, 4409 replaced by a newer session, 4426 no common protocol version, 4429 rate limited. Server ping every 30 s, 60 s pong deadline; the server answers the agent's pings with a pong and acks heartbeats, so the agent's contact clock advances. Revocation is the `revoked` command followed by close 4401; a bare 401 on upgrade means an unknown token only.
+         *
+         *     Problems: `rate_limited` (429).
+         */
+        get: operations["agent.connect"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1577,7 +2039,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "agent_offline" | "agent_session_expired";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -1913,7 +2375,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "allocation.manage" | "allocation.read" | "audit.read" | "audit.report" | "claim.manage" | "directory.consent" | "directory.read" | "import.run" | "invitation.household" | "invitation.manage" | "me.read" | "membership.manage" | "membership.read" | "moveout.manage" | "moveout.read" | "occupancy.grant_money" | "occupancy.manage" | "occupancy.read" | "org.manage" | "org.read" | "person.manage" | "person.read" | "platform.manage" | "sessions.manage_own" | "site.create" | "site.export" | "site.import" | "site.manage" | "site.offboard" | "site.read" | "unit.manage" | "unit.read" | "vehicle.manage" | "vehicle.read" | "vendor.manage" | "vendor.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "allocation.manage" | "allocation.read" | "audit.read" | "audit.report" | "claim.manage" | "directory.consent" | "directory.read" | "import.run" | "invitation.household" | "invitation.manage" | "me.read" | "membership.manage" | "membership.read" | "moveout.manage" | "moveout.read" | "occupancy.grant_money" | "occupancy.manage" | "occupancy.read" | "org.manage" | "org.read" | "person.manage" | "person.read" | "platform.manage" | "sessions.manage_own" | "site.create" | "site.export" | "site.import" | "site.manage" | "site.offboard" | "site.read" | "unit.manage" | "unit.read" | "vehicle.manage" | "vehicle.read" | "vendor.manage" | "vendor.read";
         Organization: {
             /** Format: uuid */
             id: string;
@@ -2986,6 +3448,685 @@ export interface components {
             /** @description False for a former occupancy (read access bounded by its dates). */
             current: boolean;
         };
+        DriverRef: {
+            /** @description Names a driver instance in the agent's local config file; hardware details and secrets never live on the server. */
+            instance: string;
+            /** @description Relay or lane within the instance. */
+            channel?: string;
+        };
+        DriverState: {
+            instance: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            state: "ok" | "degraded" | "down" | "missing";
+            detail?: string;
+            /** @description A mock driver is configured; the UI shows it. */
+            mock: boolean;
+        };
+        /**
+         * @description A gate or door driven by an agent.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "vehicle_gate",
+         *       "direction": "in",
+         *       "agent_id": null,
+         *       "driver_ref": {
+         *         "instance": "instance",
+         *         "channel": "channel"
+         *       },
+         *       "enabled": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        AccessPoint: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "vehicle_gate" | "pedestrian_door";
+            /**
+             * @description Informational and for filtering the guard feed; no anti-passback. Open enum.
+             * @enum {string}
+             */
+            direction: "in" | "out" | "both";
+            /** Format: uuid */
+            agent_id: string | null;
+            driver_ref: components["schemas"]["DriverRef"] | null;
+            /** @description Disabled points are omitted from snapshots and refuse open. */
+            enabled: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        AccessPointCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "vehicle_gate" | "pedestrian_door";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            direction: "in" | "out" | "both";
+            /** Format: uuid */
+            agent_id?: string | null;
+            driver_ref?: components["schemas"]["DriverRef"] | null;
+            enabled?: boolean;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AccessPointUpdate: {
+            name?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind?: "vehicle_gate" | "pedestrian_door";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            direction?: "in" | "out" | "both";
+            /** Format: uuid */
+            agent_id?: string | null;
+            driver_ref?: components["schemas"]["DriverRef"] | null;
+            enabled?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "vehicle_gate",
+         *           "direction": "in",
+         *           "agent_id": null,
+         *           "driver_ref": {
+         *             "instance": "instance",
+         *             "channel": "channel"
+         *           },
+         *           "enabled": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AccessPointList: {
+            items: components["schemas"]["AccessPoint"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description An on-site agent. The agent token is scoped to this one site; the server stores only its hash.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "name": "Main gate Pi",
+         *       "status": "active",
+         *       "connected": true,
+         *       "version": 1,
+         *       "platform": null,
+         *       "protocol_version": null,
+         *       "last_seen": null,
+         *       "snapshot_version": null,
+         *       "queue_depth": null,
+         *       "drivers": [
+         *         {
+         *           "instance": "instance",
+         *           "state": "ok",
+         *           "mock": false
+         *         }
+         *       ],
+         *       "clock_offset_ms": null,
+         *       "clock_suspect": false,
+         *       "rotate_by": null,
+         *       "enrol_expires_at": null,
+         *       "revoked_at": null,
+         *       "created_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "lost_events": null,
+         *       "store_error": null,
+         *       "dead_letters": null
+         *     }
+         */
+        Agent: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "active" | "revoked";
+            /** @description A live session exists or a frame arrived within 90 seconds. */
+            connected: boolean;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+            platform: string | null;
+            /** Format: int64 */
+            protocol_version: number | null;
+            /** Format: date-time */
+            last_seen: string | null;
+            /** Format: int64 */
+            snapshot_version: number | null;
+            /** Format: int64 */
+            queue_depth: number | null;
+            drivers: components["schemas"]["DriverState"][];
+            /** Format: int64 */
+            clock_offset_ms: number | null;
+            /** @description True when the offset exceeds 120 seconds or the agent reports a clock jump; a manual open is refused beyond 24 hours. */
+            clock_suspect: boolean;
+            /** Format: date-time */
+            rotate_by: string | null;
+            /** Format: date-time */
+            enrol_expires_at: string | null;
+            /** Format: date-time */
+            revoked_at: string | null;
+            /** Format: uuid */
+            created_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description From the last heartbeat: events the agent had to discard.
+             */
+            lost_events: number | null;
+            /** @description From the last heartbeat: the agent's local store error, null when healthy. */
+            store_error: string | null;
+            /**
+             * Format: int64
+             * @description From the last heartbeat: events set aside after final rejection.
+             */
+            dead_letters: number | null;
+        };
+        AgentCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AgentUpdate: {
+            name?: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "name": "Main gate Pi",
+         *           "status": "active",
+         *           "connected": true,
+         *           "version": 1,
+         *           "platform": null,
+         *           "protocol_version": null,
+         *           "last_seen": null,
+         *           "snapshot_version": null,
+         *           "queue_depth": null,
+         *           "drivers": [
+         *             {
+         *               "instance": "instance",
+         *               "state": "ok",
+         *               "mock": false
+         *             }
+         *           ],
+         *           "clock_offset_ms": null,
+         *           "clock_suspect": false,
+         *           "rotate_by": null,
+         *           "enrol_expires_at": null,
+         *           "revoked_at": null,
+         *           "created_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "lost_events": null,
+         *           "store_error": null,
+         *           "dead_letters": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AgentList: {
+            items: components["schemas"]["Agent"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        AgentEnrolment: {
+            agent: components["schemas"]["Agent"];
+            /** @description `obk_enr_...`, shown once; valid 15 minutes, single use. */
+            enrolment_token: string;
+            /** Format: date-time */
+            enrolment_expires_at: string;
+        };
+        RecurringWindow: {
+            /** @description ISO weekdays, 1 = Monday. */
+            days: number[];
+            /** @example 09:00 */
+            start: string;
+            /**
+             * @description `start > end` crosses midnight and belongs to the start day.
+             * @example 09:00
+             */
+            end: string;
+        };
+        /**
+         * @description A credential the agent can match. Plates and visitor QR codes are derived from vehicles and visitor entries and never edited by hand; `tag` and `pin` credentials are created manually (`access.createCredential`, `source_type: manual`).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "kind": "plate",
+         *       "value": "value",
+         *       "source_type": "vehicle",
+         *       "source_id": null,
+         *       "unit_id": null,
+         *       "unit_door_number": null,
+         *       "person_id": null,
+         *       "point_scope": "all_vehicle",
+         *       "point_ids": [
+         *         "0192a3f0-1000-7000-8000-000000000005"
+         *       ],
+         *       "valid_from": "2026-03-01T09:00:00Z",
+         *       "valid_to": null,
+         *       "recurring": {
+         *         "days": [
+         *           1
+         *         ],
+         *         "start": "09:00",
+         *         "end": "09:00"
+         *       },
+         *       "max_uses": null,
+         *       "uses": 1,
+         *       "status": "active",
+         *       "status_reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Credential: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "plate" | "visitor_qr" | "tag" | "pin";
+            /** @description Normalized plate; for `visitor_qr` the sha-256 of the token, for tag and pin a salted hash. Never the secret itself. */
+            value: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            source_type: "vehicle" | "visitor_entry" | "manual";
+            /** Format: uuid */
+            source_id: string | null;
+            /** Format: uuid */
+            unit_id: string | null;
+            unit_door_number: string | null;
+            /** Format: uuid */
+            person_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            point_scope: "all_vehicle" | "all_pedestrian" | "all" | "ids";
+            point_ids: string[];
+            /** Format: date-time */
+            valid_from: string;
+            /** Format: date-time */
+            valid_to: string | null;
+            recurring: components["schemas"]["RecurringWindow"] | null;
+            /** Format: int64 */
+            max_uses: number | null;
+            /** Format: int64 */
+            uses: number;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "active" | "suspended" | "revoked" | "expired";
+            status_reason: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "kind": "plate",
+         *           "value": "value",
+         *           "source_type": "vehicle",
+         *           "source_id": null,
+         *           "unit_id": null,
+         *           "unit_door_number": null,
+         *           "person_id": null,
+         *           "point_scope": "all_vehicle",
+         *           "point_ids": [
+         *             "0192a3f0-1000-7000-8000-000000000005"
+         *           ],
+         *           "valid_from": "2026-03-01T09:00:00Z",
+         *           "valid_to": null,
+         *           "recurring": {
+         *             "days": [
+         *               1
+         *             ],
+         *             "start": "09:00",
+         *             "end": "09:00"
+         *           },
+         *           "max_uses": null,
+         *           "uses": 1,
+         *           "status": "active",
+         *           "status_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        CredentialList: {
+            items: components["schemas"]["Credential"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description Append-only. Retention follows the site visitor-log setting (default 90 days).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "point_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "point_name": null,
+         *       "agent_id": null,
+         *       "credential_id": null,
+         *       "decision": "allow",
+         *       "reason": "match",
+         *       "presented_kind": null,
+         *       "observed_plate": "34ABC123",
+         *       "unit_door_number": null,
+         *       "actor_user_id": null,
+         *       "actor_display_name": null,
+         *       "command_id": null,
+         *       "visitor_entry_id": null,
+         *       "occurred_at": "2026-03-01T09:00:00Z",
+         *       "synced_at": "2026-03-01T09:00:00Z",
+         *       "sync_seq": 1,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        AccessEvent: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            point_id: string;
+            point_name: string | null;
+            /** Format: uuid */
+            agent_id: string | null;
+            /** Format: uuid */
+            credential_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            decision: "allow" | "deny" | "manual_open";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            reason: "match" | "unknown" | "outside_window" | "wrong_point" | "revoked" | "used_up" | "agent_stopped" | "guard" | "manager" | "remote" | "driver_error";
+            presented_kind: string | null;
+            /** @description Normalized; QR and tag values are never stored. */
+            observed_plate: string | null;
+            unit_door_number: string | null;
+            /** Format: uuid */
+            actor_user_id: string | null;
+            actor_display_name: string | null;
+            /** Format: uuid */
+            command_id: string | null;
+            /** Format: uuid */
+            visitor_entry_id: string | null;
+            /**
+             * Format: date-time
+             * @description Agent clock, corrected for the reported offset.
+             */
+            occurred_at: string;
+            /** Format: date-time */
+            synced_at: string;
+            /**
+             * Format: int64
+             * @description Feed cursor.
+             */
+            sync_seq: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "point_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "point_name": null,
+         *           "agent_id": null,
+         *           "credential_id": null,
+         *           "decision": "allow",
+         *           "reason": "match",
+         *           "presented_kind": null,
+         *           "observed_plate": "34ABC123",
+         *           "unit_door_number": null,
+         *           "actor_user_id": null,
+         *           "actor_display_name": null,
+         *           "command_id": null,
+         *           "visitor_entry_id": null,
+         *           "occurred_at": "2026-03-01T09:00:00Z",
+         *           "synced_at": "2026-03-01T09:00:00Z",
+         *           "sync_seq": 1,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AccessEventList: {
+            items: components["schemas"]["AccessEvent"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        OpenPointRequest: {
+            /**
+             * Format: uuid
+             * @description Links the opening to an expected visitor.
+             */
+            visitor_entry_id?: string;
+            /** Format: uuid */
+            credential_id?: string;
+        };
+        AgentCommand: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            point_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            command: "open_point" | "revoke_credential" | "request_snapshot" | "update_config" | "revoked";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "delivered" | "done" | "failed" | "expired";
+            /** @description For example driver_error. */
+            reason: string | null;
+            /** Format: date-time */
+            issued_at: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: date-time */
+            completed_at: string | null;
+        };
+        /** @description One JSON message of the agent protocol. Payload schemas per type: api/agent-protocol/v1/*.schema.json. */
+        AgentEnvelope: {
+            /**
+             * Format: int64
+             * @description Protocol version, 1.
+             */
+            v: number;
+            /** @description hello, snapshot, delta, event, ack, command or heartbeat; unknown types are answered with an ack `unsupported`. */
+            type: string;
+            /**
+             * Format: uuid
+             * @description UUIDv7, referenced by `ack.ref`.
+             */
+            id: string;
+            /**
+             * Format: date-time
+             * @description Sender clock.
+             */
+            ts: string;
+            payload: {
+                [key: string]: unknown;
+            };
+        };
+        AgentEnrolRequest: {
+            enrolment_token: string;
+            hostname: string;
+            platform: string;
+            agent_version: string;
+        };
+        AgentEnrolResponse: {
+            /** Format: uuid */
+            agent_id: string;
+            /** @description `obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success. */
+            agent_token: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date-time */
+            server_time: string;
+            /** @description wss only. */
+            ws_url: string;
+            /** @description https only. */
+            poll_url: string;
+            protocol_versions: number[];
+        };
+        /**
+         * @example {
+         *       "session": "sess_0192a3f0100070008000000000000001",
+         *       "messages": [],
+         *       "wait_seconds": 25
+         *     }
+         */
+        AgentPollRequest: {
+            messages: components["schemas"]["AgentEnvelope"][];
+            /**
+             * Format: int64
+             * @description 0 to 30 seconds to hold the request open when the server has nothing to send.
+             */
+            wait_seconds: number;
+            /** @description Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`. */
+            session?: string;
+        };
+        /**
+         * @description Messages for the agent. An empty poll is still 200 with `messages: []` (it also refreshes the agent's contact clock).
+         * @example {
+         *       "session": "sess_0192a3f0100070008000000000000001",
+         *       "seq": 1,
+         *       "messages": []
+         *     }
+         */
+        AgentPollResponse: {
+            /** @description The session handle (also in the server hello). */
+            session: string;
+            /**
+             * Format: int64
+             * @description Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+             */
+            seq: number;
+            messages: components["schemas"]["AgentEnvelope"][];
+        };
+        /**
+         * @description Rotation is idempotent for the retired token: calling again with the previous token inside the 10 minute window returns the same new token.
+         * @example {
+         *       "agent_token": "obk_agt_0192a3f0-1000-7000-8000-000000000001.secret",
+         *       "rotate_by": "2026-09-01T00:00:00Z",
+         *       "previous_valid_until": "2026-03-05T10:10:00Z"
+         *     }
+         */
+        AgentTokenRotated: {
+            /** @description The new token, `obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success. */
+            agent_token: string;
+            /**
+             * Format: date-time
+             * @description Rotate again before this time (default 180 days from now).
+             */
+            rotate_by: string;
+            /**
+             * Format: date-time
+             * @description The retired token keeps working until then (10 minutes after the first rotation) so a crash between steps recovers.
+             */
+            previous_valid_until: string;
+        };
         ReauthEmailCode: {
             /**
              * @description Always `email_code`. (enum property replaced by openapi-typescript)
@@ -3021,6 +4162,14 @@ export interface components {
         IdempotencyKey: string;
         /** @description The organization id. */
         OrgId: string;
+        /** @description The site this resource belongs to. */
+        SiteIdRequired: string;
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+        IfMatch: string;
+        /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+        IdempotencyKeyRequired: string;
+        /** @description Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor. */
+        GuardSession: string;
     };
     requestBodies: never;
     headers: never;
@@ -5832,6 +6981,748 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.listAccessPoints": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `agent_id`. */
+                agent_id?: string;
+                /** @description Filter by `enabled`. */
+                enabled?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessPointList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.createAccessPoint": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccessPointCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessPoint"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.getAccessPoint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the point. */
+                point_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessPoint"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.deleteAccessPoint": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the point. */
+                point_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.updateAccessPoint": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the point. */
+                point_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccessPointUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessPoint"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.openAccessPoint": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the point. */
+                point_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["OpenPointRequest"];
+            };
+        };
+        responses: {
+            /** @description Accepted; the work continues as a job. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentCommand"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.listAgents": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.createAgent": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentEnrolment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.getAgent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Agent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.updateAgent": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Agent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.reenrolAgent": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentEnrolment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.revokeAgent": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Agent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.rotateAgentToken": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agent. */
+                agent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Agent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.listCredentials": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `source_type`. */
+                source_type?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `point_id`. */
+                point_id?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CredentialList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.getCredential": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Credential"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.revokeCredential": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.listAccessEvents": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `point_id`. */
+                point_id?: string;
+                /** @description Filter by `decision`. */
+                decision?: string;
+                /** @description Filter by `reason`. */
+                reason?: string;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Filter by `plate`. */
+                plate?: string;
+                /** @description Filter by `after`. */
+                after?: number;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessEventList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.getAgentCommand": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the command. */
+                command_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentCommand"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "agent.enrol": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentEnrolRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentEnrolResponse"];
+                };
+            };
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "agent.poll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentPollRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentPollResponse"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            410: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "agent.rotateToken": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentTokenRotated"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "agent.connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description WebSocket upgrade accepted (subprotocol `openbekci.agent.v1`). */
+            101: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

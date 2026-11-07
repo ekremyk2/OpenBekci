@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/event.schema.json",
+  "title": "event payload: a batch of 1 to 100 access events, idempotent by each event id (UUIDv7)",
+  "type": "object",
+  "required": [
+    "events"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "clock_offset_ms": {
+      "type": "integer"
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "point_id",
+          "decision",
+          "reason",
+          "occurred_at"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          },
+          "point_id": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          },
+          "decision": {
+            "enum": [
+              "allow",
+              "deny",
+              "manual_open"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "occurred_at": {
+            "$ref": "defs.schema.json#/$defs/ts"
+          },
+          "credential_id": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          },
+          "presented_kind": {
+            "type": "string"
+          },
+          "observed_plate": {
+            "type": "string"
+          },
+          "command_id": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          },
+          "visitor_entry_id": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          },
+          "raw_ref": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "detail": {
+            "type": "object",
+            "description": "At most 2 KB serialized."
+          }
+        }
+      }
+    }
+  }
+}

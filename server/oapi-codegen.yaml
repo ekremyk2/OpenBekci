@@ -9,5 +9,10 @@ generate:
   embedded-spec: true
 output-options:
   nullable-type: true
+  # The agent transport (/v1/agent/*) is served by hand-written handlers: the
+  # WebSocket upgrade cannot go through the strict server and agentAuth is not
+  # a user session. The operations stay in the spec for documentation.
+  exclude-tags:
+    - agent
 compatibility:
   always-prefix-enum-values: true

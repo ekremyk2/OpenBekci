@@ -52,6 +52,10 @@ const (
 	CodeMethodNotAllowed       Code = "method_not_allowed"
 	CodeUnsupportedMediaType   Code = "unsupported_media_type"
 	CodeTimeout                Code = "timeout"
+	// CodeAgentOffline: the on-site agent of an access point is not connected (409).
+	CodeAgentOffline Code = "agent_offline"
+	// CodeAgentSessionExpired: the agent's long-poll session ended; start a new one with hello (410).
+	CodeAgentSessionExpired Code = "agent_session_expired"
 )
 
 // Field is one entry of the errors[] array.

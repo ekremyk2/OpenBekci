@@ -1,0 +1,88 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: access.listAgents
+  summary: List agents
+  description: |-
+    **Release 0.3.** List agents.
+
+    Permission: `access.read`.
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - access.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/access.yaml#/parameters/SiteIdRequired
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - pending
+          - active
+          - revoked
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: access.createAgent
+  summary: Create an agent and its enrolment token
+  description: |-
+    **Release 0.3.** The agent starts `pending`; the token is shown once.
+
+    Permission: `access.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - access.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/access.yaml#/schemas/AgentCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentEnrolment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
