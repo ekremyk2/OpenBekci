@@ -7,6 +7,7 @@ package tenancy
 // and people only, and the money history stays with the source organization.
 var moneyTables = []string{
 	"fund", "account", "cash_box", "fiscal_year", "sequence", "journal_entry", "journal_line",
+	"charge_plan", "charge_plan_rate", "charge", "opening_balance", "late_fee_policy", "late_fee_booking", "late_fee_waiver", "late_fee_freeze", "payment", "payment_allocation",
 }
 
 func init() {

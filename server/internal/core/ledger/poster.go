@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -116,7 +117,7 @@ func ensureFiscalYear(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, d
 	if err == nil {
 		return fy, nil
 	}
-	if err != pgx.ErrNoRows {
+	if !errors.Is(err, pgx.ErrNoRows) {
 		return uuid.Nil, err
 	}
 	var startMonth int
@@ -148,7 +149,7 @@ func Reverse(ctx context.Context, tx pgx.Tx, orgID, siteID, entryID uuid.UUID, e
 	var srcID, reverses *uuid.UUID
 	if err := tx.QueryRow(ctx, `SELECT document_date::text, source_type, source_id, reverses_entry_id FROM journal_entry WHERE org_id = $1 AND site_id = $2 AND id = $3`,
 		orgID, siteID, entryID).Scan(&docDate, &srcType, &srcID, &reverses); err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return uuid.Nil, problem.NotFound("no such journal entry")
 		}
 		return uuid.Nil, err

@@ -95,7 +95,7 @@ func SiteFor(ctx context.Context, tx pgx.Tx, perm authz.Permission, orgID, siteI
 
 // Actor returns the signed-in user id, if any.
 func Actor(ctx context.Context) *uuid.UUID {
-	if p := authz.PrincipalFromContext(ctx); p != nil {
+	if p := authz.PrincipalFromContext(ctx); p != nil && p.UserID != uuid.Nil {
 		id := p.UserID
 		return &id
 	}
@@ -112,7 +112,26 @@ func Audit(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, action, enti
 	if err != nil {
 		return err
 	}
-	return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &siteID, Action: action, TargetType: entity, TargetID: targetID, Diff: diff})
+	ev := audit.Event{OrgID: orgID, SiteID: &siteID, Action: action, TargetType: entity, TargetID: targetID, Diff: diff}
+	if p := authz.PrincipalFromContext(ctx); p != nil && p.UserID == uuid.Nil {
+		ev.ActorKind = audit.ActorJob
+	}
+	return audit.Record(ctx, tx, ev)
+}
+
+// SystemContext returns a context for jobs: a principal without a user (audit
+// events are recorded as job events) holding every money permission and the
+// tenancy read permissions organization-wide. Jobs never run on behalf of a person.
+func SystemContext(ctx context.Context, orgID uuid.UUID) context.Context {
+	var items []authz.Grant
+	for _, d := range Permissions() {
+		items = append(items, authz.Grant{Permission: d.Name, ScopeType: authz.ScopeOrg})
+	}
+	for _, p := range []authz.Permission{tenancy.PermAllocationRead, tenancy.PermUnitRead, tenancy.PermSiteRead} {
+		items = append(items, authz.Grant{Permission: p, ScopeType: authz.ScopeOrg})
+	}
+	ctx = authz.WithPrincipal(ctx, &authz.Principal{})
+	return authz.WithGrants(ctx, authz.Grants{OrgID: orgID, Items: items})
 }
 
 // Currency returns the site's currency code.

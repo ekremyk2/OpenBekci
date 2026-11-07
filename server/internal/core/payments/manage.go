@@ -1,0 +1,313 @@
+package payments
+
+import (
+	"context"
+	"encoding/json"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
+	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/money"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/problem"
+)
+
+// DeclareInput is a resident's "I have paid" for a bank transfer.
+type DeclareInput struct {
+	SiteID    uuid.UUID      `json:"site_id"`
+	Debtor    billing.Debtor `json:"debtor"`
+	Amount    money.Money    `json:"amount"`
+	PaidOn    string         `json:"paid_on"`
+	Reference *string        `json:"reference"`
+}
+
+// Declare records a declared bank transfer as pending_declared (payments.declare,
+// the caller's own unit side only). Nothing is posted until a manager confirms it.
+func (s *Service) Declare(ctx context.Context, orgID uuid.UUID, in DeclareInput) (Payment, error) {
+	if in.Debtor.UnitID == nil || in.Debtor.IsPerson() || (in.Debtor.Kind != "owner" && in.Debtor.Kind != "tenant") {
+		return Payment{}, bad("debtor", "invalid_value")
+	}
+	var out Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
+		if err := ledger.RequireSite(ctx, tx, ledger.PermPaymentsDeclare, in.SiteID); err != nil {
+			return err
+		}
+		if !ledger.HasSite(ctx, tx, ledger.PermMoneyManage, in.SiteID) {
+			if err := authz.CanAccessUnit(ctx, *in.Debtor.UnitID, authz.UnitSide(in.Debtor.Kind)); err != nil {
+				return err
+			}
+		}
+		site, err := tenancy.LoadSite(ctx, tx, orgID, in.SiteID, false, false)
+		if err != nil {
+			return err
+		}
+		if in.Amount.Amount <= 0 || in.Amount.Currency != ledger.Currency(site) {
+			return bad("amount", "invalid_value")
+		}
+		if _, err := ledger.ParseDate(in.PaidOn); err != nil {
+			return bad("paid_on", "invalid_format")
+		}
+		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
+		if err != nil {
+			return err
+		}
+		if err := checkDebtor(ctx, tx, orgID, in.SiteID, in.Debtor); err != nil {
+			return err
+		}
+		p := Payment{ID: id.New(), OrgID: orgID, SiteID: in.SiteID, Method: "bank_transfer", ReceivedOn: in.PaidOn, AssetAccountID: ch.Account(ledger.SubBank), Reference: in.Reference,
+			Gross: in.Amount, Fee: money.Zero(in.Amount.Currency), Net: in.Amount, Status: "pending_declared", RecordedBy: ledger.Actor(ctx)}
+		if err := insertPayment(ctx, tx, p, in.Debtor); err != nil {
+			return err
+		}
+		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "payment.declare", "payment", p.ID, nil, map[string]any{"amount": in.Amount.Amount, "paid_on": in.PaidOn}); err != nil {
+			return err
+		}
+		out, err = loadPayment(ctx, tx, orgID, p.ID)
+		return err
+	})
+	return out, err
+}
+
+func debtorOf(p Payment) billing.Debtor {
+	if p.DebtorKind != nil && *p.DebtorKind == "person" {
+		return billing.Debtor{PersonID: p.PersonID}
+	}
+	k := ""
+	if p.DebtorKind != nil {
+		k = *p.DebtorKind
+	}
+	return billing.Debtor{UnitID: p.UnitID, Kind: k}
+}
+
+// Confirm settles a declared payment (payments.record): it is allocated and
+// posted like a recorded payment, optionally with another received date.
+func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, receivedOn string, chargeIDs []uuid.UUID) (Payment, error) {
+	var out Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
+		p, err := scanPayment(tx.QueryRow(ctx, paySel+` WHERE p.org_id=$1 AND p.id=$2 FOR UPDATE OF p`, orgID, paymentID))
+		if err != nil {
+			return err
+		}
+		if err := ledger.RequireSite(ctx, tx, ledger.PermPaymentsRecord, p.SiteID); err != nil {
+			return err
+		}
+		if p.Status != "pending_declared" {
+			return problem.Conflict("only a declared payment can be confirmed")
+		}
+		site, err := tenancy.LoadSite(ctx, tx, orgID, p.SiteID, true, false)
+		if err != nil {
+			return err
+		}
+		ch, err := ledger.EnsureChart(ctx, tx, orgID, p.SiteID)
+		if err != nil {
+			return err
+		}
+		if receivedOn != "" {
+			if _, err := ledger.ParseDate(receivedOn); err != nil {
+				return bad("received_on", "invalid_format")
+			}
+			p.ReceivedOn = receivedOn
+		}
+		d := debtorOf(p)
+		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, d, chargeIDs)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6 WHERE org_id=$1 AND id=$2`,
+			orgID, paymentID, p.ReceivedOn, p.ReceiptNo, p.JournalEntryID, ledger.Actor(ctx)); err != nil {
+			return err
+		}
+		if err := saveAllocations(ctx, tx, orgID, p.SiteID, p, allocs); err != nil {
+			return err
+		}
+		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment.confirm", "payment", paymentID, map[string]any{"status": "pending_declared"}, map[string]any{"status": "confirmed", "receipt_no": *p.ReceiptNo}); err != nil {
+			return err
+		}
+		if err := s.notify(ctx, tx, NotifyPaymentConfirmed, p); err != nil {
+			return err
+		}
+		out, err = loadPayment(ctx, tx, orgID, paymentID)
+		return err
+	})
+	return out, err
+}
+
+// Reject turns a declared payment down with a reason (payments.record); the
+// resident is told through a payment.rejected notification.
+func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason string) (Payment, error) {
+	if reason == "" {
+		return Payment{}, bad("reason", "required")
+	}
+	var out Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
+		p, err := scanPayment(tx.QueryRow(ctx, paySel+` WHERE p.org_id=$1 AND p.id=$2 FOR UPDATE OF p`, orgID, paymentID))
+		if err != nil {
+			return err
+		}
+		if err := ledger.RequireSite(ctx, tx, ledger.PermPaymentsRecord, p.SiteID); err != nil {
+			return err
+		}
+		if p.Status != "pending_declared" {
+			return problem.Conflict("only a declared payment can be rejected")
+		}
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='voided' WHERE org_id=$1 AND id=$2`, orgID, paymentID); err != nil {
+			return err
+		}
+		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment.reject", "payment", paymentID, map[string]any{"status": "pending_declared"}, map[string]any{"status": "voided", "reason": reason}); err != nil {
+			return err
+		}
+		if s.Notifier != nil {
+			payload := []byte(`{"payment_id":"` + paymentID.String() + `","reason":` + jsonString(reason) + `}`)
+			if err := s.Notifier.Enqueue(ctx, tx, ledger.Notification{Type: NotifyPaymentRejected, OrgID: orgID, SiteID: p.SiteID, Payload: payload}); err != nil {
+				return err
+			}
+		}
+		out, err = loadPayment(ctx, tx, orgID, paymentID)
+		return err
+	})
+	return out, err
+}
+
+func jsonString(s string) string {
+	b, _ := json.Marshal(s)
+	return string(b)
+}
+
+// Void reverses a confirmed payment (money.post): its entry is reversed dated
+// today, its allocations are voided and the charges re-derive their status.
+func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason string) (Payment, error) {
+	var out Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
+		p, err := scanPayment(tx.QueryRow(ctx, paySel+` WHERE p.org_id=$1 AND p.id=$2 FOR UPDATE OF p`, orgID, paymentID))
+		if err != nil {
+			return err
+		}
+		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyPost, orgID, p.SiteID)
+		if err != nil {
+			return err
+		}
+		if p.Status == "voided" {
+			out, err = loadPayment(ctx, tx, orgID, paymentID)
+			return err
+		}
+		if p.Status != "confirmed" || p.JournalEntryID == nil {
+			return problem.Conflict("only a confirmed payment can be voided")
+		}
+		rid, err := ledger.Reverse(ctx, tx, orgID, p.SiteID, *p.JournalEntryID, ledger.Today(site.Timezone, s.Now()), "Payment voided: "+reason)
+		if err != nil {
+			return err
+		}
+		rows, err := tx.Query(ctx, `UPDATE payment_allocation SET voided = true WHERE org_id=$1 AND payment_id=$2 AND NOT voided RETURNING charge_id`, orgID, paymentID)
+		if err != nil {
+			return err
+		}
+		var ids []uuid.UUID
+		for rows.Next() {
+			var cid uuid.UUID
+			if err := rows.Scan(&cid); err != nil {
+				rows.Close()
+				return err
+			}
+			ids = append(ids, cid)
+		}
+		rows.Close()
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='voided', void_entry_id=$3 WHERE org_id=$1 AND id=$2`, orgID, paymentID, rid); err != nil {
+			return err
+		}
+		if _, err := billing.RefreshStatus(ctx, tx, orgID, p.SiteID, ids); err != nil {
+			return err
+		}
+		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment.void", "payment", paymentID, map[string]any{"status": "confirmed"}, map[string]any{"status": "voided", "reason": reason}); err != nil {
+			return err
+		}
+		out, err = loadPayment(ctx, tx, orgID, paymentID)
+		return err
+	})
+	return out, err
+}
+
+// Filter filters List.
+type Filter struct {
+	UnitID     *uuid.UUID
+	DebtorKind string
+	PersonID   *uuid.UUID
+	Status     string
+	Method     string
+	ReceiptNo  string
+	From, To   string
+}
+
+// List lists payments (money.read; a resident gets their own unit side only).
+func (s *Service) List(ctx context.Context, orgID, siteID uuid.UUID, f Filter, p ledger.PageParams) ([]Payment, string, error) {
+	limit, after, err := p.Resolve()
+	if err != nil {
+		return nil, "", err
+	}
+	var out []Payment
+	err = s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
+		if _, err := tenancy.LoadSite(ctx, tx, orgID, siteID, false, true); err != nil {
+			return err
+		}
+		if !ledger.HasSite(ctx, tx, ledger.PermMoneyRead, siteID) {
+			if err := billing.OwnSide(ctx, f.UnitID, f.DebtorKind); err != nil {
+				return err
+			}
+		}
+		rows, err := tx.Query(ctx, paySel+` WHERE p.org_id=$1 AND p.site_id=$2 AND p.id > $3
+			AND ($4::uuid IS NULL OR p.unit_id = $4) AND ($5 = '' OR p.debtor_kind = $5) AND ($6::uuid IS NULL OR p.debtor_person_id = $6)
+			AND ($7 = '' OR p.status = $7) AND ($8 = '' OR p.method = $8) AND ($9 = '' OR p.receipt_no = $9)
+			AND ($10 = '' OR p.received_on >= $10::date) AND ($11 = '' OR p.received_on <= $11::date) ORDER BY p.id LIMIT $12`,
+			orgID, siteID, after, f.UnitID, f.DebtorKind, f.PersonID, f.Status, f.Method, f.ReceiptNo, f.From, f.To, limit+1)
+		if err != nil {
+			return err
+		}
+		for rows.Next() {
+			pm, err := scanPayment(rows)
+			if err != nil {
+				rows.Close()
+				return err
+			}
+			out = append(out, pm)
+		}
+		rows.Close()
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		for i := range out {
+			if err := loadAllocations(ctx, tx, orgID, &out[i]); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, "", err
+	}
+	items, next := tenancy.Page(out, limit, func(p Payment) uuid.UUID { return p.ID })
+	return items, next, nil
+}
+
+// Get returns a payment with its allocations (money.read, or the caller's own unit side).
+func (s *Service) Get(ctx context.Context, orgID, paymentID uuid.UUID) (Payment, error) {
+	var p Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) (err error) {
+		if p, err = loadPayment(ctx, tx, orgID, paymentID); err != nil {
+			return err
+		}
+		if ledger.HasSite(ctx, tx, ledger.PermMoneyRead, p.SiteID) {
+			return nil
+		}
+		if p.UnitID == nil || p.DebtorKind == nil {
+			return problem.NotFound("no such payment")
+		}
+		if authz.CanAccessUnit(ctx, *p.UnitID, authz.UnitSide(*p.DebtorKind)) != nil {
+			return problem.NotFound("no such payment")
+		}
+		return nil
+	})
+	return p, err
+}
