@@ -12,6 +12,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -260,9 +261,13 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 	now := s.now()
 	out := ScanResult{Reason: ReasonUnknown}
 	hash, parsed := ParseQR(text)
+	// per guard session (the console login without one): guessing tokens at the booth is not a use of the console
+	if ok, retry := s.scanLimit.Allow(scanKey(ctx, guardToken)); !ok {
+		return ScanResult{}, problem.RateLimited(retry)
+	}
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		if !parsed {
-			return nil
+			return s.scanFailed(ctx, tx, orgID, nil, guardToken, ReasonUnknown)
 		}
 		entry, err := scanEntry(tx.QueryRow(ctx, entrySelect+` WHERE e.org_id = $1 AND e.qr_token_hash = $2`, orgID, hash))
 		isEntry := err == nil
@@ -273,7 +278,7 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 		if !isEntry {
 			rv, err = scanRecurring(tx.QueryRow(ctx, recurringSelect+` WHERE r.org_id = $1 AND r.qr_token_hash = $2 FOR UPDATE OF r`, orgID, hash))
 			if errors.Is(err, pgx.ErrNoRows) {
-				return nil
+				return s.scanFailed(ctx, tx, orgID, nil, guardToken, ReasonUnknown)
 			}
 			if err != nil {
 				return err
@@ -290,14 +295,14 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 		}
 		if !authz.Has(ctx, PermGateOperate, sc) {
 			out.Reason = ReasonWrongSite
-			return nil
+			return s.scanFailed(ctx, tx, orgID, nil, guardToken, ReasonWrongSite)
 		}
 		g, err := s.guardFor(ctx, tx, orgID, siteID, guardToken)
 		if err != nil {
 			var pe *problem.Error
 			if errors.As(err, &pe) && pe.Status == 403 {
 				out.Reason = ReasonWrongSite
-				return nil
+				return s.scanFailed(ctx, tx, orgID, nil, guardToken, ReasonWrongSite)
 			}
 			return err
 		}
@@ -348,6 +353,34 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 		return ScanResult{}, tenancy.DBProblem(err, "scan")
 	}
 	return out, nil
+}
+
+// scanKey is the rate limit key of a scan: the console login and the guard
+// session on it (a hash, never the token).
+func scanKey(ctx context.Context, guardToken string) string {
+	return "scan:" + consoleID(ctx).String() + ":" + HashHex(crypto.HashToken(guardToken))
+}
+
+// scanFailed audits a scan that matched nothing (unparseable, unknown or
+// another site's token) with the console and guard session that made it; it
+// never records the scanned text. site is nil when the token names none.
+func (s *Service) scanFailed(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site *uuid.UUID, guardToken, reason string) error {
+	diff := audit.Changes{"result": {After: mustJSON(reason)}}
+	if c := consoleID(ctx); c != uuid.Nil {
+		diff["console_id"] = audit.Change{After: mustJSON(c.String())}
+	}
+	if guardToken != "" {
+		var session, person uuid.UUID
+		err := tx.QueryRow(ctx, `SELECT id, person_id FROM guard_session WHERE org_id = $1 AND token_hash = $2 AND console_id = $3 AND ended_at IS NULL AND expires_at > now()`,
+			orgID, crypto.HashToken(guardToken), consoleID(ctx)).Scan(&session, &person)
+		if err == nil {
+			diff["guard_session_id"] = audit.Change{After: mustJSON(session.String())}
+			diff["guard_person_id"] = audit.Change{After: mustJSON(person.String())}
+		} else if !errors.Is(err, pgx.ErrNoRows) {
+			return err
+		}
+	}
+	return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: site, Action: "gate.scan_failed", TargetType: "gate_console", TargetID: consoleID(ctx), Diff: diff})
 }
 
 // evalEntry judges a pre-registered entry at time now.

@@ -27,6 +27,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/openbekci/openbekci/server/internal/platform/ratelimit"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -127,6 +128,9 @@ type Config struct {
 	// Platform lists organizations for the jobs.
 	Platform PlatformRunner
 	Log      *slog.Logger
+	// ScanPerMinute limits the QR scans of one guard session (the console
+	// login without one); 0 means DefaultScanPerMinute.
+	ScanPerMinute int
 	// Now is the clock; nil means time.Now.
 	Now func() time.Time
 }
@@ -138,6 +142,8 @@ type Service struct {
 	log    *slog.Logger
 	now    func() time.Time
 	cipher *crypto.FieldCipher
+	// scanLimit limits scans per guard session (or console).
+	scanLimit *ratelimit.Limiter
 }
 
 // NewService returns a Service.
@@ -155,6 +161,11 @@ func NewService(db TxRunner, cfg Config) (*Service, error) {
 	if s.now == nil {
 		s.now = time.Now
 	}
+	scans := cfg.ScanPerMinute
+	if scans <= 0 {
+		scans = DefaultScanPerMinute
+	}
+	s.scanLimit = ratelimit.NewWithClock(scans, time.Minute/time.Duration(scans), s.now)
 	if len(cfg.EncryptionKey) > 0 {
 		c, err := crypto.NewFieldCipher(cfg.EncryptionKey, "community.qr_token")
 		if err != nil {
@@ -196,6 +207,8 @@ const (
 	qrPrefix = "obk1."
 	// DefaultRetentionDays is how long visitor logs are kept unless the site says otherwise.
 	DefaultRetentionDays = 90
+	// DefaultScanPerMinute is how many QR scans one guard session may make a minute.
+	DefaultScanPerMinute = 30
 	// DefaultRequestExpiry is how long a resident has to answer a walk-in request.
 	DefaultRequestExpiry = 10 * time.Minute
 )

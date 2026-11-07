@@ -49,6 +49,8 @@ type GuardSession struct {
 type guardCtx struct {
 	Person *uuid.UUID
 	Name   string
+	// Session is the id of the guard session, uuid.Nil without one.
+	Session uuid.UUID
 }
 
 // consoleID identifies the console login session a guard session is bound to.
@@ -91,12 +93,12 @@ func (s *Service) guardFor(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UU
 		return guardCtx{}, nil
 	}
 	var (
-		sessionSite, console, person uuid.UUID
-		name                         string
+		sessionID, sessionSite, console, person uuid.UUID
+		name                                    string
 	)
-	err := tx.QueryRow(ctx, `SELECT g.site_id, g.console_id, g.person_id, p.display_name FROM guard_session g
+	err := tx.QueryRow(ctx, `SELECT g.id, g.site_id, g.console_id, g.person_id, p.display_name FROM guard_session g
 		JOIN person p ON p.org_id = g.org_id AND p.id = g.person_id
-		WHERE g.org_id = $1 AND g.token_hash = $2 AND g.ended_at IS NULL AND g.expires_at > now()`, orgID, crypto.HashToken(token)).Scan(&sessionSite, &console, &person, &name)
+		WHERE g.org_id = $1 AND g.token_hash = $2 AND g.ended_at IS NULL AND g.expires_at > now()`, orgID, crypto.HashToken(token)).Scan(&sessionID, &sessionSite, &console, &person, &name)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return guardCtx{}, problem.New(401, problem.CodeInvalidGrant, "the guard session is not valid; pick your name and enter your PIN again")
 	}
@@ -113,7 +115,7 @@ func (s *Service) guardFor(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UU
 	if !ok {
 		return guardCtx{}, problem.New(401, problem.CodeInvalidGrant, "the guard session is not valid; pick your name and enter your PIN again")
 	}
-	return guardCtx{Person: &person, Name: name}, nil
+	return guardCtx{Person: &person, Name: name, Session: sessionID}, nil
 }
 
 // gateAt checks gate.operate at the site and resolves the guard session.
@@ -132,6 +134,12 @@ func gateAudit(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, g guardC
 	}
 	if g.Person != nil {
 		diff["guard_person_id"] = audit.Change{After: mustJSON(g.Person.String())}
+	}
+	if g.Session != uuid.Nil {
+		diff["guard_session_id"] = audit.Change{After: mustJSON(g.Session.String())}
+	}
+	if c := consoleID(ctx); c != uuid.Nil {
+		diff["console_id"] = audit.Change{After: mustJSON(c.String())}
 	}
 	return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &siteID, Action: action, TargetType: targetType, TargetID: targetID, Diff: diff})
 }
