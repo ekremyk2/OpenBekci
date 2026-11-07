@@ -15,6 +15,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"strings"
 	"time"
@@ -131,6 +132,9 @@ type Config struct {
 	// ScanPerMinute limits the QR scans of one guard session (the console
 	// login without one); 0 means DefaultScanPerMinute.
 	ScanPerMinute int
+	// DeskPerHour limits the walk-in registrations and call-contact reads of
+	// one guard session; 0 means DefaultDeskPerHour.
+	DeskPerHour int
 	// Now is the clock; nil means time.Now.
 	Now func() time.Time
 }
@@ -144,6 +148,8 @@ type Service struct {
 	cipher *crypto.FieldCipher
 	// scanLimit limits scans per guard session (or console).
 	scanLimit *ratelimit.Limiter
+	// deskLimit limits walk-ins plus call-contact reads per guard session.
+	deskLimit *ratelimit.Limiter
 }
 
 // NewService returns a Service.
@@ -166,6 +172,11 @@ func NewService(db TxRunner, cfg Config) (*Service, error) {
 		scans = DefaultScanPerMinute
 	}
 	s.scanLimit = ratelimit.NewWithClock(scans, time.Minute/time.Duration(scans), s.now)
+	desk := cfg.DeskPerHour
+	if desk <= 0 {
+		desk = DefaultDeskPerHour
+	}
+	s.deskLimit = ratelimit.NewWithClock(desk, time.Hour/time.Duration(desk), s.now)
 	if len(cfg.EncryptionKey) > 0 {
 		c, err := crypto.NewFieldCipher(cfg.EncryptionKey, "community.qr_token")
 		if err != nil {
@@ -209,6 +220,10 @@ const (
 	DefaultRetentionDays = 90
 	// DefaultScanPerMinute is how many QR scans one guard session may make a minute.
 	DefaultScanPerMinute = 30
+	// DefaultDeskPerHour is how many walk-ins plus call-contact reads one guard session may make an hour.
+	DefaultDeskPerHour = 20
+	// guardParcelDays is how long the guard sees a collected parcel; guard date browsing reaches one day either way.
+	guardParcelDays = 7
 	// DefaultRequestExpiry is how long a resident has to answer a walk-in request.
 	DefaultRequestExpiry = 10 * time.Minute
 )
@@ -270,7 +285,8 @@ func loadSite(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (siteInfo
 	}
 	loc, lerr := time.LoadLocation(tz)
 	if lerr != nil {
-		loc = time.UTC
+		// never judge windows in a guessed zone: UTC would admit or refuse visitors at the wrong hours
+		return siteInfo{}, problem.Internal(fmt.Errorf("site %s has a time zone that does not load (%q): %w", siteID, tz, lerr))
 	}
 	si := siteInfo{ID: siteID, Loc: loc, Currency: cur, Settings: map[string]any{}}
 	if len(settings) > 0 {

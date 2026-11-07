@@ -3,6 +3,7 @@ package community
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -72,7 +73,7 @@ func VisitorCredentialsTx(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUI
 	}
 	loc, err := time.LoadLocation(tz)
 	if err != nil {
-		loc = time.UTC
+		return nil, fmt.Errorf("site %s has a time zone that does not load (%q): %w", siteID, tz, err)
 	}
 	// a credential of a unit nobody currently lives in is not active, whatever its source says
 	occupied := map[uuid.UUID]bool{}

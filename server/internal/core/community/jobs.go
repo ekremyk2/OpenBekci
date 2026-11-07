@@ -11,6 +11,7 @@ import (
 	"github.com/riverqueue/river"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 )
 
 // Job schedules.
@@ -19,6 +20,9 @@ const (
 	RequestExpiryInterval = time.Minute
 	// RetentionInterval is how often the visitor logs are pruned.
 	RetentionInterval = 6 * time.Hour
+	// ParcelReminderInterval is how often waiting parcels are checked for a reminder
+	// (a parcel is reminded once for every full week it waits).
+	ParcelReminderInterval = 24 * time.Hour
 )
 
 // RequestExpiryArgs is the arguments of community.visitor_request_expiry.
@@ -26,6 +30,28 @@ type RequestExpiryArgs struct{}
 
 // Kind implements river.JobArgs.
 func (RequestExpiryArgs) Kind() string { return "community.visitor_request_expiry" }
+
+// ParcelReminderArgs is the arguments of community.parcel_reminder.
+type ParcelReminderArgs struct{}
+
+// Kind implements river.JobArgs.
+func (ParcelReminderArgs) Kind() string { return "community.parcel_reminder" }
+
+type parcelReminderWorker struct {
+	river.WorkerDefaults[ParcelReminderArgs]
+	s *Service
+}
+
+func (w *parcelReminderWorker) Work(ctx context.Context, _ *river.Job[ParcelReminderArgs]) error {
+	n, err := w.s.RemindParcels(ctx)
+	if err != nil {
+		return fmt.Errorf("remind parcels: %w", err)
+	}
+	if n > 0 {
+		w.s.log.InfoContext(ctx, "reminded residents of waiting parcels", "parcels", n)
+	}
+	return nil
+}
 
 // RetentionArgs is the arguments of community.visitor_retention_prune.
 type RetentionArgs struct{}
@@ -69,6 +95,7 @@ func (w *retentionWorker) Work(ctx context.Context, _ *river.Job[RetentionArgs])
 func (s *Service) RegisterWorkers(w *river.Workers) {
 	river.AddWorker(w, &expiryWorker{s: s})
 	river.AddWorker(w, &retentionWorker{s: s})
+	river.AddWorker(w, &parcelReminderWorker{s: s})
 }
 
 // PeriodicJobs are the module's schedules (jobs.Options.Periodic).
@@ -78,6 +105,8 @@ func PeriodicJobs() []*river.PeriodicJob {
 			func() (river.JobArgs, *river.InsertOpts) { return RequestExpiryArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}),
 		river.NewPeriodicJob(river.PeriodicInterval(RetentionInterval),
 			func() (river.JobArgs, *river.InsertOpts) { return RetentionArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}),
+		river.NewPeriodicJob(river.PeriodicInterval(ParcelReminderInterval),
+			func() (river.JobArgs, *river.InsertOpts) { return ParcelReminderArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}),
 	}
 }
 
@@ -177,6 +206,85 @@ func (s *Service) ExpireVisitorsOrg(ctx context.Context, orgID uuid.UUID) (int, 
 	return total, err
 }
 
+// RemindParcels notifies the people of a unit about each parcel that has waited
+// a full week, again for every further week (the dedupe key carries the number
+// of weeks, so running it often sends each reminder once), in every
+// organization. It returns how many reminders it handed over.
+func (s *Service) RemindParcels(ctx context.Context) (int, error) {
+	orgs, err := s.orgIDs(ctx)
+	if err != nil {
+		return 0, err
+	}
+	total := 0
+	for _, org := range orgs {
+		n, err := s.RemindParcelsOrg(ctx, org)
+		if err != nil {
+			return total, fmt.Errorf("organization %s: %w", org, err)
+		}
+		total += n
+	}
+	return total, nil
+}
+
+// RemindParcelsOrg is RemindParcels for one organization.
+func (s *Service) RemindParcelsOrg(ctx context.Context, orgID uuid.UUID) (int, error) {
+	now := s.now()
+	total := 0
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		rows, err := tx.Query(ctx, `SELECT d.id, d.site_id, d.unit_id, u.door_number, d.description, st.timezone,
+				floor(extract(epoch FROM ($2::timestamptz - d.received_at)) / 604800)::int
+			FROM delivery d JOIN unit u ON u.org_id = d.org_id AND u.id = d.unit_id JOIN site st ON st.org_id = d.org_id AND st.id = d.site_id
+			WHERE d.org_id = $1 AND d.collected_at IS NULL AND d.received_at <= $2::timestamptz - interval '7 days' AND st.status = 'active'`, orgID, now)
+		if err != nil {
+			return err
+		}
+		type parcel struct {
+			id, site, unit uuid.UUID
+			door, tz       string
+			desc           *string
+			weeks          int
+		}
+		var ps []parcel
+		for rows.Next() {
+			var p parcel
+			if err := rows.Scan(&p.id, &p.site, &p.unit, &p.door, &p.desc, &p.tz, &p.weeks); err != nil {
+				rows.Close()
+				return err
+			}
+			ps = append(ps, p)
+		}
+		rows.Close()
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		for _, p := range ps {
+			loc, err := time.LoadLocation(p.tz)
+			if err != nil {
+				continue
+			}
+			people, err := unitOccupants(ctx, tx, orgID, p.unit, now.In(loc))
+			if err != nil {
+				return err
+			}
+			if len(people) == 0 {
+				continue
+			}
+			data := map[string]any{"delivery_id": p.id, "unit_door_number": p.door, "weeks": p.weeks}
+			if p.desc != nil {
+				data["description"] = *p.desc
+			}
+			site := p.site
+			if err := s.cfg.Notifier.Notify(ctx, tx, jobs.Notify{OrgID: orgID, SiteID: &site, PersonIDs: people, Template: "delivery.waiting_reminder", Data: data,
+				DedupeKey: fmt.Sprintf("delivery.waiting_reminder:%s:%d", p.id, p.weeks)}); err != nil {
+				return err
+			}
+			total++
+		}
+		return nil
+	})
+	return total, err
+}
+
 // PruneVisitorLogs deletes visitor logs older than each site's retention
 // (visitor_retention_days, default 90; KVKK) in every organization: visitor
 // entries and their requests, recurring visitors that ended, collected
@@ -234,7 +342,8 @@ func (s *Service) PruneVisitorLogsOrg(ctx context.Context, orgID uuid.UUID) (int
 			for _, q := range []string{
 				// requests go with their entry (ON DELETE CASCADE); a visit of a recurring visitor is an entry too
 				`DELETE FROM visitor_entry WHERE org_id = $1 AND site_id = $2 AND window_to < $3`,
-				`DELETE FROM delivery WHERE org_id = $1 AND site_id = $2 AND collected_at IS NOT NULL AND collected_at < $3`,
+				// a parcel nobody collected goes with the rest of the visitor logs
+				`DELETE FROM delivery WHERE org_id = $1 AND site_id = $2 AND COALESCE(collected_at, received_at) < $3`,
 				`DELETE FROM recurring_visitor r WHERE r.org_id = $1 AND r.site_id = $2 AND r.updated_at < $3::timestamptz
 				   AND (r.status = 'revoked' OR r.valid_to < ($3::timestamptz)::date) AND NOT EXISTS (SELECT 1 FROM visitor_entry e WHERE e.org_id = r.org_id AND e.recurring_visitor_id = r.id)`,
 				`DELETE FROM gate_pin_attempt WHERE org_id = $1 AND site_id = $2 AND at < $3`,

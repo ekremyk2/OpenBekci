@@ -52,9 +52,11 @@ func (d Delivery) gate() GateDelivery {
 }
 
 // listGateDeliveries is the guard's parcel list: door number, time, description, status.
-func listGateDeliveries(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, door, status string, after uuid.UUID, limit int) ([]GateDelivery, []uuid.UUID, error) {
+// A collected parcel stays visible to the guard for 7 days.
+func listGateDeliveries(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, door, status string, after uuid.UUID, limit int, now time.Time) ([]GateDelivery, []uuid.UUID, error) {
 	rows, err := tx.Query(ctx, deliverySelect+` WHERE d.org_id = $1 AND d.site_id = $2 AND d.id > $3 AND ($4 = '' OR u.door_number = $4)
-		AND ($5 = '' OR (CASE WHEN d.collected_at IS NULL THEN 'waiting' ELSE 'collected' END) = $5) ORDER BY d.id LIMIT $6`, orgID, siteID, after, door, status, limit)
+		AND ($5 = '' OR (CASE WHEN d.collected_at IS NULL THEN 'waiting' ELSE 'collected' END) = $5)
+		AND (d.collected_at IS NULL OR d.collected_at > $7) ORDER BY d.id LIMIT $6`, orgID, siteID, after, door, status, limit, now.AddDate(0, 0, -guardParcelDays))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -85,7 +87,7 @@ func (s *Service) ListGateDeliveries(ctx context.Context, orgID, siteID uuid.UUI
 			return err
 		}
 		var err error
-		items, ids, err = listGateDeliveries(ctx, tx, orgID, siteID, door, status, after, limit+1)
+		items, ids, err = listGateDeliveries(ctx, tx, orgID, siteID, door, status, after, limit+1, s.now())
 		return err
 	})
 	if err != nil {

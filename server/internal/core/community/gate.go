@@ -159,7 +159,7 @@ func (s *Service) GateConsole(ctx context.Context, orgID, siteID uuid.UUID, guar
 		if err := rows.Err(); err != nil {
 			return err
 		}
-		out.WaitingDeliveries, _, err = listGateDeliveries(ctx, tx, orgID, siteID, "", "waiting", uuid.Nil, 100)
+		out.WaitingDeliveries, _, err = listGateDeliveries(ctx, tx, orgID, siteID, "", "waiting", uuid.Nil, 100, now)
 		return err
 	})
 	if err != nil {
@@ -198,6 +198,11 @@ func (s *Service) ListGateVisitors(ctx context.Context, orgID uuid.UUID, f GateV
 			t, perr := time.ParseInLocation("2006-01-02", f.Date, si.Loc)
 			if perr != nil {
 				return validation("date", "invalid_format")
+			}
+			// a guard browses yesterday, today and tomorrow, not the visitor history
+			lo, hi := now.In(si.Loc).AddDate(0, 0, -1).Format("2006-01-02"), now.In(si.Loc).AddDate(0, 0, 1).Format("2006-01-02")
+			if f.Date < lo || f.Date > hi {
+				return problem.Validation(problem.Field{Field: "date", Code: "invalid_value", Params: map[string]any{"min": lo, "max": hi}})
 			}
 			day = t
 		}
@@ -366,6 +371,19 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 	return out, nil
 }
 
+// deskThrottle applies the per guard session limit on walk-in registrations and
+// call-contact reads (20 an hour): over it, the attempt is audited and the
+// returned problem is a 429 for the caller to send after the transaction (an
+// error from inside would roll the audit back). Both nil means go ahead.
+func (s *Service) deskThrottle(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, g guardCtx, action string) (throttled error, err error) {
+	ok, retry := s.deskLimit.Allow("desk:" + consoleID(ctx).String() + ":" + g.Session.String())
+	if ok {
+		return nil, nil
+	}
+	err = gateAudit(ctx, tx, orgID, siteID, g, "gate.throttled", "gate_console", consoleID(ctx), audit.Changes{"action": {After: mustJSON(action)}})
+	return problem.RateLimited(retry), err
+}
+
 // scanKey is the rate limit key of a scan: the console login and the guard
 // session on it (a hash, never the token).
 func scanKey(ctx context.Context, guardToken string) string {
@@ -470,9 +488,13 @@ func (s *Service) CreateWalkInVisitor(ctx context.Context, orgID uuid.UUID, in W
 	}
 	now := s.now()
 	var out GuardVisitor
+	var throttled error
 	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		g, err := s.gateAt(ctx, tx, orgID, in.SiteID, guardToken)
 		if err != nil {
+			return err
+		}
+		if throttled, err = s.deskThrottle(ctx, tx, orgID, in.SiteID, g, "walk_in"); err != nil || throttled != nil {
 			return err
 		}
 		si, err := loadSite(ctx, tx, orgID, in.SiteID)
@@ -523,6 +545,9 @@ func (s *Service) CreateWalkInVisitor(ctx context.Context, orgID uuid.UUID, in W
 	})
 	if err != nil {
 		return GuardVisitor{}, tenancy.DBProblem(err, "walk-in visitor")
+	}
+	if throttled != nil {
+		return GuardVisitor{}, throttled
 	}
 	return out, nil
 }
@@ -628,6 +653,7 @@ func (s *Service) LeaveGateVisitor(ctx context.Context, orgID, entryID uuid.UUID
 func (s *Service) GetGateVisitorCallContact(ctx context.Context, orgID, entryID uuid.UUID, guardToken string) (CallContact, error) {
 	now := s.now()
 	var out CallContact
+	var throttled error
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		v, err := loadEntry(ctx, tx, orgID, entryID, false)
 		if err != nil {
@@ -635,6 +661,9 @@ func (s *Service) GetGateVisitorCallContact(ctx context.Context, orgID, entryID 
 		}
 		g, err := s.gateAt(ctx, tx, orgID, v.SiteID, guardToken)
 		if err != nil {
+			return err
+		}
+		if throttled, err = s.deskThrottle(ctx, tx, orgID, v.SiteID, g, "call_contact"); err != nil || throttled != nil {
 			return err
 		}
 		if v.ApprovalStatus != "requested" || v.approvalExpiresAt == nil || !v.approvalExpiresAt.After(now) {
@@ -659,6 +688,9 @@ func (s *Service) GetGateVisitorCallContact(ctx context.Context, orgID, entryID 
 	})
 	if err != nil {
 		return CallContact{}, tenancy.DBProblem(err, "call contact")
+	}
+	if throttled != nil {
+		return CallContact{}, throttled
 	}
 	return out, nil
 }
