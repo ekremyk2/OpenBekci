@@ -51,8 +51,18 @@ func gate(ctx context.Context, perm authz.Permission, orgID uuid.UUID) (orgWide 
 	return false, nil, problem.Forbidden("you do not have the " + string(perm) + " permission here")
 }
 
-func (s *Service) holds(ctx context.Context, perm authz.Permission, f File) bool {
-	return authz.Has(ctx, perm, authz.Scope{OrgID: f.OrgID, SiteID: f.SiteID})
+// holds reports whether the caller has perm for f: at the file's site when it
+// has one (the scope is derived from the stored site, never built by hand),
+// otherwise in the organization. Where the site cannot be resolved (sites do
+// not exist in every build) only an organization-wide grant counts.
+func (s *Service) holds(ctx context.Context, tx pgx.Tx, perm authz.Permission, f File) bool {
+	scope := authz.Scope{OrgID: f.OrgID}
+	if f.SiteID != nil {
+		if sc, err := authz.ScopeOfSite(ctx, tx, *f.SiteID); err == nil {
+			scope = sc
+		}
+	}
+	return authz.Has(ctx, perm, scope)
 }
 
 func (s *Service) isUploader(ctx context.Context, f File) bool {
@@ -63,7 +73,7 @@ func (s *Service) isUploader(ctx context.Context, f File) bool {
 // CanSeeUploader reports whether the caller may be told who uploaded f: the
 // uploader and holders of files.manage.
 func (s *Service) CanSeeUploader(ctx context.Context, f File) bool {
-	return s.isUploader(ctx, f) || s.holds(ctx, PermManage, f)
+	return s.isUploader(ctx, f) || authz.Has(ctx, PermManage, authz.Scope{OrgID: f.OrgID})
 }
 
 // canRead decides whether the caller may see f: files.read is the gate; then
@@ -74,10 +84,10 @@ func (s *Service) CanSeeUploader(ctx context.Context, f File) bool {
 // longer read is hidden from them too. Only ready files are visible to
 // non-administrators.
 func (s *Service) canRead(ctx context.Context, tx pgx.Tx, f File) (bool, error) {
-	if f.Status == StatusPending || f.Status == StatusDeleted || !s.holds(ctx, PermRead, f) {
+	if f.Status == StatusPending || f.Status == StatusDeleted || !s.holds(ctx, tx, PermRead, f) {
 		return false, nil
 	}
-	if s.holds(ctx, PermManage, f) {
+	if s.holds(ctx, tx, PermManage, f) {
 		return true, nil
 	}
 	if f.Scope == nil {
@@ -188,7 +198,7 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, p ListParams) ([]Fi
 		atBound, idBound = &t, &c.ID
 	}
 	if p.Scope != nil && !scopeTypeRE.MatchString(p.Scope.Type) {
-		return nil, "", problem.Validation(problem.Field{Field: "scope_type", Code: "invalid_format"})
+		return nil, "", problem.Validation(problem.Field{Field: "scope", Code: "invalid_format"})
 	}
 	manager := authz.Has(ctx, PermManage, authz.Scope{OrgID: orgID})
 	me := authz.PrincipalFromContext(ctx).UserID
@@ -429,7 +439,7 @@ func (s *Service) Delete(ctx context.Context, orgID, fileID uuid.UUID) error {
 		if f.Status == StatusDeleted || f.Status == StatusPending {
 			return errNoFile
 		}
-		if !s.holds(ctx, PermManage, f) {
+		if !s.holds(ctx, tx, PermManage, f) {
 			ok, err := s.canRead(ctx, tx, f)
 			if err != nil {
 				return err
@@ -437,7 +447,7 @@ func (s *Service) Delete(ctx context.Context, orgID, fileID uuid.UUID) error {
 			switch {
 			case !ok:
 				return errNoFile
-			case !s.isUploader(ctx, f) || !s.holds(ctx, PermUpload, f):
+			case !s.isUploader(ctx, f) || !s.holds(ctx, tx, PermUpload, f):
 				return problem.Forbidden("you may not delete this file")
 			case f.Scope != nil:
 				return problem.Conflict("the file is attached to a resource; only an administrator or the resource's module can remove it")
@@ -479,7 +489,7 @@ func (s *Service) Attach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID
 	if f.Status != StatusReady && f.Status != StatusQuarantined {
 		return File{}, errNoFile
 	}
-	if pr := authz.PrincipalFromContext(ctx); pr != nil && !s.isUploader(ctx, f) && !s.holds(ctx, PermManage, f) {
+	if pr := authz.PrincipalFromContext(ctx); pr != nil && !s.isUploader(ctx, f) && !s.holds(ctx, tx, PermManage, f) {
 		return File{}, errNoFile // somebody else's file: do not reveal it exists
 	}
 	if f.Scope != nil {

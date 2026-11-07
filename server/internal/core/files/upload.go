@@ -59,9 +59,13 @@ type UploadParams struct {
 // scan_unavailable when a virus scanner is configured but unreachable. A file
 // the scanner flags comes back with status quarantined.
 func (s *Service) Upload(ctx context.Context, p UploadParams) (File, error) {
-	if err := authz.Require(ctx, PermUpload, authz.Scope{OrgID: p.OrgID, SiteID: p.SiteID}); err != nil {
-		return File{}, err
-	}
+	if p.SiteID == nil {
+		if err := authz.Require(ctx, PermUpload, authz.Scope{OrgID: p.OrgID}); err != nil {
+			return File{}, err
+		}
+	} else if authz.PrincipalFromContext(ctx) == nil {
+		return File{}, problem.Unauthenticated("authentication is required")
+	} // for a site the scope is derived from the stored site inside the reservation transaction (see ingest)
 	uid := authz.PrincipalFromContext(ctx).UserID
 	if ok, retry := s.uploads.Allow(uid.String()); !ok {
 		return File{}, problem.RateLimited(retry)
@@ -118,12 +122,12 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 	}
 	if p.Scope != nil {
 		if !scopeTypeRE.MatchString(p.Scope.Type) {
-			bad = append(bad, problem.Field{Field: "scope_type", Code: "invalid_format"})
+			bad = append(bad, problem.Field{Field: "scope", Code: "invalid_format"})
 		} else if _, ok := s.scope(p.Scope.Type); !ok && m.authorize {
-			bad = append(bad, problem.Field{Field: "scope_type", Code: "invalid_value"})
+			bad = append(bad, problem.Field{Field: "scope", Code: "invalid_value"})
 		}
 		if p.Scope.ID == uuid.Nil {
-			bad = append(bad, problem.Field{Field: "scope_id", Code: "invalid_value"})
+			bad = append(bad, problem.Field{Field: "scope", Code: "invalid_value"})
 		}
 	}
 	if len(bad) > 0 {
@@ -147,6 +151,18 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 	// 1. Reserve the row, so a crash leaves a pending row the maintenance job
 	// sweeps instead of an orphan blob nobody knows about.
 	err := s.db.InTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
+		if m.authorize && p.SiteID != nil {
+			sc, err := authz.ScopeOfSite(ctx, tx, *p.SiteID)
+			switch {
+			case errors.Is(err, authz.ErrScopeUnavailable):
+				return problem.Validation(problem.Field{Field: "site_id", Code: "invalid_value"}) // no sites in this build
+			case err != nil:
+				return err
+			}
+			if err := authz.Require(ctx, PermUpload, sc); err != nil {
+				return err
+			}
+		}
 		if p.Scope != nil {
 			if e, ok := s.scope(p.Scope.Type); ok {
 				if m.authorize {

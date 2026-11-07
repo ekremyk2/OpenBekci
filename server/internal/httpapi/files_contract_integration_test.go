@@ -72,6 +72,19 @@ func TestIntegrationFilesFieldAfterFileIsRefusedAndUndone(t *testing.T) {
 	}
 }
 
+// Sites do not exist in this build, so the scope of a site cannot be derived from a stored row:
+// a site_id is refused rather than trusted.
+func TestIntegrationFilesSiteIDIsRefusedWithoutSites(t *testing.T) {
+	fe := newFilesEnv(t, 0)
+	rec := fe.upload(t, "org_admin", "a.txt", []byte("a"), map[string]string{"site_id": uuid.NewString()})
+	if rec.Code != 422 || fieldCodes(rec)["site_id"] != "invalid_value" {
+		t.Errorf("site_id: %d %s", rec.Code, rec.Body.String())
+	}
+	if n := fe.fileCount(t); n != 0 {
+		t.Errorf("%d files stored", n)
+	}
+}
+
 func TestIntegrationFilesDeleteByUploaderOnlyWhileUnattached(t *testing.T) {
 	fe := newFilesEnv(t, 0)
 	org := fe.w.OrgA.ID.String()

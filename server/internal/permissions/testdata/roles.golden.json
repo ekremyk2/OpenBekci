@@ -1,11 +1,11 @@
 {
-  "_comment": "The S5 role to permission table, written by hand and reviewed against decision S5 and backend plan 7. It is deliberately NOT generated from the registry: a wrong role assignment in a module's Permissions() must fail TestRolePermissionsGolden. Change it only together with the decision it reflects.",
-  "org_admin": ["audit.read", "me.read", "org.manage", "org.read", "sessions.manage_own"],
-  "site_manager": ["me.read", "org.read", "sessions.manage_own"],
-  "board_member": ["me.read", "org.read", "sessions.manage_own"],
-  "auditor": ["audit.read", "audit.report", "me.read", "org.read", "sessions.manage_own"],
-  "accountant": ["me.read", "org.read", "sessions.manage_own"],
-  "staff": ["me.read", "org.read", "sessions.manage_own"],
-  "guard": ["me.read", "sessions.manage_own"],
+  "_comment": "The S5 role to permission table, written by hand and reviewed against decision S5 and backend plan 7. It is deliberately NOT generated from the registry: a wrong role assignment in a module's Permissions() must fail TestRolePermissionsGolden. Change it only together with the decision it reflects. Files (backend plan 13): every member holds files.upload and files.read (they open the endpoints; each file is further limited by its attachment's visibility); files.manage is for org_admin and site_manager.",
+  "org_admin": ["audit.read", "files.manage", "files.read", "files.upload", "me.read", "org.manage", "org.read", "sessions.manage_own"],
+  "site_manager": ["files.manage", "files.read", "files.upload", "me.read", "org.read", "sessions.manage_own"],
+  "board_member": ["files.read", "files.upload", "me.read", "org.read", "sessions.manage_own"],
+  "auditor": ["audit.read", "audit.report", "files.read", "files.upload", "me.read", "org.read", "sessions.manage_own"],
+  "accountant": ["files.read", "files.upload", "me.read", "org.read", "sessions.manage_own"],
+  "staff": ["files.read", "files.upload", "me.read", "org.read", "sessions.manage_own"],
+  "guard": ["files.read", "files.upload", "me.read", "sessions.manage_own"],
   "platform_admin": ["me.read", "platform.manage", "sessions.manage_own"]
 }
