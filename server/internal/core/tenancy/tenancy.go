@@ -28,9 +28,10 @@ const (
 // Permissions declares the module's permissions; the wiring registers them.
 func Permissions() []authz.PermissionDef {
 	org := []authz.ScopeType{authz.ScopeOrg}
+	anywhere := []authz.ScopeType{authz.ScopeOrg, authz.ScopeSite, authz.ScopeBlock} // any member reads the settings
 	return []authz.PermissionDef{
 		{Name: PermOrgRead, Description: "Read the organization's settings",
-			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleSiteManager, authz.RoleBoardMember, authz.RoleAuditor, authz.RoleAccountant, authz.RoleStaff}, Scopes: org},
+			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleSiteManager, authz.RoleBoardMember, authz.RoleAuditor, authz.RoleAccountant, authz.RoleStaff}, Scopes: anywhere},
 		{Name: PermOrgManage, Description: "Change the organization's settings",
 			Roles: []authz.Role{authz.RoleOrgAdmin}, Scopes: org},
 	}
@@ -83,9 +84,10 @@ func scanOrg(row pgx.Row) (Org, error) {
 	return o, err
 }
 
-// Get returns the organization. It needs org.read.
+// Get returns the organization. It needs org.read at any scope inside the
+// organization: a member limited to one site or block reads the settings too.
 func (s *Service) Get(ctx context.Context, orgID uuid.UUID) (Org, error) {
-	if err := authz.Require(ctx, PermOrgRead, authz.Scope{OrgID: orgID}); err != nil {
+	if err := authz.RequireInOrg(ctx, PermOrgRead, orgID); err != nil {
 		return Org{}, err
 	}
 	var o Org

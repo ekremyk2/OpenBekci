@@ -96,6 +96,42 @@ func (g Grants) HasInOrg(perm Permission, orgID uuid.UUID) bool {
 	return false
 }
 
+// Reach is where a permission applies inside one organization.
+type Reach struct {
+	// OrgWide is true when an org-scoped grant holds the permission; the
+	// narrower lists are then irrelevant.
+	OrgWide  bool
+	SiteIDs  []uuid.UUID
+	BlockIDs []uuid.UUID
+}
+
+// Any reports whether the permission applies anywhere in the organization.
+func (r Reach) Any() bool { return r.OrgWide || len(r.SiteIDs) > 0 || len(r.BlockIDs) > 0 }
+
+// ReachOf returns where perm applies in organization orgID: the services of
+// operations that site- and block-scoped members may use filter their result
+// by it (audit.list shows only the events of the caller's sites and blocks).
+func (g Grants) ReachOf(perm Permission, orgID uuid.UUID) Reach {
+	var r Reach
+	if orgID == uuid.Nil || orgID != g.OrgID {
+		return r
+	}
+	for _, it := range g.Items {
+		if it.Permission != perm {
+			continue
+		}
+		switch {
+		case it.ScopeType == ScopeOrg:
+			r.OrgWide = true
+		case it.ScopeType == ScopeSite && it.ScopeID != nil:
+			r.SiteIDs = append(r.SiteIDs, *it.ScopeID)
+		case it.ScopeType == ScopeBlock && it.ScopeID != nil:
+			r.BlockIDs = append(r.BlockIDs, *it.ScopeID)
+		}
+	}
+	return r
+}
+
 // merge returns g plus the grants of o (the org id of o wins when set).
 func (g Grants) merge(o Grants) Grants {
 	if o.OrgID != uuid.Nil {
@@ -138,7 +174,7 @@ func Require(ctx context.Context, perm Permission, scope Scope) error {
 // RequireInOrg checks that the caller holds perm somewhere in the
 // organization (org-wide, or at a site or block of it); see Grants.HasInOrg.
 // Services of operations that site- and block-scoped members may use call it
-// and then filter by the scopes the caller holds (Grants.ScopesOf).
+// and then filter by the scopes the caller holds (Grants.ReachOf).
 func RequireInOrg(ctx context.Context, perm Permission, orgID uuid.UUID) error {
 	if PrincipalFromContext(ctx) == nil {
 		return problem.Unauthenticated("authentication is required")

@@ -142,6 +142,11 @@ bearer tokens) for module tests that need a signed-in caller. `GET /v1/orgs/{org
 revocation, platform-administrator promotion) go to `platform_audit_event`, readable only through the platform role.
 Both tables are append-only: the application roles have no UPDATE, DELETE or TRUNCATE.
 
+`org.read` and `audit.read` are grantable at org, site and block scope; `org.manage` is org-only. The pipeline checks
+the operation's permissions with `Grants.HasInOrg` (held anywhere in the organization) before the idempotency step;
+services use `authz.RequireInOrg` and narrow with `Grants.ReachOf`: `audit.list` shows an org-wide holder everything
+and a site or block holder only the events of their sites (`site_id`) and blocks (`target_type = block`).
+
 **PII in audit diffs (implementation note).** `audit.Diff` is fail-closed. A field is personal data when
 `pii.IsPII(entity, path)` says so: entries for one entity match the dotted path, the `*` entries match the **last
 path segment**, case-insensitively, in plural or array form and as the last word of a compound name (`billing.email`,
