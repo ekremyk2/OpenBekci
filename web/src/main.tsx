@@ -11,6 +11,10 @@ import { installChunkLoadRecovery } from '@/lib/chunk-recovery'
 installChunkLoadRecovery()
 
 async function bootstrap() {
+  if (import.meta.env.MODE === 'mock') {
+    // MSW answers /v1 in the browser (pnpm dev:mock); dead code in production builds
+    await (await import('./mocks/browser')).startMocks()
+  }
   const locale = initialLocale()
   await loadLocale(locale) // catalog first so the first paint is already translated
   applyDocumentLocale(locale)

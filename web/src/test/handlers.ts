@@ -1,5 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import type { DiscoveryDocument, Me } from '@/api/schema'
+import { peopleHandlers } from './handlers/people'
+import { tenancyHandlers } from './handlers/tenancy'
 
 /** Hand-written MSW handlers. Generated handlers (openapi-msw) replace these when the spec lands. */
 
@@ -38,6 +40,7 @@ export const meFixture: Me = {
       roles: [{ role: 'site_manager', scope_type: 'org' }],
       permissions: [
         { permission: 'site.read' },
+        { permission: 'sites.read' },
         { permission: 'ledger.read', site_ids: ['site-a'] },
       ],
       sites: [{ id: 'site-a', name: 'Güneş Sitesi', timezone: 'Europe/Istanbul', currency: 'TRY' }],
@@ -62,4 +65,6 @@ export const handlers = [
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
   http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),
   http.delete('*/v1/auth/session', () => new HttpResponse(null, { status: 204 })),
+  ...tenancyHandlers,
+  ...peopleHandlers,
 ]
