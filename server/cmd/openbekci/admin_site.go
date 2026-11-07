@@ -7,6 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
+
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 )
 
 func newExportSiteCmd(load configLoader) *cobra.Command {
@@ -53,6 +55,7 @@ func newExportSiteCmd(load configLoader) *cobra.Command {
 
 func newImportSiteCmd(load configLoader) *cobra.Command {
 	var org, file string
+	var untrusted bool
 	cmd := &cobra.Command{
 		Use:   "import-site",
 		Short: "Import a site archive into an organization (identifiers preserved)",
@@ -74,7 +77,7 @@ func newImportSiteCmd(load configLoader) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			rec, err := a.Tenancy.SystemImportSite(cmd.Context(), orgID, data)
+			rec, err := a.Tenancy.SystemImportSiteWithOptions(cmd.Context(), orgID, data, tenancy.ImportOptions{AllowUntrusted: untrusted})
 			if err != nil {
 				return err
 			}
@@ -84,6 +87,7 @@ func newImportSiteCmd(load configLoader) *cobra.Command {
 	}
 	cmd.Flags().StringVar(&org, "org", "", "target organization id or slug")
 	cmd.Flags().StringVar(&file, "file", "", "archive file to read")
+	cmd.Flags().BoolVar(&untrusted, "untrusted", false, "accept an archive not signed by this instance (another instance, or edited); only the site's own board and auditor memberships and no account links are imported either way")
 	return cmd
 }
 

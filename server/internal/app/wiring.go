@@ -90,7 +90,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 		Idempotency: idem,
 		Identity:    ident,
 		Authz:       authz.NewResolver(d, reg, nil),
-		Tenancy:     tenancy.NewService(d),
+		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey),
 		People:      peopleSvc,
 		Audit:       audit.NewService(d),
 		Authenticator: httpapi.SessionAuthenticator{

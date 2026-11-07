@@ -38,7 +38,7 @@ func OpenAdmin(ctx context.Context, cfg Config, log *slog.Logger) (*Admin, error
 		return nil, err
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{})
-	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d), db: d}, nil
+	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d}, nil
 }
 
 // Close releases the database connections.

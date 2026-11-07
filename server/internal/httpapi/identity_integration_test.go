@@ -66,7 +66,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	if perr != nil {
 		t.Fatal(perr)
 	}
-	e.tenSvc = tenancy.NewService(d)
+	e.tenSvc = tenancy.NewService(d).WithArchiveKey([]byte("test-secret-key-for-archives-0123456789"))
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},

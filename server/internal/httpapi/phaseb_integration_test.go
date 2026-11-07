@@ -385,9 +385,9 @@ func TestIntegrationPhaseBFlow(t *testing.T) {
 		}
 	}
 	p.must(p.uploadAs("/v1/orgs/"+p.w.OrgB.ID.String()+"/sites:import", bAdm, "archive", nil, "archive.json", []byte(arch)), 409) // already there
-	// the resident's login survives: the tenant still has their account, now with a person in OrgB too
-	if me := p.must(p.call("GET", "/v1/me", "", tenantTok), 200).Body; len(me["organizations"].([]any)) != 2 {
-		t.Fatalf("the tenant's account should reach both organizations: %v", me["organizations"])
+	// the archive never links an account: the tenant is not a member of OrgB until they link themselves there
+	if me := p.must(p.call("GET", "/v1/me", "", tenantTok), 200).Body; len(me["organizations"].([]any)) != 1 {
+		t.Fatalf("an archive must not link the tenant's account to OrgB: %v", me["organizations"])
 	}
 
 	// offboarding needs re-authentication, then closes the source

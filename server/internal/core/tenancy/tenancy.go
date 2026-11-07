@@ -43,7 +43,10 @@ type TxRunner interface {
 }
 
 // Service is the tenancy module.
-type Service struct{ db TxRunner }
+type Service struct {
+	db         TxRunner
+	archiveKey []byte // signs site archives; see WithArchiveKey
+}
 
 // NewService returns a Service.
 func NewService(db TxRunner) *Service { return &Service{db: db} }

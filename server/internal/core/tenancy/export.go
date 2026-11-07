@@ -3,8 +3,10 @@ package tenancy
 import (
 	"bytes"
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -35,7 +37,7 @@ type exportTable struct {
 const personsOfSite = `SELECT person_id FROM occupancy WHERE org_id = $1 AND site_id = $2
 	UNION SELECT person_id FROM unit_claim WHERE org_id = $1 AND site_id = $2
 	UNION SELECT person_id FROM directory_consent WHERE org_id = $1 AND site_id = $2
-	UNION SELECT person_id FROM membership WHERE org_id = $1 AND ((scope_type = 'site' AND scope_id = $2)
+	UNION SELECT person_id FROM membership WHERE org_id = $1 AND site_owned AND ((scope_type = 'site' AND scope_id = $2)
 	      OR (scope_type = 'block' AND scope_id IN (SELECT id FROM block WHERE org_id = $1 AND site_id = $2)))`
 
 // exportTables are the tables of an archive in insertion order (parents first).
@@ -56,7 +58,7 @@ var exportTables = []exportTable{
 	{"directory_consent", `SELECT to_jsonb(t) FROM directory_consent t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"vendor", `SELECT to_jsonb(t) FROM vendor t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"unit_claim", `SELECT to_jsonb(t) FROM unit_claim t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
-	{"membership", `SELECT to_jsonb(t) FROM membership t WHERE t.org_id = $1 AND ((t.scope_type = 'site' AND t.scope_id = $2)
+	{"membership", `SELECT to_jsonb(t) FROM membership t WHERE t.org_id = $1 AND t.site_owned AND ((t.scope_type = 'site' AND t.scope_id = $2)
 		OR (t.scope_type = 'block' AND t.scope_id IN (SELECT id FROM block WHERE org_id = $1 AND site_id = $2))) ORDER BY t.id`},
 }
 
@@ -92,6 +94,56 @@ type Archive struct {
 	SiteID      uuid.UUID                   `json:"site_id"`
 	SiteName    string                      `json:"site_name"`
 	Tables      map[string][]map[string]any `json:"tables"`
+	// Signature is an HMAC-SHA256 (hex) of the archive with this field empty,
+	// keyed from the instance SECRET_KEY: it proves the archive was produced
+	// by this instance and not altered since.
+	Signature string `json:"signature,omitempty"`
+}
+
+// ImportOptions tune ImportSiteWithOptions.
+type ImportOptions struct {
+	// AllowUntrusted accepts an archive that was not signed by this instance
+	// (another instance, or edited by hand). Only the allow-listed content is
+	// imported either way; the option exists so the operator decides knowingly.
+	AllowUntrusted bool
+}
+
+// WithArchiveKey sets the instance key (derived from SECRET_KEY) that signs
+// exported archives and verifies imported ones. Without it archives are
+// unsigned and every import counts as untrusted.
+func (s *Service) WithArchiveKey(secret []byte) *Service {
+	if len(secret) == 0 {
+		s.archiveKey = nil
+		return s
+	}
+	h := sha256.New()
+	h.Write([]byte("openbekci/site-archive/v1\x00"))
+	h.Write(secret)
+	s.archiveKey = h.Sum(nil)
+	return s
+}
+
+func (s *Service) archiveMAC(a Archive) (string, bool) {
+	if len(s.archiveKey) == 0 {
+		return "", false
+	}
+	a.Signature = ""
+	b, err := json.Marshal(a)
+	if err != nil {
+		return "", false
+	}
+	m := hmac.New(sha256.New, s.archiveKey)
+	m.Write(b)
+	return hex.EncodeToString(m.Sum(nil)), true
+}
+
+// archiveTrusted reports whether the archive carries a valid signature of this instance.
+func (s *Service) archiveTrusted(a Archive) bool {
+	want, ok := s.archiveMAC(a)
+	if !ok || a.Signature == "" {
+		return false
+	}
+	return hmac.Equal([]byte(want), []byte(a.Signature))
 }
 
 // SiteExport is the record of an export or import.
@@ -188,6 +240,9 @@ func (s *Service) exportSite(ctx context.Context, orgID, siteID uuid.UUID) (Site
 		if err != nil {
 			return err
 		}
+		if sig, ok := s.archiveMAC(a); ok {
+			a.Signature = sig
+		}
 		data, err := json.Marshal(a)
 		if err != nil {
 			return err
@@ -274,112 +329,6 @@ func (s *Service) ExportArchive(ctx context.Context, orgID, exportID uuid.UUID, 
 		return nil, "", DBProblem(err, "download export")
 	}
 	return data, name, nil
-}
-
-// ImportSite creates a site in the organization from an archive, preserving
-// identifiers. People already present (same account) are linked, not
-// duplicated. It needs site.import, organization-wide.
-func (s *Service) ImportSite(ctx context.Context, orgID uuid.UUID, data []byte) (SiteExport, error) {
-	if err := authz.Require(ctx, PermSiteImport, authz.Scope{OrgID: orgID}); err != nil {
-		return SiteExport{}, err
-	}
-	return s.importSite(ctx, orgID, data)
-}
-
-// SystemImportSite is ImportSite without an authorization check, for the admin command.
-func (s *Service) SystemImportSite(ctx context.Context, orgID uuid.UUID, data []byte) (SiteExport, error) {
-	return s.importSite(ctx, orgID, data)
-}
-
-func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte) (SiteExport, error) {
-	var a Archive
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.UseNumber()
-	if err := dec.Decode(&a); err != nil || a.Format != ArchiveFormat {
-		return SiteExport{}, problem.Validation(problem.Field{Field: "file", Code: "invalid_format"})
-	}
-	if a.Version != ArchiveVersion {
-		return SiteExport{}, problem.Validation(problem.Field{Field: "file", Code: "invalid_value", Params: map[string]any{"version": a.Version, "supported": ArchiveVersion}})
-	}
-	if len(a.Tables["site"]) != 1 {
-		return SiteExport{}, problem.Validation(problem.Field{Field: "file", Code: "invalid_value", Params: map[string]any{"reason": "needs_exactly_one_site"}})
-	}
-	var out SiteExport
-	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		summary := map[string]any{}
-		remap := map[string]string{} // archived person id -> id in this organization
-		// persons first: link by account
-		for _, t := range exportTables {
-			rows := a.Tables[t.Name]
-			var insert []map[string]any
-			linked := 0
-			for _, r := range rows {
-				r["org_id"] = orgID.String()
-				switch t.Name {
-				case "person":
-					if sid, ok := r["site_id"].(string); ok && sid != a.SiteID.String() {
-						r["site_id"] = nil // registered at another site that is not part of this archive
-					}
-					if uid, ok := r["user_id"].(string); ok && uid != "" {
-						var existing uuid.UUID
-						err := tx.QueryRow(ctx, `SELECT id FROM person WHERE org_id = $1 AND user_id = $2`, orgID, uid).Scan(&existing)
-						if err == nil {
-							remap[fmt.Sprint(r["id"])] = existing.String()
-							linked++
-							continue
-						}
-						if !errors.Is(err, pgx.ErrNoRows) {
-							return err
-						}
-					}
-				case "unit_claim":
-					r["invitation_id"] = nil
-				}
-				if pid, ok := r["person_id"].(string); ok {
-					if to, ok := remap[pid]; ok {
-						r["person_id"] = to
-					}
-				}
-				insert = append(insert, r)
-			}
-			if len(insert) > 0 {
-				blob, err := json.Marshal(insert)
-				if err != nil {
-					return err
-				}
-				if _, err := tx.Exec(ctx, fmt.Sprintf(`INSERT INTO %s SELECT * FROM jsonb_populate_recordset(NULL::%s, $1::jsonb)`, t.Name, t.Name), blob); err != nil {
-					return fmt.Errorf("import %s: %w", t.Name, err)
-				}
-			}
-			summary[t.Name] = len(insert)
-			if t.Name == "person" {
-				summary["person_linked"] = linked
-			}
-		}
-		eid := id.New()
-		sum, _ := json.Marshal(summary)
-		var uid *uuid.UUID
-		if p := authz.PrincipalFromContext(ctx); p != nil {
-			u := p.UserID
-			uid = &u
-		}
-		if _, err := tx.Exec(ctx, `INSERT INTO site_export (id, org_id, direction, site_id, site_name, source_org_id, target_org_id, status, summary, created_by)
-			VALUES ($1, $2, 'import', $3, $4, $5, $2, 'done', $6, $7)`, eid, orgID, a.SiteID, a.SiteName, a.SourceOrgID, sum, uid); err != nil {
-			return err
-		}
-		var err error
-		if out, err = scanExport(tx.QueryRow(ctx, `SELECT `+exportColumns+` FROM site_export WHERE org_id = $1 AND id = $2`, orgID, eid)); err != nil {
-			return err
-		}
-		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &a.SiteID, Action: "site.import", TargetType: "site_export", TargetID: eid})
-	})
-	if err != nil {
-		if IsUnique(err, "") {
-			return SiteExport{}, problem.Conflict("this organization already has a site or people with the identifiers of the archive")
-		}
-		return SiteExport{}, DBProblem(err, "import site")
-	}
-	return out, nil
 }
 
 // OffboardSite closes a site after its hand-over: the organization's access
