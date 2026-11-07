@@ -127,8 +127,8 @@ Draft-only conventions on top of the list above:
 - **Reports and statements** take `format=json|csv|xlsx|pdf` (`json` default) and answer with the matching content type;
   `POST /exports` is for jobs too big for that.
 - **Imports** take `dry_run=true` and return `ImportReport`; committing returns 202 with a job id (`GET /jobs/{id}`).
-- **New problem codes** the draft uses beyond the served `Problem.code` enum (add them when the first operation moves):
-  `agent_offline` (409, 0.3). Statuses used: `locked_period` 409, `version_conflict` 409, `site_offboarded` 409,
+- **Problem codes added for the draft:** `agent_offline` (409) and `agent_session_expired` (410) are in `Problem.code`
+  (the draft needs no other code beyond the served enum). Statuses used: `locked_period` 409, `version_conflict` 409, `site_offboarded` 409,
   `reauth_required` 403, `idempotency_mismatch` 422.
 - **Agent transport** (`/v1/agent/*`, tag `agent`) authenticates with the `agentAuth` bearer scheme (an agent token, not a user
   session); the message schemas are JSON Schema 2020-12 in `api/agent-protocol/v1/*.schema.json`, referenced by the

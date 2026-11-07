@@ -208,6 +208,9 @@ schemas:
       - created_by
       - created_at
       - updated_at
+      - lost_events
+      - store_error
+      - dead_letters
     properties:
       id:
         type: string
@@ -264,7 +267,7 @@ schemas:
         nullable: true
       clock_suspect:
         type: boolean
-        description: True when the offset exceeds 120 seconds; a manual open is refused beyond 24 hours.
+        description: True when the offset exceeds 120 seconds or the agent reports a clock jump; a manual open is refused beyond 24 hours.
       rotate_by:
         type: string
         format: date-time
@@ -287,6 +290,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+      lost_events:
+        type: integer
+        format: int64
+        nullable: true
+        description: "From the last heartbeat: events the agent had to discard."
+      store_error:
+        type: string
+        nullable: true
+        description: "From the last heartbeat: the agent's local store error, null when healthy."
+      dead_letters:
+        type: integer
+        format: int64
+        nullable: true
+        description: "From the last heartbeat: events set aside after final rejection."
     example:
       id: 0192a3f0-1000-7000-8000-000000000003
       org_id: 0192a3f0-1000-7000-8000-000000000001
@@ -312,6 +329,9 @@ schemas:
       created_by: null
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
+      lost_events: null
+      store_error: null
+      dead_letters: null
   AgentCreate:
     type: object
     required:
@@ -913,21 +933,60 @@ schemas:
       wait_seconds:
         type: integer
         format: int64
-        description: 0 to 30.
+        minimum: 0
+        maximum: 30
+        description: 0 to 30 seconds to hold the request open when the server has nothing to send.
+      session:
+        type: string
+        description: The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`.
+    example:
+      session: sess_0192a3f0100070008000000000000001
+      messages: []
+      wait_seconds: 25
   AgentPollResponse:
     type: object
+    description: "Messages for the agent. An empty poll is still 200 with `messages: []` (it also refreshes the agent's contact clock)."
     required:
+      - session
+      - seq
       - messages
     properties:
+      session:
+        type: string
+        description: The session handle (also in the server hello).
+      seq:
+        type: integer
+        format: int64
+        minimum: 1
+        description: Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
       messages:
         type: array
         items:
           $ref: "#/schemas/AgentEnvelope"
+    example:
+      session: sess_0192a3f0100070008000000000000001
+      seq: 1
+      messages: []
   AgentTokenRotated:
     type: object
     required:
       - agent_token
+      - rotate_by
+      - previous_valid_until
+    description: "Rotation is idempotent for the retired token: calling again with the previous token inside the 10 minute window returns the same new token."
     properties:
       agent_token:
         type: string
-        description: The previous token stays valid 10 minutes.
+        description: The new token, `obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success.
+      rotate_by:
+        type: string
+        format: date-time
+        description: Rotate again before this time (default 180 days from now).
+      previous_valid_until:
+        type: string
+        format: date-time
+        description: The retired token keeps working until then (10 minutes after the first rotation) so a crash between steps recovers.
+    example:
+      agent_token: obk_agt_0192a3f0-1000-7000-8000-000000000001.secret
+      rotate_by: 2026-09-01T00:00:00Z
+      previous_valid_until: 2026-03-05T10:10:00Z

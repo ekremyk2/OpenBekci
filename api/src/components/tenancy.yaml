@@ -89,7 +89,9 @@ schemas:
       offline_grace_hours:
         type: integer
         format: int64
-        description: Hours an offline agent keeps deciding locally before it stops (default 72).
+        description: Hours an offline agent keeps deciding locally before it stops (1 to 336, default 72). Sent to the agent as `update_config.settings.offline_grace_hours`.
+        minimum: 1
+        maximum: 336
       agent_silent_minutes:
         type: integer
         format: int64

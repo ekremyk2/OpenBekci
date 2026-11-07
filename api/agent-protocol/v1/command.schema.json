@@ -44,7 +44,8 @@
           "$ref": "defs.schema.json#/$defs/ts"
         },
         "expires_at": {
-          "$ref": "defs.schema.json#/$defs/ts"
+          "$ref": "defs.schema.json#/$defs/ts",
+          "description": "Must satisfy 0 < expires_at - issued_at <= 60 s. A longer lifetime is refused by the agent (`ack: refused`, reason `ttl`), not capped."
         }
       }
     },
@@ -153,7 +154,9 @@
           ],
           "properties": {
             "offline_grace_hours": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 336
             },
             "plate_match": {
               "enum": [
@@ -162,7 +165,9 @@
               ]
             },
             "heartbeat_seconds": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 120
             },
             "maintenance_hour": {
               "type": [

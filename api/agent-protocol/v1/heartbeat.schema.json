@@ -26,17 +26,33 @@
     },
     "dropped_events": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Deprecated alias kept for older agents; `lost_events` is the field to read."
     },
     "uptime_s": {
       "type": "integer",
       "minimum": 0
     },
     "clock_suspect": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "The agent clock jumped or disagrees with the server by more than 120 s."
     },
     "clock_offset_ms": {
       "type": "integer"
+    },
+    "lost_events": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Events the agent could not keep (queue overflow, store failure) since start."
+    },
+    "store_error": {
+      "type": "string",
+      "description": "Last local store error, absent when healthy."
+    },
+    "dead_letters": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Events set aside after a final rejection or repeated failure."
     }
   }
 }
