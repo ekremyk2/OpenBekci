@@ -60,7 +60,7 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
 
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
-  `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
+  `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`, `guard_session_required` and `guard_session_expired` (401, guard console operations: no or an expired `X-Guard-Session`; the console login stays valid),
   `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403, cookie-session mutations without the right `Origin` and `X-Requested-With`), `sms_unavailable` and `mail_unavailable` (503), `method_not_allowed` (405, with `Allow`), `unsupported_media_type` (415), `timeout` (504), `payload_too_large` (413; JSON request
   bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `invalid_grant` is a 401, and 401 responses carry
   `WWW-Authenticate`. `instance` (also `request_id`) is the request id,

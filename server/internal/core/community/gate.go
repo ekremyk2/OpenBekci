@@ -266,6 +266,17 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 		return ScanResult{}, problem.RateLimited(retry)
 	}
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		if guardToken == "" {
+			return problem.New(401, problem.CodeGuardSessionRequired, "pick your name and enter your PIN to use the console")
+		}
+		var live bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM guard_session WHERE org_id = $1 AND token_hash = $2 AND ended_at IS NULL AND expires_at > now())`,
+			orgID, crypto.HashToken(guardToken)).Scan(&live); err != nil {
+			return err
+		}
+		if !live {
+			return errGuardSessionExpired
+		}
 		if !parsed {
 			return s.scanFailed(ctx, tx, orgID, nil, guardToken, ReasonUnknown)
 		}

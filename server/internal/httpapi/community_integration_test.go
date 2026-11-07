@@ -101,6 +101,9 @@ type commEnv struct {
 	ip  atomic.Int64
 	// tokens of the role actors (one console session each)
 	manager, board, auditor, guard string
+	// guardSession is the guard's session on the console, made on the first guard operation
+	guardSession  string
+	noAutoSession bool
 }
 
 func newCommEnv(t *testing.T) *commEnv {
@@ -118,8 +121,39 @@ func newCommEnv(t *testing.T) *commEnv {
 
 func (c *commEnv) path(p string) string { return "/v1/orgs/" + c.org.ID.String() + p }
 
+// ensureGuardSession signs the guard in at the booth (PIN set by the manager) once.
+func (c *commEnv) ensureGuardSession() string {
+	c.t.Helper()
+	if c.guardSession == "" {
+		g := c.w.Actor("guard")
+		c.want(c.req(c.manager, "PUT", c.path("/persons/"+g.PersonID.String()+"/gate-pin"), `{"pin":"8642"}`), 204)
+		s := c.want(c.req(c.guard, "POST", c.path("/gate/sessions"), fmt.Sprintf(`{"site_id":%q,"person_id":%q,"pin":"8642"}`, c.f.Site, g.PersonID)), 201)
+		c.guardSession = s["token"].(string)
+	}
+	return c.guardSession
+}
+
+// rawReq is req without the automatic guard session.
+func (c *commEnv) rawReq(token, method, path, body string) *httptest.ResponseRecorder {
+	c.t.Helper()
+	c.noAutoSession = true
+	defer func() { c.noAutoSession = false }()
+	return c.req(token, method, path, body)
+}
+
+// req sends a request; guard console operations of the guard's login carry the
+// guard session unless the test passes its own X-Guard-Session.
 func (c *commEnv) req(token, method, path, body string, headers ...string) *httptest.ResponseRecorder {
 	c.t.Helper()
+	if !c.noAutoSession && token == c.guard && token != "" && strings.Contains(path, "/gate/") && !strings.Contains(path, "/gate/sessions") && !strings.Contains(path, "/gate/guards") {
+		own := false
+		for i := 0; i+1 < len(headers); i += 2 {
+			own = own || headers[i] == "X-Guard-Session"
+		}
+		if !own {
+			headers = append(headers, "X-Guard-Session", c.ensureGuardSession())
+		}
+	}
 	hs := []string{"Content-Type", "application/json", "Authorization", "Bearer " + token}
 	if token == "" {
 		hs = []string{"Content-Type", "application/json"}
@@ -860,21 +894,21 @@ func TestIntegrationCommunityGuardSessions(t *testing.T) {
 
 	// a token of another console, an unknown one, an expired one and one of another site
 	c.problemCode(c.req(c.guard, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", token), 403, "insufficient_permission")
-	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", "nonsense"), 401, "invalid_grant")
+	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", "nonsense"), 401, "guard_session_expired")
 	site2 := c.w.NewSite(t, c.org)
 	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+site2.Site.String()), "", "X-Guard-Session", token), 403, "insufficient_permission")
 	c.w.Exec(t, `UPDATE guard_session SET expires_at = now() - interval '1 minute' WHERE person_id = $1`, guardActor.PersonID)
-	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", token), 401, "invalid_grant")
+	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", token), 401, "guard_session_expired")
 	// a new session of the same console ends the earlier one
 	s1 := c.want(session(consoleB, guardActor.PersonID, "2468"), 201)["token"].(string)
 	s2 := c.want(session(consoleB, guardActor.PersonID, "2468"), 201)["token"].(string)
-	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", s1), 401, "invalid_grant")
+	c.problemCode(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", s1), 401, "guard_session_expired")
 	c.want(c.req(consoleB, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", s2), 200)
 	// the guard membership ending ends the session (the manager's login is the console here)
 	mgrSession := c.want(session(c.manager, guardActor.PersonID, "2468"), 201)["token"].(string)
 	c.want(c.req(c.manager, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", mgrSession), 200)
 	c.w.Exec(t, `UPDATE membership SET valid_to = now() WHERE person_id = $1 AND role = 'guard'`, guardActor.PersonID)
-	c.problemCode(c.req(c.manager, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", mgrSession), 401, "invalid_grant")
+	c.problemCode(c.req(c.manager, "GET", c.path("/gate/console?site_id="+c.f.Site.String()), "", "X-Guard-Session", mgrSession), 401, "guard_session_expired")
 }
 
 func TestIntegrationCommunityGuardConsoleLock(t *testing.T) {

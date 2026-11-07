@@ -84,13 +84,17 @@ func operatorRoles() []string {
 	return out
 }
 
-// guardFor resolves the X-Guard-Session token of a request at a site. No token
-// means the console login principal is the actor. An unknown, expired or ended
-// token is 401 invalid_grant; a token of another console login or another
-// site is 403 insufficient_permission.
+var errGuardSessionExpired = problem.New(401, problem.CodeGuardSessionExpired, "the guard session ended; pick your name and enter your PIN again")
+
+// guardFor resolves the X-Guard-Session token of a request at a site. Every
+// guard operation needs one (the guard picked their name and typed the PIN):
+// no token is 401 guard_session_required. An unknown, expired or ended token is
+// 401 guard_session_expired (the console login itself is still valid, so the
+// booth asks for the PIN again instead of signing out); a token of another
+// console login or another site is 403 insufficient_permission.
 func (s *Service) guardFor(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, token string) (guardCtx, error) {
 	if token == "" {
-		return guardCtx{}, nil
+		return guardCtx{}, problem.New(401, problem.CodeGuardSessionRequired, "pick your name and enter your PIN to use the console")
 	}
 	var (
 		sessionID, sessionSite, console, person uuid.UUID
@@ -100,7 +104,7 @@ func (s *Service) guardFor(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UU
 		JOIN person p ON p.org_id = g.org_id AND p.id = g.person_id
 		WHERE g.org_id = $1 AND g.token_hash = $2 AND g.ended_at IS NULL AND g.expires_at > now()`, orgID, crypto.HashToken(token)).Scan(&sessionID, &sessionSite, &console, &person, &name)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return guardCtx{}, problem.New(401, problem.CodeInvalidGrant, "the guard session is not valid; pick your name and enter your PIN again")
+		return guardCtx{}, errGuardSessionExpired
 	}
 	if err != nil {
 		return guardCtx{}, err
@@ -113,7 +117,7 @@ func (s *Service) guardFor(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UU
 		return guardCtx{}, err
 	}
 	if !ok {
-		return guardCtx{}, problem.New(401, problem.CodeInvalidGrant, "the guard session is not valid; pick your name and enter your PIN again")
+		return guardCtx{}, errGuardSessionExpired
 	}
 	return guardCtx{Person: &person, Name: name, Session: sessionID}, nil
 }
@@ -246,6 +250,10 @@ func (s *Service) SetGuardPin(ctx context.Context, orgID, personID uuid.UUID, pi
 		if _, err := tx.Exec(ctx, `INSERT INTO gate_pin (org_id, person_id, pin_hash, set_by) VALUES ($1, $2, $3, $4)
 			ON CONFLICT (org_id, person_id) DO UPDATE SET pin_hash = EXCLUDED.pin_hash, attempts_from = now(), set_by = EXCLUDED.set_by, updated_at = now()`,
 			orgID, personID, hash, nilIfZero(caller)); err != nil {
+			return err
+		}
+		// a new PIN ends the guard's live sessions: whoever held the old PIN is out
+		if _, err := tx.Exec(ctx, `UPDATE guard_session SET ended_at = now() WHERE org_id = $1 AND person_id = $2 AND ended_at IS NULL`, orgID, personID); err != nil {
 			return err
 		}
 		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: firstSite, Action: "gate.pin_set", TargetType: "person", TargetID: personID,

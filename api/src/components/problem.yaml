@@ -32,6 +32,8 @@ schemas:
           - reauth_required
           - mfa_required
           - invalid_grant
+          - guard_session_required
+          - guard_session_expired
           - rate_limited
           - pack_error
           - site_offboarded

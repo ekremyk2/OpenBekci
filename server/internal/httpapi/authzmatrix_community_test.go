@@ -198,37 +198,37 @@ func init() {
 			w.NewMembership(t, org, person, string(authz.RoleGuard))
 			return jsonReq("PUT", orgPath(org, "/persons/"+person.String()+"/gate-pin"), `{"pin":"4321"}`)
 		}},
-		"community.getGateConsole": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.getGateConsole": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: siteQ(org, w.NewSite(t, org), "/gate/console")}
 		}},
-		"community.listGateVisitors": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.listGateVisitors": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: siteQ(org, w.NewSite(t, org), "/gate/visitors")}
 		}},
-		"community.getGateVisitor": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.getGateVisitor": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			return mreq{method: "GET", path: orgPath(org, "/gate/visitors/"+cmEntry(w, t, f, "pre_approved", time.Now(), time.Now().Add(time.Hour)).String())}
 		}},
-		"community.scanGateVisitor": {perms: p(community.PermGateOperate), status: 200, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
+		"community.scanGateVisitor": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
 			return jsonReq("POST", orgPath(org, "/gate/visitors:scan"), `{"token":"obk1.0123456789012345678901234567890123456789012"}`)
 		}},
-		"community.createWalkInVisitor": {perms: p(community.PermGateOperate), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.createWalkInVisitor": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "owner")
 			return jsonReq("POST", orgPath(org, "/gate/visitors:walk-in"), fmt.Sprintf(`{"site_id":%q,"unit_id":%q,"name":"Courier","plate":"34 xyz 99"}`, f.Site, f.Unit))
 		}},
-		"community.arriveGateVisitor": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.arriveGateVisitor": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "owner") // a unit nobody lives in admits nobody
 			e := cmEntry(w, t, f, "pre_approved", time.Now().Add(-time.Minute), time.Now().Add(time.Hour))
 			return jsonReq("POST", orgPath(org, "/gate/visitors/"+e.String()+":arrive"), "")
 		}},
-		"community.leaveGateVisitor": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.leaveGateVisitor": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			e := cmEntry(w, t, f, "pre_approved", time.Now().Add(-time.Hour), time.Now().Add(time.Hour))
 			w.Exec(t, `UPDATE visitor_entry SET arrived_at = now() WHERE id = $1`, e)
 			return jsonReq("POST", orgPath(org, "/gate/visitors/"+e.String()+":leave"), "")
 		}},
-		"community.getGateVisitorCallContact": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.getGateVisitorCallContact": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			person := w.NewPerson(t, org)
 			w.Exec(t, `UPDATE person SET gate_contact_phone = '+905550001122' WHERE id = $1`, person)
@@ -237,19 +237,19 @@ func init() {
 			w.Exec(t, `INSERT INTO visitor_approval_request (id, org_id, site_id, entry_id, unit_id, expires_at) VALUES ($1, $2, $3, $4, $5, now() + interval '10 minutes')`, id.New(), org.ID, f.Site, e, f.Unit)
 			return mreq{method: "GET", path: orgPath(org, "/gate/visitors/"+e.String()+"/call-contact")}
 		}},
-		"community.searchGatePlates": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.searchGatePlates": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			w.NewVehicle(t, f)
 			return mreq{method: "GET", path: orgPath(org, "/gate/plates?site_id="+f.Site.String()+"&q=34TST")}
 		}},
-		"community.listGateDeliveries": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.listGateDeliveries": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: siteQ(org, w.NewSite(t, org), "/gate/deliveries")}
 		}},
-		"community.createGateDelivery": {perms: p(community.PermGateOperate), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.createGateDelivery": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			return jsonReq("POST", orgPath(org, "/gate/deliveries"), fmt.Sprintf(`{"site_id":%q,"unit_id":%q,"description":"Blue box"}`, f.Site, f.Unit))
 		}},
-		"community.collectGateDelivery": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"community.collectGateDelivery": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			d := cmDelivery(w, t, w.NewSite(t, org))
 			return jsonReq("POST", orgPath(org, "/gate/deliveries/"+d.String()+":collect"), `{"collected_by_name":"Ayse"}`)
 		}},

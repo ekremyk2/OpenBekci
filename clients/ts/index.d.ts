@@ -2220,9 +2220,11 @@ export interface paths {
          *
          *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
          *
+         *     **Rate limit.** 30 scans a minute per guard session: the next one is 429 `rate_limited` with `Retry-After`. Every scan that matches nothing (unknown, unparseable or another site's QR) is audited with the console and guard session, never the scanned text.
+         *
          *     Permission: `gate.operate`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `rate_limited` (429), `guard_session_required` and `guard_session_expired` (401).
          */
         post: operations["community.scanGateVisitor"];
         delete?: never;
@@ -2576,7 +2578,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -5039,7 +5041,7 @@ export interface components {
         IfMatch: string;
         /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
-        /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+        /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
         GuardSession: string;
     };
     requestBodies: never;
@@ -8817,7 +8819,7 @@ export interface operations {
                 site_id: components["parameters"]["SiteIdRequired"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -8864,7 +8866,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -8894,7 +8896,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -8926,7 +8928,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -8956,6 +8958,7 @@ export interface operations {
             403: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -8963,7 +8966,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -9001,7 +9004,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -9041,7 +9044,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -9076,7 +9079,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -9118,7 +9121,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -9159,7 +9162,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -9189,7 +9192,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -9226,7 +9229,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];

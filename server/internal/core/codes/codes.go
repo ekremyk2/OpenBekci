@@ -101,6 +101,8 @@ var sections = map[string]map[string]pair{
 		"insufficient_permission": {"You do not have permission", "Yetkiniz yok"},
 		"reauth_required":         {"Confirm your identity again", "Kimliğinizi yeniden doğrulayın"},
 		"invalid_grant":           {"The credentials or code are not valid", "Bilgiler veya kod geçerli değil"},
+		"guard_session_required":  {"Pick your name and enter your PIN", "Adınızı seçip PIN girin"},
+		"guard_session_expired":   {"Your guard session ended; enter your PIN again", "Güvenlik oturumunuz bitti; PIN'inizi yeniden girin"},
 		"rate_limited":            {"Too many attempts; try again later", "Çok fazla deneme; sonra tekrar deneyin"},
 		"site_offboarded":         {"This site was handed over", "Bu site devredildi"},
 		"internal_error":          {"Something went wrong", "Bir şeyler ters gitti"},

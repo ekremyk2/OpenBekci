@@ -76,7 +76,7 @@ parameters:
     name: X-Guard-Session
     in: header
     x-go-name: GuardSessionHeader
-    description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+    description: Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it.
     schema:
       type: string
 schemas:
