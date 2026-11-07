@@ -316,9 +316,13 @@ func TestIntegrationMePermissions(t *testing.T) {
 	if p == nil || p.SiteIDs == nil || len(*p.SiteIDs) != 2 || p.BlockIDs == nil || len(*p.BlockIDs) != 1 {
 		t.Fatalf("me.read = %+v, want 2 sites and 1 block", p)
 	}
-	// ... but a site-limited membership is not enough for an org-scoped operation: 403, not 404
-	e.problem(e.as(u, "GET", e.orgPath(e.w.OrgA, ""), ""), 403, "insufficient_permission")
+	// a site-limited member reads the organization (org.read is grantable at site scope) but
+	// cannot change it (org.manage is org-only); audit.read is not part of site_manager/staff
+	e.mustJSON(e.as(u, "GET", e.orgPath(e.w.OrgA, ""), ""), 200, nil)
+	e.problem(e.as(u, "PATCH", e.orgPath(e.w.OrgA, ""), `{"name":"x"}`, "If-Match", `"1"`), 403, "insufficient_permission")
+	e.problem(e.as(u, "GET", e.orgPath(e.w.OrgA, "/audit"), ""), 403, "insufficient_permission")
 	e.w.AddMembership(t, e.w.OrgA, u, authz.RoleAuditor, authz.ScopeOrg, nil, now.Add(-time.Hour), time.Time{})
+	me.Organizations = nil // decoding into reused elements would keep stale pointers
 	e.mustJSON(e.as(u, "GET", "/v1/me", ""), 200, &me)
 	if p := find(me.Organizations[0].Permissions, "me.read"); p == nil || p.SiteIDs != nil || p.BlockIDs != nil {
 		t.Errorf("an org-wide grant must make me.read org-wide: %+v", p)
@@ -554,7 +558,7 @@ func TestIntegrationIdentityMutationsAreAudited(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if actor == nil || *actor != u.UserID || ip == nil || *ip != "203.0.113.9" || reqID == nil || *reqID == "" {
+	if actor == nil || *actor != u.UserID || ip == nil || *ip != "203.0.113.0" || reqID == nil || *reqID == "" {
 		t.Errorf("session.revoke actor/ip/request id = %v %v %v", actor, ip != nil, reqID != nil)
 	}
 	// no secret material in any event

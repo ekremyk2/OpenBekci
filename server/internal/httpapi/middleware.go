@@ -66,6 +66,17 @@ func clientFromXFF(values []string, isTrusted func(netip.Addr) bool) string {
 	return ""
 }
 
+// noStoreSensitive marks every /v1/auth and /v1/me response (tokens, session
+// lists, the caller's identity) as not cacheable by browsers or proxies.
+func noStoreSensitive(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if p := r.URL.Path; strings.HasPrefix(p, "/v1/auth/") || p == "/v1/me" || strings.HasPrefix(p, "/v1/me/") {
+			w.Header().Set("Cache-Control", "no-store")
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // requestLogger logs one structured line per request. It never logs query
 // strings, headers or bodies, which may carry personal data.
 func requestLogger(log *slog.Logger) func(http.Handler) http.Handler {

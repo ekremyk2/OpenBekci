@@ -254,7 +254,7 @@ func (s *Service) parseInvite(d Doc, household bool) (inviteInput, error) {
 	} else if !slices.Contains([]string{KindOwner, KindTenant, KindHousehold}, in.kind) {
 		fields = append(fields, problem.Field{Field: "occupancy_kind", Code: map[bool]string{true: "required", false: "invalid_value"}[in.kind == ""]})
 	}
-	if in.unitID == nil {
+	if in.unitID == nil && !household {
 		fields = append(fields, problem.Field{Field: "unit_id", Code: "required"})
 	}
 	if err := d.Get("side", &in.side); err != nil {

@@ -103,6 +103,38 @@ func (s *apiServer) AuditList(ctx context.Context, req gen.AuditListRequestObjec
 	return gen.AuditList200JSONResponse(out), nil
 }
 
+func (s *apiServer) PlatformListAudit(ctx context.Context, req gen.PlatformListAuditRequestObject) (gen.PlatformListAuditResponseObject, error) {
+	if s.audit == nil {
+		return nil, problem.Internal(errNoAudit)
+	}
+	p := req.Params
+	f := audit.PlatformFilter{Actor: p.Actor, From: p.From, To: p.To}
+	if p.Action != nil {
+		f.Action = *p.Action
+	}
+	var limit int
+	if p.Limit != nil {
+		limit = *p.Limit
+	}
+	var cursor string
+	if p.Cursor != nil {
+		cursor = *p.Cursor
+	}
+	events, next, err := s.audit.ListPlatform(ctx, f, cursor, limit)
+	if err != nil {
+		return nil, err
+	}
+	items := make([]gen.AuditEvent, 0, len(events))
+	for _, e := range events {
+		items = append(items, auditDTO(e))
+	}
+	out := gen.AuditEventList{Items: items, NextCursor: nullable.NewNullNullable[string]()}
+	if next != "" {
+		out.NextCursor = nullable.NewNullableWithValue(next)
+	}
+	return gen.PlatformListAudit200JSONResponse(out), nil
+}
+
 func auditDTO(e audit.Stored) gen.AuditEvent {
 	diff := map[string]gen.AuditChange{}
 	var raw map[string]audit.Change

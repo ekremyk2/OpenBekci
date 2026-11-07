@@ -15,8 +15,11 @@ import (
 
 // householdAuth lets managers and the unit's owner or tenant manage its
 // household (invitations and household occupancies); it needs invitation.household.
-func householdAuth(ctx context.Context, orgID uuid.UUID, unit tenancy.Unit) error {
-	sc := authz.Scope{OrgID: orgID, SiteID: &unit.SiteID, BlockID: &unit.BlockID}
+func householdAuth(ctx context.Context, tx pgx.Tx, unit tenancy.Unit) error {
+	sc, err := authz.ScopeOfBlock(ctx, tx, unit.BlockID)
+	if err != nil {
+		return err
+	}
 	if err := authz.Require(ctx, PermInvitationHouse, sc); err != nil {
 		return err
 	}
@@ -42,7 +45,7 @@ func (s *Service) ListHouseholdInvitations(ctx context.Context, orgID, unitID uu
 		if err != nil {
 			return err
 		}
-		if err := householdAuth(ctx, orgID, unit); err != nil {
+		if err := householdAuth(ctx, tx, unit); err != nil {
 			return err
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, unit.SiteID, false, false); err != nil {
@@ -79,7 +82,7 @@ func (s *Service) RevokeHouseholdInvitation(ctx context.Context, orgID, unitID, 
 		if err != nil {
 			return err
 		}
-		if err := householdAuth(ctx, orgID, unit); err != nil {
+		if err := householdAuth(ctx, tx, unit); err != nil {
 			return err
 		}
 		inv, err := scanInv(tx.QueryRow(ctx, invSelect+` WHERE i.org_id = $1 AND i.id = $2 AND i.unit_id = $3 AND i.kind = 'household' FOR UPDATE OF i`, orgID, invID, unitID))
@@ -108,7 +111,7 @@ func (s *Service) EndHouseholdOccupancy(ctx context.Context, orgID, unitID, occI
 		if err != nil {
 			return err
 		}
-		if err := householdAuth(ctx, orgID, unit); err != nil {
+		if err := householdAuth(ctx, tx, unit); err != nil {
 			return err
 		}
 		occ, err := loadOcc(ctx, tx, orgID, occID, true)

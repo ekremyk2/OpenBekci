@@ -9,12 +9,9 @@ parameters:
 post:
   operationId: people.acceptInvitation
   summary: Accept an invitation
-  description: 'Signed in, the account is linked; anonymous, the account for the invited contact is found or created (the link proves the contact). The invited person and the occupancy are created and linked. Then sign in with any method.'
+  description: 'Public: the link proves the invited contact, like a magic link. The account for that contact is found or created (with the optional password), linked to the invited person, and the occupancy is created. Then sign in with any method.'
   tags: [people]
-  security:
-    - {}
-    - cookieAuth: []
-    - bearerAuth: []
+  security: []
   x-idempotent: optional
   requestBody:
     required: true
@@ -29,11 +26,7 @@ post:
         application/json:
           schema:
             $ref: '../../components/people.yaml#/schemas/AcceptResult'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
     '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
       $ref: '../../components/problem.yaml#/responses/Problem'
     '422':
       $ref: '../../components/problem.yaml#/responses/Problem'

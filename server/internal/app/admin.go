@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 )
 
@@ -16,6 +18,7 @@ import (
 type Admin struct {
 	Identity *identity.Service
 	Platform *platformadmin.Service
+	Tenancy  *tenancy.Service
 	db       *db.DB
 }
 
@@ -34,7 +37,8 @@ func OpenAdmin(ctx context.Context, cfg Config, log *slog.Logger) (*Admin, error
 		d.Close()
 		return nil, err
 	}
-	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), db: d}, nil
+	authz.SetScopeLoader(tenancy.ScopeLoader{})
+	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d), db: d}, nil
 }
 
 // Close releases the database connections.

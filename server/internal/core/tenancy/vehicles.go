@@ -151,7 +151,7 @@ func (s *Service) CreateVehicle(ctx context.Context, orgID, unitID uuid.UUID, d 
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermVehicleManage, authz.Scope{OrgID: orgID, SiteID: &u.SiteID, BlockID: &u.BlockID}); err != nil {
+		if err := requireBlockErr(ctx, tx, PermVehicleManage, u.BlockID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, u.SiteID, false, false); err != nil {
@@ -190,7 +190,7 @@ func (s *Service) DeleteVehicle(ctx context.Context, orgID, vehicleID uuid.UUID)
 		if err := tx.QueryRow(ctx, `SELECT block_id FROM unit WHERE org_id = $1 AND id = $2`, orgID, v.UnitID).Scan(&blockID); err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermVehicleManage, authz.Scope{OrgID: orgID, SiteID: &v.SiteID, BlockID: &blockID}); err != nil {
+		if err := requireBlockErr(ctx, tx, PermVehicleManage, blockID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, v.SiteID, false, false); err != nil {

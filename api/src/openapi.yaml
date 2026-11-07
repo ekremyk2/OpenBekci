@@ -25,6 +25,8 @@ tags:
     description: Sites, blocks, units, allocation keys, vehicles, spreadsheet import and site hand-over.
   - name: people
     description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
+  - name: platform
+    description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -47,6 +49,8 @@ paths:
     $ref: './paths/auth-magic-link-consume.yaml'
   /v1/auth/reauth:
     $ref: './paths/auth-reauth.yaml'
+  /v1/auth/reauth/email-code:
+    $ref: './paths/auth-reauth-email-code.yaml'
   /v1/auth/password:
     $ref: './paths/auth-password.yaml'
   /v1/me:
@@ -157,6 +161,8 @@ paths:
     $ref: './paths/people/vendors.yaml'
   /v1/orgs/{org_id}/vendors/{vendor_id}:
     $ref: './paths/people/vendors-vendor_id.yaml'
+  /v1/platform/audit:
+    $ref: './paths/platform-audit.yaml'
 components:
   securitySchemes:
     cookieAuth:

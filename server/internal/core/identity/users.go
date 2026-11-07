@@ -34,9 +34,77 @@ type CreateUserParams struct {
 	IsPlatformAdmin bool
 }
 
+// newUser is a validated CreateUserParams, ready to insert.
+type newUser struct {
+	email, phone, hash *string
+	locale             string
+	platformAdmin      bool
+}
+
 // CreateUser creates an account. It is the entry point for the admin CLI and,
 // later, invitations.
 func (s *Service) CreateUser(ctx context.Context, p CreateUserParams) (User, error) {
+	nu, err := s.prepareUser(p)
+	if err != nil {
+		return User{}, err
+	}
+	var u User
+	err = s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		var err error
+		u, err = insertUser(ctx, tx, nu)
+		return err
+	})
+	if err != nil {
+		if isUniqueViolation(err) {
+			return User{}, problem.Conflict("a user with this email or phone already exists")
+		}
+		return User{}, problem.Internal(fmt.Errorf("create user: %w", err))
+	}
+	return u, nil
+}
+
+// PrepareFindOrCreateUser validates p and returns a function that, inside a
+// caller-owned transaction, returns the user with the given sign-in
+// identifier or creates the one p describes. `admin create-org` hands it to
+// the organization transaction so that the organization, the person, the
+// membership and a new user are committed together or not at all. The
+// function reports whether it created the user.
+func (s *Service) PrepareFindOrCreateUser(identifier string, p CreateUserParams) (func(context.Context, pgx.Tx) (uuid.UUID, bool, error), error) {
+	nu, err := s.prepareUser(p)
+	if err != nil {
+		return nil, err
+	}
+	kind, norm, ok := s.classify(identifier)
+	if !ok {
+		return nil, problem.Validation(problem.Field{Field: "identifier", Code: "invalid_format"})
+	}
+	return func(ctx context.Context, tx pgx.Tx) (uuid.UUID, bool, error) {
+		u, found, err := findByContact(ctx, tx, kind, norm)
+		if err != nil {
+			return uuid.Nil, false, problem.Internal(fmt.Errorf("find user: %w", err))
+		}
+		if found {
+			return u.ID, false, nil
+		}
+		if u, err = insertUser(ctx, tx, nu); err != nil {
+			if isUniqueViolation(err) {
+				return uuid.Nil, false, problem.Conflict("a user with this email or phone already exists")
+			}
+			return uuid.Nil, false, problem.Internal(fmt.Errorf("create user: %w", err))
+		}
+		return u.ID, true, nil
+	}, nil
+}
+
+func insertUser(ctx context.Context, tx pgx.Tx, nu newUser) (User, error) {
+	return scanUser(tx.QueryRow(ctx, `
+		INSERT INTO "user" (id, email, phone, password_hash, locale, is_platform_admin)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING `+userColumns, id.New(), nu.email, nu.phone, nu.hash, nu.locale, nu.platformAdmin))
+}
+
+// prepareUser validates and normalizes the parameters of a new account.
+func (s *Service) prepareUser(p CreateUserParams) (newUser, error) {
 	var email, phone *string
 	var fields []problem.Field
 	if strings.TrimSpace(p.Email) != "" {
@@ -64,34 +132,19 @@ func (s *Service) CreateUser(ctx context.Context, p CreateUserParams) (User, err
 		} else {
 			h, err := crypto.HashPassword(p.Password)
 			if err != nil {
-				return User{}, problem.Internal(err)
+				return newUser{}, problem.Internal(err)
 			}
 			hash = &h
 		}
 	}
 	if len(fields) > 0 {
-		return User{}, problem.Validation(fields...)
+		return newUser{}, problem.Validation(fields...)
 	}
 	locale := p.Locale
 	if locale == "" {
 		locale = "tr"
 	}
-	var u User
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		var err error
-		u, err = scanUser(tx.QueryRow(ctx, `
-			INSERT INTO "user" (id, email, phone, password_hash, locale, is_platform_admin)
-			VALUES ($1, $2, $3, $4, $5, $6)
-			RETURNING `+userColumns, id.New(), email, phone, hash, locale, p.IsPlatformAdmin))
-		return err
-	})
-	if err != nil {
-		if isUniqueViolation(err) {
-			return User{}, problem.Conflict("a user with this email or phone already exists")
-		}
-		return User{}, problem.Internal(fmt.Errorf("create user: %w", err))
-	}
-	return u, nil
+	return newUser{email: email, phone: phone, hash: hash, locale: locale, platformAdmin: p.IsPlatformAdmin}, nil
 }
 
 // FindUser looks an account up by email or phone ("@" selects email).

@@ -2,7 +2,7 @@
 
 -- People (backend plan 4.3). Ids are unique per organization (PRIMARY KEY
 -- (org_id, id)) so a site's people can be handed over to another organization
--- with their identifiers preserved; see 20261108160000_tenancy.sql.
+-- with their identifiers preserved; see 20261108170000_tenancy.sql.
 ALTER TABLE person DROP CONSTRAINT person_pkey;
 ALTER TABLE person ADD PRIMARY KEY (org_id, id);
 ALTER TABLE membership DROP CONSTRAINT membership_pkey;

@@ -1,0 +1,28 @@
+post:
+  operationId: auth.requestReauthEmailCode
+  summary: Email a re-authentication code to the signed-in user
+  description: |
+    Sends a six-digit code (valid 5 minutes, 5 attempts) to the email address of
+    the signed-in account, to be passed to `auth.reauth` with `method: email_code`.
+    This is the re-authentication route of users who have neither a password nor
+    a phone number. 422 `validation_failed` when the account has no email
+    address, 503 `mail_unavailable` when the instance has no email
+    configuration. Limited per address, per client address and per day.
+  tags: [auth]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: optional
+  responses:
+    '202':
+      description: Accepted; the code was sent.
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '503':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

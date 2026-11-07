@@ -223,7 +223,7 @@ func (s *Service) GetAllocationKey(ctx context.Context, orgID, keyID uuid.UUID) 
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermAllocationRead, authz.Scope{OrgID: orgID, SiteID: &k.SiteID}); err != nil {
+		if err := requireSiteErr(ctx, tx, PermAllocationRead, k.SiteID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, k.SiteID, false, false); err != nil {
@@ -315,7 +315,7 @@ func (s *Service) UpdateAllocationKey(ctx context.Context, orgID, keyID uuid.UUI
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermAllocationManage, authz.Scope{OrgID: orgID, SiteID: &before.SiteID}); err != nil {
+		if err := requireSiteErr(ctx, tx, PermAllocationManage, before.SiteID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {
@@ -379,7 +379,7 @@ func (s *Service) SetAllocationKeyValues(ctx context.Context, orgID, keyID uuid.
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermAllocationManage, authz.Scope{OrgID: orgID, SiteID: &before.SiteID}); err != nil {
+		if err := requireSiteErr(ctx, tx, PermAllocationManage, before.SiteID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {

@@ -15,7 +15,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/pii"
 )
 
-var sensitiveName = regexp.MustCompile(`(?i)email|phone|national|tckn|plate|note|address|iban`)
+var sensitiveName = regexp.MustCompile(`(?i)email|phone|mobile|msisdn|national|tckn|plate|plaka|note|address|iban|fullname|surname|birth|dob|tax|vergi`)
 
 func snake(s string) string {
 	var b strings.Builder
@@ -132,6 +132,39 @@ func TestIsPII(t *testing.T) {
 	} {
 		if got := pii.IsPII(c.entity, c.field); got != c.want {
 			t.Errorf("IsPII(%q, %q) = %v, want %v", c.entity, c.field, got, c.want)
+		}
+	}
+}
+
+// TestIsPIIWildcardMatchesLastSegment covers the shapes the first review found
+// slipping through: nested paths, compound names, plurals, arrays, case.
+func TestIsPIIWildcardMatchesLastSegment(t *testing.T) {
+	for _, field := range []string{
+		"billing.email", "billing.iban", "owner.national_id", "contact_email", "owner_phone",
+		"Email", "PHONE", "emails[]", "phones[]", "emails", "Phones[0]", "owner.Emails[]",
+		"ContactEmail", "OwnerPhone", "Mobile", "FullName", "full_name", "Surname", "BirthDate", "birth_date",
+		"DOB", "tax_id", "TaxNumber", "vergi_no", "plaka", "plates", "Plate", "msisdn", "addresses", "tckn", "IBAN",
+		"nested.deeper.owner.contact_phone",
+	} {
+		if !pii.IsPII("widget", field) {
+			t.Errorf("IsPII(widget, %q) = false, want true", field)
+		}
+	}
+	for _, field := range []string{"name", "template", "plateau", "emailing", "status", "description", "contactless", "taxonomy", "notebook"} {
+		if pii.IsPII("widget", field) {
+			t.Errorf("IsPII(widget, %q) = true, want false", field)
+		}
+	}
+	// entity-specific entries keep their dotted-path meaning, case-insensitively
+	if !pii.IsPII("person", "Contact.Email") || pii.IsPII("gadget", "contact.name") {
+		t.Error("entity-specific registrations")
+	}
+}
+
+func TestKnownEntity(t *testing.T) {
+	for entity, want := range map[string]bool{"person": true, "user": true, "organization": true, "widget": false, "gadget": false, "*": false} {
+		if got := pii.KnownEntity(entity); got != want {
+			t.Errorf("KnownEntity(%q) = %v, want %v", entity, got, want)
 		}
 	}
 }

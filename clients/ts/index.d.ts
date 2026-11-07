@@ -197,11 +197,38 @@ export interface paths {
         put?: never;
         /**
          * Re-authenticate the current session for sensitive operations
-         * @description Proves the caller is still the user with the password or a fresh SMS code,
-         *     and marks the current session as re-authenticated for 10 minutes. Sensitive
-         *     operations answer 403 `reauth_required` outside that window.
+         * @description Proves the caller is still the user with the password, a fresh SMS code
+         *     (`auth.requestOtp`) or a fresh email code (`auth.requestReauthEmailCode`),
+         *     and marks the current session as re-authenticated for 10 minutes. A user
+         *     with only an email address and no password re-authenticates by email code.
+         *     Sensitive operations answer 403 `reauth_required` outside that window.
          */
         post: operations["auth.reauth"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/reauth/email-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email a re-authentication code to the signed-in user
+         * @description Sends a six-digit code (valid 5 minutes, 5 attempts) to the email address of
+         *     the signed-in account, to be passed to `auth.reauth` with `method: email_code`.
+         *     This is the re-authentication route of users who have neither a password nor
+         *     a phone number. 422 `validation_failed` when the account has no email
+         *     address, 503 `mail_unavailable` when the instance has no email
+         *     configuration. Limited per address, per client address and per day.
+         */
+        post: operations["auth.requestReauthEmailCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -400,7 +427,7 @@ export interface paths {
         put?: never;
         /**
          * Accept an invitation
-         * @description Signed in, the account is linked; anonymous, the account for the invited contact is found or created (the link proves the contact). The invited person and the occupancy are created and linked. Then sign in with any method.
+         * @description Public: the link proves the invited contact, like a magic link. The account for that contact is found or created (with the optional password), linked to the invited person, and the occupancy is created. Then sign in with any method.
          */
         post: operations["people.acceptInvitation"];
         delete?: never;
@@ -1503,6 +1530,32 @@ export interface paths {
         patch: operations["people.updateVendor"];
         trace?: never;
     };
+    "/v1/platform/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the instance-level audit events
+         * @description Events that belong to no organization: password changes, session revocation,
+         *     platform-administrator promotion. Newest first. Needs the `platform.manage`
+         *     permission (platform administrators only). Cursor pagination over `(at, id)`.
+         *
+         *     Personal data in a `diff` appears only as hashes, and `ip` is truncated to
+         *     its /24 (IPv4) or /48 (IPv6) network. Erasing a person does not change these
+         *     events: they hold ids and hashes, no personal values. `site_id` is always null.
+         */
+        get: operations["platform.listAudit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1751,7 +1804,7 @@ export interface components {
             /** @description A code sent to the account's own phone by `auth.requestOtp`. */
             code: string;
         };
-        ReauthRequest: components["schemas"]["ReauthPassword"] | components["schemas"]["ReauthSmsOtp"];
+        ReauthRequest: components["schemas"]["ReauthPassword"] | components["schemas"]["ReauthSmsOtp"] | components["schemas"]["ReauthEmailCode"];
         ReauthResponse: {
             /**
              * Format: date-time
@@ -1892,8 +1945,10 @@ export interface components {
         };
         /**
          * @description One changed field. Personal data carries only `hash_before` and
-         *     `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
-         *     fields carry `before` and `after` (absent when the field did not exist on that side).
+         *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+         *     is comparable within one instance and field only). Other fields carry `before` and
+         *     `after` (absent when the field did not exist on that side). The change of a field of an
+         *     entity without a personal data registration is an empty object: only the key changed.
          */
         AuditChange: {
             /** @description Previous value (any JSON). */
@@ -2931,6 +2986,15 @@ export interface components {
             /** @description False for a former occupancy (read access bounded by its dates). */
             current: boolean;
         };
+        ReauthEmailCode: {
+            /**
+             * @description Always `email_code`. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            method: "email_code";
+            /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
+            code: string;
+        };
     };
     responses: {
         /** @description Error. RFC 9457 problem details with a stable `code`. */
@@ -3224,6 +3288,29 @@ export interface operations {
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "auth.requestReauthEmailCode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted; the code was sent. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -3536,9 +3623,7 @@ export interface operations {
                     "application/json": components["schemas"]["AcceptResult"];
                 };
             };
-            403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
@@ -5709,6 +5794,43 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "platform.listAudit": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only events with this action, such as `session.revoke`. */
+                action?: string;
+                /** @description Only events caused by this user id. */
+                actor?: string;
+                /** @description Only events at or after this time. */
+                from?: string;
+                /** @description Only events before this time. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of events. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEventList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

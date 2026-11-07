@@ -16,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/permissions"
@@ -36,6 +37,8 @@ type idEnv struct {
 	admin  *platformadmin.Service
 	sms    *sms.Recorder
 	mail   *mail.Recorder
+	people *people.Service
+	tenSvc *tenancy.Service
 	cookie *http.Cookie
 }
 
@@ -56,13 +59,21 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		cfg.Mail = e.mail
 	}
 	e.svc = identity.NewService(d, cfg)
+	authz.SetScopeLoader(tenancy.ScopeLoader{})
+	t.Cleanup(func() { authz.SetScopeLoader(nil) })
+	var perr error
+	e.people, perr = people.NewService(d, e.svc, people.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, InstanceName: "Test", SMS: e.sms, Mail: e.mail, Log: cfg.Log})
+	if perr != nil {
+		t.Fatal(perr)
+	}
+	e.tenSvc = tenancy.NewService(d)
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.h = NewRouter(Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: tenancy.NewService(d), Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Audit: audit.NewService(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}, Options{})
 	return e
@@ -98,6 +109,10 @@ func (e *idEnv) do(method, path, body string, withCookie bool, headers ...string
 	}
 	rec := httptest.NewRecorder()
 	e.h.ServeHTTP(rec, r)
+	// code and link requests send in the background; let them finish
+	if err := e.svc.Drain(e.t.Context()); err != nil {
+		e.t.Fatal(err)
+	}
 	return rec
 }
 
@@ -287,6 +302,18 @@ func TestIntegrationHTTPBearerTokens(t *testing.T) {
 		t.Errorf("rotation = %+v", tok2)
 	}
 	e.mustJSON(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 200, nil)
+	// a retry inside the 30 s grace window (the response was lost) gets the same pair, once ...
+	var again struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+		SessionID    string `json:"session_id"`
+	}
+	e.mustJSON(e.do("POST", "/v1/auth/token/refresh", `{"refresh_token":"`+tok.RefreshToken+`"}`, false), 200, &again)
+	if again != tok2 {
+		t.Errorf("grace replay = %+v, want the same pair %+v", again, tok2)
+	}
+	e.mustJSON(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 200, nil)
+	// ... the next reuse is a leak: the family dies
 	e.problem(e.do("POST", "/v1/auth/token/refresh", `{"refresh_token":"`+tok.RefreshToken+`"}`, false), 401, "invalid_grant")
 	e.problem(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 401, "unauthenticated")
 

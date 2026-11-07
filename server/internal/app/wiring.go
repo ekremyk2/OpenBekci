@@ -17,8 +17,14 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 )
 
-// newIdentity builds the identity service from the configuration.
+// newIdentity builds the identity service from the configuration. It also keys
+// the audit hashes of PII fields (HKDF of SECRET_KEY): every process that
+// records audit events builds the identity service, so the key is always set
+// before the first event.
 func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, error) {
+	if err := audit.SetPIIKey(cfg.SecretKey); err != nil {
+		return nil, err
+	}
 	gw, err := newSMSGateway(cfg, log)
 	if err != nil {
 		return nil, err
@@ -34,6 +40,8 @@ func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, err
 		SMS:          gw,
 		Mail:         mailer,
 		Log:          log,
+
+		SendDailyBudget: cfg.SendDailyBudget, SMSHourlyBudget: cfg.SMSHourlyBudget, MailHourlyBudget: cfg.MailHourlyBudget,
 	}), nil
 }
 
@@ -65,6 +73,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
+	authz.SetScopeLoader(tenancy.ScopeLoader{}) // sites and blocks exist from phase B on
 	peopleSvc, err := newPeople(cfg, log, d, ident)
 	if err != nil {
 		return httpapi.Deps{}, err

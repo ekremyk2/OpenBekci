@@ -558,7 +558,7 @@ func (s *Service) UpdateBlock(ctx context.Context, orgID, blockID uuid.UUID, exp
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermSiteManage, authz.Scope{OrgID: orgID, SiteID: &before.SiteID}); err != nil {
+		if err := requireSiteErr(ctx, tx, PermSiteManage, before.SiteID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {

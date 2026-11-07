@@ -175,7 +175,10 @@ func (s *Service) CreateHouseholdInvitation(ctx context.Context, orgID, unitID u
 		if err != nil {
 			return err
 		}
-		sc := authz.Scope{OrgID: orgID, SiteID: &unit.SiteID, BlockID: &unit.BlockID}
+		sc, err := authz.ScopeOfBlock(ctx, tx, unit.BlockID)
+		if err != nil {
+			return err
+		}
 		if err := authz.Require(ctx, PermInvitationHouse, sc); err != nil {
 			return err
 		}

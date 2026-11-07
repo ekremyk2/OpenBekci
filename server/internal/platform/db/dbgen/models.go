@@ -63,6 +63,17 @@ type Block struct {
 	Version   int32
 }
 
+type DeliveryLog struct {
+	ID      pgtype.UUID
+	At      pgtype.Timestamptz
+	Channel string
+	Purpose string
+	Target  string
+	UserID  pgtype.UUID
+	Status  string
+	Detail  pgtype.Text
+}
+
 type DirectoryConsent struct {
 	OrgID      pgtype.UUID
 	SiteID     pgtype.UUID
@@ -312,6 +323,8 @@ type Session struct {
 	RevokedAt   pgtype.Timestamptz
 	LastUsedAt  pgtype.Timestamptz
 	ReauthUntil pgtype.Timestamptz
+	GraceBlob   []byte
+	GraceUntil  pgtype.Timestamptz
 }
 
 type Site struct {

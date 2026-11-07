@@ -229,7 +229,7 @@ func (s *Service) GetUnit(ctx context.Context, orgID, unitID uuid.UUID) (Unit, e
 		if out, err = GetUnitRow(ctx, tx, orgID, unitID); err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermUnitRead, authz.Scope{OrgID: orgID, SiteID: &out.SiteID, BlockID: &out.BlockID}); err != nil {
+		if err := requireBlockErr(ctx, tx, PermUnitRead, out.BlockID); err != nil {
 			return err
 		}
 		_, err = LoadSite(ctx, tx, orgID, out.SiteID, false, false)
@@ -449,7 +449,7 @@ func (s *Service) UpdateUnit(ctx context.Context, orgID, unitID uuid.UUID, expec
 		if before, err = GetUnitRow(ctx, tx, orgID, unitID); err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermUnitManage, authz.Scope{OrgID: orgID, SiteID: &before.SiteID, BlockID: &before.BlockID}); err != nil {
+		if err := requireBlockErr(ctx, tx, PermUnitManage, before.BlockID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {
@@ -524,7 +524,7 @@ func (s *Service) SetUnitTags(ctx context.Context, orgID, unitID uuid.UUID, expe
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermUnitManage, authz.Scope{OrgID: orgID, SiteID: &before.SiteID, BlockID: &before.BlockID}); err != nil {
+		if err := requireBlockErr(ctx, tx, PermUnitManage, before.BlockID); err != nil {
 			return err
 		}
 		if _, err := LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {

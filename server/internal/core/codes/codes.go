@@ -17,7 +17,7 @@ var sections = map[string]map[string]pair{
 		"board_member": {"Board member", "Yönetim kurulu üyesi"},
 		"auditor":      {"Auditor", "Denetçi"},
 		"accountant":   {"Accountant", "Muhasebeci"},
-		"staff":        {"Staff", "Personel"},
+		"staff":        {"Staff", "Personel"}, //nolint:misspell // Turkish
 		"guard":        {"Guard", "Güvenlik"},
 	},
 	"unit_types": {

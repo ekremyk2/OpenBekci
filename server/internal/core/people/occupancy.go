@@ -97,9 +97,8 @@ func loadOcc(ctx context.Context, tx pgx.Tx, orgID, occID uuid.UUID, forUpdate b
 	return o, err
 }
 
-func (o Occupancy) scope(orgID uuid.UUID) authz.Scope {
-	site, block := o.SiteID, o.blockID
-	return authz.Scope{OrgID: orgID, SiteID: &site, BlockID: &block}
+func (o Occupancy) scope(ctx context.Context, tx pgx.Tx) (authz.Scope, error) {
+	return authz.ScopeOfBlock(ctx, tx, o.blockID)
 }
 
 // OccFilter narrows ListOccupancies.
@@ -257,7 +256,7 @@ func (s *Service) CreateOccupancy(ctx context.Context, orgID, unitID uuid.UUID, 
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermOccupancyManage, authz.Scope{OrgID: orgID, SiteID: &unit.SiteID, BlockID: &unit.BlockID}); err != nil {
+		if err := requireBlockErr(ctx, tx, PermOccupancyManage, unit.BlockID); err != nil {
 			return err
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, unit.SiteID, false, false); err != nil {
@@ -374,7 +373,11 @@ func (s *Service) UpdateOccupancy(ctx context.Context, orgID, occID uuid.UUID, e
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermOccupancyManage, before.scope(orgID)); err != nil {
+		sc0, err := before.scope(ctx, tx)
+		if err != nil {
+			return err
+		}
+		if err := authz.Require(ctx, PermOccupancyManage, sc0); err != nil {
 			return err
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {
@@ -489,14 +492,17 @@ func (s *Service) SetMoneyAccess(ctx context.Context, orgID, occID uuid.UUID, ex
 		if err != nil {
 			return err
 		}
-		sc := before.scope(orgID)
+		sc, err := before.scope(ctx, tx)
+		if err != nil {
+			return err
+		}
 		if err := authz.Require(ctx, PermMoneyAccessGrant, sc); err != nil {
 			return err
 		}
 		if !authz.Has(ctx, PermOccupancyManage, sc) {
 			// a portal user: the owner of the unit, or the tenant for the tenant side
 			own, ok := authz.CurrentOccupancy(ctx, before.UnitID)
-			if !ok || !(own.Kind == authz.OccOwner || (own.Kind == authz.OccTenant && before.Side == SideTenant)) {
+			if !ok || (own.Kind != authz.OccOwner && (own.Kind != authz.OccTenant || before.Side != SideTenant)) {
 				return problem.Forbidden("only the unit's owner or tenant can change a household member's money access")
 			}
 		}
@@ -579,8 +585,8 @@ func (s *Service) GetMoveOut(ctx context.Context, orgID, moveOutID uuid.UUID) (M
 		if err != nil {
 			return err
 		}
-		site, block := m.SiteID, m.blockID
-		if err := authz.Require(ctx, PermMoveOutRead, authz.Scope{OrgID: orgID, SiteID: &site, BlockID: &block}); err != nil {
+		block := m.blockID
+		if err := requireBlockErr(ctx, tx, PermMoveOutRead, block); err != nil {
 			return err
 		}
 		out = m
@@ -659,7 +665,11 @@ func (s *Service) MoveOutOccupancy(ctx context.Context, orgID, occID uuid.UUID, 
 		if err != nil {
 			return err
 		}
-		if err := authz.Require(ctx, PermMoveOutManage, occ.scope(orgID)); err != nil {
+		sc1, err := occ.scope(ctx, tx)
+		if err != nil {
+			return err
+		}
+		if err := authz.Require(ctx, PermMoveOutManage, sc1); err != nil {
 			return err
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, occ.SiteID, false, false); err != nil {

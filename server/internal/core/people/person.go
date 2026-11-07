@@ -225,7 +225,7 @@ type personInput struct {
 	email, phone   *string // normalized
 	gatePhone      *string
 	nationalID     *string
-	nationalIDSet  bool // the field was sent (null clears)
+	idGiven        bool // the field was sent (null clears)
 	country        *string
 	notes          *string
 	hasEmail       bool
@@ -310,7 +310,7 @@ func (s *Service) parsePerson(d Doc, create bool, orgCountry string, allowed ...
 		in.country = v
 	}
 	if d.Has("national_id") {
-		in.nationalIDSet = true
+		in.idGiven = true
 		v, err := d.String("national_id")
 		if err != nil {
 			return in, err
@@ -493,7 +493,7 @@ func (s *Service) UpdatePerson(ctx context.Context, orgID, personID uuid.UUID, e
 			next.Notes = in.notes
 		}
 		sealed, country2 := pr.sealed, before.NationalIDCountry
-		if in.nationalIDSet {
+		if in.idGiven {
 			if in.nationalID == nil {
 				sealed, country2 = nil, nil
 			} else {
@@ -505,7 +505,7 @@ func (s *Service) UpdatePerson(ctx context.Context, orgID, personID uuid.UUID, e
 		} else if in.country != nil && sealed != nil {
 			return problem.Validation(problem.Field{Field: "national_id_country", Code: "invalid_value", Params: map[string]any{"reason": "send national_id with it"}})
 		}
-		diff, err := audit.Diff("person", personAudit(before, false), personAudit(next, in.nationalIDSet))
+		diff, err := audit.Diff("person", personAudit(before, false), personAudit(next, in.idGiven))
 		if err != nil {
 			return err
 		}
