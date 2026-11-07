@@ -3,6 +3,7 @@
 package crypto
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/subtle"
 	"encoding/base64"
@@ -23,28 +24,61 @@ const (
 	argonSaltLen = 16
 )
 
-// hashSlots bounds concurrent argon2 computations: each needs 64 MiB, so an
-// unbounded burst of sign-in requests would exhaust memory.
-var hashSlots = make(chan struct{}, 4)
+// Concurrent argon2 computations are bounded: each needs 64 MiB, so an
+// unbounded burst of sign-in requests would exhaust memory. hashSlots is the
+// number running at once; hashQueue bounds running plus waiting, so a burst
+// beyond it is refused at once (ErrBusy) instead of piling up goroutines and
+// request time, and a waiting caller whose context ends leaves the queue.
+const (
+	hashWorkers  = 4
+	hashMaxQueue = 64
+)
+
+var (
+	hashSlots = make(chan struct{}, hashWorkers)
+	hashQueue = make(chan struct{}, hashMaxQueue)
+)
 
 // ErrInvalidHash is returned by VerifyPassword for a malformed encoded hash.
 var ErrInvalidHash = errors.New("crypto: invalid password hash encoding")
 
-func derive(password string, salt []byte, t, m uint32, p uint8, keyLen uint32) []byte {
-	hashSlots <- struct{}{}
+// ErrBusy is returned when too many password computations are already queued.
+var ErrBusy = errors.New("crypto: too many password computations in progress")
+
+func derive(ctx context.Context, password string, salt []byte, t, m uint32, p uint8, keyLen uint32) ([]byte, error) {
+	select {
+	case hashQueue <- struct{}{}:
+	default:
+		return nil, ErrBusy
+	}
+	defer func() { <-hashQueue }()
+	select {
+	case hashSlots <- struct{}{}:
+	case <-ctx.Done():
+		return nil, fmt.Errorf("waiting for a password computation slot: %w", ctx.Err())
+	}
 	defer func() { <-hashSlots }()
-	return argon2.IDKey([]byte(password), salt, t, m, p, keyLen)
+	return argon2.IDKey([]byte(password), salt, t, m, p, keyLen), nil
 }
 
-// HashPassword returns the PHC-encoded argon2id hash of password:
-// $argon2id$v=19$m=65536,t=3,p=4$<salt>$<key>. The parameters travel with the
-// hash so they can be raised later.
+// HashPassword is HashPasswordContext with a background context.
 func HashPassword(password string) (string, error) {
+	return HashPasswordContext(context.Background(), password)
+}
+
+// HashPasswordContext returns the PHC-encoded argon2id hash of password:
+// $argon2id$v=19$m=65536,t=3,p=4$<salt>$<key>. The parameters travel with the
+// hash so they can be raised later. It gives up when ctx ends while waiting
+// for a computation slot, or with ErrBusy when the queue is full.
+func HashPasswordContext(ctx context.Context, password string) (string, error) {
 	salt := make([]byte, argonSaltLen)
 	if _, err := rand.Read(salt); err != nil {
 		return "", fmt.Errorf("read random salt: %w", err)
 	}
-	key := derive(password, salt, argonTime, argonMemory, argonThreads, argonKeyLen)
+	key, err := derive(ctx, password, salt, argonTime, argonMemory, argonThreads, argonKeyLen)
+	if err != nil {
+		return "", err
+	}
 	return fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, argonMemory, argonTime, argonThreads,
 		base64.RawStdEncoding.EncodeToString(salt), base64.RawStdEncoding.EncodeToString(key)), nil
 }
@@ -104,14 +138,23 @@ func parseHash(encoded string) (params, error) {
 	return pr, nil
 }
 
-// VerifyPassword reports whether password matches the encoded hash, comparing
-// in constant time. A malformed hash returns ErrInvalidHash.
+// VerifyPassword is VerifyPasswordContext with a background context.
 func VerifyPassword(password, encoded string) (bool, error) {
+	return VerifyPasswordContext(context.Background(), password, encoded)
+}
+
+// VerifyPasswordContext reports whether password matches the encoded hash,
+// comparing in constant time. A malformed hash returns ErrInvalidHash; a full
+// queue ErrBusy; a context that ends while waiting its error.
+func VerifyPasswordContext(ctx context.Context, password, encoded string) (bool, error) {
 	pr, err := parseHash(encoded)
 	if err != nil {
 		return false, err
 	}
-	key := derive(password, pr.salt, pr.t, pr.m, pr.p, uint32(len(pr.key))) //nolint:gosec // length of a decoded stored key
+	key, err := derive(ctx, password, pr.salt, pr.t, pr.m, pr.p, uint32(len(pr.key))) //nolint:gosec // length of a decoded stored key
+	if err != nil {
+		return false, err
+	}
 	return subtle.ConstantTimeCompare(key, pr.key) == 1, nil
 }
 
@@ -128,5 +171,12 @@ func NeedsRehash(encoded string) bool {
 // DummyVerify burns the cost of a verification so that an unknown account is
 // not distinguishable from a wrong password by timing.
 func DummyVerify(password string) {
-	_ = derive(password, make([]byte, argonSaltLen), argonTime, argonMemory, argonThreads, argonKeyLen)
+	_ = DummyVerifyContext(context.Background(), password)
+}
+
+// DummyVerifyContext is DummyVerify bounded like the real verification; it
+// returns ErrBusy or the context's error when it could not run.
+func DummyVerifyContext(ctx context.Context, password string) error {
+	_, err := derive(ctx, password, make([]byte, argonSaltLen), argonTime, argonMemory, argonThreads, argonKeyLen)
+	return err
 }

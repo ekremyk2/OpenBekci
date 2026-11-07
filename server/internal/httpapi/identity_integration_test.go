@@ -113,6 +113,10 @@ func (e *idEnv) do(method, path, body string, withCookie bool, headers ...string
 	}
 	rec := httptest.NewRecorder()
 	e.h.ServeHTTP(rec, r)
+	// code and link requests send in the background; let them finish
+	if err := e.svc.Drain(e.t.Context()); err != nil {
+		e.t.Fatal(err)
+	}
 	return rec
 }
 
@@ -302,6 +306,18 @@ func TestIntegrationHTTPBearerTokens(t *testing.T) {
 		t.Errorf("rotation = %+v", tok2)
 	}
 	e.mustJSON(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 200, nil)
+	// a retry inside the 30 s grace window (the response was lost) gets the same pair, once ...
+	var again struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+		SessionID    string `json:"session_id"`
+	}
+	e.mustJSON(e.do("POST", "/v1/auth/token/refresh", `{"refresh_token":"`+tok.RefreshToken+`"}`, false), 200, &again)
+	if again != tok2 {
+		t.Errorf("grace replay = %+v, want the same pair %+v", again, tok2)
+	}
+	e.mustJSON(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 200, nil)
+	// ... the next reuse is a leak: the family dies
 	e.problem(e.do("POST", "/v1/auth/token/refresh", `{"refresh_token":"`+tok.RefreshToken+`"}`, false), 401, "invalid_grant")
 	e.problem(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 401, "unauthenticated")
 

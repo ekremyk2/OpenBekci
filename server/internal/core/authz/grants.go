@@ -16,7 +16,9 @@ import (
 // Scope is the part of an organization a permission is requested for. With
 // only OrgID set the request is organization-wide. A request for a block must
 // also name the block's site (a site grant is matched against SiteID; the
-// hierarchy is not looked up). The zero Scope is the instance (platform.manage).
+// hierarchy is not looked up here). Never build a Scope with SiteID or BlockID
+// by hand: use ScopeOfSite / ScopeOfBlock, which load the parents from storage
+// (a lint test enforces it). The zero Scope is the instance (platform.manage).
 type Scope struct {
 	OrgID   uuid.UUID
 	SiteID  *uuid.UUID
@@ -69,6 +71,67 @@ func (g Grants) Has(perm Permission, want Scope) bool {
 	return false
 }
 
+// HasInOrg reports whether a grant of perm reaches anything inside the
+// organization orgID: org-wide, or limited to a site or block of it. It is the
+// coarse check "may this caller attempt perm in this organization at all"; the
+// service then narrows with Has for the concrete scope. Instance grants do not
+// count.
+func (g Grants) HasInOrg(perm Permission, orgID uuid.UUID) bool {
+	if orgID == uuid.Nil || orgID != g.OrgID {
+		return false
+	}
+	for _, it := range g.Items {
+		if it.Permission != perm {
+			continue
+		}
+		switch it.ScopeType {
+		case ScopeOrg:
+			return true
+		case ScopeSite, ScopeBlock:
+			if it.ScopeID != nil {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// Reach is where a permission applies inside one organization.
+type Reach struct {
+	// OrgWide is true when an org-scoped grant holds the permission; the
+	// narrower lists are then irrelevant.
+	OrgWide  bool
+	SiteIDs  []uuid.UUID
+	BlockIDs []uuid.UUID
+}
+
+// Any reports whether the permission applies anywhere in the organization.
+func (r Reach) Any() bool { return r.OrgWide || len(r.SiteIDs) > 0 || len(r.BlockIDs) > 0 }
+
+// ReachOf returns where perm applies in organization orgID: the services of
+// operations that site- and block-scoped members may use filter their result
+// by it (audit.list shows only the events of the caller's sites and blocks).
+func (g Grants) ReachOf(perm Permission, orgID uuid.UUID) Reach {
+	var r Reach
+	if orgID == uuid.Nil || orgID != g.OrgID {
+		return r
+	}
+	for _, it := range g.Items {
+		if it.Permission != perm {
+			continue
+		}
+		switch {
+		case it.ScopeType == ScopeOrg:
+			r.OrgWide = true
+		case it.ScopeType == ScopeSite && it.ScopeID != nil:
+			r.SiteIDs = append(r.SiteIDs, *it.ScopeID)
+		case it.ScopeType == ScopeBlock && it.ScopeID != nil:
+			r.BlockIDs = append(r.BlockIDs, *it.ScopeID)
+		}
+	}
+	return r
+}
+
 // merge returns g plus the grants of o (the org id of o wins when set).
 func (g Grants) merge(o Grants) Grants {
 	if o.OrgID != uuid.Nil {
@@ -103,6 +166,20 @@ func Require(ctx context.Context, perm Permission, scope Scope) error {
 		return problem.Unauthenticated("authentication is required")
 	}
 	if !GrantsFromContext(ctx).Has(perm, scope) {
+		return problem.Forbidden("you do not have the " + string(perm) + " permission here")
+	}
+	return nil
+}
+
+// RequireInOrg checks that the caller holds perm somewhere in the
+// organization (org-wide, or at a site or block of it); see Grants.HasInOrg.
+// Services of operations that site- and block-scoped members may use call it
+// and then filter by the scopes the caller holds (Grants.ReachOf).
+func RequireInOrg(ctx context.Context, perm Permission, orgID uuid.UUID) error {
+	if PrincipalFromContext(ctx) == nil {
+		return problem.Unauthenticated("authentication is required")
+	}
+	if !GrantsFromContext(ctx).HasInOrg(perm, orgID) {
 		return problem.Forbidden("you do not have the " + string(perm) + " permission here")
 	}
 	return nil
@@ -258,16 +335,26 @@ func NewResolver(db TxRunner, reg *Registry, now func() time.Time) *Resolver {
 // Registry returns the permission registry.
 func (r *Resolver) Registry() *Registry { return r.reg }
 
-// InstanceGrants are the grants that need no organization: platform
-// administrators hold the instance-level permissions of the platform_admin
-// role (platform.manage), and nothing inside organizations.
+// InstanceGrants are the grants that need no organization. Every
+// authenticated principal holds the account permissions (instance-scoped
+// permissions that every role holds: me.read, sessions.manage_own); platform
+// administrators also hold the instance-level permissions of the
+// platform_admin role (platform.manage), and nothing inside organizations.
 func (r *Resolver) InstanceGrants(p *Principal) Grants {
 	var g Grants
-	if p == nil || !p.IsPlatformAdmin {
+	if p == nil {
 		return g
 	}
-	for _, perm := range r.reg.RolePermissions(RolePlatformAdmin) {
-		if slices.Contains(r.reg.defs[perm].Scopes, ScopeInstance) {
+	for _, perm := range r.reg.Permissions() {
+		d := r.reg.defs[perm]
+		if !slices.Contains(d.Scopes, ScopeInstance) {
+			continue
+		}
+		account := true
+		for _, role := range EveryRole() {
+			account = account && slices.Contains(d.Roles, role)
+		}
+		if account || p.IsPlatformAdmin && slices.Contains(d.Roles, RolePlatformAdmin) {
 			g.Items = append(g.Items, Grant{Permission: perm, ScopeType: ScopeInstance})
 		}
 	}
@@ -286,25 +373,16 @@ func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID
 	now := r.now()
 	var ms []Membership
 	err = r.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `
-			SELECT m.role, m.scope_type, m.scope_id
-			FROM membership m
-			JOIN person p ON p.org_id = m.org_id AND p.id = m.person_id
-			JOIN organization o ON o.id = m.org_id AND o.status = 'active'
-			WHERE m.org_id = $1 AND p.user_id = $2
-			  AND m.valid_from <= $3 AND (m.valid_to IS NULL OR m.valid_to > $3)`, orgID, p.UserID, now)
+		rows, err := ListUserMemberships(ctx, tx, p.UserID, now, &orgID)
 		if err != nil {
 			return err
 		}
-		defer rows.Close()
-		for rows.Next() {
-			var m Membership
-			if err := rows.Scan(&m.Role, &m.ScopeType, &m.ScopeID); err != nil {
-				return err
+		for _, r := range rows {
+			if r.HasRole {
+				ms = append(ms, r.Membership)
 			}
-			ms = append(ms, m)
 		}
-		return rows.Err()
+		return nil
 	})
 	if err != nil {
 		return Grants{}, false, problem.Internal(fmt.Errorf("resolve grants: %w", err))

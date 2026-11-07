@@ -2,8 +2,6 @@ package audit
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -25,21 +23,21 @@ type Change struct {
 // as "contact.email") to its change. Only changed fields are present.
 type Changes map[string]Change
 
-// HashValue is the audit fingerprint of a PII value: SHA-256 of its canonical
-// JSON encoding, truncated to 16 hex digits. An absent value hashes to "".
-func HashValue(raw json.RawMessage) string {
-	if len(raw) == 0 {
-		return ""
-	}
-	sum := sha256.Sum256(raw)
-	return hex.EncodeToString(sum[:])[:16]
+// HashValue is the audit fingerprint of a PII value of entity.field: a keyed
+// HMAC-SHA256 of its canonical JSON encoding, domain-separated by entity and
+// field, 128 bits, prefixed with the key id ("k1:..."); see package pii. An
+// absent value, or an instance without a configured key (SetPIIKey), hashes
+// to "".
+func HashValue(entity, field string, raw json.RawMessage) string {
+	return piiHash(entity, field, raw)
 }
 
 // Diff computes the PII-safe difference between two states of an entity.
 // entity is the table or struct name in snake_case as registered in package
 // pii ("person", "user", "organization"); before and after are structs
 // (compared by their JSON field names) or maps, either may be nil for a
-// create or a delete. Fields registered as PII appear only as hashes.
+// create or a delete. Fields registered as PII (see pii.IsPII) appear only as
+// keyed hashes; an entity unknown to package pii records key names only.
 func Diff(entity string, before, after any) (Changes, error) {
 	b, err := flatten(before)
 	if err != nil {
@@ -63,9 +61,13 @@ func Diff(entity string, before, after any) (Changes, error) {
 			continue
 		}
 		c := Change{}
-		if pii.IsPII(entity, k) {
-			c.HashBefore, c.HashAfter = HashValue(bv), HashValue(aok)
-		} else {
+		switch {
+		case pii.IsPII(entity, k):
+			c.HashBefore, c.HashAfter = HashValue(entity, k, bv), HashValue(entity, k, aok)
+		case !pii.KnownEntity(entity):
+			// Fail closed: nothing says which fields of this entity are
+			// personal, so only the fact that the key changed is recorded.
+		default:
 			c.Before, c.After = bv, aok
 		}
 		d[k] = c

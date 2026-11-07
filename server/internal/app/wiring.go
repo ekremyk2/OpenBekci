@@ -19,8 +19,14 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/storage"
 )
 
-// newIdentity builds the identity service from the configuration.
+// newIdentity builds the identity service from the configuration. It also keys
+// the audit hashes of PII fields (HKDF of SECRET_KEY): every process that
+// records audit events builds the identity service, so the key is always set
+// before the first event.
 func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, error) {
+	if err := audit.SetPIIKey(cfg.SecretKey); err != nil {
+		return nil, err
+	}
 	gw, err := newSMSGateway(cfg, log)
 	if err != nil {
 		return nil, err
@@ -36,6 +42,8 @@ func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, err
 		SMS:          gw,
 		Mail:         mailer,
 		Log:          log,
+
+		SendDailyBudget: cfg.SendDailyBudget, SMSHourlyBudget: cfg.SMSHourlyBudget, MailHourlyBudget: cfg.MailHourlyBudget,
 	}), nil
 }
 

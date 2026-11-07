@@ -23,6 +23,8 @@ tags:
     description: The append-only audit trail.
   - name: files
     description: Uploaded and generated files, streamed through the server.
+  - name: platform
+    description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -45,6 +47,8 @@ paths:
     $ref: './paths/auth-magic-link-consume.yaml'
   /v1/auth/reauth:
     $ref: './paths/auth-reauth.yaml'
+  /v1/auth/reauth/email-code:
+    $ref: './paths/auth-reauth-email-code.yaml'
   /v1/auth/password:
     $ref: './paths/auth-password.yaml'
   /v1/me:
@@ -63,6 +67,8 @@ paths:
     $ref: './paths/orgs-org-id-files-file-id.yaml'
   /v1/orgs/{org_id}/files/{file_id}/content:
     $ref: './paths/orgs-org-id-files-file-id-content.yaml'
+  /v1/platform/audit:
+    $ref: './paths/platform-audit.yaml'
 components:
   securitySchemes:
     cookieAuth:

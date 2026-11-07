@@ -108,7 +108,11 @@ permission matrix and the `Permission` enum are generated from it into the spec 
 For `/v1/orgs/{org_id}/...` the pipeline resolves the caller's active memberships once (`authz.Resolver`, cached in the
 context as `authz.Grants`) and answers `404 not_found` when the caller has none there, so organizations do not leak.
 Handlers call a service; the **service** calls `authz.Require(ctx, perm, authz.Scope{OrgID: ...})` (a grant covers a
-scope when it contains it: org contains site contains block; for a block, also pass its `SiteID`). Handlers that need
+scope when it contains it: org contains site contains block). A site or block scope is **never written by hand**:
+`authz.ScopeOfSite(ctx, tx, siteID)` and `authz.ScopeOfBlock(ctx, tx, blockID)` load the parents under RLS through an
+`authz.ScopeLoader` that phase B supplies (`authz.SetScopeLoader` in the wiring; the default answers
+`ErrScopeUnavailable`), and `TestNoScopeLiteralsOutsideAuthz` fails for an `authz.Scope{... SiteID/BlockID ...}`
+literal outside `internal/core/authz` (otherwise a caller could pair their own site with another site's block). Handlers that need
 raw SQL use `httpapi.OrgTx(ctx, fn)`, which is `InTenantTx` for the request's organization.
 
 ### Adding an endpoint
@@ -135,8 +139,34 @@ raw SQL use `httpapi.OrgTx(ctx, fn)`, which is `InTenantTx` for the request's or
 `internal/authztest` seeds the world (two organizations, a member per role, a non-member, a platform administrator,
 bearer tokens) for module tests that need a signed-in caller. `GET /v1/orgs/{org_id}/audit` (`audit.read`) lists
 `audit_event` (cursor pagination over `(at, id)`); events that belong to no organization (password change, session
-revocation, platform-administrator promotion) go to `platform_audit_event`, readable only through the platform role.
-Both tables are append-only: the application roles have no UPDATE, DELETE or TRUNCATE.
+revocation, platform-administrator promotion) go to `platform_audit_event`, readable by platform administrators through
+`GET /v1/platform/audit` (`platform.manage`, cursor pagination). That table has no `org_id` and is **not touched by
+privacy erasure** by design: its diffs hold ids and keyed hashes, never personal values, and the IP is stored truncated
+to the /24 (IPv4) or /48 (IPv6) network.
+Both tables are append-only twice over: the application roles have no UPDATE, DELETE or TRUNCATE, and `BEFORE UPDATE OR
+DELETE` / `BEFORE TRUNCATE` triggers owned by the migrator refuse them for every role, so a later `GRANT` cannot reopen
+them. Events are stamped with `clock_timestamp()` (insert time); insert order is still not commit order, so an export
+that must not miss events pages with `from`/`to` snapshots taken a little in the past. `httpapi.OrgTx` has no caller
+yet; it is kept for phase B handlers that need raw SQL in the request's organization. `me.read` and
+`sessions.manage_own` are account permissions: every authenticated principal holds them as instance grants, and the
+`me` operations check them with `authz.Require(ctx, perm, authz.Scope{})`.
+
+`org.read` and `audit.read` are grantable at org, site and block scope; `org.manage` is org-only. The pipeline checks
+the operation's permissions with `Grants.HasInOrg` (held anywhere in the organization) before the idempotency step;
+services use `authz.RequireInOrg` and narrow with `Grants.ReachOf`: `audit.list` shows an org-wide holder everything
+and a site or block holder only the events of their sites (`site_id`) and blocks (`target_type = block`).
+
+**PII in audit diffs (implementation note).** `audit.Diff` is fail-closed. A field is personal data when
+`pii.IsPII(entity, path)` says so: entries for one entity match the dotted path, the `*` entries match the **last
+path segment**, case-insensitively, in plural or array form and as the last word of a compound name (`billing.email`,
+`owner_phone`, `ContactEmail`, `emails[]`). An entity that is neither registered nor listed in `pii.PlainEntities`
+(only `organization` today) records the **names** of the changed keys and no values. A personal value appears as
+`k1:` + 32 hex digits: `HMAC-SHA256(key, "entity.field" 0x00 canonical-JSON)` truncated to 128 bits, with
+`key = HKDF-SHA256(SECRET_KEY, info "openbekci/audit-pii/v1")`. The hash is domain-separated by entity and field
+and depends on the instance secret, so a phone number cannot be brute-forced from the retained trail (erasure
+leaves the hashes in place) or matched across fields. `k1` is the key id, so a later key can rotate while old hashes
+stay verifiable. `SECRET_KEY` is part of the backup set. The wiring calls `audit.SetPIIKey(cfg.SecretKey)` (in
+`newIdentity`); without a key a PII field records that it changed but no hash. See `internal/platform/pii/hash.go`.
 
 ## Files and storage
 

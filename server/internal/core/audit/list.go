@@ -23,8 +23,8 @@ const (
 // Permissions declares the module's permissions; the wiring registers them.
 func Permissions() []authz.PermissionDef {
 	return []authz.PermissionDef{
-		{Name: PermRead, Description: "Read the organization's audit trail",
-			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleAuditor}, Scopes: []authz.ScopeType{authz.ScopeOrg}},
+		{Name: PermRead, Description: "Read the organization's audit trail (limited to the member's sites and blocks when not org-wide)",
+			Roles: []authz.Role{authz.RoleOrgAdmin, authz.RoleAuditor}, Scopes: []authz.ScopeType{authz.ScopeOrg, authz.ScopeSite, authz.ScopeBlock}},
 		{Name: PermReport, Description: "Write audit notes and reports (denetci)",
 			Roles: []authz.Role{authz.RoleAuditor}, Scopes: []authz.ScopeType{authz.ScopeOrg}},
 	}
@@ -95,10 +95,27 @@ func decodeCursor(s string) (cursor, error) {
 
 // List returns one page of the organization's events, newest first, ordered
 // by (at, id) descending, and the cursor of the next page ("" on the last).
-// It needs audit.read.
+// It needs audit.read. A caller who holds it org-wide sees every event; one who
+// holds it for sites or blocks only sees the events of those sites (site_id)
+// and the events about those blocks (target_type block). Events recorded
+// without a site (organization settings) are org-wide only.
+//
+// Order and its limit: events are ordered by (at, id) where at is the commit
+// clock reading at INSERT (clock_timestamp), not the commit order. A
+// transaction that inserts and then commits late can appear behind a cursor
+// a client already passed; an export that must not miss events pages with
+// from/to snapshots taken a few seconds in the past.
 func (s *Service) List(ctx context.Context, orgID uuid.UUID, f Filter, cursorStr string, limit int) ([]Stored, string, error) {
-	if err := authz.Require(ctx, PermRead, authz.Scope{OrgID: orgID}); err != nil {
+	if err := authz.RequireInOrg(ctx, PermRead, orgID); err != nil {
 		return nil, "", err
+	}
+	reach := authz.GrantsFromContext(ctx).ReachOf(PermRead, orgID)
+	sites, blocks := reach.SiteIDs, reach.BlockIDs
+	if sites == nil {
+		sites = []uuid.UUID{}
+	}
+	if blocks == nil {
+		blocks = []uuid.UUID{}
 	}
 	if limit <= 0 {
 		limit = DefaultLimit
@@ -132,9 +149,11 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, f Filter, cursorStr
 			  AND ($5::timestamptz IS NULL OR at >= $5)
 			  AND ($6::timestamptz IS NULL OR at < $6)
 			  AND ($7::timestamptz IS NULL OR (at, id) < ($7, $8::uuid))
+			  AND ($10::bool OR site_id = ANY($11::uuid[]) OR (target_type = 'block' AND target_id = ANY($12::uuid[])))
 			ORDER BY at DESC, id DESC
 			LIMIT $9`,
-			orgID, nullStr(f.Action), nullStr(f.TargetType), f.Actor, f.From, f.To, atBound, idBound, limit+1)
+			orgID, nullStr(f.Action), nullStr(f.TargetType), f.Actor, f.From, f.To, atBound, idBound, limit+1,
+			reach.OrgWide, sites, blocks)
 		if err != nil {
 			return err
 		}

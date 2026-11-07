@@ -83,14 +83,15 @@ var authzMatrixRows = map[string]mrow{
 	"auth.consumeMagicLink": {status: 422, build: fixed("POST", "/v1/auth/magic-link/consume", `{}`)},
 
 	// signed-in callers, no organization involved: every kind of user gets the same answer
-	"instance.getInstance": {status: 200, build: mget("/v1/instance")},
-	"me.get":               {perms: []authz.Permission{identity.PermMeRead}, status: 200, build: mget("/v1/me")},
-	"me.listSessions":      {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 200, build: mget("/v1/me/sessions")},
-	"me.revokeSession":     {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 204, build: fixed("DELETE", "/v1/me/sessions/current", "")},
-	"me.revokeAllSessions": {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 204, build: fixed("DELETE", "/v1/me/sessions", "")},
-	"auth.deleteSession":   {status: 204, build: fixed("DELETE", "/v1/auth/session", "")},
-	"auth.reauth":          {status: 422, build: fixed("POST", "/v1/auth/reauth", `{}`)},
-	"auth.changePassword":  {status: 422, build: fixed("POST", "/v1/auth/password", `{}`)},
+	"instance.getInstance":        {status: 200, build: mget("/v1/instance")},
+	"me.get":                      {perms: []authz.Permission{identity.PermMeRead}, status: 200, build: mget("/v1/me")},
+	"me.listSessions":             {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 200, build: mget("/v1/me/sessions")},
+	"me.revokeSession":            {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 204, build: fixed("DELETE", "/v1/me/sessions/current", "")},
+	"me.revokeAllSessions":        {perms: []authz.Permission{identity.PermSessionsManageOwn}, status: 204, build: fixed("DELETE", "/v1/me/sessions", "")},
+	"auth.deleteSession":          {status: 204, build: fixed("DELETE", "/v1/auth/session", "")},
+	"auth.reauth":                 {status: 422, build: fixed("POST", "/v1/auth/reauth", `{}`)},
+	"auth.requestReauthEmailCode": {status: 503 /* no mailer in the matrix environment */, build: fixed("POST", "/v1/auth/reauth/email-code", `{}`)},
+	"auth.changePassword":         {status: 422, build: fixed("POST", "/v1/auth/password", `{}`)},
 
 	// inside an organization
 	"org.get": {perms: []authz.Permission{tenancy.PermOrgRead}, status: 200, build: mget("/v1/orgs/{org_id}")},
@@ -100,6 +101,18 @@ var authzMatrixRows = map[string]mrow{
 				headers: map[string]string{"If-Match": `"` + strconv.Itoa(w.OrgVersion(t, org)) + `"`}}
 		}},
 	"audit.list": {perms: []authz.Permission{audit.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/audit")},
+
+	// instance level: only platform administrators hold platform.manage
+	"platform.listAudit": {perms: []authz.Permission{audit.PermPlatformRead}, status: 200, build: mget("/v1/platform/audit"),
+		override: func(actor, _ string) (int, bool) {
+			switch actor {
+			case "anonymous":
+				return 0, false // 401 as derived
+			case "platform_admin":
+				return 200, true
+			}
+			return 403, true
+		}},
 
 	"files.list": {perms: []authz.Permission{files.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/files")},
 	"files.upload": {perms: []authz.Permission{files.PermUpload}, status: 201,

@@ -95,6 +95,14 @@ type Config struct {
 	// SMTPTLS is starttls (default), tls or none.
 	SMTPTLS string
 
+	// Send budgets of the sign-in messages (OPENBEKCI_SEND_DAILY_BUDGET,
+	// SMS_HOURLY_BUDGET, MAIL_HOURLY_BUDGET): per identifier per day, and per
+	// instance per hour for SMS and for mail. Zero takes the default (10, 120, 300);
+	// a negative value removes the limit.
+	SendDailyBudget  int
+	SMSHourlyBudget  int
+	MailHourlyBudget int
+
 	// ServerVersion is the build version; set by the command, not by the environment.
 	ServerVersion string
 }
@@ -294,6 +302,17 @@ func (c *Config) loadMessaging(l lookup) error {
 	}
 	c.SMTPFrom = l.must("SMTP_FROM")
 	c.SMTPTLS = strings.ToLower(l.must("SMTP_TLS"))
+	for name, dst := range map[string]*int{
+		"SEND_DAILY_BUDGET": &c.SendDailyBudget, "SMS_HOURLY_BUDGET": &c.SMSHourlyBudget, "MAIL_HOURLY_BUDGET": &c.MailHourlyBudget,
+	} {
+		if v := l.must(name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil {
+				return fmt.Errorf("%s%s: %q is not an integer (negative removes the limit)", envPrefix, name, v)
+			}
+			*dst = n
+		}
+	}
 	if c.MailProvider == "smtp" && (c.SMTPHost == "" || c.SMTPFrom == "") {
 		return fmt.Errorf("%sMAIL_PROVIDER=smtp needs SMTP_HOST and SMTP_FROM", envPrefix)
 	}
@@ -334,19 +353,29 @@ func (c Config) ValidateServe() error {
 	return errors.Join(errs...)
 }
 
+// isLocalHost reports whether host (without port or brackets) is the loopback
+// name or address a development instance is served on.
+func isLocalHost(host string) bool {
+	return host == "localhost" || host == "127.0.0.1" || host == "::1"
+}
+
 func (c Config) validateBaseURL() error {
 	u, err := url.Parse(c.BaseURL)
 	if err != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") {
 		return fmt.Errorf("%sBASE_URL %q is not an http(s) URL", envPrefix, c.BaseURL)
 	}
+	local := isLocalHost(u.Hostname())
+	// INSECURE_DEV relaxes cookies, key checks and the log drivers; it must
+	// not be possible to leave it on behind a real address.
+	if c.InsecureDev && !local {
+		return fmt.Errorf("%sINSECURE_DEV=true is accepted only when %sBASE_URL is localhost, 127.0.0.1 or [::1] (it is %q); unset it for any other host", envPrefix, envPrefix, u.Hostname())
+	}
 	if u.Scheme == "http" {
-		switch u.Hostname() {
-		case "localhost", "127.0.0.1", "::1":
-			if !c.InsecureDev {
-				return fmt.Errorf("%sBASE_URL uses http; set %sINSECURE_DEV=true for local development", envPrefix, envPrefix)
-			}
-		default:
+		switch {
+		case !local:
 			return fmt.Errorf("%sBASE_URL must be https (http is allowed only for localhost with INSECURE_DEV)", envPrefix)
+		case !c.InsecureDev:
+			return fmt.Errorf("%sBASE_URL uses http; set %sINSECURE_DEV=true for local development", envPrefix, envPrefix)
 		}
 	}
 	return nil

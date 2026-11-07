@@ -263,6 +263,12 @@ func (s *apiServer) AuthReauth(ctx context.Context, req gen.AuthReauthRequestObj
 			return nil, problem.BadRequest("malformed request")
 		}
 		rm, secret = identity.ReauthSMSOTP, b.Code
+	case "email_code":
+		b, err := req.Body.AsReauthEmailCode()
+		if err != nil {
+			return nil, problem.BadRequest("malformed request")
+		}
+		rm, secret = identity.ReauthEmailCode, b.Code
 	default:
 		return nil, problem.Validation(problem.Field{Field: "method", Code: "invalid_value"})
 	}
@@ -271,6 +277,21 @@ func (s *apiServer) AuthReauth(ctx context.Context, req gen.AuthReauthRequestObj
 		return nil, err
 	}
 	return gen.AuthReauth200JSONResponse(gen.ReauthResponse{ReauthUntil: until}), nil
+}
+
+func (s *apiServer) AuthRequestReauthEmailCode(ctx context.Context, _ gen.AuthRequestReauthEmailCodeRequestObject) (gen.AuthRequestReauthEmailCodeResponseObject, error) {
+	svc, err := s.ident()
+	if err != nil {
+		return nil, err
+	}
+	p, err := principal(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := svc.RequestReauthEmailCode(ctx, p, metaFrom(ctx, nil)); err != nil {
+		return nil, err
+	}
+	return gen.AuthRequestReauthEmailCode202Response{}, nil
 }
 
 func (s *apiServer) AuthChangePassword(ctx context.Context, req gen.AuthChangePasswordRequestObject) (gen.AuthChangePasswordResponseObject, error) {
@@ -315,6 +336,18 @@ func (s *apiServer) permissionGrants(o identity.OrgAccess) []gen.PermissionGrant
 	return out
 }
 
+// requireAccount checks an account permission (me.read, sessions.manage_own):
+// held by every authenticated caller as an instance grant, so it answers 401
+// for an anonymous one and 403 only if the grant is missing. Without a
+// resolver (unit tests that wire no authorization) it only requires a principal.
+func (s *apiServer) requireAccount(ctx context.Context, perm authz.Permission) error {
+	if s.resolver == nil {
+		_, err := principal(ctx)
+		return err
+	}
+	return authz.Require(ctx, perm, authz.Scope{})
+}
+
 func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.MeGetResponseObject, error) {
 	svc, err := s.ident()
 	if err != nil {
@@ -322,6 +355,9 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 	}
 	p, err := principal(ctx)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.requireAccount(ctx, identity.PermMeRead); err != nil {
 		return nil, err
 	}
 	me, err := svc.Me(ctx, p.UserID)
@@ -365,6 +401,9 @@ func (s *apiServer) MeListSessions(ctx context.Context, _ gen.MeListSessionsRequ
 	if err != nil {
 		return nil, err
 	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
+		return nil, err
+	}
 	list, err := svc.ListSessions(ctx, p.UserID, p.FamilyID)
 	if err != nil {
 		return nil, err
@@ -397,6 +436,9 @@ func (s *apiServer) MeRevokeSession(ctx context.Context, req gen.MeRevokeSession
 	if err != nil {
 		return nil, err
 	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
+		return nil, err
+	}
 	family := p.FamilyID
 	current := req.Id == "current"
 	if !current {
@@ -424,6 +466,9 @@ func (s *apiServer) MeRevokeAllSessions(ctx context.Context, _ gen.MeRevokeAllSe
 	}
 	p, err := principal(ctx)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
 		return nil, err
 	}
 	if err := svc.RevokeAllSessions(ctx, p.UserID); err != nil {

@@ -77,8 +77,9 @@ type opInfo struct {
 	idempotent string // "", optional or required
 	preview    bool   // x-stability: preview
 	auth       authMode
-	orgScoped  bool            // path under /v1/orgs/{org_id}: membership is resolved first
-	query      map[string]bool // declared query parameter names
+	orgScoped  bool               // path under /v1/orgs/{org_id}: membership is resolved first
+	perms      []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
+	query      map[string]bool    // declared query parameter names
 	// stream is x-openbekci-stream: the operation streams a request body
 	// (multipart upload) or a binary response (download). Its request body is
 	// not buffered for validation or hashed for idempotency, and a binary
@@ -123,6 +124,7 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				orgScoped:  isOrgPath(path),
 				stream:     extBool(op.Extensions, "x-openbekci-stream"),
 				hasBody:    op.RequestBody != nil,
+				perms:      extPermissions(op.Extensions),
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -165,6 +167,30 @@ func authModeOf(spec *openapi3.T, op *openapi3.Operation) authMode {
 		}
 	}
 	return authRequired
+}
+
+// extPermissions reads the x-openbekci-roles list of an operation.
+func extPermissions(ext map[string]any) []authz.Permission {
+	var raw []byte
+	switch v := ext["x-openbekci-roles"].(type) {
+	case nil:
+		return nil
+	case json.RawMessage:
+		raw = v
+	case []byte:
+		raw = v
+	default:
+		raw, _ = json.Marshal(v)
+	}
+	var names []string
+	if json.Unmarshal(raw, &names) != nil {
+		return nil
+	}
+	out := make([]authz.Permission, len(names))
+	for i, n := range names {
+		out[i] = authz.Permission(n)
+	}
+	return out
 }
 
 // extString reads a string extension that arrives as json.RawMessage or a decoded value.
