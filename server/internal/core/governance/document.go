@@ -193,7 +193,7 @@ type msgs struct {
 	minutesQuorum, minutesAtt, minutesItems             string
 	decisionNo, outcome, votes, dissent, noDecision     string
 	chair, secretary, draftNote, outcomes               string
-	accepted, rejected, noVote, noted, locationLabel    string
+	accepted, rejected, noVote, informed, locationLabel string
 	dateLabel, siteLabel, notVoted                      string
 }
 
@@ -212,7 +212,7 @@ var trMsgs = msgs{
 	sheetPresent: "Toplantıda temsil edilen oy: %d, arsa payı: %s",
 	sheetQuorum:  "Toplantı yeter sayısı (%s toplantı): %s", yes: "sağlandı", no: "sağlanamadı",
 	first: "birinci", second: "ikinci", noQuorum: "ikinci toplantıda yeter sayı aranmaz",
-	minutesTitle: "KAT MALİKLERİ KURULU TOPLANTI TUTANAĞI", minutesIntro: "%s kat malikleri kurulu %s toplantısı %s tarihinde %s adresinde yapılmıştır.",
+	minutesTitle: "KAT MALİKLERİ KURULU TOPLANTI TUTANAĞI", minutesIntro: "%[2]s kat malikleri kurulu %[1]s toplantısı %[3]s tarihinde %[4]s adresinde yapılmıştır.",
 	minutesCall:   "Çağrı: toplantı %s için çağrılmış, ikinci toplantı tarihi %s olarak bildirilmiştir.",
 	minutesQuorum: "Toplantı yeter sayısı (%s toplantı): %s. Oy hakkı %d, temsil edilen %d; arsa payı %s, temsil edilen %s.",
 	minutesAtt:    "Hazirun cetveline göre %d kişi katılmıştır.", minutesItems: "Gündem maddeleri ve kararlar",
@@ -220,7 +220,7 @@ var trMsgs = msgs{
 	dissent: "Muhalefet şerhi (%s): %s", noDecision: "Bu madde için karar kaydedilmemiştir.",
 	chair: "Toplantı başkanı", secretary: "Yazman", locationLabel: "Yer", dateLabel: "Tarih", siteLabel: "Site",
 	draftNote: "Bu belge noter onaylı karar defterine geçirilmek üzere hazırlanmış numaralı bir taslaktır; karar defterinin yerine geçmez.",
-	accepted:  "kabul edildi", rejected: "reddedildi", noVote: "oylanmadı", noted: "bilgi için kaydedildi", notVoted: "oylama yapılmadı",
+	accepted:  "kabul edildi", rejected: "reddedildi", noVote: "oylanmadı", informed: "bilgi için kaydedildi", notVoted: "oylama yapılmadı",
 }
 
 var enMsgs = msgs{
@@ -246,7 +246,7 @@ var enMsgs = msgs{
 	dissent: "Dissent (%s): %s", noDecision: "No decision was recorded for this item.",
 	chair: "Chair", secretary: "Secretary", locationLabel: "Place", dateLabel: "Date", siteLabel: "Site",
 	draftNote: "This is a numbered draft for transcription into the notarized decision book; it is not the decision book.",
-	accepted:  "accepted", rejected: "rejected", noVote: "no vote", noted: "noted", notVoted: "no vote taken",
+	accepted:  "accepted", rejected: "rejected", noVote: "no vote", informed: "noted", notVoted: "no vote taken",
 }
 
 func msgsFor(locale string) msgs {
@@ -287,7 +287,7 @@ type CallLetterData struct {
 	SecondCall  time.Time
 	Location    string
 	Agenda      []AgendaLine
-	Addressee   string // empty: the generic letter
+	Recipient   string // empty: the generic letter
 	QRToken     string
 	QRPayload   string
 	QRPNG       []byte
@@ -308,8 +308,8 @@ func CallLetter(d CallLetterData) DocModel {
 		doc.Lines = append(doc.Lines, d.Title)
 	}
 	who := m.dearOwner
-	if d.Addressee != "" {
-		who = d.Addressee
+	if d.Recipient != "" {
+		who = d.Recipient
 	}
 	doc.Body = append(doc.Body,
 		DocBlock{Kind: "p", Text: fmt.Sprintf(m.dear, who)},
@@ -450,7 +450,7 @@ func Minutes(d MinutesData) DocModel {
 		DocBlock{Kind: "p", Text: fmt.Sprintf(m.minutesAtt, d.Attended)},
 		DocBlock{Kind: "h", Text: m.minutesItems},
 	)
-	outcomes := map[string]string{"accepted": m.accepted, "rejected": m.rejected, "no_vote": m.noVote, "noted": m.noted}
+	outcomes := map[string]string{"accepted": m.accepted, "rejected": m.rejected, "no_vote": m.noVote, "noted": m.informed}
 	for _, it := range d.Items {
 		doc.Body = append(doc.Body, DocBlock{Kind: "p", Text: fmt.Sprintf("%d. %s", it.Position, it.Title)})
 		if it.Decision == nil {

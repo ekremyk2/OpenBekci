@@ -47,7 +47,7 @@ func (s *apiServer) GovernanceSetGovernanceSettings(ctx context.Context, req gen
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (s *apiServer) GovernanceUpdateMeeting(ctx context.Context, req gen.Governa
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func (s *apiServer) GovernanceDeleteMeeting(ctx context.Context, req gen.Governa
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -414,7 +414,7 @@ func (s *apiServer) GovernanceUpdateAgendaItem(ctx context.Context, req gen.Gove
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -438,7 +438,7 @@ func (s *apiServer) GovernanceDeleteAgendaItem(ctx context.Context, req gen.Gove
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -482,7 +482,7 @@ func (s *apiServer) GovernanceSetPoll(ctx context.Context, req gen.GovernanceSet
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -688,7 +688,7 @@ func (s *apiServer) GovernanceUpdateDecision(ctx context.Context, req gen.Govern
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(&req.Params.IfMatch)
+	ver, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}

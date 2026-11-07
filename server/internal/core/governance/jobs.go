@@ -194,7 +194,7 @@ func (s *Service) termRemindersOrg(ctx context.Context, tx pgx.Tx, orgID uuid.UU
 		WHERE m.org_id = $1 AND m.scope_type = 'site' AND m.role IN ('site_manager', 'board_member', 'auditor') AND m.valid_to IS NOT NULL
 		AND m.valid_from <= now() AND m.valid_to >= now() - interval '30 days' AND m.valid_to <= now() + interval '366 days'
 		AND NOT EXISTS (SELECT 1 FROM membership n WHERE n.org_id = m.org_id AND n.person_id = m.person_id AND n.role = m.role AND n.scope_type = m.scope_type
-			AND n.scope_id = m.scope_id AND n.id <> m.id AND n.valid_from <= now() AND (n.valid_to IS NULL OR n.valid_to > m.valid_to))
+			AND n.scope_id = m.scope_id AND n.id <> m.id AND n.valid_from <= m.valid_to AND (n.valid_to IS NULL OR n.valid_to > m.valid_to))
 		AND EXISTS (SELECT 1 FROM site s WHERE s.org_id = m.org_id AND s.id = m.scope_id AND s.status = 'active')
 		ORDER BY m.id`, orgID)
 	if err != nil {

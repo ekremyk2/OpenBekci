@@ -5101,11 +5101,15 @@ export interface components {
         OrgId: string;
         /** @description Organization id. */
         "OrgId-2": string;
-        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+        /**
+         * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+         *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+         *     (served convention; the draft declared it required).
+         */
         IfMatch: string;
         /** @description The site this resource belongs to. */
         SiteIdRequired: string;
-        /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+        /** @description Client-generated unique key (8..128 chars); mandatory on this operation (`x-idempotent: required`, enforced by the request pipeline after authentication, so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
         /** @description When true, validate and return the row-level report without saving anything. */
         DryRun: boolean;
@@ -7955,9 +7959,13 @@ export interface operations {
     "governance.setGovernanceSettings": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -8133,9 +8141,13 @@ export interface operations {
     "governance.deleteMeeting": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -8165,9 +8177,13 @@ export interface operations {
     "governance.updateMeeting": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -8646,9 +8662,9 @@ export interface operations {
                 /** @description When true, validate and return the row-level report without saving anything. */
                 dry_run?: components["parameters"]["DryRun"];
             };
-            header: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            header?: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation (`x-idempotent: required`, enforced by the request pipeline after authentication, so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -8757,9 +8773,13 @@ export interface operations {
     "governance.deleteAgendaItem": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -8789,9 +8809,13 @@ export interface operations {
     "governance.updateAgendaItem": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -8889,9 +8913,13 @@ export interface operations {
     "governance.setPoll": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -9342,9 +9370,13 @@ export interface operations {
     "governance.updateDecision": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag` or the `version` field), optionally quoted (`"3"`). Required: without it the answer is 422
+                 *     `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first
+                 *     (served convention; the draft declared it required).
+                 */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description Organization id. */
@@ -9383,9 +9415,9 @@ export interface operations {
                 /** @description When true, validate and return the row-level report without saving anything. */
                 dry_run?: components["parameters"]["DryRun"];
             };
-            header: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            header?: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation (`x-idempotent: required`, enforced by the request pipeline after authentication, so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */

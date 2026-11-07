@@ -599,7 +599,7 @@ func (s *Service) callLetterDoc(ctx context.Context, tx pgx.Tx, m Meeting, perso
 		if err != nil {
 			return DocModel{}, err
 		}
-		d.Addressee, d.QRToken, d.QRPayload = name, token, s.checkinPayload(token)
+		d.Recipient, d.QRToken, d.QRPayload = name, token, s.checkinPayload(token)
 		if d.QRPNG, err = QRPNG(d.QRPayload); err != nil {
 			return DocModel{}, fmt.Errorf("render qr: %w", err)
 		}
