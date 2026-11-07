@@ -5,6 +5,7 @@ package permissions
 import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
@@ -24,6 +25,7 @@ func NewRegistry() (*authz.Registry, error) {
 		{"tenancy", tenancy.Permissions()},
 		{"identity", identity.Permissions()},
 		{"audit", audit.Permissions()},
+		{"files", files.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {
 			return nil, err
