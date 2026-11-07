@@ -7,11 +7,147 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
+#. placeholder {0}: items.length
+msgid "{0} opening entries as of <0/>."
+msgstr "{0} opening entries as of <0/>."
+
+#. placeholder {0}: preview.data.recipient_count
+#. placeholder {1}: preview.data.sms_count
+#. placeholder {2}: preview.data.skipped_frozen
+msgid "{0} recipients, {1} SMS, {2} skipped (in legal collection)."
+msgstr "{0} recipients, {1} SMS, {2} skipped (in legal collection)."
+
+msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
+msgstr "<0/> received, <1/> applied to charges, <2/> kept as credit."
+
+msgid "A fixed amount per unit"
+msgstr "A fixed amount per unit"
+
+msgid "A name is required."
+msgstr "A name is required."
+
+msgid "A person"
+msgstr "A person"
+
+msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
+msgstr "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
+
+msgid "A reason is required."
+msgstr "A reason is required."
+
+msgid "A total split between units"
+msgstr "A total split between units"
+
+msgid "A unit side"
+msgstr "A unit side"
+
 msgid "Accept your invitation"
 msgstr "Accept your invitation"
 
+msgid "Account"
+msgstr "Account"
+
+msgid "Account holder"
+msgstr "Account holder"
+
 msgid "Accountant"
 msgstr "Accountant"
+
+msgid "Accrual, monthly bookings, waivers, freezes"
+msgstr "Accrual, monthly bookings, waivers, freezes"
+
+msgid "Accrued fee"
+msgstr "Accrued fee"
+
+msgid "Accrued late fees"
+msgstr "Accrued late fees"
+
+msgid "Accrued so far: <0/>. Waivers above the site threshold ask you to confirm your password."
+msgstr "Accrued so far: <0/>. Waivers above the site threshold ask you to confirm your password."
+
+msgid "Accrued today"
+msgstr "Accrued today"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Actual"
+msgstr "Actual"
+
+msgid "Add a rate"
+msgstr "Add a rate"
+
+msgid "Add cash box"
+msgstr "Add cash box"
+
+msgid "Add one for each person who collects cash."
+msgstr "Add one for each person who collects cash."
+
+msgid "Add rate"
+msgstr "Add rate"
+
+msgid "Add stage"
+msgstr "Add stage"
+
+msgid "Adjust"
+msgstr "Adjust"
+
+msgid "Adjust this charge"
+msgstr "Adjust this charge"
+
+msgid "Adjustment"
+msgstr "Adjustment"
+
+msgid "All categories"
+msgstr "All categories"
+
+msgid "All funds"
+msgstr "All funds"
+
+msgid "All imports"
+msgstr "All imports"
+
+msgid "All units"
+msgstr "All units"
+
+msgid "Allocated <0/> of <1/>"
+msgstr "Allocated <0/> of <1/>"
+
+msgid "Already entered"
+msgstr "Already entered"
+
+msgid "Amount"
+msgstr "Amount"
+
+msgid "Amount (partial payments are fine)"
+msgstr "Amount (partial payments are fine)"
+
+msgid "Amount is"
+msgstr "Amount is"
+
+msgid "Amount per period"
+msgstr "Amount per period"
+
+msgid "Amount to waive"
+msgstr "Amount to waive"
+
+msgid "Amount you paid"
+msgstr "Amount you paid"
+
+msgid "Any"
+msgstr "Any"
+
+msgid "Applies to"
+msgstr "Applies to"
+
+msgid "Approved"
+msgstr "Approved"
+
+msgid "As of"
+msgstr "As of"
+
+msgid "As of <0/>"
+msgstr "As of <0/>"
 
 msgid "Ask your building manager to invite you."
 msgstr "Ask your building manager to invite you."
@@ -19,32 +155,469 @@ msgstr "Ask your building manager to invite you."
 msgid "Ask your manager if you think you should."
 msgstr "Ask your manager if you think you should."
 
+msgid "At least this many months overdue"
+msgstr "At least this many months overdue"
+
 msgid "Auditor"
 msgstr "Auditor"
+
+msgid "Automatic allocation"
+msgstr "Automatic allocation"
+
+msgid "Awaiting confirmation"
+msgstr "Awaiting confirmation"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Back to automatic"
+msgstr "Back to automatic"
 
 msgid "Back to sign in"
 msgstr "Back to sign in"
 
+msgid "Balance"
+msgstr "Balance"
+
+msgid "Balances as of"
+msgstr "Balances as of"
+
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Balances, open requests and announcements will appear here."
+
+msgid "Bank"
+msgstr "Bank"
+
+msgid "Bank account"
+msgstr "Bank account"
+
+msgid "Bank deposit"
+msgstr "Bank deposit"
+
+msgid "Bank details"
+msgstr "Bank details"
+
+msgid "Bank import"
+msgstr "Bank import"
+
+msgid "Bank lines"
+msgstr "Bank lines"
+
+msgid "Bank reconciliation"
+msgstr "Bank reconciliation"
+
+msgid "Bank statement import"
+msgstr "Bank statement import"
+
+msgid "Bank transfer"
+msgstr "Bank transfer"
+
+msgid "Block"
+msgstr "Block"
 
 msgid "Board member"
 msgstr "Board member"
 
+msgid "Booked"
+msgstr "Booked"
+
+msgid "Booked to date"
+msgstr "Booked to date"
+
+msgid "Booking fee"
+msgstr "Booking fee"
+
+msgid "Both"
+msgstr "Both"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Budget saved."
+msgstr "Budget saved."
+
+msgid "Budget vs actual"
+msgstr "Budget vs actual"
+
+msgid "By area"
+msgstr "By area"
+
+msgid "Calculating…"
+msgstr "Calculating…"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Cancel charge"
+msgstr "Cancel charge"
+
+msgid "Cancel this charge?"
+msgstr "Cancel this charge?"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "Card"
+msgstr "Card"
+
+msgid "Case opened; late fees are frozen for this unit side."
+msgstr "Case opened; late fees are frozen for this unit side."
+
+msgid "Cash"
+msgstr "Cash"
+
+msgid "Cash box added."
+msgstr "Cash box added."
+
+msgid "Cash boxes"
+msgstr "Cash boxes"
+
+msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
+msgstr "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
+
+msgid "Cash receipts, cash boxes, declared transfers"
+msgstr "Cash receipts, cash boxes, declared transfers"
+
+msgid "Cash-basis income and expense, debtors, budget, and the accountant's views. Every report exports to CSV and Excel."
+msgstr "Cash-basis income and expense, debtors, budget, and the accountant's views. Every report exports to CSV and Excel."
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Category budget"
+msgstr "Category budget"
+
+msgid "Change the filters, or create a dues plan to generate charges."
+msgstr "Change the filters, or create a dues plan to generate charges."
+
+msgid "Channels"
+msgstr "Channels"
+
+msgid "Charge"
+msgstr "Charge"
+
+msgid "Charge adjusted; the difference is posted as a correction."
+msgstr "Charge adjusted; the difference is posted as a correction."
+
+msgid "Charge cancelled; a reversal was created."
+msgstr "Charge cancelled; a reversal was created."
+
+msgid "Charge type"
+msgstr "Charge type"
+
+msgid "Charges"
+msgstr "Charges"
+
+msgid "Charges created."
+msgstr "Charges created."
+
+msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
+msgstr "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
+
+msgid "Check (dry run)"
+msgstr "Check (dry run)"
+
+msgid "Choose a unit and an amount."
+msgstr "Choose a unit and an amount."
+
+msgid "Choose a unit to see what was sent to it."
+msgstr "Choose a unit to see what was sent to it."
+
+msgid "Choose a unit."
+msgstr "Choose a unit."
+
 msgid "Choose an organization"
 msgstr "Choose an organization"
+
+msgid "Choose charges myself"
+msgstr "Choose charges myself"
+
+msgid "Choose one."
+msgstr "Choose one."
+
+msgid "Choose the file, the importer and the bank account."
+msgstr "Choose the file, the importer and the bank account."
+
+msgid "Choose who the statement is for."
+msgstr "Choose who the statement is for."
 
 msgid "Close"
 msgstr "Close"
 
+msgid "Close case"
+msgstr "Close case"
+
+msgid "Closed"
+msgstr "Closed"
+
+msgid "Closing balance"
+msgstr "Closing balance"
+
 msgid "Code from the SMS"
 msgstr "Code from the SMS"
+
+msgid "Collection cases"
+msgstr "Collection cases"
+
+msgid "Collection rate this month"
+msgstr "Collection rate this month"
+
+msgid "Collections"
+msgstr "Collections"
+
+msgid "Collector"
+msgstr "Collector"
+
+msgid "Collector reconciliation"
+msgstr "Collector reconciliation"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Confirm it is you"
+msgstr "Confirm it is you"
+
+msgid "Confirm payment"
+msgstr "Confirm payment"
+
+msgid "Confirm this transfer"
+msgstr "Confirm this transfer"
+
+msgid "Confirmed"
+msgstr "Confirmed"
+
+#. placeholder {0}: p.receipt_no ?? ''
+msgid "Confirmed. Receipt {0}"
+msgstr "Confirmed. Receipt {0}"
+
+msgid "Costs charged"
+msgstr "Costs charged"
+
+msgid "Could not add the cash box."
+msgstr "Could not add the cash box."
+
+msgid "Could not add the rate."
+msgstr "Could not add the rate."
+
+msgid "Could not add the stage."
+msgstr "Could not add the stage."
+
+msgid "Could not adjust the charge."
+msgstr "Could not adjust the charge."
+
+msgid "Could not cancel the charge."
+msgstr "Could not cancel the charge."
+
+msgid "Could not close the case."
+msgstr "Could not close the case."
+
+msgid "Could not confirm the payment."
+msgstr "Could not confirm the payment."
+
+msgid "Could not create the charges."
+msgstr "Could not create the charges."
+
+msgid "Could not freeze the fees."
+msgstr "Could not freeze the fees."
+
+msgid "Could not match the line."
+msgstr "Could not match the line."
+
+msgid "Could not open the case."
+msgstr "Could not open the case."
+
+msgid "Could not record the expense."
+msgstr "Could not record the expense."
+
+msgid "Could not record the payment."
+msgstr "Could not record the payment."
+
+msgid "Could not record the refund."
+msgstr "Could not record the refund."
+
+msgid "Could not record the transfer."
+msgstr "Could not record the transfer."
+
+msgid "Could not reject the payment."
+msgstr "Could not reject the payment."
+
+msgid "Could not save the bill."
+msgstr "Could not save the bill."
+
+msgid "Could not save the budget."
+msgstr "Could not save the budget."
+
+msgid "Could not save the opening balances."
+msgstr "Could not save the opening balances."
+
+msgid "Could not save the plan."
+msgstr "Could not save the plan."
+
+msgid "Could not save the policy."
+msgstr "Could not save the policy."
+
+msgid "Could not send the receipt."
+msgstr "Could not send the receipt."
+
+msgid "Could not send the reminders."
+msgstr "Could not send the reminders."
+
+msgid "Could not send the statement."
+msgstr "Could not send the statement."
+
+msgid "Could not send your declaration."
+msgstr "Could not send your declaration."
 
 msgid "Could not sign out. Please try again."
 msgstr "Could not sign out. Please try again."
 
+msgid "Could not void the expense."
+msgstr "Could not void the expense."
+
+msgid "Could not void the payment."
+msgstr "Could not void the payment."
+
+msgid "Could not waive the fee."
+msgstr "Could not waive the fee."
+
+msgid "Counterparty"
+msgstr "Counterparty"
+
+msgid "Create budget"
+msgstr "Create budget"
+
+msgid "Create charges"
+msgstr "Create charges"
+
+msgid "Create the monthly dues plan; you will see what every unit pays before saving."
+msgstr "Create the monthly dues plan; you will see what every unit pays before saving."
+
+msgid "Creates a legal-cost charge on the debtor's side."
+msgstr "Creates a legal-cost charge on the debtor's side."
+
+msgid "Credit"
+msgstr "Credit"
+
+msgid "Credits (prepayments)"
+msgstr "Credits (prepayments)"
+
+msgid "Current rate"
+msgstr "Current rate"
+
 msgid "Dark"
 msgstr "Dark"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date you paid"
+msgstr "Date you paid"
+
+msgid "day"
+msgstr "day"
+
+#. placeholder {0}: r.day_of_month
+msgid "Day {0}"
+msgstr "Day {0}"
+
+msgid "Days after due"
+msgstr "Days after due"
+
+msgid "Debit"
+msgstr "Debit"
+
+msgid "Debtors"
+msgstr "Debtors"
+
+msgid "Debts per unit side"
+msgstr "Debts per unit side"
+
+msgid "Decision"
+msgstr "Decision"
+
+msgid "Decision reference (optional)"
+msgstr "Decision reference (optional)"
+
+msgid "Declared by residents, awaiting confirmation"
+msgstr "Declared by residents, awaiting confirmation"
+
+msgid "Declared transfers"
+msgstr "Declared transfers"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Delete rate"
+msgstr "Delete rate"
+
+msgid "Delta"
+msgstr "Delta"
+
+msgid "Deposit"
+msgstr "Deposit"
+
+msgid "Deposit cash to the bank"
+msgstr "Deposit cash to the bank"
+
+msgid "Deposit to bank"
+msgstr "Deposit to bank"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Difference"
+msgstr "Difference"
+
+msgid "Document"
+msgstr "Document"
+
+msgid "Document number (optional)"
+msgstr "Document number (optional)"
+
+msgid "Download ihtarname"
+msgstr "Download ihtarname"
+
+msgid "Download receipt (PDF)"
+msgstr "Download receipt (PDF)"
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "Dry run result"
+msgstr "Dry run result"
+
+#. placeholder {0}: report.ok_rows
+#. placeholder {1}: report.total_rows
+#. placeholder {2}: report.error_rows
+msgid "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
+msgstr "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
+
+msgid "Due"
+msgstr "Due"
+
+msgid "Due date"
+msgstr "Due date"
+
+msgid "Due day"
+msgstr "Due day"
+
+msgid "Dues (aidat)"
+msgstr "Dues (aidat)"
+
+msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
+msgstr "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
+
+msgid "Dues plans"
+msgstr "Dues plans"
+
+msgid "Dunning stages"
+msgstr "Dunning stages"
+
+msgid "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
+msgstr "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
+
+msgid "Edit the plan, or change the amount by adding a rate that starts on a date."
+msgstr "Edit the plan, or change the amount by adding a rate that starts on a date."
 
 msgid "Email"
 msgstr "Email"
@@ -58,8 +631,47 @@ msgstr "Email me a link"
 msgid "Email or phone"
 msgstr "Email or phone"
 
+msgid "Enabled"
+msgstr "Enabled"
+
+msgid "Ended"
+msgstr "Ended"
+
+msgid "Enter a date."
+msgstr "Enter a date."
+
+msgid "Enter a name and the days after the due date."
+msgstr "Enter a name and the days after the due date."
+
+msgid "Enter a rate."
+msgstr "Enter a rate."
+
+msgid "Enter an amount greater than zero."
+msgstr "Enter an amount greater than zero."
+
+msgid "Enter an amount up to the accrued fee."
+msgstr "Enter an amount up to the accrued fee."
+
+msgid "Enter an amount up to the open balance and the account."
+msgstr "Enter an amount up to the open balance and the account."
+
+msgid "Enter an amount."
+msgstr "Enter an amount."
+
+msgid "Enter how much goes to each charge."
+msgstr "Enter how much goes to each charge."
+
+msgid "Enter opening balances"
+msgstr "Enter opening balances"
+
 msgid "Enter the code from the SMS"
 msgstr "Enter the code from the SMS"
+
+msgid "Enter the grace days."
+msgstr "Enter the grace days."
+
+msgid "Enter what every unit owes on the go-live date and what the bank and cash hold. A dry run shows problems before anything is saved."
+msgstr "Enter what every unit owes on the go-live date and what the bank and cash hold. A dry run shows problems before anything is saved."
 
 msgid "Enter your email"
 msgstr "Enter your email"
@@ -70,14 +682,122 @@ msgstr "Enter your email or phone number"
 msgid "Enter your password"
 msgstr "Enter your password"
 
+msgid "Enter your password."
+msgstr "Enter your password."
+
 msgid "Enter your phone number"
 msgstr "Enter your phone number"
+
+msgid "Equal per unit"
+msgstr "Equal per unit"
+
+msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
+msgstr "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
+
+msgid "Every receivable by period, unit and side"
+msgstr "Every receivable by period, unit and side"
+
+msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+msgstr "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+
+msgid "Everything is matched"
+msgstr "Everything is matched"
+
+msgid "Expected to date"
+msgstr "Expected to date"
+
+msgid "Expense"
+msgstr "Expense"
+
+msgid "Expense recorded."
+msgstr "Expense recorded."
+
+msgid "Expenses"
+msgstr "Expenses"
+
+msgid "Failed"
+msgstr "Failed"
+
+msgid "Fees are computed continuously on overdue principal, booked once a month, and can be waived or frozen with a reason."
+msgstr "Fees are computed continuously on overdue principal, booked once a month, and can be waived or frozen with a reason."
+
+msgid "Fees frozen"
+msgstr "Fees frozen"
+
+msgid "File (CSV or XLSX)"
+msgstr "File (CSV or XLSX)"
+
+msgid "File no."
+msgstr "File no."
+
+msgid "File number"
+msgstr "File number"
+
+msgid "Fill in the amount and split rule to see what each unit pays."
+msgstr "Fill in the amount and split rule to see what each unit pays."
+
+msgid "Fill in the vendor, category and amount."
+msgstr "Fill in the vendor, category and amount."
+
+msgid "Final"
+msgstr "Final"
+
+msgid "Fiscal year"
+msgstr "Fiscal year"
+
+msgid "Fixed table"
+msgstr "Fixed table"
+
+msgid "For"
+msgstr "For"
+
+msgid "Freeze"
+msgstr "Freeze"
+
+msgid "Freeze late fees"
+msgstr "Freeze late fees"
+
+msgid "Frequency"
+msgstr "Frequency"
+
+msgid "From"
+msgstr "From"
+
+msgid "Frozen"
+msgstr "Frozen"
+
+msgid "Fund"
+msgstr "Fund"
+
+msgid "Fund balances"
+msgstr "Fund balances"
+
+msgid "Gelir-gider, debtors, budget, aging"
+msgstr "Gelir-gider, debtors, budget, aging"
 
 msgid "Go home"
 msgstr "Go home"
 
+msgid "Grace days"
+msgstr "Grace days"
+
 msgid "Guard"
 msgstr "Guard"
+
+msgid "Hand cash over"
+msgstr "Hand cash over"
+
+msgid "Hand over"
+msgstr "Hand over"
+
+msgid "Hand over to"
+msgstr "Hand over to"
+
+msgid "Handed over"
+msgstr "Handed over"
+
+msgid "Handover"
+msgstr "Handover"
 
 msgid "Home"
 msgstr "Home"
@@ -85,8 +805,50 @@ msgstr "Home"
 msgid "Household member"
 msgstr "Household member"
 
+msgid "How it will be applied"
+msgstr "How it will be applied"
+
+msgid "I've paid"
+msgstr "I've paid"
+
+msgid "I've paid by transfer"
+msgstr "I've paid by transfer"
+
+msgid "IBAN"
+msgstr "IBAN"
+
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "If that address is registered, a sign-in link is on its way. It works once."
+
+msgid "Ignore"
+msgstr "Ignore"
+
+msgid "Ignored"
+msgstr "Ignored"
+
+msgid "Ihtarname"
+msgstr "Ihtarname"
+
+msgid "Importer"
+msgstr "Importer"
+
+msgid "In app"
+msgstr "In app"
+
+msgid "In collection"
+msgstr "In collection"
+
+msgid "Income"
+msgstr "Income"
+
+msgid "Income and expense"
+msgstr "Income and expense"
+
+msgid "Issued"
+msgstr "Issued"
+
+msgid "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
+msgstr "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
 
 msgid "Join your building"
 msgstr "Join your building"
@@ -94,32 +856,352 @@ msgstr "Join your building"
 msgid "Keep editing"
 msgstr "Keep editing"
 
+msgid "Kept as credit"
+msgstr "Kept as credit"
+
+msgid "Kind"
+msgstr "Kind"
+
+msgid "Land share (arsa payı)"
+msgstr "Land share (arsa payı)"
+
 msgid "Language"
 msgstr "Language"
+
+msgid "Largest balances"
+msgstr "Largest balances"
+
+msgid "late fee"
+msgstr "late fee"
+
+msgid "Late fee"
+msgstr "Late fee"
+
+msgid "Late fee accrued so far (not yet booked)"
+msgstr "Late fee accrued so far (not yet booked)"
+
+msgid "Late fee waived."
+msgstr "Late fee waived."
+
+msgid "Late fees"
+msgstr "Late fees"
+
+msgid "Late fees accrued"
+msgstr "Late fees accrued"
+
+msgid "Late fees frozen."
+msgstr "Late fees frozen."
+
+msgid "Late-fee policy"
+msgstr "Late-fee policy"
+
+msgid "Lawyer"
+msgstr "Lawyer"
+
+msgid "Ledger balance"
+msgstr "Ledger balance"
+
+msgid "Ledger closing"
+msgstr "Ledger closing"
+
+msgid "Ledger opening"
+msgstr "Ledger opening"
+
+msgid "Legal cost"
+msgstr "Legal cost"
+
+msgid "Legal costs to charge back to the debtor (optional)"
+msgstr "Legal costs to charge back to the debtor (optional)"
+
+msgid "Letter"
+msgstr "Letter"
 
 msgid "Light"
 msgstr "Light"
 
+msgid "Lines"
+msgstr "Lines"
+
+msgid "Loading charges…"
+msgstr "Loading charges…"
+
+msgid "Lock date: <0/>"
+msgstr "Lock date: <0/>"
+
+msgid "Locked"
+msgstr "Locked"
+
 msgid "Main"
 msgstr "Main"
+
+msgid "Manual allocation"
+msgstr "Manual allocation"
+
+msgid "Match"
+msgstr "Match"
+
+msgid "Match bank lines"
+msgstr "Match bank lines"
+
+msgid "Match manually"
+msgstr "Match manually"
+
+msgid "Matched"
+msgstr "Matched"
+
+#. placeholder {0}: s.unit_door_number
+msgid "Matched to {0}."
+msgstr "Matched to {0}."
+
+msgid "Method"
+msgstr "Method"
 
 msgid "Money"
 msgstr "Money"
 
+msgid "Money overview"
+msgstr "Money overview"
+
+msgid "Money sections"
+msgstr "Money sections"
+
+msgid "Monthly"
+msgstr "Monthly"
+
+msgid "Monthly bookings"
+msgstr "Monthly bookings"
+
+msgid "Monthly recurring expenses"
+msgstr "Monthly recurring expenses"
+
+msgid "Months overdue"
+msgstr "Months overdue"
+
 msgid "My account"
 msgstr "My account"
+
+msgid "My balance"
+msgstr "My balance"
+
+msgid "My statement"
+msgstr "My statement"
 
 msgid "My units"
 msgstr "My units"
 
+msgid "Name"
+msgstr "Name"
+
 msgid "Navigation"
 msgstr "Navigation"
+
+msgid "Net: <0/>"
+msgstr "Net: <0/>"
+
+msgid "New amount"
+msgstr "New amount"
+
+msgid "New bill"
+msgstr "New bill"
+
+msgid "New cash box"
+msgstr "New cash box"
+
+msgid "New dues plan"
+msgstr "New dues plan"
+
+msgid "New expense"
+msgstr "New expense"
+
+msgid "New plan"
+msgstr "New plan"
+
+msgid "New stage"
+msgstr "New stage"
+
+msgid "New vendor bill"
+msgstr "New vendor bill"
+
+msgid "Next due: <0/>"
+msgstr "Next due: <0/>"
+
+msgid "Next: choose the split"
+msgstr "Next: choose the split"
+
+msgid "No bills"
+msgstr "No bills"
+
+msgid "No budget lines yet"
+msgstr "No budget lines yet"
+
+msgid "No cases"
+msgstr "No cases"
+
+msgid "No cash boxes yet"
+msgstr "No cash boxes yet"
+
+msgid "No charges match"
+msgstr "No charges match"
+
+msgid "No collectors"
+msgstr "No collectors"
+
+msgid "No credits"
+msgstr "No credits"
+
+msgid "No debtors"
+msgstr "No debtors"
+
+msgid "No dues plans yet"
+msgstr "No dues plans yet"
+
+msgid "No expenses"
+msgstr "No expenses"
+
+#. placeholder {0}: accrual.unit_door_number
+msgid "No fee accrues for {0} while it is frozen, for example during legal collection."
+msgstr "No fee accrues for {0} while it is frozen, for example during legal collection."
+
+msgid "No funds"
+msgstr "No funds"
+
+msgid "No imports yet"
+msgstr "No imports yet"
+
+msgid "No income or expense in this period"
+msgstr "No income or expense in this period"
+
+msgid "No late fees are accruing"
+msgstr "No late fees are accruing"
+
+msgid "No lines are waiting for you."
+msgstr "No lines are waiting for you."
+
+msgid "No open receivables"
+msgstr "No open receivables"
+
+msgid "No payments match."
+msgstr "No payments match."
+
+msgid "No payments yet"
+msgstr "No payments yet"
+
+msgid "No postings yet"
+msgstr "No postings yet"
+
+msgid "No rates yet"
+msgstr "No rates yet"
+
+msgid "No refunds"
+msgstr "No refunds"
+
+msgid "No site yet"
+msgstr "No site yet"
+
+msgid "No stages"
+msgstr "No stages"
+
+msgid "No suggestion"
+msgstr "No suggestion"
+
+msgid "No transfers yet"
+msgstr "No transfers yet"
+
+msgid "No waivers"
+msgstr "No waivers"
+
+msgid "Nobody has overdue principal beyond the grace period."
+msgstr "Nobody has overdue principal beyond the grace period."
+
+msgid "Nobody owes anything right now."
+msgstr "Nobody owes anything right now."
+
+msgid "None"
+msgstr "None"
+
+msgid "Not yet booked; shown continuously"
+msgstr "Not yet booked; shown continuously"
+
+msgid "Note"
+msgstr "Note"
+
+msgid "Note (optional)"
+msgstr "Note (optional)"
+
+msgid "Nothing booked yet"
+msgstr "Nothing booked yet"
+
+msgid "Nothing here yet"
+msgstr "Nothing here yet"
+
+msgid "Nothing sent yet"
+msgstr "Nothing sent yet"
+
+msgid "Nothing to pay"
+msgstr "Nothing to pay"
+
+msgid "Nothing to show"
+msgstr "Nothing to show"
+
+msgid "Nothing to show for this period"
+msgstr "Nothing to show for this period"
 
 msgid "Notifications"
 msgstr "Notifications"
 
+msgid "Off: expenses are recorded as paid when they happen."
+msgstr "Off: expenses are recorded as paid when they happen."
+
+msgid "Once"
+msgstr "Once"
+
+msgid "one block"
+msgstr "one block"
+
+msgid "One block"
+msgstr "One block"
+
+msgid "One-off"
+msgstr "One-off"
+
+msgid "open"
+msgstr "open"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Open a case"
+msgstr "Open a case"
+
+msgid "Open a case when a debt goes to a lawyer; fee accrual is frozen for that unit side."
+msgstr "Open a case when a debt goes to a lawyer; fee accrual is frozen for that unit side."
+
+msgid "Open a collection case"
+msgstr "Open a collection case"
+
+msgid "Open case"
+msgstr "Open case"
+
 msgid "Open menu"
 msgstr "Open menu"
+
+msgid "Opened"
+msgstr "Opened"
+
+msgid "Opening balance"
+msgstr "Opening balance"
+
+msgid "Opening balances"
+msgstr "Opening balances"
+
+msgid "Opening balances saved."
+msgstr "Opening balances saved."
+
+msgid "Operating"
+msgstr "Operating"
+
+msgid "Or upload a spreadsheet instead (CSV or XLSX)"
+msgstr "Or upload a spreadsheet instead (CSV or XLSX)"
 
 msgid "Organization admin"
 msgstr "Organization admin"
@@ -127,20 +1209,107 @@ msgstr "Organization admin"
 msgid "Organizations, health and backup status will appear here."
 msgstr "Organizations, health and backup status will appear here."
 
+msgid "Other"
+msgstr "Other"
+
+msgid "Overdue principal"
+msgstr "Overdue principal"
+
+msgid "Overview"
+msgstr "Overview"
+
+msgid "Owed by owners"
+msgstr "Owed by owners"
+
+msgid "Owed by tenants"
+msgstr "Owed by tenants"
+
 msgid "Owner"
 msgstr "Owner"
+
+msgid "Owner: known late fee"
+msgstr "Owner: known late fee"
+
+msgid "Owner: principal"
+msgstr "Owner: principal"
 
 msgid "Page not found"
 msgstr "Page not found"
 
+msgid "Paid"
+msgstr "Paid"
+
+msgid "Paid by"
+msgstr "Paid by"
+
+msgid "Paid by (optional)"
+msgstr "Paid by (optional)"
+
+msgid "Paid from"
+msgstr "Paid from"
+
+msgid "Paid on"
+msgstr "Paid on"
+
+msgid "Parsing"
+msgstr "Parsing"
+
+msgid "Partial"
+msgstr "Partial"
+
+msgid "Partially paid"
+msgstr "Partially paid"
+
 msgid "Password"
 msgstr "Password"
+
+msgid "Paused"
+msgstr "Paused"
+
+msgid "Pay"
+msgstr "Pay"
+
+msgid "Pay bill"
+msgstr "Pay bill"
+
+msgid "Payer"
+msgstr "Payer"
+
+msgid "Paying for"
+msgstr "Paying for"
+
+msgid "Payment"
+msgstr "Payment"
+
+msgid "Payment recorded"
+msgstr "Payment recorded"
+
+msgid "Payments"
+msgstr "Payments"
 
 msgid "People"
 msgstr "People"
 
+msgid "per unit"
+msgstr "per unit"
+
+msgid "Per unit side or per person, PDF"
+msgstr "Per unit side or per person, PDF"
+
+msgid "Period"
+msgstr "Period"
+
+msgid "Person"
+msgstr "Person"
+
 msgid "Phone number"
 msgstr "Phone number"
+
+msgid "Plan saved."
+msgstr "Plan saved."
+
+msgid "Plan settings"
+msgstr "Plan settings"
 
 msgid "Platform administration"
 msgstr "Platform administration"
@@ -148,18 +1317,263 @@ msgstr "Platform administration"
 msgid "Please confirm it is you before continuing."
 msgstr "Please confirm it is you before continuing."
 
+msgid "Policy"
+msgstr "Policy"
+
+msgid "Policy saved."
+msgstr "Policy saved."
+
+msgid "Posted"
+msgstr "Posted"
+
+msgid "Prepayment credit"
+msgstr "Prepayment credit"
+
+msgid "Prepayment credit: <0/>"
+msgstr "Prepayment credit: <0/>"
+
+msgid "Preview"
+msgstr "Preview"
+
+msgid "principal"
+msgstr "principal"
+
+msgid "Principal"
+msgstr "Principal"
+
+msgid "Principal <0/> plus late fee <1/>"
+msgstr "Principal <0/> plus late fee <1/>"
+
+msgid "Quarterly"
+msgstr "Quarterly"
+
+msgid "Rate added."
+msgstr "Rate added."
+
+msgid "Rate history"
+msgstr "Rate history"
+
+msgid "Rate per month (%)"
+msgstr "Rate per month (%)"
+
+msgid "Rates"
+msgstr "Rates"
+
+msgid "Rates, split rules and live previews"
+msgstr "Rates, split rules and live previews"
+
+msgid "Ready"
+msgstr "Ready"
+
+msgid "Reason"
+msgstr "Reason"
+
+msgid "Receipt"
+msgstr "Receipt"
+
+msgid "Receipt number"
+msgstr "Receipt number"
+
+msgid "Receipt photo (optional)"
+msgstr "Receipt photo (optional)"
+
+msgid "Receipt sent."
+msgstr "Receipt sent."
+
+msgid "Receivables aging"
+msgstr "Receivables aging"
+
+msgid "Received"
+msgstr "Received"
+
+msgid "Received in"
+msgstr "Received in"
+
+msgid "Received into"
+msgstr "Received into"
+
+msgid "Received on"
+msgstr "Received on"
+
+msgid "Reconciliation balances"
+msgstr "Reconciliation balances"
+
+msgid "Record a payment"
+msgstr "Record a payment"
+
+msgid "Record another"
+msgstr "Record another"
+
+msgid "Record payment"
+msgstr "Record payment"
+
+msgid "Record the first cash receipt, or import a bank statement."
+msgstr "Record the first cash receipt, or import a bank statement."
+
+msgid "Record transfer"
+msgstr "Record transfer"
+
+msgid "Record what the site spends: electricity, cleaning, repairs."
+msgstr "Record what the site spends: electricity, cleaning, repairs."
+
+msgid "Recurring"
+msgstr "Recurring"
+
+msgid "Reference (optional)"
+msgstr "Reference (optional)"
+
+msgid "Reference to write"
+msgstr "Reference to write"
+
+msgid "Reference you wrote (optional)"
+msgstr "Reference you wrote (optional)"
+
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
 msgstr "Reference: {0}"
 
+msgid "Refund"
+msgstr "Refund"
+
+msgid "Refund a credit"
+msgstr "Refund a credit"
+
+msgid "Refund recorded."
+msgstr "Refund recorded."
+
+msgid "Refunded"
+msgstr "Refunded"
+
+msgid "Refunds"
+msgstr "Refunds"
+
+msgid "Reject"
+msgstr "Reject"
+
+msgid "Reject this declared transfer?"
+msgstr "Reject this declared transfer?"
+
 msgid "Reload"
 msgstr "Reload"
+
+msgid "Reminder"
+msgstr "Reminder"
+
+msgid "Reminder history of a unit side"
+msgstr "Reminder history of a unit side"
+
+msgid "Reminder stages, the history of what was sent to a debtor, and legal cases."
+msgstr "Reminder stages, the history of what was sent to a debtor, and legal cases."
+
+#. placeholder {0}: r.event_count
+msgid "Reminders sent: {0}."
+msgstr "Reminders sent: {0}."
+
+msgid "Reminders, ihtarname and legal cases"
+msgstr "Reminders, ihtarname and legal cases"
+
+msgid "Repeat every month"
+msgstr "Repeat every month"
+
+msgid "Reports"
+msgstr "Reports"
+
+msgid "Reserve"
+msgstr "Reserve"
+
+msgid "Reserve contribution"
+msgstr "Reserve contribution"
 
 msgid "Reset your password"
 msgstr "Reset your password"
 
+msgid "Reversal"
+msgstr "Reversal"
+
+msgid "Rounding remainder was distributed to the largest shares."
+msgstr "Rounding remainder was distributed to the largest shares."
+
+#. placeholder {0}: r.row
+msgid "Row {0}"
+msgstr "Row {0}"
+
+msgid "Save bill"
+msgstr "Save bill"
+
+msgid "Save budget"
+msgstr "Save budget"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Save expense"
+msgstr "Save expense"
+
+msgid "Save opening balances"
+msgstr "Save opening balances"
+
+msgid "Save plan"
+msgstr "Save plan"
+
+msgid "Save policy"
+msgstr "Save policy"
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Scope"
+msgstr "Scope"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "See statement"
+msgstr "See statement"
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Select…"
+msgstr "Select…"
+
+msgid "Send"
+msgstr "Send"
+
 msgid "Send me a code"
 msgstr "Send me a code"
+
+msgid "Send receipt"
+msgstr "Send receipt"
+
+msgid "Send reminders"
+msgstr "Send reminders"
+
+msgid "Send the receipt by SMS"
+msgstr "Send the receipt by SMS"
+
+msgid "Send to resident"
+msgstr "Send to resident"
+
+msgid "Set a category budget below to compare it with what was spent."
+msgstr "Set a category budget below to compare it with what was spent."
+
+msgid "Set up a site first; money is kept per site."
+msgstr "Set up a site first; money is kept per site."
+
+msgid "Settlement"
+msgstr "Settlement"
+
+msgid "Share an expense"
+msgstr "Share an expense"
+
+msgid "Show matched and ignored lines too"
+msgstr "Show matched and ignored lines too"
+
+msgid "Showing the first 200 charges. Narrow the filters to see the rest."
+msgstr "Showing the first 200 charges. Narrow the filters to see the rest."
+
+msgid "Side"
+msgstr "Side"
 
 msgid "Sign in"
 msgstr "Sign in"
@@ -173,6 +1587,9 @@ msgstr "Sign out"
 msgid "Signing you in"
 msgstr "Signing you in"
 
+msgid "Site"
+msgstr "Site"
+
 msgid "Site manager"
 msgstr "Site manager"
 
@@ -182,8 +1599,14 @@ msgstr "Sites"
 msgid "Skip to content"
 msgstr "Skip to content"
 
+msgid "SMS"
+msgstr "SMS"
+
 msgid "SMS code"
 msgstr "SMS code"
+
+msgid "Some periods are still being generated."
+msgstr "Some periods are still being generated."
 
 msgid "Someone else changed this record. Reload to see the latest version."
 msgstr "Someone else changed this record. Reload to see the latest version."
@@ -197,8 +1620,67 @@ msgstr "Something went wrong"
 msgid "Something went wrong. Please try again."
 msgstr "Something went wrong. Please try again."
 
+msgid "Special assessment"
+msgstr "Special assessment"
+
+msgid "Split by"
+msgstr "Split by"
+
+msgid "split in total"
+msgstr "split in total"
+
+msgid "Split rule"
+msgstr "Split rule"
+
 msgid "Staff"
 msgstr "Staff"
+
+msgid "Stage"
+msgstr "Stage"
+
+msgid "Starts"
+msgstr "Starts"
+
+msgid "Starts on"
+msgstr "Starts on"
+
+msgid "Statement"
+msgstr "Statement"
+
+msgid "Statement balance"
+msgstr "Statement balance"
+
+msgid "Statement closing"
+msgstr "Statement closing"
+
+msgid "Statement opening"
+msgstr "Statement opening"
+
+#. placeholder {0}: r.recipient_count
+msgid "Statement sent to {0} recipient(s)."
+msgstr "Statement sent to {0} recipient(s)."
+
+msgid "Statements"
+msgstr "Statements"
+
+msgid "Status"
+msgstr "Status"
+
+#. placeholder {0}: policy.max_rate_pct_per_month
+msgid "Statutory cap: {0}% per month."
+msgstr "Statutory cap: {0}% per month."
+
+msgid "Still in the box"
+msgstr "Still in the box"
+
+msgid "Stop repeating"
+msgstr "Stop repeating"
+
+msgid "Suggested"
+msgstr "Suggested"
+
+msgid "Suggestion"
+msgstr "Suggestion"
 
 msgid "Switch organization"
 msgstr "Switch organization"
@@ -206,23 +1688,105 @@ msgstr "Switch organization"
 msgid "System"
 msgstr "System"
 
+msgid "Tag"
+msgstr "Tag"
+
+msgid "tagged units"
+msgstr "tagged units"
+
+msgid "Tell us about another payment"
+msgstr "Tell us about another payment"
+
 msgid "Tenant"
 msgstr "Tenant"
+
+msgid "Tenant: known late fee"
+msgstr "Tenant: known late fee"
+
+msgid "Tenant: principal"
+msgstr "Tenant: principal"
+
+msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
+msgstr "Thank you. Your manager will confirm the payment when it shows up in the bank."
 
 msgid "That did not work. Check your details and try again."
 msgstr "That did not work. Check your details and try again."
 
+msgid "That password is not correct."
+msgstr "That password is not correct."
+
+msgid "The amount is more than the accrued fee."
+msgstr "The amount is more than the accrued fee."
+
+msgid "The amounts are more than the payment or a charge's balance."
+msgstr "The amounts are more than the payment or a charge's balance."
+
+msgid "The assembly or board decision this amount comes from."
+msgstr "The assembly or board decision this amount comes from."
+
+msgid "The box does not hold that much."
+msgstr "The box does not hold that much."
+
+msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
+msgstr "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
+
+msgid "The download failed. Please try again."
+msgstr "The download failed. Please try again."
+
+msgid "The dry run failed."
+msgstr "The dry run failed."
+
+msgid "The file could not be imported."
+msgstr "The file could not be imported."
+
+msgid "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
+msgstr "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
+
 msgid "The page you are looking for does not exist or has moved."
 msgstr "The page you are looking for does not exist or has moved."
+
+msgid "The preview is not available for these settings yet."
+msgstr "The preview is not available for these settings yet."
+
+#. placeholder {0}: policy.max_rate_pct_per_month
+msgid "The rate cannot be above the statutory cap of {0}% per month."
+msgstr "The rate cannot be above the statutory cap of {0}% per month."
+
+msgid "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
+msgstr "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
 
 msgid "The request failed. Please try again."
 msgstr "The request failed. Please try again."
 
+msgid "The side's person"
+msgstr "The side's person"
+
+msgid "The site has not published bank details yet. Ask your manager how to pay."
+msgstr "The site has not published bank details yet. Ask your manager how to pay."
+
+msgid "The table on the right updates as you change the amount or split rule."
+msgstr "The table on the right updates as you change the amount or split rule."
+
 msgid "Theme"
 msgstr "Theme"
 
+msgid "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
+msgstr "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
+
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "This accounting period is closed and can no longer be changed."
+
+msgid "This action needs a recent sign-in. Enter your password to continue."
+msgstr "This action needs a recent sign-in. Enter your password to continue."
+
+msgid "This date is on or before the lock date; the period is closed."
+msgstr "This date is on or before the lock date; the period is closed."
+
+msgid "This field is required."
+msgstr "This field is required."
+
+msgid "This period is locked."
+msgstr "This period is locked."
 
 msgid "This record changed"
 msgstr "This record changed"
@@ -233,14 +1797,36 @@ msgstr "This request was already sent with different details. Reload the form an
 msgid "This server offers no sign-in method this app can use."
 msgstr "This server offers no sign-in method this app can use."
 
+msgid "This side has no open charges; the payment becomes credit."
+msgstr "This side has no open charges; the payment becomes credit."
+
 msgid "This step is not available in this build yet."
 msgstr "This step is not available in this build yet."
 
 msgid "This value is not valid"
 msgstr "This value is not valid"
 
+msgid "Tick “Repeat every month” on a new expense to add one."
+msgstr "Tick “Repeat every month” on a new expense to add one."
+
 msgid "Tickets"
 msgstr "Tickets"
+
+msgid "Timeline"
+msgstr "Timeline"
+
+msgid "To"
+msgstr "To"
+
+msgid "To every unit side with an overdue balance. Select rows first to narrow it down."
+msgstr "To every unit side with an overdue balance. Select rows first to narrow it down."
+
+msgid "To match"
+msgstr "To match"
+
+#. placeholder {0}: unitIds.length
+msgid "To the {0} selected units with an overdue balance."
+msgstr "To the {0} selected units with an overdue balance."
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Too many attempts. Please wait and try again."
@@ -252,14 +1838,190 @@ msgstr "Too many requests. Please wait a moment and try again."
 msgid "Too many requests. Try again in {0} seconds."
 msgstr "Too many requests. Try again in {0} seconds."
 
+msgid "Total"
+msgstr "Total"
+
+#. placeholder {0}: preview.unit_count
+msgid "Total <0/> across {0} units"
+msgstr "Total <0/> across {0} units"
+
+msgid "Total amount"
+msgstr "Total amount"
+
+msgid "Total principal in this file: <0/>"
+msgstr "Total principal in this file: <0/>"
+
+msgid "Totals (without cancelled)"
+msgstr "Totals (without cancelled)"
+
+msgid "Track vendor bills with due dates and partial payments"
+msgstr "Track vendor bills with due dates and partial payments"
+
+msgid "Transfer recorded."
+msgstr "Transfer recorded."
+
+msgid "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
+msgstr "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
+
+msgid "Transfers"
+msgstr "Transfers"
+
+msgid "Trial balance"
+msgstr "Trial balance"
+
 msgid "Try again"
 msgstr "Try again"
+
+msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
+msgstr "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
+
+msgid "Type"
+msgstr "Type"
+
+msgid "Unfreeze"
+msgstr "Unfreeze"
+
+msgid "Unit"
+msgstr "Unit"
+
+msgid "Units with a tag"
+msgstr "Units with a tag"
+
+msgid "Unmatch"
+msgstr "Unmatch"
+
+msgid "Unmatched"
+msgstr "Unmatched"
+
+msgid "Unmatched money in"
+msgstr "Unmatched money in"
+
+msgid "Unmatched money out"
+msgstr "Unmatched money out"
+
+msgid "Until (optional)"
+msgstr "Until (optional)"
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "Upload a statement"
+msgstr "Upload a statement"
+
+msgid "Upload a statement above to start matching."
+msgstr "Upload a statement above to start matching."
+
+msgid "Upload a statement and match lines to units"
+msgstr "Upload a statement and match lines to units"
+
+msgid "Upload the bank's CSV or Excel export, then confirm which unit each line belongs to. Nothing is matched without you."
+msgstr "Upload the bank's CSV or Excel export, then confirm which unit each line belongs to. Nothing is matched without you."
+
+msgid "Use a day from 1 to 28."
+msgstr "Use a day from 1 to 28."
+
+msgid "Utility"
+msgstr "Utility"
+
+msgid "Variance"
+msgstr "Variance"
+
+msgid "Vendor"
+msgstr "Vendor"
+
+msgid "Vendor (optional)"
+msgstr "Vendor (optional)"
+
+msgid "Vendor bills"
+msgstr "Vendor bills"
+
+msgid "Visible to the manager and the board only. Never share it publicly."
+msgstr "Visible to the manager and the board only. Never share it publicly."
+
+msgid "Void"
+msgstr "Void"
+
+msgid "Void expense"
+msgstr "Void expense"
+
+msgid "Void payment"
+msgstr "Void payment"
+
+#. placeholder {0}: payment.receipt_no ?? ''
+msgid "Void receipt {0}?"
+msgstr "Void receipt {0}?"
+
+msgid "Void this expense?"
+msgstr "Void this expense?"
+
+msgid "Voided"
+msgstr "Voided"
+
+msgid "Waive"
+msgstr "Waive"
+
+msgid "Waive fee"
+msgstr "Waive fee"
+
+msgid "Waive late fee"
+msgstr "Waive late fee"
+
+msgid "Waived"
+msgstr "Waived"
+
+msgid "Waivers"
+msgstr "Waivers"
+
+msgid "Waivers above this ask for re-authentication"
+msgstr "Waivers above this ask for re-authentication"
 
 msgid "We could not find that."
 msgstr "We could not find that."
 
+msgid "Weight"
+msgstr "Weight"
+
+msgid "What each unit side would pay"
+msgstr "What each unit side would pay"
+
+msgid "What each unit would pay"
+msgstr "What each unit would pay"
+
+msgid "What is it for?"
+msgstr "What is it for?"
+
+msgid "What is owed today"
+msgstr "What is owed today"
+
+msgid "What was it for?"
+msgstr "What was it for?"
+
+msgid "What was spent, from which account"
+msgstr "What was spent, from which account"
+
+msgid "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
+msgstr "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
+
+msgid "What you owe today, including the late fee accrued so far."
+msgstr "What you owe today, including the late fee accrued so far."
+
+msgid "Where the site stands today: what residents owe, what is in the bank and in cash."
+msgstr "Where the site stands today: what residents owe, what is in the bank and in cash."
+
+msgid "whole site"
+msgstr "whole site"
+
+msgid "Whole site"
+msgstr "Whole site"
+
+msgid "Yearly"
+msgstr "Yearly"
+
 msgid "You are not linked to a unit in this organization."
 msgstr "You are not linked to a unit in this organization."
+
+msgid "You are not linked to a unit with a balance."
+msgstr "You are not linked to a unit with a balance."
 
 msgid "You are not part of any organization yet"
 msgstr "You are not part of any organization yet"

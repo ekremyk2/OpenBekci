@@ -7,11 +7,147 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: tr\n"
 
+#. placeholder {0}: items.length
+msgid "{0} opening entries as of <0/>."
+msgstr "{0} açılış kaydı, <0/> tarihi itibarıyla."
+
+#. placeholder {0}: preview.data.recipient_count
+#. placeholder {1}: preview.data.sms_count
+#. placeholder {2}: preview.data.skipped_frozen
+msgid "{0} recipients, {1} SMS, {2} skipped (in legal collection)."
+msgstr "{0} alıcı, {1} SMS, {2} atlandı (yasal takipte)."
+
+msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
+msgstr "<0/> alındı, <1/> tahakkuklara uygulandı, <2/> alacak olarak tutuldu."
+
+msgid "A fixed amount per unit"
+msgstr "Birim başına sabit tutar"
+
+msgid "A name is required."
+msgstr "Bir ad gerekli."
+
+msgid "A person"
+msgstr "Bir kişi"
+
+msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
+msgstr "Plan, her dönemin tahakkuklarını oluşturur. Tutarlar geçmiş düzenlenerek değil, tarihli oranlarla değişir."
+
+msgid "A reason is required."
+msgstr "Bir gerekçe gerekli."
+
+msgid "A total split between units"
+msgstr "Birimler arasında bölünen toplam"
+
+msgid "A unit side"
+msgstr "Bir birim tarafı"
+
 msgid "Accept your invitation"
 msgstr "Davetinizi kabul edin"
 
+msgid "Account"
+msgstr "Hesap"
+
+msgid "Account holder"
+msgstr "Hesap sahibi"
+
 msgid "Accountant"
 msgstr "Muhasebeci"
+
+msgid "Accrual, monthly bookings, waivers, freezes"
+msgstr "Tahakkuk, aylık kayıtlar, affetmeler, dondurmalar"
+
+msgid "Accrued fee"
+msgstr "Tahakkuk eden tazminat"
+
+msgid "Accrued late fees"
+msgstr "Tahakkuk eden gecikme tazminatları"
+
+msgid "Accrued so far: <0/>. Waivers above the site threshold ask you to confirm your password."
+msgstr "Şimdiye kadar tahakkuk eden: <0/>. Site eşiğini aşan affetmeler için parolanızı onaylamanız istenir."
+
+msgid "Accrued today"
+msgstr "Bugüne kadar tahakkuk eden"
+
+msgid "Active"
+msgstr "Etkin"
+
+msgid "Actual"
+msgstr "Gerçekleşen"
+
+msgid "Add a rate"
+msgstr "Oran ekle"
+
+msgid "Add cash box"
+msgstr "Kasa ekle"
+
+msgid "Add one for each person who collects cash."
+msgstr "Nakit tahsil eden her kişi için bir tane ekleyin."
+
+msgid "Add rate"
+msgstr "Oran ekle"
+
+msgid "Add stage"
+msgstr "Aşama ekle"
+
+msgid "Adjust"
+msgstr "Düzelt"
+
+msgid "Adjust this charge"
+msgstr "Bu tahakkuku düzelt"
+
+msgid "Adjustment"
+msgstr "Düzeltme"
+
+msgid "All categories"
+msgstr "Tüm kategoriler"
+
+msgid "All funds"
+msgstr "Tüm fonlar"
+
+msgid "All imports"
+msgstr "Tüm aktarımlar"
+
+msgid "All units"
+msgstr "Tüm birimler"
+
+msgid "Allocated <0/> of <1/>"
+msgstr "<1/> içinden <0/> dağıtıldı"
+
+msgid "Already entered"
+msgstr "Zaten girilmiş"
+
+msgid "Amount"
+msgstr "Tutar"
+
+msgid "Amount (partial payments are fine)"
+msgstr "Tutar (kısmi ödeme olabilir)"
+
+msgid "Amount is"
+msgstr "Tutar şudur"
+
+msgid "Amount per period"
+msgstr "Dönem başına tutar"
+
+msgid "Amount to waive"
+msgstr "Affedilecek tutar"
+
+msgid "Amount you paid"
+msgstr "Ödediğiniz tutar"
+
+msgid "Any"
+msgstr "Herhangi"
+
+msgid "Applies to"
+msgstr "Uygulandığı yer"
+
+msgid "Approved"
+msgstr "Onaylandı"
+
+msgid "As of"
+msgstr "Tarih itibarıyla"
+
+msgid "As of <0/>"
+msgstr "<0/> itibarıyla"
 
 msgid "Ask your building manager to invite you."
 msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
@@ -19,32 +155,469 @@ msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
 msgid "Ask your manager if you think you should."
 msgstr "Erişmeniz gerektiğini düşünüyorsanız yöneticinize danışın."
 
+msgid "At least this many months overdue"
+msgstr "En az şu kadar ay gecikmiş"
+
 msgid "Auditor"
 msgstr "Denetçi"
+
+msgid "Automatic allocation"
+msgstr "Otomatik dağıtım"
+
+msgid "Awaiting confirmation"
+msgstr "Onay bekliyor"
+
+msgid "Back"
+msgstr "Geri"
+
+msgid "Back to automatic"
+msgstr "Otomatiğe dön"
 
 msgid "Back to sign in"
 msgstr "Girişe dön"
 
+msgid "Balance"
+msgstr "Bakiye"
+
+msgid "Balances as of"
+msgstr "Bakiyelerin tarihi"
+
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Bakiyeler, açık talepler ve duyurular burada görünecek."
+
+msgid "Bank"
+msgstr "Banka"
+
+msgid "Bank account"
+msgstr "Banka hesabı"
+
+msgid "Bank deposit"
+msgstr "Bankaya yatırma"
+
+msgid "Bank details"
+msgstr "Banka bilgileri"
+
+msgid "Bank import"
+msgstr "Banka aktarımı"
+
+msgid "Bank lines"
+msgstr "Banka satırları"
+
+msgid "Bank reconciliation"
+msgstr "Banka mutabakatı"
+
+msgid "Bank statement import"
+msgstr "Banka ekstresi aktarımı"
+
+msgid "Bank transfer"
+msgstr "Banka havalesi"
+
+msgid "Block"
+msgstr "Blok"
 
 msgid "Board member"
 msgstr "Yönetim kurulu üyesi"
 
+msgid "Booked"
+msgstr "Kaydedilen"
+
+msgid "Booked to date"
+msgstr "Bugüne kadar kaydedilen"
+
+msgid "Booking fee"
+msgstr "Rezervasyon bedeli"
+
+msgid "Both"
+msgstr "Her ikisi"
+
+msgid "Budget"
+msgstr "Bütçe"
+
+msgid "Budget saved."
+msgstr "Bütçe kaydedildi."
+
+msgid "Budget vs actual"
+msgstr "Bütçe ve gerçekleşen"
+
+msgid "By area"
+msgstr "Alana göre"
+
+msgid "Calculating…"
+msgstr "Hesaplanıyor…"
+
+msgid "Cancel"
+msgstr "Vazgeç"
+
+msgid "Cancel charge"
+msgstr "Tahakkuku iptal et"
+
+msgid "Cancel this charge?"
+msgstr "Bu tahakkuk iptal edilsin mi?"
+
+msgid "Cancelled"
+msgstr "İptal edildi"
+
+msgid "Card"
+msgstr "Kart"
+
+msgid "Case opened; late fees are frozen for this unit side."
+msgstr "Dosya açıldı; bu birim tarafı için gecikme tazminatı donduruldu."
+
+msgid "Cash"
+msgstr "Nakit"
+
+msgid "Cash box added."
+msgstr "Kasa eklendi."
+
+msgid "Cash boxes"
+msgstr "Kasalar"
+
+msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
+msgstr "Aldığınız nakit veya havale. Başka türlü seçmezseniz en eski borca, önce anapara sonra tazminat olacak şekilde uygulanır."
+
+msgid "Cash receipts, cash boxes, declared transfers"
+msgstr "Nakit tahsilatlar, kasalar, bildirilen havaleler"
+
+msgid "Cash-basis income and expense, debtors, budget, and the accountant's views. Every report exports to CSV and Excel."
+msgstr "Nakit esaslı gelir ve gider, borçlular, bütçe ve muhasebeci görünümleri. Her rapor CSV ve Excel olarak dışa aktarılır."
+
+msgid "Category"
+msgstr "Kategori"
+
+msgid "Category budget"
+msgstr "Kategori bütçesi"
+
+msgid "Change the filters, or create a dues plan to generate charges."
+msgstr "Filtreleri değiştirin veya tahakkuk üretmek için bir aidat planı oluşturun."
+
+msgid "Channels"
+msgstr "Kanallar"
+
+msgid "Charge"
+msgstr "Tahakkuk"
+
+msgid "Charge adjusted; the difference is posted as a correction."
+msgstr "Tahakkuk düzeltildi; fark bir düzeltme olarak kaydedildi."
+
+msgid "Charge cancelled; a reversal was created."
+msgstr "Tahakkuk iptal edildi; bir ters kayıt oluşturuldu."
+
+msgid "Charge type"
+msgstr "Tahakkuk türü"
+
+msgid "Charges"
+msgstr "Tahakkuklar"
+
+msgid "Charges created."
+msgstr "Tahakkuklar oluşturuldu."
+
+msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
+msgstr "Bir birimin bir tarafı veya bir kişi için, yürüyen bakiyeli tahakkuklar, ödemeler ve tazminatlar."
+
+msgid "Check (dry run)"
+msgstr "Kontrol et (deneme çalıştırması)"
+
+msgid "Choose a unit and an amount."
+msgstr "Bir birim ve tutar seçin."
+
+msgid "Choose a unit to see what was sent to it."
+msgstr "Neler gönderildiğini görmek için bir birim seçin."
+
+msgid "Choose a unit."
+msgstr "Bir birim seçin."
+
 msgid "Choose an organization"
 msgstr "Bir kuruluş seçin"
+
+msgid "Choose charges myself"
+msgstr "Tahakkukları kendim seçeyim"
+
+msgid "Choose one."
+msgstr "Birini seçin."
+
+msgid "Choose the file, the importer and the bank account."
+msgstr "Dosyayı, aktarıcıyı ve banka hesabını seçin."
+
+msgid "Choose who the statement is for."
+msgstr "Ekstrenin kimin için olduğunu seçin."
 
 msgid "Close"
 msgstr "Kapat"
 
+msgid "Close case"
+msgstr "Dosyayı kapat"
+
+msgid "Closed"
+msgstr "Kapandı"
+
+msgid "Closing balance"
+msgstr "Kapanış bakiyesi"
+
 msgid "Code from the SMS"
 msgstr "SMS ile gelen kod"
+
+msgid "Collection cases"
+msgstr "Takip dosyaları"
+
+msgid "Collection rate this month"
+msgstr "Bu ayki tahsilat oranı"
+
+msgid "Collections"
+msgstr "Tahsilat"
+
+msgid "Collector"
+msgstr "Tahsilatçı"
+
+msgid "Collector reconciliation"
+msgstr "Tahsilatçı mutabakatı"
+
+msgid "Confirm"
+msgstr "Onayla"
+
+msgid "Confirm it is you"
+msgstr "Siz olduğunuzu doğrulayın"
+
+msgid "Confirm payment"
+msgstr "Ödemeyi onayla"
+
+msgid "Confirm this transfer"
+msgstr "Bu havaleyi onayla"
+
+msgid "Confirmed"
+msgstr "Onaylandı"
+
+#. placeholder {0}: p.receipt_no ?? ''
+msgid "Confirmed. Receipt {0}"
+msgstr "Onaylandı. Makbuz {0}"
+
+msgid "Costs charged"
+msgstr "Yansıtılan masraflar"
+
+msgid "Could not add the cash box."
+msgstr "Kasa eklenemedi."
+
+msgid "Could not add the rate."
+msgstr "Oran eklenemedi."
+
+msgid "Could not add the stage."
+msgstr "Aşama eklenemedi."
+
+msgid "Could not adjust the charge."
+msgstr "Tahakkuk düzeltilemedi."
+
+msgid "Could not cancel the charge."
+msgstr "Tahakkuk iptal edilemedi."
+
+msgid "Could not close the case."
+msgstr "Dosya kapatılamadı."
+
+msgid "Could not confirm the payment."
+msgstr "Ödeme onaylanamadı."
+
+msgid "Could not create the charges."
+msgstr "Tahakkuklar oluşturulamadı."
+
+msgid "Could not freeze the fees."
+msgstr "Tazminatlar dondurulamadı."
+
+msgid "Could not match the line."
+msgstr "Satır eşleştirilemedi."
+
+msgid "Could not open the case."
+msgstr "Dosya açılamadı."
+
+msgid "Could not record the expense."
+msgstr "Gider kaydedilemedi."
+
+msgid "Could not record the payment."
+msgstr "Ödeme kaydedilemedi."
+
+msgid "Could not record the refund."
+msgstr "İade kaydedilemedi."
+
+msgid "Could not record the transfer."
+msgstr "Virman kaydedilemedi."
+
+msgid "Could not reject the payment."
+msgstr "Ödeme reddedilemedi."
+
+msgid "Could not save the bill."
+msgstr "Fatura kaydedilemedi."
+
+msgid "Could not save the budget."
+msgstr "Bütçe kaydedilemedi."
+
+msgid "Could not save the opening balances."
+msgstr "Açılış bakiyeleri kaydedilemedi."
+
+msgid "Could not save the plan."
+msgstr "Plan kaydedilemedi."
+
+msgid "Could not save the policy."
+msgstr "Politika kaydedilemedi."
+
+msgid "Could not send the receipt."
+msgstr "Makbuz gönderilemedi."
+
+msgid "Could not send the reminders."
+msgstr "Hatırlatmalar gönderilemedi."
+
+msgid "Could not send the statement."
+msgstr "Ekstre gönderilemedi."
+
+msgid "Could not send your declaration."
+msgstr "Bildiriminiz gönderilemedi."
 
 msgid "Could not sign out. Please try again."
 msgstr "Çıkış yapılamadı. Lütfen tekrar deneyin."
 
+msgid "Could not void the expense."
+msgstr "Gider iptal edilemedi."
+
+msgid "Could not void the payment."
+msgstr "Ödeme iptal edilemedi."
+
+msgid "Could not waive the fee."
+msgstr "Tazminat affedilemedi."
+
+msgid "Counterparty"
+msgstr "Karşı taraf"
+
+msgid "Create budget"
+msgstr "Bütçe oluştur"
+
+msgid "Create charges"
+msgstr "Tahakkukları oluştur"
+
+msgid "Create the monthly dues plan; you will see what every unit pays before saving."
+msgstr "Aylık aidat planını oluşturun; kaydetmeden önce her birimin ne ödeyeceğini göreceksiniz."
+
+msgid "Creates a legal-cost charge on the debtor's side."
+msgstr "Borçlunun tarafına bir yasal masraf tahakkuku oluşturur."
+
+msgid "Credit"
+msgstr "Alacak"
+
+msgid "Credits (prepayments)"
+msgstr "Alacaklar (peşin ödemeler)"
+
+msgid "Current rate"
+msgstr "Güncel oran"
+
 msgid "Dark"
 msgstr "Koyu"
+
+msgid "Date"
+msgstr "Tarih"
+
+msgid "Date you paid"
+msgstr "Ödediğiniz tarih"
+
+msgid "day"
+msgstr "gün"
+
+#. placeholder {0}: r.day_of_month
+msgid "Day {0}"
+msgstr "{0}. gün"
+
+msgid "Days after due"
+msgstr "Vadeden sonraki gün"
+
+msgid "Debit"
+msgstr "Borç"
+
+msgid "Debtors"
+msgstr "Borçlular"
+
+msgid "Debts per unit side"
+msgstr "Birim tarafı başına borçlar"
+
+msgid "Decision"
+msgstr "Karar"
+
+msgid "Decision reference (optional)"
+msgstr "Karar referansı (isteğe bağlı)"
+
+msgid "Declared by residents, awaiting confirmation"
+msgstr "Sakinlerin bildirdiği, onay bekleyenler"
+
+msgid "Declared transfers"
+msgstr "Bildirilen havaleler"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Delete rate"
+msgstr "Oranı sil"
+
+msgid "Delta"
+msgstr "Fark"
+
+msgid "Deposit"
+msgstr "Depozito"
+
+msgid "Deposit cash to the bank"
+msgstr "Nakdi bankaya yatır"
+
+msgid "Deposit to bank"
+msgstr "Bankaya yatır"
+
+msgid "Description"
+msgstr "Açıklama"
+
+msgid "Difference"
+msgstr "Fark"
+
+msgid "Document"
+msgstr "Belge"
+
+msgid "Document number (optional)"
+msgstr "Belge numarası (isteğe bağlı)"
+
+msgid "Download ihtarname"
+msgstr "İhtarnameyi indir"
+
+msgid "Download receipt (PDF)"
+msgstr "Makbuzu indir (PDF)"
+
+msgid "Draft"
+msgstr "Taslak"
+
+msgid "Dry run result"
+msgstr "Deneme çalıştırması sonucu"
+
+#. placeholder {0}: report.ok_rows
+#. placeholder {1}: report.total_rows
+#. placeholder {2}: report.error_rows
+msgid "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
+msgstr "Deneme çalıştırması: {1} satırdan {0} tanesi uygun, {2} tanesinde hata var. Hiçbir şey kaydedilmedi."
+
+msgid "Due"
+msgstr "Vade"
+
+msgid "Due date"
+msgstr "Vade tarihi"
+
+msgid "Due day"
+msgstr "Vade günü"
+
+msgid "Dues (aidat)"
+msgstr "Aidat"
+
+msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
+msgstr "Birimde kiracı varsa aidat kiracıya, demirbaş ve olağanüstü gider malike aittir. Burada plan bazında değiştirebilirsiniz."
+
+msgid "Dues plans"
+msgstr "Aidat planları"
+
+msgid "Dunning stages"
+msgstr "İhtar aşamaları"
+
+msgid "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
+msgstr "Nakit tahsil eden her kişinin bir kasası vardır. Nakdi teslim etmek veya bankaya yatırmak hesaplar arası bir virmandır."
+
+msgid "Edit the plan, or change the amount by adding a rate that starts on a date."
+msgstr "Planı düzenleyin veya bir tarihte başlayan yeni bir oran ekleyerek tutarı değiştirin."
 
 msgid "Email"
 msgstr "E-posta"
@@ -58,8 +631,47 @@ msgstr "Bana bağlantı gönder"
 msgid "Email or phone"
 msgstr "E-posta veya telefon"
 
+msgid "Enabled"
+msgstr "Etkin"
+
+msgid "Ended"
+msgstr "Sona erdi"
+
+msgid "Enter a date."
+msgstr "Bir tarih girin."
+
+msgid "Enter a name and the days after the due date."
+msgstr "Bir ad ve vadeden sonraki gün sayısını girin."
+
+msgid "Enter a rate."
+msgstr "Bir oran girin."
+
+msgid "Enter an amount greater than zero."
+msgstr "Sıfırdan büyük bir tutar girin."
+
+msgid "Enter an amount up to the accrued fee."
+msgstr "Tahakkuk eden tazminata kadar bir tutar girin."
+
+msgid "Enter an amount up to the open balance and the account."
+msgstr "Açık bakiyeye kadar bir tutar ve hesabı girin."
+
+msgid "Enter an amount."
+msgstr "Bir tutar girin."
+
+msgid "Enter how much goes to each charge."
+msgstr "Her tahakkuka ne kadar gideceğini girin."
+
+msgid "Enter opening balances"
+msgstr "Açılış bakiyelerini girin"
+
 msgid "Enter the code from the SMS"
 msgstr "SMS ile gelen kodu girin"
+
+msgid "Enter the grace days."
+msgstr "Gecikme gün sayısını girin."
+
+msgid "Enter what every unit owes on the go-live date and what the bank and cash hold. A dry run shows problems before anything is saved."
+msgstr "Devreye alma tarihinde her birimin borcunu ve bankada ile kasada olanı girin. Deneme çalıştırması, hiçbir şey kaydedilmeden önce sorunları gösterir."
 
 msgid "Enter your email"
 msgstr "E-posta adresinizi girin"
@@ -70,14 +682,122 @@ msgstr "E-posta adresinizi veya telefon numaranızı girin"
 msgid "Enter your password"
 msgstr "Parolanızı girin"
 
+msgid "Enter your password."
+msgstr "Parolanızı girin."
+
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
+
+msgid "Equal per unit"
+msgstr "Birim başına eşit"
+
+msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
+msgstr "Her makbuz, sitenin boşluksuz sırasında bir sonraki numarayı alır. Hata gerekçeyle iptal edilir, asla silinmez."
+
+msgid "Every receivable by period, unit and side"
+msgstr "Dönem, birim ve tarafa göre tüm alacaklar"
+
+msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+msgstr "Bir birim tarafının her alacağı. Tahakkuklar asla düzenlenmez: gerekçeyle iptal edin veya düzeltin, ters kayıt oluşturulur."
+
+msgid "Everything is matched"
+msgstr "Her şey eşleşti"
+
+msgid "Expected to date"
+msgstr "Bugüne kadar beklenen"
+
+msgid "Expense"
+msgstr "Gider"
+
+msgid "Expense recorded."
+msgstr "Gider kaydedildi."
+
+msgid "Expenses"
+msgstr "Giderler"
+
+msgid "Failed"
+msgstr "Başarısız"
+
+msgid "Fees are computed continuously on overdue principal, booked once a month, and can be waived or frozen with a reason."
+msgstr "Tazminat, gecikmiş anaparaya sürekli hesaplanır, ayda bir kaydedilir ve gerekçeyle affedilebilir veya dondurulabilir."
+
+msgid "Fees frozen"
+msgstr "Tazminatlar donduruldu"
+
+msgid "File (CSV or XLSX)"
+msgstr "Dosya (CSV veya XLSX)"
+
+msgid "File no."
+msgstr "Dosya no."
+
+msgid "File number"
+msgstr "Dosya numarası"
+
+msgid "Fill in the amount and split rule to see what each unit pays."
+msgstr "Her birimin ne ödeyeceğini görmek için tutarı ve bölüştürme kuralını girin."
+
+msgid "Fill in the vendor, category and amount."
+msgstr "Satıcıyı, kategoriyi ve tutarı girin."
+
+msgid "Final"
+msgstr "Kesin"
+
+msgid "Fiscal year"
+msgstr "Mali yıl"
+
+msgid "Fixed table"
+msgstr "Sabit tablo"
+
+msgid "For"
+msgstr "Kim için"
+
+msgid "Freeze"
+msgstr "Dondur"
+
+msgid "Freeze late fees"
+msgstr "Gecikme tazminatlarını dondur"
+
+msgid "Frequency"
+msgstr "Sıklık"
+
+msgid "From"
+msgstr "Başlangıç"
+
+msgid "Frozen"
+msgstr "Donduruldu"
+
+msgid "Fund"
+msgstr "Fon"
+
+msgid "Fund balances"
+msgstr "Fon bakiyeleri"
+
+msgid "Gelir-gider, debtors, budget, aging"
+msgstr "Gelir-gider, borçlular, bütçe, yaşlandırma"
 
 msgid "Go home"
 msgstr "Ana sayfaya git"
 
+msgid "Grace days"
+msgstr "Ek gün (tolerans)"
+
 msgid "Guard"
 msgstr "Güvenlik görevlisi"
+
+msgid "Hand cash over"
+msgstr "Nakdi teslim et"
+
+msgid "Hand over"
+msgstr "Teslim et"
+
+msgid "Hand over to"
+msgstr "Teslim edilecek kişi"
+
+msgid "Handed over"
+msgstr "Teslim edilen"
+
+msgid "Handover"
+msgstr "Teslim"
 
 msgid "Home"
 msgstr "Ana sayfa"
@@ -85,8 +805,50 @@ msgstr "Ana sayfa"
 msgid "Household member"
 msgstr "Hane halkı üyesi"
 
+msgid "How it will be applied"
+msgstr "Nasıl uygulanacak"
+
+msgid "I've paid"
+msgstr "Ödedim"
+
+msgid "I've paid by transfer"
+msgstr "Havale ile ödedim"
+
+msgid "IBAN"
+msgstr "IBAN"
+
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "Bu adres kayıtlıysa giriş bağlantısı yolda. Bağlantı yalnızca bir kez çalışır."
+
+msgid "Ignore"
+msgstr "Yok say"
+
+msgid "Ignored"
+msgstr "Yok sayıldı"
+
+msgid "Ihtarname"
+msgstr "İhtarname"
+
+msgid "Importer"
+msgstr "Aktarıcı"
+
+msgid "In app"
+msgstr "Uygulama içi"
+
+msgid "In collection"
+msgstr "Takipte"
+
+msgid "Income"
+msgstr "Gelir"
+
+msgid "Income and expense"
+msgstr "Gelir ve gider"
+
+msgid "Issued"
+msgstr "Düzenlenme"
+
+msgid "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
+msgstr "J ve K satırlar arasında gezinir, Enter önerilen birimi onaylar, I satırı yok sayar. Önerisi olmayan satırlar elle eşleştirilmelidir."
 
 msgid "Join your building"
 msgstr "Binanıza katılın"
@@ -94,32 +856,352 @@ msgstr "Binanıza katılın"
 msgid "Keep editing"
 msgstr "Düzenlemeye devam et"
 
+msgid "Kept as credit"
+msgstr "Alacak olarak tutuldu"
+
+msgid "Kind"
+msgstr "Tür"
+
+msgid "Land share (arsa payı)"
+msgstr "Arsa payı"
+
 msgid "Language"
 msgstr "Dil"
+
+msgid "Largest balances"
+msgstr "En yüksek bakiyeler"
+
+msgid "late fee"
+msgstr "gecikme tazminatı"
+
+msgid "Late fee"
+msgstr "Gecikme tazminatı"
+
+msgid "Late fee accrued so far (not yet booked)"
+msgstr "Şimdiye kadar tahakkuk eden gecikme tazminatı (henüz kaydedilmedi)"
+
+msgid "Late fee waived."
+msgstr "Gecikme tazminatı affedildi."
+
+msgid "Late fees"
+msgstr "Gecikme tazminatları"
+
+msgid "Late fees accrued"
+msgstr "Tahakkuk eden gecikme tazminatları"
+
+msgid "Late fees frozen."
+msgstr "Gecikme tazminatları donduruldu."
+
+msgid "Late-fee policy"
+msgstr "Gecikme tazminatı politikası"
+
+msgid "Lawyer"
+msgstr "Avukat"
+
+msgid "Ledger balance"
+msgstr "Defter bakiyesi"
+
+msgid "Ledger closing"
+msgstr "Defter kapanışı"
+
+msgid "Ledger opening"
+msgstr "Defter açılışı"
+
+msgid "Legal cost"
+msgstr "Yasal masraf"
+
+msgid "Legal costs to charge back to the debtor (optional)"
+msgstr "Borçluya yansıtılacak yasal masraflar (isteğe bağlı)"
+
+msgid "Letter"
+msgstr "Mektup"
 
 msgid "Light"
 msgstr "Açık"
 
+msgid "Lines"
+msgstr "Satırlar"
+
+msgid "Loading charges…"
+msgstr "Tahakkuklar yükleniyor…"
+
+msgid "Lock date: <0/>"
+msgstr "Kilit tarihi: <0/>"
+
+msgid "Locked"
+msgstr "Kilitli"
+
 msgid "Main"
 msgstr "Ana"
+
+msgid "Manual allocation"
+msgstr "Elle dağıtım"
+
+msgid "Match"
+msgstr "Eşleştir"
+
+msgid "Match bank lines"
+msgstr "Banka satırlarını eşleştir"
+
+msgid "Match manually"
+msgstr "Elle eşleştir"
+
+msgid "Matched"
+msgstr "Eşleşti"
+
+#. placeholder {0}: s.unit_door_number
+msgid "Matched to {0}."
+msgstr "{0} ile eşleştirildi."
+
+msgid "Method"
+msgstr "Yöntem"
 
 msgid "Money"
 msgstr "Para"
 
+msgid "Money overview"
+msgstr "Para özeti"
+
+msgid "Money sections"
+msgstr "Para bölümleri"
+
+msgid "Monthly"
+msgstr "Aylık"
+
+msgid "Monthly bookings"
+msgstr "Aylık kayıtlar"
+
+msgid "Monthly recurring expenses"
+msgstr "Aylık tekrarlayan giderler"
+
+msgid "Months overdue"
+msgstr "Gecikme ayı"
+
 msgid "My account"
 msgstr "Hesabım"
+
+msgid "My balance"
+msgstr "Bakiyem"
+
+msgid "My statement"
+msgstr "Ekstrem"
 
 msgid "My units"
 msgstr "Bağımsız bölümlerim"
 
+msgid "Name"
+msgstr "Ad"
+
 msgid "Navigation"
 msgstr "Gezinme"
+
+msgid "Net: <0/>"
+msgstr "Net: <0/>"
+
+msgid "New amount"
+msgstr "Yeni tutar"
+
+msgid "New bill"
+msgstr "Yeni fatura"
+
+msgid "New cash box"
+msgstr "Yeni kasa"
+
+msgid "New dues plan"
+msgstr "Yeni aidat planı"
+
+msgid "New expense"
+msgstr "Yeni gider"
+
+msgid "New plan"
+msgstr "Yeni plan"
+
+msgid "New stage"
+msgstr "Yeni aşama"
+
+msgid "New vendor bill"
+msgstr "Yeni satıcı faturası"
+
+msgid "Next due: <0/>"
+msgstr "Sonraki vade: <0/>"
+
+msgid "Next: choose the split"
+msgstr "Sonraki: bölüştürmeyi seçin"
+
+msgid "No bills"
+msgstr "Fatura yok"
+
+msgid "No budget lines yet"
+msgstr "Henüz bütçe satırı yok"
+
+msgid "No cases"
+msgstr "Dosya yok"
+
+msgid "No cash boxes yet"
+msgstr "Henüz kasa yok"
+
+msgid "No charges match"
+msgstr "Eşleşen tahakkuk yok"
+
+msgid "No collectors"
+msgstr "Tahsilatçı yok"
+
+msgid "No credits"
+msgstr "Alacak yok"
+
+msgid "No debtors"
+msgstr "Borçlu yok"
+
+msgid "No dues plans yet"
+msgstr "Henüz aidat planı yok"
+
+msgid "No expenses"
+msgstr "Gider yok"
+
+#. placeholder {0}: accrual.unit_door_number
+msgid "No fee accrues for {0} while it is frozen, for example during legal collection."
+msgstr "{0} dondurulduğu sürece, örneğin yasal takip sırasında, tazminat işlemez."
+
+msgid "No funds"
+msgstr "Fon yok"
+
+msgid "No imports yet"
+msgstr "Henüz aktarım yok"
+
+msgid "No income or expense in this period"
+msgstr "Bu dönemde gelir veya gider yok"
+
+msgid "No late fees are accruing"
+msgstr "Gecikme tazminatı işlemiyor"
+
+msgid "No lines are waiting for you."
+msgstr "Sizi bekleyen satır yok."
+
+msgid "No open receivables"
+msgstr "Açık alacak yok"
+
+msgid "No payments match."
+msgstr "Eşleşen ödeme yok."
+
+msgid "No payments yet"
+msgstr "Henüz ödeme yok"
+
+msgid "No postings yet"
+msgstr "Henüz kayıt yok"
+
+msgid "No rates yet"
+msgstr "Henüz oran yok"
+
+msgid "No refunds"
+msgstr "İade yok"
+
+msgid "No site yet"
+msgstr "Henüz site yok"
+
+msgid "No stages"
+msgstr "Aşama yok"
+
+msgid "No suggestion"
+msgstr "Öneri yok"
+
+msgid "No transfers yet"
+msgstr "Henüz virman yok"
+
+msgid "No waivers"
+msgstr "Affetme yok"
+
+msgid "Nobody has overdue principal beyond the grace period."
+msgstr "Hiç kimsenin ek gün süresini aşan gecikmiş anaparası yok."
+
+msgid "Nobody owes anything right now."
+msgstr "Şu anda kimsenin borcu yok."
+
+msgid "None"
+msgstr "Yok"
+
+msgid "Not yet booked; shown continuously"
+msgstr "Henüz kaydedilmedi; sürekli gösterilir"
+
+msgid "Note"
+msgstr "Not"
+
+msgid "Note (optional)"
+msgstr "Not (isteğe bağlı)"
+
+msgid "Nothing booked yet"
+msgstr "Henüz kayıt yok"
+
+msgid "Nothing here yet"
+msgstr "Henüz burada bir şey yok"
+
+msgid "Nothing sent yet"
+msgstr "Henüz bir şey gönderilmedi"
+
+msgid "Nothing to pay"
+msgstr "Ödenecek bir şey yok"
+
+msgid "Nothing to show"
+msgstr "Gösterilecek bir şey yok"
+
+msgid "Nothing to show for this period"
+msgstr "Bu dönem için gösterilecek bir şey yok"
 
 msgid "Notifications"
 msgstr "Bildirimler"
 
+msgid "Off: expenses are recorded as paid when they happen."
+msgstr "Kapalı: giderler gerçekleştiği anda ödenmiş olarak kaydedilir."
+
+msgid "Once"
+msgstr "Bir kez"
+
+msgid "one block"
+msgstr "bir blok"
+
+msgid "One block"
+msgstr "Bir blok"
+
+msgid "One-off"
+msgstr "Tek seferlik"
+
+msgid "open"
+msgstr "açık"
+
+msgid "Open"
+msgstr "Açık"
+
+msgid "Open a case"
+msgstr "Dosya aç"
+
+msgid "Open a case when a debt goes to a lawyer; fee accrual is frozen for that unit side."
+msgstr "Bir borç avukata gittiğinde dosya açın; o birim tarafı için tazminat işlemesi durdurulur."
+
+msgid "Open a collection case"
+msgstr "Takip dosyası aç"
+
+msgid "Open case"
+msgstr "Dosyayı aç"
+
 msgid "Open menu"
 msgstr "Menüyü aç"
+
+msgid "Opened"
+msgstr "Açılış"
+
+msgid "Opening balance"
+msgstr "Açılış bakiyesi"
+
+msgid "Opening balances"
+msgstr "Açılış bakiyeleri"
+
+msgid "Opening balances saved."
+msgstr "Açılış bakiyeleri kaydedildi."
+
+msgid "Operating"
+msgstr "İşletme"
+
+msgid "Or upload a spreadsheet instead (CSV or XLSX)"
+msgstr "Veya bunun yerine bir tablo yükleyin (CSV veya XLSX)"
 
 msgid "Organization admin"
 msgstr "Kurum yöneticisi"
@@ -127,20 +1209,107 @@ msgstr "Kurum yöneticisi"
 msgid "Organizations, health and backup status will appear here."
 msgstr "Kuruluşlar, sistem durumu ve yedekleme durumu burada görünecek."
 
+msgid "Other"
+msgstr "Diğer"
+
+msgid "Overdue principal"
+msgstr "Gecikmiş anapara"
+
+msgid "Overview"
+msgstr "Genel bakış"
+
+msgid "Owed by owners"
+msgstr "Maliklerin borcu"
+
+msgid "Owed by tenants"
+msgstr "Kiracıların borcu"
+
 msgid "Owner"
 msgstr "Mal sahibi"
+
+msgid "Owner: known late fee"
+msgstr "Malik: bilinen gecikme tazminatı"
+
+msgid "Owner: principal"
+msgstr "Malik: anapara"
 
 msgid "Page not found"
 msgstr "Sayfa bulunamadı"
 
+msgid "Paid"
+msgstr "Ödendi"
+
+msgid "Paid by"
+msgstr "Ödeyen taraf"
+
+msgid "Paid by (optional)"
+msgstr "Ödeyen (isteğe bağlı)"
+
+msgid "Paid from"
+msgstr "Ödeme kaynağı"
+
+msgid "Paid on"
+msgstr "Ödeme tarihi"
+
+msgid "Parsing"
+msgstr "Ayrıştırılıyor"
+
+msgid "Partial"
+msgstr "Kısmi"
+
+msgid "Partially paid"
+msgstr "Kısmen ödendi"
+
 msgid "Password"
 msgstr "Parola"
+
+msgid "Paused"
+msgstr "Duraklatıldı"
+
+msgid "Pay"
+msgstr "Öde"
+
+msgid "Pay bill"
+msgstr "Faturayı öde"
+
+msgid "Payer"
+msgstr "Ödeyen"
+
+msgid "Paying for"
+msgstr "Ödenen birim"
+
+msgid "Payment"
+msgstr "Ödeme"
+
+msgid "Payment recorded"
+msgstr "Ödeme kaydedildi"
+
+msgid "Payments"
+msgstr "Ödemeler"
 
 msgid "People"
 msgstr "Kişiler"
 
+msgid "per unit"
+msgstr "birim başına"
+
+msgid "Per unit side or per person, PDF"
+msgstr "Birim tarafı veya kişi bazında, PDF"
+
+msgid "Period"
+msgstr "Dönem"
+
+msgid "Person"
+msgstr "Kişi"
+
 msgid "Phone number"
 msgstr "Telefon numarası"
+
+msgid "Plan saved."
+msgstr "Plan kaydedildi."
+
+msgid "Plan settings"
+msgstr "Plan ayarları"
 
 msgid "Platform administration"
 msgstr "Platform yönetimi"
@@ -148,18 +1317,263 @@ msgstr "Platform yönetimi"
 msgid "Please confirm it is you before continuing."
 msgstr "Devam etmeden önce lütfen kimliğinizi doğrulayın."
 
+msgid "Policy"
+msgstr "Politika"
+
+msgid "Policy saved."
+msgstr "Politika kaydedildi."
+
+msgid "Posted"
+msgstr "Kaydedildi"
+
+msgid "Prepayment credit"
+msgstr "Peşin ödeme alacağı"
+
+msgid "Prepayment credit: <0/>"
+msgstr "Peşin ödeme alacağı: <0/>"
+
+msgid "Preview"
+msgstr "Önizleme"
+
+msgid "principal"
+msgstr "anapara"
+
+msgid "Principal"
+msgstr "Anapara"
+
+msgid "Principal <0/> plus late fee <1/>"
+msgstr "Anapara <0/> artı gecikme tazminatı <1/>"
+
+msgid "Quarterly"
+msgstr "Üç aylık"
+
+msgid "Rate added."
+msgstr "Oran eklendi."
+
+msgid "Rate history"
+msgstr "Oran geçmişi"
+
+msgid "Rate per month (%)"
+msgstr "Aylık oran (%)"
+
+msgid "Rates"
+msgstr "Oranlar"
+
+msgid "Rates, split rules and live previews"
+msgstr "Oranlar, bölüştürme kuralları ve canlı önizlemeler"
+
+msgid "Ready"
+msgstr "Hazır"
+
+msgid "Reason"
+msgstr "Gerekçe"
+
+msgid "Receipt"
+msgstr "Makbuz"
+
+msgid "Receipt number"
+msgstr "Makbuz numarası"
+
+msgid "Receipt photo (optional)"
+msgstr "Makbuz fotoğrafı (isteğe bağlı)"
+
+msgid "Receipt sent."
+msgstr "Makbuz gönderildi."
+
+msgid "Receivables aging"
+msgstr "Alacak yaşlandırma"
+
+msgid "Received"
+msgstr "Alınan"
+
+msgid "Received in"
+msgstr "Alındığı yer"
+
+msgid "Received into"
+msgstr "Alındığı hesap"
+
+msgid "Received on"
+msgstr "Alındığı tarih"
+
+msgid "Reconciliation balances"
+msgstr "Mutabakat bakiyeleri"
+
+msgid "Record a payment"
+msgstr "Ödeme kaydet"
+
+msgid "Record another"
+msgstr "Bir tane daha kaydet"
+
+msgid "Record payment"
+msgstr "Ödemeyi kaydet"
+
+msgid "Record the first cash receipt, or import a bank statement."
+msgstr "İlk nakit makbuzu kaydedin veya bir banka ekstresi aktarın."
+
+msgid "Record transfer"
+msgstr "Virmanı kaydet"
+
+msgid "Record what the site spends: electricity, cleaning, repairs."
+msgstr "Sitenin harcadıklarını kaydedin: elektrik, temizlik, onarım."
+
+msgid "Recurring"
+msgstr "Tekrarlayan"
+
+msgid "Reference (optional)"
+msgstr "Referans (isteğe bağlı)"
+
+msgid "Reference to write"
+msgstr "Yazılacak referans"
+
+msgid "Reference you wrote (optional)"
+msgstr "Yazdığınız referans (isteğe bağlı)"
+
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
 msgstr "Referans: {0}"
 
+msgid "Refund"
+msgstr "İade"
+
+msgid "Refund a credit"
+msgstr "Alacağı iade et"
+
+msgid "Refund recorded."
+msgstr "İade kaydedildi."
+
+msgid "Refunded"
+msgstr "İade edildi"
+
+msgid "Refunds"
+msgstr "İadeler"
+
+msgid "Reject"
+msgstr "Reddet"
+
+msgid "Reject this declared transfer?"
+msgstr "Bu bildirilen havale reddedilsin mi?"
+
 msgid "Reload"
 msgstr "Yeniden yükle"
+
+msgid "Reminder"
+msgstr "Hatırlatma"
+
+msgid "Reminder history of a unit side"
+msgstr "Bir birim tarafının hatırlatma geçmişi"
+
+msgid "Reminder stages, the history of what was sent to a debtor, and legal cases."
+msgstr "Hatırlatma aşamaları, borçluya gönderilenlerin geçmişi ve yasal dosyalar."
+
+#. placeholder {0}: r.event_count
+msgid "Reminders sent: {0}."
+msgstr "Gönderilen hatırlatma: {0}."
+
+msgid "Reminders, ihtarname and legal cases"
+msgstr "Hatırlatmalar, ihtarname ve yasal dosyalar"
+
+msgid "Repeat every month"
+msgstr "Her ay tekrarla"
+
+msgid "Reports"
+msgstr "Raporlar"
+
+msgid "Reserve"
+msgstr "Yedek"
+
+msgid "Reserve contribution"
+msgstr "Yedek akçe katkısı"
 
 msgid "Reset your password"
 msgstr "Parolanızı sıfırlayın"
 
+msgid "Reversal"
+msgstr "Ters kayıt"
+
+msgid "Rounding remainder was distributed to the largest shares."
+msgstr "Yuvarlama artığı en büyük paylara dağıtıldı."
+
+#. placeholder {0}: r.row
+msgid "Row {0}"
+msgstr "Satır {0}"
+
+msgid "Save bill"
+msgstr "Faturayı kaydet"
+
+msgid "Save budget"
+msgstr "Bütçeyi kaydet"
+
+msgid "Save changes"
+msgstr "Değişiklikleri kaydet"
+
+msgid "Save expense"
+msgstr "Gideri kaydet"
+
+msgid "Save opening balances"
+msgstr "Açılış bakiyelerini kaydet"
+
+msgid "Save plan"
+msgstr "Planı kaydet"
+
+msgid "Save policy"
+msgstr "Politikayı kaydet"
+
+msgid "Schedule"
+msgstr "Takvim"
+
+msgid "Scope"
+msgstr "Kapsam"
+
+msgid "Search"
+msgstr "Ara"
+
+msgid "See statement"
+msgstr "Ekstreyi gör"
+
+msgid "Select"
+msgstr "Seç"
+
+msgid "Select…"
+msgstr "Seçin…"
+
+msgid "Send"
+msgstr "Gönder"
+
 msgid "Send me a code"
 msgstr "Bana kod gönder"
+
+msgid "Send receipt"
+msgstr "Makbuzu gönder"
+
+msgid "Send reminders"
+msgstr "Hatırlatma gönder"
+
+msgid "Send the receipt by SMS"
+msgstr "Makbuzu SMS ile gönder"
+
+msgid "Send to resident"
+msgstr "Sakine gönder"
+
+msgid "Set a category budget below to compare it with what was spent."
+msgstr "Harcamalarla karşılaştırmak için aşağıda bir kategori bütçesi belirleyin."
+
+msgid "Set up a site first; money is kept per site."
+msgstr "Önce bir site kurun; para site bazında tutulur."
+
+msgid "Settlement"
+msgstr "Uzlaşma"
+
+msgid "Share an expense"
+msgstr "Bir gideri paylaştır"
+
+msgid "Show matched and ignored lines too"
+msgstr "Eşleşen ve yok sayılan satırları da göster"
+
+msgid "Showing the first 200 charges. Narrow the filters to see the rest."
+msgstr "İlk 200 tahakkuk gösteriliyor. Gerisini görmek için filtreleri daraltın."
+
+msgid "Side"
+msgstr "Taraf"
 
 msgid "Sign in"
 msgstr "Giriş yap"
@@ -173,6 +1587,9 @@ msgstr "Çıkış yap"
 msgid "Signing you in"
 msgstr "Giriş yapılıyor"
 
+msgid "Site"
+msgstr "Site"
+
 msgid "Site manager"
 msgstr "Site yöneticisi"
 
@@ -182,8 +1599,14 @@ msgstr "Siteler"
 msgid "Skip to content"
 msgstr "İçeriğe geç"
 
+msgid "SMS"
+msgstr "SMS"
+
 msgid "SMS code"
 msgstr "SMS kodu"
+
+msgid "Some periods are still being generated."
+msgstr "Bazı dönemler hâlâ oluşturuluyor."
 
 msgid "Someone else changed this record. Reload to see the latest version."
 msgstr "Bu kaydı başka biri değiştirdi. En güncel sürümü görmek için yenileyin."
@@ -197,8 +1620,67 @@ msgstr "Bir şeyler ters gitti"
 msgid "Something went wrong. Please try again."
 msgstr "Bir şeyler ters gitti. Lütfen tekrar deneyin."
 
+msgid "Special assessment"
+msgstr "Demirbaş / olağanüstü gider"
+
+msgid "Split by"
+msgstr "Bölüştürme ölçütü"
+
+msgid "split in total"
+msgstr "toplam olarak bölünür"
+
+msgid "Split rule"
+msgstr "Bölüştürme kuralı"
+
 msgid "Staff"
 msgstr "Personel"
+
+msgid "Stage"
+msgstr "Aşama"
+
+msgid "Starts"
+msgstr "Başlangıç"
+
+msgid "Starts on"
+msgstr "Başlangıç tarihi"
+
+msgid "Statement"
+msgstr "Ekstre"
+
+msgid "Statement balance"
+msgstr "Ekstre bakiyesi"
+
+msgid "Statement closing"
+msgstr "Ekstre kapanışı"
+
+msgid "Statement opening"
+msgstr "Ekstre açılışı"
+
+#. placeholder {0}: r.recipient_count
+msgid "Statement sent to {0} recipient(s)."
+msgstr "Ekstre {0} alıcıya gönderildi."
+
+msgid "Statements"
+msgstr "Ekstreler"
+
+msgid "Status"
+msgstr "Durum"
+
+#. placeholder {0}: policy.max_rate_pct_per_month
+msgid "Statutory cap: {0}% per month."
+msgstr "Yasal sınır: ayda %{0}."
+
+msgid "Still in the box"
+msgstr "Kasada kalan"
+
+msgid "Stop repeating"
+msgstr "Tekrarlamayı durdur"
+
+msgid "Suggested"
+msgstr "Önerildi"
+
+msgid "Suggestion"
+msgstr "Öneri"
 
 msgid "Switch organization"
 msgstr "Kuruluş değiştir"
@@ -206,23 +1688,105 @@ msgstr "Kuruluş değiştir"
 msgid "System"
 msgstr "Sistem"
 
+msgid "Tag"
+msgstr "Etiket"
+
+msgid "tagged units"
+msgstr "etiketli birimler"
+
+msgid "Tell us about another payment"
+msgstr "Başka bir ödemeyi bildirin"
+
 msgid "Tenant"
 msgstr "Kiracı"
+
+msgid "Tenant: known late fee"
+msgstr "Kiracı: bilinen gecikme tazminatı"
+
+msgid "Tenant: principal"
+msgstr "Kiracı: anapara"
+
+msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
+msgstr "Teşekkürler. Ödeme bankada göründüğünde yöneticiniz onaylayacak."
 
 msgid "That did not work. Check your details and try again."
 msgstr "Olmadı. Bilgilerinizi kontrol edip tekrar deneyin."
 
+msgid "That password is not correct."
+msgstr "Bu parola doğru değil."
+
+msgid "The amount is more than the accrued fee."
+msgstr "Tutar, tahakkuk eden tazminattan fazla."
+
+msgid "The amounts are more than the payment or a charge's balance."
+msgstr "Tutarlar ödemeden veya bir tahakkukun bakiyesinden fazla."
+
+msgid "The assembly or board decision this amount comes from."
+msgstr "Bu tutarın dayandığı genel kurul veya kurul kararı."
+
+msgid "The box does not hold that much."
+msgstr "Kasada o kadar para yok."
+
+msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
+msgstr "<0/> tutarındaki tahakkuk kayıtlarda kalır. Gerekçenizle bir ters kayıt oluşturulur, hiçbir şey kaybolmaz."
+
+msgid "The download failed. Please try again."
+msgstr "İndirme başarısız oldu. Lütfen tekrar deneyin."
+
+msgid "The dry run failed."
+msgstr "Deneme çalıştırması başarısız oldu."
+
+msgid "The file could not be imported."
+msgstr "Dosya aktarılamadı."
+
+msgid "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
+msgstr "Para bankaya ulaştı: <0/>. En eski borca uygulanır ve bir makbuz numarası alır."
+
 msgid "The page you are looking for does not exist or has moved."
 msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
+
+msgid "The preview is not available for these settings yet."
+msgstr "Önizleme bu ayarlar için henüz kullanılamıyor."
+
+#. placeholder {0}: policy.max_rate_pct_per_month
+msgid "The rate cannot be above the statutory cap of {0}% per month."
+msgstr "Oran, ayda %{0} olan yasal sınırın üzerinde olamaz."
+
+msgid "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
+msgstr "Makbuz numarası sırada kalır, iptal edildi olarak işaretlenir. Ödediği tahakkuklar yeniden açılır."
 
 msgid "The request failed. Please try again."
 msgstr "İstek başarısız oldu. Lütfen tekrar deneyin."
 
+msgid "The side's person"
+msgstr "Tarafın kişisi"
+
+msgid "The site has not published bank details yet. Ask your manager how to pay."
+msgstr "Site henüz banka bilgilerini yayımlamadı. Nasıl ödeyeceğinizi yöneticinize sorun."
+
+msgid "The table on the right updates as you change the amount or split rule."
+msgstr "Sağdaki tablo, tutarı veya bölüştürme kuralını değiştirdikçe güncellenir."
+
 msgid "Theme"
 msgstr "Tema"
 
+msgid "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
+msgstr "Bu yıl için henüz bütçe yok. Aidatı belirlemez; yalnızca harcamalarla karşılaştırılır."
+
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "Bu muhasebe dönemi kapatıldı ve artık değiştirilemez."
+
+msgid "This action needs a recent sign-in. Enter your password to continue."
+msgstr "Bu işlem yakın zamanda giriş yapmanızı gerektirir. Devam etmek için parolanızı girin."
+
+msgid "This date is on or before the lock date; the period is closed."
+msgstr "Bu tarih kilit tarihinde veya öncesinde; dönem kapalı."
+
+msgid "This field is required."
+msgstr "Bu alan zorunludur."
+
+msgid "This period is locked."
+msgstr "Bu dönem kilitli."
 
 msgid "This record changed"
 msgstr "Bu kayıt değişti"
@@ -233,14 +1797,36 @@ msgstr "Bu istek daha önce farklı bilgilerle gönderilmişti. Formu yenileyip 
 msgid "This server offers no sign-in method this app can use."
 msgstr "Bu sunucu, uygulamanın kullanabileceği bir giriş yöntemi sunmuyor."
 
+msgid "This side has no open charges; the payment becomes credit."
+msgstr "Bu tarafın açık tahakkuku yok; ödeme alacağa dönüşür."
+
 msgid "This step is not available in this build yet."
 msgstr "Bu adım henüz bu sürümde kullanılamıyor."
 
 msgid "This value is not valid"
 msgstr "Bu değer geçerli değil"
 
+msgid "Tick “Repeat every month” on a new expense to add one."
+msgstr "Eklemek için yeni bir giderde “Her ay tekrarla” seçeneğini işaretleyin."
+
 msgid "Tickets"
 msgstr "Talepler"
+
+msgid "Timeline"
+msgstr "Zaman çizelgesi"
+
+msgid "To"
+msgstr "Bitiş"
+
+msgid "To every unit side with an overdue balance. Select rows first to narrow it down."
+msgstr "Gecikmiş bakiyesi olan her birim tarafına. Daraltmak için önce satırları seçin."
+
+msgid "To match"
+msgstr "Eşleştirilecek"
+
+#. placeholder {0}: unitIds.length
+msgid "To the {0} selected units with an overdue balance."
+msgstr "Gecikmiş bakiyesi olan {0} seçili birime."
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Çok fazla deneme yapıldı. Lütfen bekleyip tekrar deneyin."
@@ -252,14 +1838,190 @@ msgstr "Çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin."
 msgid "Too many requests. Try again in {0} seconds."
 msgstr "Çok fazla istek gönderildi. {0} saniye sonra tekrar deneyin."
 
+msgid "Total"
+msgstr "Toplam"
+
+#. placeholder {0}: preview.unit_count
+msgid "Total <0/> across {0} units"
+msgstr "{0} birim için toplam <0/>"
+
+msgid "Total amount"
+msgstr "Toplam tutar"
+
+msgid "Total principal in this file: <0/>"
+msgstr "Bu dosyadaki toplam anapara: <0/>"
+
+msgid "Totals (without cancelled)"
+msgstr "Toplamlar (iptaller hariç)"
+
+msgid "Track vendor bills with due dates and partial payments"
+msgstr "Satıcı faturalarını vade ve kısmi ödemelerle takip et"
+
+msgid "Transfer recorded."
+msgstr "Virman kaydedildi."
+
+msgid "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
+msgstr "Tutarı aşağıdaki hesaba havale edin, sonra ödediğinizi bize bildirin. Para ulaşınca yöneticiniz onaylar."
+
+msgid "Transfers"
+msgstr "Virmanlar"
+
+msgid "Trial balance"
+msgstr "Mizan"
+
 msgid "Try again"
 msgstr "Tekrar dene"
+
+msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
+msgstr "Bir maliyeti, aidatla aynı bölüştürme kurallarıyla birimlere tahakkuk olarak yansıtın. Adım {step}/3."
+
+msgid "Type"
+msgstr "Tür"
+
+msgid "Unfreeze"
+msgstr "Dondurmayı kaldır"
+
+msgid "Unit"
+msgstr "Birim"
+
+msgid "Units with a tag"
+msgstr "Etiketli birimler"
+
+msgid "Unmatch"
+msgstr "Eşleşmeyi kaldır"
+
+msgid "Unmatched"
+msgstr "Eşleşmedi"
+
+msgid "Unmatched money in"
+msgstr "Eşleşmeyen gelen para"
+
+msgid "Unmatched money out"
+msgstr "Eşleşmeyen giden para"
+
+msgid "Until (optional)"
+msgstr "Şu tarihe kadar (isteğe bağlı)"
+
+msgid "Upload"
+msgstr "Yükle"
+
+msgid "Upload a statement"
+msgstr "Ekstre yükle"
+
+msgid "Upload a statement above to start matching."
+msgstr "Eşleştirmeye başlamak için yukarıdan bir ekstre yükleyin."
+
+msgid "Upload a statement and match lines to units"
+msgstr "Bir ekstre yükleyin ve satırları birimlerle eşleştirin"
+
+msgid "Upload the bank's CSV or Excel export, then confirm which unit each line belongs to. Nothing is matched without you."
+msgstr "Bankanın CSV veya Excel dökümünü yükleyin, sonra her satırın hangi birime ait olduğunu onaylayın. Siz onaylamadan hiçbir şey eşleştirilmez."
+
+msgid "Use a day from 1 to 28."
+msgstr "1 ile 28 arasında bir gün kullanın."
+
+msgid "Utility"
+msgstr "Kullanım gideri"
+
+msgid "Variance"
+msgstr "Sapma"
+
+msgid "Vendor"
+msgstr "Satıcı"
+
+msgid "Vendor (optional)"
+msgstr "Satıcı (isteğe bağlı)"
+
+msgid "Vendor bills"
+msgstr "Satıcı faturaları"
+
+msgid "Visible to the manager and the board only. Never share it publicly."
+msgstr "Yalnızca yönetici ve kurul görür. Asla herkese açık paylaşmayın."
+
+msgid "Void"
+msgstr "İptal et"
+
+msgid "Void expense"
+msgstr "Gideri iptal et"
+
+msgid "Void payment"
+msgstr "Ödemeyi iptal et"
+
+#. placeholder {0}: payment.receipt_no ?? ''
+msgid "Void receipt {0}?"
+msgstr "{0} numaralı makbuz iptal edilsin mi?"
+
+msgid "Void this expense?"
+msgstr "Bu gider iptal edilsin mi?"
+
+msgid "Voided"
+msgstr "İptal edildi"
+
+msgid "Waive"
+msgstr "Affet"
+
+msgid "Waive fee"
+msgstr "Tazminatı affet"
+
+msgid "Waive late fee"
+msgstr "Gecikme tazminatını affet"
+
+msgid "Waived"
+msgstr "Affedilen"
+
+msgid "Waivers"
+msgstr "Affetmeler"
+
+msgid "Waivers above this ask for re-authentication"
+msgstr "Bunun üzerindeki affetmeler yeniden kimlik doğrulaması ister"
 
 msgid "We could not find that."
 msgstr "Bulunamadı."
 
+msgid "Weight"
+msgstr "Ağırlık"
+
+msgid "What each unit side would pay"
+msgstr "Her birim tarafı ne öderdi"
+
+msgid "What each unit would pay"
+msgstr "Her birim ne öderdi"
+
+msgid "What is it for?"
+msgstr "Ne için?"
+
+msgid "What is owed today"
+msgstr "Bugün ne borçlu"
+
+msgid "What was it for?"
+msgstr "Ne için yapıldı?"
+
+msgid "What was spent, from which account"
+msgstr "Neye, hangi hesaptan harcandı"
+
+msgid "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
+msgstr "Neye harcandığı, kime ödendiği ve hangi hesaptan. Harcama onayı toplantılarınızda verilir; burası sonucu kaydeder."
+
+msgid "What you owe today, including the late fee accrued so far."
+msgstr "Bugün borcunuz, şimdiye kadar tahakkuk eden gecikme tazminatı dahil."
+
+msgid "Where the site stands today: what residents owe, what is in the bank and in cash."
+msgstr "Sitenin bugünkü durumu: sakinlerin borcu, bankada ve kasada olanlar."
+
+msgid "whole site"
+msgstr "tüm site"
+
+msgid "Whole site"
+msgstr "Tüm site"
+
+msgid "Yearly"
+msgstr "Yıllık"
+
 msgid "You are not linked to a unit in this organization."
 msgstr "Bu kuruluşta bir bağımsız bölümle ilişkiniz yok."
+
+msgid "You are not linked to a unit with a balance."
+msgstr "Bir birime bağlı değilsiniz veya bakiyeniz yok."
 
 msgid "You are not part of any organization yet"
 msgstr "Henüz hiçbir kuruluşa bağlı değilsiniz"
