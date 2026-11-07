@@ -174,11 +174,11 @@ type Result struct {
 // order. Zero-weight and exempt units never receive a leftover unit. A
 // negative total (a credit note) is allocated as its absolute value and
 // negated. The result always sums exactly to total.
-func Allocate(total money.Money, weights []Weight, order OrderFn) (Result, error) {
-	return allocate(total, weights, order, KeyWeights, "")
+func Allocate(total money.Money, weights []Weight, order OrderFn, opts ...Option) (Result, error) {
+	return allocate(total, weights, order, KeyWeights, "", newConfig(opts))
 }
 
-func allocate(total money.Money, weights []Weight, order OrderFn, kind KeyKind, scope string) (Result, error) {
+func allocate(total money.Money, weights []Weight, order OrderFn, kind KeyKind, scope string, cfg config) (Result, error) {
 	if err := total.Validate(); err != nil {
 		return Result{}, fmt.Errorf("%w: %w", ErrInvalidCurrency, err)
 	}
@@ -222,11 +222,7 @@ func allocate(total money.Money, weights []Weight, order OrderFn, kind KeyKind, 
 		}
 		abs = -abs
 	}
-	rank := make([]int, len(ws))
-	for i := range rank {
-		rank[i] = i
-	}
-	parts := largestRemainder(abs, eff, rank)
+	parts := largestRemainder(abs, eff, cfg.rank(len(ws)))
 
 	res := Result{Shares: make([]Share, len(ws))}
 	snap := BasisSnapshot{Key: kind, Scope: scope, Total: total, WeightTotal: wsum.RatString(), Weights: make([]WeightBasis, len(ws))}

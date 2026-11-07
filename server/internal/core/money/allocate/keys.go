@@ -2,6 +2,7 @@ package allocate
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 	"sort"
 
@@ -77,18 +78,19 @@ func Composite(parts ...Part) Key { return Key{Kind: KeyComposite, Parts: parts}
 
 // ByKey allocates total over units by key, tagging the snapshot with scope
 // (for example "site" or "block:<id>"). Units are returned in order.
-func ByKey(total money.Money, scope string, units []Unit, key Key, order OrderFn) (Result, error) {
+func ByKey(total money.Money, scope string, units []Unit, key Key, order OrderFn, opts ...Option) (Result, error) {
+	cfg := newConfig(opts)
 	if order == nil {
 		order = ByID()
 	}
 	if key.Kind == KeyComposite {
-		return composite(total, scope, units, key, order)
+		return composite(total, scope, units, key, order, cfg)
 	}
 	ws, err := leafWeights(total, units, key)
 	if err != nil {
 		return Result{}, err
 	}
-	return allocate(total, ws, order, key.Kind, scope)
+	return allocate(total, ws, order, key.Kind, scope, cfg)
 }
 
 func leafWeights(total money.Money, units []Unit, key Key) ([]Weight, error) {
@@ -120,6 +122,9 @@ func leafWeights(total money.Money, units []Unit, key Key) ([]Weight, error) {
 				return nil, ErrNegativeTable
 			default:
 				w.Weight = new(big.Rat).SetInt64(a)
+				if tableSum > math.MaxInt64-a {
+					return nil, money.ErrOverflow
+				}
 				tableSum += a
 			}
 		default:
@@ -133,7 +138,7 @@ func leafWeights(total money.Money, units []Unit, key Key) ([]Weight, error) {
 	return ws, nil
 }
 
-func composite(total money.Money, scope string, units []Unit, key Key, order OrderFn) (Result, error) {
+func composite(total money.Money, scope string, units []Unit, key Key, order OrderFn, cfg config) (Result, error) {
 	if len(key.Parts) == 0 {
 		return Result{}, ErrEmptyComposite
 	}
@@ -176,7 +181,7 @@ func composite(total money.Money, scope string, units []Unit, key Key, order Ord
 		if total.Amount < 0 {
 			pt = -pt
 		}
-		r, err := ByKey(money.New(pt, total.Currency), scope, sorted, p.Key, order)
+		r, err := ByKey(money.New(pt, total.Currency), scope, sorted, p.Key, order, cfg.part(pi)...)
 		if err != nil {
 			return Result{}, fmt.Errorf("composite part %d: %w", pi, err)
 		}

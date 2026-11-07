@@ -14,6 +14,17 @@
 // the unit of rounding is the minor unit. A negative total (credit note) is
 // allocated as |T| and negated.
 //
+// # Rotation
+//
+// By default ties always go to the first units in order, so a fixed 100 kuruş
+// over 7 units costs the same two units one kuruş more every month. Passing
+// WithRotation(periodKey) offsets the start of the tie order by
+// fnv1a64(periodKey) mod n over the ordered units: still fully deterministic
+// and still summing exactly, but the leftover kuruş move from period to
+// period. Callers pass the charge's period key (plus a charge-type code when
+// several charges share a period). A composite rotates each part by
+// key + "/" + part index.
+//
 // # Keys
 //
 //   - equal: every non-exempt unit weighs 1 (Law 634 default for staff costs).
@@ -29,6 +40,8 @@
 //     example 70 % consumption and 30 % area for central heating). The part
 //     totals are rounded by largest remainder, so parts sum to the total.
 //     A table part inside a composite must itself sum to its part total.
+//     Table keys (and composites with a table part) reject a negative total:
+//     a reversal must negate the original shares, not re-allocate.
 //
 // Scope (site, one block, a unit tag) is the caller's choice of which units
 // it passes in; it is recorded in the snapshot only as a label.
