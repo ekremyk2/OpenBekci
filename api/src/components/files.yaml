@@ -1,0 +1,148 @@
+parameters:
+  FileId:
+    name: file_id
+    in: path
+    required: true
+    description: The file id.
+    schema:
+      type: string
+      format: uuid
+schemas:
+  FileVariant:
+    type: object
+    description: A rendition of an image, generated on upload.
+    required: [width, height, size, mime]
+    properties:
+      width:
+        type: integer
+      height:
+        type: integer
+      size:
+        type: integer
+        format: int64
+        description: Bytes.
+      mime:
+        type: string
+  FileLinks:
+    type: object
+    description: |
+      Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+      Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+      fetch the file's metadata again for fresh ones.
+    required: [original, variants, expires_at]
+    properties:
+      original:
+        type: string
+        nullable: true
+        description: URL of the original; null while the file is not ready.
+      variants:
+        type: object
+        description: URLs of the image variants (`thumb`, `medium`) by name; empty for other files.
+        additionalProperties:
+          type: string
+      expires_at:
+        type: string
+        format: date-time
+  File:
+    type: object
+    required: [id, org_id, site_id, name, size, mime, sha256, status, source, uploaded_by, scope_type, scope_id, retention_until, variants, links, created_at]
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      name:
+        type: string
+        description: The file name. A re-encoded image gets the extension of its stored type.
+      size:
+        type: integer
+        format: int64
+        description: Bytes of the stored original (for images, after metadata stripping and downscaling).
+      mime:
+        type: string
+        description: The stored type, from sniffing the content.
+      sha256:
+        type: string
+        description: Hex SHA-256 of the stored original.
+      status:
+        type: string
+        x-open-enum: true
+        description: |
+          Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+          administrators see it). `pending` and `deleted` files are never returned.
+        enum: [ready, quarantined]
+      source:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).'
+        enum: [uploaded, generated]
+      uploaded_by:
+        type: string
+        format: uuid
+        nullable: true
+        description: The user who uploaded it; null for generated files.
+      scope_type:
+        type: string
+        nullable: true
+        description: The kind of resource the file is attached to (`ticket`, `document`, ...); null for a draft.
+      scope_id:
+        type: string
+        format: uuid
+        nullable: true
+      retention_until:
+        type: string
+        format: date-time
+        nullable: true
+        description: When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+      variants:
+        type: object
+        description: Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side).
+        additionalProperties:
+          $ref: '#/schemas/FileVariant'
+      links:
+        $ref: '#/schemas/FileLinks'
+      created_at:
+        type: string
+        format: date-time
+  FileList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/schemas/File'
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  FileUpload:
+    type: object
+    description: |
+      The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+      it arrives, and fields after it are ignored. Request-body validation is skipped for this operation
+      (the body is not buffered); the server checks the fields itself.
+    required: [file]
+    properties:
+      scope_type:
+        type: string
+        description: Attach the file to a resource of this kind (the owning module registers the kind). Needs `scope_id`.
+      scope_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        description: The site the file belongs to; limits who can read it to site-scoped grants.
+      name:
+        type: string
+        description: File name when the `file` part carries none.
+      file:
+        type: string
+        format: binary

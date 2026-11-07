@@ -1,8 +1,11 @@
 package httpapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
+	"mime/multipart"
 	"net/http/httptest"
 	"slices"
 	"sort"
@@ -13,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/authztest"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 )
@@ -96,6 +100,54 @@ var authzMatrixRows = map[string]mrow{
 				headers: map[string]string{"If-Match": `"` + strconv.Itoa(w.OrgVersion(t, org)) + `"`}}
 		}},
 	"audit.list": {perms: []authz.Permission{audit.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/audit")},
+
+	"files.list": {perms: []authz.Permission{files.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/files")},
+	"files.upload": {perms: []authz.Permission{files.PermUpload}, status: 201,
+		build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
+			body, ctype := multipartBody(map[string]string{"scope_type": testScope, "scope_id": uuid.NewString()}, "matrix.txt", []byte("uploaded by the matrix"))
+			return mreq{method: "POST", path: "/v1/orgs/" + org.ID.String() + "/files", body: body, headers: map[string]string{"Content-Type": ctype}}
+		}},
+	"files.get": {perms: []authz.Permission{files.PermRead}, status: 200,
+		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String()}
+		}},
+	"files.download": {perms: []authz.Permission{files.PermRead}, status: 200,
+		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String() + "/content"}
+		}},
+	"files.delete": {perms: []authz.Permission{files.PermManage}, status: 204,
+		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "DELETE", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String()}
+		}},
+}
+
+// matrixFiles is the files service of the environment the matrix runs against.
+var matrixFiles *files.Service
+
+// matrixFile stores a file in org that every member may read.
+func matrixFile(t *testing.T, org authztest.Org) files.File {
+	t.Helper()
+	f, err := matrixFiles.UploadGenerated(t.Context(), files.UploadParams{
+		OrgID: org.ID, Name: "matrix.txt", Scope: &files.ScopeRef{Type: testScope, ID: uuid.New()},
+		Content: strings.NewReader("a file for the authorization matrix"),
+	})
+	if err != nil {
+		t.Fatalf("store a file for the matrix: %v", err)
+	}
+	return f
+}
+
+// multipartBody builds an upload form: fields first, then the file part.
+func multipartBody(fields map[string]string, filename string, content []byte) (body, contentType string) {
+	var buf bytes.Buffer
+	w := multipart.NewWriter(&buf)
+	for k, v := range fields {
+		_ = w.WriteField(k, v)
+	}
+	part, _ := w.CreateFormFile("file", filename)
+	_, _ = part.Write(content)
+	_ = w.Close()
+	return buf.String(), w.FormDataContentType()
 }
 
 func extJSON(t *testing.T, ext map[string]any, name string, into any) bool {
@@ -124,6 +176,7 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 	spec := loadSpec(t)
 	e := newIDEnv(t, false, false)
 	w := authztest.NewWorld(t, e.db, e.svc)
+	matrixFiles = e.files
 
 	var matrix map[string][]string // role -> permissions, from the spec
 	if !extJSON(t, spec.Extensions, "x-openbekci-roles", &matrix) {

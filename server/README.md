@@ -138,6 +138,50 @@ bearer tokens) for module tests that need a signed-in caller. `GET /v1/orgs/{org
 revocation, platform-administrator promotion) go to `platform_audit_event`, readable only through the platform role.
 Both tables are append-only: the application roles have no UPDATE, DELETE or TRUNCATE.
 
+## Files and storage
+
+Files are the `file` table (metadata, scope, status, retention, image variants) plus blobs in a `storage.Blob`
+(`internal/platform/storage`): the local driver under `DATA_DIR/files/<org>/<yy>/<mm>/<id>` (atomic writes) or S3
+(`OPENBEKCI_STORAGE_DRIVER=s3`, `OPENBEKCI_STORAGE_S3_*`, any S3-compatible store). Uploads always stream through the
+server: `POST /v1/orgs/{org_id}/files` (multipart; form fields first, then `file`). Settings:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `OPENBEKCI_MAX_UPLOAD_BYTES` | 25 MiB | one file; the multipart route alone bypasses the 1 MiB JSON cap (`MAX_BODY_BYTES`), its request cap is this plus 1 MiB of framing, and uploads get a 10 minute timeout |
+| `OPENBEKCI_FILES_ALLOWED_EXTENSIONS` | jpg jpeg png webp pdf txt csv docx xlsx pptx odt ods doc xls | narrows the built-in allowlist |
+| `OPENBEKCI_STORAGE_DRIVER` | `local` | `local` or `s3` |
+| `OPENBEKCI_CLAMAV_ADDR` | unset | clamd `host:port` or `unix:/path`; unset skips scanning, unreachable refuses uploads with 503 `scan_unavailable` |
+
+What an upload goes through: the extension must be allowed and the first bytes must really be that type
+(`http.DetectContentType`; a renamed executable is 415), over-limit files are 413 (no partial blob is kept), images are
+decoded and re-encoded (EXIF including GPS, XMP, ICC and comments are dropped, the EXIF rotation is applied to the pixels,
+the stored original is capped at 4096 px, `thumb` 256 px and `medium` 1600 px variants are made), everything else is
+stored as is, the SHA-256 of what is stored is recorded, the ClamAV verdict can mark it `quarantined`. A file without a
+scope is a draft that expires after 7 days. Downloads (`/files/{id}/content`, `?variant=thumb|medium`) are authorized per
+file (uploader, `files.manage`, or the scope's visibility resolver), images are `inline`, everything else
+`Content-Disposition: attachment`, always `nosniff` and `Cache-Control: private, no-store`. File metadata carries short-lived
+`links`: signed paths on this server for the local driver (usable without a session), presigned GETs for S3.
+Deleting is soft; the hourly `maintenance.prune_files` job also expires drafts and files past `retention_until`, removes
+blobs and gives the storage back to `org_storage_usage` (a deleted file another table still references keeps its row).
+
+For other modules (Go):
+
+```go
+// wiring: tell the file module who may read and attach to your resource (ticket photos: at most 10)
+filesSvc.RegisterResolver("ticket", ticketFiles{}, files.WithMaxFiles(10)) // ticketFiles implements files.VisibilityResolver
+
+// in your own tenant transaction, attach what the client uploaded first (atomic with the ticket insert)
+f, err := filesSvc.Attach(ctx, tx, orgID, fileID, files.ScopeRef{Type: "ticket", ID: ticketID})
+
+// generated documents (statements, receipts, minutes): server side, source "generated", no permission check
+f, err := filesSvc.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, Name: "statement.pdf", Content: r,
+    Scope: &files.ScopeRef{Type: "document", ID: documentID}})
+```
+
+`files.upload` and `files.read` are held by every role (they only open the endpoints); `files.manage` (org_admin,
+site_manager) reads and deletes any file and shows `Usage`. A table that references files should use a composite
+foreign key `(org_id, file_id) REFERENCES file (org_id, id)`.
+
 ## Tests
 
 ```powershell
@@ -158,11 +202,11 @@ cmd/openbekci/     cobra commands
 internal/app/      config, startup checks, wiring, lifecycle
 internal/httpapi/  router, middleware, /healthz, /readyz, MountAPI, spec-driven pipeline, gen/ (generated)
 internal/problem/  RFC 9457 problem+json errors
-internal/core/     business modules (instance, authz, identity, tenancy, audit, platformadmin, ...)
+internal/core/     business modules (instance, authz, identity, tenancy, audit, files, platformadmin, ...)
 internal/permissions/ the permission registry built from every module (also run by cmd/genpermissions)
 internal/authztest/  seeded world for authorization tests
 internal/platform/ db (pools, tenant tx, migrations), jobs (River), id (UUIDv7), idempotency,
-                   crypto (argon2id, opaque tokens), sms (gateway, netgsm), mail (smtp), ratelimit,
+                   crypto (argon2id, opaque tokens), sms (gateway, netgsm), mail (smtp), ratelimit, storage (local, s3),
                    pii (personal data registry for audit diffs)
 internal/webassets web app embed; -tags nowebassets serves a placeholder
 db/migrations/     goose SQL        db/queries/  sqlc inputs

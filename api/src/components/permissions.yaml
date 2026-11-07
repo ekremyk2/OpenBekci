@@ -8,6 +8,9 @@ schemas:
     enum:
       - audit.read
       - audit.report
+      - files.manage
+      - files.read
+      - files.upload
       - me.read
       - org.manage
       - org.read
@@ -16,33 +19,49 @@ schemas:
 x-openbekci-roles:
   org_admin:
     - audit.read
+    - files.manage
+    - files.read
+    - files.upload
     - me.read
     - org.manage
     - org.read
     - sessions.manage_own
   site_manager:
+    - files.manage
+    - files.read
+    - files.upload
     - me.read
     - org.read
     - sessions.manage_own
   board_member:
+    - files.read
+    - files.upload
     - me.read
     - org.read
     - sessions.manage_own
   auditor:
     - audit.read
     - audit.report
+    - files.read
+    - files.upload
     - me.read
     - org.read
     - sessions.manage_own
   accountant:
+    - files.read
+    - files.upload
     - me.read
     - org.read
     - sessions.manage_own
   staff:
+    - files.read
+    - files.upload
     - me.read
     - org.read
     - sessions.manage_own
   guard:
+    - files.read
+    - files.upload
     - me.read
     - sessions.manage_own
   platform_admin:

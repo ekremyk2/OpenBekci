@@ -21,6 +21,8 @@ tags:
     description: Organizations.
   - name: audit
     description: The append-only audit trail.
+  - name: files
+    description: Uploaded and generated files, streamed through the server.
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -55,6 +57,12 @@ paths:
     $ref: './paths/orgs-org-id.yaml'
   /v1/orgs/{org_id}/audit:
     $ref: './paths/orgs-org-id-audit.yaml'
+  /v1/orgs/{org_id}/files:
+    $ref: './paths/orgs-org-id-files.yaml'
+  /v1/orgs/{org_id}/files/{file_id}:
+    $ref: './paths/orgs-org-id-files-file-id.yaml'
+  /v1/orgs/{org_id}/files/{file_id}/content:
+    $ref: './paths/orgs-org-id-files-file-id-content.yaml'
 components:
   securitySchemes:
     cookieAuth:
@@ -159,3 +167,13 @@ components:
       $ref: './components/org.yaml#/schemas/AuditEvent'
     AuditEventList:
       $ref: './components/org.yaml#/schemas/AuditEventList'
+    FileVariant:
+      $ref: './components/files.yaml#/schemas/FileVariant'
+    FileLinks:
+      $ref: './components/files.yaml#/schemas/FileLinks'
+    File:
+      $ref: './components/files.yaml#/schemas/File'
+    FileList:
+      $ref: './components/files.yaml#/schemas/FileList'
+    FileUpload:
+      $ref: './components/files.yaml#/schemas/FileUpload'

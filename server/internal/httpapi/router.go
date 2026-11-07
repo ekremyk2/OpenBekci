@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
@@ -44,6 +45,9 @@ type Deps struct {
 	Authz   *authz.Resolver
 	Tenancy *tenancy.Service
 	Audit   *audit.Service
+	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
+	// with an internal error (unit tests only).
+	Files *files.Service
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).
@@ -57,6 +61,10 @@ type Options struct {
 	RequestTimeout time.Duration
 	// MaxBodyBytes caps request bodies; zero means DefaultMaxBodyBytes.
 	MaxBodyBytes int64
+	// MaxUploadBytes caps the body of the file upload request (the multipart
+	// framing included); zero means DefaultMaxUploadBytes. The file module
+	// enforces its own per-file limit while streaming.
+	MaxUploadBytes int64
 	// Ready are the probes behind /readyz.
 	Ready []Check
 }
@@ -69,13 +77,16 @@ func NewRouter(deps Deps, o Options) http.Handler {
 	if o.MaxBodyBytes == 0 {
 		o.MaxBodyBytes = DefaultMaxBodyBytes
 	}
+	if o.MaxUploadBytes == 0 {
+		o.MaxUploadBytes = DefaultMaxUploadBytes
+	}
 	r := chi.NewRouter()
 	r.Use(
 		middleware.RequestID,
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
-		maxBody(o.MaxBodyBytes),
+		maxBody(o.MaxBodyBytes, o.MaxUploadBytes),
 		requestTimeout(o.RequestTimeout),
 	)
 

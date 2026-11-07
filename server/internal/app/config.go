@@ -40,6 +40,27 @@ type Config struct {
 	// zero means the httpapi default (1 MiB). File uploads get their own limit.
 	MaxBodyBytes int64
 
+	// MaxUploadBytes limits one uploaded file (OPENBEKCI_MAX_UPLOAD_BYTES);
+	// zero means 25 MiB. It bypasses the JSON cap above for the multipart
+	// upload route only.
+	MaxUploadBytes int64
+	// FilesAllowedExtensions narrows the built-in file type allowlist
+	// (OPENBEKCI_FILES_ALLOWED_EXTENSIONS, comma separated); empty keeps it all.
+	FilesAllowedExtensions []string
+	// StorageDriver is "local" (default, under DATA_DIR/files) or "s3".
+	StorageDriver string
+	// S3 driver settings (OPENBEKCI_STORAGE_S3_*).
+	StorageS3Bucket    string
+	StorageS3Region    string
+	StorageS3Endpoint  string
+	StorageS3AccessKey string
+	StorageS3SecretKey string
+	StorageS3PathStyle bool
+	StorageS3Prefix    string
+	// ClamAVAddr is a clamd address (host:port or unix:/path); empty skips
+	// virus scanning (OPENBEKCI_CLAMAV_ADDR).
+	ClamAVAddr string
+
 	// Worker runs the job worker inside serve.
 	Worker      bool
 	AutoMigrate bool
@@ -82,6 +103,7 @@ type Config struct {
 var secretNames = map[string]bool{
 	"DATABASE_URL": true, "MIGRATOR_DATABASE_URL": true, "PLATFORM_DATABASE_URL": true,
 	"SECRET_KEY": true, "ENCRYPTION_KEY": true, "SMS_NETGSM_PASSWORD": true, "SMTP_PASSWORD": true,
+	"STORAGE_S3_SECRET_KEY": true,
 }
 
 // devKeys are the throwaway keys shipped in the repository's .env.example. They
@@ -163,6 +185,10 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 		c.MaxBodyBytes = n
 	}
 
+	if err = c.loadFiles(l); err != nil {
+		return Config{}, err
+	}
+
 	switch w := strings.ToLower(l.must("WORKER")); w {
 	case "", "embedded":
 		c.Worker = true
@@ -192,6 +218,41 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	}
 	c.SecretKey, c.EncryptionKey = []byte(secret), []byte(enc)
 	return c, nil
+}
+
+// loadFiles reads the file storage and upload settings.
+func (c *Config) loadFiles(l lookup) error {
+	var err error
+	if v := l.must("MAX_UPLOAD_BYTES"); v != "" {
+		n, perr := strconv.ParseInt(v, 10, 64)
+		if perr != nil || n < 1 {
+			return fmt.Errorf("%sMAX_UPLOAD_BYTES: %q is not a positive integer", envPrefix, v)
+		}
+		c.MaxUploadBytes = n
+	}
+	c.FilesAllowedExtensions = splitList(l.must("FILES_ALLOWED_EXTENSIONS"))
+	c.StorageDriver = strings.ToLower(l.must("STORAGE_DRIVER"))
+	switch c.StorageDriver {
+	case "", "local", "s3":
+	default:
+		return fmt.Errorf("%sSTORAGE_DRIVER: %q is not one of local, s3", envPrefix, c.StorageDriver)
+	}
+	c.StorageS3Bucket = l.must("STORAGE_S3_BUCKET")
+	c.StorageS3Region = l.must("STORAGE_S3_REGION")
+	c.StorageS3Endpoint = l.must("STORAGE_S3_ENDPOINT")
+	c.StorageS3AccessKey = l.must("STORAGE_S3_ACCESS_KEY")
+	if c.StorageS3SecretKey, err = l.get("STORAGE_S3_SECRET_KEY"); err != nil {
+		return err
+	}
+	c.StorageS3Prefix = l.must("STORAGE_S3_PREFIX")
+	if c.StorageS3PathStyle, err = parseBool(l.must("STORAGE_S3_PATH_STYLE")); err != nil {
+		return fmt.Errorf("%sSTORAGE_S3_PATH_STYLE: %w", envPrefix, err)
+	}
+	if c.StorageDriver == "s3" && c.StorageS3Bucket == "" {
+		return fmt.Errorf("%sSTORAGE_DRIVER=s3 needs STORAGE_S3_BUCKET", envPrefix)
+	}
+	c.ClamAVAddr = l.must("CLAMAV_ADDR")
+	return nil
 }
 
 // loadMessaging reads the SMS and email settings.
