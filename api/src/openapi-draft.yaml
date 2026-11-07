@@ -188,6 +188,12 @@ paths:
     $ref: ./paths/people/me-directory-consent.yaml
   /v1/orgs/{org_id}/me/occupancies:
     $ref: ./paths/people/me-occupancies.yaml
+  /v1/orgs/{org_id}/me/household-invitations:
+    $ref: ./paths/people/me-household-invitations.yaml
+  /v1/orgs/{org_id}/me/household-invitations/{invitation_id}:
+    $ref: ./paths/people/me-household-invitations-invitation_id.yaml
+  /v1/orgs/{org_id}/me/household-occupancies/{occupancy_id}:
+    $ref: ./paths/people/me-household-occupancies-occupancy_id.yaml
   /v1/orgs/{org_id}/accounts:
     $ref: ./paths/money/accounts.yaml
   /v1/orgs/{org_id}/accounts/{account_id}:

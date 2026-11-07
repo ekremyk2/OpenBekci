@@ -13,6 +13,8 @@ post:
   description: |-
     **Release 0.1.** Invite a household member to my unit.
 
+    Listing and revoking what the caller sent: `me.listHouseholdInvitations`, `me.revokeHouseholdInvitation`; removing a member: `me.endHouseholdOccupancy`.
+
     Permission: `invitations.household` (own unit only).
 
     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).

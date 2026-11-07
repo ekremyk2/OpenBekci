@@ -33,11 +33,12 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `people.move_out` | Record a move-out or sale and issue the closing statement and certificate. | `org_admin`, `site_manager` |
 | `occupancies.read` | Read occupancies (occupants: the people of their own unit). | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household` |
 | `occupancies.manage` | Create, change and end occupancies. | `org_admin`, `site_manager`, `board_member` |
+| `occupancies.household` | End a household member's occupancy on the caller's own unit (`kind = household` only). | `owner`, `tenant` |
 | `occupancies.grant_money` | Grant or withdraw money visibility for a household member. | `org_admin`, `site_manager`, `owner`, `tenant` |
 | `memberships.read` | Read role memberships. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 | `memberships.manage` | Create and end role memberships (site-owned ones need re-authentication or a decision). | `org_admin`, `site_manager` |
 | `invitations.manage` | Send, list, resend and revoke invitations. | `org_admin`, `site_manager`, `board_member` |
-| `invitations.household` | Invite household members to the caller's own unit. | `owner`, `tenant` |
+| `invitations.household` | Invite household members to the caller's own unit, and list and revoke the household invitations the caller sent. | `owner`, `tenant` |
 | `claims.decide` | Approve or reject unit claims from the site QR path; read the site join code. | `org_admin`, `site_manager` |
 | `directory.read` | Read the resident directory (filtered by each person's consent; managers and board see everyone). | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household` |
 | `vendors.read` | Read vendors. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant`, `staff` |
