@@ -1,0 +1,125 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: people.listMemberships
+  summary: List memberships
+  description: |-
+    **Release 0.1.** List memberships.
+
+    Permission: `memberships.read`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - memberships.read
+    site_manager:
+      - memberships.read
+    board_member:
+      - memberships.read
+    auditor:
+      - memberships.read
+  x-stability: stable
+  parameters:
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+    - name: role
+      in: query
+      schema:
+        type: string
+      description: Filter by `role`.
+    - name: scope_type
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - org
+          - site
+          - block
+      description: Filter by `scope_type`.
+    - name: scope_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `scope_id`.
+    - name: active
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `active`.
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/MembershipList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: people.createMembership
+  summary: Create a membership
+  description: |-
+    **Release 0.1.** Create a membership.
+
+    Permission: `memberships.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - memberships.manage
+    site_manager:
+      - memberships.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/MembershipCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Membership
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
