@@ -7,6 +7,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -64,6 +65,14 @@ func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) 
 		Mail:          mailer,
 		Log:           log,
 	})
+}
+
+// newGovernance builds the governance service. Decision effects that need the
+// money module and document filing use the module's defaults until those
+// modules register their implementations (SetEffects, SetFiler); the job client
+// is set as the notifier once it exists.
+func newGovernance(cfg Config, log *slog.Logger, d *db.DB) *governance.Service {
+	return governance.NewService(d, d, governance.Config{BaseURL: cfg.BaseURL, InstanceName: cfg.InstanceName, Log: log})
 }
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity

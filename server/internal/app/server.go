@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
@@ -42,6 +43,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	}
 	go pruneIdentity(ctx, log, deps.Identity)
 	deps.Jobs = rt.jobs
+	deps.Governance = rt.gov
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
@@ -100,6 +102,7 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
+	gov     *governance.Service
 	idem    *idempotency.PG
 	working bool
 }
@@ -148,18 +151,21 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	d.WarnIfPlatformSuperuser(ctx, log)
 
 	idem := idempotency.NewPG(d)
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
+	gov := newGovernance(cfg, log, d)
+	registerGov, periodicGov := gov.JobOptions()
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, Register: registerGov, Periodic: periodicGov})
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
+	gov.SetNotifier(governance.RiverNotifier{Client: client})
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, idem: idem, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, idem: idem, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

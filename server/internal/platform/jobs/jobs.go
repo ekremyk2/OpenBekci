@@ -27,6 +27,10 @@ type Options struct {
 	// Idempotency is pruned by the hourly maintenance.prune_idempotency job.
 	// Nil registers neither the worker nor the schedule.
 	Idempotency Pruner
+	// Register adds a module's workers (for example governance). Optional.
+	Register func(*river.Workers)
+	// Periodic are a module's scheduled jobs, run by the elected leader. Optional.
+	Periodic []*river.PeriodicJob
 }
 
 // Pruner deletes expired idempotency keys (*idempotency.PG).
@@ -80,6 +84,10 @@ func (w *pingWorker) Work(ctx context.Context, job *river.Job[PingArgs]) error {
 func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 	workers := river.NewWorkers()
 	river.AddWorker(workers, &pingWorker{log: log})
+	river.AddWorker(workers, &notifyLogWorker{log: log})
+	if o.Register != nil {
+		o.Register(workers)
+	}
 	if o.Idempotency != nil {
 		river.AddWorker(workers, &pruneIdempotencyWorker{log: log, pruner: o.Idempotency})
 	}
@@ -104,6 +112,9 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 				),
 			}
 		}
+	}
+	if o.Work {
+		cfg.PeriodicJobs = append(cfg.PeriodicJobs, o.Periodic...)
 	}
 	c, err := river.NewClient(riverpgxv5.New(pool), cfg)
 	if err != nil {

@@ -10,6 +10,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AgendaItem struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	MeetingID   pgtype.UUID
+	Position    int32
+	Title       string
+	Description pgtype.Text
+	WillBeVoted bool
+	Topic       pgtype.Text
+	DecisionID  pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+}
+
 type AllocationKey struct {
 	ID        pgtype.UUID
 	OrgID     pgtype.UUID
@@ -34,6 +50,33 @@ type AllocationKeyValue struct {
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Version   int32
+}
+
+type Attendance struct {
+	ID               pgtype.UUID
+	OrgID            pgtype.UUID
+	SiteID           pgtype.UUID
+	MeetingID        pgtype.UUID
+	PersonID         pgtype.UUID
+	UnitIds          []pgtype.UUID
+	Mode             string
+	ProxyForPersonID pgtype.UUID
+	Source           string
+	Votes            int32
+	Share            pgtype.Numeric
+	CheckedInAt      pgtype.Timestamptz
+	CheckedInBy      pgtype.UUID
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+}
+
+type AttendanceToken struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	MeetingID pgtype.UUID
+	PersonID  pgtype.UUID
+	Token     string
+	CreatedAt pgtype.Timestamptz
 }
 
 type AuditEvent struct {
@@ -61,6 +104,34 @@ type Block struct {
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Version   int32
+}
+
+type Decision struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	MeetingID         pgtype.UUID
+	AgendaItemID      pgtype.UUID
+	SequenceNo        int32
+	Year              int32
+	Text              string
+	Outcome           string
+	VoteCount         []byte
+	Dissents          []byte
+	ConcernsResidents bool
+	NotifiedAt        pgtype.Timestamptz
+	Effect            []byte
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type DecisionCounter struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Year   int32
+	LastNo int32
 }
 
 type DeliveryLog struct {
@@ -92,6 +163,16 @@ type Facility struct {
 	SiteID    pgtype.UUID
 	Name      string
 	Rules     []byte
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type GovernanceSetting struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Preset    pgtype.Text
+	Settings  []byte
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Version   int32
@@ -191,6 +272,63 @@ type LoginAttempt struct {
 	Success    bool
 	UserID     pgtype.UUID
 	At         pgtype.Timestamptz
+}
+
+type Meeting struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	Kind                 string
+	Scope                string
+	Title                pgtype.Text
+	ScheduledAt          pgtype.Timestamptz
+	SecondCallAt         pgtype.Timestamptz
+	Location             string
+	Status               string
+	EligibilitySnapshot  []byte
+	SettingsSnapshot     []byte
+	CallLetterDocumentID pgtype.UUID
+	MinutesDocumentID    pgtype.UUID
+	MinutesFileID        pgtype.UUID
+	CalledAt             pgtype.Timestamptz
+	StartedAt            pgtype.Timestamptz
+	ClosedAt             pgtype.Timestamptz
+	CancelReason         pgtype.Text
+	CreatedBy            pgtype.UUID
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type MeetingDocument struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	MeetingID pgtype.UUID
+	Kind      string
+	FileName  string
+	Mime      string
+	Content   []byte
+	CreatedBy pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+}
+
+type MeetingNotice struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	MeetingID   pgtype.UUID
+	PersonID    pgtype.UUID
+	Phase       string
+	Method      pgtype.Text
+	Status      string
+	SentAt      pgtype.Timestamptz
+	TrackingNo  pgtype.Text
+	ProofFileID pgtype.UUID
+	Note        pgtype.Text
+	RecordedBy  pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
 }
 
 type Membership struct {
@@ -308,6 +446,28 @@ type PlatformAuditEvent struct {
 	At          pgtype.Timestamptz
 }
 
+type Poll struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	Question     pgtype.Text
+	OpensAt      pgtype.Timestamptz
+	ClosesAt     pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type PollAnswer struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	UnitID       pgtype.UUID
+	Answer       string
+	AnsweredBy   pgtype.UUID
+	AnsweredAt   pgtype.Timestamptz
+}
+
 type Session struct {
 	ID          pgtype.UUID
 	UserID      pgtype.UUID
@@ -360,6 +520,20 @@ type SiteExport struct {
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
 	Version     int32
+}
+
+type TermReminder struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	MembershipID pgtype.UUID
+	PersonID     pgtype.UUID
+	Role         string
+	ValidTo      pgtype.Date
+	LeadDays     int32
+	NotifiedAt   pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
 }
 
 type Unit struct {
@@ -447,4 +621,18 @@ type Vendor struct {
 	CreatedAt                pgtype.Timestamptz
 	UpdatedAt                pgtype.Timestamptz
 	Version                  int32
+}
+
+type VoteCount struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	YesCount     int32
+	NoCount      int32
+	AbstainCount int32
+	YesShare     pgtype.Numeric
+	NoShare      pgtype.Numeric
+	AbstainShare pgtype.Numeric
+	RecordedBy   pgtype.UUID
+	RecordedAt   pgtype.Timestamptz
 }

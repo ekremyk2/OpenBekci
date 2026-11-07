@@ -98,6 +98,60 @@ func (e AllocationKeyDetailKind) Valid() bool {
 	}
 }
 
+// Defines values for AttendanceMode.
+const (
+	AttendanceModeInPerson AttendanceMode = "in_person"
+	AttendanceModeProxy    AttendanceMode = "proxy"
+)
+
+// Valid indicates whether the value is a known member of the AttendanceMode enum.
+func (e AttendanceMode) Valid() bool {
+	switch e {
+	case AttendanceModeInPerson:
+		return true
+	case AttendanceModeProxy:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AttendanceSource.
+const (
+	AttendanceSourceDesk AttendanceSource = "desk"
+	AttendanceSourceQr   AttendanceSource = "qr"
+)
+
+// Valid indicates whether the value is a known member of the AttendanceSource enum.
+func (e AttendanceSource) Valid() bool {
+	switch e {
+	case AttendanceSourceDesk:
+		return true
+	case AttendanceSourceQr:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AttendanceCreateMode.
+const (
+	AttendanceCreateModeInPerson AttendanceCreateMode = "in_person"
+	AttendanceCreateModeProxy    AttendanceCreateMode = "proxy"
+)
+
+// Valid indicates whether the value is a known member of the AttendanceCreateMode enum.
+func (e AttendanceCreateMode) Valid() bool {
+	switch e {
+	case AttendanceCreateModeInPerson:
+		return true
+	case AttendanceCreateModeProxy:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AuditEventActorKind.
 const (
 	AuditEventActorKindJob    AuditEventActorKind = "job"
@@ -188,6 +242,165 @@ func (e CredentialsClient) Valid() bool {
 	case CredentialsClientMobile:
 		return true
 	case CredentialsClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecisionOutcome.
+const (
+	DecisionOutcomeAccepted DecisionOutcome = "accepted"
+	DecisionOutcomeNoVote   DecisionOutcome = "no_vote"
+	DecisionOutcomeNoted    DecisionOutcome = "noted"
+	DecisionOutcomeRejected DecisionOutcome = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the DecisionOutcome enum.
+func (e DecisionOutcome) Valid() bool {
+	switch e {
+	case DecisionOutcomeAccepted:
+		return true
+	case DecisionOutcomeNoVote:
+		return true
+	case DecisionOutcomeNoted:
+		return true
+	case DecisionOutcomeRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecisionCreateOutcome.
+const (
+	DecisionCreateOutcomeAccepted DecisionCreateOutcome = "accepted"
+	DecisionCreateOutcomeNoVote   DecisionCreateOutcome = "no_vote"
+	DecisionCreateOutcomeNoted    DecisionCreateOutcome = "noted"
+	DecisionCreateOutcomeRejected DecisionCreateOutcome = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the DecisionCreateOutcome enum.
+func (e DecisionCreateOutcome) Valid() bool {
+	switch e {
+	case DecisionCreateOutcomeAccepted:
+		return true
+	case DecisionCreateOutcomeNoVote:
+		return true
+	case DecisionCreateOutcomeNoted:
+		return true
+	case DecisionCreateOutcomeRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecisionEffectKind.
+const (
+	DecisionEffectKindBudgetFinal       DecisionEffectKind = "budget_final"
+	DecisionEffectKindDuesRate          DecisionEffectKind = "dues_rate"
+	DecisionEffectKindMembership        DecisionEffectKind = "membership"
+	DecisionEffectKindSpecialAssessment DecisionEffectKind = "special_assessment"
+)
+
+// Valid indicates whether the value is a known member of the DecisionEffectKind enum.
+func (e DecisionEffectKind) Valid() bool {
+	switch e {
+	case DecisionEffectKindBudgetFinal:
+		return true
+	case DecisionEffectKindDuesRate:
+		return true
+	case DecisionEffectKindMembership:
+		return true
+	case DecisionEffectKindSpecialAssessment:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecisionNotifyChannels.
+const (
+	DecisionNotifyChannelsEmail DecisionNotifyChannels = "email"
+	DecisionNotifyChannelsInApp DecisionNotifyChannels = "in_app"
+	DecisionNotifyChannelsSms   DecisionNotifyChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the DecisionNotifyChannels enum.
+func (e DecisionNotifyChannels) Valid() bool {
+	switch e {
+	case DecisionNotifyChannelsEmail:
+		return true
+	case DecisionNotifyChannelsInApp:
+		return true
+	case DecisionNotifyChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecisionThresholdRule.
+const (
+	DecisionThresholdRuleFourFifths            DecisionThresholdRule = "four_fifths"
+	DecisionThresholdRuleMajorityCountAndShare DecisionThresholdRule = "majority_count_and_share"
+	DecisionThresholdRuleSimpleMajorityPresent DecisionThresholdRule = "simple_majority_present"
+	DecisionThresholdRuleUnanimity             DecisionThresholdRule = "unanimity"
+)
+
+// Valid indicates whether the value is a known member of the DecisionThresholdRule enum.
+func (e DecisionThresholdRule) Valid() bool {
+	switch e {
+	case DecisionThresholdRuleFourFifths:
+		return true
+	case DecisionThresholdRuleMajorityCountAndShare:
+		return true
+	case DecisionThresholdRuleSimpleMajorityPresent:
+		return true
+	case DecisionThresholdRuleUnanimity:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecisionUpdateOutcome.
+const (
+	DecisionUpdateOutcomeAccepted DecisionUpdateOutcome = "accepted"
+	DecisionUpdateOutcomeNoVote   DecisionUpdateOutcome = "no_vote"
+	DecisionUpdateOutcomeNoted    DecisionUpdateOutcome = "noted"
+	DecisionUpdateOutcomeRejected DecisionUpdateOutcome = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the DecisionUpdateOutcome enum.
+func (e DecisionUpdateOutcome) Valid() bool {
+	switch e {
+	case DecisionUpdateOutcomeAccepted:
+		return true
+	case DecisionUpdateOutcomeNoVote:
+		return true
+	case DecisionUpdateOutcomeNoted:
+		return true
+	case DecisionUpdateOutcomeRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GovernanceSettingsSetVoteWeight.
+const (
+	GovernanceSettingsSetVoteWeightPerOwner GovernanceSettingsSetVoteWeight = "per_owner"
+	GovernanceSettingsSetVoteWeightPerUnit  GovernanceSettingsSetVoteWeight = "per_unit"
+)
+
+// Valid indicates whether the value is a known member of the GovernanceSettingsSetVoteWeight enum.
+func (e GovernanceSettingsSetVoteWeight) Valid() bool {
+	switch e {
+	case GovernanceSettingsSetVoteWeightPerOwner:
+		return true
+	case GovernanceSettingsSetVoteWeightPerUnit:
 		return true
 	default:
 		return false
@@ -575,6 +788,285 @@ func (e MeOccupancySide) Valid() bool {
 	}
 }
 
+// Defines values for MeetingKind.
+const (
+	MeetingKindExtraordinary   MeetingKind = "extraordinary"
+	MeetingKindGeneralAssembly MeetingKind = "general_assembly"
+)
+
+// Valid indicates whether the value is a known member of the MeetingKind enum.
+func (e MeetingKind) Valid() bool {
+	switch e {
+	case MeetingKindExtraordinary:
+		return true
+	case MeetingKindGeneralAssembly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingScope.
+const (
+	MeetingScopeBlock   MeetingScope = "block"
+	MeetingScopeCouncil MeetingScope = "council"
+	MeetingScopeSite    MeetingScope = "site"
+)
+
+// Valid indicates whether the value is a known member of the MeetingScope enum.
+func (e MeetingScope) Valid() bool {
+	switch e {
+	case MeetingScopeBlock:
+		return true
+	case MeetingScopeCouncil:
+		return true
+	case MeetingScopeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingStatus.
+const (
+	MeetingStatusCalled    MeetingStatus = "called"
+	MeetingStatusCancelled MeetingStatus = "cancelled"
+	MeetingStatusClosed    MeetingStatus = "closed"
+	MeetingStatusDraft     MeetingStatus = "draft"
+	MeetingStatusInSession MeetingStatus = "in_session"
+)
+
+// Valid indicates whether the value is a known member of the MeetingStatus enum.
+func (e MeetingStatus) Valid() bool {
+	switch e {
+	case MeetingStatusCalled:
+		return true
+	case MeetingStatusCancelled:
+		return true
+	case MeetingStatusClosed:
+		return true
+	case MeetingStatusDraft:
+		return true
+	case MeetingStatusInSession:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingCallNotifyChannels.
+const (
+	MeetingCallNotifyChannelsEmail MeetingCallNotifyChannels = "email"
+	MeetingCallNotifyChannelsInApp MeetingCallNotifyChannels = "in_app"
+	MeetingCallNotifyChannelsSms   MeetingCallNotifyChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the MeetingCallNotifyChannels enum.
+func (e MeetingCallNotifyChannels) Valid() bool {
+	switch e {
+	case MeetingCallNotifyChannelsEmail:
+		return true
+	case MeetingCallNotifyChannelsInApp:
+		return true
+	case MeetingCallNotifyChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingCreateKind.
+const (
+	MeetingCreateKindExtraordinary   MeetingCreateKind = "extraordinary"
+	MeetingCreateKindGeneralAssembly MeetingCreateKind = "general_assembly"
+)
+
+// Valid indicates whether the value is a known member of the MeetingCreateKind enum.
+func (e MeetingCreateKind) Valid() bool {
+	switch e {
+	case MeetingCreateKindExtraordinary:
+		return true
+	case MeetingCreateKindGeneralAssembly:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingCreateScope.
+const (
+	MeetingCreateScopeBlock   MeetingCreateScope = "block"
+	MeetingCreateScopeCouncil MeetingCreateScope = "council"
+	MeetingCreateScopeSite    MeetingCreateScope = "site"
+)
+
+// Valid indicates whether the value is a known member of the MeetingCreateScope enum.
+func (e MeetingCreateScope) Valid() bool {
+	switch e {
+	case MeetingCreateScopeBlock:
+		return true
+	case MeetingCreateScopeCouncil:
+		return true
+	case MeetingCreateScopeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticeMethod.
+const (
+	MeetingNoticeMethodEmail          MeetingNoticeMethod = "email"
+	MeetingNoticeMethodOther          MeetingNoticeMethod = "other"
+	MeetingNoticeMethodRegisteredMail MeetingNoticeMethod = "registered_mail"
+	MeetingNoticeMethodSigned         MeetingNoticeMethod = "signed"
+	MeetingNoticeMethodSms            MeetingNoticeMethod = "sms"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticeMethod enum.
+func (e MeetingNoticeMethod) Valid() bool {
+	switch e {
+	case MeetingNoticeMethodEmail:
+		return true
+	case MeetingNoticeMethodOther:
+		return true
+	case MeetingNoticeMethodRegisteredMail:
+		return true
+	case MeetingNoticeMethodSigned:
+		return true
+	case MeetingNoticeMethodSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticePhase.
+const (
+	MeetingNoticePhaseCall      MeetingNoticePhase = "call"
+	MeetingNoticePhaseDecisions MeetingNoticePhase = "decisions"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticePhase enum.
+func (e MeetingNoticePhase) Valid() bool {
+	switch e {
+	case MeetingNoticePhaseCall:
+		return true
+	case MeetingNoticePhaseDecisions:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticeStatus.
+const (
+	MeetingNoticeStatusPending  MeetingNoticeStatus = "pending"
+	MeetingNoticeStatusRecorded MeetingNoticeStatus = "recorded"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticeStatus enum.
+func (e MeetingNoticeStatus) Valid() bool {
+	switch e {
+	case MeetingNoticeStatusPending:
+		return true
+	case MeetingNoticeStatusRecorded:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticeBulkMethod.
+const (
+	MeetingNoticeBulkMethodEmail          MeetingNoticeBulkMethod = "email"
+	MeetingNoticeBulkMethodOther          MeetingNoticeBulkMethod = "other"
+	MeetingNoticeBulkMethodRegisteredMail MeetingNoticeBulkMethod = "registered_mail"
+	MeetingNoticeBulkMethodSigned         MeetingNoticeBulkMethod = "signed"
+	MeetingNoticeBulkMethodSms            MeetingNoticeBulkMethod = "sms"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticeBulkMethod enum.
+func (e MeetingNoticeBulkMethod) Valid() bool {
+	switch e {
+	case MeetingNoticeBulkMethodEmail:
+		return true
+	case MeetingNoticeBulkMethodOther:
+		return true
+	case MeetingNoticeBulkMethodRegisteredMail:
+		return true
+	case MeetingNoticeBulkMethodSigned:
+		return true
+	case MeetingNoticeBulkMethodSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticeBulkPhase.
+const (
+	MeetingNoticeBulkPhaseCall      MeetingNoticeBulkPhase = "call"
+	MeetingNoticeBulkPhaseDecisions MeetingNoticeBulkPhase = "decisions"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticeBulkPhase enum.
+func (e MeetingNoticeBulkPhase) Valid() bool {
+	switch e {
+	case MeetingNoticeBulkPhaseCall:
+		return true
+	case MeetingNoticeBulkPhaseDecisions:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticeRecordMethod.
+const (
+	MeetingNoticeRecordMethodEmail          MeetingNoticeRecordMethod = "email"
+	MeetingNoticeRecordMethodOther          MeetingNoticeRecordMethod = "other"
+	MeetingNoticeRecordMethodRegisteredMail MeetingNoticeRecordMethod = "registered_mail"
+	MeetingNoticeRecordMethodSigned         MeetingNoticeRecordMethod = "signed"
+	MeetingNoticeRecordMethodSms            MeetingNoticeRecordMethod = "sms"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticeRecordMethod enum.
+func (e MeetingNoticeRecordMethod) Valid() bool {
+	switch e {
+	case MeetingNoticeRecordMethodEmail:
+		return true
+	case MeetingNoticeRecordMethodOther:
+		return true
+	case MeetingNoticeRecordMethodRegisteredMail:
+		return true
+	case MeetingNoticeRecordMethodSigned:
+		return true
+	case MeetingNoticeRecordMethodSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeetingNoticeRecordPhase.
+const (
+	MeetingNoticeRecordPhaseCall      MeetingNoticeRecordPhase = "call"
+	MeetingNoticeRecordPhaseDecisions MeetingNoticeRecordPhase = "decisions"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNoticeRecordPhase enum.
+func (e MeetingNoticeRecordPhase) Valid() bool {
+	switch e {
+	case MeetingNoticeRecordPhaseCall:
+		return true
+	case MeetingNoticeRecordPhaseDecisions:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MembershipRole.
 const (
 	MembershipRoleAccountant  MembershipRole = "accountant"
@@ -858,15 +1350,19 @@ func (e OrganizationStatus) Valid() bool {
 const (
 	PermissionAllocationManage    Permission = "allocation.manage"
 	PermissionAllocationRead      Permission = "allocation.read"
+	PermissionAttendanceManage    Permission = "attendance.manage"
 	PermissionAuditRead           Permission = "audit.read"
 	PermissionAuditReport         Permission = "audit.report"
 	PermissionClaimManage         Permission = "claim.manage"
+	PermissionDecisionsManage     Permission = "decisions.manage"
 	PermissionDirectoryConsent    Permission = "directory.consent"
 	PermissionDirectoryRead       Permission = "directory.read"
 	PermissionImportRun           Permission = "import.run"
 	PermissionInvitationHousehold Permission = "invitation.household"
 	PermissionInvitationManage    Permission = "invitation.manage"
 	PermissionMeRead              Permission = "me.read"
+	PermissionMeetingsManage      Permission = "meetings.manage"
+	PermissionMeetingsRead        Permission = "meetings.read"
 	PermissionMembershipManage    Permission = "membership.manage"
 	PermissionMembershipRead      Permission = "membership.read"
 	PermissionMoveoutManage       Permission = "moveout.manage"
@@ -879,6 +1375,7 @@ const (
 	PermissionPersonManage        Permission = "person.manage"
 	PermissionPersonRead          Permission = "person.read"
 	PermissionPlatformManage      Permission = "platform.manage"
+	PermissionPollsAnswer         Permission = "polls.answer"
 	PermissionSessionsManageOwn   Permission = "sessions.manage_own"
 	PermissionSiteCreate          Permission = "site.create"
 	PermissionSiteExport          Permission = "site.export"
@@ -901,11 +1398,15 @@ func (e Permission) Valid() bool {
 		return true
 	case PermissionAllocationRead:
 		return true
+	case PermissionAttendanceManage:
+		return true
 	case PermissionAuditRead:
 		return true
 	case PermissionAuditReport:
 		return true
 	case PermissionClaimManage:
+		return true
+	case PermissionDecisionsManage:
 		return true
 	case PermissionDirectoryConsent:
 		return true
@@ -918,6 +1419,10 @@ func (e Permission) Valid() bool {
 	case PermissionInvitationManage:
 		return true
 	case PermissionMeRead:
+		return true
+	case PermissionMeetingsManage:
+		return true
+	case PermissionMeetingsRead:
 		return true
 	case PermissionMembershipManage:
 		return true
@@ -942,6 +1447,8 @@ func (e Permission) Valid() bool {
 	case PermissionPersonRead:
 		return true
 	case PermissionPlatformManage:
+		return true
+	case PermissionPollsAnswer:
 		return true
 	case PermissionSessionsManageOwn:
 		return true
@@ -968,6 +1475,69 @@ func (e Permission) Valid() bool {
 	case PermissionVendorManage:
 		return true
 	case PermissionVendorRead:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PollStatus.
+const (
+	PollStatusClosed PollStatus = "closed"
+	PollStatusDraft  PollStatus = "draft"
+	PollStatusOpen   PollStatus = "open"
+)
+
+// Valid indicates whether the value is a known member of the PollStatus enum.
+func (e PollStatus) Valid() bool {
+	switch e {
+	case PollStatusClosed:
+		return true
+	case PollStatusDraft:
+		return true
+	case PollStatusOpen:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PollAnswerAnswer.
+const (
+	PollAnswerAnswerAbstain PollAnswerAnswer = "abstain"
+	PollAnswerAnswerNo      PollAnswerAnswer = "no"
+	PollAnswerAnswerYes     PollAnswerAnswer = "yes"
+)
+
+// Valid indicates whether the value is a known member of the PollAnswerAnswer enum.
+func (e PollAnswerAnswer) Valid() bool {
+	switch e {
+	case PollAnswerAnswerAbstain:
+		return true
+	case PollAnswerAnswerNo:
+		return true
+	case PollAnswerAnswerYes:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PollAnswerSetAnswer.
+const (
+	PollAnswerSetAnswerAbstain PollAnswerSetAnswer = "abstain"
+	PollAnswerSetAnswerNo      PollAnswerSetAnswer = "no"
+	PollAnswerSetAnswerYes     PollAnswerSetAnswer = "yes"
+)
+
+// Valid indicates whether the value is a known member of the PollAnswerSetAnswer enum.
+func (e PollAnswerSetAnswer) Valid() bool {
+	switch e {
+	case PollAnswerSetAnswerAbstain:
+		return true
+	case PollAnswerSetAnswerNo:
+		return true
+	case PollAnswerSetAnswerYes:
 		return true
 	default:
 		return false
@@ -1049,6 +1619,24 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeValidationFailed:
 		return true
 	case ProblemCodeVersionConflict:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for QuorumCall.
+const (
+	QuorumCallFirst  QuorumCall = "first"
+	QuorumCallSecond QuorumCall = "second"
+)
+
+// Valid indicates whether the value is a known member of the QuorumCall enum.
+func (e QuorumCall) Valid() bool {
+	switch e {
+	case QuorumCallFirst:
+		return true
+	case QuorumCallSecond:
 		return true
 	default:
 		return false
@@ -1196,6 +1784,27 @@ func (e SiteSettingsAppurtenanceDefault) Valid() bool {
 	case SiteSettingsAppurtenanceDefaultAppurtenance:
 		return true
 	case SiteSettingsAppurtenanceDefaultIndependent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TermReminderStatus.
+const (
+	TermReminderStatusDue      TermReminderStatus = "due"
+	TermReminderStatusOverdue  TermReminderStatus = "overdue"
+	TermReminderStatusUpcoming TermReminderStatus = "upcoming"
+)
+
+// Valid indicates whether the value is a known member of the TermReminderStatus enum.
+func (e TermReminderStatus) Valid() bool {
+	switch e {
+	case TermReminderStatusDue:
+		return true
+	case TermReminderStatusOverdue:
+		return true
+	case TermReminderStatusUpcoming:
 		return true
 	default:
 		return false
@@ -1406,6 +2015,27 @@ func (e UnitUpdatePayerOverrides) Valid() bool {
 	}
 }
 
+// Defines values for VoteCountOutcomeHint.
+const (
+	VoteCountOutcomeHintAccepted     VoteCountOutcomeHint = "accepted"
+	VoteCountOutcomeHintRejected     VoteCountOutcomeHint = "rejected"
+	VoteCountOutcomeHintUndetermined VoteCountOutcomeHint = "undetermined"
+)
+
+// Valid indicates whether the value is a known member of the VoteCountOutcomeHint enum.
+func (e VoteCountOutcomeHint) Valid() bool {
+	switch e {
+	case VoteCountOutcomeHintAccepted:
+		return true
+	case VoteCountOutcomeHintRejected:
+		return true
+	case VoteCountOutcomeHintUndetermined:
+		return true
+	default:
+		return false
+	}
+}
+
 // AcceptInvitation defines model for AcceptInvitation.
 type AcceptInvitation struct {
 	Locale *string `json:"locale,omitempty"`
@@ -1425,6 +2055,57 @@ type AcceptResult struct {
 	SiteId         openapi_types.UUID `json:"site_id"`
 	UserCreated    bool               `json:"user_created"`
 	UserId         openapi_types.UUID `json:"user_id"`
+}
+
+// AgendaItem An agenda item, marked whether it will be voted on (G1).
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","decision_id":null,"description":null,"id":"0192a3f0-1000-7000-8000-000000000002","meeting_id":"0192a3f0-1000-7000-8000-000000000004","org_id":"0192a3f0-1000-7000-8000-000000000003","position":1,"title":"Ali Veli","topic":null,"updated_at":"2026-03-01T09:00:00Z","version":1,"will_be_voted":false}
+type AgendaItem struct {
+	CreatedAt   time.Time                             `json:"created_at"`
+	DecisionId  nullable.Nullable[openapi_types.UUID] `json:"decision_id"`
+	Description nullable.Nullable[string]             `json:"description"`
+	Id          openapi_types.UUID                    `json:"id"`
+	MeetingId   openapi_types.UUID                    `json:"meeting_id"`
+	OrgId       openapi_types.UUID                    `json:"org_id"`
+	Position    int64                                 `json:"position"`
+	Title       string                                `json:"title"`
+
+	// Topic Key into the threshold table.
+	Topic     nullable.Nullable[string] `json:"topic"`
+	UpdatedAt time.Time                 `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version     int64 `json:"version"`
+	WillBeVoted bool  `json:"will_be_voted"`
+}
+
+// AgendaItemCreate defines model for AgendaItemCreate.
+type AgendaItemCreate struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Title       string                    `json:"title"`
+	Topic       nullable.Nullable[string] `json:"topic,omitempty"`
+	WillBeVoted *bool                     `json:"will_be_voted,omitempty"`
+}
+
+// AgendaItemList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","decision_id":null,"description":null,"id":"0192a3f0-1000-7000-8000-000000000002","meeting_id":"0192a3f0-1000-7000-8000-000000000004","org_id":"0192a3f0-1000-7000-8000-000000000003","position":1,"title":"Ali Veli","topic":null,"updated_at":"2026-03-01T09:00:00Z","version":1,"will_be_voted":false}],"next_cursor":null}
+type AgendaItemList struct {
+	Items []AgendaItem `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// AgendaItemUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type AgendaItemUpdate struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Title       *string                   `json:"title,omitempty"`
+	Topic       nullable.Nullable[string] `json:"topic,omitempty"`
+	WillBeVoted *bool                     `json:"will_be_voted,omitempty"`
+}
+
+// AgendaOrder defines model for AgendaOrder.
+type AgendaOrder struct {
+	ItemIds []openapi_types.UUID `json:"item_ids"`
 }
 
 // AllocationKey defines model for AllocationKey.
@@ -1504,6 +2185,61 @@ type AllocationKeyValues struct {
 type ArchiveUpload struct {
 	// File A site archive produced by a site export.
 	File openapi_types.File `json:"file"`
+}
+
+// Attendance Who is present, and for which units.
+//
+// Example: {"checked_in_at":"2026-03-01T09:00:00Z","checked_in_by":null,"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","meeting_id":"0192a3f0-1000-7000-8000-000000000004","mode":"in_person","org_id":"0192a3f0-1000-7000-8000-000000000003","person_display_name":"Ali Veli","person_id":"0192a3f0-1000-7000-8000-000000000005","proxy_for_person_id":null,"source":"desk","unit_ids":["0192a3f0-1000-7000-8000-000000000006"],"unit_labels":["Ali Veli"],"updated_at":"2026-03-01T09:00:00Z"}
+type Attendance struct {
+	CheckedInAt time.Time                             `json:"checked_in_at"`
+	CheckedInBy nullable.Nullable[openapi_types.UUID] `json:"checked_in_by"`
+	CreatedAt   time.Time                             `json:"created_at"`
+	Id          openapi_types.UUID                    `json:"id"`
+	MeetingId   openapi_types.UUID                    `json:"meeting_id"`
+
+	// Mode Open enum.
+	Mode              AttendanceMode                        `json:"mode"`
+	OrgId             openapi_types.UUID                    `json:"org_id"`
+	PersonDisplayName string                                `json:"person_display_name"`
+	PersonId          openapi_types.UUID                    `json:"person_id"`
+	ProxyForPersonId  nullable.Nullable[openapi_types.UUID] `json:"proxy_for_person_id"`
+
+	// Source Open enum.
+	Source     AttendanceSource     `json:"source"`
+	UnitIds    []openapi_types.UUID `json:"unit_ids"`
+	UnitLabels []string             `json:"unit_labels"`
+	UpdatedAt  time.Time            `json:"updated_at"`
+}
+
+// AttendanceMode Open enum.
+type AttendanceMode string
+
+// AttendanceSource Open enum.
+type AttendanceSource string
+
+// AttendanceCheckin defines model for AttendanceCheckin.
+type AttendanceCheckin struct {
+	// Token From the owner's QR (call letter or app).
+	Token string `json:"token"`
+}
+
+// AttendanceCreate defines model for AttendanceCreate.
+type AttendanceCreate struct {
+	Mode             AttendanceCreateMode `json:"mode"`
+	PersonId         openapi_types.UUID   `json:"person_id"`
+	ProxyForPersonId *openapi_types.UUID  `json:"proxy_for_person_id,omitempty"`
+	UnitIds          []openapi_types.UUID `json:"unit_ids"`
+}
+
+// AttendanceCreateMode defines model for AttendanceCreate.Mode.
+type AttendanceCreateMode string
+
+// AttendanceList Example: {"items":[{"checked_in_at":"2026-03-01T09:00:00Z","checked_in_by":null,"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","meeting_id":"0192a3f0-1000-7000-8000-000000000004","mode":"in_person","org_id":"0192a3f0-1000-7000-8000-000000000003","person_display_name":"Ali Veli","person_id":"0192a3f0-1000-7000-8000-000000000005","proxy_for_person_id":null,"source":"desk","unit_ids":["0192a3f0-1000-7000-8000-000000000006"],"unit_labels":["Ali Veli"],"updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type AttendanceList struct {
+	Items []Attendance `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
 }
 
 // AuditChange One changed field. Personal data carries only `hash_before` and
@@ -1709,6 +2445,177 @@ type Credentials struct {
 // CredentialsClient `mobile` makes an emailed link use the `openbekci://` scheme.
 type CredentialsClient string
 
+// Decision A recorded decision. The system produces numbered drafts; it does not claim to be the karar defteri.
+//
+// Example: {"agenda_item_id":null,"concerns_residents":true,"created_at":"2026-03-01T09:00:00Z","dissents":[{"display_name":null,"person_id":"0192a3f0-1000-7000-8000-000000000001","text":"text"}],"effect":null,"id":"0192a3f0-1000-7000-8000-000000000003","meeting_id":"0192a3f0-1000-7000-8000-000000000002","notified_at":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","outcome":"accepted","sequence_no":3,"site_id":"0192a3f0-1000-7000-8000-000000000002","text":"Dues become 2,000 TRY from March.","updated_at":"2026-03-01T09:00:00Z","version":1,"vote_count":null,"year":2026}
+type Decision struct {
+	AgendaItemId nullable.Nullable[openapi_types.UUID] `json:"agenda_item_id"`
+
+	// ConcernsResidents Tenants see only decisions marked this way.
+	ConcernsResidents bool                              `json:"concerns_residents"`
+	CreatedAt         time.Time                         `json:"created_at"`
+	Dissents          []Dissent                         `json:"dissents"`
+	Effect            nullable.Nullable[DecisionEffect] `json:"effect"`
+	Id                openapi_types.UUID                `json:"id"`
+	MeetingId         openapi_types.UUID                `json:"meeting_id"`
+	NotifiedAt        nullable.Nullable[time.Time]      `json:"notified_at"`
+	OrgId             openapi_types.UUID                `json:"org_id"`
+
+	// Outcome Open enum.
+	Outcome DecisionOutcome `json:"outcome"`
+
+	// SequenceNo Gap-free per site per year, for transcription into the notarized karar defteri.
+	SequenceNo int64              `json:"sequence_no"`
+	SiteId     openapi_types.UUID `json:"site_id"`
+	Text       string             `json:"text"`
+	UpdatedAt  time.Time          `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version   int64                        `json:"version"`
+	VoteCount nullable.Nullable[VoteCount] `json:"vote_count"`
+	Year      int64                        `json:"year"`
+}
+
+// DecisionOutcome Open enum.
+type DecisionOutcome string
+
+// DecisionApply The change a decision triggers; the manager confirms each one (G5).
+type DecisionApply struct {
+	union json.RawMessage
+}
+
+// DecisionApplyBudget defines model for DecisionApplyBudget.
+type DecisionApplyBudget struct {
+	BudgetId openapi_types.UUID `json:"budget_id"`
+
+	// Kind `budget_final`
+	Kind string `json:"kind"`
+}
+
+// DecisionApplyDuesRate defines model for DecisionApplyDuesRate.
+type DecisionApplyDuesRate struct {
+	// Amount Integer minor units with an ISO 4217 currency code.
+	Amount Money              `json:"amount"`
+	From   openapi_types.Date `json:"from"`
+
+	// Kind `dues_rate`
+	Kind   string             `json:"kind"`
+	PlanId openapi_types.UUID `json:"plan_id"`
+}
+
+// DecisionApplyMembership defines model for DecisionApplyMembership.
+type DecisionApplyMembership struct {
+	// EndPrevious A new election ends the old terms (G6).
+	EndPrevious *bool `json:"end_previous,omitempty"`
+
+	// Kind `membership`
+	Kind      string                                `json:"kind"`
+	PersonId  openapi_types.UUID                    `json:"person_id"`
+	Role      string                                `json:"role"`
+	ScopeId   nullable.Nullable[openapi_types.UUID] `json:"scope_id"`
+	ScopeType string                                `json:"scope_type"`
+	ValidFrom openapi_types.Date                    `json:"valid_from"`
+	ValidTo   openapi_types.Date                    `json:"valid_to"`
+}
+
+// DecisionApplyResult defines model for DecisionApplyResult.
+type DecisionApplyResult struct {
+	// Decision When committed: the decision with its `effect`.
+	Decision nullable.Nullable[Decision] `json:"decision"`
+	DryRun   bool                        `json:"dry_run"`
+
+	// Preview With `dry_run=true`: what would be created.
+	Preview nullable.Nullable[map[string]interface{}] `json:"preview"`
+}
+
+// DecisionApplySpecialAssessment defines model for DecisionApplySpecialAssessment.
+type DecisionApplySpecialAssessment struct {
+	// Kind `special_assessment`
+	Kind string `json:"kind"`
+
+	// Plan A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged).
+	Plan map[string]interface{} `json:"plan"`
+}
+
+// DecisionCreate defines model for DecisionCreate.
+type DecisionCreate struct {
+	AgendaItemId      nullable.Nullable[openapi_types.UUID] `json:"agenda_item_id,omitempty"`
+	ConcernsResidents *bool                                 `json:"concerns_residents,omitempty"`
+	Dissents          *[]DissentInput                       `json:"dissents,omitempty"`
+	MeetingId         openapi_types.UUID                    `json:"meeting_id"`
+
+	// Outcome Open enum.
+	Outcome DecisionCreateOutcome `json:"outcome"`
+	SiteId  openapi_types.UUID    `json:"site_id"`
+	Text    string                `json:"text"`
+}
+
+// DecisionCreateOutcome Open enum.
+type DecisionCreateOutcome string
+
+// DecisionEffect defines model for DecisionEffect.
+type DecisionEffect struct {
+	AppliedAt time.Time          `json:"applied_at"`
+	AppliedBy openapi_types.UUID `json:"applied_by"`
+
+	// Kind Open enum.
+	Kind       DecisionEffectKind `json:"kind"`
+	RecordId   openapi_types.UUID `json:"record_id"`
+	RecordType string             `json:"record_type"`
+}
+
+// DecisionEffectKind Open enum.
+type DecisionEffectKind string
+
+// DecisionList Example: {"items":[{"agenda_item_id":null,"concerns_residents":true,"created_at":"2026-03-01T09:00:00Z","dissents":[{"display_name":null,"person_id":"0192a3f0-1000-7000-8000-000000000001","text":"text"}],"effect":null,"id":"0192a3f0-1000-7000-8000-000000000003","meeting_id":"0192a3f0-1000-7000-8000-000000000002","notified_at":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","outcome":"accepted","sequence_no":3,"site_id":"0192a3f0-1000-7000-8000-000000000002","text":"Dues become 2,000 TRY from March.","updated_at":"2026-03-01T09:00:00Z","version":1,"vote_count":null,"year":2026}],"next_cursor":null}
+type DecisionList struct {
+	Items []Decision `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// DecisionNotify defines model for DecisionNotify.
+type DecisionNotify struct {
+	// Channels Chosen by the sender (O5).
+	Channels []DecisionNotifyChannels `json:"channels"`
+}
+
+// DecisionNotifyChannels defines model for DecisionNotify.Channels.
+type DecisionNotifyChannels string
+
+// DecisionNotifyResult defines model for DecisionNotifyResult.
+type DecisionNotifyResult struct {
+	DryRun         bool  `json:"dry_run"`
+	RecipientCount int64 `json:"recipient_count"`
+	SmsCount       int64 `json:"sms_count"`
+}
+
+// DecisionThreshold defines model for DecisionThreshold.
+type DecisionThreshold struct {
+	Note nullable.Nullable[string] `json:"note"`
+
+	// Rule Open enum.
+	Rule  DecisionThresholdRule `json:"rule"`
+	Topic string                `json:"topic"`
+}
+
+// DecisionThresholdRule Open enum.
+type DecisionThresholdRule string
+
+// DecisionUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type DecisionUpdate struct {
+	ConcernsResidents *bool           `json:"concerns_residents,omitempty"`
+	Dissents          *[]DissentInput `json:"dissents,omitempty"`
+
+	// Outcome Open enum.
+	Outcome *DecisionUpdateOutcome `json:"outcome,omitempty"`
+	Text    *string                `json:"text,omitempty"`
+}
+
+// DecisionUpdateOutcome Open enum.
+type DecisionUpdateOutcome string
+
 // DirectoryConsent defines model for DirectoryConsent.
 type DirectoryConsent struct {
 	ShareName  bool               `json:"share_name"`
@@ -1769,6 +2676,82 @@ type DiscoveryDocument struct {
 	// ServerVersion Example: 0.1.0
 	ServerVersion string `json:"server_version"`
 }
+
+// Dissent defines model for Dissent.
+type Dissent struct {
+	DisplayName nullable.Nullable[string] `json:"display_name"`
+	PersonId    openapi_types.UUID        `json:"person_id"`
+	Text        string                    `json:"text"`
+}
+
+// DissentInput defines model for DissentInput.
+type DissentInput struct {
+	PersonId openapi_types.UUID `json:"person_id"`
+	Text     string             `json:"text"`
+}
+
+// GovernancePreset Example: {"country_code":"country code","id":"id","name":"Ali Veli","notes":[{"key":"key","note":"note","verify":false}],"settings":{"call_min_days":1,"max_votes_per_person_pct":1.5,"proxy_cap_pct":1.5,"proxy_cap_small_building_max":1,"quorum":{"first_call_by_count_pct":1.5,"first_call_by_share_pct":1.5,"second_call_requires_quorum":false},"second_call_max_days":1,"second_call_min_days":1,"small_building_unit_limit":1,"term_reminder_days":1,"thresholds":[{"note":null,"rule":"simple_majority_present","topic":"topic"}]}}
+type GovernancePreset struct {
+	CountryCode string       `json:"country_code"`
+	Id          string       `json:"id"`
+	Name        string       `json:"name"`
+	Notes       []PresetNote `json:"notes"`
+
+	// Settings Quorum, thresholds, vote weight and proxy caps: site settings with Law 634 defaults, editable where the yonetim plani allows.
+	Settings GovernanceSettingsSet `json:"settings"`
+}
+
+// GovernancePresetList Example: {"items":[{"country_code":"country code","id":"id","name":"Ali Veli","notes":[{"key":"key","note":"note","verify":false}],"settings":{"call_min_days":1,"max_votes_per_person_pct":1.5,"proxy_cap_pct":1.5,"proxy_cap_small_building_max":1,"quorum":{"first_call_by_count_pct":1.5,"first_call_by_share_pct":1.5,"second_call_requires_quorum":false},"second_call_max_days":1,"second_call_min_days":1,"small_building_unit_limit":1,"term_reminder_days":1,"thresholds":[{"note":null,"rule":"simple_majority_present","topic":"topic"}]}}],"next_cursor":null}
+type GovernancePresetList struct {
+	Items      []GovernancePreset        `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// GovernanceSettings defines model for GovernanceSettings.
+type GovernanceSettings struct {
+	Preset      nullable.Nullable[string] `json:"preset"`
+	PresetNotes []PresetNote              `json:"preset_notes"`
+
+	// Settings Quorum, thresholds, vote weight and proxy caps: site settings with Law 634 defaults, editable where the yonetim plani allows.
+	Settings GovernanceSettingsSet `json:"settings"`
+	SiteId   openapi_types.UUID    `json:"site_id"`
+	Version  int64                 `json:"version"`
+}
+
+// GovernanceSettingsSet Quorum, thresholds, vote weight and proxy caps: site settings with Law 634 defaults, editable where the yonetim plani allows.
+type GovernanceSettingsSet struct {
+	// CallMinDays Default 15 (verify).
+	CallMinDays int64 `json:"call_min_days"`
+
+	// DefaultTermMonths Additive to the draft. Default length of an elected term in months (default 12).
+	DefaultTermMonths *int64 `json:"default_term_months,omitempty"`
+
+	// MaxVotesPerPersonPct Default one third (verify).
+	MaxVotesPerPersonPct float32 `json:"max_votes_per_person_pct"`
+
+	// OrdinaryAssemblyMonth Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+	OrdinaryAssemblyMonth *int64 `json:"ordinary_assembly_month,omitempty"`
+
+	// ProxyCapPct Default 5 percent of total votes (verify).
+	ProxyCapPct float32 `json:"proxy_cap_pct"`
+
+	// ProxyCapSmallBuildingMax In buildings up to `small_building_unit_limit` units, at most this many others (default 2, verify).
+	ProxyCapSmallBuildingMax int64      `json:"proxy_cap_small_building_max"`
+	Quorum                   QuorumRule `json:"quorum"`
+	SecondCallMaxDays        int64      `json:"second_call_max_days"`
+	SecondCallMinDays        int64      `json:"second_call_min_days"`
+	SmallBuildingUnitLimit   int64      `json:"small_building_unit_limit"`
+
+	// TermReminderDays Reminder lead time before a term ends.
+	TermReminderDays int64               `json:"term_reminder_days"`
+	Thresholds       []DecisionThreshold `json:"thresholds"`
+
+	// VoteWeight Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+	VoteWeight *GovernanceSettingsSetVoteWeight `json:"vote_weight,omitempty"`
+}
+
+// GovernanceSettingsSetVoteWeight Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+type GovernanceSettingsSetVoteWeight string
 
 // HouseholdInvitationCreate Invite a household member to this unit. They get no money access.
 type HouseholdInvitationCreate struct {
@@ -2119,6 +3102,176 @@ type MeUser struct {
 	Phone           nullable.Nullable[string] `json:"phone"`
 }
 
+// Meeting An owners' assembly (kat malikleri kurulu).
+//
+// Example: {"call_letter_document_id":null,"called_at":null,"created_at":"2026-03-01T09:00:00Z","eligibility_snapshot":null,"id":"0192a3f0-1000-7000-8000-000000000003","kind":"general_assembly","location":"location","minutes_document_id":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","scheduled_at":"2026-01-18T10:00:00Z","scope":"site","second_call_at":"2026-01-28T10:00:00Z","site_id":"0192a3f0-1000-7000-8000-000000000002","status":"called","title":null,"updated_at":"2026-03-01T09:00:00Z","version":1}
+type Meeting struct {
+	CallLetterDocumentId nullable.Nullable[openapi_types.UUID] `json:"call_letter_document_id"`
+	CalledAt             nullable.Nullable[time.Time]          `json:"called_at"`
+	CreatedAt            time.Time                             `json:"created_at"`
+
+	// EligibilitySnapshot Who could vote and with what weight as of the call date; fixed at `:call`.
+	EligibilitySnapshot nullable.Nullable[map[string]interface{}] `json:"eligibility_snapshot"`
+	Id                  openapi_types.UUID                        `json:"id"`
+
+	// Kind Open enum.
+	Kind              MeetingKind                           `json:"kind"`
+	Location          string                                `json:"location"`
+	MinutesDocumentId nullable.Nullable[openapi_types.UUID] `json:"minutes_document_id"`
+	OrgId             openapi_types.UUID                    `json:"org_id"`
+	ScheduledAt       time.Time                             `json:"scheduled_at"`
+
+	// Scope Only `site` is supported in 0.2; block and council are reserved (G7). Open enum.
+	Scope        MeetingScope       `json:"scope"`
+	SecondCallAt time.Time          `json:"second_call_at"`
+	SiteId       openapi_types.UUID `json:"site_id"`
+
+	// Status Open enum.
+	Status    MeetingStatus             `json:"status"`
+	Title     nullable.Nullable[string] `json:"title"`
+	UpdatedAt time.Time                 `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// MeetingKind Open enum.
+type MeetingKind string
+
+// MeetingScope Only `site` is supported in 0.2; block and council are reserved (G7). Open enum.
+type MeetingScope string
+
+// MeetingStatus Open enum.
+type MeetingStatus string
+
+// MeetingCall defines model for MeetingCall.
+type MeetingCall struct {
+	// NotifyChannels Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices.
+	NotifyChannels *[]MeetingCallNotifyChannels `json:"notify_channels,omitempty"`
+}
+
+// MeetingCallNotifyChannels defines model for MeetingCall.NotifyChannels.
+type MeetingCallNotifyChannels string
+
+// MeetingCancel defines model for MeetingCancel.
+type MeetingCancel struct {
+	Reason string `json:"reason"`
+}
+
+// MeetingCreate defines model for MeetingCreate.
+type MeetingCreate struct {
+	// Kind Open enum.
+	Kind        MeetingCreateKind `json:"kind"`
+	Location    string            `json:"location"`
+	ScheduledAt time.Time         `json:"scheduled_at"`
+
+	// Scope Open enum.
+	Scope        *MeetingCreateScope       `json:"scope,omitempty"`
+	SecondCallAt time.Time                 `json:"second_call_at"`
+	SiteId       openapi_types.UUID        `json:"site_id"`
+	Title        nullable.Nullable[string] `json:"title,omitempty"`
+}
+
+// MeetingCreateKind Open enum.
+type MeetingCreateKind string
+
+// MeetingCreateScope Open enum.
+type MeetingCreateScope string
+
+// MeetingList Example: {"items":[{"call_letter_document_id":null,"called_at":null,"created_at":"2026-03-01T09:00:00Z","eligibility_snapshot":null,"id":"0192a3f0-1000-7000-8000-000000000003","kind":"general_assembly","location":"location","minutes_document_id":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","scheduled_at":"2026-01-18T10:00:00Z","scope":"site","second_call_at":"2026-01-28T10:00:00Z","site_id":"0192a3f0-1000-7000-8000-000000000002","status":"called","title":null,"updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type MeetingList struct {
+	Items []Meeting `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// MeetingNotice Per-owner delivery record of the call or of the decisions (G3).
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","meeting_id":"0192a3f0-1000-7000-8000-000000000004","method":"registered_mail","note":null,"org_id":"0192a3f0-1000-7000-8000-000000000003","person_display_name":"Ali Veli","person_id":"0192a3f0-1000-7000-8000-000000000005","phase":"call","proof_file_id":null,"sent_at":null,"status":"pending","tracking_no":null,"updated_at":"2026-03-01T09:00:00Z"}
+type MeetingNotice struct {
+	CreatedAt time.Time          `json:"created_at"`
+	Id        openapi_types.UUID `json:"id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+
+	// Method Open enum.
+	Method            nullable.Nullable[MeetingNoticeMethod] `json:"method"`
+	Note              nullable.Nullable[string]              `json:"note"`
+	OrgId             openapi_types.UUID                     `json:"org_id"`
+	PersonDisplayName string                                 `json:"person_display_name"`
+	PersonId          openapi_types.UUID                     `json:"person_id"`
+
+	// Phase `decisions`: the post-meeting notification of absent owners. Open enum.
+	Phase       MeetingNoticePhase                    `json:"phase"`
+	ProofFileId nullable.Nullable[openapi_types.UUID] `json:"proof_file_id"`
+	SentAt      nullable.Nullable[time.Time]          `json:"sent_at"`
+
+	// Status Open enum.
+	Status     MeetingNoticeStatus       `json:"status"`
+	TrackingNo nullable.Nullable[string] `json:"tracking_no"`
+	UpdatedAt  time.Time                 `json:"updated_at"`
+}
+
+// MeetingNoticeMethod Open enum.
+type MeetingNoticeMethod string
+
+// MeetingNoticePhase `decisions`: the post-meeting notification of absent owners. Open enum.
+type MeetingNoticePhase string
+
+// MeetingNoticeStatus Open enum.
+type MeetingNoticeStatus string
+
+// MeetingNoticeBulk defines model for MeetingNoticeBulk.
+type MeetingNoticeBulk struct {
+	Method    MeetingNoticeBulkMethod `json:"method"`
+	PersonIds []openapi_types.UUID    `json:"person_ids"`
+	Phase     MeetingNoticeBulkPhase  `json:"phase"`
+	SentAt    time.Time               `json:"sent_at"`
+}
+
+// MeetingNoticeBulkMethod defines model for MeetingNoticeBulk.Method.
+type MeetingNoticeBulkMethod string
+
+// MeetingNoticeBulkPhase defines model for MeetingNoticeBulk.Phase.
+type MeetingNoticeBulkPhase string
+
+// MeetingNoticeBulkResult defines model for MeetingNoticeBulkResult.
+type MeetingNoticeBulkResult struct {
+	Recorded int64 `json:"recorded"`
+}
+
+// MeetingNoticeList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","meeting_id":"0192a3f0-1000-7000-8000-000000000004","method":"registered_mail","note":null,"org_id":"0192a3f0-1000-7000-8000-000000000003","person_display_name":"Ali Veli","person_id":"0192a3f0-1000-7000-8000-000000000005","phase":"call","proof_file_id":null,"sent_at":null,"status":"pending","tracking_no":null,"updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type MeetingNoticeList struct {
+	Items []MeetingNotice `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// MeetingNoticeRecord defines model for MeetingNoticeRecord.
+type MeetingNoticeRecord struct {
+	Method      MeetingNoticeRecordMethod `json:"method"`
+	Note        *string                   `json:"note,omitempty"`
+	Phase       MeetingNoticeRecordPhase  `json:"phase"`
+	ProofFileId *openapi_types.UUID       `json:"proof_file_id,omitempty"`
+	SentAt      time.Time                 `json:"sent_at"`
+	TrackingNo  *string                   `json:"tracking_no,omitempty"`
+}
+
+// MeetingNoticeRecordMethod defines model for MeetingNoticeRecord.Method.
+type MeetingNoticeRecordMethod string
+
+// MeetingNoticeRecordPhase defines model for MeetingNoticeRecord.Phase.
+type MeetingNoticeRecordPhase string
+
+// MeetingUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type MeetingUpdate struct {
+	Location     *string                   `json:"location,omitempty"`
+	ScheduledAt  *time.Time                `json:"scheduled_at,omitempty"`
+	SecondCallAt *time.Time                `json:"second_call_at,omitempty"`
+	Title        nullable.Nullable[string] `json:"title,omitempty"`
+}
+
 // Membership defines model for Membership.
 type Membership struct {
 	CreatedAt time.Time `json:"created_at"`
@@ -2184,6 +3337,22 @@ type MinAppVersion struct {
 	Ios string `json:"ios"`
 }
 
+// MinutesResult defines model for MinutesResult.
+type MinutesResult struct {
+	DocumentId openapi_types.UUID `json:"document_id"`
+	FileId     openapi_types.UUID `json:"file_id"`
+	MeetingId  openapi_types.UUID `json:"meeting_id"`
+}
+
+// Money Integer minor units with an ISO 4217 currency code.
+type Money struct {
+	// Amount Example: 123450
+	Amount int64 `json:"amount"`
+
+	// Currency Example: TRY
+	Currency string `json:"currency"`
+}
+
 // MoneyAccess defines model for MoneyAccess.
 type MoneyAccess struct {
 	MaySeeMoney bool `json:"may_see_money"`
@@ -2246,6 +3415,30 @@ type MoveOutRequest struct {
 
 // MoveOutRequestOpenCharges What happens to the leaving person's open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.
 type MoveOutRequestOpenCharges string
+
+// MyMeeting defines model for MyMeeting.
+type MyMeeting struct {
+	AttendanceQr nullable.Nullable[string] `json:"attendance_qr"`
+
+	// AttendanceToken The per-person check-in token; the QR encodes `attendance_qr`.
+	AttendanceToken nullable.Nullable[string] `json:"attendance_token"`
+	CheckedIn       bool                      `json:"checked_in"`
+	EligibleUnitIds []openapi_types.UUID      `json:"eligible_unit_ids"`
+
+	// Meeting An owners' assembly (kat malikleri kurulu).
+	//
+	// Example: {"call_letter_document_id":null,"called_at":null,"created_at":"2026-03-01T09:00:00Z","eligibility_snapshot":null,"id":"0192a3f0-1000-7000-8000-000000000003","kind":"general_assembly","location":"location","minutes_document_id":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","scheduled_at":"2026-01-18T10:00:00Z","scope":"site","second_call_at":"2026-01-28T10:00:00Z","site_id":"0192a3f0-1000-7000-8000-000000000002","status":"called","title":null,"updated_at":"2026-03-01T09:00:00Z","version":1}
+	Meeting Meeting                          `json:"meeting"`
+	Notice  nullable.Nullable[MeetingNotice] `json:"notice"`
+	Polls   []MyPoll                         `json:"polls"`
+}
+
+// MyPoll defines model for MyPoll.
+type MyPoll struct {
+	AgendaItemId  openapi_types.UUID   `json:"agenda_item_id"`
+	AnsweredUnits []openapi_types.UUID `json:"answered_units"`
+	Title         string               `json:"title"`
+}
 
 // Occupancy defines model for Occupancy.
 type Occupancy struct {
@@ -2457,6 +3650,82 @@ type PersonUpdate struct {
 	Phone             nullable.Nullable[string] `json:"phone,omitempty"`
 }
 
+// Poll Non-binding pre-meeting poll (G2).
+type Poll struct {
+	AgendaItemId openapi_types.UUID        `json:"agenda_item_id"`
+	ClosesAt     time.Time                 `json:"closes_at"`
+	OpensAt      time.Time                 `json:"opens_at"`
+	Question     nullable.Nullable[string] `json:"question"`
+
+	// Status Open enum.
+	Status PollStatus `json:"status"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on the next write.
+	Version int64 `json:"version"`
+}
+
+// PollStatus Open enum.
+type PollStatus string
+
+// PollAnswer Example: {"agenda_item_id":"0192a3f0-1000-7000-8000-000000000002","answer":"yes","answered_at":"2026-03-01T09:00:00Z","answered_by":"0192a3f0-1000-7000-8000-000000000004","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000003"}
+type PollAnswer struct {
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+
+	// Answer Open enum.
+	Answer         PollAnswerAnswer   `json:"answer"`
+	AnsweredAt     time.Time          `json:"answered_at"`
+	AnsweredBy     openapi_types.UUID `json:"answered_by"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+	UnitId         openapi_types.UUID `json:"unit_id"`
+}
+
+// PollAnswerAnswer Open enum.
+type PollAnswerAnswer string
+
+// PollAnswerList Example: {"items":[{"agenda_item_id":"0192a3f0-1000-7000-8000-000000000002","answer":"yes","answered_at":"2026-03-01T09:00:00Z","answered_by":"0192a3f0-1000-7000-8000-000000000004","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000003"}],"next_cursor":null}
+type PollAnswerList struct {
+	Items      []PollAnswer              `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// PollAnswerSet defines model for PollAnswerSet.
+type PollAnswerSet struct {
+	Answer PollAnswerSetAnswer `json:"answer"`
+	UnitId openapi_types.UUID  `json:"unit_id"`
+}
+
+// PollAnswerSetAnswer defines model for PollAnswerSet.Answer.
+type PollAnswerSetAnswer string
+
+// PollResults defines model for PollResults.
+type PollResults struct {
+	Abstain      int64              `json:"abstain"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+
+	// Binding Always false: the binding vote is counted in the room.
+	Binding       bool  `json:"binding"`
+	No            int64 `json:"no"`
+	UnitsAnswered int64 `json:"units_answered"`
+	UnitsTotal    int64 `json:"units_total"`
+	Yes           int64 `json:"yes"`
+}
+
+// PollSet defines model for PollSet.
+type PollSet struct {
+	ClosesAt time.Time `json:"closes_at"`
+	OpensAt  time.Time `json:"opens_at"`
+	Question *string   `json:"question,omitempty"`
+}
+
+// PresetNote defines model for PresetNote.
+type PresetNote struct {
+	Key  string `json:"key"`
+	Note string `json:"note"`
+
+	// Verify The legal claim must be confirmed by a person with Turkish practice before it is relied on.
+	Verify bool `json:"verify"`
+}
+
 // Problem RFC 9457 problem details, served as application/problem+json. Clients
 // translate by `code`. `code` is an open enum: clients must tolerate unknown values.
 type Problem struct {
@@ -2504,6 +3773,39 @@ type ProblemFieldError struct {
 type PushInfo struct {
 	RelayIds    []string `json:"relay_ids"`
 	UnifiedPush bool     `json:"unified_push"`
+}
+
+// Quorum Live quorum under the site rules; polled.
+type Quorum struct {
+	AsOf time.Time `json:"as_of"`
+
+	// Call Which call the numbers are checked against. Open enum.
+	Call          QuorumCall         `json:"call"`
+	EligibleCount int64              `json:"eligible_count"`
+	EligibleShare float32            `json:"eligible_share"`
+	MeetingId     openapi_types.UUID `json:"meeting_id"`
+	PresentCount  int64              `json:"present_count"`
+
+	// PresentShare Arsa payi present.
+	PresentShare       float32                    `json:"present_share"`
+	Reached            bool                       `json:"reached"`
+	RequiredByCountPct nullable.Nullable[float32] `json:"required_by_count_pct"`
+	RequiredBySharePct nullable.Nullable[float32] `json:"required_by_share_pct"`
+}
+
+// QuorumCall Which call the numbers are checked against. Open enum.
+type QuorumCall string
+
+// QuorumRule defines model for QuorumRule.
+type QuorumRule struct {
+	// FirstCallByCountPct Law 634 default: a majority by number of owners.
+	FirstCallByCountPct float32 `json:"first_call_by_count_pct"`
+
+	// FirstCallBySharePct ...and by arsa payi (land share).
+	FirstCallBySharePct float32 `json:"first_call_by_share_pct"`
+
+	// SecondCallRequiresQuorum Default false: decisions by majority of those present (verify).
+	SecondCallRequiresQuorum bool `json:"second_call_requires_quorum"`
 }
 
 // ReauthEmailCode defines model for ReauthEmailCode.
@@ -2731,6 +4033,37 @@ type SiteUpdate struct {
 	Timezone             *string                               `json:"timezone,omitempty"`
 }
 
+// TermReminder A board, auditor or manager term nearing its end (G6).
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","days_left":1,"id":"0192a3f0-1000-7000-8000-000000000002","membership_id":"0192a3f0-1000-7000-8000-000000000005","notified_at":null,"org_id":"0192a3f0-1000-7000-8000-000000000003","person_display_name":"Ali Veli","role":"role","site_id":"0192a3f0-1000-7000-8000-000000000004","status":"upcoming","updated_at":"2026-03-01T09:00:00Z","valid_to":"2026-03-01"}
+type TermReminder struct {
+	CreatedAt         time.Time                    `json:"created_at"`
+	DaysLeft          int64                        `json:"days_left"`
+	Id                openapi_types.UUID           `json:"id"`
+	MembershipId      openapi_types.UUID           `json:"membership_id"`
+	NotifiedAt        nullable.Nullable[time.Time] `json:"notified_at"`
+	OrgId             openapi_types.UUID           `json:"org_id"`
+	PersonDisplayName string                       `json:"person_display_name"`
+	Role              string                       `json:"role"`
+	SiteId            openapi_types.UUID           `json:"site_id"`
+
+	// Status Open enum.
+	Status    TermReminderStatus `json:"status"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	ValidTo   openapi_types.Date `json:"valid_to"`
+}
+
+// TermReminderStatus Open enum.
+type TermReminderStatus string
+
+// TermReminderList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","days_left":1,"id":"0192a3f0-1000-7000-8000-000000000002","membership_id":"0192a3f0-1000-7000-8000-000000000005","notified_at":null,"org_id":"0192a3f0-1000-7000-8000-000000000003","person_display_name":"Ali Veli","role":"role","site_id":"0192a3f0-1000-7000-8000-000000000004","status":"upcoming","updated_at":"2026-03-01T09:00:00Z","valid_to":"2026-03-01"}],"next_cursor":null}
+type TermReminderList struct {
+	Items []TermReminder `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
 // TokenResponse A mobile or integration session. The access token is short-lived and
 // checked on every request; the refresh token rotates on every use, and
 // presenting a rotated one revokes the whole session.
@@ -2949,14 +4282,61 @@ type VendorUpdate struct {
 	TaxId                    nullable.Nullable[string]             `json:"tax_id,omitempty"`
 }
 
+// VoteCount defines model for VoteCount.
+type VoteCount struct {
+	AbstainCount int64                      `json:"abstain_count"`
+	AbstainShare nullable.Nullable[float32] `json:"abstain_share"`
+	AgendaItemId openapi_types.UUID         `json:"agenda_item_id"`
+	NoCount      int64                      `json:"no_count"`
+	NoShare      nullable.Nullable[float32] `json:"no_share"`
+
+	// OutcomeHint Computed from the threshold rule; the decision records the final outcome. Open enum.
+	OutcomeHint VoteCountOutcomeHint                  `json:"outcome_hint"`
+	RecordedAt  nullable.Nullable[time.Time]          `json:"recorded_at"`
+	RecordedBy  nullable.Nullable[openapi_types.UUID] `json:"recorded_by"`
+	YesCount    int64                                 `json:"yes_count"`
+	YesShare    nullable.Nullable[float32]            `json:"yes_share"`
+}
+
+// VoteCountOutcomeHint Computed from the threshold rule; the decision records the final outcome. Open enum.
+type VoteCountOutcomeHint string
+
+// VoteCountSet The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi.
+type VoteCountSet struct {
+	AbstainCount int64    `json:"abstain_count"`
+	AbstainShare *float32 `json:"abstain_share,omitempty"`
+	NoCount      int64    `json:"no_count"`
+	NoShare      *float32 `json:"no_share,omitempty"`
+	YesCount     int64    `json:"yes_count"`
+	YesShare     *float32 `json:"yes_share,omitempty"`
+}
+
 // Cursor defines model for Cursor.
 type Cursor = string
+
+// DryRun defines model for DryRun.
+type DryRun = bool
+
+// IdempotencyKey defines model for IdempotencyKey.
+type IdempotencyKey = string
+
+// IdempotencyKeyRequired defines model for IdempotencyKeyRequired.
+type IdempotencyKeyRequired = string
+
+// IfMatch Example: "3"
+type IfMatch = string
 
 // Limit defines model for Limit.
 type Limit = int
 
 // OrgId defines model for OrgId.
 type OrgId = openapi_types.UUID
+
+// OrgId2 defines model for OrgId-2.
+type OrgId2 = openapi_types.UUID
+
+// SiteIdRequired defines model for SiteIdRequired.
+type SiteIdRequired = openapi_types.UUID
 
 // InstanceGetCodesParams defines parameters for InstanceGetCodes.
 type InstanceGetCodesParams struct {
@@ -2970,6 +4350,33 @@ type OrgUpdateParams struct {
 	// `validation_failed`. It is declared optional here only so that an unauthenticated caller gets 401 before
 	// any validation detail (generated code binds required headers before authentication runs).
 	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// GovernanceDeleteAgendaItemParams defines parameters for GovernanceDeleteAgendaItem.
+type GovernanceDeleteAgendaItemParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GovernanceUpdateAgendaItemParams defines parameters for GovernanceUpdateAgendaItem.
+type GovernanceUpdateAgendaItemParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GovernanceSetPollParams defines parameters for GovernanceSetPoll.
+type GovernanceSetPollParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GovernanceListPollAnswersParams defines parameters for GovernanceListPollAnswers.
+type GovernanceListPollAnswersParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // TenancyUpdateAllocationKeyParams defines parameters for TenancyUpdateAllocationKey.
@@ -3017,6 +4424,66 @@ type TenancyUpdateBlockParams struct {
 	IfMatch *string `json:"If-Match,omitempty"`
 }
 
+// GovernanceListDecisionsParams defines parameters for GovernanceListDecisions.
+type GovernanceListDecisionsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// MeetingId Filter by `meeting_id`.
+	MeetingId *openapi_types.UUID `form:"meeting_id,omitempty" json:"meeting_id,omitempty"`
+
+	// Year Filter by `year`.
+	Year *int64 `form:"year,omitempty" json:"year,omitempty"`
+
+	// Outcome Filter by `outcome`.
+	Outcome *string `form:"outcome,omitempty" json:"outcome,omitempty"`
+
+	// ConcernsResidents Filter by `concerns_residents`.
+	ConcernsResidents *bool `form:"concerns_residents,omitempty" json:"concerns_residents,omitempty"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// GovernanceCreateDecisionParams defines parameters for GovernanceCreateDecision.
+type GovernanceCreateDecisionParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceUpdateDecisionParams defines parameters for GovernanceUpdateDecision.
+type GovernanceUpdateDecisionParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GovernanceApplyDecisionParams defines parameters for GovernanceApplyDecision.
+type GovernanceApplyDecisionParams struct {
+	// DryRun When true, validate and return the row-level report without saving anything.
+	DryRun *DryRun `form:"dry_run,omitempty" json:"dry_run,omitempty"`
+
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// GovernanceListGovernancePresetsParams defines parameters for GovernanceListGovernancePresets.
+type GovernanceListGovernancePresetsParams struct {
+	// CountryCode Filter by `country_code`.
+	CountryCode *string `form:"country_code,omitempty" json:"country_code,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
 // PeopleListInvitationsParams defines parameters for PeopleListInvitations.
 type PeopleListInvitationsParams struct {
 	// Limit Page size.
@@ -3030,6 +4497,159 @@ type PeopleListInvitationsParams struct {
 
 	// Status pending, accepted, revoked or expired.
 	Status *string `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// GovernanceListMeetingsParams defines parameters for GovernanceListMeetings.
+type GovernanceListMeetingsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Kind Filter by `kind`.
+	Kind *string `form:"kind,omitempty" json:"kind,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// GovernanceCreateMeetingParams defines parameters for GovernanceCreateMeeting.
+type GovernanceCreateMeetingParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceDeleteMeetingParams defines parameters for GovernanceDeleteMeeting.
+type GovernanceDeleteMeetingParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GovernanceUpdateMeetingParams defines parameters for GovernanceUpdateMeeting.
+type GovernanceUpdateMeetingParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// GovernanceListAgendaItemsParams defines parameters for GovernanceListAgendaItems.
+type GovernanceListAgendaItemsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// GovernanceCreateAgendaItemParams defines parameters for GovernanceCreateAgendaItem.
+type GovernanceCreateAgendaItemParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceListAttendanceParams defines parameters for GovernanceListAttendance.
+type GovernanceListAttendanceParams struct {
+	// Mode Filter by `mode`.
+	Mode *string `form:"mode,omitempty" json:"mode,omitempty"`
+
+	// Source Filter by `source`.
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// GovernanceRecordAttendanceParams defines parameters for GovernanceRecordAttendance.
+type GovernanceRecordAttendanceParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceCheckInAttendanceParams defines parameters for GovernanceCheckInAttendance.
+type GovernanceCheckInAttendanceParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceGetCallLetterParams defines parameters for GovernanceGetCallLetter.
+type GovernanceGetCallLetterParams struct {
+	// PersonId Filter by person.
+	PersonId *openapi_types.UUID `form:"person_id,omitempty" json:"person_id,omitempty"`
+}
+
+// GovernanceGenerateMinutesParams defines parameters for GovernanceGenerateMinutes.
+type GovernanceGenerateMinutesParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceListMeetingNoticesParams defines parameters for GovernanceListMeetingNotices.
+type GovernanceListMeetingNoticesParams struct {
+	// Phase Filter by `phase`.
+	Phase *string `form:"phase,omitempty" json:"phase,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// PersonId Filter by person.
+	PersonId *openapi_types.UUID `form:"person_id,omitempty" json:"person_id,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// GovernanceRecordMeetingNoticesBulkParams defines parameters for GovernanceRecordMeetingNoticesBulk.
+type GovernanceRecordMeetingNoticesBulkParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceCallMeetingParams defines parameters for GovernanceCallMeeting.
+type GovernanceCallMeetingParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceCancelMeetingParams defines parameters for GovernanceCancelMeeting.
+type GovernanceCancelMeetingParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceCloseMeetingParams defines parameters for GovernanceCloseMeeting.
+type GovernanceCloseMeetingParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GovernanceNotifyMeetingDecisionsParams defines parameters for GovernanceNotifyMeetingDecisions.
+type GovernanceNotifyMeetingDecisionsParams struct {
+	// DryRun When true, validate and return the row-level report without saving anything.
+	DryRun *DryRun `form:"dry_run,omitempty" json:"dry_run,omitempty"`
+
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// GovernanceStartMeetingParams defines parameters for GovernanceStartMeeting.
+type GovernanceStartMeetingParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
 }
 
 // PeopleListMembershipsParams defines parameters for PeopleListMemberships.
@@ -3135,6 +4755,12 @@ type PeopleListDirectoryParams struct {
 	Q *string `form:"q,omitempty" json:"q,omitempty"`
 }
 
+// GovernanceSetGovernanceSettingsParams defines parameters for GovernanceSetGovernanceSettings.
+type GovernanceSetGovernanceSettingsParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // TenancyListUnitsParams defines parameters for TenancyListUnits.
 type TenancyListUnitsParams struct {
 	// Limit Page size.
@@ -3172,6 +4798,21 @@ type TenancyListVehiclesParams struct {
 
 	// Q Plate fragment.
 	Q *string `form:"q,omitempty" json:"q,omitempty"`
+}
+
+// GovernanceListTermRemindersParams defines parameters for GovernanceListTermReminders.
+type GovernanceListTermRemindersParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 }
 
 // PeopleListClaimsParams defines parameters for PeopleListClaims.
@@ -3273,6 +4914,18 @@ type PeopleCreateClaimJSONRequestBody = ClaimCreate
 // OrgUpdateJSONRequestBody defines body for OrgUpdate for application/json ContentType.
 type OrgUpdateJSONRequestBody = OrganizationUpdate
 
+// GovernanceUpdateAgendaItemJSONRequestBody defines body for GovernanceUpdateAgendaItem for application/json ContentType.
+type GovernanceUpdateAgendaItemJSONRequestBody = AgendaItemUpdate
+
+// GovernanceSetPollJSONRequestBody defines body for GovernanceSetPoll for application/json ContentType.
+type GovernanceSetPollJSONRequestBody = PollSet
+
+// GovernanceAnswerPollJSONRequestBody defines body for GovernanceAnswerPoll for application/json ContentType.
+type GovernanceAnswerPollJSONRequestBody = PollAnswerSet
+
+// GovernanceRecordVoteCountsJSONRequestBody defines body for GovernanceRecordVoteCounts for application/json ContentType.
+type GovernanceRecordVoteCountsJSONRequestBody = VoteCountSet
+
 // TenancyUpdateAllocationKeyJSONRequestBody defines body for TenancyUpdateAllocationKey for application/json ContentType.
 type TenancyUpdateAllocationKeyJSONRequestBody = AllocationKeyUpdate
 
@@ -3282,8 +4935,50 @@ type TenancySetAllocationKeyValuesJSONRequestBody = AllocationKeyValues
 // TenancyUpdateBlockJSONRequestBody defines body for TenancyUpdateBlock for application/json ContentType.
 type TenancyUpdateBlockJSONRequestBody = BlockUpdate
 
+// GovernanceCreateDecisionJSONRequestBody defines body for GovernanceCreateDecision for application/json ContentType.
+type GovernanceCreateDecisionJSONRequestBody = DecisionCreate
+
+// GovernanceUpdateDecisionJSONRequestBody defines body for GovernanceUpdateDecision for application/json ContentType.
+type GovernanceUpdateDecisionJSONRequestBody = DecisionUpdate
+
+// GovernanceApplyDecisionJSONRequestBody defines body for GovernanceApplyDecision for application/json ContentType.
+type GovernanceApplyDecisionJSONRequestBody = DecisionApply
+
 // PeopleCreateInvitationJSONRequestBody defines body for PeopleCreateInvitation for application/json ContentType.
 type PeopleCreateInvitationJSONRequestBody = InvitationCreate
+
+// GovernanceCreateMeetingJSONRequestBody defines body for GovernanceCreateMeeting for application/json ContentType.
+type GovernanceCreateMeetingJSONRequestBody = MeetingCreate
+
+// GovernanceUpdateMeetingJSONRequestBody defines body for GovernanceUpdateMeeting for application/json ContentType.
+type GovernanceUpdateMeetingJSONRequestBody = MeetingUpdate
+
+// GovernanceCreateAgendaItemJSONRequestBody defines body for GovernanceCreateAgendaItem for application/json ContentType.
+type GovernanceCreateAgendaItemJSONRequestBody = AgendaItemCreate
+
+// GovernanceReorderAgendaItemsJSONRequestBody defines body for GovernanceReorderAgendaItems for application/json ContentType.
+type GovernanceReorderAgendaItemsJSONRequestBody = AgendaOrder
+
+// GovernanceRecordAttendanceJSONRequestBody defines body for GovernanceRecordAttendance for application/json ContentType.
+type GovernanceRecordAttendanceJSONRequestBody = AttendanceCreate
+
+// GovernanceCheckInAttendanceJSONRequestBody defines body for GovernanceCheckInAttendance for application/json ContentType.
+type GovernanceCheckInAttendanceJSONRequestBody = AttendanceCheckin
+
+// GovernanceRecordMeetingNoticeJSONRequestBody defines body for GovernanceRecordMeetingNotice for application/json ContentType.
+type GovernanceRecordMeetingNoticeJSONRequestBody = MeetingNoticeRecord
+
+// GovernanceRecordMeetingNoticesBulkJSONRequestBody defines body for GovernanceRecordMeetingNoticesBulk for application/json ContentType.
+type GovernanceRecordMeetingNoticesBulkJSONRequestBody = MeetingNoticeBulk
+
+// GovernanceCallMeetingJSONRequestBody defines body for GovernanceCallMeeting for application/json ContentType.
+type GovernanceCallMeetingJSONRequestBody = MeetingCall
+
+// GovernanceCancelMeetingJSONRequestBody defines body for GovernanceCancelMeeting for application/json ContentType.
+type GovernanceCancelMeetingJSONRequestBody = MeetingCancel
+
+// GovernanceNotifyMeetingDecisionsJSONRequestBody defines body for GovernanceNotifyMeetingDecisions for application/json ContentType.
+type GovernanceNotifyMeetingDecisionsJSONRequestBody = DecisionNotify
 
 // PeopleCreateMembershipJSONRequestBody defines body for PeopleCreateMembership for application/json ContentType.
 type PeopleCreateMembershipJSONRequestBody = MembershipCreate
@@ -3320,6 +5015,9 @@ type TenancyCreateBlockJSONRequestBody = BlockCreate
 
 // PeopleSetDirectoryConsentJSONRequestBody defines body for PeopleSetDirectoryConsent for application/json ContentType.
 type PeopleSetDirectoryConsentJSONRequestBody = DirectoryConsentUpdate
+
+// GovernanceSetGovernanceSettingsJSONRequestBody defines body for GovernanceSetGovernanceSettings for application/json ContentType.
+type GovernanceSetGovernanceSettingsJSONRequestBody = GovernanceSettingsSet
 
 // TenancyImportUnitsMultipartRequestBody defines body for TenancyImportUnits for multipart/form-data ContentType.
 type TenancyImportUnitsMultipartRequestBody = ImportUpload
@@ -3465,6 +5163,179 @@ func (a SiteSettings) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsDecisionApplyDuesRate returns the union data inside the DecisionApply as a DecisionApplyDuesRate
+func (t DecisionApply) AsDecisionApplyDuesRate() (DecisionApplyDuesRate, error) {
+	var body DecisionApplyDuesRate
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDecisionApplyDuesRate overwrites any union data inside the DecisionApply as the provided DecisionApplyDuesRate
+func (t *DecisionApply) FromDecisionApplyDuesRate(v DecisionApplyDuesRate) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"dues_rate"}`))
+	t.union = b
+	return err
+}
+
+// MergeDecisionApplyDuesRate performs a merge with any union data inside the DecisionApply, using the provided DecisionApplyDuesRate
+func (t *DecisionApply) MergeDecisionApplyDuesRate(v DecisionApplyDuesRate) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"dues_rate"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDecisionApplyMembership returns the union data inside the DecisionApply as a DecisionApplyMembership
+func (t DecisionApply) AsDecisionApplyMembership() (DecisionApplyMembership, error) {
+	var body DecisionApplyMembership
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDecisionApplyMembership overwrites any union data inside the DecisionApply as the provided DecisionApplyMembership
+func (t *DecisionApply) FromDecisionApplyMembership(v DecisionApplyMembership) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"membership"}`))
+	t.union = b
+	return err
+}
+
+// MergeDecisionApplyMembership performs a merge with any union data inside the DecisionApply, using the provided DecisionApplyMembership
+func (t *DecisionApply) MergeDecisionApplyMembership(v DecisionApplyMembership) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"membership"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDecisionApplyBudget returns the union data inside the DecisionApply as a DecisionApplyBudget
+func (t DecisionApply) AsDecisionApplyBudget() (DecisionApplyBudget, error) {
+	var body DecisionApplyBudget
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDecisionApplyBudget overwrites any union data inside the DecisionApply as the provided DecisionApplyBudget
+func (t *DecisionApply) FromDecisionApplyBudget(v DecisionApplyBudget) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"budget_final"}`))
+	t.union = b
+	return err
+}
+
+// MergeDecisionApplyBudget performs a merge with any union data inside the DecisionApply, using the provided DecisionApplyBudget
+func (t *DecisionApply) MergeDecisionApplyBudget(v DecisionApplyBudget) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"budget_final"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDecisionApplySpecialAssessment returns the union data inside the DecisionApply as a DecisionApplySpecialAssessment
+func (t DecisionApply) AsDecisionApplySpecialAssessment() (DecisionApplySpecialAssessment, error) {
+	var body DecisionApplySpecialAssessment
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDecisionApplySpecialAssessment overwrites any union data inside the DecisionApply as the provided DecisionApplySpecialAssessment
+func (t *DecisionApply) FromDecisionApplySpecialAssessment(v DecisionApplySpecialAssessment) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"special_assessment"}`))
+	t.union = b
+	return err
+}
+
+// MergeDecisionApplySpecialAssessment performs a merge with any union data inside the DecisionApply, using the provided DecisionApplySpecialAssessment
+func (t *DecisionApply) MergeDecisionApplySpecialAssessment(v DecisionApplySpecialAssessment) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"kind":"special_assessment"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t DecisionApply) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"kind"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t DecisionApply) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "budget_final":
+		return t.AsDecisionApplyBudget()
+	case "dues_rate":
+		return t.AsDecisionApplyDuesRate()
+	case "membership":
+		return t.AsDecisionApplyMembership()
+	case "special_assessment":
+		return t.AsDecisionApplySpecialAssessment()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t DecisionApply) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *DecisionApply) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }
 
 // AsReauthPassword returns the union data inside the ReauthRequest as a ReauthPassword
@@ -3675,6 +5546,33 @@ type ServerInterface interface {
 	// OrgUpdate Change an organization's settings
 	// (PATCH /v1/orgs/{org_id})
 	OrgUpdate(w http.ResponseWriter, r *http.Request, orgId OrgId, params OrgUpdateParams)
+	// GovernanceDeleteAgendaItem Remove an agenda item
+	// (DELETE /v1/orgs/{org_id}/agenda-items/{agenda_item_id})
+	GovernanceDeleteAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceDeleteAgendaItemParams)
+	// GovernanceUpdateAgendaItem Edit an agenda item
+	// (PATCH /v1/orgs/{org_id}/agenda-items/{agenda_item_id})
+	GovernanceUpdateAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceUpdateAgendaItemParams)
+	// GovernanceGetPoll Get the poll of an agenda item
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll)
+	GovernanceGetPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID)
+	// GovernanceSetPoll Create or change the poll
+	// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll)
+	GovernanceSetPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceSetPollParams)
+	// GovernanceAnswerPoll Answer the poll for my unit
+	// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer)
+	GovernanceAnswerPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID)
+	// GovernanceListPollAnswers Poll answers per unit
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers)
+	GovernanceListPollAnswers(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceListPollAnswersParams)
+	// GovernanceGetPollResults Aggregate poll results
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results)
+	GovernanceGetPollResults(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID)
+	// GovernanceGetVoteCounts Get the in-room count
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts)
+	GovernanceGetVoteCounts(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID)
+	// GovernanceRecordVoteCounts Record the in-room count
+	// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts)
+	GovernanceRecordVoteCounts(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID)
 	// TenancyGetAllocationKey Read an allocation key with its values
 	// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
 	TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID)
@@ -3690,6 +5588,24 @@ type ServerInterface interface {
 	// TenancyUpdateBlock Rename, hide or reorder a block
 	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 	TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams)
+	// GovernanceListDecisions Search the decision history
+	// (GET /v1/orgs/{org_id}/decisions)
+	GovernanceListDecisions(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListDecisionsParams)
+	// GovernanceCreateDecision Record a decision
+	// (POST /v1/orgs/{org_id}/decisions)
+	GovernanceCreateDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceCreateDecisionParams)
+	// GovernanceGetDecision Get a decision
+	// (GET /v1/orgs/{org_id}/decisions/{decision_id})
+	GovernanceGetDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID)
+	// GovernanceUpdateDecision Edit a decision
+	// (PATCH /v1/orgs/{org_id}/decisions/{decision_id})
+	GovernanceUpdateDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID, params GovernanceUpdateDecisionParams)
+	// GovernanceApplyDecision Apply the effect of a decision
+	// (POST /v1/orgs/{org_id}/decisions/{decision_id}:apply)
+	GovernanceApplyDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID, params GovernanceApplyDecisionParams)
+	// GovernanceListGovernancePresets List national governance presets
+	// (GET /v1/orgs/{org_id}/governance-presets)
+	GovernanceListGovernancePresets(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListGovernancePresetsParams)
 	// PeopleListInvitations List invitations
 	// (GET /v1/orgs/{org_id}/invitations)
 	PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams)
@@ -3702,6 +5618,84 @@ type ServerInterface interface {
 	// PeopleResendInvitation Send an invitation again with a new link
 	// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
 	PeopleResendInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID)
+	// GovernanceListMeetings List meetings
+	// (GET /v1/orgs/{org_id}/meetings)
+	GovernanceListMeetings(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListMeetingsParams)
+	// GovernanceCreateMeeting Create meeting
+	// (POST /v1/orgs/{org_id}/meetings)
+	GovernanceCreateMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceCreateMeetingParams)
+	// GovernanceDeleteMeeting Delete meeting
+	// (DELETE /v1/orgs/{org_id}/meetings/{meeting_id})
+	GovernanceDeleteMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceDeleteMeetingParams)
+	// GovernanceGetMeeting Get meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id})
+	GovernanceGetMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID)
+	// GovernanceUpdateMeeting Update meeting
+	// (PATCH /v1/orgs/{org_id}/meetings/{meeting_id})
+	GovernanceUpdateMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceUpdateMeetingParams)
+	// GovernanceListAgendaItems List agenda items
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items)
+	GovernanceListAgendaItems(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListAgendaItemsParams)
+	// GovernanceCreateAgendaItem Add an agenda item
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items)
+	GovernanceCreateAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCreateAgendaItemParams)
+	// GovernanceReorderAgendaItems Reorder the agenda
+	// (PUT /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order)
+	GovernanceReorderAgendaItems(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID)
+	// GovernanceListAttendance Attendance of a meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance)
+	GovernanceListAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListAttendanceParams)
+	// GovernanceRecordAttendance Tick an owner off
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/attendance)
+	GovernanceRecordAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceRecordAttendanceParams)
+	// GovernanceGetAttendanceSheet Download the attendance list (hazirun cetveli)
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet)
+	GovernanceGetAttendanceSheet(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID)
+	// GovernanceRemoveAttendance Remove an attendance record
+	// (DELETE /v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id})
+	GovernanceRemoveAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, attendanceId openapi_types.UUID)
+	// GovernanceCheckInAttendance Check an owner in by QR
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin)
+	GovernanceCheckInAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCheckInAttendanceParams)
+	// GovernanceGetCallLetter Download the call letter
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter)
+	GovernanceGetCallLetter(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceGetCallLetterParams)
+	// GovernanceGetMyMeeting The meeting as the caller sees it
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/me)
+	GovernanceGetMyMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID)
+	// GovernanceGetMinutes The minutes document of a meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/minutes)
+	GovernanceGetMinutes(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID)
+	// GovernanceGenerateMinutes Generate or regenerate the minutes
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate)
+	GovernanceGenerateMinutes(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceGenerateMinutesParams)
+	// GovernanceListMeetingNotices Delivery checklist of a meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/notices)
+	GovernanceListMeetingNotices(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListMeetingNoticesParams)
+	// GovernanceRecordMeetingNotice Record how a notice reached one owner
+	// (PUT /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id})
+	GovernanceRecordMeetingNotice(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, personId openapi_types.UUID)
+	// GovernanceRecordMeetingNoticesBulk Record one delivery method for many owners
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk)
+	GovernanceRecordMeetingNoticesBulk(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceRecordMeetingNoticesBulkParams)
+	// GovernanceGetMeetingQuorum Live quorum
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/quorum)
+	GovernanceGetMeetingQuorum(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID)
+	// GovernanceCallMeeting Issue the call (cagri)
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:call)
+	GovernanceCallMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCallMeetingParams)
+	// GovernanceCancelMeeting Cancel a meeting
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:cancel)
+	GovernanceCancelMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCancelMeetingParams)
+	// GovernanceCloseMeeting Close the meeting and generate the minutes
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:close)
+	GovernanceCloseMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCloseMeetingParams)
+	// GovernanceNotifyMeetingDecisions Send the decisions to absent owners
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions)
+	GovernanceNotifyMeetingDecisions(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceNotifyMeetingDecisionsParams)
+	// GovernanceStartMeeting Open the session
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:start)
+	GovernanceStartMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceStartMeetingParams)
 	// PeopleListMemberships List role memberships
 	// (GET /v1/orgs/{org_id}/memberships)
 	PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams)
@@ -3780,6 +5774,12 @@ type ServerInterface interface {
 	// TenancyExportSite Export a whole site to an archive
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/export)
 	TenancyExportSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// GovernanceGetGovernanceSettings Get the governance settings of a site
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/governance-settings)
+	GovernanceGetGovernanceSettings(w http.ResponseWriter, r *http.Request, orgId OrgId2, siteId openapi_types.UUID)
+	// GovernanceSetGovernanceSettings Replace the governance settings of a site
+	// (PUT /v1/orgs/{org_id}/sites/{site_id}/governance-settings)
+	GovernanceSetGovernanceSettings(w http.ResponseWriter, r *http.Request, orgId OrgId2, siteId openapi_types.UUID, params GovernanceSetGovernanceSettingsParams)
 	// TenancyImportUnits Import units and people from a spreadsheet
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/import)
 	TenancyImportUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
@@ -3804,6 +5804,9 @@ type ServerInterface interface {
 	// TenancyExportVehicles Export the site's plates as CSV
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
 	TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// GovernanceListTermReminders Terms nearing expiry
+	// (GET /v1/orgs/{org_id}/term-reminders)
+	GovernanceListTermReminders(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListTermRemindersParams)
 	// PeopleListClaims List unit claims
 	// (GET /v1/orgs/{org_id}/unit-claims)
 	PeopleListClaims(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListClaimsParams)
@@ -4005,6 +6008,60 @@ func (_ Unimplemented) OrgUpdate(w http.ResponseWriter, r *http.Request, orgId O
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GovernanceDeleteAgendaItem Remove an agenda item
+// (DELETE /v1/orgs/{org_id}/agenda-items/{agenda_item_id})
+func (_ Unimplemented) GovernanceDeleteAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceDeleteAgendaItemParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceUpdateAgendaItem Edit an agenda item
+// (PATCH /v1/orgs/{org_id}/agenda-items/{agenda_item_id})
+func (_ Unimplemented) GovernanceUpdateAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceUpdateAgendaItemParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetPoll Get the poll of an agenda item
+// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll)
+func (_ Unimplemented) GovernanceGetPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceSetPoll Create or change the poll
+// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll)
+func (_ Unimplemented) GovernanceSetPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceSetPollParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceAnswerPoll Answer the poll for my unit
+// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer)
+func (_ Unimplemented) GovernanceAnswerPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListPollAnswers Poll answers per unit
+// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers)
+func (_ Unimplemented) GovernanceListPollAnswers(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceListPollAnswersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetPollResults Aggregate poll results
+// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results)
+func (_ Unimplemented) GovernanceGetPollResults(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetVoteCounts Get the in-room count
+// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts)
+func (_ Unimplemented) GovernanceGetVoteCounts(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceRecordVoteCounts Record the in-room count
+// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts)
+func (_ Unimplemented) GovernanceRecordVoteCounts(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // TenancyGetAllocationKey Read an allocation key with its values
 // (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
 func (_ Unimplemented) TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID) {
@@ -4035,6 +6092,42 @@ func (_ Unimplemented) TenancyUpdateBlock(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GovernanceListDecisions Search the decision history
+// (GET /v1/orgs/{org_id}/decisions)
+func (_ Unimplemented) GovernanceListDecisions(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListDecisionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCreateDecision Record a decision
+// (POST /v1/orgs/{org_id}/decisions)
+func (_ Unimplemented) GovernanceCreateDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceCreateDecisionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetDecision Get a decision
+// (GET /v1/orgs/{org_id}/decisions/{decision_id})
+func (_ Unimplemented) GovernanceGetDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceUpdateDecision Edit a decision
+// (PATCH /v1/orgs/{org_id}/decisions/{decision_id})
+func (_ Unimplemented) GovernanceUpdateDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID, params GovernanceUpdateDecisionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceApplyDecision Apply the effect of a decision
+// (POST /v1/orgs/{org_id}/decisions/{decision_id}:apply)
+func (_ Unimplemented) GovernanceApplyDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID, params GovernanceApplyDecisionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListGovernancePresets List national governance presets
+// (GET /v1/orgs/{org_id}/governance-presets)
+func (_ Unimplemented) GovernanceListGovernancePresets(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListGovernancePresetsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // PeopleListInvitations List invitations
 // (GET /v1/orgs/{org_id}/invitations)
 func (_ Unimplemented) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
@@ -4056,6 +6149,162 @@ func (_ Unimplemented) PeopleRevokeInvitation(w http.ResponseWriter, r *http.Req
 // PeopleResendInvitation Send an invitation again with a new link
 // (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
 func (_ Unimplemented) PeopleResendInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListMeetings List meetings
+// (GET /v1/orgs/{org_id}/meetings)
+func (_ Unimplemented) GovernanceListMeetings(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListMeetingsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCreateMeeting Create meeting
+// (POST /v1/orgs/{org_id}/meetings)
+func (_ Unimplemented) GovernanceCreateMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceCreateMeetingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceDeleteMeeting Delete meeting
+// (DELETE /v1/orgs/{org_id}/meetings/{meeting_id})
+func (_ Unimplemented) GovernanceDeleteMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceDeleteMeetingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetMeeting Get meeting
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id})
+func (_ Unimplemented) GovernanceGetMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceUpdateMeeting Update meeting
+// (PATCH /v1/orgs/{org_id}/meetings/{meeting_id})
+func (_ Unimplemented) GovernanceUpdateMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceUpdateMeetingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListAgendaItems List agenda items
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items)
+func (_ Unimplemented) GovernanceListAgendaItems(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListAgendaItemsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCreateAgendaItem Add an agenda item
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items)
+func (_ Unimplemented) GovernanceCreateAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCreateAgendaItemParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceReorderAgendaItems Reorder the agenda
+// (PUT /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order)
+func (_ Unimplemented) GovernanceReorderAgendaItems(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListAttendance Attendance of a meeting
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance)
+func (_ Unimplemented) GovernanceListAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListAttendanceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceRecordAttendance Tick an owner off
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/attendance)
+func (_ Unimplemented) GovernanceRecordAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceRecordAttendanceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetAttendanceSheet Download the attendance list (hazirun cetveli)
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet)
+func (_ Unimplemented) GovernanceGetAttendanceSheet(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceRemoveAttendance Remove an attendance record
+// (DELETE /v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id})
+func (_ Unimplemented) GovernanceRemoveAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, attendanceId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCheckInAttendance Check an owner in by QR
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin)
+func (_ Unimplemented) GovernanceCheckInAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCheckInAttendanceParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetCallLetter Download the call letter
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter)
+func (_ Unimplemented) GovernanceGetCallLetter(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceGetCallLetterParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetMyMeeting The meeting as the caller sees it
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/me)
+func (_ Unimplemented) GovernanceGetMyMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetMinutes The minutes document of a meeting
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/minutes)
+func (_ Unimplemented) GovernanceGetMinutes(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGenerateMinutes Generate or regenerate the minutes
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate)
+func (_ Unimplemented) GovernanceGenerateMinutes(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceGenerateMinutesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListMeetingNotices Delivery checklist of a meeting
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/notices)
+func (_ Unimplemented) GovernanceListMeetingNotices(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListMeetingNoticesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceRecordMeetingNotice Record how a notice reached one owner
+// (PUT /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id})
+func (_ Unimplemented) GovernanceRecordMeetingNotice(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, personId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceRecordMeetingNoticesBulk Record one delivery method for many owners
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk)
+func (_ Unimplemented) GovernanceRecordMeetingNoticesBulk(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceRecordMeetingNoticesBulkParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceGetMeetingQuorum Live quorum
+// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/quorum)
+func (_ Unimplemented) GovernanceGetMeetingQuorum(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCallMeeting Issue the call (cagri)
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:call)
+func (_ Unimplemented) GovernanceCallMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCallMeetingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCancelMeeting Cancel a meeting
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:cancel)
+func (_ Unimplemented) GovernanceCancelMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCancelMeetingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceCloseMeeting Close the meeting and generate the minutes
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:close)
+func (_ Unimplemented) GovernanceCloseMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCloseMeetingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceNotifyMeetingDecisions Send the decisions to absent owners
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions)
+func (_ Unimplemented) GovernanceNotifyMeetingDecisions(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceNotifyMeetingDecisionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceStartMeeting Open the session
+// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:start)
+func (_ Unimplemented) GovernanceStartMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceStartMeetingParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4215,6 +6464,18 @@ func (_ Unimplemented) TenancyExportSite(w http.ResponseWriter, r *http.Request,
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// GovernanceGetGovernanceSettings Get the governance settings of a site
+// (GET /v1/orgs/{org_id}/sites/{site_id}/governance-settings)
+func (_ Unimplemented) GovernanceGetGovernanceSettings(w http.ResponseWriter, r *http.Request, orgId OrgId2, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceSetGovernanceSettings Replace the governance settings of a site
+// (PUT /v1/orgs/{org_id}/sites/{site_id}/governance-settings)
+func (_ Unimplemented) GovernanceSetGovernanceSettings(w http.ResponseWriter, r *http.Request, orgId OrgId2, siteId openapi_types.UUID, params GovernanceSetGovernanceSettingsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // TenancyImportUnits Import units and people from a spreadsheet
 // (POST /v1/orgs/{org_id}/sites/{site_id}/import)
 func (_ Unimplemented) TenancyImportUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
@@ -4260,6 +6521,12 @@ func (_ Unimplemented) TenancyListVehicles(w http.ResponseWriter, r *http.Reques
 // TenancyExportVehicles Export the site's plates as CSV
 // (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
 func (_ Unimplemented) TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GovernanceListTermReminders Terms nearing expiry
+// (GET /v1/orgs/{org_id}/term-reminders)
+func (_ Unimplemented) GovernanceListTermReminders(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListTermRemindersParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4835,6 +7102,434 @@ func (siw *ServerInterfaceWrapper) OrgUpdate(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
+// GovernanceDeleteAgendaItem operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceDeleteAgendaItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceDeleteAgendaItemParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceDeleteAgendaItem(w, r, orgId, agendaItemId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceUpdateAgendaItem operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceUpdateAgendaItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceUpdateAgendaItemParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceUpdateAgendaItem(w, r, orgId, agendaItemId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetPoll operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetPoll(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetPoll(w, r, orgId, agendaItemId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceSetPoll operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceSetPoll(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceSetPollParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceSetPoll(w, r, orgId, agendaItemId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceAnswerPoll operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceAnswerPoll(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceAnswerPoll(w, r, orgId, agendaItemId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListPollAnswers operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListPollAnswers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListPollAnswersParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListPollAnswers(w, r, orgId, agendaItemId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetPollResults operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetPollResults(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetPollResults(w, r, orgId, agendaItemId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetVoteCounts operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetVoteCounts(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetVoteCounts(w, r, orgId, agendaItemId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceRecordVoteCounts operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceRecordVoteCounts(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "agenda_item_id" -------------
+	var agendaItemId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "agenda_item_id", chi.URLParam(r, "agenda_item_id"), &agendaItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "agenda_item_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceRecordVoteCounts(w, r, orgId, agendaItemId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // TenancyGetAllocationKey operation middleware
 func (siw *ServerInterfaceWrapper) TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request) {
 
@@ -5167,6 +7862,431 @@ func (siw *ServerInterfaceWrapper) TenancyUpdateBlock(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// GovernanceListDecisions operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListDecisions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListDecisionsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "meeting_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "meeting_id", r.URL.Query(), &params.MeetingId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "meeting_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "year" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "year", r.URL.Query(), &params.Year, runtime.BindQueryParameterOptions{Type: "integer", Format: "int64"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "year"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "year", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "outcome" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "outcome", r.URL.Query(), &params.Outcome, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "outcome"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "outcome", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "concerns_residents" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "concerns_residents", r.URL.Query(), &params.ConcernsResidents, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "concerns_residents"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "concerns_residents", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListDecisions(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCreateDecision operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCreateDecision(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCreateDecisionParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCreateDecision(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetDecision operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetDecision(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "decision_id" -------------
+	var decisionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "decision_id", chi.URLParam(r, "decision_id"), &decisionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "decision_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetDecision(w, r, orgId, decisionId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceUpdateDecision operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceUpdateDecision(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "decision_id" -------------
+	var decisionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "decision_id", chi.URLParam(r, "decision_id"), &decisionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "decision_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceUpdateDecisionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceUpdateDecision(w, r, orgId, decisionId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceApplyDecision operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceApplyDecision(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "decision_id" -------------
+	var decisionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "decision_id", chi.URLParam(r, "decision_id"), &decisionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "decision_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceApplyDecisionParams
+
+	// ------------- Optional query parameter "dry_run" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "dry_run", r.URL.Query(), &params.DryRun, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "dry_run"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "dry_run", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceApplyDecision(w, r, orgId, decisionId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListGovernancePresets operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListGovernancePresets(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListGovernancePresetsParams
+
+	// ------------- Optional query parameter "country_code" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "country_code", r.URL.Query(), &params.CountryCode, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "country_code"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "country_code", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListGovernancePresets(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // PeopleListInvitations operation middleware
 func (siw *ServerInterfaceWrapper) PeopleListInvitations(w http.ResponseWriter, r *http.Request) {
 
@@ -5335,6 +8455,1515 @@ func (siw *ServerInterfaceWrapper) PeopleResendInvitation(w http.ResponseWriter,
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PeopleResendInvitation(w, r, orgId, invitationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListMeetings operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListMeetings(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListMeetingsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListMeetings(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCreateMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCreateMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCreateMeetingParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCreateMeeting(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceDeleteMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceDeleteMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceDeleteMeetingParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceDeleteMeeting(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetMeeting(w, r, orgId, meetingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceUpdateMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceUpdateMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceUpdateMeetingParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceUpdateMeeting(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListAgendaItems operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListAgendaItems(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListAgendaItemsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListAgendaItems(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCreateAgendaItem operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCreateAgendaItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCreateAgendaItemParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCreateAgendaItem(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceReorderAgendaItems operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceReorderAgendaItems(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceReorderAgendaItems(w, r, orgId, meetingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListAttendance operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListAttendance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListAttendanceParams
+
+	// ------------- Optional query parameter "mode" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "mode", r.URL.Query(), &params.Mode, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "mode"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "mode", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "source" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "source", r.URL.Query(), &params.Source, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "source"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "source", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListAttendance(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceRecordAttendance operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceRecordAttendance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceRecordAttendanceParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceRecordAttendance(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetAttendanceSheet operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetAttendanceSheet(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetAttendanceSheet(w, r, orgId, meetingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceRemoveAttendance operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceRemoveAttendance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "attendance_id" -------------
+	var attendanceId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "attendance_id", chi.URLParam(r, "attendance_id"), &attendanceId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "attendance_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceRemoveAttendance(w, r, orgId, meetingId, attendanceId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCheckInAttendance operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCheckInAttendance(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCheckInAttendanceParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCheckInAttendance(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetCallLetter operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetCallLetter(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceGetCallLetterParams
+
+	// ------------- Optional query parameter "person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "person_id", r.URL.Query(), &params.PersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetCallLetter(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetMyMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetMyMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetMyMeeting(w, r, orgId, meetingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetMinutes operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetMinutes(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetMinutes(w, r, orgId, meetingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGenerateMinutes operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGenerateMinutes(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceGenerateMinutesParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGenerateMinutes(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListMeetingNotices operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListMeetingNotices(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListMeetingNoticesParams
+
+	// ------------- Optional query parameter "phase" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "phase", r.URL.Query(), &params.Phase, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "phase"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "phase", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "person_id", r.URL.Query(), &params.PersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListMeetingNotices(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceRecordMeetingNotice operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceRecordMeetingNotice(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "person_id" -------------
+	var personId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "person_id", chi.URLParam(r, "person_id"), &personId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceRecordMeetingNotice(w, r, orgId, meetingId, personId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceRecordMeetingNoticesBulk operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceRecordMeetingNoticesBulk(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceRecordMeetingNoticesBulkParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceRecordMeetingNoticesBulk(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceGetMeetingQuorum operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetMeetingQuorum(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetMeetingQuorum(w, r, orgId, meetingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCallMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCallMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCallMeetingParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCallMeeting(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCancelMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCancelMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCancelMeetingParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCancelMeeting(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceCloseMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceCloseMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceCloseMeetingParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceCloseMeeting(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceNotifyMeetingDecisions operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceNotifyMeetingDecisions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceNotifyMeetingDecisionsParams
+
+	// ------------- Optional query parameter "dry_run" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "dry_run", r.URL.Query(), &params.DryRun, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "dry_run"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "dry_run", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceNotifyMeetingDecisions(w, r, orgId, meetingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceStartMeeting operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceStartMeeting(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "meeting_id" -------------
+	var meetingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "meeting_id", chi.URLParam(r, "meeting_id"), &meetingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "meeting_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceStartMeetingParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceStartMeeting(w, r, orgId, meetingId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6534,6 +11163,104 @@ func (siw *ServerInterfaceWrapper) TenancyExportSite(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
+// GovernanceGetGovernanceSettings operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceGetGovernanceSettings(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceGetGovernanceSettings(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceSetGovernanceSettings operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceSetGovernanceSettings(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceSetGovernanceSettingsParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceSetGovernanceSettings(w, r, orgId, siteId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // TenancyImportUnits operation middleware
 func (siw *ServerInterfaceWrapper) TenancyImportUnits(w http.ResponseWriter, r *http.Request) {
 
@@ -6954,6 +11681,87 @@ func (siw *ServerInterfaceWrapper) TenancyExportVehicles(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.TenancyExportVehicles(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GovernanceListTermReminders operation middleware
+func (siw *ServerInterfaceWrapper) GovernanceListTermReminders(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId2
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GovernanceListTermRemindersParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GovernanceListTermReminders(w, r, orgId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8205,6 +13013,138 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/platform/audit", wrapper.PlatformListAudit)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/governance-settings", wrapper.GovernanceGetGovernanceSettings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/governance-settings", wrapper.GovernanceSetGovernanceSettings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/governance-presets", wrapper.GovernanceListGovernancePresets)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings", wrapper.GovernanceListMeetings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings", wrapper.GovernanceCreateMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}", wrapper.GovernanceDeleteMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}", wrapper.GovernanceGetMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}", wrapper.GovernanceUpdateMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}:call", wrapper.GovernanceCallMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}:start", wrapper.GovernanceStartMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}:close", wrapper.GovernanceCloseMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}:cancel", wrapper.GovernanceCancelMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/quorum", wrapper.GovernanceGetMeetingQuorum)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/call-letter", wrapper.GovernanceGetCallLetter)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet", wrapper.GovernanceGetAttendanceSheet)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/me", wrapper.GovernanceGetMyMeeting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate", wrapper.GovernanceGenerateMinutes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/minutes", wrapper.GovernanceGetMinutes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/notices", wrapper.GovernanceListMeetingNotices)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}", wrapper.GovernanceRecordMeetingNotice)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk", wrapper.GovernanceRecordMeetingNoticesBulk)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions", wrapper.GovernanceNotifyMeetingDecisions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items", wrapper.GovernanceListAgendaItems)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items", wrapper.GovernanceCreateAgendaItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}", wrapper.GovernanceDeleteAgendaItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}", wrapper.GovernanceUpdateAgendaItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order", wrapper.GovernanceReorderAgendaItems)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll", wrapper.GovernanceGetPoll)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll", wrapper.GovernanceSetPoll)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer", wrapper.GovernanceAnswerPoll)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results", wrapper.GovernanceGetPollResults)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers", wrapper.GovernanceListPollAnswers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts", wrapper.GovernanceGetVoteCounts)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts", wrapper.GovernanceRecordVoteCounts)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/attendance", wrapper.GovernanceListAttendance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/attendance", wrapper.GovernanceRecordAttendance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id}", wrapper.GovernanceRemoveAttendance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin", wrapper.GovernanceCheckInAttendance)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/decisions", wrapper.GovernanceListDecisions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/decisions", wrapper.GovernanceCreateDecision)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/decisions/{decision_id}", wrapper.GovernanceGetDecision)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/decisions/{decision_id}", wrapper.GovernanceUpdateDecision)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/decisions/{decision_id}:apply", wrapper.GovernanceApplyDecision)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/term-reminders", wrapper.GovernanceListTermReminders)
 	})
 
 	return r
@@ -11389,6 +16329,1633 @@ func (response OrgUpdatedefaultApplicationProblemPlusJSONResponse) VisitOrgUpdat
 	return err
 }
 
+type GovernanceDeleteAgendaItemRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+	Params       GovernanceDeleteAgendaItemParams
+}
+
+type GovernanceDeleteAgendaItemResponseObject interface {
+	VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error
+}
+
+type GovernanceDeleteAgendaItem204Response struct {
+}
+
+func (response GovernanceDeleteAgendaItem204Response) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type GovernanceDeleteAgendaItem401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceDeleteAgendaItem401ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteAgendaItem403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteAgendaItem403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteAgendaItem403ResponseHeaders
+}
+
+func (response GovernanceDeleteAgendaItem403ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteAgendaItem404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteAgendaItem404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteAgendaItem404ResponseHeaders
+}
+
+func (response GovernanceDeleteAgendaItem404ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteAgendaItem409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteAgendaItem409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteAgendaItem409ResponseHeaders
+}
+
+func (response GovernanceDeleteAgendaItem409ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteAgendaItem422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteAgendaItem422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteAgendaItem422ResponseHeaders
+}
+
+func (response GovernanceDeleteAgendaItem422ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteAgendaItemdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteAgendaItemdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceDeleteAgendaItemdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceDeleteAgendaItemdefaultApplicationProblemPlusJSONResponse) VisitGovernanceDeleteAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItemRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+	Params       GovernanceUpdateAgendaItemParams
+	Body         *GovernanceUpdateAgendaItemJSONRequestBody
+}
+
+type GovernanceUpdateAgendaItemResponseObject interface {
+	VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error
+}
+
+type GovernanceUpdateAgendaItem200JSONResponse AgendaItem
+
+func (response GovernanceUpdateAgendaItem200JSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItem401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceUpdateAgendaItem401ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItem403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateAgendaItem403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateAgendaItem403ResponseHeaders
+}
+
+func (response GovernanceUpdateAgendaItem403ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItem404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateAgendaItem404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateAgendaItem404ResponseHeaders
+}
+
+func (response GovernanceUpdateAgendaItem404ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItem409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateAgendaItem409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateAgendaItem409ResponseHeaders
+}
+
+func (response GovernanceUpdateAgendaItem409ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItem422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateAgendaItem422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateAgendaItem422ResponseHeaders
+}
+
+func (response GovernanceUpdateAgendaItem422ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateAgendaItemdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateAgendaItemdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceUpdateAgendaItemdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceUpdateAgendaItemdefaultApplicationProblemPlusJSONResponse) VisitGovernanceUpdateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPollRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+}
+
+type GovernanceGetPollResponseObject interface {
+	VisitGovernanceGetPollResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetPoll200JSONResponse Poll
+
+func (response GovernanceGetPoll200JSONResponse) VisitGovernanceGetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPoll401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetPoll401ApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPoll403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetPoll403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetPoll403ResponseHeaders
+}
+
+func (response GovernanceGetPoll403ApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPoll404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetPoll404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetPoll404ResponseHeaders
+}
+
+func (response GovernanceGetPoll404ApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPolldefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetPolldefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetPolldefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetPolldefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPollRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+	Params       GovernanceSetPollParams
+	Body         *GovernanceSetPollJSONRequestBody
+}
+
+type GovernanceSetPollResponseObject interface {
+	VisitGovernanceSetPollResponse(w http.ResponseWriter) error
+}
+
+type GovernanceSetPoll200JSONResponse Poll
+
+func (response GovernanceSetPoll200JSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPoll401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceSetPoll401ApplicationProblemPlusJSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPoll403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetPoll403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetPoll403ResponseHeaders
+}
+
+func (response GovernanceSetPoll403ApplicationProblemPlusJSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPoll404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetPoll404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetPoll404ResponseHeaders
+}
+
+func (response GovernanceSetPoll404ApplicationProblemPlusJSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPoll409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetPoll409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetPoll409ResponseHeaders
+}
+
+func (response GovernanceSetPoll409ApplicationProblemPlusJSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPoll422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetPoll422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetPoll422ResponseHeaders
+}
+
+func (response GovernanceSetPoll422ApplicationProblemPlusJSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetPolldefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetPolldefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceSetPolldefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceSetPolldefaultApplicationProblemPlusJSONResponse) VisitGovernanceSetPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPollRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+	Body         *GovernanceAnswerPollJSONRequestBody
+}
+
+type GovernanceAnswerPollResponseObject interface {
+	VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error
+}
+
+type GovernanceAnswerPoll200JSONResponse PollAnswer
+
+func (response GovernanceAnswerPoll200JSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPoll401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceAnswerPoll401ApplicationProblemPlusJSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPoll403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceAnswerPoll403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceAnswerPoll403ResponseHeaders
+}
+
+func (response GovernanceAnswerPoll403ApplicationProblemPlusJSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPoll404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceAnswerPoll404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceAnswerPoll404ResponseHeaders
+}
+
+func (response GovernanceAnswerPoll404ApplicationProblemPlusJSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPoll409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceAnswerPoll409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceAnswerPoll409ResponseHeaders
+}
+
+func (response GovernanceAnswerPoll409ApplicationProblemPlusJSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPoll422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceAnswerPoll422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceAnswerPoll422ResponseHeaders
+}
+
+func (response GovernanceAnswerPoll422ApplicationProblemPlusJSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceAnswerPolldefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceAnswerPolldefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceAnswerPolldefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceAnswerPolldefaultApplicationProblemPlusJSONResponse) VisitGovernanceAnswerPollResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListPollAnswersRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+	Params       GovernanceListPollAnswersParams
+}
+
+type GovernanceListPollAnswersResponseObject interface {
+	VisitGovernanceListPollAnswersResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListPollAnswers200JSONResponse PollAnswerList
+
+func (response GovernanceListPollAnswers200JSONResponse) VisitGovernanceListPollAnswersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListPollAnswers401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListPollAnswers401ApplicationProblemPlusJSONResponse) VisitGovernanceListPollAnswersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListPollAnswers403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListPollAnswers403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListPollAnswers403ResponseHeaders
+}
+
+func (response GovernanceListPollAnswers403ApplicationProblemPlusJSONResponse) VisitGovernanceListPollAnswersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListPollAnswers404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListPollAnswers404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListPollAnswers404ResponseHeaders
+}
+
+func (response GovernanceListPollAnswers404ApplicationProblemPlusJSONResponse) VisitGovernanceListPollAnswersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListPollAnswersdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListPollAnswersdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListPollAnswersdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListPollAnswersdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListPollAnswersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPollResultsRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+}
+
+type GovernanceGetPollResultsResponseObject interface {
+	VisitGovernanceGetPollResultsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetPollResults200JSONResponse PollResults
+
+func (response GovernanceGetPollResults200JSONResponse) VisitGovernanceGetPollResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPollResults401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetPollResults401ApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPollResults403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetPollResults403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetPollResults403ResponseHeaders
+}
+
+func (response GovernanceGetPollResults403ApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPollResults404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetPollResults404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetPollResults404ResponseHeaders
+}
+
+func (response GovernanceGetPollResults404ApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetPollResultsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetPollResultsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetPollResultsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetPollResultsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetPollResultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetVoteCountsRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+}
+
+type GovernanceGetVoteCountsResponseObject interface {
+	VisitGovernanceGetVoteCountsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetVoteCounts200JSONResponse VoteCount
+
+func (response GovernanceGetVoteCounts200JSONResponse) VisitGovernanceGetVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetVoteCounts401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetVoteCounts401ApplicationProblemPlusJSONResponse) VisitGovernanceGetVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetVoteCounts403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetVoteCounts403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetVoteCounts403ResponseHeaders
+}
+
+func (response GovernanceGetVoteCounts403ApplicationProblemPlusJSONResponse) VisitGovernanceGetVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetVoteCounts404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetVoteCounts404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetVoteCounts404ResponseHeaders
+}
+
+func (response GovernanceGetVoteCounts404ApplicationProblemPlusJSONResponse) VisitGovernanceGetVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetVoteCountsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetVoteCountsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetVoteCountsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetVoteCountsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCountsRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	AgendaItemId openapi_types.UUID `json:"agenda_item_id"`
+	Body         *GovernanceRecordVoteCountsJSONRequestBody
+}
+
+type GovernanceRecordVoteCountsResponseObject interface {
+	VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceRecordVoteCounts200JSONResponse VoteCount
+
+func (response GovernanceRecordVoteCounts200JSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCounts401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceRecordVoteCounts401ApplicationProblemPlusJSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCounts403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordVoteCounts403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordVoteCounts403ResponseHeaders
+}
+
+func (response GovernanceRecordVoteCounts403ApplicationProblemPlusJSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCounts404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordVoteCounts404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordVoteCounts404ResponseHeaders
+}
+
+func (response GovernanceRecordVoteCounts404ApplicationProblemPlusJSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCounts409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordVoteCounts409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordVoteCounts409ResponseHeaders
+}
+
+func (response GovernanceRecordVoteCounts409ApplicationProblemPlusJSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCounts422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordVoteCounts422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordVoteCounts422ResponseHeaders
+}
+
+func (response GovernanceRecordVoteCounts422ApplicationProblemPlusJSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordVoteCountsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordVoteCountsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceRecordVoteCountsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceRecordVoteCountsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceRecordVoteCountsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type TenancyGetAllocationKeyRequestObject struct {
 	OrgId OrgId              `json:"org_id"`
 	KeyId openapi_types.UUID `json:"key_id"`
@@ -12438,6 +19005,1041 @@ func (response TenancyUpdateBlockdefaultApplicationProblemPlusJSONResponse) Visi
 	return err
 }
 
+type GovernanceListDecisionsRequestObject struct {
+	OrgId  OrgId2 `json:"org_id"`
+	Params GovernanceListDecisionsParams
+}
+
+type GovernanceListDecisionsResponseObject interface {
+	VisitGovernanceListDecisionsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListDecisions200JSONResponse DecisionList
+
+func (response GovernanceListDecisions200JSONResponse) VisitGovernanceListDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListDecisions401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListDecisions401ApplicationProblemPlusJSONResponse) VisitGovernanceListDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListDecisions403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListDecisions403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListDecisions403ResponseHeaders
+}
+
+func (response GovernanceListDecisions403ApplicationProblemPlusJSONResponse) VisitGovernanceListDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListDecisions422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListDecisions422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListDecisions422ResponseHeaders
+}
+
+func (response GovernanceListDecisions422ApplicationProblemPlusJSONResponse) VisitGovernanceListDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListDecisionsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListDecisionsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListDecisionsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListDecisionsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateDecisionRequestObject struct {
+	OrgId  OrgId2 `json:"org_id"`
+	Params GovernanceCreateDecisionParams
+	Body   *GovernanceCreateDecisionJSONRequestBody
+}
+
+type GovernanceCreateDecisionResponseObject interface {
+	VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCreateDecision201JSONResponse Decision
+
+func (response GovernanceCreateDecision201JSONResponse) VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateDecision401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCreateDecision401ApplicationProblemPlusJSONResponse) VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateDecision403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateDecision403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateDecision403ResponseHeaders
+}
+
+func (response GovernanceCreateDecision403ApplicationProblemPlusJSONResponse) VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateDecision409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateDecision409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateDecision409ResponseHeaders
+}
+
+func (response GovernanceCreateDecision409ApplicationProblemPlusJSONResponse) VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateDecision422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateDecision422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateDecision422ResponseHeaders
+}
+
+func (response GovernanceCreateDecision422ApplicationProblemPlusJSONResponse) VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateDecisiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateDecisiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCreateDecisiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCreateDecisiondefaultApplicationProblemPlusJSONResponse) VisitGovernanceCreateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetDecisionRequestObject struct {
+	OrgId      OrgId2             `json:"org_id"`
+	DecisionId openapi_types.UUID `json:"decision_id"`
+}
+
+type GovernanceGetDecisionResponseObject interface {
+	VisitGovernanceGetDecisionResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetDecision200JSONResponse Decision
+
+func (response GovernanceGetDecision200JSONResponse) VisitGovernanceGetDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetDecision401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetDecision401ApplicationProblemPlusJSONResponse) VisitGovernanceGetDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetDecision403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetDecision403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetDecision403ResponseHeaders
+}
+
+func (response GovernanceGetDecision403ApplicationProblemPlusJSONResponse) VisitGovernanceGetDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetDecision404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetDecision404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetDecision404ResponseHeaders
+}
+
+func (response GovernanceGetDecision404ApplicationProblemPlusJSONResponse) VisitGovernanceGetDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetDecisiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetDecisiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetDecisiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetDecisiondefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecisionRequestObject struct {
+	OrgId      OrgId2             `json:"org_id"`
+	DecisionId openapi_types.UUID `json:"decision_id"`
+	Params     GovernanceUpdateDecisionParams
+	Body       *GovernanceUpdateDecisionJSONRequestBody
+}
+
+type GovernanceUpdateDecisionResponseObject interface {
+	VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error
+}
+
+type GovernanceUpdateDecision200JSONResponse Decision
+
+func (response GovernanceUpdateDecision200JSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecision401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceUpdateDecision401ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecision403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateDecision403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateDecision403ResponseHeaders
+}
+
+func (response GovernanceUpdateDecision403ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecision404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateDecision404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateDecision404ResponseHeaders
+}
+
+func (response GovernanceUpdateDecision404ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecision409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateDecision409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateDecision409ResponseHeaders
+}
+
+func (response GovernanceUpdateDecision409ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecision422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateDecision422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateDecision422ResponseHeaders
+}
+
+func (response GovernanceUpdateDecision422ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateDecisiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateDecisiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceUpdateDecisiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceUpdateDecisiondefaultApplicationProblemPlusJSONResponse) VisitGovernanceUpdateDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecisionRequestObject struct {
+	OrgId      OrgId2             `json:"org_id"`
+	DecisionId openapi_types.UUID `json:"decision_id"`
+	Params     GovernanceApplyDecisionParams
+	Body       *GovernanceApplyDecisionJSONRequestBody
+}
+
+type GovernanceApplyDecisionResponseObject interface {
+	VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error
+}
+
+type GovernanceApplyDecision200JSONResponse DecisionApplyResult
+
+func (response GovernanceApplyDecision200JSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecision401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceApplyDecision401ApplicationProblemPlusJSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecision403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceApplyDecision403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceApplyDecision403ResponseHeaders
+}
+
+func (response GovernanceApplyDecision403ApplicationProblemPlusJSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecision404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceApplyDecision404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceApplyDecision404ResponseHeaders
+}
+
+func (response GovernanceApplyDecision404ApplicationProblemPlusJSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecision409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceApplyDecision409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceApplyDecision409ResponseHeaders
+}
+
+func (response GovernanceApplyDecision409ApplicationProblemPlusJSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecision422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceApplyDecision422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceApplyDecision422ResponseHeaders
+}
+
+func (response GovernanceApplyDecision422ApplicationProblemPlusJSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceApplyDecisiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceApplyDecisiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceApplyDecisiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceApplyDecisiondefaultApplicationProblemPlusJSONResponse) VisitGovernanceApplyDecisionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListGovernancePresetsRequestObject struct {
+	OrgId  OrgId2 `json:"org_id"`
+	Params GovernanceListGovernancePresetsParams
+}
+
+type GovernanceListGovernancePresetsResponseObject interface {
+	VisitGovernanceListGovernancePresetsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListGovernancePresets200JSONResponse GovernancePresetList
+
+func (response GovernanceListGovernancePresets200JSONResponse) VisitGovernanceListGovernancePresetsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListGovernancePresets401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListGovernancePresets401ApplicationProblemPlusJSONResponse) VisitGovernanceListGovernancePresetsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListGovernancePresets403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListGovernancePresets403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListGovernancePresets403ResponseHeaders
+}
+
+func (response GovernanceListGovernancePresets403ApplicationProblemPlusJSONResponse) VisitGovernanceListGovernancePresetsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListGovernancePresets422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListGovernancePresets422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListGovernancePresets422ResponseHeaders
+}
+
+func (response GovernanceListGovernancePresets422ApplicationProblemPlusJSONResponse) VisitGovernanceListGovernancePresetsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListGovernancePresetsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListGovernancePresetsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListGovernancePresetsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListGovernancePresetsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListGovernancePresetsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PeopleListInvitationsRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params PeopleListInvitationsParams
@@ -13248,6 +20850,4791 @@ type PeopleResendInvitationdefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response PeopleResendInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingsRequestObject struct {
+	OrgId  OrgId2 `json:"org_id"`
+	Params GovernanceListMeetingsParams
+}
+
+type GovernanceListMeetingsResponseObject interface {
+	VisitGovernanceListMeetingsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListMeetings200JSONResponse MeetingList
+
+func (response GovernanceListMeetings200JSONResponse) VisitGovernanceListMeetingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetings401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListMeetings401ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetings403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetings403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListMeetings403ResponseHeaders
+}
+
+func (response GovernanceListMeetings403ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetings422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetings422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListMeetings422ResponseHeaders
+}
+
+func (response GovernanceListMeetings422ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetingsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListMeetingsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListMeetingsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateMeetingRequestObject struct {
+	OrgId  OrgId2 `json:"org_id"`
+	Params GovernanceCreateMeetingParams
+	Body   *GovernanceCreateMeetingJSONRequestBody
+}
+
+type GovernanceCreateMeetingResponseObject interface {
+	VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCreateMeeting201JSONResponse Meeting
+
+func (response GovernanceCreateMeeting201JSONResponse) VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCreateMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateMeeting403ResponseHeaders
+}
+
+func (response GovernanceCreateMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateMeeting409ResponseHeaders
+}
+
+func (response GovernanceCreateMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateMeeting422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateMeeting422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateMeeting422ResponseHeaders
+}
+
+func (response GovernanceCreateMeeting422ApplicationProblemPlusJSONResponse) VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCreateMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCreateMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceCreateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceDeleteMeetingParams
+}
+
+type GovernanceDeleteMeetingResponseObject interface {
+	VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceDeleteMeeting204Response struct {
+}
+
+func (response GovernanceDeleteMeeting204Response) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type GovernanceDeleteMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceDeleteMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteMeeting403ResponseHeaders
+}
+
+func (response GovernanceDeleteMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteMeeting404ResponseHeaders
+}
+
+func (response GovernanceDeleteMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteMeeting409ResponseHeaders
+}
+
+func (response GovernanceDeleteMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteMeeting422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteMeeting422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceDeleteMeeting422ResponseHeaders
+}
+
+func (response GovernanceDeleteMeeting422ApplicationProblemPlusJSONResponse) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceDeleteMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceDeleteMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceDeleteMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceDeleteMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceDeleteMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+}
+
+type GovernanceGetMeetingResponseObject interface {
+	VisitGovernanceGetMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetMeeting200JSONResponse Meeting
+
+func (response GovernanceGetMeeting200JSONResponse) VisitGovernanceGetMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMeeting403ResponseHeaders
+}
+
+func (response GovernanceGetMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMeeting404ResponseHeaders
+}
+
+func (response GovernanceGetMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceUpdateMeetingParams
+	Body      *GovernanceUpdateMeetingJSONRequestBody
+}
+
+type GovernanceUpdateMeetingResponseObject interface {
+	VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceUpdateMeeting200JSONResponse Meeting
+
+func (response GovernanceUpdateMeeting200JSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceUpdateMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateMeeting403ResponseHeaders
+}
+
+func (response GovernanceUpdateMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateMeeting404ResponseHeaders
+}
+
+func (response GovernanceUpdateMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateMeeting409ResponseHeaders
+}
+
+func (response GovernanceUpdateMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeeting422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateMeeting422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceUpdateMeeting422ResponseHeaders
+}
+
+func (response GovernanceUpdateMeeting422ApplicationProblemPlusJSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceUpdateMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceUpdateMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceUpdateMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceUpdateMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceUpdateMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAgendaItemsRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceListAgendaItemsParams
+}
+
+type GovernanceListAgendaItemsResponseObject interface {
+	VisitGovernanceListAgendaItemsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListAgendaItems200JSONResponse AgendaItemList
+
+func (response GovernanceListAgendaItems200JSONResponse) VisitGovernanceListAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAgendaItems401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListAgendaItems401ApplicationProblemPlusJSONResponse) VisitGovernanceListAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAgendaItems403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAgendaItems403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListAgendaItems403ResponseHeaders
+}
+
+func (response GovernanceListAgendaItems403ApplicationProblemPlusJSONResponse) VisitGovernanceListAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAgendaItems404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAgendaItems404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListAgendaItems404ResponseHeaders
+}
+
+func (response GovernanceListAgendaItems404ApplicationProblemPlusJSONResponse) VisitGovernanceListAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAgendaItemsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAgendaItemsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListAgendaItemsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListAgendaItemsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItemRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceCreateAgendaItemParams
+	Body      *GovernanceCreateAgendaItemJSONRequestBody
+}
+
+type GovernanceCreateAgendaItemResponseObject interface {
+	VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCreateAgendaItem201JSONResponse AgendaItem
+
+func (response GovernanceCreateAgendaItem201JSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItem401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCreateAgendaItem401ApplicationProblemPlusJSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItem403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateAgendaItem403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateAgendaItem403ResponseHeaders
+}
+
+func (response GovernanceCreateAgendaItem403ApplicationProblemPlusJSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItem404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateAgendaItem404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateAgendaItem404ResponseHeaders
+}
+
+func (response GovernanceCreateAgendaItem404ApplicationProblemPlusJSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItem409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateAgendaItem409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateAgendaItem409ResponseHeaders
+}
+
+func (response GovernanceCreateAgendaItem409ApplicationProblemPlusJSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItem422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateAgendaItem422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCreateAgendaItem422ResponseHeaders
+}
+
+func (response GovernanceCreateAgendaItem422ApplicationProblemPlusJSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCreateAgendaItemdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCreateAgendaItemdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCreateAgendaItemdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCreateAgendaItemdefaultApplicationProblemPlusJSONResponse) VisitGovernanceCreateAgendaItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceReorderAgendaItemsRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Body      *GovernanceReorderAgendaItemsJSONRequestBody
+}
+
+type GovernanceReorderAgendaItemsResponseObject interface {
+	VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceReorderAgendaItems204Response struct {
+}
+
+func (response GovernanceReorderAgendaItems204Response) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type GovernanceReorderAgendaItems401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceReorderAgendaItems401ApplicationProblemPlusJSONResponse) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceReorderAgendaItems403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceReorderAgendaItems403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceReorderAgendaItems403ResponseHeaders
+}
+
+func (response GovernanceReorderAgendaItems403ApplicationProblemPlusJSONResponse) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceReorderAgendaItems404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceReorderAgendaItems404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceReorderAgendaItems404ResponseHeaders
+}
+
+func (response GovernanceReorderAgendaItems404ApplicationProblemPlusJSONResponse) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceReorderAgendaItems409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceReorderAgendaItems409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceReorderAgendaItems409ResponseHeaders
+}
+
+func (response GovernanceReorderAgendaItems409ApplicationProblemPlusJSONResponse) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceReorderAgendaItems422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceReorderAgendaItems422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceReorderAgendaItems422ResponseHeaders
+}
+
+func (response GovernanceReorderAgendaItems422ApplicationProblemPlusJSONResponse) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceReorderAgendaItemsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceReorderAgendaItemsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceReorderAgendaItemsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceReorderAgendaItemsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceReorderAgendaItemsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAttendanceRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceListAttendanceParams
+}
+
+type GovernanceListAttendanceResponseObject interface {
+	VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListAttendance200JSONResponse AttendanceList
+
+func (response GovernanceListAttendance200JSONResponse) VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAttendance401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListAttendance401ApplicationProblemPlusJSONResponse) VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAttendance403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAttendance403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListAttendance403ResponseHeaders
+}
+
+func (response GovernanceListAttendance403ApplicationProblemPlusJSONResponse) VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAttendance404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAttendance404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListAttendance404ResponseHeaders
+}
+
+func (response GovernanceListAttendance404ApplicationProblemPlusJSONResponse) VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAttendance422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAttendance422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListAttendance422ResponseHeaders
+}
+
+func (response GovernanceListAttendance422ApplicationProblemPlusJSONResponse) VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListAttendancedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListAttendancedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListAttendancedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListAttendancedefaultApplicationProblemPlusJSONResponse) VisitGovernanceListAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendanceRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceRecordAttendanceParams
+	Body      *GovernanceRecordAttendanceJSONRequestBody
+}
+
+type GovernanceRecordAttendanceResponseObject interface {
+	VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error
+}
+
+type GovernanceRecordAttendance201JSONResponse Attendance
+
+func (response GovernanceRecordAttendance201JSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendance401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceRecordAttendance401ApplicationProblemPlusJSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendance403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordAttendance403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordAttendance403ResponseHeaders
+}
+
+func (response GovernanceRecordAttendance403ApplicationProblemPlusJSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendance404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordAttendance404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordAttendance404ResponseHeaders
+}
+
+func (response GovernanceRecordAttendance404ApplicationProblemPlusJSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendance409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordAttendance409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordAttendance409ResponseHeaders
+}
+
+func (response GovernanceRecordAttendance409ApplicationProblemPlusJSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendance422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordAttendance422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordAttendance422ResponseHeaders
+}
+
+func (response GovernanceRecordAttendance422ApplicationProblemPlusJSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordAttendancedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordAttendancedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceRecordAttendancedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceRecordAttendancedefaultApplicationProblemPlusJSONResponse) VisitGovernanceRecordAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetAttendanceSheetRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+}
+
+type GovernanceGetAttendanceSheetResponseObject interface {
+	VisitGovernanceGetAttendanceSheetResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetAttendanceSheet200ApplicationpdfResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response GovernanceGetAttendanceSheet200ApplicationpdfResponse) VisitGovernanceGetAttendanceSheetResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "application/pdf")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type GovernanceGetAttendanceSheet401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetAttendanceSheet401ApplicationProblemPlusJSONResponse) VisitGovernanceGetAttendanceSheetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetAttendanceSheet403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetAttendanceSheet403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetAttendanceSheet403ResponseHeaders
+}
+
+func (response GovernanceGetAttendanceSheet403ApplicationProblemPlusJSONResponse) VisitGovernanceGetAttendanceSheetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetAttendanceSheet404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetAttendanceSheet404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetAttendanceSheet404ResponseHeaders
+}
+
+func (response GovernanceGetAttendanceSheet404ApplicationProblemPlusJSONResponse) VisitGovernanceGetAttendanceSheetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetAttendanceSheetdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetAttendanceSheetdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetAttendanceSheetdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetAttendanceSheetdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetAttendanceSheetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRemoveAttendanceRequestObject struct {
+	OrgId        OrgId2             `json:"org_id"`
+	MeetingId    openapi_types.UUID `json:"meeting_id"`
+	AttendanceId openapi_types.UUID `json:"attendance_id"`
+}
+
+type GovernanceRemoveAttendanceResponseObject interface {
+	VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error
+}
+
+type GovernanceRemoveAttendance204Response struct {
+}
+
+func (response GovernanceRemoveAttendance204Response) VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type GovernanceRemoveAttendance401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceRemoveAttendance401ApplicationProblemPlusJSONResponse) VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRemoveAttendance403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRemoveAttendance403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRemoveAttendance403ResponseHeaders
+}
+
+func (response GovernanceRemoveAttendance403ApplicationProblemPlusJSONResponse) VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRemoveAttendance404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRemoveAttendance404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRemoveAttendance404ResponseHeaders
+}
+
+func (response GovernanceRemoveAttendance404ApplicationProblemPlusJSONResponse) VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRemoveAttendance409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRemoveAttendance409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRemoveAttendance409ResponseHeaders
+}
+
+func (response GovernanceRemoveAttendance409ApplicationProblemPlusJSONResponse) VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRemoveAttendancedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRemoveAttendancedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceRemoveAttendancedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceRemoveAttendancedefaultApplicationProblemPlusJSONResponse) VisitGovernanceRemoveAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendanceRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceCheckInAttendanceParams
+	Body      *GovernanceCheckInAttendanceJSONRequestBody
+}
+
+type GovernanceCheckInAttendanceResponseObject interface {
+	VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCheckInAttendance201JSONResponse Attendance
+
+func (response GovernanceCheckInAttendance201JSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendance401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCheckInAttendance401ApplicationProblemPlusJSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendance403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCheckInAttendance403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCheckInAttendance403ResponseHeaders
+}
+
+func (response GovernanceCheckInAttendance403ApplicationProblemPlusJSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendance404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCheckInAttendance404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCheckInAttendance404ResponseHeaders
+}
+
+func (response GovernanceCheckInAttendance404ApplicationProblemPlusJSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendance409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCheckInAttendance409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCheckInAttendance409ResponseHeaders
+}
+
+func (response GovernanceCheckInAttendance409ApplicationProblemPlusJSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendance422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCheckInAttendance422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCheckInAttendance422ResponseHeaders
+}
+
+func (response GovernanceCheckInAttendance422ApplicationProblemPlusJSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCheckInAttendancedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCheckInAttendancedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCheckInAttendancedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCheckInAttendancedefaultApplicationProblemPlusJSONResponse) VisitGovernanceCheckInAttendanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetCallLetterRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceGetCallLetterParams
+}
+
+type GovernanceGetCallLetterResponseObject interface {
+	VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetCallLetter200ApplicationpdfResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response GovernanceGetCallLetter200ApplicationpdfResponse) VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "application/pdf")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type GovernanceGetCallLetter401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetCallLetter401ApplicationProblemPlusJSONResponse) VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetCallLetter403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetCallLetter403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetCallLetter403ResponseHeaders
+}
+
+func (response GovernanceGetCallLetter403ApplicationProblemPlusJSONResponse) VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetCallLetter404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetCallLetter404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetCallLetter404ResponseHeaders
+}
+
+func (response GovernanceGetCallLetter404ApplicationProblemPlusJSONResponse) VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetCallLetter422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetCallLetter422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetCallLetter422ResponseHeaders
+}
+
+func (response GovernanceGetCallLetter422ApplicationProblemPlusJSONResponse) VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetCallLetterdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetCallLetterdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetCallLetterdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetCallLetterdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetCallLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMyMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+}
+
+type GovernanceGetMyMeetingResponseObject interface {
+	VisitGovernanceGetMyMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetMyMeeting200JSONResponse MyMeeting
+
+func (response GovernanceGetMyMeeting200JSONResponse) VisitGovernanceGetMyMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMyMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetMyMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceGetMyMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMyMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMyMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMyMeeting403ResponseHeaders
+}
+
+func (response GovernanceGetMyMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceGetMyMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMyMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMyMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMyMeeting404ResponseHeaders
+}
+
+func (response GovernanceGetMyMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceGetMyMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMyMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMyMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetMyMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetMyMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetMyMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMinutesRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+}
+
+type GovernanceGetMinutesResponseObject interface {
+	VisitGovernanceGetMinutesResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetMinutes200JSONResponse MinutesResult
+
+func (response GovernanceGetMinutes200JSONResponse) VisitGovernanceGetMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMinutes401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetMinutes401ApplicationProblemPlusJSONResponse) VisitGovernanceGetMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMinutes403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMinutes403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMinutes403ResponseHeaders
+}
+
+func (response GovernanceGetMinutes403ApplicationProblemPlusJSONResponse) VisitGovernanceGetMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMinutes404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMinutes404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMinutes404ResponseHeaders
+}
+
+func (response GovernanceGetMinutes404ApplicationProblemPlusJSONResponse) VisitGovernanceGetMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMinutesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMinutesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetMinutesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetMinutesdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGenerateMinutesRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceGenerateMinutesParams
+}
+
+type GovernanceGenerateMinutesResponseObject interface {
+	VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGenerateMinutes200JSONResponse MinutesResult
+
+func (response GovernanceGenerateMinutes200JSONResponse) VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGenerateMinutes401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGenerateMinutes401ApplicationProblemPlusJSONResponse) VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGenerateMinutes403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGenerateMinutes403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGenerateMinutes403ResponseHeaders
+}
+
+func (response GovernanceGenerateMinutes403ApplicationProblemPlusJSONResponse) VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGenerateMinutes404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGenerateMinutes404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGenerateMinutes404ResponseHeaders
+}
+
+func (response GovernanceGenerateMinutes404ApplicationProblemPlusJSONResponse) VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGenerateMinutes409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGenerateMinutes409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGenerateMinutes409ResponseHeaders
+}
+
+func (response GovernanceGenerateMinutes409ApplicationProblemPlusJSONResponse) VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGenerateMinutesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGenerateMinutesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGenerateMinutesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGenerateMinutesdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGenerateMinutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingNoticesRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceListMeetingNoticesParams
+}
+
+type GovernanceListMeetingNoticesResponseObject interface {
+	VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListMeetingNotices200JSONResponse MeetingNoticeList
+
+func (response GovernanceListMeetingNotices200JSONResponse) VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingNotices401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListMeetingNotices401ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingNotices403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetingNotices403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListMeetingNotices403ResponseHeaders
+}
+
+func (response GovernanceListMeetingNotices403ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingNotices404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetingNotices404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListMeetingNotices404ResponseHeaders
+}
+
+func (response GovernanceListMeetingNotices404ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingNotices422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetingNotices422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListMeetingNotices422ResponseHeaders
+}
+
+func (response GovernanceListMeetingNotices422ApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListMeetingNoticesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListMeetingNoticesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListMeetingNoticesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListMeetingNoticesdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListMeetingNoticesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticeRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	PersonId  openapi_types.UUID `json:"person_id"`
+	Body      *GovernanceRecordMeetingNoticeJSONRequestBody
+}
+
+type GovernanceRecordMeetingNoticeResponseObject interface {
+	VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error
+}
+
+type GovernanceRecordMeetingNotice200JSONResponse MeetingNotice
+
+func (response GovernanceRecordMeetingNotice200JSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNotice401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceRecordMeetingNotice401ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNotice403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNotice403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNotice403ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNotice403ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNotice404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNotice404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNotice404ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNotice404ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNotice409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNotice409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNotice409ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNotice409ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNotice422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNotice422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNotice422ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNotice422ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNoticedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceRecordMeetingNoticedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceRecordMeetingNoticedefaultApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulkRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceRecordMeetingNoticesBulkParams
+	Body      *GovernanceRecordMeetingNoticesBulkJSONRequestBody
+}
+
+type GovernanceRecordMeetingNoticesBulkResponseObject interface {
+	VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error
+}
+
+type GovernanceRecordMeetingNoticesBulk200JSONResponse MeetingNoticeBulkResult
+
+func (response GovernanceRecordMeetingNoticesBulk200JSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulk401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceRecordMeetingNoticesBulk401ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulk403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNoticesBulk403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNoticesBulk403ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNoticesBulk403ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulk404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNoticesBulk404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNoticesBulk404ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNoticesBulk404ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulk409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNoticesBulk409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNoticesBulk409ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNoticesBulk409ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulk422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNoticesBulk422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceRecordMeetingNoticesBulk422ResponseHeaders
+}
+
+func (response GovernanceRecordMeetingNoticesBulk422ApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceRecordMeetingNoticesBulkdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceRecordMeetingNoticesBulkdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceRecordMeetingNoticesBulkdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceRecordMeetingNoticesBulkdefaultApplicationProblemPlusJSONResponse) VisitGovernanceRecordMeetingNoticesBulkResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingQuorumRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+}
+
+type GovernanceGetMeetingQuorumResponseObject interface {
+	VisitGovernanceGetMeetingQuorumResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetMeetingQuorum200JSONResponse Quorum
+
+func (response GovernanceGetMeetingQuorum200JSONResponse) VisitGovernanceGetMeetingQuorumResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingQuorum401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetMeetingQuorum401ApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingQuorumResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingQuorum403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMeetingQuorum403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMeetingQuorum403ResponseHeaders
+}
+
+func (response GovernanceGetMeetingQuorum403ApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingQuorumResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingQuorum404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMeetingQuorum404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetMeetingQuorum404ResponseHeaders
+}
+
+func (response GovernanceGetMeetingQuorum404ApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingQuorumResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetMeetingQuorumdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetMeetingQuorumdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetMeetingQuorumdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetMeetingQuorumdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetMeetingQuorumResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceCallMeetingParams
+	Body      *GovernanceCallMeetingJSONRequestBody
+}
+
+type GovernanceCallMeetingResponseObject interface {
+	VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCallMeeting200JSONResponse Meeting
+
+func (response GovernanceCallMeeting200JSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCallMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCallMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCallMeeting403ResponseHeaders
+}
+
+func (response GovernanceCallMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCallMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCallMeeting404ResponseHeaders
+}
+
+func (response GovernanceCallMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCallMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCallMeeting409ResponseHeaders
+}
+
+func (response GovernanceCallMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeeting422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCallMeeting422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCallMeeting422ResponseHeaders
+}
+
+func (response GovernanceCallMeeting422ApplicationProblemPlusJSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCallMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCallMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCallMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCallMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceCallMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceCancelMeetingParams
+	Body      *GovernanceCancelMeetingJSONRequestBody
+}
+
+type GovernanceCancelMeetingResponseObject interface {
+	VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCancelMeeting200JSONResponse Meeting
+
+func (response GovernanceCancelMeeting200JSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCancelMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCancelMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCancelMeeting403ResponseHeaders
+}
+
+func (response GovernanceCancelMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCancelMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCancelMeeting404ResponseHeaders
+}
+
+func (response GovernanceCancelMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCancelMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCancelMeeting409ResponseHeaders
+}
+
+func (response GovernanceCancelMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeeting422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCancelMeeting422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCancelMeeting422ResponseHeaders
+}
+
+func (response GovernanceCancelMeeting422ApplicationProblemPlusJSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCancelMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCancelMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCancelMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCancelMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceCancelMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCloseMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceCloseMeetingParams
+}
+
+type GovernanceCloseMeetingResponseObject interface {
+	VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceCloseMeeting200JSONResponse Meeting
+
+func (response GovernanceCloseMeeting200JSONResponse) VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCloseMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceCloseMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCloseMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCloseMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCloseMeeting403ResponseHeaders
+}
+
+func (response GovernanceCloseMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCloseMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCloseMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCloseMeeting404ResponseHeaders
+}
+
+func (response GovernanceCloseMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCloseMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCloseMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceCloseMeeting409ResponseHeaders
+}
+
+func (response GovernanceCloseMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceCloseMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceCloseMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceCloseMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceCloseMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceCloseMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisionsRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceNotifyMeetingDecisionsParams
+	Body      *GovernanceNotifyMeetingDecisionsJSONRequestBody
+}
+
+type GovernanceNotifyMeetingDecisionsResponseObject interface {
+	VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceNotifyMeetingDecisions200JSONResponse DecisionNotifyResult
+
+func (response GovernanceNotifyMeetingDecisions200JSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisions401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceNotifyMeetingDecisions401ApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisions403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceNotifyMeetingDecisions403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceNotifyMeetingDecisions403ResponseHeaders
+}
+
+func (response GovernanceNotifyMeetingDecisions403ApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisions404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceNotifyMeetingDecisions404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceNotifyMeetingDecisions404ResponseHeaders
+}
+
+func (response GovernanceNotifyMeetingDecisions404ApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisions409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceNotifyMeetingDecisions409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceNotifyMeetingDecisions409ResponseHeaders
+}
+
+func (response GovernanceNotifyMeetingDecisions409ApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisions422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceNotifyMeetingDecisions422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceNotifyMeetingDecisions422ResponseHeaders
+}
+
+func (response GovernanceNotifyMeetingDecisions422ApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisions503ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceNotifyMeetingDecisions503ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceNotifyMeetingDecisions503ResponseHeaders
+}
+
+func (response GovernanceNotifyMeetingDecisions503ApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceNotifyMeetingDecisionsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceNotifyMeetingDecisionsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceNotifyMeetingDecisionsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceNotifyMeetingDecisionsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceNotifyMeetingDecisionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceStartMeetingRequestObject struct {
+	OrgId     OrgId2             `json:"org_id"`
+	MeetingId openapi_types.UUID `json:"meeting_id"`
+	Params    GovernanceStartMeetingParams
+}
+
+type GovernanceStartMeetingResponseObject interface {
+	VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error
+}
+
+type GovernanceStartMeeting200JSONResponse Meeting
+
+func (response GovernanceStartMeeting200JSONResponse) VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceStartMeeting401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceStartMeeting401ApplicationProblemPlusJSONResponse) VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceStartMeeting403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceStartMeeting403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceStartMeeting403ResponseHeaders
+}
+
+func (response GovernanceStartMeeting403ApplicationProblemPlusJSONResponse) VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceStartMeeting404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceStartMeeting404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceStartMeeting404ResponseHeaders
+}
+
+func (response GovernanceStartMeeting404ApplicationProblemPlusJSONResponse) VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceStartMeeting409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceStartMeeting409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceStartMeeting409ResponseHeaders
+}
+
+func (response GovernanceStartMeeting409ApplicationProblemPlusJSONResponse) VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceStartMeetingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceStartMeetingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceStartMeetingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceStartMeetingdefaultApplicationProblemPlusJSONResponse) VisitGovernanceStartMeetingResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -18765,6 +31152,362 @@ func (response TenancyExportSitedefaultApplicationProblemPlusJSONResponse) Visit
 	return err
 }
 
+type GovernanceGetGovernanceSettingsRequestObject struct {
+	OrgId  OrgId2             `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type GovernanceGetGovernanceSettingsResponseObject interface {
+	VisitGovernanceGetGovernanceSettingsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceGetGovernanceSettings200JSONResponse GovernanceSettings
+
+func (response GovernanceGetGovernanceSettings200JSONResponse) VisitGovernanceGetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetGovernanceSettings401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceGetGovernanceSettings401ApplicationProblemPlusJSONResponse) VisitGovernanceGetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetGovernanceSettings403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetGovernanceSettings403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetGovernanceSettings403ResponseHeaders
+}
+
+func (response GovernanceGetGovernanceSettings403ApplicationProblemPlusJSONResponse) VisitGovernanceGetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetGovernanceSettings404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetGovernanceSettings404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceGetGovernanceSettings404ResponseHeaders
+}
+
+func (response GovernanceGetGovernanceSettings404ApplicationProblemPlusJSONResponse) VisitGovernanceGetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceGetGovernanceSettingsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceGetGovernanceSettingsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceGetGovernanceSettingsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceGetGovernanceSettingsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceGetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettingsRequestObject struct {
+	OrgId  OrgId2             `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Params GovernanceSetGovernanceSettingsParams
+	Body   *GovernanceSetGovernanceSettingsJSONRequestBody
+}
+
+type GovernanceSetGovernanceSettingsResponseObject interface {
+	VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error
+}
+
+type GovernanceSetGovernanceSettings200JSONResponse GovernanceSettings
+
+func (response GovernanceSetGovernanceSettings200JSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettings401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceSetGovernanceSettings401ApplicationProblemPlusJSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettings403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetGovernanceSettings403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetGovernanceSettings403ResponseHeaders
+}
+
+func (response GovernanceSetGovernanceSettings403ApplicationProblemPlusJSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettings404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetGovernanceSettings404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetGovernanceSettings404ResponseHeaders
+}
+
+func (response GovernanceSetGovernanceSettings404ApplicationProblemPlusJSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettings409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetGovernanceSettings409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetGovernanceSettings409ResponseHeaders
+}
+
+func (response GovernanceSetGovernanceSettings409ApplicationProblemPlusJSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettings422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetGovernanceSettings422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceSetGovernanceSettings422ResponseHeaders
+}
+
+func (response GovernanceSetGovernanceSettings422ApplicationProblemPlusJSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceSetGovernanceSettingsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceSetGovernanceSettingsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceSetGovernanceSettingsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceSetGovernanceSettingsdefaultApplicationProblemPlusJSONResponse) VisitGovernanceSetGovernanceSettingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type TenancyImportUnitsRequestObject struct {
 	OrgId  OrgId              `json:"org_id"`
 	SiteId openapi_types.UUID `json:"site_id"`
@@ -20427,6 +33170,151 @@ type TenancyExportVehiclesdefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response TenancyExportVehiclesdefaultApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListTermRemindersRequestObject struct {
+	OrgId  OrgId2 `json:"org_id"`
+	Params GovernanceListTermRemindersParams
+}
+
+type GovernanceListTermRemindersResponseObject interface {
+	VisitGovernanceListTermRemindersResponse(w http.ResponseWriter) error
+}
+
+type GovernanceListTermReminders200JSONResponse TermReminderList
+
+func (response GovernanceListTermReminders200JSONResponse) VisitGovernanceListTermRemindersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListTermReminders401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GovernanceListTermReminders401ApplicationProblemPlusJSONResponse) VisitGovernanceListTermRemindersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListTermReminders403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListTermReminders403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListTermReminders403ResponseHeaders
+}
+
+func (response GovernanceListTermReminders403ApplicationProblemPlusJSONResponse) VisitGovernanceListTermRemindersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListTermReminders422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListTermReminders422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GovernanceListTermReminders422ResponseHeaders
+}
+
+func (response GovernanceListTermReminders422ApplicationProblemPlusJSONResponse) VisitGovernanceListTermRemindersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GovernanceListTermRemindersdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GovernanceListTermRemindersdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GovernanceListTermRemindersdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GovernanceListTermRemindersdefaultApplicationProblemPlusJSONResponse) VisitGovernanceListTermRemindersResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -24453,6 +37341,33 @@ type StrictServerInterface interface {
 	// OrgUpdate Change an organization's settings
 	// (PATCH /v1/orgs/{org_id})
 	OrgUpdate(ctx context.Context, request OrgUpdateRequestObject) (OrgUpdateResponseObject, error)
+	// GovernanceDeleteAgendaItem Remove an agenda item
+	// (DELETE /v1/orgs/{org_id}/agenda-items/{agenda_item_id})
+	GovernanceDeleteAgendaItem(ctx context.Context, request GovernanceDeleteAgendaItemRequestObject) (GovernanceDeleteAgendaItemResponseObject, error)
+	// GovernanceUpdateAgendaItem Edit an agenda item
+	// (PATCH /v1/orgs/{org_id}/agenda-items/{agenda_item_id})
+	GovernanceUpdateAgendaItem(ctx context.Context, request GovernanceUpdateAgendaItemRequestObject) (GovernanceUpdateAgendaItemResponseObject, error)
+	// GovernanceGetPoll Get the poll of an agenda item
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll)
+	GovernanceGetPoll(ctx context.Context, request GovernanceGetPollRequestObject) (GovernanceGetPollResponseObject, error)
+	// GovernanceSetPoll Create or change the poll
+	// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll)
+	GovernanceSetPoll(ctx context.Context, request GovernanceSetPollRequestObject) (GovernanceSetPollResponseObject, error)
+	// GovernanceAnswerPoll Answer the poll for my unit
+	// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer)
+	GovernanceAnswerPoll(ctx context.Context, request GovernanceAnswerPollRequestObject) (GovernanceAnswerPollResponseObject, error)
+	// GovernanceListPollAnswers Poll answers per unit
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers)
+	GovernanceListPollAnswers(ctx context.Context, request GovernanceListPollAnswersRequestObject) (GovernanceListPollAnswersResponseObject, error)
+	// GovernanceGetPollResults Aggregate poll results
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results)
+	GovernanceGetPollResults(ctx context.Context, request GovernanceGetPollResultsRequestObject) (GovernanceGetPollResultsResponseObject, error)
+	// GovernanceGetVoteCounts Get the in-room count
+	// (GET /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts)
+	GovernanceGetVoteCounts(ctx context.Context, request GovernanceGetVoteCountsRequestObject) (GovernanceGetVoteCountsResponseObject, error)
+	// GovernanceRecordVoteCounts Record the in-room count
+	// (PUT /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts)
+	GovernanceRecordVoteCounts(ctx context.Context, request GovernanceRecordVoteCountsRequestObject) (GovernanceRecordVoteCountsResponseObject, error)
 	// TenancyGetAllocationKey Read an allocation key with its values
 	// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
 	TenancyGetAllocationKey(ctx context.Context, request TenancyGetAllocationKeyRequestObject) (TenancyGetAllocationKeyResponseObject, error)
@@ -24468,6 +37383,24 @@ type StrictServerInterface interface {
 	// TenancyUpdateBlock Rename, hide or reorder a block
 	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 	TenancyUpdateBlock(ctx context.Context, request TenancyUpdateBlockRequestObject) (TenancyUpdateBlockResponseObject, error)
+	// GovernanceListDecisions Search the decision history
+	// (GET /v1/orgs/{org_id}/decisions)
+	GovernanceListDecisions(ctx context.Context, request GovernanceListDecisionsRequestObject) (GovernanceListDecisionsResponseObject, error)
+	// GovernanceCreateDecision Record a decision
+	// (POST /v1/orgs/{org_id}/decisions)
+	GovernanceCreateDecision(ctx context.Context, request GovernanceCreateDecisionRequestObject) (GovernanceCreateDecisionResponseObject, error)
+	// GovernanceGetDecision Get a decision
+	// (GET /v1/orgs/{org_id}/decisions/{decision_id})
+	GovernanceGetDecision(ctx context.Context, request GovernanceGetDecisionRequestObject) (GovernanceGetDecisionResponseObject, error)
+	// GovernanceUpdateDecision Edit a decision
+	// (PATCH /v1/orgs/{org_id}/decisions/{decision_id})
+	GovernanceUpdateDecision(ctx context.Context, request GovernanceUpdateDecisionRequestObject) (GovernanceUpdateDecisionResponseObject, error)
+	// GovernanceApplyDecision Apply the effect of a decision
+	// (POST /v1/orgs/{org_id}/decisions/{decision_id}:apply)
+	GovernanceApplyDecision(ctx context.Context, request GovernanceApplyDecisionRequestObject) (GovernanceApplyDecisionResponseObject, error)
+	// GovernanceListGovernancePresets List national governance presets
+	// (GET /v1/orgs/{org_id}/governance-presets)
+	GovernanceListGovernancePresets(ctx context.Context, request GovernanceListGovernancePresetsRequestObject) (GovernanceListGovernancePresetsResponseObject, error)
 	// PeopleListInvitations List invitations
 	// (GET /v1/orgs/{org_id}/invitations)
 	PeopleListInvitations(ctx context.Context, request PeopleListInvitationsRequestObject) (PeopleListInvitationsResponseObject, error)
@@ -24480,6 +37413,84 @@ type StrictServerInterface interface {
 	// PeopleResendInvitation Send an invitation again with a new link
 	// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
 	PeopleResendInvitation(ctx context.Context, request PeopleResendInvitationRequestObject) (PeopleResendInvitationResponseObject, error)
+	// GovernanceListMeetings List meetings
+	// (GET /v1/orgs/{org_id}/meetings)
+	GovernanceListMeetings(ctx context.Context, request GovernanceListMeetingsRequestObject) (GovernanceListMeetingsResponseObject, error)
+	// GovernanceCreateMeeting Create meeting
+	// (POST /v1/orgs/{org_id}/meetings)
+	GovernanceCreateMeeting(ctx context.Context, request GovernanceCreateMeetingRequestObject) (GovernanceCreateMeetingResponseObject, error)
+	// GovernanceDeleteMeeting Delete meeting
+	// (DELETE /v1/orgs/{org_id}/meetings/{meeting_id})
+	GovernanceDeleteMeeting(ctx context.Context, request GovernanceDeleteMeetingRequestObject) (GovernanceDeleteMeetingResponseObject, error)
+	// GovernanceGetMeeting Get meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id})
+	GovernanceGetMeeting(ctx context.Context, request GovernanceGetMeetingRequestObject) (GovernanceGetMeetingResponseObject, error)
+	// GovernanceUpdateMeeting Update meeting
+	// (PATCH /v1/orgs/{org_id}/meetings/{meeting_id})
+	GovernanceUpdateMeeting(ctx context.Context, request GovernanceUpdateMeetingRequestObject) (GovernanceUpdateMeetingResponseObject, error)
+	// GovernanceListAgendaItems List agenda items
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items)
+	GovernanceListAgendaItems(ctx context.Context, request GovernanceListAgendaItemsRequestObject) (GovernanceListAgendaItemsResponseObject, error)
+	// GovernanceCreateAgendaItem Add an agenda item
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items)
+	GovernanceCreateAgendaItem(ctx context.Context, request GovernanceCreateAgendaItemRequestObject) (GovernanceCreateAgendaItemResponseObject, error)
+	// GovernanceReorderAgendaItems Reorder the agenda
+	// (PUT /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order)
+	GovernanceReorderAgendaItems(ctx context.Context, request GovernanceReorderAgendaItemsRequestObject) (GovernanceReorderAgendaItemsResponseObject, error)
+	// GovernanceListAttendance Attendance of a meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance)
+	GovernanceListAttendance(ctx context.Context, request GovernanceListAttendanceRequestObject) (GovernanceListAttendanceResponseObject, error)
+	// GovernanceRecordAttendance Tick an owner off
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/attendance)
+	GovernanceRecordAttendance(ctx context.Context, request GovernanceRecordAttendanceRequestObject) (GovernanceRecordAttendanceResponseObject, error)
+	// GovernanceGetAttendanceSheet Download the attendance list (hazirun cetveli)
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet)
+	GovernanceGetAttendanceSheet(ctx context.Context, request GovernanceGetAttendanceSheetRequestObject) (GovernanceGetAttendanceSheetResponseObject, error)
+	// GovernanceRemoveAttendance Remove an attendance record
+	// (DELETE /v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id})
+	GovernanceRemoveAttendance(ctx context.Context, request GovernanceRemoveAttendanceRequestObject) (GovernanceRemoveAttendanceResponseObject, error)
+	// GovernanceCheckInAttendance Check an owner in by QR
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin)
+	GovernanceCheckInAttendance(ctx context.Context, request GovernanceCheckInAttendanceRequestObject) (GovernanceCheckInAttendanceResponseObject, error)
+	// GovernanceGetCallLetter Download the call letter
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter)
+	GovernanceGetCallLetter(ctx context.Context, request GovernanceGetCallLetterRequestObject) (GovernanceGetCallLetterResponseObject, error)
+	// GovernanceGetMyMeeting The meeting as the caller sees it
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/me)
+	GovernanceGetMyMeeting(ctx context.Context, request GovernanceGetMyMeetingRequestObject) (GovernanceGetMyMeetingResponseObject, error)
+	// GovernanceGetMinutes The minutes document of a meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/minutes)
+	GovernanceGetMinutes(ctx context.Context, request GovernanceGetMinutesRequestObject) (GovernanceGetMinutesResponseObject, error)
+	// GovernanceGenerateMinutes Generate or regenerate the minutes
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate)
+	GovernanceGenerateMinutes(ctx context.Context, request GovernanceGenerateMinutesRequestObject) (GovernanceGenerateMinutesResponseObject, error)
+	// GovernanceListMeetingNotices Delivery checklist of a meeting
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/notices)
+	GovernanceListMeetingNotices(ctx context.Context, request GovernanceListMeetingNoticesRequestObject) (GovernanceListMeetingNoticesResponseObject, error)
+	// GovernanceRecordMeetingNotice Record how a notice reached one owner
+	// (PUT /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id})
+	GovernanceRecordMeetingNotice(ctx context.Context, request GovernanceRecordMeetingNoticeRequestObject) (GovernanceRecordMeetingNoticeResponseObject, error)
+	// GovernanceRecordMeetingNoticesBulk Record one delivery method for many owners
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk)
+	GovernanceRecordMeetingNoticesBulk(ctx context.Context, request GovernanceRecordMeetingNoticesBulkRequestObject) (GovernanceRecordMeetingNoticesBulkResponseObject, error)
+	// GovernanceGetMeetingQuorum Live quorum
+	// (GET /v1/orgs/{org_id}/meetings/{meeting_id}/quorum)
+	GovernanceGetMeetingQuorum(ctx context.Context, request GovernanceGetMeetingQuorumRequestObject) (GovernanceGetMeetingQuorumResponseObject, error)
+	// GovernanceCallMeeting Issue the call (cagri)
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:call)
+	GovernanceCallMeeting(ctx context.Context, request GovernanceCallMeetingRequestObject) (GovernanceCallMeetingResponseObject, error)
+	// GovernanceCancelMeeting Cancel a meeting
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:cancel)
+	GovernanceCancelMeeting(ctx context.Context, request GovernanceCancelMeetingRequestObject) (GovernanceCancelMeetingResponseObject, error)
+	// GovernanceCloseMeeting Close the meeting and generate the minutes
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:close)
+	GovernanceCloseMeeting(ctx context.Context, request GovernanceCloseMeetingRequestObject) (GovernanceCloseMeetingResponseObject, error)
+	// GovernanceNotifyMeetingDecisions Send the decisions to absent owners
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions)
+	GovernanceNotifyMeetingDecisions(ctx context.Context, request GovernanceNotifyMeetingDecisionsRequestObject) (GovernanceNotifyMeetingDecisionsResponseObject, error)
+	// GovernanceStartMeeting Open the session
+	// (POST /v1/orgs/{org_id}/meetings/{meeting_id}:start)
+	GovernanceStartMeeting(ctx context.Context, request GovernanceStartMeetingRequestObject) (GovernanceStartMeetingResponseObject, error)
 	// PeopleListMemberships List role memberships
 	// (GET /v1/orgs/{org_id}/memberships)
 	PeopleListMemberships(ctx context.Context, request PeopleListMembershipsRequestObject) (PeopleListMembershipsResponseObject, error)
@@ -24558,6 +37569,12 @@ type StrictServerInterface interface {
 	// TenancyExportSite Export a whole site to an archive
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/export)
 	TenancyExportSite(ctx context.Context, request TenancyExportSiteRequestObject) (TenancyExportSiteResponseObject, error)
+	// GovernanceGetGovernanceSettings Get the governance settings of a site
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/governance-settings)
+	GovernanceGetGovernanceSettings(ctx context.Context, request GovernanceGetGovernanceSettingsRequestObject) (GovernanceGetGovernanceSettingsResponseObject, error)
+	// GovernanceSetGovernanceSettings Replace the governance settings of a site
+	// (PUT /v1/orgs/{org_id}/sites/{site_id}/governance-settings)
+	GovernanceSetGovernanceSettings(ctx context.Context, request GovernanceSetGovernanceSettingsRequestObject) (GovernanceSetGovernanceSettingsResponseObject, error)
 	// TenancyImportUnits Import units and people from a spreadsheet
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/import)
 	TenancyImportUnits(ctx context.Context, request TenancyImportUnitsRequestObject) (TenancyImportUnitsResponseObject, error)
@@ -24582,6 +37599,9 @@ type StrictServerInterface interface {
 	// TenancyExportVehicles Export the site's plates as CSV
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
 	TenancyExportVehicles(ctx context.Context, request TenancyExportVehiclesRequestObject) (TenancyExportVehiclesResponseObject, error)
+	// GovernanceListTermReminders Terms nearing expiry
+	// (GET /v1/orgs/{org_id}/term-reminders)
+	GovernanceListTermReminders(ctx context.Context, request GovernanceListTermRemindersRequestObject) (GovernanceListTermRemindersResponseObject, error)
 	// PeopleListClaims List unit claims
 	// (GET /v1/orgs/{org_id}/unit-claims)
 	PeopleListClaims(ctx context.Context, request PeopleListClaimsRequestObject) (PeopleListClaimsResponseObject, error)
@@ -25326,6 +38346,281 @@ func (sh *strictHandler) OrgUpdate(w http.ResponseWriter, r *http.Request, orgId
 	}
 }
 
+// GovernanceDeleteAgendaItem operation middleware
+func (sh *strictHandler) GovernanceDeleteAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceDeleteAgendaItemParams) {
+	var request GovernanceDeleteAgendaItemRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceDeleteAgendaItem(ctx, request.(GovernanceDeleteAgendaItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceDeleteAgendaItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceDeleteAgendaItemResponseObject); ok {
+		if err := validResponse.VisitGovernanceDeleteAgendaItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceUpdateAgendaItem operation middleware
+func (sh *strictHandler) GovernanceUpdateAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceUpdateAgendaItemParams) {
+	var request GovernanceUpdateAgendaItemRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+	request.Params = params
+
+	var body GovernanceUpdateAgendaItemJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceUpdateAgendaItem(ctx, request.(GovernanceUpdateAgendaItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceUpdateAgendaItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceUpdateAgendaItemResponseObject); ok {
+		if err := validResponse.VisitGovernanceUpdateAgendaItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetPoll operation middleware
+func (sh *strictHandler) GovernanceGetPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	var request GovernanceGetPollRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetPoll(ctx, request.(GovernanceGetPollRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetPoll")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetPollResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetPollResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceSetPoll operation middleware
+func (sh *strictHandler) GovernanceSetPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceSetPollParams) {
+	var request GovernanceSetPollRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+	request.Params = params
+
+	var body GovernanceSetPollJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceSetPoll(ctx, request.(GovernanceSetPollRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceSetPoll")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceSetPollResponseObject); ok {
+		if err := validResponse.VisitGovernanceSetPollResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceAnswerPoll operation middleware
+func (sh *strictHandler) GovernanceAnswerPoll(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	var request GovernanceAnswerPollRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+
+	var body GovernanceAnswerPollJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceAnswerPoll(ctx, request.(GovernanceAnswerPollRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceAnswerPoll")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceAnswerPollResponseObject); ok {
+		if err := validResponse.VisitGovernanceAnswerPollResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListPollAnswers operation middleware
+func (sh *strictHandler) GovernanceListPollAnswers(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID, params GovernanceListPollAnswersParams) {
+	var request GovernanceListPollAnswersRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListPollAnswers(ctx, request.(GovernanceListPollAnswersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListPollAnswers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListPollAnswersResponseObject); ok {
+		if err := validResponse.VisitGovernanceListPollAnswersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetPollResults operation middleware
+func (sh *strictHandler) GovernanceGetPollResults(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	var request GovernanceGetPollResultsRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetPollResults(ctx, request.(GovernanceGetPollResultsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetPollResults")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetPollResultsResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetPollResultsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetVoteCounts operation middleware
+func (sh *strictHandler) GovernanceGetVoteCounts(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	var request GovernanceGetVoteCountsRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetVoteCounts(ctx, request.(GovernanceGetVoteCountsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetVoteCounts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetVoteCountsResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetVoteCountsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceRecordVoteCounts operation middleware
+func (sh *strictHandler) GovernanceRecordVoteCounts(w http.ResponseWriter, r *http.Request, orgId OrgId2, agendaItemId openapi_types.UUID) {
+	var request GovernanceRecordVoteCountsRequestObject
+
+	request.OrgId = orgId
+	request.AgendaItemId = agendaItemId
+
+	var body GovernanceRecordVoteCountsJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceRecordVoteCounts(ctx, request.(GovernanceRecordVoteCountsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceRecordVoteCounts")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceRecordVoteCountsResponseObject); ok {
+		if err := validResponse.VisitGovernanceRecordVoteCountsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // TenancyGetAllocationKey operation middleware
 func (sh *strictHandler) TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID) {
 	var request TenancyGetAllocationKeyRequestObject
@@ -25485,6 +38780,191 @@ func (sh *strictHandler) TenancyUpdateBlock(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// GovernanceListDecisions operation middleware
+func (sh *strictHandler) GovernanceListDecisions(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListDecisionsParams) {
+	var request GovernanceListDecisionsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListDecisions(ctx, request.(GovernanceListDecisionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListDecisions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListDecisionsResponseObject); ok {
+		if err := validResponse.VisitGovernanceListDecisionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCreateDecision operation middleware
+func (sh *strictHandler) GovernanceCreateDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceCreateDecisionParams) {
+	var request GovernanceCreateDecisionRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body GovernanceCreateDecisionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCreateDecision(ctx, request.(GovernanceCreateDecisionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCreateDecision")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCreateDecisionResponseObject); ok {
+		if err := validResponse.VisitGovernanceCreateDecisionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetDecision operation middleware
+func (sh *strictHandler) GovernanceGetDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID) {
+	var request GovernanceGetDecisionRequestObject
+
+	request.OrgId = orgId
+	request.DecisionId = decisionId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetDecision(ctx, request.(GovernanceGetDecisionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetDecision")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetDecisionResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetDecisionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceUpdateDecision operation middleware
+func (sh *strictHandler) GovernanceUpdateDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID, params GovernanceUpdateDecisionParams) {
+	var request GovernanceUpdateDecisionRequestObject
+
+	request.OrgId = orgId
+	request.DecisionId = decisionId
+	request.Params = params
+
+	var body GovernanceUpdateDecisionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceUpdateDecision(ctx, request.(GovernanceUpdateDecisionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceUpdateDecision")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceUpdateDecisionResponseObject); ok {
+		if err := validResponse.VisitGovernanceUpdateDecisionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceApplyDecision operation middleware
+func (sh *strictHandler) GovernanceApplyDecision(w http.ResponseWriter, r *http.Request, orgId OrgId2, decisionId openapi_types.UUID, params GovernanceApplyDecisionParams) {
+	var request GovernanceApplyDecisionRequestObject
+
+	request.OrgId = orgId
+	request.DecisionId = decisionId
+	request.Params = params
+
+	var body GovernanceApplyDecisionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceApplyDecision(ctx, request.(GovernanceApplyDecisionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceApplyDecision")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceApplyDecisionResponseObject); ok {
+		if err := validResponse.VisitGovernanceApplyDecisionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListGovernancePresets operation middleware
+func (sh *strictHandler) GovernanceListGovernancePresets(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListGovernancePresetsParams) {
+	var request GovernanceListGovernancePresetsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListGovernancePresets(ctx, request.(GovernanceListGovernancePresetsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListGovernancePresets")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListGovernancePresetsResponseObject); ok {
+		if err := validResponse.VisitGovernanceListGovernancePresetsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PeopleListInvitations operation middleware
 func (sh *strictHandler) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
 	var request PeopleListInvitationsRequestObject
@@ -25592,6 +39072,806 @@ func (sh *strictHandler) PeopleResendInvitation(w http.ResponseWriter, r *http.R
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PeopleResendInvitationResponseObject); ok {
 		if err := validResponse.VisitPeopleResendInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListMeetings operation middleware
+func (sh *strictHandler) GovernanceListMeetings(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListMeetingsParams) {
+	var request GovernanceListMeetingsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListMeetings(ctx, request.(GovernanceListMeetingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListMeetings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListMeetingsResponseObject); ok {
+		if err := validResponse.VisitGovernanceListMeetingsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCreateMeeting operation middleware
+func (sh *strictHandler) GovernanceCreateMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceCreateMeetingParams) {
+	var request GovernanceCreateMeetingRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body GovernanceCreateMeetingJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCreateMeeting(ctx, request.(GovernanceCreateMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCreateMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCreateMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceCreateMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceDeleteMeeting operation middleware
+func (sh *strictHandler) GovernanceDeleteMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceDeleteMeetingParams) {
+	var request GovernanceDeleteMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceDeleteMeeting(ctx, request.(GovernanceDeleteMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceDeleteMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceDeleteMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceDeleteMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetMeeting operation middleware
+func (sh *strictHandler) GovernanceGetMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	var request GovernanceGetMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetMeeting(ctx, request.(GovernanceGetMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceUpdateMeeting operation middleware
+func (sh *strictHandler) GovernanceUpdateMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceUpdateMeetingParams) {
+	var request GovernanceUpdateMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceUpdateMeetingJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceUpdateMeeting(ctx, request.(GovernanceUpdateMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceUpdateMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceUpdateMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceUpdateMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListAgendaItems operation middleware
+func (sh *strictHandler) GovernanceListAgendaItems(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListAgendaItemsParams) {
+	var request GovernanceListAgendaItemsRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListAgendaItems(ctx, request.(GovernanceListAgendaItemsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListAgendaItems")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListAgendaItemsResponseObject); ok {
+		if err := validResponse.VisitGovernanceListAgendaItemsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCreateAgendaItem operation middleware
+func (sh *strictHandler) GovernanceCreateAgendaItem(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCreateAgendaItemParams) {
+	var request GovernanceCreateAgendaItemRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceCreateAgendaItemJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCreateAgendaItem(ctx, request.(GovernanceCreateAgendaItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCreateAgendaItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCreateAgendaItemResponseObject); ok {
+		if err := validResponse.VisitGovernanceCreateAgendaItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceReorderAgendaItems operation middleware
+func (sh *strictHandler) GovernanceReorderAgendaItems(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	var request GovernanceReorderAgendaItemsRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+
+	var body GovernanceReorderAgendaItemsJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceReorderAgendaItems(ctx, request.(GovernanceReorderAgendaItemsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceReorderAgendaItems")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceReorderAgendaItemsResponseObject); ok {
+		if err := validResponse.VisitGovernanceReorderAgendaItemsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListAttendance operation middleware
+func (sh *strictHandler) GovernanceListAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListAttendanceParams) {
+	var request GovernanceListAttendanceRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListAttendance(ctx, request.(GovernanceListAttendanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListAttendance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListAttendanceResponseObject); ok {
+		if err := validResponse.VisitGovernanceListAttendanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceRecordAttendance operation middleware
+func (sh *strictHandler) GovernanceRecordAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceRecordAttendanceParams) {
+	var request GovernanceRecordAttendanceRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceRecordAttendanceJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceRecordAttendance(ctx, request.(GovernanceRecordAttendanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceRecordAttendance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceRecordAttendanceResponseObject); ok {
+		if err := validResponse.VisitGovernanceRecordAttendanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetAttendanceSheet operation middleware
+func (sh *strictHandler) GovernanceGetAttendanceSheet(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	var request GovernanceGetAttendanceSheetRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetAttendanceSheet(ctx, request.(GovernanceGetAttendanceSheetRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetAttendanceSheet")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetAttendanceSheetResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetAttendanceSheetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceRemoveAttendance operation middleware
+func (sh *strictHandler) GovernanceRemoveAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, attendanceId openapi_types.UUID) {
+	var request GovernanceRemoveAttendanceRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.AttendanceId = attendanceId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceRemoveAttendance(ctx, request.(GovernanceRemoveAttendanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceRemoveAttendance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceRemoveAttendanceResponseObject); ok {
+		if err := validResponse.VisitGovernanceRemoveAttendanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCheckInAttendance operation middleware
+func (sh *strictHandler) GovernanceCheckInAttendance(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCheckInAttendanceParams) {
+	var request GovernanceCheckInAttendanceRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceCheckInAttendanceJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCheckInAttendance(ctx, request.(GovernanceCheckInAttendanceRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCheckInAttendance")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCheckInAttendanceResponseObject); ok {
+		if err := validResponse.VisitGovernanceCheckInAttendanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetCallLetter operation middleware
+func (sh *strictHandler) GovernanceGetCallLetter(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceGetCallLetterParams) {
+	var request GovernanceGetCallLetterRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetCallLetter(ctx, request.(GovernanceGetCallLetterRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetCallLetter")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetCallLetterResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetCallLetterResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetMyMeeting operation middleware
+func (sh *strictHandler) GovernanceGetMyMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	var request GovernanceGetMyMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetMyMeeting(ctx, request.(GovernanceGetMyMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetMyMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetMyMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetMyMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetMinutes operation middleware
+func (sh *strictHandler) GovernanceGetMinutes(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	var request GovernanceGetMinutesRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetMinutes(ctx, request.(GovernanceGetMinutesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetMinutes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetMinutesResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetMinutesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGenerateMinutes operation middleware
+func (sh *strictHandler) GovernanceGenerateMinutes(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceGenerateMinutesParams) {
+	var request GovernanceGenerateMinutesRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGenerateMinutes(ctx, request.(GovernanceGenerateMinutesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGenerateMinutes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGenerateMinutesResponseObject); ok {
+		if err := validResponse.VisitGovernanceGenerateMinutesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListMeetingNotices operation middleware
+func (sh *strictHandler) GovernanceListMeetingNotices(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceListMeetingNoticesParams) {
+	var request GovernanceListMeetingNoticesRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListMeetingNotices(ctx, request.(GovernanceListMeetingNoticesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListMeetingNotices")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListMeetingNoticesResponseObject); ok {
+		if err := validResponse.VisitGovernanceListMeetingNoticesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceRecordMeetingNotice operation middleware
+func (sh *strictHandler) GovernanceRecordMeetingNotice(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, personId openapi_types.UUID) {
+	var request GovernanceRecordMeetingNoticeRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.PersonId = personId
+
+	var body GovernanceRecordMeetingNoticeJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceRecordMeetingNotice(ctx, request.(GovernanceRecordMeetingNoticeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceRecordMeetingNotice")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceRecordMeetingNoticeResponseObject); ok {
+		if err := validResponse.VisitGovernanceRecordMeetingNoticeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceRecordMeetingNoticesBulk operation middleware
+func (sh *strictHandler) GovernanceRecordMeetingNoticesBulk(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceRecordMeetingNoticesBulkParams) {
+	var request GovernanceRecordMeetingNoticesBulkRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceRecordMeetingNoticesBulkJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceRecordMeetingNoticesBulk(ctx, request.(GovernanceRecordMeetingNoticesBulkRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceRecordMeetingNoticesBulk")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceRecordMeetingNoticesBulkResponseObject); ok {
+		if err := validResponse.VisitGovernanceRecordMeetingNoticesBulkResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceGetMeetingQuorum operation middleware
+func (sh *strictHandler) GovernanceGetMeetingQuorum(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID) {
+	var request GovernanceGetMeetingQuorumRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetMeetingQuorum(ctx, request.(GovernanceGetMeetingQuorumRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetMeetingQuorum")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetMeetingQuorumResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetMeetingQuorumResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCallMeeting operation middleware
+func (sh *strictHandler) GovernanceCallMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCallMeetingParams) {
+	var request GovernanceCallMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceCallMeetingJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCallMeeting(ctx, request.(GovernanceCallMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCallMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCallMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceCallMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCancelMeeting operation middleware
+func (sh *strictHandler) GovernanceCancelMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCancelMeetingParams) {
+	var request GovernanceCancelMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceCancelMeetingJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCancelMeeting(ctx, request.(GovernanceCancelMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCancelMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCancelMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceCancelMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceCloseMeeting operation middleware
+func (sh *strictHandler) GovernanceCloseMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceCloseMeetingParams) {
+	var request GovernanceCloseMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceCloseMeeting(ctx, request.(GovernanceCloseMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceCloseMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceCloseMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceCloseMeetingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceNotifyMeetingDecisions operation middleware
+func (sh *strictHandler) GovernanceNotifyMeetingDecisions(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceNotifyMeetingDecisionsParams) {
+	var request GovernanceNotifyMeetingDecisionsRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	var body GovernanceNotifyMeetingDecisionsJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceNotifyMeetingDecisions(ctx, request.(GovernanceNotifyMeetingDecisionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceNotifyMeetingDecisions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceNotifyMeetingDecisionsResponseObject); ok {
+		if err := validResponse.VisitGovernanceNotifyMeetingDecisionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceStartMeeting operation middleware
+func (sh *strictHandler) GovernanceStartMeeting(w http.ResponseWriter, r *http.Request, orgId OrgId2, meetingId openapi_types.UUID, params GovernanceStartMeetingParams) {
+	var request GovernanceStartMeetingRequestObject
+
+	request.OrgId = orgId
+	request.MeetingId = meetingId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceStartMeeting(ctx, request.(GovernanceStartMeetingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceStartMeeting")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceStartMeetingResponseObject); ok {
+		if err := validResponse.VisitGovernanceStartMeetingResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -26386,6 +40666,68 @@ func (sh *strictHandler) TenancyExportSite(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// GovernanceGetGovernanceSettings operation middleware
+func (sh *strictHandler) GovernanceGetGovernanceSettings(w http.ResponseWriter, r *http.Request, orgId OrgId2, siteId openapi_types.UUID) {
+	var request GovernanceGetGovernanceSettingsRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceGetGovernanceSettings(ctx, request.(GovernanceGetGovernanceSettingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceGetGovernanceSettings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceGetGovernanceSettingsResponseObject); ok {
+		if err := validResponse.VisitGovernanceGetGovernanceSettingsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceSetGovernanceSettings operation middleware
+func (sh *strictHandler) GovernanceSetGovernanceSettings(w http.ResponseWriter, r *http.Request, orgId OrgId2, siteId openapi_types.UUID, params GovernanceSetGovernanceSettingsParams) {
+	var request GovernanceSetGovernanceSettingsRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+	request.Params = params
+
+	var body GovernanceSetGovernanceSettingsJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceSetGovernanceSettings(ctx, request.(GovernanceSetGovernanceSettingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceSetGovernanceSettings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceSetGovernanceSettingsResponseObject); ok {
+		if err := validResponse.VisitGovernanceSetGovernanceSettingsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // TenancyImportUnits operation middleware
 func (sh *strictHandler) TenancyImportUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
 	var request TenancyImportUnitsRequestObject
@@ -26611,6 +40953,33 @@ func (sh *strictHandler) TenancyExportVehicles(w http.ResponseWriter, r *http.Re
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(TenancyExportVehiclesResponseObject); ok {
 		if err := validResponse.VisitTenancyExportVehiclesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GovernanceListTermReminders operation middleware
+func (sh *strictHandler) GovernanceListTermReminders(w http.ResponseWriter, r *http.Request, orgId OrgId2, params GovernanceListTermRemindersParams) {
+	var request GovernanceListTermRemindersRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GovernanceListTermReminders(ctx, request.(GovernanceListTermRemindersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GovernanceListTermReminders")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GovernanceListTermRemindersResponseObject); ok {
+		if err := validResponse.VisitGovernanceListTermRemindersResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -27202,337 +41571,493 @@ func (sh *strictHandler) PlatformListAudit(w http.ResponseWriter, r *http.Reques
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"AwA=",
+	"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",
+	"96ThLZNtnRh3TXza0MlkvUi9g4LQLtA/ffr/BgA=",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

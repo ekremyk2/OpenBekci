@@ -1,0 +1,585 @@
+package governance
+
+import (
+	"context"
+	"crypto/rand"
+	"encoding/base32"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"slices"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/openbekci/openbekci/server/internal/problem"
+)
+
+// Meeting statuses.
+const (
+	StatusDraft     = "draft"
+	StatusCalled    = "called"
+	StatusInSession = "in_session"
+	StatusClosed    = "closed"
+	StatusCancelled = "cancelled"
+)
+
+// Meeting is an assembly as the API shows it.
+type Meeting struct {
+	ID                   uuid.UUID       `json:"id"`
+	OrgID                uuid.UUID       `json:"org_id"`
+	SiteID               uuid.UUID       `json:"site_id"`
+	Kind                 string          `json:"kind"`
+	Scope                string          `json:"scope"`
+	Title                *string         `json:"title"`
+	ScheduledAt          time.Time       `json:"scheduled_at"`
+	SecondCallAt         time.Time       `json:"second_call_at"`
+	Location             string          `json:"location"`
+	Status               string          `json:"status"`
+	EligibilitySnapshot  json.RawMessage `json:"eligibility_snapshot"`
+	CallLetterDocumentID *uuid.UUID      `json:"call_letter_document_id"`
+	MinutesDocumentID    *uuid.UUID      `json:"minutes_document_id"`
+	CalledAt             *time.Time      `json:"called_at"`
+	CreatedAt            time.Time       `json:"created_at"`
+	UpdatedAt            time.Time       `json:"updated_at"`
+	Version              int             `json:"version"`
+
+	settings      json.RawMessage
+	minutesFileID *uuid.UUID
+}
+
+const meetingColumns = `id, org_id, site_id, kind, scope, title, scheduled_at, second_call_at, location, status, eligibility_snapshot, settings_snapshot,
+	call_letter_document_id, minutes_document_id, minutes_file_id, called_at, created_at, updated_at, version`
+
+func scanMeeting(row pgx.Row) (Meeting, error) {
+	var m Meeting
+	var snap, set []byte
+	err := row.Scan(&m.ID, &m.OrgID, &m.SiteID, &m.Kind, &m.Scope, &m.Title, &m.ScheduledAt, &m.SecondCallAt, &m.Location, &m.Status, &snap, &set,
+		&m.CallLetterDocumentID, &m.MinutesDocumentID, &m.minutesFileID, &m.CalledAt, &m.CreatedAt, &m.UpdatedAt, &m.Version)
+	m.ScheduledAt, m.SecondCallAt, m.CreatedAt, m.UpdatedAt = m.ScheduledAt.UTC(), m.SecondCallAt.UTC(), m.CreatedAt.UTC(), m.UpdatedAt.UTC()
+	if m.CalledAt != nil {
+		t := m.CalledAt.UTC()
+		m.CalledAt = &t
+	}
+	m.EligibilitySnapshot, m.settings = snap, set
+	return m, err
+}
+
+// loadMeeting reads a meeting under RLS; ErrNoRows becomes 404.
+func loadMeeting(ctx context.Context, tx pgx.Tx, orgID, id uuid.UUID, forUpdate bool) (Meeting, error) {
+	q := `SELECT ` + meetingColumns + ` FROM meeting WHERE org_id = $1 AND id = $2`
+	if forUpdate {
+		q += ` FOR UPDATE`
+	}
+	m, err := scanMeeting(tx.QueryRow(ctx, q, orgID, id))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return m, problem.NotFound("no such meeting")
+	}
+	return m, err
+}
+
+// meetingAt loads a meeting and checks perm at its site's scope.
+func (s *Service) meetingAt(ctx context.Context, tx pgx.Tx, perm authz.Permission, orgID, id uuid.UUID, forUpdate bool) (Meeting, authz.Scope, error) {
+	m, err := loadMeeting(ctx, tx, orgID, id, forUpdate)
+	if err != nil {
+		return m, authz.Scope{}, err
+	}
+	sc, err := requireSite(ctx, tx, perm, m.SiteID)
+	return m, sc, err
+}
+
+// redact hides the eligibility snapshot (who owns what) from callers who are not staff.
+func (m Meeting) redact(v viewer) Meeting {
+	if !v.staff {
+		m.EligibilitySnapshot = nil
+	}
+	return m
+}
+
+func (m Meeting) auditView() map[string]any {
+	return map[string]any{"kind": m.Kind, "scope": m.Scope, "title": m.Title, "scheduled_at": m.ScheduledAt, "second_call_at": m.SecondCallAt,
+		"location": m.Location, "status": m.Status}
+}
+
+// MeetingFilter narrows ListMeetings.
+type MeetingFilter struct {
+	Status, Kind string
+	From, To     *time.Time
+}
+
+// ListMeetings lists a site's meetings (newest first by creation). It needs meetings.read.
+func (s *Service) ListMeetings(ctx context.Context, orgID, siteID uuid.UUID, f MeetingFilter, p tenancy.PageParams) ([]Meeting, string, error) {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsRead); err != nil {
+		return nil, "", err
+	}
+	limit, after, err := p.Resolve()
+	if err != nil {
+		return nil, "", err
+	}
+	var out []Meeting
+	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		sc, err := requireSite(ctx, tx, PermMeetingsRead, siteID)
+		if err != nil {
+			return err
+		}
+		v := viewerOf(ctx, sc)
+		rows, err := tx.Query(ctx, `SELECT `+meetingColumns+` FROM meeting WHERE org_id = $1 AND site_id = $2 AND id > $3
+			AND ($4 = '' OR status = $4) AND ($5 = '' OR kind = $5) AND ($6::timestamptz IS NULL OR scheduled_at >= $6) AND ($7::timestamptz IS NULL OR scheduled_at <= $7)
+			AND ($8 OR status <> 'draft') ORDER BY id LIMIT $9`, orgID, siteID, after, f.Status, f.Kind, f.From, f.To, v.staff, limit+1)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			m, err := scanMeeting(rows)
+			if err != nil {
+				return err
+			}
+			out = append(out, m.redact(v))
+		}
+		return rows.Err()
+	})
+	if err != nil {
+		return nil, "", dbErr(err, "list meetings")
+	}
+	items, next := tenancy.Page(out, limit, func(m Meeting) uuid.UUID { return m.ID })
+	return items, next, nil
+}
+
+// MeetingCreate is the input of CreateMeeting.
+type MeetingCreate struct {
+	SiteID       uuid.UUID `json:"site_id"`
+	Kind         string    `json:"kind"`
+	Scope        string    `json:"scope"`
+	Title        *string   `json:"title"`
+	ScheduledAt  time.Time `json:"scheduled_at"`
+	SecondCallAt time.Time `json:"second_call_at"`
+	Location     string    `json:"location"`
+}
+
+// validateWindow checks the second call against the site's window.
+func validateWindow(set Settings, scheduled, second time.Time) []problem.Field {
+	var fs []problem.Field
+	days := second.Sub(scheduled).Hours() / 24
+	if days < float64(set.SecondCallMinDays) || days > float64(set.SecondCallMaxDays) {
+		fs = append(fs, problem.Field{Field: "second_call_at", Code: "invalid_value",
+			Params: map[string]any{"reason": "second_call_window", "min_days": set.SecondCallMinDays, "max_days": set.SecondCallMaxDays}})
+	}
+	return fs
+}
+
+func validateMeetingKind(kind, scope string) []problem.Field {
+	var fs []problem.Field
+	if kind != "general_assembly" && kind != "extraordinary" {
+		fs = append(fs, problem.Field{Field: "kind", Code: "invalid_value"})
+	}
+	if scope != "site" {
+		fs = append(fs, problem.Field{Field: "scope", Code: "invalid_value", Params: map[string]any{"reason": "only_site_scope_is_supported"}})
+	}
+	return fs
+}
+
+// CreateMeeting creates a draft meeting. The second call must fall in the
+// site's window. It needs meetings.manage.
+func (s *Service) CreateMeeting(ctx context.Context, orgID uuid.UUID, in MeetingCreate) (Meeting, error) {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
+		return Meeting{}, err
+	}
+	if in.Scope == "" {
+		in.Scope = "site"
+	}
+	fs := validateMeetingKind(in.Kind, in.Scope)
+	if strings.TrimSpace(in.Location) == "" {
+		fs = append(fs, problem.Field{Field: "location", Code: "required"})
+	}
+	if !in.ScheduledAt.After(s.now()) {
+		fs = append(fs, problem.Field{Field: "scheduled_at", Code: "invalid_value", Params: map[string]any{"reason": "in_the_past"}})
+	}
+	var out Meeting
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		sc, err := requireSite(ctx, tx, PermMeetingsManage, in.SiteID)
+		if err != nil {
+			return err
+		}
+		if _, err = tenancy.LoadSite(ctx, tx, orgID, in.SiteID, false, false); err != nil {
+			return err
+		}
+		set, err := loadSettings(ctx, tx, orgID, in.SiteID, false)
+		if err != nil {
+			return err
+		}
+		fs = append(fs, validateWindow(set.Settings, in.ScheduledAt, in.SecondCallAt)...)
+		if len(fs) > 0 {
+			return problem.Validation(fs...)
+		}
+		mid := newID()
+		if _, err = tx.Exec(ctx, `INSERT INTO meeting (id, org_id, site_id, kind, scope, title, scheduled_at, second_call_at, location, created_by)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, mid, orgID, in.SiteID, in.Kind, in.Scope, in.Title, in.ScheduledAt, in.SecondCallAt, in.Location, principalID(ctx)); err != nil {
+			return err
+		}
+		if out, err = loadMeeting(ctx, tx, orgID, mid, false); err != nil {
+			return err
+		}
+		diff, err := audit.Diff("meeting", nil, out.auditView())
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: "meeting.create", TargetType: "meeting", TargetID: mid, Diff: diff})
+	})
+	return out, dbErr(err, "meeting")
+}
+
+// GetMeeting returns a meeting. It needs meetings.read; callers who are not
+// staff do not see the eligibility snapshot or drafts.
+func (s *Service) GetMeeting(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsRead); err != nil {
+		return Meeting{}, err
+	}
+	var out Meeting
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		m, sc, err := s.meetingAt(ctx, tx, PermMeetingsRead, orgID, id, false)
+		if err != nil {
+			return err
+		}
+		v := viewerOf(ctx, sc)
+		if m.Status == StatusDraft && !v.staff {
+			return problem.NotFound("no such meeting")
+		}
+		out = m.redact(v)
+		return nil
+	})
+	return out, dbErr(err, "meeting")
+}
+
+// UpdateMeeting changes a draft meeting if it is still at expectedVersion. It
+// needs meetings.manage. A called meeting can only be cancelled.
+func (s *Service) UpdateMeeting(ctx context.Context, orgID, id uuid.UUID, expectedVersion int, d tenancy.Doc) (Meeting, error) {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
+		return Meeting{}, err
+	}
+	fs := d.Unknown("title", "scheduled_at", "second_call_at", "location")
+	var out Meeting
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		m, sc, err := s.meetingAt(ctx, tx, PermMeetingsManage, orgID, id, true)
+		if err != nil {
+			return err
+		}
+		if m.Version != expectedVersion {
+			return errVersion
+		}
+		if m.Status != StatusDraft {
+			return problem.Conflict("only a draft meeting can be changed; cancel a called meeting and create a new one")
+		}
+		next := m
+		if d.Has("title") {
+			if next.Title, err = d.String("title"); err != nil {
+				return err
+			}
+		}
+		if err := d.Get("scheduled_at", &next.ScheduledAt); err != nil {
+			return err
+		}
+		if err := d.Get("second_call_at", &next.SecondCallAt); err != nil {
+			return err
+		}
+		if err := d.Get("location", &next.Location); err != nil {
+			return err
+		}
+		if strings.TrimSpace(next.Location) == "" {
+			fs = append(fs, problem.Field{Field: "location", Code: "required"})
+		}
+		if !next.ScheduledAt.After(s.now()) {
+			fs = append(fs, problem.Field{Field: "scheduled_at", Code: "invalid_value", Params: map[string]any{"reason": "in_the_past"}})
+		}
+		set, err := loadSettings(ctx, tx, orgID, m.SiteID, false)
+		if err != nil {
+			return err
+		}
+		fs = append(fs, validateWindow(set.Settings, next.ScheduledAt, next.SecondCallAt)...)
+		if len(fs) > 0 {
+			return problem.Validation(fs...)
+		}
+		if _, err = tx.Exec(ctx, `UPDATE meeting SET title = $3, scheduled_at = $4, second_call_at = $5, location = $6, updated_at = now(), version = version + 1
+			WHERE org_id = $1 AND id = $2`, orgID, id, next.Title, next.ScheduledAt, next.SecondCallAt, next.Location); err != nil {
+			return err
+		}
+		if out, err = loadMeeting(ctx, tx, orgID, id, false); err != nil {
+			return err
+		}
+		diff, err := audit.Diff("meeting", m.auditView(), out.auditView())
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: "meeting.update", TargetType: "meeting", TargetID: id, Diff: diff})
+	})
+	return out, dbErr(err, "meeting")
+}
+
+// DeleteMeeting deletes a draft meeting with its agenda. It needs meetings.manage.
+func (s *Service) DeleteMeeting(ctx context.Context, orgID, id uuid.UUID, expectedVersion int) error {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
+		return err
+	}
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		m, sc, err := s.meetingAt(ctx, tx, PermMeetingsManage, orgID, id, true)
+		if err != nil {
+			return err
+		}
+		if m.Version != expectedVersion {
+			return errVersion
+		}
+		if m.Status != StatusDraft {
+			return problem.Conflict("only a draft meeting can be deleted; cancel it instead")
+		}
+		if _, err := tx.Exec(ctx, `DELETE FROM meeting WHERE org_id = $1 AND id = $2`, orgID, id); err != nil {
+			return err
+		}
+		diff, err := audit.Diff("meeting", m.auditView(), nil)
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: "meeting.delete", TargetType: "meeting", TargetID: id, Diff: diff})
+	})
+	return dbErr(err, "meeting")
+}
+
+// siteInfo is what documents need to know about the site.
+type siteInfo struct {
+	Name   string
+	Loc    *time.Location
+	Locale string
+}
+
+func loadSiteInfo(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (siteInfo, error) {
+	site, err := tenancy.LoadSite(ctx, tx, orgID, siteID, false, true)
+	if err != nil {
+		return siteInfo{}, err
+	}
+	loc, lerr := time.LoadLocation(site.Timezone)
+	if lerr != nil {
+		loc = time.UTC
+	}
+	var locale string
+	if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, orgID).Scan(&locale); err != nil {
+		return siteInfo{}, err
+	}
+	return siteInfo{Name: site.Name, Loc: loc, Locale: locale}, nil
+}
+
+func newToken() string {
+	b := make([]byte, 15)
+	if _, err := rand.Read(b); err != nil {
+		panic(err) // crypto/rand does not fail
+	}
+	return strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(b))
+}
+
+// checkinPayload is what the QR code encodes.
+func (s *Service) checkinPayload(token string) string {
+	return strings.TrimRight(s.cfg.BaseURL, "/") + "/checkin/" + token
+}
+
+// MeetingCall is the optional announcement of the call.
+type MeetingCall struct {
+	NotifyChannels []string `json:"notify_channels"`
+}
+
+// CallMeeting calls a draft meeting: it checks the notice lead time and the
+// agenda, takes the eligibility snapshot from the owners of record, issues
+// each owner a check-in QR token and a pending call notice (the legal
+// delivery record), generates the call letter and files it. The call may also
+// be announced through the notification channels given; announcing is not
+// the legal delivery. It needs meetings.manage.
+func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in MeetingCall) (Meeting, error) {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
+		return Meeting{}, err
+	}
+	channels, err := cleanChannels(in.NotifyChannels)
+	if err != nil {
+		return Meeting{}, err
+	}
+	var out Meeting
+	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		m, sc, err := s.meetingAt(ctx, tx, PermMeetingsManage, orgID, id, true)
+		if err != nil {
+			return err
+		}
+		if m.Status != StatusDraft {
+			return problem.Conflict("only a draft meeting can be called")
+		}
+		set, err := loadSettings(ctx, tx, orgID, m.SiteID, false)
+		if err != nil {
+			return err
+		}
+		now := s.now()
+		var fs []problem.Field
+		if lead := m.ScheduledAt.Sub(now); lead < time.Duration(set.Settings.CallMinDays)*24*time.Hour {
+			fs = append(fs, problem.Field{Field: "scheduled_at", Code: "invalid_value", Params: map[string]any{"reason": "call_too_late", "min_days": set.Settings.CallMinDays}})
+		}
+		fs = append(fs, validateWindow(set.Settings, m.ScheduledAt, m.SecondCallAt)...)
+		var agenda []AgendaLine
+		arows, err := tx.Query(ctx, `SELECT position, title, COALESCE(description, ''), will_be_voted FROM agenda_item WHERE org_id = $1 AND meeting_id = $2 ORDER BY position`, orgID, id)
+		if err != nil {
+			return err
+		}
+		for arows.Next() {
+			var a AgendaLine
+			if err := arows.Scan(&a.Position, &a.Title, &a.Description, &a.WillBeVoted); err != nil {
+				arows.Close()
+				return err
+			}
+			agenda = append(agenda, a)
+		}
+		arows.Close()
+		if err := arows.Err(); err != nil {
+			return err
+		}
+		if len(agenda) == 0 {
+			fs = append(fs, problem.Field{Field: "agenda", Code: "required"})
+		}
+		if len(fs) > 0 {
+			return problem.Validation(fs...)
+		}
+		snap, err := computeSnapshot(ctx, tx, orgID, m.SiteID, s.today(), set.Settings.VoteWeight)
+		if err != nil {
+			return err
+		}
+		if len(snap.Owners) == 0 {
+			return problem.Conflict("the site has no owners of record to call; add owner occupancies first")
+		}
+		si, err := loadSiteInfo(ctx, tx, orgID, m.SiteID)
+		if err != nil {
+			return err
+		}
+		snapRaw, setRaw := mustJSON(snap), mustJSON(set.Settings)
+		if _, err = tx.Exec(ctx, `UPDATE meeting SET status = 'called', called_at = $3, eligibility_snapshot = $4, settings_snapshot = $5, updated_at = now(), version = version + 1
+			WHERE org_id = $1 AND id = $2`, orgID, id, now, snapRaw, setRaw); err != nil {
+			return err
+		}
+		people := make([]uuid.UUID, 0, len(snap.Owners))
+		for _, o := range snap.Owners {
+			people = append(people, o.PersonID)
+			if _, err = tx.Exec(ctx, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token) VALUES ($1, $2, $3, $4, $5)`, orgID, m.SiteID, id, o.PersonID, newToken()); err != nil {
+				return err
+			}
+			if _, err = tx.Exec(ctx, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase) VALUES ($1, $2, $3, $4, $5, 'call')`, newID(), orgID, m.SiteID, id, o.PersonID); err != nil {
+				return err
+			}
+		}
+		title := ""
+		if m.Title != nil {
+			title = *m.Title
+		}
+		letter := CallLetter(CallLetterData{SiteName: si.Name, Kind: m.Kind, Title: title, Locale: si.Locale, Loc: si.Loc, ScheduledAt: m.ScheduledAt,
+			SecondCall: m.SecondCallAt, Location: m.Location, Agenda: agenda, Instance: s.cfg.InstanceName, IssuedAt: now})
+		pdf, err := letter.PDF()
+		if err != nil {
+			return err
+		}
+		filed, err := s.filer.File(ctx, tx, orgID, Document{Kind: "call_letter", FileName: "call-letter.pdf", MIME: "application/pdf", Content: pdf, SiteID: m.SiteID, MeetingID: id})
+		if err != nil {
+			return err
+		}
+		if _, err = tx.Exec(ctx, `UPDATE meeting SET call_letter_document_id = $3 WHERE org_id = $1 AND id = $2`, orgID, id, filed.DocumentID); err != nil {
+			return err
+		}
+		if len(channels) > 0 && s.notifier != nil {
+			body := fmt.Sprintf("%s: %s, %s", si.Name, fmtTime(m.ScheduledAt, si.Loc, si.Locale), m.Location)
+			if err := s.notifier.Enqueue(ctx, tx, jobs.Notify{OrgID: orgID, SiteID: &m.SiteID, Topic: "governance.call", PersonIDs: people, Channels: channels,
+				Title: letter.Title, Body: body, RefType: "meeting", RefID: id}); err != nil {
+				return err
+			}
+		}
+		if out, err = loadMeeting(ctx, tx, orgID, id, false); err != nil {
+			return err
+		}
+		diff, err := audit.Diff("meeting", m.auditView(), out.auditView())
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: "meeting.call", TargetType: "meeting", TargetID: id, Diff: diff})
+	})
+	return out, dbErr(err, "meeting")
+}
+
+func cleanChannels(in []string) ([]string, error) {
+	var out []string
+	for _, c := range in {
+		if !slices.Contains([]string{"in_app", "email", "sms"}, c) {
+			return nil, fieldProblem("notify_channels", "invalid_value")
+		}
+		if !slices.Contains(out, c) {
+			out = append(out, c)
+		}
+	}
+	return out, nil
+}
+
+// transition moves a meeting between statuses with an audit event.
+func (s *Service) transition(ctx context.Context, orgID, id uuid.UUID, from []string, to, action string, extra func(tx pgx.Tx, m Meeting) error) (Meeting, error) {
+	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
+		return Meeting{}, err
+	}
+	var out Meeting
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		m, sc, err := s.meetingAt(ctx, tx, PermMeetingsManage, orgID, id, true)
+		if err != nil {
+			return err
+		}
+		if !slices.Contains(from, m.Status) {
+			return problem.Conflict(fmt.Sprintf("a %s meeting cannot be moved to %s", m.Status, to))
+		}
+		if extra != nil {
+			if err := extra(tx, m); err != nil {
+				return err
+			}
+		}
+		if _, err = tx.Exec(ctx, `UPDATE meeting SET status = $3, updated_at = now(), version = version + 1,
+			started_at = CASE WHEN $3 = 'in_session' THEN now() ELSE started_at END, closed_at = CASE WHEN $3 = 'closed' THEN now() ELSE closed_at END
+			WHERE org_id = $1 AND id = $2`, orgID, id, to); err != nil {
+			return err
+		}
+		if out, err = loadMeeting(ctx, tx, orgID, id, false); err != nil {
+			return err
+		}
+		diff, err := audit.Diff("meeting", m.auditView(), out.auditView())
+		if err != nil {
+			return err
+		}
+		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: action, TargetType: "meeting", TargetID: id, Diff: diff})
+	})
+	return out, dbErr(err, "meeting")
+}
+
+// StartMeeting opens the session of a called meeting (the attendance desk opens). It needs meetings.manage.
+func (s *Service) StartMeeting(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
+	return s.transition(ctx, orgID, id, []string{StatusCalled}, StatusInSession, "meeting.start", nil)
+}
+
+// CloseMeeting closes a session. The decisions go to the absent owners
+// afterwards (governance.notify_absentees, enqueued here). It needs meetings.manage.
+func (s *Service) CloseMeeting(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
+	return s.transition(ctx, orgID, id, []string{StatusInSession}, StatusClosed, "meeting.close", func(tx pgx.Tx, m Meeting) error {
+		if s.notifier == nil {
+			return nil
+		}
+		return s.notifier.EnqueueNotifyAbsentees(ctx, tx, orgID, m.ID)
+	})
+}
+
+// CancelMeeting cancels a meeting that has not closed; the reason is kept. It needs meetings.manage.
+func (s *Service) CancelMeeting(ctx context.Context, orgID, id uuid.UUID, reason string) (Meeting, error) {
+	if strings.TrimSpace(reason) == "" {
+		return Meeting{}, fieldProblem("reason", "required")
+	}
+	return s.transition(ctx, orgID, id, []string{StatusDraft, StatusCalled, StatusInSession}, StatusCancelled, "meeting.cancel", func(tx pgx.Tx, m Meeting) error {
+		_, err := tx.Exec(ctx, `UPDATE meeting SET cancel_reason = $3 WHERE org_id = $1 AND id = $2`, orgID, m.ID, reason)
+		return err
+	})
+}

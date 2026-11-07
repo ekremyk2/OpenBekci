@@ -68,6 +68,20 @@ var excludedTables = map[string]string{
 	"import_batch": "operational record of spreadsheet imports",
 	"import_row":   "operational record of spreadsheet imports",
 	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
+	// Governance (0.2) records are the site's legal paperwork; their export follows with the documents module.
+	"governance_settings": "governance records are not part of the 0.1 archive format",
+	"meeting":             "governance records are not part of the 0.1 archive format",
+	"meeting_document":    "governance records are not part of the 0.1 archive format",
+	"agenda_item":         "governance records are not part of the 0.1 archive format",
+	"meeting_notice":      "governance records are not part of the 0.1 archive format",
+	"poll":                "governance records are not part of the 0.1 archive format",
+	"poll_answer":         "governance records are not part of the 0.1 archive format",
+	"attendance":          "governance records are not part of the 0.1 archive format",
+	"attendance_token":    "governance records are not part of the 0.1 archive format",
+	"vote_count":          "governance records are not part of the 0.1 archive format",
+	"decision_counter":    "governance records are not part of the 0.1 archive format",
+	"decision":            "governance records are not part of the 0.1 archive format",
+	"term_reminder":       "governance records are not part of the 0.1 archive format",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried
