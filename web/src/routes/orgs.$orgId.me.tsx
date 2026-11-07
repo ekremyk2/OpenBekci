@@ -4,6 +4,7 @@ import { occupancyKindLabel } from '@/lib/labels'
 import { useSession } from '@/app/session'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { HouseholdPanel } from '@/features/people/HouseholdPanel'
 
 export const Route = createFileRoute('/orgs/$orgId/me')({
   component: function MyAccount() {
@@ -48,6 +49,7 @@ export const Route = createFileRoute('/orgs/$orgId/me')({
             )}
           </CardContent>
         </Card>
+        <HouseholdPanel />
       </div>
     )
   },
