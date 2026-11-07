@@ -44,7 +44,8 @@ get:
       in: query
       schema:
         type: string
-      description: Filter by `period`.
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      description: Filter by month, `YYYY-MM`.
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:

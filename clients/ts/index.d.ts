@@ -583,15 +583,86 @@ export interface components {
         Me: {
             user: components["schemas"]["MeUser"];
             organizations: components["schemas"]["OrgAccess"][];
-            /** @description The caller's unit occupancies (owner, tenant, household); empty until the people module lands. */
-            occupancies: {
-                [key: string]: unknown;
-            }[];
-            policies: {
-                [key: string]: unknown;
-            };
+            /** @description The caller's unit occupancies across organizations (owner, tenant, household; former ones only inside their dates). Empty until the people module lands. */
+            occupancies: components["schemas"]["MeOccupancy"][];
+            policies: components["schemas"]["MePolicies"];
         };
-        /** @description One open session of the caller. Mobile sessions keep their id across token rotation. */
+        /**
+         * @description One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "unit_label": "A Blok D:12",
+         *       "kind": "tenant",
+         *       "side": "tenant",
+         *       "may_see_money": true,
+         *       "valid_from": "2025-09-01",
+         *       "valid_to": null
+         *     }
+         */
+        MeOccupancy: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /** @description What people say, for example `A Blok D:12`. */
+            unit_label: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household" | "former_occupant";
+            /**
+             * @description The debtor side the occupant belongs to (`owner` or `tenant`); null for household members. Open enum.
+             * @enum {string|null}
+             */
+            side: "owner" | "tenant" | null;
+            /** @description Always true for owners and tenants; for household members whether the owner or tenant granted money visibility (S3). */
+            may_see_money: boolean;
+            /** Format: date */
+            valid_from: string;
+            /**
+             * Format: date
+             * @description Null while the occupancy is current.
+             */
+            valid_to: string | null;
+        };
+        /**
+         * @description Instance policies that apply to the signed-in user, so clients can enforce them without a second call.
+         * @example {
+         *       "app_lock_required": false,
+         *       "reauth_window_minutes": 10
+         *     }
+         */
+        MePolicies: {
+            /** @description The mobile app must be protected by a device lock (biometrics or passcode) before it shows money or personal data. */
+            app_lock_required: boolean;
+            /**
+             * Format: int64
+             * @description How long a re-authentication (`POST /v1/auth/reauth`) stays valid for sensitive operations (default 10).
+             */
+            reauth_window_minutes: number;
+        };
+        /**
+         * @description One open session of the caller. Mobile sessions keep their id across token rotation.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "client": "web",
+         *       "device_name": null,
+         *       "ip": null,
+         *       "user_agent": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "last_used_at": null,
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "current": false
+         *     }
+         */
         Session: {
             /** Format: uuid */
             id: string;
@@ -613,6 +684,24 @@ export interface components {
             /** @description True for the session that made this request. */
             current: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "client": "web",
+         *           "device_name": null,
+         *           "ip": null,
+         *           "user_agent": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "last_used_at": null,
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "current": false
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         SessionList: {
             items: components["schemas"]["Session"][];
             /** @description Always null; the list is short and returned whole. */

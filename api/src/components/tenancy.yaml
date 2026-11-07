@@ -48,20 +48,6 @@ schemas:
       version:
         type: integer
         format: int64
-  OrganizationCreate:
-    type: object
-    properties:
-      name:
-        type: string
-      default_locale:
-        type: string
-      timezone:
-        type: string
-      country_code:
-        type: string
-      settings:
-        type: object
-        additionalProperties: true
   OrganizationUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
@@ -89,7 +75,9 @@ schemas:
       offline_grace_hours:
         type: integer
         format: int64
-        description: Hours an offline agent keeps deciding locally before it stops (default 72).
+        description: Hours an offline agent keeps deciding locally before it stops (1 to 336, default 72). Sent to the agent as `update_config.settings.offline_grace_hours`.
+        minimum: 1
+        maximum: 336
       agent_silent_minutes:
         type: integer
         format: int64
@@ -277,6 +265,25 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      name: Ali Veli
+      address:
+        line1: line1
+        line2: null
+        district: null
+        city: null
+        postal_code: null
+        country_code: country code
+      timezone: timezone
+      currency: currency
+      fiscal_year_start_month: 1
+      lock_date: null
+      status: active
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   SiteCreate:
     type: object
     required:
@@ -324,6 +331,27 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          name: Ali Veli
+          address:
+            line1: line1
+            line2: null
+            district: null
+            city: null
+            postal_code: null
+            country_code: country code
+          timezone: timezone
+          currency: currency
+          fiscal_year_start_month: 1
+          lock_date: null
+          status: active
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   BankDetails:
     type: object
     description: Shown to payers (M5).
@@ -402,6 +430,15 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      is_default: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   BlockCreate:
     type: object
     required:
@@ -433,6 +470,17 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          is_default: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   OccupancySummary:
     type: object
     required:
@@ -468,6 +516,7 @@ schemas:
       - created_at
       - updated_at
       - version
+      - payer_overrides
     properties:
       id:
         type: string
@@ -531,6 +580,17 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+      payer_overrides: &a1
+        type: object
+        description: "Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed."
+        additionalProperties:
+          type: string
+          enum:
+            - owner
+            - tenant
+        example: &a2
+          dues: owner
+          utility: tenant
     example:
       id: 0192a3f0-1000-7000-8000-000000000003
       org_id: 0192a3f0-1000-7000-8000-000000000001
@@ -550,6 +610,7 @@ schemas:
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
       version: 1
+      payer_overrides: {}
   UnitCreate:
     type: object
     required:
@@ -588,6 +649,7 @@ schemas:
         type: string
         format: uuid
         nullable: true
+      payer_overrides: *a1
   UnitUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
@@ -619,6 +681,16 @@ schemas:
         type: string
         format: uuid
         nullable: true
+      payer_overrides:
+        type: object
+        description: "Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed. PATCH merges by key; a `null` value removes that override."
+        additionalProperties:
+          type: string
+          enum:
+            - owner
+            - tenant
+          nullable: true
+        example: *a2
   UnitList:
     type: object
     required:
@@ -633,6 +705,28 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          block_id: 0192a3f0-1000-7000-8000-000000000003
+          door_number: A-12
+          legal_ref: 12/34
+          type: flat
+          area_m2: 96.5
+          parent_unit_id: null
+          status: active
+          vacant: false
+          occupancy:
+            owners: 1
+            tenants: 1
+            household: 1
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+          payer_overrides: {}
+      next_cursor: null
   AllocationKey:
     type: object
     description: How a cost is split (M2).
@@ -683,6 +777,17 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      kind: share
+      is_system: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   AllocationKeyCreate:
     type: object
     required:
@@ -738,6 +843,19 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          kind: share
+          is_system: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   AllocationKeyValue:
     type: object
     required:
@@ -753,6 +871,10 @@ schemas:
         description: Weight; for `equal` and `area` computed, for `share` and `table` stored.
       computed:
         type: boolean
+    example:
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      value: 1.5
+      computed: false
   AllocationKeyValueList:
     type: object
     required:
@@ -774,6 +896,14 @@ schemas:
       complete:
         type: boolean
         description: Every active unit in scope has a value.
+    example:
+      items:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000002
+          value: 1.5
+          computed: false
+      next_cursor: null
+      total: 1.5
+      complete: false
   AllocationKeyValuesPut:
     type: object
     required:
@@ -830,6 +960,15 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   UnitTagCreate:
     type: object
     required:
@@ -866,16 +1005,32 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   UnitTagMembers:
     type: object
     required:
       - unit_ids
+      - version
     properties:
       unit_ids:
         type: array
         items:
           type: string
           format: uuid
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   Vehicle:
     type: object
     description: A plate registered to a unit (D6).
@@ -930,6 +1085,19 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      plate: plate
+      plate_normalized: plate normalized
+      description: null
+      archived: false
+      warning: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   VehicleCreate:
     type: object
     required:
@@ -978,6 +1146,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          plate: plate
+          plate_normalized: plate normalized
+          description: null
+          archived: false
+          warning: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   SiteTransfer:
     type: object
     description: Record of a site export, import or offboarding (D2).
@@ -1047,6 +1230,19 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      direction: export
+      site_id: null
+      archive_file_id: null
+      source_org_id: null
+      target_org_id: null
+      status: queued
+      job_id: null
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   SiteTransferList:
     type: object
     required:
@@ -1061,6 +1257,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          direction: export
+          site_id: null
+          archive_file_id: null
+          source_org_id: null
+          target_org_id: null
+          status: queued
+          job_id: null
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   SiteExportRequest:
     type: object
     properties:
@@ -1078,3 +1289,13 @@ schemas:
         description: Must equal the site name.
       reason:
         type: string
+  UnitTagMembersSet:
+    type: object
+    required:
+      - unit_ids
+    properties:
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://openbekci.org/agent-protocol/v1/ack.schema.json",
-  "title": "ack payload: acknowledges a message by ref; for event batches detail is {accepted, duplicates, rejected: [{id, code}]}",
+  "title": "ack payload: acknowledges a message by ref; `detail` is typed per status (see $defs)",
   "type": "object",
   "required": [
     "ref",
@@ -17,6 +17,7 @@
         "ok",
         "duplicate",
         "gap",
+        "stale",
         "done",
         "failed",
         "expired",
@@ -27,7 +28,218 @@
       ]
     },
     "detail": {
-      "type": "object"
+      "type": "object",
+      "description": "Shape depends on the acked message and the status: `ack_event_batch` (ack of an event batch, status ok), `ack_snapshot_part` (snapshot part, ok), `ack_gap` (delta, gap), `ack_stale` (snapshot, stale), `ack_expired` (command, expired), `ack_refused` (command, refused). Other statuses carry free-form detail."
     }
-  }
+  },
+  "$defs": {
+    "ack_event_batch": {
+      "type": "object",
+      "required": [
+        "accepted",
+        "duplicates",
+        "rejected"
+      ],
+      "properties": {
+        "accepted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duplicates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "code"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "defs.schema.json#/$defs/uuid"
+              },
+              "code": {
+                "type": "string",
+                "description": "`unknown_point` and `invalid` are final (the agent drops the event); any other code is retried."
+              }
+            }
+          }
+        }
+      }
+    },
+    "ack_snapshot_part": {
+      "type": "object",
+      "required": [
+        "version",
+        "part",
+        "applied"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "part": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "applied": {
+          "type": "boolean",
+          "description": "True once all parts are present and the snapshot was applied atomically."
+        }
+      }
+    },
+    "ack_gap": {
+      "type": "object",
+      "required": [
+        "have_version"
+      ],
+      "properties": {
+        "have_version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "ack_stale": {
+      "type": "object",
+      "required": [
+        "have_version",
+        "offered_version"
+      ],
+      "properties": {
+        "have_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "offered_version": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "A snapshot with a lower version that the hello did not announce and that was not requested."
+        }
+      }
+    },
+    "ack_expired": {
+      "type": "object",
+      "required": [
+        "expires_at"
+      ],
+      "properties": {
+        "expires_at": {
+          "$ref": "defs.schema.json#/$defs/ts"
+        },
+        "now": {
+          "$ref": "defs.schema.json#/$defs/ts"
+        },
+        "clock_offset_ms": {
+          "type": "integer"
+        }
+      }
+    },
+    "ack_refused": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "description": "Open: `ttl` (open_point lifetime outside (0, 60 s]), `clock` (agent clock offset beyond 24 h), `disabled`, `unknown_command`."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "gap"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "$ref": "#/$defs/ack_gap"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "stale"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "$ref": "#/$defs/ack_stale"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "expired"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "$ref": "#/$defs/ack_expired"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "refused"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "detail"
+        ],
+        "properties": {
+          "detail": {
+            "$ref": "#/$defs/ack_refused"
+          }
+        }
+      }
+    }
+  ]
 }

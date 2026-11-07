@@ -15,7 +15,7 @@ post:
 
     Permission: `money.post`.
 
-    Problems: `conflict` (409), `idempotency_mismatch` (422).
+    Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
   tags:
     - money
   security:

@@ -2,7 +2,12 @@ schemas:
   AuthUser:
     type: object
     description: The signed-in account (instance-wide, not per organization).
-    required: [id, email, phone, locale, is_platform_admin]
+    required:
+      - id
+      - email
+      - phone
+      - locale
+      - is_platform_admin
     properties:
       id:
         type: string
@@ -21,7 +26,9 @@ schemas:
         type: boolean
   Credentials:
     type: object
-    required: [method, identifier]
+    required:
+      - method
+      - identifier
     description: |
       What the caller proves. `method` is `password`, `sms_otp` or
       `magic_link` (open on input; known values listed). `identifier` is an
@@ -32,7 +39,10 @@ schemas:
     properties:
       method:
         type: string
-        x-known-values: [password, sms_otp, magic_link]
+        x-known-values:
+          - password
+          - sms_otp
+          - magic_link
       identifier:
         type: string
         maxLength: 254
@@ -45,9 +55,11 @@ schemas:
         description: The code sent by SMS.
       client:
         type: string
-        enum: [web, mobile]
+        enum:
+          - web
+          - mobile
         default: web
-        description: '`mobile` makes an emailed link use the `openbekci://` scheme.'
+        description: "`mobile` makes an emailed link use the `openbekci://` scheme."
       device_name:
         type: string
         maxLength: 128
@@ -55,7 +67,10 @@ schemas:
   SessionResponse:
     type: object
     description: A browser session was created; the token is in the `obk_session` cookie.
-    required: [session_id, expires_at, user]
+    required:
+      - session_id
+      - expires_at
+      - user
     properties:
       session_id:
         type: string
@@ -65,14 +80,21 @@ schemas:
         type: string
         format: date-time
       user:
-        $ref: '#/schemas/AuthUser'
+        $ref: "#/schemas/AuthUser"
   TokenResponse:
     type: object
     description: |
       A mobile or integration session. The access token is short-lived and
       checked on every request; the refresh token rotates on every use, and
       presenting a rotated one revokes the whole session.
-    required: [token_type, access_token, access_expires_at, refresh_token, refresh_expires_at, session_id, user]
+    required:
+      - token_type
+      - access_token
+      - access_expires_at
+      - refresh_token
+      - refresh_expires_at
+      - session_id
+      - user
     properties:
       token_type:
         type: string
@@ -91,7 +113,7 @@ schemas:
         type: string
         format: uuid
       user:
-        $ref: '#/schemas/AuthUser'
+        $ref: "#/schemas/AuthUser"
   AuthResult:
     type: object
     description: |
@@ -99,11 +121,17 @@ schemas:
       `obk_session` cookie and `expires_at` is the session expiry; for
       `client=mobile` the token fields are present and `expires_at` is the
       access token expiry.
-    required: [client, session_id, expires_at, user]
+    required:
+      - client
+      - session_id
+      - expires_at
+      - user
     properties:
       client:
         type: string
-        enum: [web, mobile]
+        enum:
+          - web
+          - mobile
         x-open-enum: true
         description: Which kind of session was created (open enum).
       session_id:
@@ -113,7 +141,7 @@ schemas:
         type: string
         format: date-time
       user:
-        $ref: '#/schemas/AuthUser'
+        $ref: "#/schemas/AuthUser"
       access_token:
         type: string
         description: Only for `client=mobile`.
@@ -126,14 +154,16 @@ schemas:
         description: Only for `client=mobile`.
   RefreshRequest:
     type: object
-    required: [refresh_token]
+    required:
+      - refresh_token
     properties:
       refresh_token:
         type: string
         maxLength: 200
   OtpRequest:
     type: object
-    required: [phone]
+    required:
+      - phone
     properties:
       phone:
         type: string
@@ -141,34 +171,42 @@ schemas:
         description: E.164 or national format.
   MagicLinkRequest:
     type: object
-    required: [email]
+    required:
+      - email
     properties:
       email:
         type: string
         maxLength: 254
       client:
         type: string
-        enum: [web, mobile]
+        enum:
+          - web
+          - mobile
         default: web
-        description: '`mobile` makes the link use the `openbekci://` scheme instead of the web URL.'
+        description: "`mobile` makes the link use the `openbekci://` scheme instead of the web URL."
   MagicLinkConsumeRequest:
     type: object
-    required: [token]
+    required:
+      - token
     properties:
       token:
         type: string
         maxLength: 200
       client:
         type: string
-        enum: [web, mobile]
+        enum:
+          - web
+          - mobile
         default: web
-        description: '`web` sets the session cookie, `mobile` returns tokens.'
+        description: "`web` sets the session cookie, `mobile` returns tokens."
       device_name:
         type: string
         maxLength: 128
   ReauthPassword:
     type: object
-    required: [method, password]
+    required:
+      - method
+      - password
     properties:
       method:
         type: string
@@ -178,27 +216,30 @@ schemas:
         maxLength: 256
   ReauthSmsOtp:
     type: object
-    required: [method, code]
+    required:
+      - method
+      - code
     properties:
       method:
         type: string
         description: Always `sms_otp`.
       code:
         type: string
-        pattern: '^[0-9]{6}$'
+        pattern: ^[0-9]{6}$
         description: A code sent to the account's own phone by `auth.requestOtp`.
   ReauthRequest:
     oneOf:
-      - $ref: '#/schemas/ReauthPassword'
-      - $ref: '#/schemas/ReauthSmsOtp'
+      - $ref: "#/schemas/ReauthPassword"
+      - $ref: "#/schemas/ReauthSmsOtp"
     discriminator:
       propertyName: method
       mapping:
-        password: '#/schemas/ReauthPassword'
-        sms_otp: '#/schemas/ReauthSmsOtp'
+        password: "#/schemas/ReauthPassword"
+        sms_otp: "#/schemas/ReauthSmsOtp"
   ReauthResponse:
     type: object
-    required: [reauth_until]
+    required:
+      - reauth_until
     properties:
       reauth_until:
         type: string
@@ -206,7 +247,8 @@ schemas:
         description: End of the re-authentication window of this session (10 minutes).
   ChangePasswordRequest:
     type: object
-    required: [new_password]
+    required:
+      - new_password
     properties:
       new_password:
         type: string
@@ -215,18 +257,32 @@ schemas:
   RoleGrant:
     type: object
     description: An active membership of the caller's person in the organization.
-    required: [role, scope_type, scope_id, site_owned]
+    required:
+      - role
+      - scope_type
+      - scope_id
+      - site_owned
     properties:
       role:
         type: string
         x-open-enum: true
-        description: 'Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.'
-        enum: [org_admin, site_manager, board_member, auditor, accountant, staff, guard]
+        description: "Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard."
+        enum:
+          - org_admin
+          - site_manager
+          - board_member
+          - auditor
+          - accountant
+          - staff
+          - guard
       scope_type:
         type: string
         x-open-enum: true
         description: Open enum.
-        enum: [org, site, block]
+        enum:
+          - org
+          - site
+          - block
       scope_id:
         type: string
         format: uuid
@@ -237,7 +293,13 @@ schemas:
   MeUser:
     type: object
     description: The signed-in account as `GET /v1/me` shows it.
-    required: [id, display_name, email, phone, locale, is_platform_admin]
+    required:
+      - id
+      - display_name
+      - email
+      - phone
+      - locale
+      - is_platform_admin
     properties:
       id:
         type: string
@@ -258,7 +320,8 @@ schemas:
   PermissionGrant:
     type: object
     description: An effective permission, optionally limited to sites or blocks.
-    required: [permission]
+    required:
+      - permission
     properties:
       permission:
         type: string
@@ -274,7 +337,11 @@ schemas:
           format: uuid
   MeSite:
     type: object
-    required: [id, name, timezone, currency]
+    required:
+      - id
+      - name
+      - timezone
+      - currency
     properties:
       id:
         type: string
@@ -287,7 +354,14 @@ schemas:
         type: string
   OrgAccess:
     type: object
-    required: [id, slug, name, default_locale, roles, permissions, sites]
+    required:
+      - id
+      - slug
+      - name
+      - default_locale
+      - roles
+      - permissions
+      - sites
     properties:
       default_locale:
         type: string
@@ -301,47 +375,146 @@ schemas:
       roles:
         type: array
         items:
-          $ref: '#/schemas/RoleGrant'
+          $ref: "#/schemas/RoleGrant"
       permissions:
         type: array
         description: Effective permissions in this organization (filled by the authorization module; empty until then).
         items:
-          $ref: '#/schemas/PermissionGrant'
+          $ref: "#/schemas/PermissionGrant"
       sites:
         type: array
         description: Sites of the organization the caller can see (empty until the tenancy module lands).
         items:
-          $ref: '#/schemas/MeSite'
+          $ref: "#/schemas/MeSite"
+  MeOccupancy:
+    type: object
+    description: One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - unit_label
+      - kind
+      - side
+      - may_see_money
+      - valid_from
+      - valid_to
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      unit_label:
+        type: string
+        description: What people say, for example `A Blok D:12`.
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+          - household
+          - former_occupant
+        x-open-enum: true
+      side:
+        type: string
+        nullable: true
+        description: The debtor side the occupant belongs to (`owner` or `tenant`); null for household members. Open enum.
+        enum:
+          - owner
+          - tenant
+        x-open-enum: true
+      may_see_money:
+        type: boolean
+        description: Always true for owners and tenants; for household members whether the owner or tenant granted money visibility (S3).
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+        description: Null while the occupancy is current.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000005
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_id: 0192a3f0-1000-7000-8000-000000000003
+      unit_label: A Blok D:12
+      kind: tenant
+      side: tenant
+      may_see_money: true
+      valid_from: 2025-09-01
+      valid_to: null
+  MePolicies:
+    type: object
+    description: Instance policies that apply to the signed-in user, so clients can enforce them without a second call.
+    required:
+      - app_lock_required
+      - reauth_window_minutes
+    properties:
+      app_lock_required:
+        type: boolean
+        description: The mobile app must be protected by a device lock (biometrics or passcode) before it shows money or personal data.
+      reauth_window_minutes:
+        type: integer
+        format: int64
+        description: How long a re-authentication (`POST /v1/auth/reauth`) stays valid for sensitive operations (default 10).
+    example:
+      app_lock_required: false
+      reauth_window_minutes: 10
   Me:
     type: object
-    required: [user, organizations, occupancies, policies]
+    required:
+      - user
+      - organizations
+      - occupancies
+      - policies
     properties:
       user:
-        $ref: '#/schemas/MeUser'
+        $ref: "#/schemas/MeUser"
       organizations:
         type: array
         items:
-          $ref: '#/schemas/OrgAccess'
+          $ref: "#/schemas/OrgAccess"
       occupancies:
         type: array
-        description: The caller's unit occupancies (owner, tenant, household); empty until the people module lands.
+        description: The caller's unit occupancies across organizations (owner, tenant, household; former ones only inside their dates). Empty until the people module lands.
         items:
-          type: object
-          additionalProperties: true
+          $ref: "#/schemas/MeOccupancy"
       policies:
-        type: object
-        additionalProperties: true
+        $ref: "#/schemas/MePolicies"
   Session:
     type: object
     description: One open session of the caller. Mobile sessions keep their id across token rotation.
-    required: [id, client, device_name, ip, user_agent, created_at, last_used_at, expires_at, current]
+    required:
+      - id
+      - client
+      - device_name
+      - ip
+      - user_agent
+      - created_at
+      - last_used_at
+      - expires_at
+      - current
     properties:
       id:
         type: string
         format: uuid
       client:
         type: string
-        enum: [web, mobile]
+        enum:
+          - web
+          - mobile
         x-open-enum: true
         description: Open enum.
       device_name:
@@ -367,15 +540,39 @@ schemas:
       current:
         type: boolean
         description: True for the session that made this request.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      client: web
+      device_name: null
+      ip: null
+      user_agent: null
+      created_at: 2026-03-01T09:00:00Z
+      last_used_at: null
+      expires_at: 2026-03-01T09:00:00Z
+      current: false
   SessionList:
     type: object
-    required: [items, next_cursor]
+    required:
+      - items
+      - next_cursor
     properties:
       items:
         type: array
         items:
-          $ref: '#/schemas/Session'
+          $ref: "#/schemas/Session"
       next_cursor:
         type: string
         nullable: true
         description: Always null; the list is short and returned whole.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          client: web
+          device_name: null
+          ip: null
+          user_agent: null
+          created_at: 2026-03-01T09:00:00Z
+          last_used_at: null
+          expires_at: 2026-03-01T09:00:00Z
+          current: false
+      next_cursor: null

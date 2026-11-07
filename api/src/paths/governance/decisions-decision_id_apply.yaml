@@ -15,7 +15,7 @@ post:
 
     Permission: `decisions.manage`.
 
-    Problems: `conflict` (409), `locked_period` (409).
+    Problems: `conflict` (409), `locked_period` (409), `idempotency_mismatch` (422).
   tags:
     - governance
   security:
@@ -28,11 +28,11 @@ post:
       - decisions.manage
     board_member:
       - decisions.manage
-  x-idempotent: optional
+  x-idempotent: required
   x-stability: preview
   parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
     - $ref: ../../components/draft-common.yaml#/parameters/DryRun
-    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:
     required: true
     content:

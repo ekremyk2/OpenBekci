@@ -57,6 +57,12 @@
     },
     "rotate_now": {
       "type": "boolean"
+    },
+    "session": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "description": "Poll mode only: the session handle the agent sends as `session` on every later `POST /v1/agent/poll`. Absent on WebSocket sessions."
     }
   }
 }

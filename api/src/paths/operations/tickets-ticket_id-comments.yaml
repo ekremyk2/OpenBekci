@@ -13,7 +13,9 @@ get:
   description: |-
     **Release 0.1.** Residents never receive internal comments.
 
-    Permission (any one of): `tickets.read`, `tickets.open`.
+    Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
     - operations
   security:
@@ -32,7 +34,7 @@ get:
     auditor:
       - tickets.read
     staff:
-      - tickets.read
+      - tickets.read_assigned
       - tickets.open
     owner:
       - tickets.open
@@ -65,7 +67,7 @@ post:
   description: |-
     **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
 
-    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.work`.
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
 
     Problems: `conflict` (409).
   tags:
@@ -86,7 +88,7 @@ post:
     auditor:
       - tickets.read
     staff:
-      - tickets.read
+      - tickets.read_assigned
       - tickets.open
       - tickets.work
     owner:

@@ -13,6 +13,8 @@ get:
   description: |-
     **Release 0.3.** Poll one visitor (approval status).
 
+    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
     Permission: `gate.operate`.
   tags:
     - community

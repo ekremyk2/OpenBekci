@@ -6,7 +6,9 @@ get:
   description: |-
     **Release 0.1.** List payments.
 
-    Permission: `money.read`.
+    Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+
+    Permission (any one of): `money.read`, `statements.read_own`.
   tags:
     - money
   security:
@@ -23,6 +25,14 @@ get:
       - money.read
     accountant:
       - money.read
+    owner:
+      - statements.read_own
+    tenant:
+      - statements.read_own
+    household:
+      - statements.read_own
+    former_occupant:
+      - statements.read_own
   x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
@@ -107,9 +117,13 @@ post:
   description: |-
     **Release 0.1.** Cash (with a gap-free receipt number) or a bank transfer entered by hand. The response shows the allocation actually applied.
 
+    Cash collectors: a person bound to a cash box (a kapici or a board member, M5) holds `payments.record` only for payments recorded into that box (`asset_account_id` is their cash box account); anything else is 403 `insufficient_permission`. They see and void nothing else.
+
     Permission: `payments.record`.
 
     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+
+    `debtor` targets a unit side or a person; payments against a person settle carried debt oldest-first and never touch the unit's current occupants.
   tags:
     - money
   security:
@@ -123,6 +137,8 @@ post:
     board_member:
       - payments.record
     accountant:
+      - payments.record
+    staff:
       - payments.record
   x-idempotent: required
   x-stability: stable

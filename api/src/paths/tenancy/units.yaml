@@ -31,8 +31,6 @@ get:
       - units.read
     household:
       - units.read
-    former_occupant:
-      - units.read
   x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired

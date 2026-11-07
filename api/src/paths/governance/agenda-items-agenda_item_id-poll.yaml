@@ -54,9 +54,11 @@ put:
   description: |-
     **Release 0.2.** Create or change the poll.
 
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
     Permission: `meetings.manage`.
 
-    Problems: `conflict` (409).
+    Problems: `conflict` (409), `version_conflict` (409).
   tags:
     - governance
   security:
@@ -96,3 +98,5 @@ put:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

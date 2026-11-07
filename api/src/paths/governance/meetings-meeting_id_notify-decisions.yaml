@@ -15,7 +15,7 @@ post:
 
     Permission: `meetings.manage`.
 
-    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
   tags:
     - governance
   security:
@@ -28,11 +28,11 @@ post:
       - meetings.manage
     board_member:
       - meetings.manage
-  x-idempotent: optional
+  x-idempotent: required
   x-stability: preview
   parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
     - $ref: ../../components/draft-common.yaml#/parameters/DryRun
-    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:
     required: true
     content:

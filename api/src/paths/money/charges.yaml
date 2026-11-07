@@ -6,7 +6,9 @@ get:
   description: |-
     **Release 0.1.** List charges.
 
-    Permission: `money.read`.
+    Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+
+    Permission (any one of): `money.read`, `statements.read_own`.
   tags:
     - money
   security:
@@ -23,6 +25,14 @@ get:
       - money.read
     accountant:
       - money.read
+    owner:
+      - statements.read_own
+    tenant:
+      - statements.read_own
+    household:
+      - statements.read_own
+    former_occupant:
+      - statements.read_own
   x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
@@ -66,7 +76,8 @@ get:
       in: query
       schema:
         type: string
-      description: Filter by `period`.
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      description: Filter by month, `YYYY-MM`.
     - name: charge_type
       in: query
       schema:
@@ -109,7 +120,7 @@ post:
 
     Permission: `money.post`.
 
-    Problems: `idempotency_mismatch` (422), `conflict` (409).
+    Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
   tags:
     - money
   security:

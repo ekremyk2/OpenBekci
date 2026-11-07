@@ -38,8 +38,6 @@ get:
       - units.read
     household:
       - units.read
-    former_occupant:
-      - units.read
   x-stability: stable
   responses:
     "200":
@@ -62,9 +60,11 @@ put:
   description: |-
     **Release 0.1.** Set the units carrying a tag.
 
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
     Permission: `sites.manage`.
 
-    Problems: `conflict` (409).
+    Problems: `conflict` (409), `version_conflict` (409).
   tags:
     - tenancy
   security:
@@ -84,7 +84,7 @@ put:
     content:
       application/json:
         schema:
-          $ref: ../../components/tenancy.yaml#/schemas/UnitTagMembers
+          $ref: ../../components/tenancy.yaml#/schemas/UnitTagMembersSet
   responses:
     "200":
       description: OK
@@ -104,3 +104,5 @@ put:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

@@ -13,6 +13,8 @@ post:
   description: |-
     **Release 0.3.** Only for a valid pre-approved or approved entry.
 
+    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
     Permission: `gate.operate`.
 
     Problems: `conflict` (409).

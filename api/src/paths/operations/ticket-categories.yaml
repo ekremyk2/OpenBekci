@@ -6,7 +6,7 @@ get:
   description: |-
     **Release 0.1.** Cursor-paginated list of ticket categorys.
 
-    Permission (any one of): `tickets.read`, `tickets.open`.
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
     - operations
   security:
@@ -25,7 +25,7 @@ get:
     auditor:
       - tickets.read
     staff:
-      - tickets.read
+      - tickets.read_assigned
       - tickets.open
     owner:
       - tickets.open

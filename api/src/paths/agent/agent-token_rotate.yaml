@@ -2,7 +2,7 @@ post:
   operationId: agent.rotateToken
   summary: Rotate the agent token
   description: |-
-    **Release 0.3.** The old token stays valid for 10 minutes so a crash between steps recovers. The server hello carries `rotate_by` (default 180 days).
+    **Release 0.3.** Returns a new token. The retired token stays valid for 10 minutes (`previous_valid_until`) so a crash between steps recovers, and calling again with the retired token inside that window is idempotent: it returns the same new token. After the window the retired token is 401. `rotate_by` is also in the server hello (default 180 days); the hello may set `rotate_now`.
 
     Problems: `rate_limited` (429), `conflict` (409).
   tags:
