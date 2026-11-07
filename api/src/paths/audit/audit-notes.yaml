@@ -1,0 +1,98 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: audit.listNotes
+  summary: List audit notes
+  description: |-
+    **Release 0.1.** List audit notes.
+
+    Permission: `audit.read`.
+  tags:
+    - audit
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - audit.read
+    site_manager:
+      - audit.read
+    board_member:
+      - audit.read
+    auditor:
+      - audit.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
+    - name: target_type
+      in: query
+      schema:
+        type: string
+      description: Filter by `target_type`.
+    - name: target_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `target_id`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/AuditNoteList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: audit.createNote
+  summary: Write an audit note
+  description: |-
+    **Release 0.1.** Write an audit note.
+
+    Permission: `audit.report`.
+
+    Problems: `conflict` (409).
+  tags:
+    - audit
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    auditor:
+      - audit.report
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/AuditNoteCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/AuditNote
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

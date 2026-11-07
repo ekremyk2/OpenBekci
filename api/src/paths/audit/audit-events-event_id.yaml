@@ -1,0 +1,46 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: event_id
+    in: path
+    required: true
+    description: Id of the event.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: audit.getEvent
+  summary: Get an audit event
+  description: |-
+    **Release 0.1.** Get an audit event.
+
+    Permission: `audit.read`.
+  tags:
+    - audit
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - audit.read
+    site_manager:
+      - audit.read
+    board_member:
+      - audit.read
+    auditor:
+      - audit.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/AuditEvent
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

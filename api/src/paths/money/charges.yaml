@@ -1,0 +1,164 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listCharges
+  summary: List charges
+  description: |-
+    **Release 0.1.** List charges.
+
+    Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+
+    Permission (any one of): `money.read`, `statements.read_own`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+    owner:
+      - statements.read_own
+    tenant:
+      - statements.read_own
+    household:
+      - statements.read_own
+    former_occupant:
+      - statements.read_own
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: "Debtor side of the unit: owner or tenant."
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+    - name: plan_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `plan_id`.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - open
+          - partially_paid
+          - paid
+          - cancelled
+      description: Filter by `status`.
+    - name: period
+      in: query
+      schema:
+        type: string
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      description: Filter by month, `YYYY-MM`.
+    - name: charge_type
+      in: query
+      schema:
+        type: string
+      description: Filter by `charge_type`.
+    - name: due_from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter by `due_from`.
+    - name: due_to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter by `due_to`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/ChargeList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: money.createCharge
+  summary: Create a one-off charge
+  description: |-
+    **Release 0.1.** Create a one-off charge.
+
+    Permission: `money.post`.
+
+    Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/ChargeCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Charge
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

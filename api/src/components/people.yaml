@@ -1,0 +1,1749 @@
+schemas:
+  PersonContact:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+        nullable: true
+      phone:
+        type: string
+        description: E.164.
+        nullable: true
+      preferred_channel:
+        type: string
+        description: Open enum.
+        enum:
+          - sms
+          - email
+        x-open-enum: true
+        nullable: true
+      address:
+        type: object
+        allOf:
+          - $ref: ./draft-common.yaml#/schemas/Address
+        nullable: true
+  DirectoryConsent:
+    type: object
+    required:
+      - site_id
+      - consent
+      - show_phone
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      consent:
+        type: boolean
+      show_phone:
+        type: boolean
+  Person:
+    type: object
+    description: A person of the organization; exists before an account.
+    required:
+      - id
+      - org_id
+      - user_id
+      - display_name
+      - contact
+      - national_id_masked
+      - national_id_country
+      - gate_contact_phone
+      - notes
+      - join_status
+      - directory_consent
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      user_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The linked sign-in account, once the person joined.
+      display_name:
+        type: string
+      contact:
+        $ref: "#/schemas/PersonContact"
+      national_id_masked:
+        type: string
+        nullable: true
+        description: Only for callers with `people.national_id`; for example `*******1234`. Never returned in full and never in audit diffs.
+      national_id_country:
+        type: string
+        nullable: true
+      gate_contact_phone:
+        type: string
+        description: E.164.
+        nullable: true
+      notes:
+        type: string
+        nullable: true
+      join_status:
+        type: string
+        description: Open enum.
+        enum:
+          - no_account
+          - invited
+          - joined
+        x-open-enum: true
+      directory_consent:
+        type: array
+        items:
+          $ref: "#/schemas/DirectoryConsent"
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      user_id: null
+      display_name: Ayse Yilmaz
+      contact: {}
+      national_id_masked: "*******1234"
+      national_id_country: TR
+      gate_contact_phone: null
+      notes: null
+      join_status: no_account
+      directory_consent:
+        - site_id: 0192a3f0-1000-7000-8000-000000000002
+          consent: false
+          show_phone: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  PersonCreate:
+    type: object
+    required:
+      - display_name
+    properties:
+      display_name:
+        type: string
+      contact:
+        $ref: "#/schemas/PersonContact"
+      gate_contact_phone:
+        type: string
+        description: E.164.
+        nullable: true
+      notes:
+        type: string
+        nullable: true
+  PersonUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      display_name:
+        type: string
+      contact:
+        $ref: "#/schemas/PersonContact"
+      gate_contact_phone:
+        type: string
+        description: E.164.
+        nullable: true
+      notes:
+        type: string
+        nullable: true
+  PersonList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Person"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          user_id: null
+          display_name: Ayse Yilmaz
+          contact: {}
+          national_id_masked: "*******1234"
+          national_id_country: TR
+          gate_contact_phone: null
+          notes: null
+          join_status: no_account
+          directory_consent:
+            - site_id: 0192a3f0-1000-7000-8000-000000000002
+              consent: false
+              show_phone: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  NationalId:
+    type: object
+    required:
+      - set
+      - country_code
+      - masked
+    properties:
+      set:
+        type: boolean
+      country_code:
+        type: string
+        nullable: true
+      masked:
+        type: string
+        nullable: true
+  NationalIdSet:
+    type: object
+    required:
+      - country_code
+      - value
+    properties:
+      country_code:
+        type: string
+        description: ISO 3166-1 alpha-2; `TR` validates the TCKN checksum.
+      value:
+        type: string
+  Occupancy:
+    type: object
+    description: Who is related to which unit, and for how long. Portal rights derive from this resource only.
+    required:
+      - id
+      - org_id
+      - person_id
+      - person_display_name
+      - unit_id
+      - unit_door_number
+      - kind
+      - side
+      - share_pct
+      - is_correspondent
+      - may_see_money
+      - valid_from
+      - valid_to
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+      person_display_name:
+        type: string
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+          - household
+        x-open-enum: true
+      side:
+        type: string
+        description: "Debtor side: owner for owners, tenant for tenants; for a household member the side whose money they may see. Open enum."
+        enum:
+          - owner
+          - tenant
+        x-open-enum: true
+      share_pct:
+        type: number
+        nullable: true
+        description: Co-owner share.
+      is_correspondent:
+        type: boolean
+        description: One per unit side.
+      may_see_money:
+        type: boolean
+        description: Household only; default false.
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      person_id: 0192a3f0-1000-7000-8000-000000000001
+      person_display_name: Ayse Yilmaz
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_door_number: A-12
+      kind: owner
+      side: owner
+      share_pct: 100
+      is_correspondent: false
+      may_see_money: false
+      valid_from: 2024-01-01
+      valid_to: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  OccupancyCreate:
+    type: object
+    required:
+      - person_id
+      - unit_id
+      - kind
+      - valid_from
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+          - household
+        x-open-enum: true
+      side:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+        x-open-enum: true
+      share_pct:
+        type: number
+        nullable: true
+      is_correspondent:
+        type: boolean
+      may_see_money:
+        type: boolean
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+  OccupancyUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+          - household
+        x-open-enum: true
+      side:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+        x-open-enum: true
+      share_pct:
+        type: number
+        nullable: true
+      is_correspondent:
+        type: boolean
+      may_see_money:
+        type: boolean
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+  OccupancyList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Occupancy"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          person_id: 0192a3f0-1000-7000-8000-000000000001
+          person_display_name: Ayse Yilmaz
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: A-12
+          kind: owner
+          side: owner
+          share_pct: 100
+          is_correspondent: false
+          may_see_money: false
+          valid_from: 2024-01-01
+          valid_to: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  MoneyAccessSet:
+    type: object
+    required:
+      - may_see_money
+    properties:
+      may_see_money:
+        type: boolean
+  MoveOutPreview:
+    type: object
+    required:
+      - occupancy_id
+      - as_of
+      - principal
+      - late_fee
+      - credit
+      - total
+      - default_open_charges
+      - carried
+    properties:
+      occupancy_id:
+        type: string
+        format: uuid
+      as_of:
+        type: string
+        format: date
+      principal:
+        $ref: ./common.yaml#/schemas/Money
+      late_fee:
+        $ref: ./common.yaml#/schemas/Money
+      credit:
+        $ref: ./common.yaml#/schemas/Money
+      total:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: Principal plus fee minus credit.
+      default_open_charges:
+        type: string
+        enum:
+          - carry_to_person
+          - keep_on_unit
+          - write_off
+        description: Open enum.
+        x-open-enum: true
+      carried:
+        type: array
+        items:
+          $ref: "#/schemas/CarriedCharge"
+        description: Open charges the move-out would handle under the default.
+  MoveOut:
+    type: object
+    description: A move-out or sale (S7).
+    required:
+      - id
+      - org_id
+      - occupancy_id
+      - as_of
+      - closing_statement_file_id
+      - certificate_file_id
+      - open_charges
+      - carried
+      - disposition_reason
+      - transferred_to_person_id
+      - decided_by
+      - balance
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      occupancy_id:
+        type: string
+        format: uuid
+      as_of:
+        type: string
+        format: date
+      closing_statement_file_id:
+        type: string
+        format: uuid
+        nullable: true
+      certificate_file_id:
+        type: string
+        format: uuid
+        nullable: true
+      open_charges:
+        type: string
+        enum:
+          - carry_to_person
+          - keep_on_unit
+          - write_off
+        description: The decision taken. Open enum.
+        x-open-enum: true
+      carried:
+        type: array
+        items:
+          $ref: "#/schemas/CarriedCharge"
+        description: Every open charge the move-out handled and where it went; sums to `balance.principal` plus fee.
+      disposition_reason:
+        type: string
+        nullable: true
+      transferred_to_person_id:
+        type: string
+        format: uuid
+        nullable: true
+      decided_by:
+        type: string
+        format: uuid
+      balance:
+        $ref: "#/schemas/MoveOutPreview"
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      occupancy_id: 0192a3f0-1000-7000-8000-000000000004
+      as_of: 2026-03-01
+      closing_statement_file_id: null
+      certificate_file_id: null
+      open_charges: carry_to_person
+      carried:
+        - charge_id: 0192a3f0-1000-7000-8000-000000000001
+          charge_type: dues
+          period: 2026-02
+          balance:
+            amount: 200000
+            currency: TRY
+          outcome: carried_to_person
+          person_id: 0192a3f0-1000-7000-8000-000000000001
+      disposition_reason: null
+      transferred_to_person_id: null
+      decided_by: 0192a3f0-1000-7000-8000-000000000005
+      balance:
+        occupancy_id: 0192a3f0-1000-7000-8000-000000000006
+        as_of: 2026-03-01
+        principal:
+          amount: 200000
+          currency: TRY
+        late_fee:
+          amount: 200000
+          currency: TRY
+        credit:
+          amount: 200000
+          currency: TRY
+        total:
+          amount: 200000
+          currency: TRY
+        default_open_charges: carry_to_person
+        carried:
+          - charge_id: 0192a3f0-1000-7000-8000-000000000001
+            charge_type: dues
+            period: 2026-02
+            balance:
+              amount: 200000
+              currency: TRY
+            outcome: carried_to_person
+            person_id: 0192a3f0-1000-7000-8000-000000000001
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  MoveOutList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/MoveOut"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          occupancy_id: 0192a3f0-1000-7000-8000-000000000004
+          as_of: 2026-03-01
+          closing_statement_file_id: null
+          certificate_file_id: null
+          open_charges: carry_to_person
+          carried:
+            - charge_id: 0192a3f0-1000-7000-8000-000000000001
+              charge_type: dues
+              period: 2026-02
+              balance:
+                amount: 200000
+                currency: TRY
+              outcome: carried_to_person
+              person_id: 0192a3f0-1000-7000-8000-000000000001
+          disposition_reason: null
+          transferred_to_person_id: null
+          decided_by: 0192a3f0-1000-7000-8000-000000000005
+          balance:
+            occupancy_id: 0192a3f0-1000-7000-8000-000000000006
+            as_of: 2026-03-01
+            principal:
+              amount: 200000
+              currency: TRY
+            late_fee:
+              amount: 200000
+              currency: TRY
+            credit:
+              amount: 200000
+              currency: TRY
+            total:
+              amount: 200000
+              currency: TRY
+            default_open_charges: carry_to_person
+            carried:
+              - charge_id: 0192a3f0-1000-7000-8000-000000000001
+                charge_type: dues
+                period: 2026-02
+                balance:
+                  amount: 200000
+                  currency: TRY
+                outcome: carried_to_person
+                person_id: 0192a3f0-1000-7000-8000-000000000001
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  MoveOutCreate:
+    type: object
+    required:
+      - as_of
+    properties:
+      as_of:
+        type: string
+        format: date
+      open_charges:
+        type: string
+        enum:
+          - carry_to_person
+          - keep_on_unit
+          - write_off
+        default: carry_to_person
+        description: "What happens to the leaving person's open charges (S7). `carry_to_person` (default): they become that person's personal receivable and the next occupant starts at zero, collectible through `DebtorRef.person_id`. `keep_on_unit`: they stay on the unit side. `write_off`: written off (needs `disposition_reason`; audited)."
+      disposition_reason:
+        type: string
+        description: Required for `write_off` and `keep_on_unit` (an override of the default).
+      transferred_to_person_id:
+        type: string
+        format: uuid
+        description: "With `carry_to_person`: carry to this person instead of the leaving one (for example the seller's estate); audited."
+  Membership:
+    type: object
+    description: A role of a person with a scope and a term.
+    required:
+      - id
+      - org_id
+      - person_id
+      - person_display_name
+      - role
+      - scope_type
+      - scope_id
+      - valid_from
+      - valid_to
+      - decision_id
+      - site_owned
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+      person_display_name:
+        type: string
+      role:
+        type: string
+        description: Open enum.
+        enum:
+          - org_admin
+          - site_manager
+          - board_member
+          - auditor
+          - accountant
+          - staff
+          - guard
+        x-open-enum: true
+      scope_type:
+        type: string
+        description: Open enum.
+        enum:
+          - org
+          - site
+          - block
+        x-open-enum: true
+      scope_id:
+        type: string
+        format: uuid
+        nullable: true
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+      decision_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The electing assembly decision (0.2).
+      site_owned:
+        type: boolean
+        description: "Board and auditor memberships: removable only through a decision or an audited override with re-authentication."
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      person_id: 0192a3f0-1000-7000-8000-000000000004
+      person_display_name: Ali Veli
+      role: org_admin
+      scope_type: org
+      scope_id: null
+      valid_from: 2026-03-01
+      valid_to: null
+      decision_id: null
+      site_owned: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  MembershipCreate:
+    type: object
+    required:
+      - person_id
+      - role
+      - scope_type
+      - valid_from
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      role:
+        type: string
+        description: Open enum.
+        enum:
+          - org_admin
+          - site_manager
+          - board_member
+          - auditor
+          - accountant
+          - staff
+          - guard
+        x-open-enum: true
+      scope_type:
+        type: string
+        description: Open enum.
+        enum:
+          - org
+          - site
+          - block
+        x-open-enum: true
+      scope_id:
+        type: string
+        format: uuid
+        nullable: true
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+      decision_id:
+        type: string
+        format: uuid
+        nullable: true
+      site_owned:
+        type: boolean
+  MembershipUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      role:
+        type: string
+        description: Open enum.
+        enum:
+          - org_admin
+          - site_manager
+          - board_member
+          - auditor
+          - accountant
+          - staff
+          - guard
+        x-open-enum: true
+      scope_type:
+        type: string
+        description: Open enum.
+        enum:
+          - org
+          - site
+          - block
+        x-open-enum: true
+      scope_id:
+        type: string
+        format: uuid
+        nullable: true
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+      decision_id:
+        type: string
+        format: uuid
+        nullable: true
+      site_owned:
+        type: boolean
+  MembershipList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Membership"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          person_id: 0192a3f0-1000-7000-8000-000000000004
+          person_display_name: Ali Veli
+          role: org_admin
+          scope_type: org
+          scope_id: null
+          valid_from: 2026-03-01
+          valid_to: null
+          decision_id: null
+          site_owned: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  Invitation:
+    type: object
+    description: "An invitation to join. Links: `{BASE_URL}/invite/{token}`."
+    required:
+      - id
+      - org_id
+      - kind
+      - site_id
+      - person_id
+      - unit_id
+      - channel
+      - destination
+      - status
+      - expires_at
+      - accepted_at
+      - invited_by
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - manager
+          - site_code
+          - household
+        x-open-enum: true
+      site_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+      unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      channel:
+        type: string
+        description: Open enum.
+        enum:
+          - sms
+          - email
+        x-open-enum: true
+      destination:
+        type: string
+        description: Masked phone or email.
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - accepted
+          - expired
+          - revoked
+        x-open-enum: true
+      expires_at:
+        type: string
+        format: date-time
+      accepted_at:
+        type: string
+        format: date-time
+        nullable: true
+      invited_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      kind: manager
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: null
+      unit_id: null
+      channel: sms
+      destination: destination
+      status: pending
+      expires_at: 2026-03-01T09:00:00Z
+      accepted_at: null
+      invited_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  InvitationList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Invitation"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          kind: manager
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: null
+          unit_id: null
+          channel: sms
+          destination: destination
+          status: pending
+          expires_at: 2026-03-01T09:00:00Z
+          accepted_at: null
+          invited_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  InvitationCreate:
+    type: object
+    required:
+      - site_id
+      - person_id
+      - channel
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+      channel:
+        type: string
+        enum:
+          - sms
+          - email
+      unit_id:
+        type: string
+        format: uuid
+      destination:
+        type: string
+        description: Override of the person contact.
+  HouseholdInvitationCreate:
+    type: object
+    description: Creates a household occupancy on the inviter's unit only; cannot grant money access (S3).
+    required:
+      - display_name
+      - channel
+      - destination
+    properties:
+      display_name:
+        type: string
+      channel:
+        type: string
+        enum:
+          - sms
+          - email
+      destination:
+        type: string
+  InvitationPreview:
+    type: object
+    required:
+      - kind
+      - org_name
+      - site_name
+      - unit_door_number
+      - person_display_name
+      - channel
+      - expires_at
+      - existing_account
+    properties:
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - manager
+          - site_code
+          - household
+        x-open-enum: true
+      org_name:
+        type: string
+      site_name:
+        type: string
+      unit_door_number:
+        type: string
+        nullable: true
+      person_display_name:
+        type: string
+        nullable: true
+      channel:
+        type: string
+        description: Open enum.
+        enum:
+          - sms
+          - email
+        x-open-enum: true
+      expires_at:
+        type: string
+        format: date-time
+      existing_account:
+        type: boolean
+        description: "An account with the destination exists: accepting links it, no password needed."
+  InvitationAccept:
+    type: object
+    properties:
+      password:
+        type: string
+        description: Required for a new account; minimum 10 characters.
+      display_name:
+        type: string
+      locale:
+        type: string
+      client:
+        type: string
+        enum:
+          - web
+          - mobile
+  JoinCode:
+    type: object
+    required:
+      - code
+      - url
+      - enabled
+      - rotated_at
+    properties:
+      code:
+        type: string
+      url:
+        type: string
+        description: "`{BASE_URL}/join/{code}`; the QR encodes this."
+      enabled:
+        type: boolean
+      rotated_at:
+        type: string
+        format: date-time
+  JoinCodeSet:
+    type: object
+    required:
+      - enabled
+    properties:
+      enabled:
+        type: boolean
+  JoinInfo:
+    type: object
+    required:
+      - site_name
+      - org_name
+      - blocks
+    properties:
+      site_name:
+        type: string
+      org_name:
+        type: string
+      blocks:
+        type: array
+        items:
+          $ref: "#/schemas/JoinBlock"
+  JoinBlock:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+  JoinUnit:
+    type: object
+    required:
+      - id
+      - door_number
+      - block_name
+    properties:
+      id:
+        type: string
+        format: uuid
+      door_number:
+        type: string
+      block_name:
+        type: string
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      door_number: door number
+      block_name: Ali Veli
+  JoinUnitList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/JoinUnit"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          door_number: door number
+          block_name: Ali Veli
+      next_cursor: null
+  UnitClaimCreate:
+    type: object
+    required:
+      - unit_id
+      - claimed_role
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      claimed_role:
+        type: string
+        enum:
+          - owner
+          - tenant
+          - household
+      note:
+        type: string
+  UnitClaim:
+    type: object
+    description: A request from the site QR path to be linked to a unit (S4).
+    required:
+      - id
+      - org_id
+      - user_id
+      - display_name
+      - unit_id
+      - unit_door_number
+      - claimed_role
+      - status
+      - decided_by
+      - decided_at
+      - decision_note
+      - note
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      user_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      claimed_role:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+          - household
+        x-open-enum: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - approved
+          - rejected
+        x-open-enum: true
+      decided_by:
+        type: string
+        format: uuid
+        nullable: true
+      decided_at:
+        type: string
+        format: date-time
+        nullable: true
+      decision_note:
+        type: string
+        nullable: true
+      note:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      user_id: 0192a3f0-1000-7000-8000-000000000004
+      display_name: Ali Veli
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      unit_door_number: unit door number
+      claimed_role: owner
+      status: pending
+      decided_by: null
+      decided_at: null
+      decision_note: null
+      note: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  UnitClaimList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/UnitClaim"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          user_id: 0192a3f0-1000-7000-8000-000000000004
+          display_name: Ali Veli
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          unit_door_number: unit door number
+          claimed_role: owner
+          status: pending
+          decided_by: null
+          decided_at: null
+          decision_note: null
+          note: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  UnitClaimApprove:
+    type: object
+    properties:
+      share_pct:
+        type: number
+      valid_from:
+        type: string
+        format: date
+      note:
+        type: string
+  UnitClaimReject:
+    type: object
+    required:
+      - reason
+    properties:
+      reason:
+        type: string
+  DirectoryUnit:
+    type: object
+    required:
+      - unit_id
+      - door_number
+      - kind
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      door_number:
+        type: string
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+          - household
+        x-open-enum: true
+  DirectoryEntry:
+    type: object
+    required:
+      - person_id
+      - display_name
+      - units
+      - phone
+      - email
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+      units:
+        type: array
+        items:
+          $ref: "#/schemas/DirectoryUnit"
+      phone:
+        type: string
+        description: E.164.
+        nullable: true
+      email:
+        type: string
+        format: email
+        nullable: true
+        description: Only for managers and board.
+    example:
+      person_id: 0192a3f0-1000-7000-8000-000000000002
+      display_name: Ali Veli
+      units:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000003
+          door_number: door number
+          kind: owner
+      phone: null
+      email: null
+  DirectoryEntryList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/DirectoryEntry"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - person_id: 0192a3f0-1000-7000-8000-000000000002
+          display_name: Ali Veli
+          units:
+            - unit_id: 0192a3f0-1000-7000-8000-000000000003
+              door_number: door number
+              kind: owner
+          phone: null
+          email: null
+      next_cursor: null
+  Vendor:
+    type: object
+    description: A supplier, also used as a ticket assignee label (O2).
+    required:
+      - id
+      - org_id
+      - name
+      - tax_id
+      - contact
+      - default_expense_category_id
+      - archived
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      tax_id:
+        type: string
+        nullable: true
+      contact:
+        $ref: "#/schemas/PersonContact"
+      default_expense_category_id:
+        type: string
+        format: uuid
+        nullable: true
+      archived:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      name: Ali Veli
+      tax_id: null
+      contact:
+        email: null
+        phone: null
+        preferred_channel: sms
+        address:
+          line1: line1
+          line2: null
+          district: null
+          city: null
+          postal_code: null
+          country_code: country code
+      default_expense_category_id: null
+      archived: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  VendorCreate:
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      tax_id:
+        type: string
+        nullable: true
+      contact:
+        $ref: "#/schemas/PersonContact"
+      default_expense_category_id:
+        type: string
+        format: uuid
+        nullable: true
+      archived:
+        type: boolean
+  VendorUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      tax_id:
+        type: string
+        nullable: true
+      contact:
+        $ref: "#/schemas/PersonContact"
+      default_expense_category_id:
+        type: string
+        format: uuid
+        nullable: true
+      archived:
+        type: boolean
+  VendorList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Vendor"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          name: Ali Veli
+          tax_id: null
+          contact:
+            email: null
+            phone: null
+            preferred_channel: sms
+            address:
+              line1: line1
+              line2: null
+              district: null
+              city: null
+              postal_code: null
+              country_code: country code
+          default_expense_category_id: null
+          archived: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  RoleDefinition:
+    type: object
+    required:
+      - role
+      - description
+      - permissions
+    properties:
+      role:
+        type: string
+      description:
+        type: string
+      permissions:
+        type: array
+        items:
+          type: string
+  RoleMatrix:
+    type: object
+    required:
+      - roles
+    properties:
+      roles:
+        type: array
+        items:
+          $ref: "#/schemas/RoleDefinition"
+  MyPersonUpdate:
+    type: object
+    properties:
+      display_name:
+        type: string
+      contact:
+        $ref: "#/schemas/PersonContact"
+      gate_contact_phone:
+        type: string
+        description: E.164.
+        nullable: true
+  ProfileUpdate:
+    type: object
+    properties:
+      display_name:
+        type: string
+      locale:
+        type: string
+  ContactChangeCreate:
+    type: object
+    required:
+      - kind
+      - value
+    properties:
+      kind:
+        type: string
+        enum:
+          - email
+          - phone
+      value:
+        type: string
+  ContactChange:
+    type: object
+    required:
+      - id
+      - kind
+      - masked_value
+      - expires_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - email
+          - phone
+        x-open-enum: true
+      masked_value:
+        type: string
+      expires_at:
+        type: string
+        format: date-time
+  ContactChangeConfirm:
+    type: object
+    required:
+      - code
+    properties:
+      code:
+        type: string
+  PasswordResetRequest:
+    type: object
+    required:
+      - identifier
+    properties:
+      identifier:
+        type: string
+      client:
+        type: string
+        enum:
+          - web
+          - mobile
+        description: "`mobile` makes the emailed link use the `openbekci://` scheme."
+  PasswordResetConsume:
+    type: object
+    required:
+      - token
+      - new_password
+    properties:
+      token:
+        type: string
+      new_password:
+        type: string
+        description: Minimum 10 characters.
+  CarriedCharge:
+    type: object
+    description: An open charge handled by a move-out.
+    required:
+      - charge_id
+      - charge_type
+      - period
+      - balance
+      - outcome
+      - person_id
+    properties:
+      charge_id:
+        type: string
+        format: uuid
+      charge_type:
+        type: string
+        description: Open enum, see `Charge.charge_type`.
+      period:
+        type: string
+        nullable: true
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
+      balance:
+        $ref: ./common.yaml#/schemas/Money
+      outcome:
+        type: string
+        enum:
+          - carried_to_person
+          - kept_on_unit
+          - written_off
+        description: Open enum.
+        x-open-enum: true
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The person now holding the receivable (`carried_to_person`).
+    example:
+      charge_id: 0192a3f0-1000-7000-8000-000000000001
+      charge_type: dues
+      period: 2026-02
+      balance:
+        amount: 200000
+        currency: TRY
+      outcome: carried_to_person
+      person_id: 0192a3f0-1000-7000-8000-000000000001
+  PersonErase:
+    type: object
+    description: 'Erasure = `privacy_erase(person_id)`: the person row is anonymized, the user unlinked; ledger lines, ballots and attendance keep their rows with the name replaced by "Former owner #n". Blocked (409 `conflict`) while the person has an open balance unless `override_open_balance` is set (audited).'
+    required:
+      - reason
+    properties:
+      reason:
+        type: string
+        description: Why (a data-subject request, a court order, ...); audited.
+      override_open_balance:
+        type: boolean
+        default: false
+        description: Erase although the person still owes or is owed money.
+    example:
+      reason: Data subject request 2026/17
+      override_open_balance: false

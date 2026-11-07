@@ -1,0 +1,46 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: agenda_item_id
+    in: path
+    required: true
+    description: Id of the agenda item.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.getPollResults
+  summary: Aggregate poll results
+  description: |-
+    **Release 0.2.** Aggregate poll results.
+
+    Permission (any one of): `meetings.manage`, `polls.answer`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - meetings.manage
+    site_manager:
+      - meetings.manage
+    board_member:
+      - meetings.manage
+    owner:
+      - polls.answer
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/PollResults
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

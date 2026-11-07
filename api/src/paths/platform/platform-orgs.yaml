@@ -1,0 +1,92 @@
+get:
+  operationId: platform.listOrgs
+  summary: List organizations
+  description: |-
+    **Release 0.1.** Instance operators only (`is_platform_admin`).
+
+    Permission: `platform.read`.
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.read
+  x-stability: stable
+  parameters:
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - active
+          - suspended
+          - archived
+      description: Filter by `status`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/PlatformOrgList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: platform.createOrg
+  summary: Create an organization
+  description: |-
+    **Release 0.1.** Create an organization.
+
+    Permission: `platform.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/platform.yaml#/schemas/PlatformOrgCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/PlatformOrg
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,57 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: entry_id
+    in: path
+    required: true
+    description: Id of the entry.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: community.cancelVisitorEntry
+  summary: Cancel a visitor entry
+  description: |-
+    **Release 0.3.** Cancel a visitor entry.
+
+    Permission: `visitors.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.manage
+    site_manager:
+      - visitors.manage
+    board_member:
+      - visitors.manage
+    owner:
+      - visitors.manage
+    tenant:
+      - visitors.manage
+    household:
+      - visitors.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/VisitorEntry
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

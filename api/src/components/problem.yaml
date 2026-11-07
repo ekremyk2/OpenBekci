@@ -1,0 +1,99 @@
+schemas:
+  Problem:
+    type: object
+    description: |
+      RFC 9457 problem details, served as application/problem+json. Clients
+      translate by `code`. `code` is an open enum: clients must tolerate unknown values.
+    required:
+      - type
+      - title
+      - status
+      - code
+      - instance
+    properties:
+      type:
+        type: string
+        description: URI reference identifying the problem type; `about:blank` unless documented.
+        example: about:blank
+      title:
+        type: string
+      status:
+        type: integer
+        description: HTTP status code.
+      code:
+        type: string
+        x-open-enum: true
+        description: Stable machine-readable error code. Open enum.
+        enum:
+          - validation_failed
+          - bad_request
+          - unauthenticated
+          - not_found
+          - conflict
+          - version_conflict
+          - idempotency_mismatch
+          - locked_period
+          - insufficient_permission
+          - reauth_required
+          - mfa_required
+          - invalid_grant
+          - rate_limited
+          - pack_error
+          - site_offboarded
+          - internal_error
+          - csrf_failed
+          - sms_unavailable
+          - mail_unavailable
+          - payload_too_large
+          - method_not_allowed
+          - unsupported_media_type
+          - timeout
+      detail:
+        type: string
+        description: Human-readable explanation, not for machine parsing.
+      instance:
+        type: string
+        description: The request id (also in the `X-Request-Id` response header), for support and logs.
+      request_id:
+        type: string
+        description: Same value as `instance`.
+      errors:
+        type: array
+        description: Per-field errors (with `validation_failed`).
+        items:
+          $ref: "#/schemas/ProblemFieldError"
+  ProblemFieldError:
+    type: object
+    required:
+      - field
+      - code
+    properties:
+      field:
+        type: string
+        description: Dotted path of the offending request field, query or header parameter.
+      code:
+        type: string
+        description: Field-level error code, for example `required`, `invalid`, `too_long`.
+      params:
+        type: object
+        additionalProperties: true
+        description: Values for the client message template, such as the maximum length.
+responses:
+  Problem:
+    description: Error. RFC 9457 problem details with a stable `code`.
+    headers:
+      X-Request-Id:
+        schema:
+          type: string
+      WWW-Authenticate:
+        description: On 401, the accepted scheme (`Bearer`).
+        schema:
+          type: string
+      Allow:
+        description: On 405, the methods the resource supports.
+        schema:
+          type: string
+    content:
+      application/problem+json:
+        schema:
+          $ref: "#/schemas/Problem"

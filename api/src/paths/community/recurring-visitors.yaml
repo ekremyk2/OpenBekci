@@ -1,0 +1,121 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: community.listRecurringVisitors
+  summary: List recurring visitors
+  description: |-
+    **Release 0.3.** Cursor-paginated list of recurring visitors.
+
+    Permission (any one of): `visitors.read`, `visitors.manage`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.read
+      - visitors.manage
+    site_manager:
+      - visitors.read
+      - visitors.manage
+    board_member:
+      - visitors.read
+      - visitors.manage
+    auditor:
+      - visitors.read
+    owner:
+      - visitors.manage
+    tenant:
+      - visitors.manage
+    household:
+      - visitors.manage
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - active
+          - revoked
+          - expired
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/RecurringVisitorList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: community.createRecurringVisitor
+  summary: Create recurring visitor
+  description: |-
+    **Release 0.3.** Creates a recurring visitor.
+
+    Permission: `visitors.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.manage
+    site_manager:
+      - visitors.manage
+    board_member:
+      - visitors.manage
+    owner:
+      - visitors.manage
+    tenant:
+      - visitors.manage
+    household:
+      - visitors.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/RecurringVisitorCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/RecurringVisitor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

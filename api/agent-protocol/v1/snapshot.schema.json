@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/snapshot.schema.json",
+  "title": "snapshot payload: the full allow-list at a version, in parts; the union of all parts replaces the store",
+  "type": "object",
+  "required": [
+    "version",
+    "part",
+    "parts",
+    "site",
+    "entries"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "part": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parts": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "site": {
+      "type": "object",
+      "required": [
+        "timezone"
+      ],
+      "properties": {
+        "timezone": {
+          "type": "string"
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "$ref": "defs.schema.json#/$defs/entry"
+      }
+    }
+  }
+}

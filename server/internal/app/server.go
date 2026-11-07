@@ -12,6 +12,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
+	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 )
 
@@ -33,9 +34,17 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem)
+	if err != nil {
+		_ = ln.Close()
+		rt.stopJobs(log)
+		return err
+	}
+	go pruneIdentity(ctx, log, deps.Identity)
+	deps.Jobs = rt.jobs
 	router := httpapi.NewRouter(
-		httpapi.Deps{Log: log, DB: rt.db, Jobs: rt.jobs},
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, Ready: readiness(cfg, rt.db)},
+		deps,
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,
@@ -88,6 +97,7 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
+	idem    *idempotency.PG
 	working bool
 }
 
@@ -134,7 +144,8 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	d.WarnIfPlatformSuperuser(ctx, log)
 
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected})
+	idem := idempotency.NewPG(d)
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -145,7 +156,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, idem: idem, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

@@ -1,0 +1,68 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: booking_id
+    in: path
+    required: true
+    description: Id of the booking.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: community.cancelBooking
+  summary: Cancel a booking
+  description: |-
+    **Release 0.3.** Refunds the fee automatically when cancelled before the facility cutoff.
+
+    Permission (any one of): `bookings.manage`, `bookings.create`.
+
+    Problems: `conflict` (409), `idempotency_mismatch` (422).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - bookings.manage
+      - bookings.create
+    site_manager:
+      - bookings.manage
+      - bookings.create
+    board_member:
+      - bookings.manage
+      - bookings.create
+    owner:
+      - bookings.create
+    tenant:
+      - bookings.create
+    household:
+      - bookings.create
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/BookingCancel
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/Booking
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

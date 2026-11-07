@@ -12,7 +12,7 @@ import (
 )
 
 const getOrganization = `-- name: GetOrganization :one
-SELECT id, org_id, slug, name, status, settings, created_at, updated_at, version FROM organization WHERE id = $1
+SELECT id, org_id, slug, name, status, settings, created_at, updated_at, version, country_code, default_locale, timezone FROM organization WHERE id = $1
 `
 
 func (q *Queries) GetOrganization(ctx context.Context, id pgtype.UUID) (Organization, error) {
@@ -28,12 +28,15 @@ func (q *Queries) GetOrganization(ctx context.Context, id pgtype.UUID) (Organiza
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Version,
+		&i.CountryCode,
+		&i.DefaultLocale,
+		&i.Timezone,
 	)
 	return i, err
 }
 
 const listOrganizations = `-- name: ListOrganizations :many
-SELECT id, org_id, slug, name, status, settings, created_at, updated_at, version FROM organization ORDER BY slug
+SELECT id, org_id, slug, name, status, settings, created_at, updated_at, version, country_code, default_locale, timezone FROM organization ORDER BY slug
 `
 
 func (q *Queries) ListOrganizations(ctx context.Context) ([]Organization, error) {
@@ -55,6 +58,9 @@ func (q *Queries) ListOrganizations(ctx context.Context) ([]Organization, error)
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Version,
+			&i.CountryCode,
+			&i.DefaultLocale,
+			&i.Timezone,
 		); err != nil {
 			return nil, err
 		}

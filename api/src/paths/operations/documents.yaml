@@ -1,0 +1,124 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.listDocuments
+  summary: List documents
+  description: |-
+    **Release 0.1.** Cursor-paginated list of documents.
+
+    A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+
+    Permission (any one of): `documents.read`, `documents.read_addressed`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - documents.read
+    site_manager:
+      - documents.read
+    board_member:
+      - documents.read
+    auditor:
+      - documents.read
+    owner:
+      - documents.read
+    tenant:
+      - documents.read
+    household:
+      - documents.read
+    former_occupant:
+      - documents.read_addressed
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: folder_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `folder_id`.
+    - name: source
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - uploaded
+          - generated
+      description: Filter by `source`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/DocumentList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: operations.createDocument
+  summary: Create document
+  description: |-
+    **Release 0.1.** Creates a document.
+
+    Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
+    owner:
+      - documents.upload_own
+    tenant:
+      - documents.upload_own
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/DocumentCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Document
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

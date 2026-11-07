@@ -1,0 +1,102 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: vendor_id
+    in: path
+    required: true
+    description: Id of the vendor.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.getVendor
+  summary: Get vendor
+  description: |-
+    **Release 0.1.** Get vendor.
+
+    Permission: `vendors.read`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vendors.read
+    site_manager:
+      - vendors.read
+    board_member:
+      - vendors.read
+    auditor:
+      - vendors.read
+    accountant:
+      - vendors.read
+    staff:
+      - vendors.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Vendor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: people.updateVendor
+  summary: Update vendor
+  description: |-
+    **Release 0.1.** Update vendor.
+
+    Permission: `vendors.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vendors.manage
+    site_manager:
+      - vendors.manage
+    board_member:
+      - vendors.manage
+    accountant:
+      - vendors.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/VendorUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Vendor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

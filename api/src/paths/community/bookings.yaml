@@ -1,0 +1,138 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: community.listBookings
+  summary: List bookings
+  description: |-
+    **Release 0.3.** List bookings.
+
+    Permission: `bookings.read` (residents: their own unit).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - bookings.read
+    site_manager:
+      - bookings.read
+    board_member:
+      - bookings.read
+    owner:
+      - bookings.read
+    tenant:
+      - bookings.read
+    household:
+      - bookings.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: facility_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `facility_id`.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - confirmed
+          - cancelled
+      description: Filter by `status`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: End of the range (inclusive).
+    - name: mine
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `mine`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/BookingList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: community.createBooking
+  summary: Book a facility
+  description: |-
+    **Release 0.3.** Checks hours, duration, lead time, quota and who may book; a taken slot is 409 `conflict`. A fee posts a charge on the unit side.
+
+    Permission: `bookings.create`.
+
+    Problems: `conflict` (409), `validation_failed` (422), `idempotency_mismatch` (422).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - bookings.create
+    site_manager:
+      - bookings.create
+    board_member:
+      - bookings.create
+    owner:
+      - bookings.create
+    tenant:
+      - bookings.create
+    household:
+      - bookings.create
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/BookingCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/Booking
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,102 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: budget_id
+    in: path
+    required: true
+    description: Id of the budget.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getBudgetLines
+  summary: Get the lines of a budget
+  description: |-
+    **Release 0.1.** Get the lines of a budget.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BudgetLines
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: money.putBudgetLines
+  summary: Replace the lines of a draft budget
+  description: |-
+    **Release 0.1.** Replace the lines of a draft budget.
+
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+    Permission: `money.manage`.
+
+    Problems: `conflict` (409), `version_conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.manage
+    site_manager:
+      - money.manage
+    board_member:
+      - money.manage
+    accountant:
+      - money.manage
+  x-idempotent: optional
+  x-stability: stable
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/BudgetLinesSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BudgetLines
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

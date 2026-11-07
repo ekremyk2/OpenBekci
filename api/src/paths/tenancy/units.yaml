@@ -1,0 +1,151 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: tenancy.listUnits
+  summary: List units
+  description: |-
+    **Release 0.1.** Cursor-paginated list of units.
+
+    Permission: `units.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - units.read
+    site_manager:
+      - units.read
+    board_member:
+      - units.read
+    auditor:
+      - units.read
+    accountant:
+      - units.read
+    staff:
+      - units.read
+    owner:
+      - units.read
+    tenant:
+      - units.read
+    household:
+      - units.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: block_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `block_id`.
+    - name: type
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - flat
+          - shop
+          - office
+          - parking
+          - storage
+          - common
+          - other
+      description: Filter by `type`.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - active
+          - merged
+          - split
+      description: Filter by `status`.
+    - name: parent_unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `parent_unit_id`.
+    - name: vacant
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `vacant`.
+    - name: tag_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `tag_id`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/UnitList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: tenancy.createUnit
+  summary: Create unit
+  description: |-
+    **Release 0.1.** Creates a unit.
+
+    Permission: `units.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - units.manage
+    site_manager:
+      - units.manage
+    board_member:
+      - units.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/UnitCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/Unit
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
