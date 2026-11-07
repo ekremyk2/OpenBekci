@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
@@ -34,7 +35,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem)
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
@@ -44,7 +45,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	deps.Jobs = rt.jobs
 	router := httpapi.NewRouter(
 		deps,
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db)},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,
@@ -81,6 +82,15 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	return errors.Join(errs...)
 }
 
+// uploadBodyLimit is the request body cap of the upload route: the file limit
+// plus multipart framing. Zero (limit unset) lets the HTTP layer use its default.
+func uploadBodyLimit(cfg Config) int64 {
+	if cfg.MaxUploadBytes <= 0 {
+		return 0
+	}
+	return httpapi.UploadBodyLimit(cfg.MaxUploadBytes)
+}
+
 // RunWorker runs only the job worker until ctx is cancelled.
 func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 	rt, err := start(ctx, cfg, log, true)
@@ -101,6 +111,7 @@ type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
 	idem    *idempotency.PG
+	files   *files.Service
 	working bool
 }
 
@@ -148,7 +159,12 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	d.WarnIfPlatformSuperuser(ctx, log)
 
 	idem := idempotency.NewPG(d)
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
+	fs, err := newFiles(ctx, cfg, log, d)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, Files: fs})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -159,7 +175,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, idem: idem, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, idem: idem, files: fs, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

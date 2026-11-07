@@ -27,6 +27,8 @@ tags:
     description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
   - name: platform
     description: Instance operation (platform administrators).
+  - name: files
+    description: Uploaded and generated files, streamed through the server.
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -163,6 +165,12 @@ paths:
     $ref: './paths/people/vendors-vendor_id.yaml'
   /v1/platform/audit:
     $ref: './paths/platform-audit.yaml'
+  /v1/orgs/{org_id}/files:
+    $ref: './paths/orgs-org-id-files.yaml'
+  /v1/orgs/{org_id}/files/{file_id}:
+    $ref: './paths/orgs-org-id-files-file-id.yaml'
+  /v1/orgs/{org_id}/files/{file_id}/content:
+    $ref: './paths/orgs-org-id-files-file-id-content.yaml'
 components:
   securitySchemes:
     cookieAuth:
@@ -409,3 +417,13 @@ components:
       $ref: './components/people.yaml#/schemas/VendorUpdate'
     MeOccupancy:
       $ref: './components/people.yaml#/schemas/MeOccupancy'
+    FileVariant:
+      $ref: './components/files.yaml#/schemas/FileVariant'
+    FileLinks:
+      $ref: './components/files.yaml#/schemas/FileLinks'
+    File:
+      $ref: './components/files.yaml#/schemas/File'
+    FileList:
+      $ref: './components/files.yaml#/schemas/FileList'
+    FileUpload:
+      $ref: './components/files.yaml#/schemas/FileUpload'

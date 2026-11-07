@@ -1,0 +1,53 @@
+parameters:
+  - $ref: '../components/common.yaml#/parameters/OrgId'
+  - $ref: '../components/files.yaml#/parameters/FileId'
+get:
+  operationId: files.get
+  summary: Read a file's metadata
+  description: |
+    Needs `files.read`. The file must be visible to the caller: the uploader, a holder of `files.manage`, or whoever
+    the attached resource's owning module lets read it; anything else is 404, so file ids do not leak.
+    `links` carries fresh short-lived download URLs.
+  tags: [files]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [files.read]
+  responses:
+    '200':
+      description: The file.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/files.yaml#/schemas/File'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'
+delete:
+  operationId: files.delete
+  summary: Delete a file
+  description: |
+    Needs `files.manage`. The file disappears at once; its blobs are removed by the hourly `maintenance.prune_files`
+    job. Recorded in the audit trail.
+  tags: [files]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [files.manage]
+  x-idempotent: optional
+  responses:
+    '204':
+      description: Deleted.
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

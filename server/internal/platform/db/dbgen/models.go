@@ -97,6 +97,27 @@ type Facility struct {
 	Version   int32
 }
 
+type File struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Key            string
+	Name           string
+	Size           int64
+	Mime           string
+	Sha256         pgtype.Text
+	UploadedBy     pgtype.UUID
+	ScopeType      pgtype.Text
+	ScopeID        pgtype.UUID
+	Status         string
+	Source         string
+	RetentionUntil pgtype.Timestamptz
+	Variants       []byte
+	CreatedAt      pgtype.Timestamptz
+	DeletedAt      pgtype.Timestamptz
+	PurgedAt       pgtype.Timestamptz
+}
+
 type IdempotencyKey struct {
 	OrgID               pgtype.UUID
 	PrincipalID         pgtype.UUID
@@ -249,6 +270,13 @@ type Occupancy struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type OrgStorageUsage struct {
+	OrgID     pgtype.UUID
+	Bytes     int64
+	Files     int32
+	UpdatedAt pgtype.Timestamptz
 }
 
 type Organization struct {

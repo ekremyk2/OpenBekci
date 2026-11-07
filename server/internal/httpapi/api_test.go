@@ -262,6 +262,7 @@ func TestProblemCodesMatchSpec(t *testing.T) {
 		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant,
 		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError, problem.CodePayloadTooLarge, problem.CodeMethodNotAllowed, problem.CodeUnsupportedMediaType, problem.CodeTimeout,
 		problem.CodeCSRFFailed, problem.CodeSMSUnavailable, problem.CodeMailUnavailable,
+		problem.CodeScanUnavailable,
 	} {
 		if !inSpec[string(c)] {
 			t.Errorf("code %q is not in the spec enum", c)

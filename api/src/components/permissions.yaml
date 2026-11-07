@@ -13,6 +13,9 @@ schemas:
       - claim.manage
       - directory.consent
       - directory.read
+      - files.manage
+      - files.read
+      - files.upload
       - import.run
       - invitation.household
       - invitation.manage
@@ -50,6 +53,9 @@ x-openbekci-roles:
     - claim.manage
     - directory.consent
     - directory.read
+    - files.manage
+    - files.read
+    - files.upload
     - import.run
     - invitation.household
     - invitation.manage
@@ -84,6 +90,9 @@ x-openbekci-roles:
     - claim.manage
     - directory.consent
     - directory.read
+    - files.manage
+    - files.read
+    - files.upload
     - import.run
     - invitation.household
     - invitation.manage
@@ -111,6 +120,8 @@ x-openbekci-roles:
     - allocation.read
     - directory.consent
     - directory.read
+    - files.read
+    - files.upload
     - me.read
     - membership.read
     - moveout.read
@@ -128,6 +139,8 @@ x-openbekci-roles:
     - audit.report
     - directory.consent
     - directory.read
+    - files.read
+    - files.upload
     - me.read
     - membership.read
     - moveout.read
@@ -143,6 +156,8 @@ x-openbekci-roles:
     - allocation.manage
     - allocation.read
     - directory.consent
+    - files.read
+    - files.upload
     - me.read
     - moveout.read
     - occupancy.read
@@ -154,6 +169,8 @@ x-openbekci-roles:
     - vendor.read
   staff:
     - directory.consent
+    - files.read
+    - files.upload
     - me.read
     - org.read
     - sessions.manage_own
@@ -163,6 +180,8 @@ x-openbekci-roles:
     - vendor.read
   guard:
     - directory.consent
+    - files.read
+    - files.upload
     - me.read
     - sessions.manage_own
     - vehicle.read

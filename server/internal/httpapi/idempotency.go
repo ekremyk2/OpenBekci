@@ -8,6 +8,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -66,12 +68,22 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			return
 		}
 
-		body, err := io.ReadAll(r.Body) // already capped by maxBody
-		if err != nil {
-			problem.Write(w, r, bodyReadError(err))
-			return
+		var body []byte
+		if info.stream {
+			// A streamed body (file upload) is not buffered to be hashed: the
+			// declared length stands in for it. A boundary-less fingerprint
+			// also lets a client that retries with a fresh multipart boundary
+			// replay instead of tripping idempotency_mismatch.
+			body = []byte("stream:" + strconv.FormatInt(r.ContentLength, 10))
+		} else {
+			var err error
+			body, err = io.ReadAll(r.Body) // already capped by maxBody
+			if err != nil {
+				problem.Write(w, r, bodyReadError(err))
+				return
+			}
+			r.Body = io.NopCloser(bytes.NewReader(body))
 		}
-		r.Body = io.NopCloser(bytes.NewReader(body))
 		hash := requestHash(r, body)
 		scope := requestScope(r, principal)
 
@@ -279,7 +291,9 @@ func (p *pipeline) validateResponse(r *http.Request, buf *bufferedResponse) erro
 		RequestValidationInput: &openapi3filter.RequestValidationInput{Request: r, PathParams: params, Route: route},
 		Status:                 buf.statusCode(),
 		Header:                 buf.header,
-		Options:                &openapi3filter.Options{IncludeResponseStatus: true},
+		// A streamed binary response (a file download) is not decoded: the spec
+		// declares it as an opaque binary, and the headers are still checked.
+		Options: &openapi3filter.Options{IncludeResponseStatus: true, ExcludeResponseBody: p.op(r).stream && !strings.Contains(buf.header.Get("Content-Type"), "json")},
 	}
 	in.SetBodyBytes(buf.body.Bytes())
 	return openapi3filter.ValidateResponse(r.Context(), in)

@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"regexp"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -115,7 +116,11 @@ func levelFor(status int) slog.Level {
 func requestTimeout(d time.Duration) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx, cancel := context.WithTimeout(r.Context(), d)
+			timeout := d
+			if isUploadRequest(r) {
+				timeout = max(d, uploadTimeout) // a phone on a slow link needs longer than a JSON call
+			}
+			ctx, cancel := context.WithTimeout(r.Context(), timeout)
 			defer cancel()
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 			next.ServeHTTP(ww, r.WithContext(ctx))
@@ -127,31 +132,61 @@ func requestTimeout(d time.Duration) func(http.Handler) http.Handler {
 }
 
 // DefaultMaxBodyBytes is the request body cap for JSON API requests (1 MiB).
-// File uploads get their own, larger limit when they exist.
+// File uploads get their own, larger limit (DefaultMaxUploadBytes).
 const DefaultMaxBodyBytes = 1 << 20
+
+// DefaultMaxUploadBytes is the cap for the body of a file upload request:
+// the file limit (25 MiB) plus room for the multipart framing and fields. The
+// file module enforces the exact per-file limit while streaming.
+const DefaultMaxUploadBytes = 25<<20 + uploadSlack
+
+// UploadBodyLimit is the request body cap that goes with a per-file limit.
+func UploadBodyLimit(fileLimit int64) int64 { return fileLimit + uploadSlack }
+
+const (
+	uploadSlack   = 1 << 20
+	uploadTimeout = 10 * time.Minute
+)
+
+var uploadPath = regexp.MustCompile(`^/v1/orgs/[^/]+/files/?$`)
+
+// isUploadRequest recognizes the one multipart route (POST /v1/orgs/{org_id}/files).
+// The body cap and timeout run before routing, so they match on the path.
+func isUploadRequest(r *http.Request) bool {
+	return r.Method == http.MethodPost && uploadPath.MatchString(r.URL.Path)
+}
 
 // maxBody caps request bodies before anything reads them. A declared
 // Content-Length over the limit is refused at once; a body without a length
 // (chunked) is buffered up to the limit so the refusal is deterministic and
 // still happens ahead of validation, authentication and idempotency. Readers
 // further down are also behind http.MaxBytesReader.
-func maxBody(jsonLimit, uploadLimit int64) func(http.Handler) http.Handler {
+//
+// The file upload route has its own, larger cap (uploadLimit) and is never
+// buffered: its body is streamed, so a chunked upload over the cap fails
+// while it is being read (413 from the upload handler). Other multipart
+// bodies (spreadsheet and archive imports) use importLimit.
+func maxBody(jsonLimit, uploadLimit, importLimit int64) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			limit := jsonLimit
 			if strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
-				limit = uploadLimit // spreadsheet and archive uploads
+				limit = importLimit // spreadsheet and archive uploads
 			}
 			if r.Body == nil || r.Body == http.NoBody {
 				next.ServeHTTP(w, r)
 				return
+			}
+			limit, streamed := limit, isUploadRequest(r)
+			if streamed {
+				limit = uploadLimit
 			}
 			if r.ContentLength > limit {
 				problem.Write(w, r, tooLarge(limit, nil))
 				return
 			}
 			r.Body = http.MaxBytesReader(w, r.Body, limit)
-			if r.ContentLength < 0 {
+			if r.ContentLength < 0 && !streamed {
 				b, err := io.ReadAll(r.Body)
 				if err != nil {
 					var mbe *http.MaxBytesError

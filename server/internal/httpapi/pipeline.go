@@ -80,6 +80,12 @@ type opInfo struct {
 	orgScoped  bool               // path under /v1/orgs/{org_id}: membership is resolved first
 	perms      []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
 	query      map[string]bool    // declared query parameter names
+	// stream is x-openbekci-stream: the operation streams a request body
+	// (multipart upload) or a binary response (download). Its request body is
+	// not buffered for validation or hashed for idempotency, and a binary
+	// response is not buffered by the response validator.
+	stream  bool
+	hasBody bool // the operation declares a request body
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -117,6 +123,8 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				query:      queryParams(item, op),
 				orgScoped:  isOrgPath(path),
 				perms:      extPermissions(op.Extensions),
+				stream:     extBool(op.Extensions, "x-openbekci-stream"),
+				hasBody:    op.RequestBody != nil,
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -204,6 +212,18 @@ func extString(ext map[string]any, name string) string {
 	return ""
 }
 
+// extBool reads a boolean extension.
+func extBool(ext map[string]any, name string) bool {
+	switch v := ext[name].(type) {
+	case bool:
+		return v
+	case json.RawMessage:
+		var b bool
+		return json.Unmarshal(v, &b) == nil && b
+	}
+	return false
+}
+
 // op finds the operation being served from the chi route pattern. It is only
 // meaningful inside a route-level middleware.
 func (p *pipeline) op(r *http.Request) opInfo {
@@ -227,7 +247,7 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 		p.authenticate,
 		p.authzContext,
 		p.rejectUnknownQuery,
-		requestValidator(p.spec),
+		p.validation,
 		p.idempotency,
 	)
 	return chain
