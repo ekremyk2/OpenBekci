@@ -138,6 +138,18 @@ bearer tokens) for module tests that need a signed-in caller. `GET /v1/orgs/{org
 revocation, platform-administrator promotion) go to `platform_audit_event`, readable only through the platform role.
 Both tables are append-only: the application roles have no UPDATE, DELETE or TRUNCATE.
 
+**PII in audit diffs (implementation note).** `audit.Diff` is fail-closed. A field is personal data when
+`pii.IsPII(entity, path)` says so: entries for one entity match the dotted path, the `*` entries match the **last
+path segment**, case-insensitively, in plural or array form and as the last word of a compound name (`billing.email`,
+`owner_phone`, `ContactEmail`, `emails[]`). An entity that is neither registered nor listed in `pii.PlainEntities`
+(only `organization` today) records the **names** of the changed keys and no values. A personal value appears as
+`k1:` + 32 hex digits: `HMAC-SHA256(key, "entity.field" 0x00 canonical-JSON)` truncated to 128 bits, with
+`key = HKDF-SHA256(SECRET_KEY, info "openbekci/audit-pii/v1")`. The hash is domain-separated by entity and field
+and depends on the instance secret, so a phone number cannot be brute-forced from the retained trail (erasure
+leaves the hashes in place) or matched across fields. `k1` is the key id, so a later key can rotate while old hashes
+stay verifiable. `SECRET_KEY` is part of the backup set. The wiring calls `audit.SetPIIKey(cfg.SecretKey)` (in
+`newIdentity`); without a key a PII field records that it changed but no hash. See `internal/platform/pii/hash.go`.
+
 ## Tests
 
 ```powershell

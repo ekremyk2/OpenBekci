@@ -1,10 +1,17 @@
 package audit
 
 import (
+	"crypto/hkdf"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/openbekci/openbekci/server/internal/platform/pii"
 )
 
 type thing struct {
@@ -16,6 +23,15 @@ type thing struct {
 }
 
 func raw(s string) json.RawMessage { return json.RawMessage(s) }
+
+const testSecret = "0123456789abcdef0123456789abcdef"
+
+func TestMain(m *testing.M) {
+	if err := SetPIIKey([]byte(testSecret)); err != nil {
+		panic(err)
+	}
+	os.Exit(m.Run())
+}
 
 func TestDiffValuesForPlainFieldsHashesForPII(t *testing.T) {
 	before := thing{Name: "A", Count: 1, DisplayName: "Ayse Yilmaz", Contact: map[string]any{"email": "a@example.org", "city": "Izmir"}}
@@ -33,7 +49,7 @@ func TestDiffValuesForPlainFieldsHashesForPII(t *testing.T) {
 	if _, ok := d["contact.city"]; ok {
 		t.Error("an unchanged nested field must not appear")
 	}
-	hex16 := regexp.MustCompile(`^[0-9a-f]{16}$`)
+	hex16 := regexp.MustCompile(`^k1:[0-9a-f]{32}$`) // key id, then 128 bits
 	for _, field := range []string{"display_name", "contact.email"} {
 		c, ok := d[field]
 		if !ok {
@@ -63,7 +79,7 @@ func TestDiffCreateAndDelete(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if c := d["display_name"]; c.HashBefore != "" || len(c.HashAfter) != 16 {
+	if c := d["display_name"]; c.HashBefore != "" || len(c.HashAfter) != len("k1:")+32 {
 		t.Errorf("created PII field: %+v", c)
 	}
 	if c := d["role"]; c.Before != nil || string(c.After) != `"owner"` {
@@ -79,17 +95,39 @@ func TestDiffCreateAndDelete(t *testing.T) {
 }
 
 func TestHashValueIsCanonicalAndStable(t *testing.T) {
-	// SHA-256("\"a@example.org\"") truncated to 16 hex digits; pinned so the
-	// hashes stored in old audit rows stay comparable with new ones.
-	if got := HashValue(raw(`"a@example.org"`)); got != "906e1f522edce22f" {
-		t.Fatalf("hash %q", got)
+	// The specification, re-implemented independently of package pii:
+	// HMAC-SHA256(HKDF(secret, info), "entity.field\x00" + json)[:16], prefixed "k1:".
+	key, err := hkdf.Key(sha256.New, []byte(testSecret), nil, "openbekci/audit-pii/v1", 32)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := hmac.New(sha256.New, key)
+	m.Write([]byte("user.email\x00" + `"a@example.org"`))
+	want := "k1:" + hex.EncodeToString(m.Sum(nil)[:16])
+	if got := HashValue("user", "email", raw(`"a@example.org"`)); got != want {
+		t.Fatalf("hash %q, want %q", got, want)
+	}
+	// domain separation: the same value in another field or entity hashes differently
+	if HashValue("user", "phone", raw(`"a@example.org"`)) == want || HashValue("visitor", "email", raw(`"a@example.org"`)) == want {
+		t.Error("hashes must be domain-separated by entity and field")
+	}
+	// another instance secret gives other hashes
+	other, err := pii.NewHasher([]byte("another-instance-secret-0123456789"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if other.Hash("user", "email", raw(`"a@example.org"`)) == want {
+		t.Error("hashes must depend on the instance secret")
+	}
+	if h, _ := pii.NewHasher([]byte(testSecret)); !h.Verify(want, "user", "email", raw(`"a@example.org"`)) || h.Verify(want, "user", "email", raw(`"b@example.org"`)) {
+		t.Error("Verify")
 	}
 	a, _ := Diff("user", map[string]any{"email": "x"}, map[string]any{"email": "a@example.org"})
 	b, _ := Diff("user", map[string]any{"email": "y"}, map[string]any{"email": "a@example.org"})
 	if a["email"].HashAfter != b["email"].HashAfter {
 		t.Error("the same value must hash the same")
 	}
-	if HashValue(nil) != "" {
+	if HashValue("user", "email", nil) != "" {
 		t.Error("an absent value hashes to the empty string")
 	}
 	// object key order does not matter
