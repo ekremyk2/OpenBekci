@@ -6,6 +6,8 @@ get:
   description: |-
     **Release 0.1.** Principal and fee per period as of a date; JSON, or a CSV/XLSX/PDF export.
 
+    Targeting: `unit_id` and `debtor_kind` together, or `person_id` (carried debt of a person); exactly one mode.
+
     Permission: `collections.manage`.
   tags:
     - money
@@ -27,8 +29,7 @@ get:
       schema:
         type: string
         format: uuid
-      description: Filter by unit.
-      required: true
+      description: "Filter by unit. Unit mode: send with the other."
     - name: debtor_kind
       in: query
       schema:
@@ -36,8 +37,13 @@ get:
         enum:
           - owner
           - tenant
-      description: "Debtor side of the unit: owner or tenant."
-      required: true
+      description: "Debtor side of the unit: owner or tenant. Unit mode: send with the other."
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "Person mode: the person whose debt to break down (instead of `unit_id` + `debtor_kind`)."
     - name: as_of
       in: query
       schema:

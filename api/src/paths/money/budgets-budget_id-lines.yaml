@@ -52,9 +52,11 @@ put:
   description: |-
     **Release 0.1.** Replace the lines of a draft budget.
 
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
     Permission: `money.manage`.
 
-    Problems: `conflict` (409).
+    Problems: `conflict` (409), `version_conflict` (409).
   tags:
     - money
   security:
@@ -76,7 +78,7 @@ put:
     content:
       application/json:
         schema:
-          $ref: ../../components/money.yaml#/schemas/BudgetLines
+          $ref: ../../components/money.yaml#/schemas/BudgetLinesSet
   responses:
     "200":
       description: OK
@@ -96,3 +98,5 @@ put:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

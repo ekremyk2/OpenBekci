@@ -143,6 +143,31 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/PresetNote"
+    example:
+      id: id
+      country_code: country code
+      name: Ali Veli
+      settings:
+        quorum:
+          first_call_by_count_pct: 1.5
+          first_call_by_share_pct: 1.5
+          second_call_requires_quorum: false
+        thresholds:
+          - topic: topic
+            rule: simple_majority_present
+            note: null
+        max_votes_per_person_pct: 1.5
+        proxy_cap_pct: 1.5
+        proxy_cap_small_building_max: 1
+        small_building_unit_limit: 1
+        call_min_days: 1
+        second_call_min_days: 1
+        second_call_max_days: 1
+        term_reminder_days: 1
+      notes:
+        - key: key
+          note: note
+          verify: false
   GovernancePresetList:
     type: object
     required:
@@ -156,6 +181,33 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - id: id
+          country_code: country code
+          name: Ali Veli
+          settings:
+            quorum:
+              first_call_by_count_pct: 1.5
+              first_call_by_share_pct: 1.5
+              second_call_requires_quorum: false
+            thresholds:
+              - topic: topic
+                rule: simple_majority_present
+                note: null
+            max_votes_per_person_pct: 1.5
+            proxy_cap_pct: 1.5
+            proxy_cap_small_building_max: 1
+            small_building_unit_limit: 1
+            call_min_days: 1
+            second_call_min_days: 1
+            second_call_max_days: 1
+            term_reminder_days: 1
+          notes:
+            - key: key
+              note: note
+              verify: false
+      next_cursor: null
   Meeting:
     type: object
     description: An owners' assembly (kat malikleri kurulu).
@@ -335,6 +387,26 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          kind: general_assembly
+          scope: site
+          title: null
+          scheduled_at: 2026-01-18T10:00:00Z
+          second_call_at: 2026-01-28T10:00:00Z
+          location: location
+          status: called
+          eligibility_snapshot: null
+          call_letter_document_id: null
+          minutes_document_id: null
+          called_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   MeetingCall:
     type: object
     properties:
@@ -548,6 +620,21 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      meeting_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: 0192a3f0-1000-7000-8000-000000000005
+      person_display_name: Ali Veli
+      phase: call
+      method: registered_mail
+      status: pending
+      sent_at: null
+      tracking_no: null
+      proof_file_id: null
+      note: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   MeetingNoticeList:
     type: object
     required:
@@ -562,6 +649,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          meeting_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: 0192a3f0-1000-7000-8000-000000000005
+          person_display_name: Ali Veli
+          phase: call
+          method: registered_mail
+          status: pending
+          sent_at: null
+          tracking_no: null
+          proof_file_id: null
+          note: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   MeetingNoticeRecord:
     type: object
     required:
@@ -712,6 +816,19 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      meeting_id: 0192a3f0-1000-7000-8000-000000000004
+      position: 1
+      title: Ali Veli
+      description: null
+      will_be_voted: false
+      topic: null
+      decision_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   AgendaItemCreate:
     type: object
     required:
@@ -755,6 +872,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          meeting_id: 0192a3f0-1000-7000-8000-000000000004
+          position: 1
+          title: Ali Veli
+          description: null
+          will_be_voted: false
+          topic: null
+          decision_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   AgendaOrder:
     type: object
     required:
@@ -774,6 +906,7 @@ schemas:
       - opens_at
       - closes_at
       - status
+      - version
     properties:
       agenda_item_id:
         type: string
@@ -795,6 +928,10 @@ schemas:
           - open
           - closed
         x-open-enum: true
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   PollSet:
     type: object
     required:
@@ -856,6 +993,13 @@ schemas:
       answered_at:
         type: string
         format: date-time
+    example:
+      agenda_item_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_id: 0192a3f0-1000-7000-8000-000000000003
+      unit_door_number: unit door number
+      answer: yes
+      answered_by: 0192a3f0-1000-7000-8000-000000000004
+      answered_at: 2026-03-01T09:00:00Z
   PollAnswerList:
     type: object
     required:
@@ -869,6 +1013,15 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - agenda_item_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_id: 0192a3f0-1000-7000-8000-000000000003
+          unit_door_number: unit door number
+          answer: yes
+          answered_by: 0192a3f0-1000-7000-8000-000000000004
+          answered_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   PollResults:
     type: object
     required:
@@ -1048,6 +1201,23 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      meeting_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: 0192a3f0-1000-7000-8000-000000000005
+      person_display_name: Ali Veli
+      unit_ids:
+        - 0192a3f0-1000-7000-8000-000000000006
+      unit_labels:
+        - Ali Veli
+      mode: in_person
+      proxy_for_person_id: null
+      source: desk
+      checked_in_at: 2026-03-01T09:00:00Z
+      checked_in_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   AttendanceList:
     type: object
     required:
@@ -1062,6 +1232,25 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          meeting_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: 0192a3f0-1000-7000-8000-000000000005
+          person_display_name: Ali Veli
+          unit_ids:
+            - 0192a3f0-1000-7000-8000-000000000006
+          unit_labels:
+            - Ali Veli
+          mode: in_person
+          proxy_for_person_id: null
+          source: desk
+          checked_in_at: 2026-03-01T09:00:00Z
+          checked_in_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   AttendanceCreate:
     type: object
     required:
@@ -1326,6 +1515,29 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          meeting_id: 0192a3f0-1000-7000-8000-000000000002
+          agenda_item_id: null
+          sequence_no: 3
+          year: 2026
+          text: Dues become 2,000 TRY from March.
+          outcome: accepted
+          vote_count: null
+          dissents:
+            - person_id: 0192a3f0-1000-7000-8000-000000000001
+              display_name: null
+              text: text
+          concerns_residents: true
+          notified_at: null
+          effect: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   DecisionApplyDuesRate:
     type: object
     required:
@@ -1493,6 +1705,19 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      membership_id: 0192a3f0-1000-7000-8000-000000000005
+      person_display_name: Ali Veli
+      role: role
+      valid_to: 2026-03-01
+      days_left: 1
+      status: upcoming
+      notified_at: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   TermReminderList:
     type: object
     required:
@@ -1507,3 +1732,18 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          membership_id: 0192a3f0-1000-7000-8000-000000000005
+          person_display_name: Ali Veli
+          role: role
+          valid_to: 2026-03-01
+          days_left: 1
+          status: upcoming
+          notified_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null

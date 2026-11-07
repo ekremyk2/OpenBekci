@@ -11,7 +11,7 @@ post:
   operationId: people.moveOut
   summary: Record a move-out or sale
   description: |-
-    **Release 0.1.** Ends the occupancy at `as_of`, files the closing statement and the debt / no-debt certificate (O8), and records the disposition: remaining debt stays on the person unless overridden (audited).
+    **Release 0.1.** Ends the occupancy at `as_of`, files the closing statement and the debt / no-debt certificate (O8), and handles open charges per `open_charges`: by default (`carry_to_person`) they become the leaving person's personal receivable and the next occupant starts at zero; the response lists every carried charge. Overrides are audited.
 
     Permission: `people.move_out`.
 

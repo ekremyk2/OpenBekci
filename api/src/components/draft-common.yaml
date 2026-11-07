@@ -75,7 +75,7 @@ parameters:
   GuardSession:
     name: X-Guard-Session
     in: header
-    description: Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login.
+    description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
     schema:
       type: string
 schemas:
@@ -323,6 +323,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      kind: import
+      status: queued
+      progress: null
+      result_file_id: null
+      result: null
+      error: null
+      started_at: null
+      finished_at: null
+      created_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   JobList:
     type: object
     required:
@@ -337,108 +351,19 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
-  Permission:
-    type: string
-    description: "A permission name, `<module>.<verb>`. The full list with the role matrix is api/PERMISSIONS.md and the `x-openbekci-roles` extension. Open: clients tolerate unknown values."
-    x-known-values:
-      - org.read
-      - org.manage
-      - sites.read
-      - sites.manage
-      - sites.bank_details
-      - sites.export
-      - sites.offboard
-      - units.read
-      - units.manage
-      - units.import
-      - vehicles.read
-      - vehicles.manage
-      - jobs.read
-      - exports.create
-      - people.read
-      - people.manage
-      - people.national_id
-      - people.move_out
-      - occupancies.read
-      - occupancies.manage
-      - occupancies.grant_money
-      - memberships.read
-      - memberships.manage
-      - invitations.manage
-      - invitations.household
-      - claims.decide
-      - directory.read
-      - vendors.read
-      - vendors.manage
-      - roles.read
-      - me.manage
-      - money.read
-      - money.manage
-      - money.post
-      - money.lock
-      - payments.record
-      - payments.declare
-      - statements.read
-      - statements.read_own
-      - reports.read
-      - reports.debtors
-      - reports.aggregate
-      - collections.manage
-      - tickets.read
-      - tickets.manage
-      - tickets.work
-      - tickets.open
-      - announcements.read
-      - announcements.publish
-      - documents.read
-      - documents.manage
-      - documents.upload_own
-      - files.upload
-      - files.read
-      - notifications.read
-      - notifications.manage
-      - audit.read
-      - audit.report
-      - dashboard.site
-      - dashboard.portfolio
-      - me.dashboard
-      - codes.read
-      - meetings.read
-      - meetings.manage
-      - decisions.manage
-      - polls.answer
-      - attendance.manage
-      - facilities.manage
-      - bookings.read
-      - bookings.create
-      - bookings.manage
-      - visitors.read
-      - visitors.manage
-      - visitors.decide
-      - deliveries.read
-      - gate.operate
-      - gate.manage
-      - access.read
-      - access.manage
-      - access.open
-      - access.view_events
-      - platform.read
-      - platform.manage
-  Role:
-    type: string
-    description: "A role key used in `x-openbekci-roles`: a membership role, an occupancy kind, or the pseudo roles `member` and `platform_admin`. Open enum."
-    x-open-enum: true
-    enum:
-      - platform_admin
-      - org_admin
-      - site_manager
-      - board_member
-      - auditor
-      - accountant
-      - staff
-      - guard
-      - owner
-      - tenant
-      - household
-      - former_occupant
-      - member
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          kind: import
+          status: queued
+          progress: null
+          result_file_id: null
+          result: null
+          error: null
+          started_at: null
+          finished_at: null
+          created_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null

@@ -124,6 +124,32 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      description: null
+      rules:
+        opening_hours:
+          - days: []
+            start: 09:00
+            end: 09:00
+        max_duration_minutes: 1
+        max_days_ahead: 1
+        min_notice_minutes: null
+        quota_per_unit: null
+        quota_period: week
+        who_may_book:
+          - owner
+        fee:
+          amount: 200000
+          currency: TRY
+        cancel_refund_cutoff_hours: null
+      enabled: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   FacilityCreate:
     type: object
     required:
@@ -170,6 +196,34 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          description: null
+          rules:
+            opening_hours:
+              - days: []
+                start: 09:00
+                end: 09:00
+            max_duration_minutes: 1
+            max_days_ahead: 1
+            min_notice_minutes: null
+            quota_per_unit: null
+            quota_period: week
+            who_may_book:
+              - owner
+            fee:
+              amount: 200000
+              currency: TRY
+            cancel_refund_cutoff_hours: null
+          enabled: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   TimeRange:
     type: object
     required:
@@ -219,24 +273,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      facility_id: 0192a3f0-1000-7000-8000-000000000004
+      start: 2026-03-01T09:00:00Z
+      end: 2026-03-01T09:00:00Z
+      reason: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   FacilityBlockCreate:
     type: object
     required:
       - start
       - end
-    properties:
-      start:
-        type: string
-        format: date-time
-      end:
-        type: string
-        format: date-time
-      reason:
-        type: string
-        nullable: true
-  FacilityBlockUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
     properties:
       start:
         type: string
@@ -261,6 +311,17 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          facility_id: 0192a3f0-1000-7000-8000-000000000004
+          start: 2026-03-01T09:00:00Z
+          end: 2026-03-01T09:00:00Z
+          reason: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   Availability:
     type: object
     required:
@@ -407,6 +468,27 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          facility_id: 0192a3f0-1000-7000-8000-000000000003
+          facility_name: Community hall
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          person_id: null
+          person_display_name: null
+          start: 2026-03-14T18:00:00Z
+          end: 2026-03-14T22:00:00Z
+          status: confirmed
+          charge_id: null
+          fee: null
+          refund: null
+          cancelled_reason: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   BookingCreate:
     type: object
     required:
@@ -514,7 +596,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
-        description: Shown to the resident who created the entry and to managers; the QR encodes `obk1.<token>`.
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
       decided_by:
         type: string
         format: uuid
@@ -624,6 +706,30 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          name: Mehmet Kaya
+          plate: 34ABC123
+          window_from: 2026-03-01T09:00:00Z
+          window_to: 2026-03-01T09:00:00Z
+          approval_status: pre_approved
+          source: pre_registered
+          qr_token: null
+          decided_by: null
+          decided_at: null
+          arrived_at: null
+          left_at: null
+          cancelled: false
+          recurring_visitor_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   RecurringVisitor:
     type: object
     description: A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone.
@@ -694,6 +800,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
       created_at:
         type: string
         format: date-time
@@ -704,6 +811,24 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      name: Ali Veli
+      plate: null
+      days:
+        - 1
+      start: 09:00
+      end: 09:00
+      valid_from: 2026-03-01
+      valid_to: null
+      status: active
+      qr_token: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   RecurringVisitorCreate:
     type: object
     required:
@@ -786,6 +911,26 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          name: Ali Veli
+          plate: null
+          days:
+            - 1
+          start: 09:00
+          end: 09:00
+          valid_from: 2026-03-01
+          valid_to: null
+          status: active
+          qr_token: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   VisitorApprovalRequest:
     type: object
     description: The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS).
@@ -853,6 +998,21 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      entry_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      unit_door_number: unit door number
+      visitor_name: Ali Veli
+      plate: null
+      requested_at: 2026-03-01T09:00:00Z
+      expires_at: 2026-03-01T09:00:00Z
+      status: pending
+      decided_by: null
+      decided_at: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   VisitorApprovalRequestList:
     type: object
     required:
@@ -867,6 +1027,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          entry_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          unit_door_number: unit door number
+          visitor_name: Ali Veli
+          plate: null
+          requested_at: 2026-03-01T09:00:00Z
+          expires_at: 2026-03-01T09:00:00Z
+          status: pending
+          decided_by: null
+          decided_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   VisitorDecision:
     type: object
     required:
@@ -938,6 +1115,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      unit_door_number: unit door number
+      received_at: 2026-03-01T09:00:00Z
+      received_by_display_name: null
+      description: null
+      status: waiting
+      collected_at: null
+      collected_by_name: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   DeliveryCreate:
     type: object
     required:
@@ -947,16 +1138,6 @@ schemas:
       site_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      description:
-        type: string
-        nullable: true
-  DeliveryUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
       unit_id:
         type: string
         format: uuid
@@ -977,6 +1158,22 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          unit_door_number: unit door number
+          received_at: 2026-03-01T09:00:00Z
+          received_by_display_name: null
+          description: null
+          status: waiting
+          collected_at: null
+          collected_by_name: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   DeliveryCollect:
     type: object
     required:
@@ -986,7 +1183,7 @@ schemas:
         type: string
   GuardVisitor:
     type: object
-    description: "What a guard sees of a visitor: never balances, other contacts or national ids."
+    description: "What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token."
     required:
       - id
       - name
@@ -1040,6 +1237,18 @@ schemas:
         nullable: true
       recurring:
         type: boolean
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      name: Ali Veli
+      plate: null
+      unit_door_number: unit door number
+      window_from: 2026-03-01T09:00:00Z
+      window_to: 2026-03-01T09:00:00Z
+      approval_status: pre_approved
+      approval_expires_at: null
+      arrived_at: null
+      left_at: null
+      recurring: false
   GuardVisitorList:
     type: object
     required:
@@ -1053,6 +1262,20 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          name: Ali Veli
+          plate: null
+          unit_door_number: unit door number
+          window_from: 2026-03-01T09:00:00Z
+          window_to: 2026-03-01T09:00:00Z
+          approval_status: pre_approved
+          approval_expires_at: null
+          arrived_at: null
+          left_at: null
+          recurring: false
+      next_cursor: null
   GateAgentStatus:
     type: object
     required:
@@ -1152,6 +1375,13 @@ schemas:
       collected_by_name:
         type: string
         nullable: true
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      unit_door_number: unit door number
+      received_at: 2026-03-01T09:00:00Z
+      description: null
+      status: waiting
+      collected_by_name: null
   GateDeliveryList:
     type: object
     required:
@@ -1165,6 +1395,15 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          received_at: 2026-03-01T09:00:00Z
+          description: null
+          status: waiting
+          collected_by_name: null
+      next_cursor: null
   GatePlate:
     type: object
     required:
@@ -1175,6 +1414,9 @@ schemas:
         type: string
       unit_door_number:
         type: string
+    example:
+      plate: plate
+      unit_door_number: unit door number
   GatePlateList:
     type: object
     required:
@@ -1188,6 +1430,11 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - plate: plate
+          unit_door_number: unit door number
+      next_cursor: null
   ScanRequest:
     type: object
     required:
@@ -1259,17 +1506,30 @@ schemas:
       phone:
         type: string
         description: E.164.
+    description: "The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident's number the visitor entry points to, with no other contact data."
   GuardSessionCreate:
     type: object
+    description: "Quick PIN switch at the booth: the guard picks their name from `gate.listGuards`, then types the PIN. The PIN is checked against that one person, so PINs need not be unique per site."
     required:
       - site_id
+      - person_id
       - pin
     properties:
       site_id:
         type: string
         format: uuid
+      person_id:
+        type: string
+        format: uuid
+        description: The guard, from `gate.listGuards`.
       pin:
         type: string
+        pattern: ^\d{4,8}$
+        description: 4 to 8 digits (`community.setGuardPin`).
+    example:
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      person_id: 0192a3f0-1000-7000-8000-000000000004
+      pin: "1234"
   GuardSession:
     type: object
     required:
@@ -1280,7 +1540,7 @@ schemas:
     properties:
       token:
         type: string
-        description: Send as `X-Guard-Session` on guard operations.
+        description: Opaque bearer for the `X-Guard-Session` header. Valid until `expires_at` (12 hours), bound to the console login session and the site it was created for; ends earlier on logout of the console, on a new `createGuardSession` by the same console, or when the guard membership ends.
       expires_at:
         type: string
         format: date-time
@@ -1289,6 +1549,7 @@ schemas:
         format: uuid
       display_name:
         type: string
+    description: "A short-lived guard session. Send `token` as `X-Guard-Session` on guard operations (semantics: the header parameter)."
   GatePinSet:
     type: object
     required:
@@ -1297,3 +1558,43 @@ schemas:
       pin:
         type: string
         description: 4 to 8 digits.
+  GuardRef:
+    type: object
+    description: "A guard of the site as the booth shows it: name and id only, no contact data."
+    required:
+      - person_id
+      - display_name
+      - has_pin
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+      has_pin:
+        type: boolean
+        description: False until a manager has set a PIN (`community.setGuardPin`); such a guard cannot switch in.
+    example:
+      person_id: 0192a3f0-1000-7000-8000-000000000004
+      display_name: Ali Veli
+      has_pin: true
+  GuardList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GuardRef"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - person_id: 0192a3f0-1000-7000-8000-000000000004
+          display_name: Ali Veli
+          has_pin: true
+      next_cursor: null

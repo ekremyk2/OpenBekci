@@ -2,9 +2,11 @@ post:
   operationId: agent.poll
   summary: Long-poll transport (WebSocket fallback)
   description: |-
-    **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with `hello` and ends after 60 seconds of silence (a later call then fails non-2xx so the agent re-hellos). Idempotency is built into the protocol (events by id, commands by id, deltas by version), not the header.
+    **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with a `hello` call (no `session`); the server hello carries the `session` handle that every later call sends. Each response has a per-session `seq` (ordered delivery, see `AgentPollResponse`). An empty poll is 200 with an empty `messages` array, never 204.
 
-    Problems: `rate_limited` (429), `conflict` (409).
+    A session ends after 60 seconds without a request: the next call fails with 410 `agent_session_expired` and the agent starts a new session with `hello`. A bare 401 means an unknown token only (the agent quarantines itself and does not wipe); a revoked agent receives the `revoked` command (the WebSocket closes with 4401) and wipes. Idempotency is built into the protocol (events by id, commands by id, deltas by version); `Idempotency-Key` is ignored.
+
+    Problems: `agent_session_expired` (410), `rate_limited` (429), `conflict` (409).
   tags:
     - agent
   security:
@@ -39,6 +41,8 @@ post:
     "403":
       $ref: ../../components/problem.yaml#/responses/Problem
     "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "410":
       $ref: ../../components/problem.yaml#/responses/Problem
     "422":
       $ref: ../../components/problem.yaml#/responses/Problem

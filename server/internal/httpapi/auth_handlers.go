@@ -324,8 +324,11 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			Locale: me.User.Locale, IsPlatformAdmin: me.User.IsPlatformAdmin,
 		},
 		Organizations: orgs,
-		Occupancies:   []map[string]interface{}{}, // phase B: occupancies
-		Policies:      map[string]interface{}{},
+		Occupancies:   []gen.MeOccupancy{}, // phase B: occupancies
+		Policies: gen.MePolicies{
+			AppLockRequired:     false,
+			ReauthWindowMinutes: int64(svc.ReauthWindow() / time.Minute),
+		},
 	}), nil
 }
 

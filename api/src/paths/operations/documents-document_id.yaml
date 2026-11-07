@@ -13,7 +13,9 @@ get:
   description: |-
     **Release 0.1.** Get document.
 
-    Permission: `documents.read`.
+    A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+
+    Permission (any one of): `documents.read`, `documents.read_addressed`.
   tags:
     - operations
   security:
@@ -35,7 +37,7 @@ get:
     household:
       - documents.read
     former_occupant:
-      - documents.read
+      - documents.read_addressed
   x-stability: stable
   responses:
     "200":

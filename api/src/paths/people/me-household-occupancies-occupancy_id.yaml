@@ -1,0 +1,57 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: occupancy_id
+    in: path
+    required: true
+    description: Id of a household occupancy on the caller's own unit.
+    schema:
+      type: string
+      format: uuid
+delete:
+  operationId: me.endHouseholdOccupancy
+  summary: End a household member's occupancy
+  description: |-
+    **Release 0.1.** Ends the occupancy of a household member of the caller's own unit (`kind = household` only) and withdraws their access and money visibility from that day. Owner and tenant occupancies are ended by managers (`people.deleteOccupancy`, `people.moveOut`).
+
+    Permission: `occupancies.household` (own unit, household occupancies only).
+
+    Problems: `conflict` (409, not a household occupancy or already ended).
+  tags:
+    - me
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    owner:
+      - occupancies.household
+    tenant:
+      - occupancies.household
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+    - name: valid_to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Last day of the occupancy; default today. Not in the past by more than the lock date allows.
+  responses:
+    "200":
+      description: The ended occupancy.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Occupancy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

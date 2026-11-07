@@ -34,8 +34,6 @@ get:
       - documents.read
     household:
       - documents.read
-    former_occupant:
-      - documents.read
   x-stability: stable
   responses:
     "200":

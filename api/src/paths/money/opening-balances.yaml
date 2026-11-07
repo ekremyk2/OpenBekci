@@ -73,6 +73,8 @@ post:
 
     Permission: `money.post`.
 
+    Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
   tags:
     - money
