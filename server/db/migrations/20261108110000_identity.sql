@@ -43,7 +43,10 @@ CREATE TABLE session (
     expires_at   timestamptz NOT NULL,
     revoked_at   timestamptz,
     last_used_at timestamptz,
-    reauth_until timestamptz
+    reauth_until timestamptz,
+    -- set when a rotated refresh token was replayed inside the 30 s grace window
+    -- (it is accepted once; a second replay is reuse)
+    grace_used_at timestamptz
 );
 CREATE INDEX session_user_family ON session (user_id, family_id);
 CREATE INDEX session_family ON session (family_id);

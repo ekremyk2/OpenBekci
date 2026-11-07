@@ -38,86 +38,6 @@ func (s *Service) ipGate(ip string) error {
 	return nil
 }
 
-// lockoutKey names the failure counter of an account: one per user, so email
-// and phone attempts count together. An identifier without an account is
-// counted under the normalised identifier itself, so unknown accounts are
-// locked out like known ones.
-func lockoutKey(u User, found bool, norm string) (string, *uuid.UUID) {
-	if found {
-		return "uid:" + u.ID.String(), &u.ID
-	}
-	return norm, nil
-}
-
-// beginAttempt is the lockout gate of a credential check. Under a per-key
-// Postgres advisory lock it refuses the attempt while the key is locked and
-// otherwise records it as a failure BEFORE the credential is verified, so that
-// parallel guesses cannot all pass a check-then-act race: at most
-// LockoutThreshold attempts are ever evaluated between two successes. A
-// correct credential then calls recordSuccess, which resets the counter.
-func (s *Service) beginAttempt(ctx context.Context, key, method, ip string, userID *uuid.UUID) error {
-	var wait time.Duration
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, key); err != nil {
-			return err
-		}
-		var err error
-		if wait, err = s.lockedFor(ctx, tx, key); err != nil || wait > 0 {
-			return err
-		}
-		return s.insertAttempt(ctx, tx, key, method, ip, false, userID)
-	})
-	if err != nil {
-		return problem.Internal(fmt.Errorf("check lockout: %w", err))
-	}
-	if wait > 0 {
-		return problem.RateLimited(wait)
-	}
-	return nil
-}
-
-func (s *Service) insertAttempt(ctx context.Context, tx pgx.Tx, key, method, ip string, success bool, userID *uuid.UUID) error {
-	_, err := tx.Exec(ctx, `INSERT INTO login_attempt (id, identifier, method, ip, success, user_id, at) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		id.New(), key, method, clip(ip, 64), success, userID, s.now())
-	return err
-}
-
-// recordSuccess notes a verified credential, which resets the failure count of key.
-func (s *Service) recordSuccess(ctx context.Context, key, method, ip string, userID *uuid.UUID) {
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		return s.insertAttempt(ctx, tx, key, method, ip, true, userID)
-	})
-	if err != nil {
-		s.log.ErrorContext(ctx, "record login attempt", "error", err)
-	}
-}
-
-// lockedFor returns how much longer key is locked out. After
-// LockoutThreshold failures since the last success (within 30 minutes) the
-// lock lasts 30s, doubling with every further failure, up to 30 minutes.
-func (s *Service) lockedFor(ctx context.Context, tx pgx.Tx, key string) (time.Duration, error) {
-	now := s.now()
-	var n int
-	var last *time.Time
-	err := tx.QueryRow(ctx, `
-		SELECT count(*), max(at) FROM login_attempt
-		WHERE identifier = $1 AND NOT success AND at > $2
-		  AND at > COALESCE((SELECT max(at) FROM login_attempt WHERE identifier = $1 AND success), '-infinity')`,
-		key, now.Add(-lockoutWindow)).Scan(&n, &last)
-	if err != nil {
-		return 0, err
-	}
-	if n < s.cfg.LockoutThreshold || last == nil {
-		return 0, nil
-	}
-	d := lockoutBase << min(n-s.cfg.LockoutThreshold, maxLockoutSteps)
-	d = min(d, lockoutMax)
-	if remaining := last.Add(d).Sub(now); remaining > 0 {
-		return remaining, nil
-	}
-	return 0, nil
-}
-
 func (s *Service) loadUser(ctx context.Context, tx pgx.Tx, userID uuid.UUID) (User, error) {
 	return scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+` FROM "user" WHERE id = $1`, userID))
 }
@@ -131,7 +51,9 @@ func (s *Service) PasswordSignIn(ctx context.Context, identifier, password strin
 		return User{}, err
 	}
 	if !ok {
-		crypto.DummyVerify(password)
+		if _, err := s.verifyPassword(ctx, uuid.Nil, password, nil, nil); err != nil {
+			return User{}, err
+		}
 		return User{}, errInvalidGrant()
 	}
 	var u User
@@ -149,23 +71,23 @@ func (s *Service) PasswordSignIn(ctx context.Context, identifier, password strin
 		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
 	}
 	key, uid := lockoutKey(u, found, norm)
-	if err := s.beginAttempt(ctx, key, methodPassword, m.IP, uid); err != nil {
+	attemptID, err := s.beginAttempt(ctx, key, methodPassword, m.IP, uid)
+	if err != nil {
 		return User{}, err
 	}
 	if !found || hash == nil || u.Status != "active" {
-		crypto.DummyVerify(password)
-		return User{}, errInvalidGrant()
+		hash = nil // burn the time of a verification all the same
 	}
-	match, verr := crypto.VerifyPassword(password, *hash)
-	if verr != nil {
-		s.log.ErrorContext(ctx, "stored password hash is unreadable", "user_id", u.ID, "error", verr)
+	match, err := s.verifyPassword(ctx, attemptID, password, hash, uid)
+	if err != nil {
+		return User{}, err
 	}
-	if !match {
+	if !match || hash == nil {
 		return User{}, errInvalidGrant()
 	}
 	s.recordSuccess(ctx, key, methodPassword, m.IP, uid)
 	if crypto.NeedsRehash(*hash) {
-		if nh, err := crypto.HashPassword(password); err == nil {
+		if nh, err := crypto.HashPasswordContext(ctx, password); err == nil {
 			_ = s.db.InAppTx(ctx, func(tx pgx.Tx) error {
 				_, err := tx.Exec(ctx, `UPDATE "user" SET password_hash = $2 WHERE id = $1`, u.ID, nh)
 				return err
@@ -173,6 +95,36 @@ func (s *Service) PasswordSignIn(ctx context.Context, identifier, password strin
 		}
 	}
 	return u, nil
+}
+
+// verifyPassword checks password against hash; a nil hash only burns the time
+// of a verification, so that an unknown account cannot be told from a wrong
+// password. When the computation is refused (the argon2 queue is full, or the
+// request's context ended while waiting) the pre-recorded failure attemptID is
+// refunded, since no credential was checked, and the caller gets a 429.
+func (s *Service) verifyPassword(ctx context.Context, attemptID uuid.UUID, password string, hash *string, userID *uuid.UUID) (bool, error) {
+	var match bool
+	var err error
+	if hash == nil {
+		err = crypto.DummyVerifyContext(ctx, password)
+	} else {
+		match, err = crypto.VerifyPasswordContext(ctx, password, *hash)
+	}
+	switch {
+	case err == nil:
+		return match, nil
+	case errors.Is(err, crypto.ErrInvalidHash):
+		s.log.ErrorContext(ctx, "stored password hash is unreadable", "user_id", userID, "error", err)
+		return false, nil
+	}
+	if attemptID != uuid.Nil {
+		s.refundAttempt(ctx, attemptID)
+	}
+	if !errors.Is(err, crypto.ErrBusy) {
+		return false, problem.Wrap(503, problem.CodeTimeout, "the request was cancelled while waiting", err)
+	}
+	s.log.WarnContext(ctx, "password computation refused: too many in progress")
+	return false, problem.RateLimited(2 * time.Second)
 }
 
 func (s *Service) codeMAC(purpose, target, code string) []byte {
@@ -239,7 +191,7 @@ func (s *Service) OTPSignIn(ctx context.Context, phoneRaw, code string, m Meta) 
 		return User{}, problem.Internal(fmt.Errorf("load user: %w", err))
 	}
 	key, kid := lockoutKey(owner, found, phone)
-	if err := s.beginAttempt(ctx, key, methodOTP, m.IP, kid); err != nil {
+	if _, err := s.beginAttempt(ctx, key, methodOTP, m.IP, kid); err != nil {
 		return User{}, err
 	}
 	uid, good, err := s.checkOTP(ctx, phone, code)

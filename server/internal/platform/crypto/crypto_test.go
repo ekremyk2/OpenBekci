@@ -2,6 +2,7 @@ package crypto
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"strings"
 	"testing"
@@ -33,7 +34,7 @@ func TestPasswordRoundTrip(t *testing.T) {
 func TestVerifyUsesParametersFromHash(t *testing.T) {
 	// A hash made with lighter parameters still verifies and is flagged for rehash.
 	salt := []byte("0123456789abcdef")
-	key := derive("pw", salt, 1, 8, 1, 32)
+	key, _ := derive(context.Background(), "pw", salt, 1, 8, 1, 32)
 	enc := "$argon2id$v=19$m=8,t=1,p=1$" + b64(salt) + "$" + b64(key)
 	if ok, err := VerifyPassword("pw", enc); err != nil || !ok {
 		t.Fatalf("verify = %v, %v", ok, err)

@@ -550,7 +550,8 @@ func TestIntegrationTokenFamilyRotationAndReuse(t *testing.T) {
 		t.Fatalf("new access token: %v", err)
 	}
 
-	// reuse of the rotated refresh token: invalid_grant and the family dies
+	// reuse of the rotated refresh token (after the grace window): invalid_grant and the family dies
+	e.clk.Advance(identity.RefreshGrace + time.Second)
 	_, _, err = e.svc.Refresh(ctx, tp1.RefreshToken, meta)
 	wantProblem(t, err, 401, problem.CodeInvalidGrant)
 	_, err = e.svc.Authenticate(ctx, identity.KindAccessToken, tp2.AccessToken)

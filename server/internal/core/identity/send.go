@@ -74,10 +74,25 @@ func (s *Service) Drain(ctx context.Context) error {
 	}
 }
 
+// checkDailyBudget spends one of the identifier's daily sends. It does not
+// depend on whether an account exists, so it reveals nothing.
+func (s *Service) checkDailyBudget(identifier string) error {
+	if ok, wait := s.cfg.Limits.SendDaily.Allow(identifier); !ok {
+		return problem.RateLimited(wait)
+	}
+	return nil
+}
+
 // deliverSMS sends a text and records the outcome in the delivery log. It
 // reports nothing to the caller: a gateway failure must not tell a requester
-// that the account exists.
+// that the account exists. A message beyond the instance's hourly SMS budget
+// is dropped and recorded.
 func (s *Service) deliverSMS(ctx context.Context, purpose string, userID *uuid.UUID, phone, text string) {
+	if ok, _ := s.cfg.Limits.SMSHourly.Allow("instance"); !ok {
+		s.log.WarnContext(ctx, "hourly SMS budget exhausted; a sign-in code was not sent", "purpose", purpose)
+		s.recordDelivery(ctx, channelSMS, purpose, userID, phone, deliveryDropped, "hourly SMS budget exhausted")
+		return
+	}
 	if _, err := s.cfg.SMS.Send(ctx, phone, text); err != nil {
 		s.log.ErrorContext(ctx, "send sms", "purpose", purpose, "user_id", userID, "error", err)
 		s.recordDelivery(ctx, channelSMS, purpose, userID, phone, deliveryFailed, err.Error())
@@ -88,6 +103,11 @@ func (s *Service) deliverSMS(ctx context.Context, purpose string, userID *uuid.U
 
 // deliverMail is deliverSMS for mail.
 func (s *Service) deliverMail(ctx context.Context, purpose string, userID *uuid.UUID, msg mail.Message) {
+	if ok, _ := s.cfg.Limits.MailHourly.Allow("instance"); !ok {
+		s.log.WarnContext(ctx, "hourly mail budget exhausted; a sign-in message was not sent", "purpose", purpose)
+		s.recordDelivery(ctx, channelEmail, purpose, userID, msg.To, deliveryDropped, "hourly mail budget exhausted")
+		return
+	}
 	if err := s.cfg.Mail.Send(ctx, msg); err != nil {
 		s.log.ErrorContext(ctx, "send mail", "purpose", purpose, "user_id", userID, "error", err)
 		s.recordDelivery(ctx, channelEmail, purpose, userID, msg.To, deliveryFailed, err.Error())
@@ -183,6 +203,9 @@ func (s *Service) RequestOTP(ctx context.Context, phoneRaw string, m Meta) error
 	if ok, wait := s.cfg.Limits.OTPSendTarget.Allow(phone); !ok {
 		return problem.RateLimited(wait)
 	}
+	if err := s.checkDailyBudget(phone); err != nil {
+		return err
+	}
 	s.dispatch(ctx, func(ctx context.Context) { s.sendOTP(ctx, phone) })
 	return nil
 }
@@ -241,6 +264,9 @@ func (s *Service) RequestMagicLink(ctx context.Context, emailRaw string, client 
 	}
 	if ok, wait := s.cfg.Limits.LinkSendTarget.Allow(email); !ok {
 		return problem.RateLimited(wait)
+	}
+	if err := s.checkDailyBudget(email); err != nil {
+		return err
 	}
 	s.dispatch(ctx, func(ctx context.Context) { s.sendMagicLink(ctx, email, client) })
 	return nil

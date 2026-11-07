@@ -44,11 +44,15 @@ type sessionInsert struct {
 	kind           string
 	expires        time.Time
 	m              Meta
+	// fixedToken is a derived token to use instead of a random one (rotation).
+	fixedToken string
 }
 
 func (s *Service) insertSession(ctx context.Context, tx pgx.Tx, in sessionInsert) (token string, rowID uuid.UUID, err error) {
-	token, hash, err := crypto.NewToken()
-	if err != nil {
+	var hash []byte
+	if in.fixedToken != "" {
+		token, hash = in.fixedToken, crypto.HashToken(in.fixedToken)
+	} else if token, hash, err = crypto.NewToken(); err != nil {
 		return "", uuid.Nil, err
 	}
 	rowID = id.New()
@@ -100,70 +104,6 @@ func (s *Service) IssueTokens(ctx context.Context, userID uuid.UUID, m Meta) (To
 		return TokenPair{}, problem.Internal(fmt.Errorf("issue tokens: %w", err))
 	}
 	return out, nil
-}
-
-func (s *Service) insertPair(ctx context.Context, tx pgx.Tx, userID, family uuid.UUID, rotatedFrom *uuid.UUID, m Meta) (TokenPair, error) {
-	now := s.now()
-	out := TokenPair{SessionID: family, AccessExpiresAt: now.Add(s.cfg.AccessTTL), RefreshExpiresAt: now.Add(s.cfg.RefreshTTL)}
-	var err error
-	if out.RefreshToken, _, err = s.insertSession(ctx, tx, sessionInsert{userID: userID, family: family, rotatedFrom: rotatedFrom, kind: KindRefreshToken, expires: out.RefreshExpiresAt, m: m}); err != nil {
-		return TokenPair{}, err
-	}
-	out.AccessToken, _, err = s.insertSession(ctx, tx, sessionInsert{userID: userID, family: family, kind: KindAccessToken, expires: out.AccessExpiresAt, m: m})
-	return out, err
-}
-
-// Refresh exchanges a refresh token for a new pair and retires the old
-// refresh token. Presenting a refresh token that was already rotated means it
-// leaked (or the client raced itself): the whole family is revoked and the
-// user must sign in again.
-func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (TokenPair, uuid.UUID, error) {
-	if err := s.ipGate(m.IP); err != nil {
-		return TokenPair{}, uuid.Nil, err
-	}
-	now := s.now()
-	var out TokenPair
-	ok := false
-	var owner uuid.UUID
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		var rowID, userID, family uuid.UUID
-		var expires time.Time
-		var revoked *time.Time
-		var status string
-		err := tx.QueryRow(ctx, `
-			SELECT s.id, s.user_id, s.family_id, s.expires_at, s.revoked_at, u.status
-			FROM session s JOIN "user" u ON u.id = s.user_id
-			WHERE s.token_hash = $1 AND s.kind = $2 FOR UPDATE OF s`, crypto.HashToken(refreshToken), KindRefreshToken).
-			Scan(&rowID, &userID, &family, &expires, &revoked, &status)
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		if revoked != nil {
-			// Reuse detection: burn the family. This commits (fn returns nil).
-			s.log.WarnContext(ctx, "refresh token reuse detected; revoking session family", "user_id", userID, "family_id", family)
-			_, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE family_id = $1 AND revoked_at IS NULL`, family, now)
-			return err
-		}
-		if !expires.After(now) || status != "active" {
-			return nil
-		}
-		if _, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE id = $1`, rowID, now); err != nil {
-			return err
-		}
-		out, err = s.insertPair(ctx, tx, userID, family, &rowID, m)
-		ok, owner = err == nil, userID
-		return err
-	})
-	if err != nil {
-		return TokenPair{}, uuid.Nil, problem.Internal(fmt.Errorf("refresh: %w", err))
-	}
-	if !ok {
-		return TokenPair{}, uuid.Nil, errInvalidGrant()
-	}
-	return out, owner, nil
 }
 
 // Authenticate resolves a presented token. kind must be KindWebCookie for a
@@ -295,7 +235,8 @@ func (s *Service) Reauth(ctx context.Context, p *authz.Principal, method ReauthM
 	if err := s.ipGate(m.IP); err != nil {
 		return time.Time{}, err
 	}
-	if err := s.beginAttempt(ctx, ident, methodReauth, m.IP, &p.UserID); err != nil {
+	attemptID, err := s.beginAttempt(ctx, ident, methodReauth, m.IP, &p.UserID)
+	if err != nil {
 		return time.Time{}, err
 	}
 	var u User
@@ -312,11 +253,11 @@ func (s *Service) Reauth(ctx context.Context, p *authz.Principal, method ReauthM
 	good := false
 	switch method {
 	case ReauthPassword:
-		if hash == nil {
-			crypto.DummyVerify(secret)
-		} else if ok, err := crypto.VerifyPassword(secret, *hash); err == nil && ok {
-			good = true
+		ok, err := s.verifyPassword(ctx, attemptID, secret, hash, &p.UserID)
+		if err != nil {
+			return time.Time{}, err
 		}
+		good = ok && hash != nil
 	case ReauthSMSOTP:
 		if u.Phone != nil {
 			uid, ok, err := s.checkOTP(ctx, *u.Phone, secret)
@@ -357,7 +298,10 @@ func (s *Service) ChangePassword(ctx context.Context, p *authz.Principal, newPas
 	if pe := ValidatePassword(newPassword); pe != nil {
 		return pe
 	}
-	hash, err := crypto.HashPassword(newPassword)
+	hash, err := crypto.HashPasswordContext(ctx, newPassword)
+	if errors.Is(err, crypto.ErrBusy) {
+		return problem.RateLimited(2 * time.Second)
+	}
 	if err != nil {
 		return problem.Internal(err)
 	}

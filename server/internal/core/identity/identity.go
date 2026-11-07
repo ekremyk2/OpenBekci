@@ -72,9 +72,22 @@ type Config struct {
 	LinkTTL       time.Duration
 	ReauthWindow  time.Duration
 
-	// LockoutThreshold is the number of consecutive failures per identifier
-	// after which sign-in attempts are refused for a growing time.
+	// LockoutThreshold is the number of consecutive failures per account and
+	// client address after which that address is refused for a growing time.
 	LockoutThreshold int
+	// LockoutGlobalThreshold is the number of consecutive failures per
+	// account, from any addresses, after which everyone is refused for a
+	// growing time. It is higher than LockoutThreshold so that one address
+	// cannot lock the owner out (see lockout.go for the trade-off); default
+	// five times LockoutThreshold.
+	LockoutGlobalThreshold int
+
+	// Send budgets (used only when Limits is nil): messages per identifier per
+	// day, SMS per hour and mail per hour for the whole instance. Zero takes the
+	// default (10, 120, 300), a negative value removes the limit.
+	SendDailyBudget  int
+	SMSHourlyBudget  int
+	MailHourlyBudget int
 
 	Limits *Limits
 	Log    *slog.Logger
@@ -93,16 +106,54 @@ type Limits struct {
 	// AuthIP limits credential checks (password, code verification, link
 	// consumption, refresh) per client address.
 	AuthIP *ratelimit.Limiter
+	// SendDaily is the daily send budget per identifier (a phone number or
+	// an address, whatever the purpose), on top of the short-term buckets.
+	SendDaily *ratelimit.Limiter
+	// SMSHourly and MailHourly are the per-instance hourly budgets of the SMS
+	// and mail gateways (a runaway or an attack costs money and gets the
+	// sender blocked). They are spent only by messages that are really sent,
+	// so requests for unknown accounts cannot use them up.
+	SMSHourly, MailHourly *ratelimit.Limiter
 }
 
-// DefaultLimits returns the production limits.
-func DefaultLimits(now func() time.Time) *Limits {
+// Default send budgets (Config.SendDailyBudget, SMSHourlyBudget, MailHourlyBudget).
+const (
+	DefaultSendDailyBudget  = 10
+	DefaultSMSHourlyBudget  = 120
+	DefaultMailHourlyBudget = 300
+)
+
+// DefaultLimits returns the production limits with the default send budgets.
+func DefaultLimits(now func() time.Time) *Limits { return newLimits(Config{}, now) }
+
+// budget resolves a configured budget: zero takes def, negative means unlimited.
+func budget(v, def int) int {
+	if v == 0 {
+		return def
+	}
+	return max(v, 0)
+}
+
+func newLimits(cfg Config, now func() time.Time) *Limits {
+	daily := budget(cfg.SendDailyBudget, DefaultSendDailyBudget)
+	sms := budget(cfg.SMSHourlyBudget, DefaultSMSHourlyBudget)
+	mailB := budget(cfg.MailHourlyBudget, DefaultMailHourlyBudget)
+	// a bucket that holds `n` and refills one every period/n: n events per period
+	per := func(n int, period time.Duration) *ratelimit.Limiter {
+		if n <= 0 {
+			return nil // unlimited
+		}
+		return ratelimit.NewWithClock(n, period/time.Duration(n), now)
+	}
 	return &Limits{
 		OTPSendIP:      ratelimit.NewWithClock(10, time.Minute, now),
 		OTPSendTarget:  ratelimit.NewWithClock(3, 2*time.Minute, now),
 		LinkSendIP:     ratelimit.NewWithClock(10, time.Minute, now),
 		LinkSendTarget: ratelimit.NewWithClock(3, 2*time.Minute, now),
 		AuthIP:         ratelimit.NewWithClock(30, 2*time.Second, now),
+		SendDaily:      per(daily, 24*time.Hour),
+		SMSHourly:      per(sms, time.Hour),
+		MailHourly:     per(mailB, time.Hour),
 	}
 }
 
@@ -142,6 +193,9 @@ func NewService(db TxRunner, cfg Config) *Service {
 	if cfg.LockoutThreshold == 0 {
 		cfg.LockoutThreshold = 5
 	}
+	if cfg.LockoutGlobalThreshold < cfg.LockoutThreshold {
+		cfg.LockoutGlobalThreshold = 5 * cfg.LockoutThreshold
+	}
 	if cfg.DefaultCountryCode == "" {
 		cfg.DefaultCountryCode = "90"
 	}
@@ -156,7 +210,7 @@ func NewService(db TxRunner, cfg Config) *Service {
 		s.now = time.Now
 	}
 	if s.cfg.Limits == nil {
-		s.cfg.Limits = DefaultLimits(s.now)
+		s.cfg.Limits = newLimits(cfg, s.now)
 	}
 	return s
 }

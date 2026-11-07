@@ -36,6 +36,12 @@ func (s *Service) RequestReauthEmailCode(ctx context.Context, p *authz.Principal
 	if ok, wait := s.cfg.Limits.LinkSendTarget.Allow(purposeReauth + ":" + email); !ok {
 		return problem.RateLimited(wait)
 	}
+	if err := s.checkDailyBudget(email); err != nil {
+		return err
+	}
+	if ok, wait := s.cfg.Limits.MailHourly.Allow("instance"); !ok {
+		return problem.RateLimited(wait)
+	}
 	code, err := crypto.RandomDigits(6)
 	if err != nil {
 		return problem.Internal(err)

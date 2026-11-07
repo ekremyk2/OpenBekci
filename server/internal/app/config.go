@@ -74,6 +74,14 @@ type Config struct {
 	// SMTPTLS is starttls (default), tls or none.
 	SMTPTLS string
 
+	// Send budgets of the sign-in messages (OPENBEKCI_SEND_DAILY_BUDGET,
+	// SMS_HOURLY_BUDGET, MAIL_HOURLY_BUDGET): per identifier per day, and per
+	// instance per hour for SMS and for mail. Zero takes the default (10, 120, 300);
+	// a negative value removes the limit.
+	SendDailyBudget  int
+	SMSHourlyBudget  int
+	MailHourlyBudget int
+
 	// ServerVersion is the build version; set by the command, not by the environment.
 	ServerVersion string
 }
@@ -233,6 +241,17 @@ func (c *Config) loadMessaging(l lookup) error {
 	}
 	c.SMTPFrom = l.must("SMTP_FROM")
 	c.SMTPTLS = strings.ToLower(l.must("SMTP_TLS"))
+	for name, dst := range map[string]*int{
+		"SEND_DAILY_BUDGET": &c.SendDailyBudget, "SMS_HOURLY_BUDGET": &c.SMSHourlyBudget, "MAIL_HOURLY_BUDGET": &c.MailHourlyBudget,
+	} {
+		if v := l.must(name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil {
+				return fmt.Errorf("%s%s: %q is not an integer (negative removes the limit)", envPrefix, name, v)
+			}
+			*dst = n
+		}
+	}
 	if c.MailProvider == "smtp" && (c.SMTPHost == "" || c.SMTPFrom == "") {
 		return fmt.Errorf("%sMAIL_PROVIDER=smtp needs SMTP_HOST and SMTP_FROM", envPrefix)
 	}

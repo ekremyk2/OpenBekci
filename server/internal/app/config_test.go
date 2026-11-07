@@ -95,6 +95,7 @@ func TestLoadConfigBadValues(t *testing.T) {
 		{"OPENBEKCI_WORKER", "sometimes"},
 		{"OPENBEKCI_DEBUG", "maybe"},
 		{"OPENBEKCI_TRUSTED_PROXIES", "not-an-ip"},
+		{"OPENBEKCI_SEND_DAILY_BUDGET", "lots"},
 	} {
 		e := baseEnv()
 		e[tc.k] = tc.v
