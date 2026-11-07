@@ -6,7 +6,9 @@ get:
   description: |-
     **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
 
-    Permission (any one of): `tickets.read`, `tickets.open` (residents: own private and all common tickets of their site).
+    Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
   tags:
     - operations
   security:
@@ -25,7 +27,7 @@ get:
     auditor:
       - tickets.read
     staff:
-      - tickets.read
+      - tickets.read_assigned
       - tickets.open
     owner:
       - tickets.open

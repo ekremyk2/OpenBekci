@@ -6,6 +6,8 @@ get:
   description: |-
     **Release 0.3.** Waiting parcels.
 
+    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
     Permission: `gate.operate`.
   tags:
     - community
@@ -58,6 +60,8 @@ post:
   summary: Log a parcel against a unit
   description: |-
     **Release 0.3.** Notifies the resident (in-app plus their preferred channel).
+
+    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
 
     Permission: `gate.operate`.
 

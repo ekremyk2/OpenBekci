@@ -630,6 +630,8 @@ paths:
     $ref: ./paths/agent/agent-ws.yaml
   /v1/orgs/{org_id}/sites/{site_id}/dashboard:
     $ref: ./paths/dashboards/sites-site_id-dashboard.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard:
+    $ref: ./paths/dashboards/sites-site_id-staff-dashboard.yaml
   /v1/orgs/{org_id}/dashboard/portfolio:
     $ref: ./paths/dashboards/dashboard-portfolio.yaml
   /v1/orgs/{org_id}/me/dashboard:
@@ -1744,3 +1746,11 @@ components:
       $ref: ./components/platform.yaml#/schemas/PlatformJob
     PlatformJobList:
       $ref: ./components/platform.yaml#/schemas/PlatformJobList
+    DebtorRef:
+      $ref: ./components/money.yaml#/schemas/DebtorRef
+    EffectiveDebtor:
+      $ref: ./components/money.yaml#/schemas/EffectiveDebtor
+    CarriedCharge:
+      $ref: ./components/people.yaml#/schemas/CarriedCharge
+    StaffDashboard:
+      $ref: ./components/dashboards.yaml#/schemas/StaffDashboard

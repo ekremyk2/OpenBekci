@@ -6,6 +6,8 @@ get:
   description: |-
     **Release 0.3.** Search visitors by name or plate.
 
+    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
     Permission: `gate.operate`.
   tags:
     - community

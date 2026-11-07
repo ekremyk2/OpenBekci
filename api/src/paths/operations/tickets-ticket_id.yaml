@@ -13,7 +13,9 @@ get:
   description: |-
     **Release 0.1.** Get a ticket.
 
-    Permission (any one of): `tickets.read`, `tickets.open`.
+    Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
     - operations
   security:
@@ -32,7 +34,7 @@ get:
     auditor:
       - tickets.read
     staff:
-      - tickets.read
+      - tickets.read_assigned
       - tickets.open
     owner:
       - tickets.open

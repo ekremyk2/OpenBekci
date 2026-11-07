@@ -27,8 +27,6 @@ get:
       - documents.read
     household:
       - documents.read
-    former_occupant:
-      - documents.read
   x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired

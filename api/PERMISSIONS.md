@@ -2,7 +2,7 @@
 
 Generated with the draft contract (`api/src/openapi-draft.yaml`). Every org-scoped operation names the permissions it needs in `x-openbekci-roles`, as the README defines it: a map from role to the permissions that role holds *for that operation*. Role keys are memberships (`org_admin`, `site_manager`, `board_member`, `auditor`, `accountant`, `staff`, `guard`), occupancy kinds (`owner`, `tenant`, `household`, `former_occupant`) and two pseudo roles: `member` (any person with an active membership or occupancy in the organization) and `platform_admin` (instance operators). The matrix below is the draft seed for the A4 registry; the authz module owns the final one.
 
-Where an operation lists several permissions, holding any one of them suffices. Scope rules (not repeated per permission): memberships apply within their scope (org, site or block); occupancy rights apply to the occupant's own unit and the side they occupy (S3); `household` never sees money unless `may_see_money` is set; `former_occupant` access is bounded by the occupancy dates (S7).
+Where an operation lists several permissions, holding any one of them suffices. Scope rules (not repeated per permission): memberships apply within their scope (org, site or block); occupancy rights apply to the occupant's own unit and the side they occupy (S3); `household` never sees money unless `may_see_money` is set; `former_occupant` holds only `statements.read_own`, the receipts of that period and `documents.read_addressed`, bounded by the occupancy dates (S7); `staff` see counts and assigned work, never money (S3/S8); `guard` sees no contacts, balances or QR tokens.
 
 ## tenancy
 
@@ -15,7 +15,7 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `sites.bank_details` | Read the site bank details shown to payers. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant`, `owner`, `tenant` |
 | `sites.export` | Export a site archive and import one (re-authentication required). | `org_admin` |
 | `sites.offboard` | Offboard a site from the organization (re-authentication required). | `org_admin` |
-| `units.read` | Read units, appurtenances, allocation keys and tags (occupants: their own units). | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant`, `staff`, `owner`, `tenant`, `household`, `former_occupant` |
+| `units.read` | Read units, appurtenances, allocation keys and tags (occupants: their own units; never former occupants). | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant`, `staff`, `owner`, `tenant`, `household` |
 | `units.manage` | Create and edit units. | `org_admin`, `site_manager`, `board_member` |
 | `units.import` | Import units and people from CSV or XLSX. | `org_admin`, `site_manager` |
 | `vehicles.read` | Read the plate registry and export it. | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household` |
@@ -67,13 +67,15 @@ Where an operation lists several permissions, holding any one of them suffices. 
 
 | Permission | Meaning | Roles |
 |---|---|---|
-| `tickets.read` | Read every ticket of the site, internal comments included. | `org_admin`, `site_manager`, `board_member`, `auditor`, `staff` |
+| `tickets.read` | Read every ticket of the site, internal comments included. | `org_admin`, `site_manager`, `board_member`, `auditor` |
+| `tickets.read_assigned` | Read the tickets assigned to the caller and the common tickets of the site; internal notes only with `tickets.work`. | `staff` |
 | `tickets.manage` | Edit the workflow and categories; assign, merge, change visibility, internal notes, open on behalf. | `org_admin`, `site_manager`, `board_member` |
 | `tickets.work` | Move assigned tickets through the workflow and add internal notes. | `staff` |
 | `tickets.open` | Open tickets, comment, vote (+1); read own and common tickets. | `org_admin`, `site_manager`, `board_member`, `staff`, `owner`, `tenant`, `household` |
 | `announcements.read` | Read announcements addressed to the caller and mark them read. | `member` |
 | `announcements.publish` | Create, schedule and publish announcements; see read receipts. | `org_admin`, `site_manager`, `board_member` |
-| `documents.read` | Read folders and documents the caller's visibility allows. | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household`, `former_occupant` |
+| `documents.read` | Read folders and documents the caller's visibility allows. | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household` |
+| `documents.read_addressed` | Read only the documents addressed to the caller (closing statement, debt certificate); no folders. | `former_occupant` |
 | `documents.manage` | Create folders, upload, move and delete documents. | `org_admin`, `site_manager`, `board_member` |
 | `documents.upload_own` | Upload documents into the private folder of the caller's own unit. | `owner`, `tenant` |
 | `files.upload` | Upload files. | `member` |
@@ -92,7 +94,8 @@ Where an operation lists several permissions, holding any one of them suffices. 
 
 | Permission | Meaning | Roles |
 |---|---|---|
-| `dashboard.site` | Read the site dashboard. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant`, `staff` |
+| `dashboard.site` | Read the site dashboard (receivables, cash and bank; never for staff or guards). | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |
+| `dashboard.staff` | Read the counts-only staff dashboard (assigned and common tickets, expected visitors, parcels; no money). | `staff` |
 | `dashboard.portfolio` | Read the organization portfolio dashboard. | `org_admin`, `site_manager`, `auditor`, `accountant` |
 | `me.dashboard` | Read the caller's home summary. | `member` |
 

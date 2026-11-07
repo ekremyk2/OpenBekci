@@ -223,3 +223,48 @@ schemas:
       waiting_deliveries:
         type: integer
         format: int64
+  StaffDashboard:
+    type: object
+    description: "Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names."
+    required:
+      - site_id
+      - as_of
+      - assigned_open_tickets
+      - assigned_overdue_tickets
+      - open_common_tickets
+      - expected_visitors_today
+      - waiting_deliveries
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      as_of:
+        type: string
+        format: date-time
+      assigned_open_tickets:
+        type: integer
+        format: int64
+        description: Open tickets assigned to the caller.
+      assigned_overdue_tickets:
+        type: integer
+        format: int64
+        description: Assigned tickets past their category's target time.
+      open_common_tickets:
+        type: integer
+        format: int64
+        description: Open common (site-wide) tickets.
+      expected_visitors_today:
+        type: integer
+        format: int64
+      waiting_deliveries:
+        type: integer
+        format: int64
+        description: Parcels logged and not yet collected.
+    example:
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      as_of: 2026-03-05T09:00:00Z
+      assigned_open_tickets: 3
+      assigned_overdue_tickets: 0
+      open_common_tickets: 5
+      expected_visitors_today: 4
+      waiting_deliveries: 2

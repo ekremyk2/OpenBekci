@@ -514,7 +514,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
-        description: Shown to the resident who created the entry and to managers; the QR encodes `obk1.<token>`.
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
       decided_by:
         type: string
         format: uuid
@@ -694,6 +694,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
       created_at:
         type: string
         format: date-time
@@ -986,7 +987,7 @@ schemas:
         type: string
   GuardVisitor:
     type: object
-    description: "What a guard sees of a visitor: never balances, other contacts or national ids."
+    description: "What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token."
     required:
       - id
       - name
@@ -1259,6 +1260,7 @@ schemas:
       phone:
         type: string
         description: E.164.
+    description: "The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident's number the visitor entry points to, with no other contact data."
   GuardSessionCreate:
     type: object
     required:
