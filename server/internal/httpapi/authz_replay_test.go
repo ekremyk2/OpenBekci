@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -59,6 +60,41 @@ func TestIntegrationAuditTriggersBlockTheOwner(t *testing.T) {
 	var pg *pgconn.PgError
 	if !errors.As(err, &pg) || pg.Code != "23000" {
 		t.Errorf("app role after a GRANT: err = %v, want the trigger", err)
+	}
+}
+
+// Events of one transaction get increasing timestamps (clock_timestamp, not
+// the transaction start), so the (at, id) cursor follows insertion order.
+func TestIntegrationAuditEventsAreStampedAtInsert(t *testing.T) {
+	e := newAuthzEnv(t)
+	ctx := context.Background()
+	org := e.w.OrgA
+	var ats []time.Time
+	err := e.db.InTenantTx(ctx, org.ID, func(tx pgx.Tx) error {
+		for i := 0; i < 3; i++ {
+			if err := audit.Record(ctx, tx, audit.Event{OrgID: org.ID, Action: "test.created", TargetType: "thing", TargetID: id.New()}); err != nil {
+				return err
+			}
+		}
+		rows, err := tx.Query(ctx, `SELECT at FROM audit_event WHERE action = 'test.created' ORDER BY id`)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var at time.Time
+			if err := rows.Scan(&at); err != nil {
+				return err
+			}
+			ats = append(ats, at)
+		}
+		return rows.Err()
+	})
+	if err != nil || len(ats) != 3 {
+		t.Fatalf("read back: %v (%d rows)", err, len(ats))
+	}
+	if !ats[0].Before(ats[1]) || !ats[1].Before(ats[2]) {
+		t.Errorf("timestamps within one transaction must increase: %v", ats)
 	}
 }
 
