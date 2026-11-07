@@ -1,5 +1,14 @@
 import type { LucideIcon } from 'lucide-react'
-import { Building2, HomeIcon, LifeBuoy, UserRound, Users, Wallet } from 'lucide-react'
+import {
+  Building2,
+  DoorOpen,
+  HomeIcon,
+  LayoutDashboard,
+  LifeBuoy,
+  UserRound,
+  Users,
+  Wallet,
+} from 'lucide-react'
 import { msg } from '@lingui/core/macro'
 import type { MessageDescriptor } from '@lingui/core'
 import type { Me } from '@/api/schema'
@@ -32,20 +41,32 @@ export interface NavContext {
 export const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: msg`Home`, to: '/orgs/$orgId', icon: HomeIcon },
   {
+    id: 'portfolio',
+    label: msg`Portfolio`,
+    to: '/orgs/$orgId/portfolio',
+    icon: LayoutDashboard,
+    permission: 'dashboard.portfolio',
+  },
+  {
     id: 'sites',
     label: msg`Sites`,
     to: '/orgs/$orgId/sites',
     icon: Building2,
-    permission: 'site.read',
-    planned: true,
+    permission: 'sites.read',
+  },
+  {
+    id: 'units',
+    label: msg`Units`,
+    to: '/orgs/$orgId/units',
+    icon: DoorOpen,
+    permission: 'units.read',
   },
   {
     id: 'people',
     label: msg`People`,
     to: '/orgs/$orgId/people',
     icon: Users,
-    permission: 'person.read',
-    planned: true,
+    permission: 'people.read',
   },
   {
     id: 'money',

@@ -7,10 +7,166 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pseudo\n"
 
+#. placeholder {0}: report.error_rows
+msgid "{0} errors"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows
+msgid "{0} fine"
+msgstr ""
+
+#. placeholder {0}: occ.person_display_name
+#. placeholder {1}: occ.unit_door_number
+msgid "{0} leaves {1}. The whole month's dues stay with whoever is in the unit on the due date; nothing is pro-rated."
+msgstr ""
+
+#. placeholder {0}: occ.person_display_name
+msgid "{0} moved out"
+msgstr ""
+
+#. placeholder {0}: report.total_rows
+msgid "{0} rows"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows
+#. placeholder {1}: report.error_rows
+msgid "{0} rows are fine, {1} have errors."
+msgstr ""
+
+#. placeholder {0}: s.overdue_units
+msgid "{0} units"
+msgstr ""
+
+#. placeholder {0}: missing.length
+msgid "{0} units have no value yet"
+msgstr ""
+
+#. placeholder {0}: report.warning_rows
+msgid "{0} warnings"
+msgstr ""
+
+msgid "A block that still has units cannot be deleted."
+msgstr ""
+
+msgid "A site is a building or a complex you manage. Create the first one to start."
+msgstr ""
+
 msgid "Accept your invitation"
 msgstr ""
 
+msgid "Account"
+msgstr ""
+
+msgid "Account holder"
+msgstr ""
+
+msgid "Account status"
+msgstr ""
+
 msgid "Accountant"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Add a person"
+msgstr ""
+
+msgid "Add an exception"
+msgstr ""
+
+msgid "Add block"
+msgstr ""
+
+msgid "Add key"
+msgstr ""
+
+msgid "Add people one by one or import them with the import wizard."
+msgstr ""
+
+msgid "Add person"
+msgstr ""
+
+msgid "Add the lift service, the plumber, the cleaner: people you pay or assign requests to."
+msgstr ""
+
+msgid "Add units one by one or import them from a spreadsheet."
+msgstr ""
+
+msgid "Add vehicle"
+msgstr ""
+
+msgid "Add vendor"
+msgstr ""
+
+msgid "Address line 2"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "All blocks"
+msgstr ""
+
+msgid "All sites"
+msgstr ""
+
+msgid "All types"
+msgstr ""
+
+msgid "All your sites at a glance, as of"
+msgstr ""
+
+msgid "Allocation keys"
+msgstr ""
+
+msgid "Any account status"
+msgstr ""
+
+msgid "Applies to"
+msgstr ""
+
+msgid "Apply the table"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+#. placeholder {0}: claim.display_name
+msgid "Approve {0}"
+msgstr ""
+
+msgid "Approve claim"
+msgstr ""
+
+msgid "Approved"
+msgstr ""
+
+msgid "Appurtenance"
+msgstr ""
+
+msgid "Appurtenances"
+msgstr ""
+
+msgid "Archive"
+msgstr ""
+
+msgid "Archive file to import"
+msgstr ""
+
+msgid "Archived"
+msgstr ""
+
+msgid "Area"
+msgstr ""
+
+msgid "Area (m²)"
+msgstr ""
+
+msgid "Ask a manager to add the account residents should pay into."
 msgstr ""
 
 msgid "Ask your building manager to invite you."
@@ -19,31 +175,278 @@ msgstr ""
 msgid "Ask your manager if you think you should."
 msgstr ""
 
+msgid "Asked"
+msgstr ""
+
 msgid "Auditor"
+msgstr ""
+
+#. placeholder {0}: occ.person_display_name
+msgid "Back to {0}"
+msgstr ""
+
+msgid "Back to columns"
 msgstr ""
 
 msgid "Back to sign in"
 msgstr ""
 
+msgid "Balance when they leave"
+msgstr ""
+
+msgid "Balances as of"
+msgstr ""
+
 msgid "Balances, open requests and announcements will appear here."
+msgstr ""
+
+msgid "Bank"
+msgstr ""
+
+msgid "Bank details"
+msgstr ""
+
+msgid "Belongs to"
+msgstr ""
+
+msgid "Belongs to (door number)"
+msgstr ""
+
+msgid "Belongs to a flat (no dues of its own)"
+msgstr ""
+
+msgid "Belongs to flat"
+msgstr ""
+
+msgid "Block"
+msgstr ""
+
+msgid "Blocks"
 msgstr ""
 
 msgid "Board member"
 msgstr ""
 
+msgid "Breadcrumb"
+msgstr ""
+
+msgid "Bring units, people and opening balances in from a spreadsheet. Nothing is saved until you have seen the check and confirmed."
+msgstr ""
+
+msgid "By"
+msgstr ""
+
+msgid "By area"
+msgstr ""
+
+msgid "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
+msgstr ""
+
+msgid "By share"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "carried to the person"
+msgstr ""
+
+msgid "Carry it to another person instead (optional)"
+msgstr ""
+
+msgid "Carry them to the leaving person's own account"
+msgstr ""
+
+msgid "Cash"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Charge type"
+msgstr ""
+
+msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
+msgstr ""
+
+msgid "Check"
+msgstr ""
+
+msgid "Check the file"
+msgstr ""
+
+msgid "Check the table"
+msgstr ""
+
+msgid "Choose a block"
+msgstr ""
+
+msgid "Choose a CSV or XLSX file"
+msgstr ""
+
+msgid "Choose a unit"
+msgstr ""
+
+msgid "Choose a valid time zone, for example Europe/Istanbul"
+msgstr ""
+
 msgid "Choose an organization"
+msgstr ""
+
+msgid "Choose another file"
+msgstr ""
+
+msgid "Choose the start date"
+msgstr ""
+
+msgid "Choose who to invite"
+msgstr ""
+
+msgid "City"
+msgstr ""
+
+#. placeholder {0}: occupancyKindLabel(claim.claimed_role, i18n)
+#. placeholder {1}: claim.unit_door_number
+msgid "Claims {0} of {1}."
+msgstr ""
+
+msgid "Claims to be"
+msgstr ""
+
+msgid "Clear selection"
 msgstr ""
 
 msgid "Close"
 msgstr ""
 
+msgid "Closing statement"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
 msgid "Code from the SMS"
+msgstr ""
+
+msgid "Code sent."
+msgstr ""
+
+msgid "Collected"
+msgstr ""
+
+msgid "Common area"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Confirm it is you"
+msgstr ""
+
+msgid "Confirm move-out"
+msgstr ""
+
+msgid "Confirmed. Please repeat the action."
+msgstr ""
+
+msgid "Correspondent"
+msgstr ""
+
+msgid "Cost groups"
+msgstr ""
+
+msgid "Costs can be split among one block's units or across the whole site."
 msgstr ""
 
 msgid "Could not sign out. Please try again."
 msgstr ""
 
+msgid "Country"
+msgstr ""
+
+msgid "Create a site"
+msgstr ""
+
+msgid "Create site"
+msgstr ""
+
+msgid "Create unit"
+msgstr ""
+
+msgid "Creating a new code stops the old poster from working."
+msgstr ""
+
+msgid "Credit"
+msgstr ""
+
+msgid "Currency"
+msgstr ""
+
+msgid "Current lock date:"
+msgstr ""
+
+msgid "Custom table"
+msgstr ""
+
 msgid "Dark"
+msgstr ""
+
+msgid "Debt status certificate"
+msgstr ""
+
+msgid "Decision"
+msgstr ""
+
+msgid "default"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+#. placeholder {0}: k.name
+msgid "Delete {0}"
+msgstr ""
+
+msgid "Delete unit"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "District"
+msgstr ""
+
+msgid "Documents"
+msgstr ""
+
+msgid "Door"
+msgstr ""
+
+msgid "Door number"
+msgstr ""
+
+msgid "Download the report"
+msgstr ""
+
+msgid "Dues and charges"
+msgstr ""
+
+msgid "Each unit counts by its floor area. Change areas on the unit pages."
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit bank details"
+msgstr ""
+
+msgid "Edit vendor"
 msgstr ""
 
 msgid "Email"
@@ -58,7 +461,73 @@ msgstr ""
 msgid "Email or phone"
 msgstr ""
 
+msgid "End membership"
+msgstr ""
+
+msgid "Enter a block name"
+msgstr ""
+
+msgid "Enter a date"
+msgstr ""
+
+msgid "Enter a name"
+msgstr ""
+
+msgid "Enter a share between 1 and 100"
+msgstr ""
+
+msgid "Enter a valid email address"
+msgstr ""
+
+msgid "Enter a valid IBAN, for example TR33 0006 1005 1978 6457 8413 26"
+msgstr ""
+
+msgid "Enter a valid phone number"
+msgstr ""
+
+msgid "Enter a valid phone number, for example +90 555 111 22 33"
+msgstr ""
+
+msgid "Enter a weight for each unit, or upload a table with one row per unit."
+msgstr ""
+
+msgid "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
+msgstr ""
+
+msgid "Enter the account holder"
+msgstr ""
+
+msgid "Enter the area in square metres"
+msgstr ""
+
 msgid "Enter the code from the SMS"
+msgstr ""
+
+msgid "Enter the door number, for example A-12"
+msgstr ""
+
+msgid "Enter the number"
+msgstr ""
+
+msgid "Enter the person's name"
+msgstr ""
+
+msgid "Enter the plate, for example 34 ABC 123"
+msgstr ""
+
+msgid "Enter the site name"
+msgstr ""
+
+msgid "Enter the street address"
+msgstr ""
+
+msgid "Enter the vendor name"
+msgstr ""
+
+msgid "Enter their name"
+msgstr ""
+
+msgid "Enter their phone number or email address"
 msgstr ""
 
 msgid "Enter your email"
@@ -73,10 +542,79 @@ msgstr ""
 msgid "Enter your phone number"
 msgstr ""
 
+msgid "Enter zero or a positive number"
+msgstr ""
+
+msgid "Equal"
+msgstr ""
+
+msgid "Every unit counts the same. There is nothing to enter."
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+msgid "Expires"
+msgstr ""
+
+msgid "Export and offboard"
+msgstr ""
+
+msgid "Export plates (CSV)"
+msgstr ""
+
+msgid "Export site"
+msgstr ""
+
+msgid "Export this site"
+msgstr ""
+
+msgid "Finished."
+msgstr ""
+
+msgid "First rows of the file"
+msgstr ""
+
+msgid "Fiscal year starts in"
+msgstr ""
+
+msgid "Fix the errors in your file and upload it again."
+msgstr ""
+
+msgid "Flat"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "Full name"
+msgstr ""
+
+msgid "Gate contact phone"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Give a role"
+msgstr ""
+
+msgid "Give role"
+msgstr ""
+
+msgid "Give the person a reason"
+msgstr ""
+
 msgid "Go home"
 msgstr ""
 
 msgid "Guard"
+msgstr ""
+
+msgid "Hands the site over and removes this organization's access to it. Export it first."
+msgstr ""
+
+msgid "Hide"
 msgstr ""
 
 msgid "Home"
@@ -85,25 +623,156 @@ msgstr ""
 msgid "Household member"
 msgstr ""
 
+msgid "Household members"
+msgstr ""
+
+msgid "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
+msgstr ""
+
+msgid "IBAN"
+msgstr ""
+
 msgid "If that address is registered, a sign-in link is on its way. It works once."
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows + report.warning_rows
+msgid "Import {0} rows"
+msgstr ""
+
+msgid "Import another file"
+msgstr ""
+
+msgid "Import failed"
+msgstr ""
+
+msgid "Import finished"
+msgstr ""
+
+msgid "Import units"
+msgstr ""
+
+msgid "Importing…"
+msgstr ""
+
+msgid "Include documents"
+msgstr ""
+
+msgid "Include money history"
+msgstr ""
+
+msgid "Independent section number from the title deed (tapu)."
+msgstr ""
+
+msgid "Independent unit (own owner and charges)"
+msgstr ""
+
+msgid "Invitations"
+msgstr ""
+
+msgid "Invitations I sent"
+msgstr ""
+
+msgid "Invite"
+msgstr ""
+
+msgid "Invite a household member"
+msgstr ""
+
+msgid "Invite a person"
+msgstr ""
+
+msgid "Invite a person by SMS or email. They set a password and are linked to their unit."
+msgstr ""
+
+#. placeholder {0}: unit.unit_label
+msgid "Invite family or flatmates to {0}. They can use requests, announcements and bookings but cannot see money unless you allow it."
+msgstr ""
+
+msgid "Invited"
 msgstr ""
 
 msgid "Join your building"
 msgstr ""
 
+msgid "Joined"
+msgstr ""
+
+msgid "Joined?"
+msgstr ""
+
 msgid "Keep editing"
+msgstr ""
+
+msgid "Keep them on the unit for the next owner or tenant"
+msgstr ""
+
+msgid "kept on the unit"
+msgstr ""
+
+msgid "Kind"
 msgstr ""
 
 msgid "Language"
 msgstr ""
 
+msgid "Late fees"
+msgstr ""
+
+msgid "Leave empty to use the number or address on the person's record."
+msgstr ""
+
 msgid "Light"
+msgstr ""
+
+msgid "Link this person to a unit as owner, tenant or household member."
+msgstr ""
+
+msgid "Link to a unit"
+msgstr ""
+
+msgid "Link to unit"
+msgstr ""
+
+msgid "Listed"
+msgstr ""
+
+msgid "Listed with phone"
+msgstr ""
+
+msgid "Lock date"
+msgstr ""
+
+msgid "Lock everything up to and including"
 msgstr ""
 
 msgid "Main"
 msgstr ""
 
+msgid "Match columns"
+msgstr ""
+
+msgid "Match each field to a column of your file. Your choices are remembered for next time."
+msgstr ""
+
+msgid "May see money"
+msgstr ""
+
 msgid "Money"
+msgstr ""
+
+msgid "Move out"
+msgstr ""
+
+msgid "Move out or sale"
+msgstr ""
+
+msgid "Move out…"
+msgstr ""
+
+msgid "Moves out on"
 msgstr ""
 
 msgid "My account"
@@ -112,13 +781,179 @@ msgstr ""
 msgid "My units"
 msgstr ""
 
+msgid "Name"
+msgstr ""
+
+msgid "National id"
+msgstr ""
+
 msgid "Navigation"
+msgstr ""
+
+msgid "New block"
+msgstr ""
+
+msgid "New code"
+msgstr ""
+
+msgid "New custom key"
+msgstr ""
+
+msgid "New site"
+msgstr ""
+
+msgid "New unit"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "No account"
+msgstr ""
+
+msgid "No bank details yet"
+msgstr ""
+
+msgid "No claims waiting"
+msgstr ""
+
+msgid "No invitations yet"
+msgstr ""
+
+msgid "No matches"
+msgstr ""
+
+msgid "No parking or storage belongs to this unit."
+msgstr ""
+
+msgid "No people yet"
+msgstr ""
+
+msgid "No preference"
+msgstr ""
+
+msgid "No problems found."
+msgstr ""
+
+msgid "No results"
+msgstr ""
+
+msgid "No roles"
+msgstr ""
+
+msgid "No sites to show"
+msgstr ""
+
+msgid "No sites yet"
+msgstr ""
+
+msgid "No units yet"
+msgstr ""
+
+msgid "No vehicles registered"
+msgstr ""
+
+msgid "No vendors yet"
+msgstr ""
+
+msgid "Nobody is linked to this unit."
+msgstr ""
+
+msgid "Nobody is listed yet. The directory must be switched on in the site settings and people choose to appear in it."
+msgstr ""
+
+msgid "Not in my file"
+msgstr ""
+
+msgid "Not linked to any unit"
+msgstr ""
+
+msgid "Not listed"
+msgstr ""
+
+msgid "Not set"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Note (optional)"
+msgstr ""
+
+msgid "Notes (managers only)"
+msgstr ""
+
+msgid "Nothing dated on or before the lock date can be posted or changed. Moving the date back asks you to confirm it is you."
+msgstr ""
+
+msgid "Nothing matches these filters. Try removing some."
+msgstr ""
+
+msgid "Nothing was changed. Fix the file and try again."
 msgstr ""
 
 msgid "Notifications"
 msgstr ""
 
+msgid "Number"
+msgstr ""
+
+msgid "Occupancy"
+msgstr ""
+
+msgid "Occupancy timeline"
+msgstr ""
+
+msgid "Occupied"
+msgstr ""
+
+msgid "Occupied only"
+msgstr ""
+
+#. placeholder {0}: site.name
+msgid "Offboard {0}?"
+msgstr ""
+
+msgid "Offboard site"
+msgstr ""
+
+msgid "Offboard site…"
+msgstr ""
+
+msgid "Offboard this site"
+msgstr ""
+
+msgid "Office"
+msgstr ""
+
+msgid "One archive with people, occupancies, money history, documents and decisions. You will be asked to confirm it is you."
+msgstr ""
+
+msgid "One currency per site."
+msgstr ""
+
+msgid "Only the first 1000 rows are listed, errors first."
+msgstr ""
+
+msgid "Open charges"
+msgstr ""
+
 msgid "Open menu"
+msgstr ""
+
+msgid "Open requests"
+msgstr ""
+
+msgid "open-ended"
+msgstr ""
+
+msgid "Opening balances"
+msgstr ""
+
+msgid "Optional. Stored encrypted and shown to managers only, for legal follow-up and formal notices."
+msgstr ""
+
+msgid "or go to"
 msgstr ""
 
 msgid "Organization admin"
@@ -127,38 +962,339 @@ msgstr ""
 msgid "Organizations, health and backup status will appear here."
 msgstr ""
 
+msgid "Other"
+msgstr ""
+
+msgid "Overdue"
+msgstr ""
+
+msgid "Overdue (all sites)"
+msgstr ""
+
+msgid "Owned by the site"
+msgstr ""
+
 msgid "Owner"
+msgstr ""
+
+msgid "Owner or tenant"
+msgstr ""
+
+msgid "Owner side"
+msgstr ""
+
+msgid "Owner: debt"
+msgstr ""
+
+msgid "Owner: known late fee"
+msgstr ""
+
+msgid "Owners see the aggregate income and expense report and the budget. The debtor list stays private."
+msgstr ""
+
+msgid "Ownership share (%)"
+msgstr ""
+
+#. placeholder {0}: pager.page
+msgid "Page {0}"
 msgstr ""
 
 msgid "Page not found"
 msgstr ""
 
+msgid "Pagination"
+msgstr ""
+
+msgid "Parking"
+msgstr ""
+
+msgid "Parking and storage default"
+msgstr ""
+
 msgid "Password"
+msgstr ""
+
+#. placeholder {0}: Object.keys(next).length
+msgid "Pasted {0} values. Check them, then save."
+msgstr ""
+
+msgid "Payers should write"
+msgstr ""
+
+msgid "Pays"
 msgstr ""
 
 msgid "People"
 msgstr ""
 
+msgid "People in my household"
+msgstr ""
+
+msgid "Person"
+msgstr ""
+
+msgid "Persons"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
 msgid "Phone number"
+msgstr ""
+
+msgid "Phone or email"
+msgstr ""
+
+msgid "Plate"
+msgstr ""
+
+msgid "Plates for the camera operator (CSV)"
 msgstr ""
 
 msgid "Platform administration"
 msgstr ""
 
-msgid "Please confirm it is you before continuing."
+msgid "Portfolio"
+msgstr ""
+
+msgid "Postal code"
+msgstr ""
+
+msgid "Poster"
+msgstr ""
+
+msgid "Preferred channel"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Print poster"
+msgstr ""
+
+msgid "Print this poster for the notice board or share the link in the residents' group. People who scan it sign up and ask for their unit; you approve each claim."
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Progress"
+msgstr ""
+
+msgid "QR code"
+msgstr ""
+
+msgid "QR code to join {siteName}"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgid "Reason (audited)"
+msgstr ""
+
+msgid "Reason (optional)"
+msgstr ""
+
+msgid "Receives the unit's correspondence"
+msgstr ""
+
+msgid "Recent transfers"
 msgstr ""
 
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
 msgstr ""
 
+msgid "Registered plates open the gate for this unit."
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+#. placeholder {0}: claim.display_name
+msgid "Reject {0}"
+msgstr ""
+
+msgid "Reject claim"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Relationship"
+msgstr ""
+
 msgid "Reload"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Remove role"
+msgstr ""
+
+msgid "Remove this role?"
+msgstr ""
+
+msgid "Resend"
 msgstr ""
 
 msgid "Reset your password"
 msgstr ""
 
+msgid "Resident directory"
+msgstr ""
+
+msgid "Residents can join with this code"
+msgstr ""
+
+msgid "Residents see these details when they pay by bank transfer."
+msgstr ""
+
+msgid "Residents who joined with the site QR code and say they live in a unit. A claim takes effect only when you approve it."
+msgstr ""
+
+msgid "Residents who opt in appear in a directory. Managers and the board always see everyone."
+msgstr ""
+
+msgid "Restore"
+msgstr ""
+
+msgid "Result"
+msgstr ""
+
+msgid "Revoke"
+msgstr ""
+
+msgid "Revoked"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Roles"
+msgstr ""
+
+msgid "Row"
+msgstr ""
+
+#. placeholder {0}: r.row
+msgid "Row {0}"
+msgstr ""
+
+msgid "Row-level report"
+msgstr ""
+
+msgid "Save bank details"
+msgstr ""
+
+msgid "Save changes"
+msgstr ""
+
+msgid "Save number"
+msgstr ""
+
+msgid "Save settings"
+msgstr ""
+
+msgid "Save values"
+msgstr ""
+
+msgid "Save vendor"
+msgstr ""
+
+msgid "Saved."
+msgstr ""
+
+msgid "Say why the debt is handled differently"
+msgstr ""
+
+msgid "Scan to join your building's app"
+msgstr ""
+
+msgid "Search by name"
+msgstr ""
+
+msgid "Search door or title deed no."
+msgstr ""
+
+msgid "Search name, phone or email"
+msgstr ""
+
+msgid "Search people"
+msgstr ""
+
+msgid "Search results"
+msgstr ""
+
+msgid "Search sites"
+msgstr ""
+
+msgid "Search the directory"
+msgstr ""
+
+msgid "Search units"
+msgstr ""
+
+msgid "Search vendors"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
+msgid "Searching…"
+msgstr ""
+
+msgid "Section"
+msgstr ""
+
+msgid "Send by"
+msgstr ""
+
+msgid "Send invitation"
+msgstr ""
+
 msgid "Send me a code"
+msgstr ""
+
+msgid "Send me a code instead"
+msgstr ""
+
+msgid "Send to (optional)"
+msgstr ""
+
+msgid "Sent to"
+msgstr ""
+
+msgid "Set lock date"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Setup"
+msgstr ""
+
+msgid "Share"
+msgstr ""
+
+msgid "Share %"
+msgstr ""
+
+msgid "Shop"
+msgstr ""
+
+msgid "Show"
+msgstr ""
+
+msgid "Show archived"
+msgstr ""
+
+msgid "Show income and expenses to owners"
+msgstr ""
+
+msgid "Show only rows with problems"
 msgstr ""
 
 msgid "Sign in"
@@ -173,10 +1309,22 @@ msgstr ""
 msgid "Signing you in"
 msgstr ""
 
+msgid "Site"
+msgstr ""
+
 msgid "Site manager"
 msgstr ""
 
+msgid "Site name"
+msgstr ""
+
+msgid "Site QR code"
+msgstr ""
+
 msgid "Sites"
+msgstr ""
+
+msgid "Sites you manage appear here with their overdue amounts, cash and open requests."
 msgstr ""
 
 msgid "Skip to content"
@@ -197,7 +1345,25 @@ msgstr ""
 msgid "Something went wrong. Please try again."
 msgstr ""
 
+msgid "Spreadsheet file"
+msgstr ""
+
 msgid "Staff"
+msgstr ""
+
+msgid "Starts on"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Steps"
+msgstr ""
+
+msgid "Storage"
+msgstr ""
+
+msgid "Street address"
 msgstr ""
 
 msgid "Switch organization"
@@ -206,22 +1372,109 @@ msgstr ""
 msgid "System"
 msgstr ""
 
+msgid "Table file"
+msgstr ""
+
+msgid "Tax id"
+msgstr ""
+
 msgid "Tenant"
+msgstr ""
+
+msgid "Tenant side"
+msgstr ""
+
+msgid "Tenant: debt"
+msgstr ""
+
+msgid "Tenant: known late fee"
+msgstr ""
+
+msgid "Tenants get their own login"
+msgstr ""
+
+msgid "That did not work. Check it and try again."
 msgstr ""
 
 msgid "That did not work. Check your details and try again."
 msgstr ""
 
+msgid "The code is switched off, so there is no poster to print."
+msgstr ""
+
+msgid "The data is in. You can review it on the units and people pages."
+msgstr ""
+
+msgid "The directory is empty"
+msgstr ""
+
+msgid "The file could not be checked. Please try again."
+msgstr ""
+
+msgid "The import could not be started. Nothing was changed."
+msgstr ""
+
+msgid "The job did not finish. Nothing was changed."
+msgstr ""
+
+msgid "The move-out is recorded. The documents were also filed with the unit."
+msgstr ""
+
+msgid "The number guards may call when a visitor arrives. Leave empty to use the phone above."
+msgstr ""
+
 msgid "The page you are looking for does not exist or has moved."
+msgstr ""
+
+msgid "The person loses the access this role gave them."
+msgstr ""
+
+msgid "The person on the lease sees the tenant side of the unit in the portal."
 msgstr ""
 
 msgid "The request failed. Please try again."
 msgstr ""
 
+msgid "The role could not be removed. Please try again."
+msgstr ""
+
+msgid "The table could not be read. Check the columns and try again."
+msgstr ""
+
+msgid "The transfer could not be started. Please try again."
+msgstr ""
+
+msgid "The values could not be saved. Check them and try again."
+msgstr ""
+
 msgid "Theme"
 msgstr ""
 
+msgid "These neighbours chose to be listed."
+msgstr ""
+
+msgid "They receive a link to set a password and join the site."
+msgstr ""
+
 msgid "This accounting period is closed and can no longer be changed."
+msgstr ""
+
+msgid "This action is sensitive. Enter your password or a code to continue."
+msgstr ""
+
+msgid "This cannot be undone from here. Type the site name to continue."
+msgstr ""
+
+msgid "This file could not be read. Use a CSV or XLSX file with a header row."
+msgstr ""
+
+msgid "This file is too large."
+msgstr ""
+
+msgid "This number is not valid. Check the digits."
+msgstr ""
+
+msgid "This person has no management or staff role."
 msgstr ""
 
 msgid "This record changed"
@@ -230,7 +1483,16 @@ msgstr ""
 msgid "This request was already sent with different details. Reload the form and try again."
 msgstr ""
 
+msgid "This role belongs to the site, so you will be asked to confirm it is you."
+msgstr ""
+
 msgid "This server offers no sign-in method this app can use."
+msgstr ""
+
+msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
+msgstr ""
+
+msgid "This site treats parking and storage as independent units. Choose a flat only if this one is an appurtenance."
 msgstr ""
 
 msgid "This step is not available in this build yet."
@@ -240,6 +1502,18 @@ msgid "This value is not valid"
 msgstr ""
 
 msgid "Tickets"
+msgstr ""
+
+msgid "Time zone"
+msgstr ""
+
+msgid "Title deed no."
+msgstr ""
+
+msgid "Title deed no. (optional)"
+msgstr ""
+
+msgid "today"
 msgstr ""
 
 msgid "Too many attempts. Please wait and try again."
@@ -252,10 +1526,141 @@ msgstr ""
 msgid "Too many requests. Try again in {0} seconds."
 msgstr ""
 
+msgid "Total"
+msgstr ""
+
+msgid "Totals"
+msgstr ""
+
 msgid "Try again"
 msgstr ""
 
+msgid "Type"
+msgstr ""
+
+msgid "Type the site name exactly to confirm"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Unit claims"
+msgstr ""
+
+msgid "Unit column"
+msgstr ""
+
+msgid "Units"
+msgstr ""
+
+msgid "Until (optional)"
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Upload a per-unit table"
+msgstr ""
+
+msgid "Use a three-letter currency code, for example TRY"
+msgstr ""
+
+msgid "Use a two-letter country code, for example TR"
+msgstr ""
+
+msgid "Use lowercase letters, digits and underscores, for example heating"
+msgstr ""
+
+msgid "Use my password"
+msgstr ""
+
+msgid "Vacant"
+msgstr ""
+
+msgid "Vacant and occupied"
+msgstr ""
+
+msgid "Vacant only"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Value column"
+msgstr ""
+
+#. placeholder {0}: p.unit.door_number
+msgid "Value for {0}"
+msgstr ""
+
+#. placeholder {0}: allocationKey.name
+msgid "Values for {0}"
+msgstr ""
+
+msgid "Values saved."
+msgstr ""
+
+msgid "Vehicles"
+msgstr ""
+
+msgid "Vendors"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
+msgid "Waiting for a decision"
+msgstr ""
+
 msgid "We could not find that."
+msgstr ""
+
+msgid "We could not send the code. Please try again."
+msgstr ""
+
+msgid "What happens to open charges"
+msgstr ""
+
+msgid "What payers should write in the description"
+msgstr ""
+
+msgid "What people say, for example A-12."
+msgstr ""
+
+msgid "What to fix"
+msgstr ""
+
+msgid "What to import"
+msgstr ""
+
+msgid "When a resident joins with the site QR code, their claim appears here."
+msgstr ""
+
+msgid "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
+msgstr ""
+
+msgid "Whether this person appears in a site's resident directory. They choose this themselves under My account."
+msgstr ""
+
+msgid "Who"
+msgstr ""
+
+msgid "Who pays what on this unit"
+msgstr ""
+
+msgid "Who was invited and who has joined."
+msgstr ""
+
+msgid "Whole organization"
+msgstr ""
+
+msgid "Working… {pct}%"
+msgstr ""
+
+msgid "Write them off"
+msgstr ""
+
+msgid "written off"
 msgstr ""
 
 msgid "You are not linked to a unit in this organization."
@@ -271,6 +1676,12 @@ msgid "You do not have access to this page"
 msgstr ""
 
 msgid "You do not have permission to do this."
+msgstr ""
+
+msgid "You do not have permission to import this."
+msgstr ""
+
+msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
 msgstr ""
 
 msgid "You will be able to choose a new password here."
