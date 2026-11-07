@@ -52,9 +52,9 @@ export const NAV_ITEMS: NavItem[] = [
     label: msg`Money`,
     to: '/orgs/$orgId/money',
     icon: Wallet,
-    planned: true,
     visible: ({ me, orgId }) =>
-      can(me, orgId, 'ledger.read') ||
+      can(me, orgId, 'money.read') ||
+      can(me, orgId, 'statements.read_own') ||
       me.occupancies.some((o) => o.organization_id === orgId && o.may_see_money),
   },
   {
