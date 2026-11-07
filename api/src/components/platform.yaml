@@ -1,0 +1,283 @@
+schemas:
+  PlatformOrg:
+    type: object
+    description: An organization as the instance operator sees it.
+    required:
+      - id
+      - slug
+      - name
+      - status
+      - default_locale
+      - timezone
+      - country_code
+      - site_count
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      slug:
+        type: string
+      name:
+        type: string
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - active
+          - suspended
+          - archived
+        x-open-enum: true
+      default_locale:
+        type: string
+      timezone:
+        type: string
+      country_code:
+        type: string
+      site_count:
+        type: integer
+        format: int64
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+  PlatformOrgList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/PlatformOrg"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  PlatformOrgCreate:
+    type: object
+    required:
+      - slug
+      - name
+    properties:
+      slug:
+        type: string
+      name:
+        type: string
+      default_locale:
+        type: string
+      timezone:
+        type: string
+      country_code:
+        type: string
+      admin_email:
+        type: string
+        format: email
+        description: Sends a manager invitation that makes this person the first organization admin.
+      admin_phone:
+        type: string
+        description: E.164.
+  PlatformOrgUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      status:
+        type: string
+        enum:
+          - active
+          - suspended
+          - archived
+  PlatformSettings:
+    type: object
+    required:
+      - version
+      - instance_name
+      - default_locale
+      - branding
+      - registration_open
+      - mail_configured
+      - sms_configured
+    properties:
+      version:
+        type: integer
+        format: int64
+      instance_name:
+        type: string
+      default_locale:
+        type: string
+      branding:
+        type: object
+        allOf:
+          - $ref: ./instance.yaml#/schemas/Branding
+        nullable: true
+      registration_open:
+        type: boolean
+      mail_configured:
+        type: boolean
+      sms_configured:
+        type: boolean
+  PlatformSettingsUpdate:
+    type: object
+    properties:
+      instance_name:
+        type: string
+      default_locale:
+        type: string
+      branding:
+        type: object
+        allOf:
+          - $ref: ./instance.yaml#/schemas/Branding
+        nullable: true
+      registration_open:
+        type: boolean
+  HealthCheck:
+    type: object
+    required:
+      - name
+      - status
+      - detail
+      - latency_ms
+    properties:
+      name:
+        type: string
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - ok
+          - degraded
+          - down
+        x-open-enum: true
+      detail:
+        type: string
+        nullable: true
+      latency_ms:
+        type: integer
+        format: int64
+        nullable: true
+  PlatformHealth:
+    type: object
+    required:
+      - status
+      - server_version
+      - checks
+      - jobs_queued
+      - jobs_failed
+    properties:
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - ok
+          - degraded
+          - down
+        x-open-enum: true
+      server_version:
+        type: string
+      checks:
+        type: array
+        items:
+          $ref: "#/schemas/HealthCheck"
+      jobs_queued:
+        type: integer
+        format: int64
+      jobs_failed:
+        type: integer
+        format: int64
+  BackupStatus:
+    type: object
+    required:
+      - last_backup_at
+      - last_backup_status
+      - last_backup_size_bytes
+      - next_backup_at
+    properties:
+      last_backup_at:
+        type: string
+        format: date-time
+        nullable: true
+      last_backup_status:
+        type: string
+        description: Open enum.
+        enum:
+          - ok
+          - failed
+          - unknown
+        x-open-enum: true
+      last_backup_size_bytes:
+        type: integer
+        format: int64
+        nullable: true
+      next_backup_at:
+        type: string
+        format: date-time
+        nullable: true
+  PlatformJob:
+    type: object
+    required:
+      - id
+      - kind
+      - queue
+      - state
+      - attempts
+      - org_id
+      - created_at
+      - finalized_at
+      - error
+    properties:
+      id:
+        type: string
+      kind:
+        type: string
+      queue:
+        type: string
+      state:
+        type: string
+        description: Open enum.
+        enum:
+          - available
+          - running
+          - retryable
+          - completed
+          - discarded
+          - cancelled
+        x-open-enum: true
+      attempts:
+        type: integer
+        format: int64
+      org_id:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      finalized_at:
+        type: string
+        format: date-time
+        nullable: true
+      error:
+        type: string
+        nullable: true
+  PlatformJobList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/PlatformJob"
+      next_cursor:
+        type: string
+        nullable: true
