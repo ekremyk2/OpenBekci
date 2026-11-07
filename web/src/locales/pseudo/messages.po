@@ -7,10 +7,113 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pseudo\n"
 
+#. placeholder {0}: query.data.open_common_tickets
+msgid "{0} in common areas"
+msgstr ""
+
+#. placeholder {0}: first?.read_count ?? 0
+#. placeholder {1}: first?.audience_count ?? 0
+msgid "{0} of {1} have opened this announcement. A delivered SMS or email is not counted as read."
+msgstr ""
+
+#. placeholder {0}: a.read_count
+#. placeholder {1}: a.recipient_count ?? '?'
+msgid "{0} of {1} read"
+msgstr ""
+
+#. placeholder {0}: ticket.vote_count
+msgid "{0} people confirmed this"
+msgstr ""
+
+#. placeholder {0}: query.data.overdue_units
+msgid "{0} units"
+msgstr ""
+
 msgid "Accept your invitation"
 msgstr ""
 
 msgid "Accountant"
+msgstr ""
+
+msgid "Accrued late fees"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Activity"
+msgstr ""
+
+msgid "Actor (user id)"
+msgstr ""
+
+msgid "Add a note (optional)"
+msgstr ""
+
+msgid "Add category"
+msgstr ""
+
+msgid "Add photos"
+msgstr ""
+
+msgid "Add status"
+msgstr ""
+
+msgid "Add to this folder"
+msgstr ""
+
+msgid "Administrator email (optional)"
+msgstr ""
+
+msgid "All announcements"
+msgstr ""
+
+msgid "All folders"
+msgstr ""
+
+msgid "All statuses"
+msgstr ""
+
+msgid "All tickets"
+msgstr ""
+
+msgid "Always on"
+msgstr ""
+
+msgid "Announcement published."
+msgstr ""
+
+msgid "Announcement scheduled."
+msgstr ""
+
+msgid "Announcements"
+msgstr ""
+
+msgid "Any category"
+msgstr ""
+
+msgid "Any status"
+msgstr ""
+
+msgid "Any unit"
+msgstr ""
+
+msgid "Anyone"
+msgstr ""
+
+msgid "Apply filters"
+msgstr ""
+
+msgid "Archive"
+msgstr ""
+
+msgid "Archived"
+msgstr ""
+
+msgid "As of <0/>"
 msgstr ""
 
 msgid "Ask your building manager to invite you."
@@ -19,31 +122,355 @@ msgstr ""
 msgid "Ask your manager if you think you should."
 msgstr ""
 
+msgid "Assembly"
+msgstr ""
+
+msgid "Assigned to"
+msgstr ""
+
+#. placeholder {0}: ticket.assignee.display_name
+msgid "Assigned to {0}"
+msgstr ""
+
+msgid "Assigned to you"
+msgstr ""
+
+msgid "Assignee"
+msgstr ""
+
+msgid "Attach files"
+msgstr ""
+
+msgid "Attempts"
+msgstr ""
+
+msgid "Audience"
+msgstr ""
+
+msgid "Audit events"
+msgstr ""
+
+msgid "Audit log"
+msgstr ""
+
 msgid "Auditor"
+msgstr ""
+
+msgid "Automatic messages"
 msgstr ""
 
 msgid "Back to sign in"
 msgstr ""
 
+msgid "Backups"
+msgstr ""
+
 msgid "Balances, open requests and announcements will appear here."
+msgstr ""
+
+msgid "Bank"
+msgstr ""
+
+msgid "Block"
 msgstr ""
 
 msgid "Board member"
 msgstr ""
 
+msgid "Board only"
+msgstr ""
+
+msgid "Bold"
+msgstr ""
+
+msgid "bold text"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+#. placeholder {0}: item.name
+msgid "Cancel upload of {0}"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Cash"
+msgstr ""
+
+msgid "Categories"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Category default"
+msgstr ""
+
+msgid "Category default (common)"
+msgstr ""
+
+msgid "Category default (private)"
+msgstr ""
+
+msgid "Category name"
+msgstr ""
+
+msgid "Category saved."
+msgstr ""
+
+msgid "Change status"
+msgstr ""
+
+msgid "Changed (private data, hashed)"
+msgstr ""
+
+msgid "Changes"
+msgstr ""
+
+msgid "Channels"
+msgstr ""
+
+msgid "Choose a block"
+msgstr ""
+
+msgid "Choose a category"
+msgstr ""
+
+msgid "Choose a channel"
+msgstr ""
+
+msgid "Choose a status"
+msgstr ""
+
+msgid "Choose a ticket"
+msgstr ""
+
+msgid "Choose an audience and at least one channel to see who will be reached."
+msgstr ""
+
 msgid "Choose an organization"
+msgstr ""
+
+msgid "Choose at least one unit"
+msgstr ""
+
+msgid "Choose at least one unit."
+msgstr ""
+
+msgid "Choose files"
+msgstr ""
+
+#. placeholder {0}: missing.name
+msgid "Choose where the tickets of \"{0}\" move to."
+msgstr ""
+
+msgid "Choose who may open this folder and the documents in it."
+msgstr ""
+
+msgid "Chosen units"
+msgstr ""
+
+msgid "Clear"
 msgstr ""
 
 msgid "Close"
 msgstr ""
 
+msgid "Closed"
+msgstr ""
+
+msgid "Closed-like"
+msgstr ""
+
 msgid "Code from the SMS"
+msgstr ""
+
+msgid "Codes"
+msgstr ""
+
+msgid "Collection rate"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Comment visibility"
+msgstr ""
+
+msgid "Common"
+msgstr ""
+
+msgid "Common areas"
+msgstr ""
+
+msgid "Common by default"
+msgstr ""
+
+msgid "Common: the whole site"
+msgstr ""
+
+msgid "configured"
+msgstr ""
+
+msgid "Confirmations"
+msgstr ""
+
+msgid "Could not add the files. Please try again."
+msgstr ""
+
+msgid "Could not assign the ticket. Please try again."
+msgstr ""
+
+msgid "Could not change the organization."
+msgstr ""
+
+msgid "Could not change the status. Please try again."
+msgstr ""
+
+msgid "Could not change the visibility. Please try again."
+msgstr ""
+
+msgid "Could not count the recipients."
+msgstr ""
+
+msgid "Could not delete the document."
+msgstr ""
+
+msgid "Could not mark everything as read."
+msgstr ""
+
+msgid "Could not merge the tickets. Please try again."
+msgstr ""
+
+msgid "Could not post the comment. Please try again."
+msgstr ""
+
+msgid "Could not publish. Please try again."
+msgstr ""
+
+msgid "Could not save the settings."
+msgstr ""
+
+msgid "Could not save your +1. Please try again."
+msgstr ""
+
+msgid "Could not save your preferences."
 msgstr ""
 
 msgid "Could not sign out. Please try again."
 msgstr ""
 
+msgid "Could not update the document."
+msgstr ""
+
+msgid "Counting recipients"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create a folder to start filing documents."
+msgstr ""
+
+msgid "Create folder"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
 msgid "Dark"
+msgstr ""
+
+#. placeholder {0}: query.data.locale
+msgid "Debug view of /codes for locale {0}."
+msgstr ""
+
+#. placeholder {0}: query.data.pending_declared_payments
+msgid "Declared payments to confirm: {0}"
+msgstr ""
+
+#. placeholder {0}: category.name
+msgid "Default assignee role of {0}"
+msgstr ""
+
+msgid "Default language"
+msgstr ""
+
+#. placeholder {0}: category.name
+msgid "Default visibility of {0}"
+msgstr ""
+
+msgid "Default visibility of the new category"
+msgstr ""
+
+msgid "Defaults saved."
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Delete \"{0}\"?"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Delete {0}"
+msgstr ""
+
+msgid "Delete this announcement?"
+msgstr ""
+
+msgid "Delivery preview"
+msgstr ""
+
+msgid "Describe the problem"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Document preview"
+msgstr ""
+
+msgid "Document title"
+msgstr ""
+
+msgid "Documents"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Download original"
+msgstr ""
+
+msgid "Draft"
+msgstr ""
+
+msgid "Draft saved."
+msgstr ""
+
+msgid "Drafts"
+msgstr ""
+
+msgid "Drop files here or choose files"
+msgstr ""
+
+msgid "Dues reminders"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit announcement"
+msgstr ""
+
+msgid "Editor mode"
 msgstr ""
 
 msgid "Email"
@@ -58,7 +485,23 @@ msgstr ""
 msgid "Email or phone"
 msgstr ""
 
+#. placeholder {0}: preview.data.email_count
+msgid "Emails: {0}"
+msgstr ""
+
+msgid "Enter a short title"
+msgstr ""
+
+msgid "Enter a title"
+msgstr ""
+
+msgid "Enter a valid email address"
+msgstr ""
+
 msgid "Enter the code from the SMS"
+msgstr ""
+
+msgid "Enter the organization name"
 msgstr ""
 
 msgid "Enter your email"
@@ -73,10 +516,64 @@ msgstr ""
 msgid "Enter your phone number"
 msgstr ""
 
+msgid "Error"
+msgstr ""
+
+msgid "Every status needs a name."
+msgstr ""
+
+msgid "Everyone"
+msgstr ""
+
+msgid "Expected visitors today"
+msgstr ""
+
+msgid "Expires at (optional)"
+msgstr ""
+
+msgid "Fixed"
+msgstr ""
+
+msgid "Folder path"
+msgstr ""
+
+msgid "Folder saved."
+msgstr ""
+
+msgid "Folder settings"
+msgstr ""
+
+msgid "Folders"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "Generated"
+msgstr ""
+
+msgid "Generated: certificate"
+msgstr ""
+
+msgid "Generated: receipt"
+msgstr ""
+
+msgid "Generated: statement"
+msgstr ""
+
 msgid "Go home"
 msgstr ""
 
 msgid "Guard"
+msgstr ""
+
+msgid "Hash before and after"
+msgstr ""
+
+msgid "Heading"
+msgstr ""
+
+msgid "Health"
 msgstr ""
 
 msgid "Home"
@@ -88,46 +585,361 @@ msgstr ""
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr ""
 
+msgid "In progress"
+msgstr ""
+
+msgid "In-app"
+msgstr ""
+
+#. placeholder {0}: preview.data.in_app_count
+msgid "In-app notifications: {0}"
+msgstr ""
+
+msgid "Inbox"
+msgstr ""
+
+msgid "Instance name"
+msgstr ""
+
+msgid "Instance settings"
+msgstr ""
+
+msgid "Internal note"
+msgstr ""
+
+msgid "Invitations"
+msgstr ""
+
+msgid "It starts with the visibility of the folder it is in. You can change it after."
+msgstr ""
+
+msgid "Italic"
+msgstr ""
+
+msgid "italic text"
+msgstr ""
+
+msgid "Job"
+msgstr ""
+
+msgid "Jobs"
+msgstr ""
+
 msgid "Join your building"
+msgstr ""
+
+msgid "Keep at least one closed-like status."
+msgstr ""
+
+msgid "Keep at least one open-like status."
 msgstr ""
 
 msgid "Keep editing"
 msgstr ""
 
+msgid "Keep the title short"
+msgstr ""
+
+msgid "Keep this ticket"
+msgstr ""
+
 msgid "Language"
+msgstr ""
+
+msgid "Last backup"
+msgstr ""
+
+msgid "Leave empty for problems in shared areas."
+msgstr ""
+
+msgid "Leave empty to open it as yourself."
 msgstr ""
 
 msgid "Light"
 msgstr ""
 
+msgid "Link"
+msgstr ""
+
+msgid "link text"
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Load more"
+msgstr ""
+
+#. placeholder {0}: s.mail_configured ? t`configured` : t`not configured`
+#. placeholder {1}: s.sms_configured ? t`configured` : t`not configured`
+msgid "Mail: {0}. SMS: {1}."
+msgstr ""
+
 msgid "Main"
+msgstr ""
+
+msgid "Mark all as read"
+msgstr ""
+
+msgid "Me too"
+msgstr ""
+
+#. placeholder {0}: i + 1
+msgid "Meaning of status {0}"
+msgstr ""
+
+msgid "Meeting notices"
+msgstr ""
+
+msgid "Merge"
+msgstr ""
+
+msgid "Merge duplicate"
+msgstr ""
+
+msgid "Merge into another ticket"
+msgstr ""
+
+msgid "Merged"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Message (Markdown)"
+msgstr ""
+
+msgid "Messages nobody sends by hand use these channels. Sign-in codes and invitations always go by SMS or email. People can still mute non-essential types themselves."
 msgstr ""
 
 msgid "Money"
 msgstr ""
 
+#. placeholder {0}: row.name
+msgid "Move {0} down"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Move {0} to"
+msgstr ""
+
+#. placeholder {0}: row.name
+msgid "Move {0} up"
+msgstr ""
+
+msgid "Move to…"
+msgstr ""
+
+msgid "Mute notifications"
+msgstr ""
+
+msgid "Muted types stop reaching you. Sign-in codes and invitations always arrive."
+msgstr ""
+
 msgid "My account"
+msgstr ""
+
+msgid "My tickets"
 msgstr ""
 
 msgid "My units"
 msgstr ""
 
+msgid "Myself"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
 msgid "Navigation"
+msgstr ""
+
+msgid "Needs attention"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "New announcement"
+msgstr ""
+
+msgid "New announcements"
+msgstr ""
+
+msgid "New category"
+msgstr ""
+
+msgid "New folder"
+msgstr ""
+
+msgid "New notifications will appear here."
+msgstr ""
+
+msgid "New organization"
+msgstr ""
+
+msgid "New ticket"
+msgstr ""
+
+msgid "Next backup"
+msgstr ""
+
+msgid "Next photo"
+msgstr ""
+
+msgid "No activity yet."
+msgstr ""
+
+msgid "No announcements"
+msgstr ""
+
+msgid "No default assignee"
+msgstr ""
+
+msgid "No details recorded."
+msgstr ""
+
+msgid "No events match"
+msgstr ""
+
+msgid "No folders yet"
+msgstr ""
+
+msgid "No jobs"
+msgstr ""
+
+msgid "No meeting is scheduled."
+msgstr ""
+
+msgid "No organizations yet"
+msgstr ""
+
+msgid "No terms end soon."
+msgstr ""
+
+msgid "No tickets here"
+msgstr ""
+
+msgid "No unit"
+msgstr ""
+
+msgid "No units yet."
+msgstr ""
+
+msgid "Not available"
+msgstr ""
+
+msgid "not configured"
+msgstr ""
+
+msgid "Not read"
+msgstr ""
+
+msgid "Note visibility"
+msgstr ""
+
+msgid "Note with the status change"
+msgstr ""
+
+msgid "Nothing is waiting for you."
+msgstr ""
+
+msgid "Nothing to preview yet."
+msgstr ""
+
+msgid "Notices from your management will appear here."
+msgstr ""
+
+msgid "Notification defaults"
+msgstr ""
+
+msgid "Notification views"
 msgstr ""
 
 msgid "Notifications"
 msgstr ""
 
+msgid "Notifications, {unread} unread"
+msgstr ""
+
+msgid "One block"
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+msgid "Open common tickets"
+msgstr ""
+
 msgid "Open menu"
+msgstr ""
+
+#. placeholder {0}: i + 1
+#. placeholder {1}: images.length
+msgid "Open photo {0} of {1}"
+msgstr ""
+
+msgid "Open registration"
+msgstr ""
+
+msgid "Open ticket"
+msgstr ""
+
+msgid "Open tickets"
+msgstr ""
+
+msgid "Open-like"
+msgstr ""
+
+msgid "Open-like statuses count as open tickets in reports; closed-like statuses count as closed."
+msgstr ""
+
+#. placeholder {0}: names.get(e.change.to_status_id) ?? '?'
+msgid "Opened as {0}"
+msgstr ""
+
+#. placeholder {0}: t.reporter_display_name
+#. placeholder {1}: t.unit_door_number ? ` (${t.unit_door_number})` : ''
+msgid "Opened by {0}{1}"
+msgstr ""
+
+msgid "Opened on behalf of"
+msgstr ""
+
+msgid "Operations"
+msgstr ""
+
+msgid "Organization"
 msgstr ""
 
 msgid "Organization admin"
 msgstr ""
 
-msgid "Organizations, health and backup status will appear here."
+msgid "Organization created."
+msgstr ""
+
+msgid "Organization saved."
+msgstr ""
+
+msgid "Organizations"
+msgstr ""
+
+msgid "Overdue"
+msgstr ""
+
+msgid "Owed by owners"
+msgstr ""
+
+msgid "Owed by tenants"
 msgstr ""
 
 msgid "Owner"
+msgstr ""
+
+msgid "Owners"
+msgstr ""
+
+msgid "Owners only"
 msgstr ""
 
 msgid "Page not found"
@@ -136,16 +948,101 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+msgid "Payment confirmed"
+msgstr ""
+
+msgid "Payment receipts"
+msgstr ""
+
+msgid "Payment rejected"
+msgstr ""
+
+msgid "PDF, images and office documents."
+msgstr ""
+
 msgid "People"
 msgstr ""
 
 msgid "Phone number"
 msgstr ""
 
+msgid "Photo"
+msgstr ""
+
+#. placeholder {0}: index + 1
+#. placeholder {1}: images.length
+msgid "Photo {0} of {1}"
+msgstr ""
+
+msgid "Pin to the top"
+msgstr ""
+
+msgid "Pinned"
+msgstr ""
+
 msgid "Platform administration"
 msgstr ""
 
+msgid "Platform sections"
+msgstr ""
+
 msgid "Please confirm it is you before continuing."
+msgstr ""
+
+msgid "Post comment"
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Preview"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Preview of {0}"
+msgstr ""
+
+msgid "Previous photo"
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
+msgid "Private and common"
+msgstr ""
+
+msgid "Private by default"
+msgstr ""
+
+msgid "Private to the unit"
+msgstr ""
+
+msgid "Private: that unit and management"
+msgstr ""
+
+msgid "Publish"
+msgstr ""
+
+msgid "Publish at (optional)"
+msgstr ""
+
+msgid "Publish now"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
+msgid "Reactivate"
+msgstr ""
+
+msgid "Read receipts"
+msgstr ""
+
+msgid "Readers"
+msgstr ""
+
+#. placeholder {0}: preview.data.recipient_count
+msgid "Recipients: {0}"
 msgstr ""
 
 #. placeholder {0}: app.requestId
@@ -155,10 +1052,85 @@ msgstr ""
 msgid "Reload"
 msgstr ""
 
+#. placeholder {0}: item.name
+#. placeholder {0}: row.name
+msgid "Remove {0}"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Rename {0}"
+msgstr ""
+
+msgid "Replace the workflow with the default (open, in progress, done)?"
+msgstr ""
+
+#. placeholder {0}: s.name
+msgid "Replacement for {0}"
+msgstr ""
+
+#. placeholder {0}: event.request_id
+#. placeholder {1}: event.ip ? ` from ${event.ip}` : ''
+msgid "Request {0}{1}"
+msgstr ""
+
 msgid "Reset your password"
 msgstr ""
 
+msgid "Restore default workflow"
+msgstr ""
+
+#. placeholder {0}: item.name
+msgid "Retry {0}"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save changes"
+msgstr ""
+
+msgid "Save defaults"
+msgstr ""
+
+msgid "Save draft"
+msgstr ""
+
+msgid "Save workflow"
+msgstr ""
+
+msgid "Schedule"
+msgstr ""
+
+msgid "Scheduled"
+msgstr ""
+
+msgid "Search tickets"
+msgstr ""
+
 msgid "Send me a code"
+msgstr ""
+
+#. placeholder {0}: x.recipient_count ?? 0
+#. placeholder {1}: x.sms_count ?? 0
+msgid "Sent to {0} people, {1} SMS messages."
+msgstr ""
+
+#. placeholder {0}: health.data.server_version
+#. placeholder {1}: health.data.jobs_queued
+#. placeholder {2}: health.data.jobs_failed
+msgid "Server {0}. Jobs queued: {1}, failed: {2}."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings saved."
+msgstr ""
+
+msgid "Settings sections"
+msgstr ""
+
+msgid "Short name (slug)"
 msgstr ""
 
 msgid "Sign in"
@@ -170,19 +1142,48 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
+msgid "Sign-in codes"
+msgstr ""
+
 msgid "Signing you in"
+msgstr ""
+
+msgid "Site"
 msgstr ""
 
 msgid "Site manager"
 msgstr ""
 
+msgid "Site settings"
+msgstr ""
+
 msgid "Sites"
+msgstr ""
+
+msgid "Size"
 msgstr ""
 
 msgid "Skip to content"
 msgstr ""
 
+msgid "Slug"
+msgstr ""
+
+msgid "SMS"
+msgstr ""
+
 msgid "SMS code"
+msgstr ""
+
+#. placeholder {0}: preview.data.sms_count
+msgid "SMS messages: {0} (billed to the site)"
+msgstr ""
+
+#. placeholder {0}: usage.data.sent
+#. placeholder {1}: usage.data.delivered
+#. placeholder {2}: usage.data.failed
+#. placeholder {3}: usage.data.monthly_limit ? ` (limit ${usage.data.monthly_limit})` : ''
+msgid "SMS this month: {0} sent, {1} delivered, {2} failed{3}"
 msgstr ""
 
 msgid "Someone else changed this record. Reload to see the latest version."
@@ -200,16 +1201,68 @@ msgstr ""
 msgid "Staff"
 msgstr ""
 
+msgid "Staff queue"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+#. placeholder {0}: names.get(e.change.from_status_id) ?? '?'
+#. placeholder {1}: names.get(e.change.to_status_id) ?? '?'
+msgid "Status changed from {0} to {1}"
+msgstr ""
+
+#. placeholder {0}: i + 1
+msgid "Status name {0}"
+msgstr ""
+
+msgid "Status names must be different."
+msgstr ""
+
+msgid "Status updated."
+msgstr ""
+
+msgid "Suspend"
+msgstr ""
+
 msgid "Switch organization"
 msgstr ""
 
 msgid "System"
 msgstr ""
 
+msgid "Target type"
+msgstr ""
+
 msgid "Tenant"
 msgstr ""
 
+msgid "Tenants only"
+msgstr ""
+
+msgid "Terms ending soon"
+msgstr ""
+
 msgid "That did not work. Check your details and try again."
+msgstr ""
+
+msgid "The default visibility and assignee role apply when a ticket is opened in the category."
+msgstr ""
+
+msgid "The expiry must be after the publish time"
+msgstr ""
+
+msgid "The file is empty."
+msgstr ""
+
+#. placeholder {0}: formatBytes(UPLOAD_LIMITS[profile].maxBytes)
+msgid "The file is larger than {0}."
+msgstr ""
+
+msgid "The first administrator is invited by email."
 msgstr ""
 
 msgid "The page you are looking for does not exist or has moved."
@@ -218,10 +1271,22 @@ msgstr ""
 msgid "The request failed. Please try again."
 msgstr ""
 
+msgid "The statuses a ticket moves through at this site, in order."
+msgstr ""
+
 msgid "Theme"
 msgstr ""
 
 msgid "This accounting period is closed and can no longer be changed."
+msgstr ""
+
+msgid "This file type cannot be previewed."
+msgstr ""
+
+msgid "This file type is not allowed."
+msgstr ""
+
+msgid "This folder is empty"
 msgstr ""
 
 msgid "This record changed"
@@ -233,16 +1298,78 @@ msgstr ""
 msgid "This server offers no sign-in method this app can use."
 msgstr ""
 
+msgid "This site has its own workflow."
+msgstr ""
+
+msgid "This site uses the default workflow. Edit it to add your own statuses."
+msgstr ""
+
 msgid "This step is not available in this build yet."
+msgstr ""
+
+msgid "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
+msgstr ""
+
+msgid "This ticket is private: only your unit and management see it."
+msgstr ""
+
+msgid "This ticket was merged into another one."
 msgstr ""
 
 msgid "This value is not valid"
 msgstr ""
 
+msgid "This will be a common ticket, visible to the whole site."
+msgstr ""
+
+msgid "Ticket settings"
+msgstr ""
+
+msgid "Ticket updates"
+msgstr ""
+
+msgid "Ticket views"
+msgstr ""
+
+msgid "Ticket workflow"
+msgstr ""
+
+msgid "Ticket workflow and categories"
+msgstr ""
+
 msgid "Tickets"
 msgstr ""
 
+msgid "Tickets matching these filters will appear here."
+msgstr ""
+
+msgid "Tickets merged."
+msgstr ""
+
+msgid "Timeline"
+msgstr ""
+
+msgid "Times are in the site's timezone ({tz}). Empty publishes now."
+msgstr ""
+
+#. placeholder {0}: query.data.timezone
+#. placeholder {1}: query.data.country_code
+msgid "Timezone {0}, country {1}. Site settings live under <0>Site</0>."
+msgstr ""
+
+msgid "Timezone, currency, fiscal year, bank details and late-fee policy."
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
 msgid "Too many attempts. Please wait and try again."
+msgstr ""
+
+msgid "Too many files."
 msgstr ""
 
 msgid "Too many requests. Please wait a moment and try again."
@@ -255,7 +1382,116 @@ msgstr ""
 msgid "Try again"
 msgstr ""
 
+msgid "Try widening the filters."
+msgstr ""
+
+msgid "Unassigned"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Unit (optional)"
+msgstr ""
+
+#. placeholder {0}: query.data.pending_unit_claims
+msgid "Unit claims to approve: {0}"
+msgstr ""
+
+msgid "Units"
+msgstr ""
+
+msgid "Unread"
+msgstr ""
+
+msgid "Unread only"
+msgstr ""
+
+msgid "Up to 10 photos. Large photos are reduced and location data is removed."
+msgstr ""
+
+msgid "Up to 10 photos. Location data is removed."
+msgstr ""
+
+msgid "Upcoming meeting"
+msgstr ""
+
+msgid "Update status"
+msgstr ""
+
+msgid "Upload a file below."
+msgstr ""
+
+msgid "Upload failed."
+msgstr ""
+
+#. placeholder {0}: item.name
+msgid "Upload progress for {0}"
+msgstr ""
+
+msgid "Uploaded"
+msgstr ""
+
+msgid "Use 2 to 40 lowercase letters, digits or dashes"
+msgstr ""
+
+msgid "Vendors"
+msgstr ""
+
+msgid "Visibility"
+msgstr ""
+
+msgid "Visible to"
+msgstr ""
+
+msgid "Visible to the reporter"
+msgstr ""
+
+#. placeholder {0}: query.data.pending_visitor_approvals
+msgid "Visitor approvals: {0}"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
+msgid "Waiting deliveries"
+msgstr ""
+
+#. placeholder {0}: query.data.waiting_deliveries
+msgid "Waiting deliveries: {0}"
+msgstr ""
+
 msgid "We could not find that."
+msgstr ""
+
+msgid "Where do tickets of removed statuses go?"
+msgstr ""
+
+msgid "Whole site"
+msgstr ""
+
+msgid "Workflow"
+msgstr ""
+
+msgid "Workflow and categories"
+msgstr ""
+
+msgid "Workflow saved."
+msgstr ""
+
+msgid "Write"
+msgstr ""
+
+msgid "Write a comment"
+msgstr ""
+
+msgid "Write the announcement"
+msgstr ""
+
+msgid "Write the first announcement for this site."
+msgstr ""
+
+msgid "You are all caught up"
 msgstr ""
 
 msgid "You are not linked to a unit in this organization."
@@ -264,10 +1500,25 @@ msgstr ""
 msgid "You are not part of any organization yet"
 msgstr ""
 
+msgid "You do not have access to announcements"
+msgstr ""
+
+msgid "You do not have access to documents"
+msgstr ""
+
+msgid "You do not have access to notifications"
+msgstr ""
+
+msgid "You do not have access to the audit log"
+msgstr ""
+
 msgid "You do not have access to this"
 msgstr ""
 
 msgid "You do not have access to this page"
+msgstr ""
+
+msgid "You do not have access to tickets"
 msgstr ""
 
 msgid "You do not have permission to do this."

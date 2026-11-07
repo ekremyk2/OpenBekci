@@ -7,11 +7,114 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
+#. placeholder {0}: query.data.open_common_tickets
+msgid "{0} in common areas"
+msgstr "{0} in common areas"
+
+#. placeholder {0}: first?.read_count ?? 0
+#. placeholder {1}: first?.audience_count ?? 0
+msgid "{0} of {1} have opened this announcement. A delivered SMS or email is not counted as read."
+msgstr "{0} of {1} have opened this announcement. A delivered SMS or email is not counted as read."
+
+#. placeholder {0}: a.read_count
+#. placeholder {1}: a.recipient_count ?? '?'
+msgid "{0} of {1} read"
+msgstr "{0} of {1} read"
+
+#. placeholder {0}: ticket.vote_count
+msgid "{0} people confirmed this"
+msgstr "{0} people confirmed this"
+
+#. placeholder {0}: query.data.overdue_units
+msgid "{0} units"
+msgstr "{0} units"
+
 msgid "Accept your invitation"
 msgstr "Accept your invitation"
 
 msgid "Accountant"
 msgstr "Accountant"
+
+msgid "Accrued late fees"
+msgstr "Accrued late fees"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Activity"
+msgstr "Activity"
+
+msgid "Actor (user id)"
+msgstr "Actor (user id)"
+
+msgid "Add a note (optional)"
+msgstr "Add a note (optional)"
+
+msgid "Add category"
+msgstr "Add category"
+
+msgid "Add photos"
+msgstr "Add photos"
+
+msgid "Add status"
+msgstr "Add status"
+
+msgid "Add to this folder"
+msgstr "Add to this folder"
+
+msgid "Administrator email (optional)"
+msgstr "Administrator email (optional)"
+
+msgid "All announcements"
+msgstr "All announcements"
+
+msgid "All folders"
+msgstr "All folders"
+
+msgid "All statuses"
+msgstr "All statuses"
+
+msgid "All tickets"
+msgstr "All tickets"
+
+msgid "Always on"
+msgstr "Always on"
+
+msgid "Announcement published."
+msgstr "Announcement published."
+
+msgid "Announcement scheduled."
+msgstr "Announcement scheduled."
+
+msgid "Announcements"
+msgstr "Announcements"
+
+msgid "Any category"
+msgstr "Any category"
+
+msgid "Any status"
+msgstr "Any status"
+
+msgid "Any unit"
+msgstr "Any unit"
+
+msgid "Anyone"
+msgstr "Anyone"
+
+msgid "Apply filters"
+msgstr "Apply filters"
+
+msgid "Archive"
+msgstr "Archive"
+
+msgid "Archived"
+msgstr "Archived"
+
+msgid "As of <0/>"
+msgstr "As of <0/>"
 
 msgid "Ask your building manager to invite you."
 msgstr "Ask your building manager to invite you."
@@ -19,32 +122,356 @@ msgstr "Ask your building manager to invite you."
 msgid "Ask your manager if you think you should."
 msgstr "Ask your manager if you think you should."
 
+msgid "Assembly"
+msgstr "Assembly"
+
+msgid "Assigned to"
+msgstr "Assigned to"
+
+#. placeholder {0}: ticket.assignee.display_name
+msgid "Assigned to {0}"
+msgstr "Assigned to {0}"
+
+msgid "Assigned to you"
+msgstr "Assigned to you"
+
+msgid "Assignee"
+msgstr "Assignee"
+
+msgid "Attach files"
+msgstr "Attach files"
+
+msgid "Attempts"
+msgstr "Attempts"
+
+msgid "Audience"
+msgstr "Audience"
+
+msgid "Audit events"
+msgstr "Audit events"
+
+msgid "Audit log"
+msgstr "Audit log"
+
 msgid "Auditor"
 msgstr "Auditor"
+
+msgid "Automatic messages"
+msgstr "Automatic messages"
 
 msgid "Back to sign in"
 msgstr "Back to sign in"
 
+msgid "Backups"
+msgstr "Backups"
+
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Balances, open requests and announcements will appear here."
+
+msgid "Bank"
+msgstr "Bank"
+
+msgid "Block"
+msgstr "Block"
 
 msgid "Board member"
 msgstr "Board member"
 
+msgid "Board only"
+msgstr "Board only"
+
+msgid "Bold"
+msgstr "Bold"
+
+msgid "bold text"
+msgstr "bold text"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+#. placeholder {0}: item.name
+msgid "Cancel upload of {0}"
+msgstr "Cancel upload of {0}"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "Cash"
+msgstr "Cash"
+
+msgid "Categories"
+msgstr "Categories"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Category default"
+msgstr "Category default"
+
+msgid "Category default (common)"
+msgstr "Category default (common)"
+
+msgid "Category default (private)"
+msgstr "Category default (private)"
+
+msgid "Category name"
+msgstr "Category name"
+
+msgid "Category saved."
+msgstr "Category saved."
+
+msgid "Change status"
+msgstr "Change status"
+
+msgid "Changed (private data, hashed)"
+msgstr "Changed (private data, hashed)"
+
+msgid "Changes"
+msgstr "Changes"
+
+msgid "Channels"
+msgstr "Channels"
+
+msgid "Choose a block"
+msgstr "Choose a block"
+
+msgid "Choose a category"
+msgstr "Choose a category"
+
+msgid "Choose a channel"
+msgstr "Choose a channel"
+
+msgid "Choose a status"
+msgstr "Choose a status"
+
+msgid "Choose a ticket"
+msgstr "Choose a ticket"
+
+msgid "Choose an audience and at least one channel to see who will be reached."
+msgstr "Choose an audience and at least one channel to see who will be reached."
+
 msgid "Choose an organization"
 msgstr "Choose an organization"
+
+msgid "Choose at least one unit"
+msgstr "Choose at least one unit"
+
+msgid "Choose at least one unit."
+msgstr "Choose at least one unit."
+
+msgid "Choose files"
+msgstr "Choose files"
+
+#. placeholder {0}: missing.name
+msgid "Choose where the tickets of \"{0}\" move to."
+msgstr "Choose where the tickets of \"{0}\" move to."
+
+msgid "Choose who may open this folder and the documents in it."
+msgstr "Choose who may open this folder and the documents in it."
+
+msgid "Chosen units"
+msgstr "Chosen units"
+
+msgid "Clear"
+msgstr "Clear"
 
 msgid "Close"
 msgstr "Close"
 
+msgid "Closed"
+msgstr "Closed"
+
+msgid "Closed-like"
+msgstr "Closed-like"
+
 msgid "Code from the SMS"
 msgstr "Code from the SMS"
+
+msgid "Codes"
+msgstr "Codes"
+
+msgid "Collection rate"
+msgstr "Collection rate"
+
+msgid "Comment"
+msgstr "Comment"
+
+msgid "Comment visibility"
+msgstr "Comment visibility"
+
+msgid "Common"
+msgstr "Common"
+
+msgid "Common areas"
+msgstr "Common areas"
+
+msgid "Common by default"
+msgstr "Common by default"
+
+msgid "Common: the whole site"
+msgstr "Common: the whole site"
+
+msgid "configured"
+msgstr "configured"
+
+msgid "Confirmations"
+msgstr "Confirmations"
+
+msgid "Could not add the files. Please try again."
+msgstr "Could not add the files. Please try again."
+
+msgid "Could not assign the ticket. Please try again."
+msgstr "Could not assign the ticket. Please try again."
+
+msgid "Could not change the organization."
+msgstr "Could not change the organization."
+
+msgid "Could not change the status. Please try again."
+msgstr "Could not change the status. Please try again."
+
+msgid "Could not change the visibility. Please try again."
+msgstr "Could not change the visibility. Please try again."
+
+msgid "Could not count the recipients."
+msgstr "Could not count the recipients."
+
+msgid "Could not delete the document."
+msgstr "Could not delete the document."
+
+msgid "Could not mark everything as read."
+msgstr "Could not mark everything as read."
+
+msgid "Could not merge the tickets. Please try again."
+msgstr "Could not merge the tickets. Please try again."
+
+msgid "Could not post the comment. Please try again."
+msgstr "Could not post the comment. Please try again."
+
+msgid "Could not publish. Please try again."
+msgstr "Could not publish. Please try again."
+
+msgid "Could not save the settings."
+msgstr "Could not save the settings."
+
+msgid "Could not save your +1. Please try again."
+msgstr "Could not save your +1. Please try again."
+
+msgid "Could not save your preferences."
+msgstr "Could not save your preferences."
 
 msgid "Could not sign out. Please try again."
 msgstr "Could not sign out. Please try again."
 
+msgid "Could not update the document."
+msgstr "Could not update the document."
+
+msgid "Counting recipients"
+msgstr "Counting recipients"
+
+msgid "Create"
+msgstr "Create"
+
+msgid "Create a folder to start filing documents."
+msgstr "Create a folder to start filing documents."
+
+msgid "Create folder"
+msgstr "Create folder"
+
+msgid "Created"
+msgstr "Created"
+
 msgid "Dark"
 msgstr "Dark"
+
+#. placeholder {0}: query.data.locale
+msgid "Debug view of /codes for locale {0}."
+msgstr "Debug view of /codes for locale {0}."
+
+#. placeholder {0}: query.data.pending_declared_payments
+msgid "Declared payments to confirm: {0}"
+msgstr "Declared payments to confirm: {0}"
+
+#. placeholder {0}: category.name
+msgid "Default assignee role of {0}"
+msgstr "Default assignee role of {0}"
+
+msgid "Default language"
+msgstr "Default language"
+
+#. placeholder {0}: category.name
+msgid "Default visibility of {0}"
+msgstr "Default visibility of {0}"
+
+msgid "Default visibility of the new category"
+msgstr "Default visibility of the new category"
+
+msgid "Defaults saved."
+msgstr "Defaults saved."
+
+msgid "Delete"
+msgstr "Delete"
+
+#. placeholder {0}: doc.title
+msgid "Delete \"{0}\"?"
+msgstr "Delete \"{0}\"?"
+
+#. placeholder {0}: doc.title
+msgid "Delete {0}"
+msgstr "Delete {0}"
+
+msgid "Delete this announcement?"
+msgstr "Delete this announcement?"
+
+msgid "Delivery preview"
+msgstr "Delivery preview"
+
+msgid "Describe the problem"
+msgstr "Describe the problem"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Document preview"
+msgstr "Document preview"
+
+msgid "Document title"
+msgstr "Document title"
+
+msgid "Documents"
+msgstr "Documents"
+
+msgid "Done"
+msgstr "Done"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Download original"
+msgstr "Download original"
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "Draft saved."
+msgstr "Draft saved."
+
+msgid "Drafts"
+msgstr "Drafts"
+
+msgid "Drop files here or choose files"
+msgstr "Drop files here or choose files"
+
+msgid "Dues reminders"
+msgstr "Dues reminders"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Edit announcement"
+msgstr "Edit announcement"
+
+msgid "Editor mode"
+msgstr "Editor mode"
 
 msgid "Email"
 msgstr "Email"
@@ -58,8 +485,24 @@ msgstr "Email me a link"
 msgid "Email or phone"
 msgstr "Email or phone"
 
+#. placeholder {0}: preview.data.email_count
+msgid "Emails: {0}"
+msgstr "Emails: {0}"
+
+msgid "Enter a short title"
+msgstr "Enter a short title"
+
+msgid "Enter a title"
+msgstr "Enter a title"
+
+msgid "Enter a valid email address"
+msgstr "Enter a valid email address"
+
 msgid "Enter the code from the SMS"
 msgstr "Enter the code from the SMS"
+
+msgid "Enter the organization name"
+msgstr "Enter the organization name"
 
 msgid "Enter your email"
 msgstr "Enter your email"
@@ -73,11 +516,65 @@ msgstr "Enter your password"
 msgid "Enter your phone number"
 msgstr "Enter your phone number"
 
+msgid "Error"
+msgstr "Error"
+
+msgid "Every status needs a name."
+msgstr "Every status needs a name."
+
+msgid "Everyone"
+msgstr "Everyone"
+
+msgid "Expected visitors today"
+msgstr "Expected visitors today"
+
+msgid "Expires at (optional)"
+msgstr "Expires at (optional)"
+
+msgid "Fixed"
+msgstr "Fixed"
+
+msgid "Folder path"
+msgstr "Folder path"
+
+msgid "Folder saved."
+msgstr "Folder saved."
+
+msgid "Folder settings"
+msgstr "Folder settings"
+
+msgid "Folders"
+msgstr "Folders"
+
+msgid "From"
+msgstr "From"
+
+msgid "Generated"
+msgstr "Generated"
+
+msgid "Generated: certificate"
+msgstr "Generated: certificate"
+
+msgid "Generated: receipt"
+msgstr "Generated: receipt"
+
+msgid "Generated: statement"
+msgstr "Generated: statement"
+
 msgid "Go home"
 msgstr "Go home"
 
 msgid "Guard"
 msgstr "Guard"
+
+msgid "Hash before and after"
+msgstr "Hash before and after"
+
+msgid "Heading"
+msgstr "Heading"
+
+msgid "Health"
+msgstr "Health"
 
 msgid "Home"
 msgstr "Home"
@@ -88,47 +585,362 @@ msgstr "Household member"
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "If that address is registered, a sign-in link is on its way. It works once."
 
+msgid "In progress"
+msgstr "In progress"
+
+msgid "In-app"
+msgstr "In-app"
+
+#. placeholder {0}: preview.data.in_app_count
+msgid "In-app notifications: {0}"
+msgstr "In-app notifications: {0}"
+
+msgid "Inbox"
+msgstr "Inbox"
+
+msgid "Instance name"
+msgstr "Instance name"
+
+msgid "Instance settings"
+msgstr "Instance settings"
+
+msgid "Internal note"
+msgstr "Internal note"
+
+msgid "Invitations"
+msgstr "Invitations"
+
+msgid "It starts with the visibility of the folder it is in. You can change it after."
+msgstr "It starts with the visibility of the folder it is in. You can change it after."
+
+msgid "Italic"
+msgstr "Italic"
+
+msgid "italic text"
+msgstr "italic text"
+
+msgid "Job"
+msgstr "Job"
+
+msgid "Jobs"
+msgstr "Jobs"
+
 msgid "Join your building"
 msgstr "Join your building"
+
+msgid "Keep at least one closed-like status."
+msgstr "Keep at least one closed-like status."
+
+msgid "Keep at least one open-like status."
+msgstr "Keep at least one open-like status."
 
 msgid "Keep editing"
 msgstr "Keep editing"
 
+msgid "Keep the title short"
+msgstr "Keep the title short"
+
+msgid "Keep this ticket"
+msgstr "Keep this ticket"
+
 msgid "Language"
 msgstr "Language"
+
+msgid "Last backup"
+msgstr "Last backup"
+
+msgid "Leave empty for problems in shared areas."
+msgstr "Leave empty for problems in shared areas."
+
+msgid "Leave empty to open it as yourself."
+msgstr "Leave empty to open it as yourself."
 
 msgid "Light"
 msgstr "Light"
 
+msgid "Link"
+msgstr "Link"
+
+msgid "link text"
+msgstr "link text"
+
+msgid "List"
+msgstr "List"
+
+msgid "Load more"
+msgstr "Load more"
+
+#. placeholder {0}: s.mail_configured ? t`configured` : t`not configured`
+#. placeholder {1}: s.sms_configured ? t`configured` : t`not configured`
+msgid "Mail: {0}. SMS: {1}."
+msgstr "Mail: {0}. SMS: {1}."
+
 msgid "Main"
 msgstr "Main"
+
+msgid "Mark all as read"
+msgstr "Mark all as read"
+
+msgid "Me too"
+msgstr "Me too"
+
+#. placeholder {0}: i + 1
+msgid "Meaning of status {0}"
+msgstr "Meaning of status {0}"
+
+msgid "Meeting notices"
+msgstr "Meeting notices"
+
+msgid "Merge"
+msgstr "Merge"
+
+msgid "Merge duplicate"
+msgstr "Merge duplicate"
+
+msgid "Merge into another ticket"
+msgstr "Merge into another ticket"
+
+msgid "Merged"
+msgstr "Merged"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Message (Markdown)"
+msgstr "Message (Markdown)"
+
+msgid "Messages nobody sends by hand use these channels. Sign-in codes and invitations always go by SMS or email. People can still mute non-essential types themselves."
+msgstr "Messages nobody sends by hand use these channels. Sign-in codes and invitations always go by SMS or email. People can still mute non-essential types themselves."
 
 msgid "Money"
 msgstr "Money"
 
+#. placeholder {0}: row.name
+msgid "Move {0} down"
+msgstr "Move {0} down"
+
+#. placeholder {0}: doc.title
+msgid "Move {0} to"
+msgstr "Move {0} to"
+
+#. placeholder {0}: row.name
+msgid "Move {0} up"
+msgstr "Move {0} up"
+
+msgid "Move to…"
+msgstr "Move to…"
+
+msgid "Mute notifications"
+msgstr "Mute notifications"
+
+msgid "Muted types stop reaching you. Sign-in codes and invitations always arrive."
+msgstr "Muted types stop reaching you. Sign-in codes and invitations always arrive."
+
 msgid "My account"
 msgstr "My account"
+
+msgid "My tickets"
+msgstr "My tickets"
 
 msgid "My units"
 msgstr "My units"
 
+msgid "Myself"
+msgstr "Myself"
+
+msgid "Name"
+msgstr "Name"
+
 msgid "Navigation"
 msgstr "Navigation"
+
+msgid "Needs attention"
+msgstr "Needs attention"
+
+msgid "New"
+msgstr "New"
+
+msgid "New announcement"
+msgstr "New announcement"
+
+msgid "New announcements"
+msgstr "New announcements"
+
+msgid "New category"
+msgstr "New category"
+
+msgid "New folder"
+msgstr "New folder"
+
+msgid "New notifications will appear here."
+msgstr "New notifications will appear here."
+
+msgid "New organization"
+msgstr "New organization"
+
+msgid "New ticket"
+msgstr "New ticket"
+
+msgid "Next backup"
+msgstr "Next backup"
+
+msgid "Next photo"
+msgstr "Next photo"
+
+msgid "No activity yet."
+msgstr "No activity yet."
+
+msgid "No announcements"
+msgstr "No announcements"
+
+msgid "No default assignee"
+msgstr "No default assignee"
+
+msgid "No details recorded."
+msgstr "No details recorded."
+
+msgid "No events match"
+msgstr "No events match"
+
+msgid "No folders yet"
+msgstr "No folders yet"
+
+msgid "No jobs"
+msgstr "No jobs"
+
+msgid "No meeting is scheduled."
+msgstr "No meeting is scheduled."
+
+msgid "No organizations yet"
+msgstr "No organizations yet"
+
+msgid "No terms end soon."
+msgstr "No terms end soon."
+
+msgid "No tickets here"
+msgstr "No tickets here"
+
+msgid "No unit"
+msgstr "No unit"
+
+msgid "No units yet."
+msgstr "No units yet."
+
+msgid "Not available"
+msgstr "Not available"
+
+msgid "not configured"
+msgstr "not configured"
+
+msgid "Not read"
+msgstr "Not read"
+
+msgid "Note visibility"
+msgstr "Note visibility"
+
+msgid "Note with the status change"
+msgstr "Note with the status change"
+
+msgid "Nothing is waiting for you."
+msgstr "Nothing is waiting for you."
+
+msgid "Nothing to preview yet."
+msgstr "Nothing to preview yet."
+
+msgid "Notices from your management will appear here."
+msgstr "Notices from your management will appear here."
+
+msgid "Notification defaults"
+msgstr "Notification defaults"
+
+msgid "Notification views"
+msgstr "Notification views"
 
 msgid "Notifications"
 msgstr "Notifications"
 
+msgid "Notifications, {unread} unread"
+msgstr "Notifications, {unread} unread"
+
+msgid "One block"
+msgstr "One block"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Open common tickets"
+msgstr "Open common tickets"
+
 msgid "Open menu"
 msgstr "Open menu"
+
+#. placeholder {0}: i + 1
+#. placeholder {1}: images.length
+msgid "Open photo {0} of {1}"
+msgstr "Open photo {0} of {1}"
+
+msgid "Open registration"
+msgstr "Open registration"
+
+msgid "Open ticket"
+msgstr "Open ticket"
+
+msgid "Open tickets"
+msgstr "Open tickets"
+
+msgid "Open-like"
+msgstr "Open-like"
+
+msgid "Open-like statuses count as open tickets in reports; closed-like statuses count as closed."
+msgstr "Open-like statuses count as open tickets in reports; closed-like statuses count as closed."
+
+#. placeholder {0}: names.get(e.change.to_status_id) ?? '?'
+msgid "Opened as {0}"
+msgstr "Opened as {0}"
+
+#. placeholder {0}: t.reporter_display_name
+#. placeholder {1}: t.unit_door_number ? ` (${t.unit_door_number})` : ''
+msgid "Opened by {0}{1}"
+msgstr "Opened by {0}{1}"
+
+msgid "Opened on behalf of"
+msgstr "Opened on behalf of"
+
+msgid "Operations"
+msgstr "Operations"
+
+msgid "Organization"
+msgstr "Organization"
 
 msgid "Organization admin"
 msgstr "Organization admin"
 
-msgid "Organizations, health and backup status will appear here."
-msgstr "Organizations, health and backup status will appear here."
+msgid "Organization created."
+msgstr "Organization created."
+
+msgid "Organization saved."
+msgstr "Organization saved."
+
+msgid "Organizations"
+msgstr "Organizations"
+
+msgid "Overdue"
+msgstr "Overdue"
+
+msgid "Owed by owners"
+msgstr "Owed by owners"
+
+msgid "Owed by tenants"
+msgstr "Owed by tenants"
 
 msgid "Owner"
 msgstr "Owner"
+
+msgid "Owners"
+msgstr "Owners"
+
+msgid "Owners only"
+msgstr "Owners only"
 
 msgid "Page not found"
 msgstr "Page not found"
@@ -136,17 +948,102 @@ msgstr "Page not found"
 msgid "Password"
 msgstr "Password"
 
+msgid "Payment confirmed"
+msgstr "Payment confirmed"
+
+msgid "Payment receipts"
+msgstr "Payment receipts"
+
+msgid "Payment rejected"
+msgstr "Payment rejected"
+
+msgid "PDF, images and office documents."
+msgstr "PDF, images and office documents."
+
 msgid "People"
 msgstr "People"
 
 msgid "Phone number"
 msgstr "Phone number"
 
+msgid "Photo"
+msgstr "Photo"
+
+#. placeholder {0}: index + 1
+#. placeholder {1}: images.length
+msgid "Photo {0} of {1}"
+msgstr "Photo {0} of {1}"
+
+msgid "Pin to the top"
+msgstr "Pin to the top"
+
+msgid "Pinned"
+msgstr "Pinned"
+
 msgid "Platform administration"
 msgstr "Platform administration"
 
+msgid "Platform sections"
+msgstr "Platform sections"
+
 msgid "Please confirm it is you before continuing."
 msgstr "Please confirm it is you before continuing."
+
+msgid "Post comment"
+msgstr "Post comment"
+
+msgid "Preferences"
+msgstr "Preferences"
+
+msgid "Preview"
+msgstr "Preview"
+
+#. placeholder {0}: doc.title
+msgid "Preview of {0}"
+msgstr "Preview of {0}"
+
+msgid "Previous photo"
+msgstr "Previous photo"
+
+msgid "Private"
+msgstr "Private"
+
+msgid "Private and common"
+msgstr "Private and common"
+
+msgid "Private by default"
+msgstr "Private by default"
+
+msgid "Private to the unit"
+msgstr "Private to the unit"
+
+msgid "Private: that unit and management"
+msgstr "Private: that unit and management"
+
+msgid "Publish"
+msgstr "Publish"
+
+msgid "Publish at (optional)"
+msgstr "Publish at (optional)"
+
+msgid "Publish now"
+msgstr "Publish now"
+
+msgid "Published"
+msgstr "Published"
+
+msgid "Reactivate"
+msgstr "Reactivate"
+
+msgid "Read receipts"
+msgstr "Read receipts"
+
+msgid "Readers"
+msgstr "Readers"
+
+#. placeholder {0}: preview.data.recipient_count
+msgid "Recipients: {0}"
+msgstr "Recipients: {0}"
 
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
@@ -155,11 +1052,86 @@ msgstr "Reference: {0}"
 msgid "Reload"
 msgstr "Reload"
 
+#. placeholder {0}: item.name
+#. placeholder {0}: row.name
+msgid "Remove {0}"
+msgstr "Remove {0}"
+
+#. placeholder {0}: doc.title
+msgid "Rename {0}"
+msgstr "Rename {0}"
+
+msgid "Replace the workflow with the default (open, in progress, done)?"
+msgstr "Replace the workflow with the default (open, in progress, done)?"
+
+#. placeholder {0}: s.name
+msgid "Replacement for {0}"
+msgstr "Replacement for {0}"
+
+#. placeholder {0}: event.request_id
+#. placeholder {1}: event.ip ? ` from ${event.ip}` : ''
+msgid "Request {0}{1}"
+msgstr "Request {0}{1}"
+
 msgid "Reset your password"
 msgstr "Reset your password"
 
+msgid "Restore default workflow"
+msgstr "Restore default workflow"
+
+#. placeholder {0}: item.name
+msgid "Retry {0}"
+msgstr "Retry {0}"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Save defaults"
+msgstr "Save defaults"
+
+msgid "Save draft"
+msgstr "Save draft"
+
+msgid "Save workflow"
+msgstr "Save workflow"
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Scheduled"
+msgstr "Scheduled"
+
+msgid "Search tickets"
+msgstr "Search tickets"
+
 msgid "Send me a code"
 msgstr "Send me a code"
+
+#. placeholder {0}: x.recipient_count ?? 0
+#. placeholder {1}: x.sms_count ?? 0
+msgid "Sent to {0} people, {1} SMS messages."
+msgstr "Sent to {0} people, {1} SMS messages."
+
+#. placeholder {0}: health.data.server_version
+#. placeholder {1}: health.data.jobs_queued
+#. placeholder {2}: health.data.jobs_failed
+msgid "Server {0}. Jobs queued: {1}, failed: {2}."
+msgstr "Server {0}. Jobs queued: {1}, failed: {2}."
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Settings saved."
+msgstr "Settings saved."
+
+msgid "Settings sections"
+msgstr "Settings sections"
+
+msgid "Short name (slug)"
+msgstr "Short name (slug)"
 
 msgid "Sign in"
 msgstr "Sign in"
@@ -170,20 +1142,49 @@ msgstr "Sign in to manage your building."
 msgid "Sign out"
 msgstr "Sign out"
 
+msgid "Sign-in codes"
+msgstr "Sign-in codes"
+
 msgid "Signing you in"
 msgstr "Signing you in"
+
+msgid "Site"
+msgstr "Site"
 
 msgid "Site manager"
 msgstr "Site manager"
 
+msgid "Site settings"
+msgstr "Site settings"
+
 msgid "Sites"
 msgstr "Sites"
+
+msgid "Size"
+msgstr "Size"
 
 msgid "Skip to content"
 msgstr "Skip to content"
 
+msgid "Slug"
+msgstr "Slug"
+
+msgid "SMS"
+msgstr "SMS"
+
 msgid "SMS code"
 msgstr "SMS code"
+
+#. placeholder {0}: preview.data.sms_count
+msgid "SMS messages: {0} (billed to the site)"
+msgstr "SMS messages: {0} (billed to the site)"
+
+#. placeholder {0}: usage.data.sent
+#. placeholder {1}: usage.data.delivered
+#. placeholder {2}: usage.data.failed
+#. placeholder {3}: usage.data.monthly_limit ? ` (limit ${usage.data.monthly_limit})` : ''
+msgid "SMS this month: {0} sent, {1} delivered, {2} failed{3}"
+msgstr "SMS this month: {0} sent, {1} delivered, {2} failed{3}"
 
 msgid "Someone else changed this record. Reload to see the latest version."
 msgstr "Someone else changed this record. Reload to see the latest version."
@@ -200,17 +1201,69 @@ msgstr "Something went wrong. Please try again."
 msgid "Staff"
 msgstr "Staff"
 
+msgid "Staff queue"
+msgstr "Staff queue"
+
+msgid "State"
+msgstr "State"
+
+msgid "Status"
+msgstr "Status"
+
+#. placeholder {0}: names.get(e.change.from_status_id) ?? '?'
+#. placeholder {1}: names.get(e.change.to_status_id) ?? '?'
+msgid "Status changed from {0} to {1}"
+msgstr "Status changed from {0} to {1}"
+
+#. placeholder {0}: i + 1
+msgid "Status name {0}"
+msgstr "Status name {0}"
+
+msgid "Status names must be different."
+msgstr "Status names must be different."
+
+msgid "Status updated."
+msgstr "Status updated."
+
+msgid "Suspend"
+msgstr "Suspend"
+
 msgid "Switch organization"
 msgstr "Switch organization"
 
 msgid "System"
 msgstr "System"
 
+msgid "Target type"
+msgstr "Target type"
+
 msgid "Tenant"
 msgstr "Tenant"
 
+msgid "Tenants only"
+msgstr "Tenants only"
+
+msgid "Terms ending soon"
+msgstr "Terms ending soon"
+
 msgid "That did not work. Check your details and try again."
 msgstr "That did not work. Check your details and try again."
+
+msgid "The default visibility and assignee role apply when a ticket is opened in the category."
+msgstr "The default visibility and assignee role apply when a ticket is opened in the category."
+
+msgid "The expiry must be after the publish time"
+msgstr "The expiry must be after the publish time"
+
+msgid "The file is empty."
+msgstr "The file is empty."
+
+#. placeholder {0}: formatBytes(UPLOAD_LIMITS[profile].maxBytes)
+msgid "The file is larger than {0}."
+msgstr "The file is larger than {0}."
+
+msgid "The first administrator is invited by email."
+msgstr "The first administrator is invited by email."
 
 msgid "The page you are looking for does not exist or has moved."
 msgstr "The page you are looking for does not exist or has moved."
@@ -218,11 +1271,23 @@ msgstr "The page you are looking for does not exist or has moved."
 msgid "The request failed. Please try again."
 msgstr "The request failed. Please try again."
 
+msgid "The statuses a ticket moves through at this site, in order."
+msgstr "The statuses a ticket moves through at this site, in order."
+
 msgid "Theme"
 msgstr "Theme"
 
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "This accounting period is closed and can no longer be changed."
+
+msgid "This file type cannot be previewed."
+msgstr "This file type cannot be previewed."
+
+msgid "This file type is not allowed."
+msgstr "This file type is not allowed."
+
+msgid "This folder is empty"
+msgstr "This folder is empty"
 
 msgid "This record changed"
 msgstr "This record changed"
@@ -233,17 +1298,79 @@ msgstr "This request was already sent with different details. Reload the form an
 msgid "This server offers no sign-in method this app can use."
 msgstr "This server offers no sign-in method this app can use."
 
+msgid "This site has its own workflow."
+msgstr "This site has its own workflow."
+
+msgid "This site uses the default workflow. Edit it to add your own statuses."
+msgstr "This site uses the default workflow. Edit it to add your own statuses."
+
 msgid "This step is not available in this build yet."
 msgstr "This step is not available in this build yet."
+
+msgid "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
+msgstr "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
+
+msgid "This ticket is private: only your unit and management see it."
+msgstr "This ticket is private: only your unit and management see it."
+
+msgid "This ticket was merged into another one."
+msgstr "This ticket was merged into another one."
 
 msgid "This value is not valid"
 msgstr "This value is not valid"
 
+msgid "This will be a common ticket, visible to the whole site."
+msgstr "This will be a common ticket, visible to the whole site."
+
+msgid "Ticket settings"
+msgstr "Ticket settings"
+
+msgid "Ticket updates"
+msgstr "Ticket updates"
+
+msgid "Ticket views"
+msgstr "Ticket views"
+
+msgid "Ticket workflow"
+msgstr "Ticket workflow"
+
+msgid "Ticket workflow and categories"
+msgstr "Ticket workflow and categories"
+
 msgid "Tickets"
 msgstr "Tickets"
 
+msgid "Tickets matching these filters will appear here."
+msgstr "Tickets matching these filters will appear here."
+
+msgid "Tickets merged."
+msgstr "Tickets merged."
+
+msgid "Timeline"
+msgstr "Timeline"
+
+msgid "Times are in the site's timezone ({tz}). Empty publishes now."
+msgstr "Times are in the site's timezone ({tz}). Empty publishes now."
+
+#. placeholder {0}: query.data.timezone
+#. placeholder {1}: query.data.country_code
+msgid "Timezone {0}, country {1}. Site settings live under <0>Site</0>."
+msgstr "Timezone {0}, country {1}. Site settings live under <0>Site</0>."
+
+msgid "Timezone, currency, fiscal year, bank details and late-fee policy."
+msgstr "Timezone, currency, fiscal year, bank details and late-fee policy."
+
+msgid "Title"
+msgstr "Title"
+
+msgid "To"
+msgstr "To"
+
 msgid "Too many attempts. Please wait and try again."
 msgstr "Too many attempts. Please wait and try again."
+
+msgid "Too many files."
+msgstr "Too many files."
 
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Too many requests. Please wait a moment and try again."
@@ -255,8 +1382,117 @@ msgstr "Too many requests. Try again in {0} seconds."
 msgid "Try again"
 msgstr "Try again"
 
+msgid "Try widening the filters."
+msgstr "Try widening the filters."
+
+msgid "Unassigned"
+msgstr "Unassigned"
+
+msgid "Unit"
+msgstr "Unit"
+
+msgid "Unit (optional)"
+msgstr "Unit (optional)"
+
+#. placeholder {0}: query.data.pending_unit_claims
+msgid "Unit claims to approve: {0}"
+msgstr "Unit claims to approve: {0}"
+
+msgid "Units"
+msgstr "Units"
+
+msgid "Unread"
+msgstr "Unread"
+
+msgid "Unread only"
+msgstr "Unread only"
+
+msgid "Up to 10 photos. Large photos are reduced and location data is removed."
+msgstr "Up to 10 photos. Large photos are reduced and location data is removed."
+
+msgid "Up to 10 photos. Location data is removed."
+msgstr "Up to 10 photos. Location data is removed."
+
+msgid "Upcoming meeting"
+msgstr "Upcoming meeting"
+
+msgid "Update status"
+msgstr "Update status"
+
+msgid "Upload a file below."
+msgstr "Upload a file below."
+
+msgid "Upload failed."
+msgstr "Upload failed."
+
+#. placeholder {0}: item.name
+msgid "Upload progress for {0}"
+msgstr "Upload progress for {0}"
+
+msgid "Uploaded"
+msgstr "Uploaded"
+
+msgid "Use 2 to 40 lowercase letters, digits or dashes"
+msgstr "Use 2 to 40 lowercase letters, digits or dashes"
+
+msgid "Vendors"
+msgstr "Vendors"
+
+msgid "Visibility"
+msgstr "Visibility"
+
+msgid "Visible to"
+msgstr "Visible to"
+
+msgid "Visible to the reporter"
+msgstr "Visible to the reporter"
+
+#. placeholder {0}: query.data.pending_visitor_approvals
+msgid "Visitor approvals: {0}"
+msgstr "Visitor approvals: {0}"
+
+msgid "Waiting"
+msgstr "Waiting"
+
+msgid "Waiting deliveries"
+msgstr "Waiting deliveries"
+
+#. placeholder {0}: query.data.waiting_deliveries
+msgid "Waiting deliveries: {0}"
+msgstr "Waiting deliveries: {0}"
+
 msgid "We could not find that."
 msgstr "We could not find that."
+
+msgid "Where do tickets of removed statuses go?"
+msgstr "Where do tickets of removed statuses go?"
+
+msgid "Whole site"
+msgstr "Whole site"
+
+msgid "Workflow"
+msgstr "Workflow"
+
+msgid "Workflow and categories"
+msgstr "Workflow and categories"
+
+msgid "Workflow saved."
+msgstr "Workflow saved."
+
+msgid "Write"
+msgstr "Write"
+
+msgid "Write a comment"
+msgstr "Write a comment"
+
+msgid "Write the announcement"
+msgstr "Write the announcement"
+
+msgid "Write the first announcement for this site."
+msgstr "Write the first announcement for this site."
+
+msgid "You are all caught up"
+msgstr "You are all caught up"
 
 msgid "You are not linked to a unit in this organization."
 msgstr "You are not linked to a unit in this organization."
@@ -264,11 +1500,26 @@ msgstr "You are not linked to a unit in this organization."
 msgid "You are not part of any organization yet"
 msgstr "You are not part of any organization yet"
 
+msgid "You do not have access to announcements"
+msgstr "You do not have access to announcements"
+
+msgid "You do not have access to documents"
+msgstr "You do not have access to documents"
+
+msgid "You do not have access to notifications"
+msgstr "You do not have access to notifications"
+
+msgid "You do not have access to the audit log"
+msgstr "You do not have access to the audit log"
+
 msgid "You do not have access to this"
 msgstr "You do not have access to this"
 
 msgid "You do not have access to this page"
 msgstr "You do not have access to this page"
+
+msgid "You do not have access to tickets"
+msgstr "You do not have access to tickets"
 
 msgid "You do not have permission to do this."
 msgstr "You do not have permission to do this."
