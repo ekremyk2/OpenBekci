@@ -11,7 +11,7 @@ post:
   operationId: access.openAccessPoint
   summary: Open an access point manually
   description: |-
-    **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds; there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
+    **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds (`expires_at - issued_at` is at most 60 seconds for every `open_point`; the agent refuses a longer lifetime with `ack: refused`, reason `ttl`, and a failed or interrupted result is never retried); there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
 
     Permission: `access.open`.
 

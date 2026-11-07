@@ -15,7 +15,7 @@ post:
 
     Permission: `money.lock`.
 
-    Problems: `conflict` (409).
+    Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
   tags:
     - money
   security:
@@ -28,10 +28,10 @@ post:
       - money.lock
     accountant:
       - money.lock
-  x-idempotent: optional
+  x-idempotent: required
   x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:
     required: false
     content:

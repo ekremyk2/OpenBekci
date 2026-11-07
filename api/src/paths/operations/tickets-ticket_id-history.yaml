@@ -13,7 +13,9 @@ get:
   description: |-
     **Release 0.1.** Status history of a ticket.
 
-    Permission (any one of): `tickets.read`, `tickets.open`.
+    Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
   tags:
     - operations
   security:
@@ -32,7 +34,7 @@ get:
     auditor:
       - tickets.read
     staff:
-      - tickets.read
+      - tickets.read_assigned
       - tickets.open
     owner:
       - tickets.open

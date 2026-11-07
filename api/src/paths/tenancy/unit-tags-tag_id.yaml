@@ -38,8 +38,6 @@ get:
       - units.read
     household:
       - units.read
-    former_occupant:
-      - units.read
   x-stability: stable
   responses:
     "200":

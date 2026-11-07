@@ -11,7 +11,7 @@ put:
   operationId: community.setGuardPin
   summary: Set or reset a guard PIN
   description: |-
-    **Release 0.3.** For a person with a guard membership; stored hashed.
+    **Release 0.3.** For a person with a guard membership; stored hashed; 4 to 8 digits. PINs are per person and are checked together with `person_id` at the booth, so they need not be unique. Setting a PIN clears a lock.
 
     Permission: `gate.manage`.
 

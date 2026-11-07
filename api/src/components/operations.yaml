@@ -8,6 +8,8 @@ schemas:
       - charge.overdue
       - payment.receipt
       - payment.declared
+      - payment.confirmed
+      - payment.rejected
       - ticket.updated
       - ticket.commented
       - claim.requested
@@ -164,6 +166,18 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      default_visibility: private
+      default_assignee_role: site_manager
+      position: 1
+      archived: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   TicketCategoryCreate:
     type: object
     required:
@@ -237,6 +251,20 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          default_visibility: private
+          default_assignee_role: site_manager
+          position: 1
+          archived: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   TicketAssignee:
     type: object
     required:
@@ -303,20 +331,6 @@ schemas:
       updated_at:
         type: string
         format: date-time
-  TicketAttachmentList:
-    type: object
-    required:
-      - items
-      - next_cursor
-    properties:
-      items:
-        type: array
-        items:
-          $ref: "#/schemas/TicketAttachment"
-      next_cursor:
-        type: string
-        nullable: true
-        description: Pass as `cursor` for the next page; null on the last page.
   TicketAttachmentCreate:
     type: object
     required:
@@ -555,6 +569,42 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_id: null
+          unit_door_number: null
+          reporter_person_id: 0192a3f0-1000-7000-8000-000000000001
+          reporter_display_name: reporter display name
+          category_id: 0192a3f0-1000-7000-8000-000000000003
+          title: Elevator stuck on floor 3
+          description: description
+          status_id: 0192a3f0-1000-7000-8000-000000000001
+          status_name: Open
+          status_semantic: open_like
+          visibility: common
+          assignee: null
+          vote_count: 4
+          voted_by_me: false
+          merged_into_id: null
+          comment_count: 1
+          attachments:
+            - id: 0192a3f0-1000-7000-8000-000000000003
+              org_id: 0192a3f0-1000-7000-8000-000000000001
+              ticket_id: 0192a3f0-1000-7000-8000-000000000001
+              comment_id: null
+              file_id: 0192a3f0-1000-7000-8000-000000000002
+              mime: mime
+              size: 1
+              created_at: 2026-03-01T09:00:00Z
+              updated_at: 2026-03-01T09:00:00Z
+          closed_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   TicketTransition:
     type: object
     required:
@@ -641,28 +691,30 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      ticket_id: 0192a3f0-1000-7000-8000-000000000004
+      author_person_id: 0192a3f0-1000-7000-8000-000000000005
+      author_display_name: Ali Veli
+      body: body
+      visibility: public
+      attachments:
+        - id: 0192a3f0-1000-7000-8000-000000000006
+          org_id: 0192a3f0-1000-7000-8000-000000000007
+          ticket_id: 0192a3f0-1000-7000-8000-000000000008
+          comment_id: null
+          file_id: 0192a3f0-1000-7000-8000-000000000009
+          mime: mime
+          size: 1
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   TicketCommentCreate:
     type: object
     required:
       - body
-    properties:
-      body:
-        type: string
-      visibility:
-        type: string
-        description: Open enum.
-        enum:
-          - public
-          - internal
-        x-open-enum: true
-      attachment_file_ids:
-        type: array
-        items:
-          type: string
-          format: uuid
-  TicketCommentUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
     properties:
       body:
         type: string
@@ -692,6 +744,28 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          ticket_id: 0192a3f0-1000-7000-8000-000000000004
+          author_person_id: 0192a3f0-1000-7000-8000-000000000005
+          author_display_name: Ali Veli
+          body: body
+          visibility: public
+          attachments:
+            - id: 0192a3f0-1000-7000-8000-000000000006
+              org_id: 0192a3f0-1000-7000-8000-000000000007
+              ticket_id: 0192a3f0-1000-7000-8000-000000000008
+              comment_id: null
+              file_id: 0192a3f0-1000-7000-8000-000000000009
+              mime: mime
+              size: 1
+              created_at: 2026-03-01T09:00:00Z
+              updated_at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   TicketStatusChange:
     type: object
     description: Append-only status history.
@@ -739,6 +813,17 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      ticket_id: 0192a3f0-1000-7000-8000-000000000004
+      from_status_id: null
+      to_status_id: 0192a3f0-1000-7000-8000-000000000005
+      changed_by: null
+      comment: null
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   TicketStatusChangeList:
     type: object
     required:
@@ -753,6 +838,19 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          ticket_id: 0192a3f0-1000-7000-8000-000000000004
+          from_status_id: null
+          to_status_id: 0192a3f0-1000-7000-8000-000000000005
+          changed_by: null
+          comment: null
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   AnnouncementAudience:
     type: object
     required:
@@ -1006,6 +1104,34 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          title: Water cut on Saturday
+          body_md: body md
+          status: published
+          audience:
+            kind: site
+          publish_at: null
+          expires_at: null
+          pinned: false
+          channels:
+            - in_app
+            - sms
+          recipient_count: 120
+          sms_count: 80
+          read_count: 1
+          read_at: null
+          file_ids:
+            - 0192a3f0-1000-7000-8000-000000000003
+          published_at: null
+          created_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   AnnouncementPreviewRequest:
     type: object
     required:
@@ -1082,6 +1208,12 @@ schemas:
         type: string
         format: date-time
         nullable: true
+    example:
+      person_id: 0192a3f0-1000-7000-8000-000000000002
+      display_name: Ali Veli
+      unit_door_numbers:
+        - unit door numbers
+      read_at: null
   AnnouncementReadList:
     type: object
     required:
@@ -1101,6 +1233,16 @@ schemas:
         type: integer
       read_count:
         type: integer
+    example:
+      items:
+        - person_id: 0192a3f0-1000-7000-8000-000000000002
+          display_name: Ali Veli
+          unit_door_numbers:
+            - unit door numbers
+          read_at: null
+      next_cursor: null
+      audience_count: 3
+      read_count: 3
   DocumentVisibility:
     type: object
     required:
@@ -1192,6 +1334,25 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      parent_id: null
+      name: Ali Veli
+      kind: site
+      unit_id: null
+      visibility:
+        level: board
+        unit_ids:
+          - 0192a3f0-1000-7000-8000-000000000005
+      breadcrumb:
+        - id: 0192a3f0-1000-7000-8000-000000000006
+          name: Ali Veli
+      is_system: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   FolderCreate:
     type: object
     required:
@@ -1235,6 +1396,27 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          parent_id: null
+          name: Ali Veli
+          kind: site
+          unit_id: null
+          visibility:
+            level: board
+            unit_ids:
+              - 0192a3f0-1000-7000-8000-000000000005
+          breadcrumb:
+            - id: 0192a3f0-1000-7000-8000-000000000006
+              name: Ali Veli
+          is_system: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   GeneratedFrom:
     type: object
     required:
@@ -1321,6 +1503,27 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      folder_id: 0192a3f0-1000-7000-8000-000000000005
+      title: Ali Veli
+      file_id: 0192a3f0-1000-7000-8000-000000000006
+      mime: mime
+      size: 1
+      visibility:
+        level: board
+        unit_ids:
+          - 0192a3f0-1000-7000-8000-000000000007
+      source: uploaded
+      generated_from:
+        type: type
+        id: 0192a3f0-1000-7000-8000-000000000008
+      uploaded_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   DocumentCreate:
     type: object
     required:
@@ -1376,6 +1579,29 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          folder_id: 0192a3f0-1000-7000-8000-000000000005
+          title: Ali Veli
+          file_id: 0192a3f0-1000-7000-8000-000000000006
+          mime: mime
+          size: 1
+          visibility:
+            level: board
+            unit_ids:
+              - 0192a3f0-1000-7000-8000-000000000007
+          source: uploaded
+          generated_from:
+            type: type
+            id: 0192a3f0-1000-7000-8000-000000000008
+          uploaded_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   Notification:
     type: object
     description: An in-app notification of the caller.
@@ -1410,6 +1636,14 @@ schemas:
       created_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      site_id: null
+      type: type
+      payload: {}
+      read_at: null
+      link: null
+      created_at: 2026-03-01T09:00:00Z
   NotificationList:
     type: object
     required:
@@ -1424,6 +1658,16 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          site_id: null
+          type: type
+          payload: {}
+          read_at: null
+          link: null
+          created_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   UnreadCount:
     type: object
     required:
@@ -1472,6 +1716,7 @@ schemas:
     required:
       - site_id
       - defaults
+      - version
     properties:
       site_id:
         type: string
@@ -1480,6 +1725,10 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/NotificationDefault"
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   NotificationDefaultsSet:
     type: object
     required:
@@ -1545,7 +1794,8 @@ schemas:
         format: uuid
       month:
         type: string
-        description: "`YYYY-MM`"
+        description: The month, `YYYY-MM`.
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
       sent:
         type: integer
         format: int64
@@ -1621,20 +1871,6 @@ schemas:
       updated_at:
         type: string
         format: date-time
-  FileList:
-    type: object
-    required:
-      - items
-      - next_cursor
-    properties:
-      items:
-        type: array
-        items:
-          $ref: "#/schemas/File"
-      next_cursor:
-        type: string
-        nullable: true
-        description: Pass as `cursor` for the next page; null on the last page.
   ExportRequest:
     type: object
     required:
@@ -1733,6 +1969,21 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: null
+      actor_user_id: null
+      actor_display_name: null
+      action: action
+      target_type: target type
+      target_id: null
+      diff: {}
+      ip: null
+      request_id: 0192a3f0-1000-7000-8000-000000000004
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   AuditEventList:
     type: object
     required:
@@ -1747,6 +1998,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: null
+          actor_user_id: null
+          actor_display_name: null
+          action: action
+          target_type: target type
+          target_id: null
+          diff: {}
+          ip: null
+          request_id: 0192a3f0-1000-7000-8000-000000000004
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   AuditNote:
     type: object
     description: An auditor's note.
@@ -1793,27 +2061,22 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      target_type: null
+      target_id: null
+      body: body
+      author_person_id: null
+      author_display_name: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   AuditNoteCreate:
     type: object
     required:
       - site_id
       - body
-    properties:
-      site_id:
-        type: string
-        format: uuid
-      target_type:
-        type: string
-        nullable: true
-      target_id:
-        type: string
-        format: uuid
-        nullable: true
-      body:
-        type: string
-  AuditNoteUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
     properties:
       site_id:
         type: string
@@ -1841,3 +2104,16 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          target_type: null
+          target_id: null
+          body: body
+          author_person_id: null
+          author_display_name: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null

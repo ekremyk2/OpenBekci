@@ -65,7 +65,9 @@ post:
 
     Permission: `money.post`.
 
-    Problems: `reauth_required` (403), `idempotency_mismatch` (422), `conflict` (409).
+    Sensitive (waivers above the site threshold): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+    Problems: `reauth_required` (403), `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
   tags:
     - money
   security:

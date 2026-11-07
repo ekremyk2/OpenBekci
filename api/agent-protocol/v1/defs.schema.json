@@ -133,6 +133,10 @@
         },
         "detail": {
           "type": "string"
+        },
+        "mock": {
+          "type": "boolean",
+          "description": "A mock driver is configured; shown in the UI."
         }
       }
     },

@@ -2,23 +2,23 @@
 
 The builders' checklist: every operation of the draft contract (`api/src/openapi-draft.yaml`, bundled to `api/openapi-draft.yaml`). Generated; regenerate by editing the path files, not this table.
 
-Total: 419 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
+Total: 424 new operations, plus the 15 already served (instance, auth, me) which stay in `api/src/openapi.yaml`. Release 0.1 operations are `x-stability: stable`; 0.2, 0.3 (and the 1.0 platform items) are `preview`. Where several permissions are listed, any one suffices.
 
 | Module | Operations |
 |---|---|
 | tenancy | 48 |
-| people | 51 |
-| money | 134 |
+| people | 52 |
+| me | 6 |
+| money | 131 |
 | operations | 55 |
 | audit | 4 |
 | governance | 44 |
-| community | 42 |
-| access | 19 |
+| community | 43 |
+| access | 21 |
 | agent | 4 |
-| dashboards | 3 |
+| dashboards | 4 |
 | codes | 1 |
 | platform | 9 |
-| me | 3 |
 | auth | 2 |
 
 | Module | operationId | Method and path | Release | Permission | Idempotency |
@@ -75,6 +75,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | people | `people.createPerson` | `POST /v1/orgs/{org_id}/persons` | 0.1 | `people.manage` | optional |
 | people | `people.getPerson` | `GET /v1/orgs/{org_id}/persons/{person_id}` | 0.1 | `people.read` | - |
 | people | `people.updatePerson` | `PATCH /v1/orgs/{org_id}/persons/{person_id}` | 0.1 | `people.manage` | optional |
+| people | `people.erasePerson` | `POST /v1/orgs/{org_id}/persons/{person_id}:erase` | 0.1 | `people.erase` | required |
 | people | `people.getNationalId` | `GET /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | - |
 | people | `people.setNationalId` | `PUT /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | optional |
 | people | `people.clearNationalId` | `DELETE /v1/orgs/{org_id}/persons/{person_id}/national-id` | 0.1 | `people.national_id` | optional |
@@ -96,8 +97,8 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | people | `people.listInvitations` | `GET /v1/orgs/{org_id}/invitations` | 0.1 | `invitations.manage` | - |
 | people | `people.createInvitation` | `POST /v1/orgs/{org_id}/invitations` | 0.1 | `invitations.manage` | optional |
 | people | `people.getInvitation` | `GET /v1/orgs/{org_id}/invitations/{invitation_id}` | 0.1 | `invitations.manage` | - |
-| people | `people.resendInvitation` | `POST /v1/orgs/{org_id}/invitations/{invitation_id}:resend` | 0.1 | `invitations.manage` | optional |
 | people | `people.revokeInvitation` | `DELETE /v1/orgs/{org_id}/invitations/{invitation_id}` | 0.1 | `invitations.manage` | optional |
+| people | `people.resendInvitation` | `POST /v1/orgs/{org_id}/invitations/{invitation_id}:resend` | 0.1 | `invitations.manage` | optional |
 | people | `people.createHouseholdInvitation` | `POST /v1/orgs/{org_id}/units/{unit_id}/household-invitations` | 0.1 | `invitations.household` | optional |
 | people | `people.previewInvitation` | `GET /v1/invitations/{token}` | 0.1 | public / self | - |
 | people | `people.acceptInvitation` | `POST /v1/invitations/{token}:accept` | 0.1 | public / self | optional |
@@ -122,6 +123,9 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | people | `people.updateMyPerson` | `PATCH /v1/orgs/{org_id}/me/person` | 0.1 | `me.manage` | optional |
 | people | `people.setMyDirectoryConsent` | `PUT /v1/orgs/{org_id}/me/directory-consent` | 0.1 | `me.manage` | optional |
 | people | `people.listMyOccupancies` | `GET /v1/orgs/{org_id}/me/occupancies` | 0.1 | `me.manage` | - |
+| me | `me.listHouseholdInvitations` | `GET /v1/orgs/{org_id}/me/household-invitations` | 0.1 | `invitations.household` | - |
+| me | `me.revokeHouseholdInvitation` | `DELETE /v1/orgs/{org_id}/me/household-invitations/{invitation_id}` | 0.1 | `invitations.household` | optional |
+| me | `me.endHouseholdOccupancy` | `DELETE /v1/orgs/{org_id}/me/household-occupancies/{occupancy_id}` | 0.1 | `occupancies.household` | optional |
 | money | `money.listAccounts` | `GET /v1/orgs/{org_id}/accounts` | 0.1 | `money.read` | - |
 | money | `money.createAccount` | `POST /v1/orgs/{org_id}/accounts` | 0.1 | `money.manage` | optional |
 | money | `money.getAccount` | `GET /v1/orgs/{org_id}/accounts/{account_id}` | 0.1 | `money.read` | - |
@@ -137,8 +141,8 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.listFiscalYears` | `GET /v1/orgs/{org_id}/fiscal-years` | 0.1 | `money.read` | - |
 | money | `money.createFiscalYear` | `POST /v1/orgs/{org_id}/fiscal-years` | 0.1 | `money.manage` | optional |
 | money | `money.getFiscalYear` | `GET /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}` | 0.1 | `money.read` | - |
-| money | `money.closeFiscalYear` | `POST /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:close` | 0.1 | `money.lock` | optional |
-| money | `money.approveFiscalYear` | `POST /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:approve` | 0.1 | `money.lock` | optional |
+| money | `money.closeFiscalYear` | `POST /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:close` | 0.1 | `money.lock` | required |
+| money | `money.approveFiscalYear` | `POST /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:approve` | 0.1 | `money.lock` | required |
 | money | `money.getLockDate` | `GET /v1/orgs/{org_id}/sites/{site_id}/lock-date` | 0.1 | `money.read` | - |
 | money | `money.setLockDate` | `PUT /v1/orgs/{org_id}/sites/{site_id}/lock-date` | 0.1 | `money.lock` | optional |
 | money | `money.listJournalEntries` | `GET /v1/orgs/{org_id}/journal-entries` | 0.1 | `money.read` | - |
@@ -147,7 +151,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.listOpeningBalances` | `GET /v1/orgs/{org_id}/opening-balances` | 0.1 | `money.read` | - |
 | money | `money.createOpeningBalance` | `POST /v1/orgs/{org_id}/opening-balances` | 0.1 | `money.post` | required |
 | money | `money.getOpeningBalance` | `GET /v1/orgs/{org_id}/opening-balances/{opening_balance_id}` | 0.1 | `money.read` | - |
-| money | `money.deleteOpeningBalance` | `DELETE /v1/orgs/{org_id}/opening-balances/{opening_balance_id}` | 0.1 | `money.post` | optional |
+| money | `money.voidOpeningBalance` | `POST /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void` | 0.1 | `money.post` | required |
 | money | `money.importOpeningBalances` | `POST /v1/orgs/{org_id}/opening-balances:import` | 0.1 | `money.post` | required |
 | money | `money.listBudgets` | `GET /v1/orgs/{org_id}/budgets` | 0.1 | `money.read` | - |
 | money | `money.createBudget` | `POST /v1/orgs/{org_id}/budgets` | 0.1 | `money.manage` | optional |
@@ -162,13 +166,13 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.getChargePlan` | `GET /v1/orgs/{org_id}/charge-plans/{plan_id}` | 0.1 | `money.read` | - |
 | money | `money.updateChargePlan` | `PATCH /v1/orgs/{org_id}/charge-plans/{plan_id}` | 0.1 | `money.manage` | optional |
 | money | `money.listChargePlanRates` | `GET /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.read` | - |
-| money | `money.createChargePlanRate` | `POST /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.manage` | optional |
-| money | `money.deleteChargePlanRate` | `DELETE /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}` | 0.1 | `money.manage` | optional |
+| money | `money.createChargePlanRate` | `POST /v1/orgs/{org_id}/charge-plans/{plan_id}/rates` | 0.1 | `money.manage` | required |
+| money | `money.deleteChargePlanRate` | `DELETE /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}` | 0.1 | `money.manage` | required |
 | money | `money.previewChargePlan` | `POST /v1/orgs/{org_id}/charge-plans:preview` | 0.1 | `money.manage` | optional |
 | money | `money.getChargeGenerationStatus` | `GET /v1/orgs/{org_id}/charge-generation` | 0.1 | `money.read` | - |
 | money | `money.previewExpenseAllocation` | `POST /v1/orgs/{org_id}/expense-allocations:preview` | 0.1 | `money.manage` | optional |
 | money | `money.createExpenseAllocation` | `POST /v1/orgs/{org_id}/expense-allocations` | 0.1 | `money.post` | required |
-| money | `money.listCharges` | `GET /v1/orgs/{org_id}/charges` | 0.1 | `money.read` | - |
+| money | `money.listCharges` | `GET /v1/orgs/{org_id}/charges` | 0.1 | `money.read`, `statements.read_own` | - |
 | money | `money.createCharge` | `POST /v1/orgs/{org_id}/charges` | 0.1 | `money.post` | required |
 | money | `money.getCharge` | `GET /v1/orgs/{org_id}/charges/{charge_id}` | 0.1 | `money.read`, `statements.read_own` | - |
 | money | `money.cancelCharge` | `POST /v1/orgs/{org_id}/charges/{charge_id}:cancel` | 0.1 | `money.post` | required |
@@ -183,7 +187,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.createLateFeeFreeze` | `POST /v1/orgs/{org_id}/late-fee-freezes` | 0.1 | `money.manage` | optional |
 | money | `money.getLateFeeFreeze` | `GET /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}` | 0.1 | `money.read` | - |
 | money | `money.updateLateFeeFreeze` | `PATCH /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}` | 0.1 | `money.manage` | optional |
-| money | `money.listPayments` | `GET /v1/orgs/{org_id}/payments` | 0.1 | `money.read` | - |
+| money | `money.listPayments` | `GET /v1/orgs/{org_id}/payments` | 0.1 | `money.read`, `statements.read_own` | - |
 | money | `money.createPayment` | `POST /v1/orgs/{org_id}/payments` | 0.1 | `payments.record` | required |
 | money | `money.getPayment` | `GET /v1/orgs/{org_id}/payments/{payment_id}` | 0.1 | `money.read`, `statements.read_own` | - |
 | money | `money.voidPayment` | `POST /v1/orgs/{org_id}/payments/{payment_id}:void` | 0.1 | `payments.record` | required |
@@ -225,9 +229,6 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.listBills` | `GET /v1/orgs/{org_id}/bills` | 0.1 | `money.read` | - |
 | money | `money.createBill` | `POST /v1/orgs/{org_id}/bills` | 0.1 | `money.post` | required |
 | money | `money.getBill` | `GET /v1/orgs/{org_id}/bills/{bill_id}` | 0.1 | `money.read` | - |
-| money | `money.updateBill` | `PATCH /v1/orgs/{org_id}/bills/{bill_id}` | 0.1 | `money.post` | optional |
-| money | `money.cancelBill` | `POST /v1/orgs/{org_id}/bills/{bill_id}:cancel` | 0.1 | `money.post` | required |
-| money | `money.listBillPayments` | `GET /v1/orgs/{org_id}/bills/{bill_id}/payments` | 0.1 | `money.read` | - |
 | money | `money.createBillPayment` | `POST /v1/orgs/{org_id}/bills/{bill_id}/payments` | 0.1 | `money.post` | required |
 | money | `money.listDunningStages` | `GET /v1/orgs/{org_id}/dunning-stages` | 0.1 | `money.read` | - |
 | money | `money.createDunningStage` | `POST /v1/orgs/{org_id}/dunning-stages` | 0.1 | `collections.manage` | optional |
@@ -235,7 +236,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.updateDunningStage` | `PATCH /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `collections.manage` | optional |
 | money | `money.deleteDunningStage` | `DELETE /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `collections.manage` | optional |
 | money | `money.previewDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs:preview` | 0.1 | `collections.manage` | optional |
-| money | `money.createDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs` | 0.1 | `collections.manage` | optional |
+| money | `money.createDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs` | 0.1 | `collections.manage` | required |
 | money | `money.listDunningEvents` | `GET /v1/orgs/{org_id}/dunning-events` | 0.1 | `money.read` | - |
 | money | `money.listCollectionCases` | `GET /v1/orgs/{org_id}/collection-cases` | 0.1 | `money.read` | - |
 | money | `money.createCollectionCase` | `POST /v1/orgs/{org_id}/collection-cases` | 0.1 | `collections.manage` | optional |
@@ -245,7 +246,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.getDebtBreakdown` | `GET /v1/orgs/{org_id}/debt-breakdown` | 0.1 | `collections.manage` | - |
 | money | `money.getUnitStatement` | `GET /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}` | 0.1 | `statements.read`, `statements.read_own` | - |
 | money | `money.getPersonStatement` | `GET /v1/orgs/{org_id}/persons/{person_id}/statement` | 0.1 | `statements.read`, `statements.read_own` | - |
-| money | `money.sendStatement` | `POST /v1/orgs/{org_id}/statements:send` | 0.1 | `statements.read` | optional |
+| money | `money.sendStatement` | `POST /v1/orgs/{org_id}/statements:send` | 0.1 | `statements.read` | required |
 | money | `money.getMyBalances` | `GET /v1/orgs/{org_id}/me/balances` | 0.1 | `statements.read_own` | - |
 | money | `money.getIncomeExpenseReport` | `GET /v1/orgs/{org_id}/reports/income-expense` | 0.1 | `reports.read`, `reports.aggregate` | - |
 | money | `money.getDebtorReport` | `GET /v1/orgs/{org_id}/reports/debtors` | 0.1 | `reports.debtors` | - |
@@ -256,32 +257,32 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.getBankReconciliationReport` | `GET /v1/orgs/{org_id}/reports/bank-reconciliation` | 0.1 | `reports.read` | - |
 | money | `money.getFundBalancesReport` | `GET /v1/orgs/{org_id}/reports/fund-balances` | 0.1 | `reports.read` | - |
 | money | `money.getMoneyOverview` | `GET /v1/orgs/{org_id}/money/overview` | 0.1 | `money.read` | - |
-| operations | `operations.getTicketWorkflow` | `GET /v1/orgs/{org_id}/ticket-workflow` | 0.1 | `tickets.read`, `tickets.open` | - |
+| operations | `operations.getTicketWorkflow` | `GET /v1/orgs/{org_id}/ticket-workflow` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
 | operations | `operations.updateTicketWorkflow` | `PUT /v1/orgs/{org_id}/ticket-workflow` | 0.1 | `tickets.manage` | optional |
-| operations | `operations.listTicketCategories` | `GET /v1/orgs/{org_id}/ticket-categories` | 0.1 | `tickets.read`, `tickets.open` | - |
+| operations | `operations.listTicketCategories` | `GET /v1/orgs/{org_id}/ticket-categories` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
 | operations | `operations.createTicketCategory` | `POST /v1/orgs/{org_id}/ticket-categories` | 0.1 | `tickets.manage` | optional |
-| operations | `operations.getTicketCategory` | `GET /v1/orgs/{org_id}/ticket-categories/{category_id}` | 0.1 | `tickets.read`, `tickets.open` | - |
+| operations | `operations.getTicketCategory` | `GET /v1/orgs/{org_id}/ticket-categories/{category_id}` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
 | operations | `operations.updateTicketCategory` | `PATCH /v1/orgs/{org_id}/ticket-categories/{category_id}` | 0.1 | `tickets.manage` | optional |
-| operations | `operations.listTickets` | `GET /v1/orgs/{org_id}/tickets` | 0.1 | `tickets.read`, `tickets.open` | - |
+| operations | `operations.listTickets` | `GET /v1/orgs/{org_id}/tickets` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
 | operations | `operations.createTicket` | `POST /v1/orgs/{org_id}/tickets` | 0.1 | `tickets.open` | optional |
-| operations | `operations.getTicket` | `GET /v1/orgs/{org_id}/tickets/{ticket_id}` | 0.1 | `tickets.read`, `tickets.open` | - |
+| operations | `operations.getTicket` | `GET /v1/orgs/{org_id}/tickets/{ticket_id}` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
 | operations | `operations.updateTicket` | `PATCH /v1/orgs/{org_id}/tickets/{ticket_id}` | 0.1 | `tickets.manage` | optional |
 | operations | `operations.transitionTicket` | `POST /v1/orgs/{org_id}/tickets/{ticket_id}:transition` | 0.1 | `tickets.manage`, `tickets.work` | optional |
 | operations | `operations.mergeTicket` | `POST /v1/orgs/{org_id}/tickets/{ticket_id}:merge` | 0.1 | `tickets.manage` | optional |
 | operations | `operations.voteTicket` | `PUT /v1/orgs/{org_id}/tickets/{ticket_id}/vote` | 0.1 | `tickets.open` | optional |
 | operations | `operations.unvoteTicket` | `DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/vote` | 0.1 | `tickets.open` | optional |
-| operations | `operations.listTicketComments` | `GET /v1/orgs/{org_id}/tickets/{ticket_id}/comments` | 0.1 | `tickets.read`, `tickets.open` | - |
-| operations | `operations.createTicketComment` | `POST /v1/orgs/{org_id}/tickets/{ticket_id}/comments` | 0.1 | `tickets.read`, `tickets.open`, `tickets.work` | optional |
+| operations | `operations.listTicketComments` | `GET /v1/orgs/{org_id}/tickets/{ticket_id}/comments` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
+| operations | `operations.createTicketComment` | `POST /v1/orgs/{org_id}/tickets/{ticket_id}/comments` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work` | optional |
 | operations | `operations.createTicketAttachment` | `POST /v1/orgs/{org_id}/tickets/{ticket_id}/attachments` | 0.1 | `tickets.open` | optional |
 | operations | `operations.deleteTicketAttachment` | `DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}` | 0.1 | `tickets.open` | optional |
-| operations | `operations.listTicketHistory` | `GET /v1/orgs/{org_id}/tickets/{ticket_id}/history` | 0.1 | `tickets.read`, `tickets.open` | - |
-| operations | `operations.listAnnouncements` | `GET /v1/orgs/{org_id}/announcements` | 0.1 | `announcements.read`, `announcements.publish` | - |
+| operations | `operations.listTicketHistory` | `GET /v1/orgs/{org_id}/tickets/{ticket_id}/history` | 0.1 | `tickets.read`, `tickets.open`, `tickets.read_assigned` | - |
+| operations | `operations.listAnnouncements` | `GET /v1/orgs/{org_id}/announcements` | 0.1 | `announcements.publish`, `announcements.read` | - |
 | operations | `operations.createAnnouncement` | `POST /v1/orgs/{org_id}/announcements` | 0.1 | `announcements.publish` | optional |
-| operations | `operations.getAnnouncement` | `GET /v1/orgs/{org_id}/announcements/{announcement_id}` | 0.1 | `announcements.read`, `announcements.publish` | - |
+| operations | `operations.getAnnouncement` | `GET /v1/orgs/{org_id}/announcements/{announcement_id}` | 0.1 | `announcements.publish`, `announcements.read` | - |
 | operations | `operations.updateAnnouncement` | `PATCH /v1/orgs/{org_id}/announcements/{announcement_id}` | 0.1 | `announcements.publish` | optional |
 | operations | `operations.deleteAnnouncement` | `DELETE /v1/orgs/{org_id}/announcements/{announcement_id}` | 0.1 | `announcements.publish` | optional |
 | operations | `operations.previewAnnouncement` | `POST /v1/orgs/{org_id}/announcements:preview` | 0.1 | `announcements.publish` | optional |
-| operations | `operations.publishAnnouncement` | `POST /v1/orgs/{org_id}/announcements/{announcement_id}:publish` | 0.1 | `announcements.publish` | optional |
+| operations | `operations.publishAnnouncement` | `POST /v1/orgs/{org_id}/announcements/{announcement_id}:publish` | 0.1 | `announcements.publish` | required |
 | operations | `operations.archiveAnnouncement` | `POST /v1/orgs/{org_id}/announcements/{announcement_id}:archive` | 0.1 | `announcements.publish` | optional |
 | operations | `operations.listAnnouncementReads` | `GET /v1/orgs/{org_id}/announcements/{announcement_id}/reads` | 0.1 | `announcements.publish` | - |
 | operations | `operations.markAnnouncementRead` | `PUT /v1/orgs/{org_id}/announcements/{announcement_id}/read` | 0.1 | `announcements.read` | optional |
@@ -290,9 +291,9 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | operations | `operations.getFolder` | `GET /v1/orgs/{org_id}/folders/{folder_id}` | 0.1 | `documents.read` | - |
 | operations | `operations.updateFolder` | `PATCH /v1/orgs/{org_id}/folders/{folder_id}` | 0.1 | `documents.manage` | optional |
 | operations | `operations.deleteFolder` | `DELETE /v1/orgs/{org_id}/folders/{folder_id}` | 0.1 | `documents.manage` | optional |
-| operations | `operations.listDocuments` | `GET /v1/orgs/{org_id}/documents` | 0.1 | `documents.read` | - |
+| operations | `operations.listDocuments` | `GET /v1/orgs/{org_id}/documents` | 0.1 | `documents.read`, `documents.read_addressed` | - |
 | operations | `operations.createDocument` | `POST /v1/orgs/{org_id}/documents` | 0.1 | `documents.manage`, `documents.upload_own` | optional |
-| operations | `operations.getDocument` | `GET /v1/orgs/{org_id}/documents/{document_id}` | 0.1 | `documents.read` | - |
+| operations | `operations.getDocument` | `GET /v1/orgs/{org_id}/documents/{document_id}` | 0.1 | `documents.read`, `documents.read_addressed` | - |
 | operations | `operations.updateDocument` | `PATCH /v1/orgs/{org_id}/documents/{document_id}` | 0.1 | `documents.manage`, `documents.upload_own` | optional |
 | operations | `operations.deleteDocument` | `DELETE /v1/orgs/{org_id}/documents/{document_id}` | 0.1 | `documents.manage`, `documents.upload_own` | optional |
 | operations | `operations.listNotifications` | `GET /v1/orgs/{org_id}/me/notifications` | 0.1 | `notifications.read` | - |
@@ -336,7 +337,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | governance | `governance.listMeetingNotices` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/notices` | 0.2 | `meetings.manage` | - |
 | governance | `governance.recordMeetingNotice` | `PUT /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}` | 0.2 | `meetings.manage` | optional |
 | governance | `governance.recordMeetingNoticesBulk` | `POST /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk` | 0.2 | `meetings.manage` | optional |
-| governance | `governance.notifyMeetingDecisions` | `POST /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions` | 0.2 | `meetings.manage` | optional |
+| governance | `governance.notifyMeetingDecisions` | `POST /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions` | 0.2 | `meetings.manage` | required |
 | governance | `governance.listAgendaItems` | `GET /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items` | 0.2 | `meetings.read` | - |
 | governance | `governance.createAgendaItem` | `POST /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items` | 0.2 | `meetings.manage` | optional |
 | governance | `governance.updateAgendaItem` | `PATCH /v1/orgs/{org_id}/agenda-items/{agenda_item_id}` | 0.2 | `meetings.manage` | optional |
@@ -357,7 +358,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | governance | `governance.createDecision` | `POST /v1/orgs/{org_id}/decisions` | 0.2 | `decisions.manage` | optional |
 | governance | `governance.getDecision` | `GET /v1/orgs/{org_id}/decisions/{decision_id}` | 0.2 | `meetings.read` | - |
 | governance | `governance.updateDecision` | `PATCH /v1/orgs/{org_id}/decisions/{decision_id}` | 0.2 | `decisions.manage` | optional |
-| governance | `governance.applyDecision` | `POST /v1/orgs/{org_id}/decisions/{decision_id}:apply` | 0.2 | `decisions.manage` | optional |
+| governance | `governance.applyDecision` | `POST /v1/orgs/{org_id}/decisions/{decision_id}:apply` | 0.2 | `decisions.manage` | required |
 | governance | `governance.listTermReminders` | `GET /v1/orgs/{org_id}/term-reminders` | 0.2 | `meetings.manage` | - |
 | community | `community.listFacilities` | `GET /v1/orgs/{org_id}/facilities` | 0.3 | `bookings.read`, `facilities.manage` | - |
 | community | `community.createFacility` | `POST /v1/orgs/{org_id}/facilities` | 0.3 | `facilities.manage` | optional |
@@ -386,7 +387,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | community | `community.getRecurringVisitorQr` | `GET /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}/qr` | 0.3 | `visitors.manage` | - |
 | community | `community.listVisitorApprovalRequests` | `GET /v1/orgs/{org_id}/visitor-approval-requests` | 0.3 | `visitors.decide` | - |
 | community | `community.decideVisitorApprovalRequest` | `POST /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide` | 0.3 | `visitors.decide` | optional |
-| community | `community.listDeliveries` | `GET /v1/orgs/{org_id}/deliveries` | 0.3 | `deliveries.read`, `visitors.read` | - |
+| community | `community.listDeliveries` | `GET /v1/orgs/{org_id}/deliveries` | 0.3 | `visitors.read`, `deliveries.read` | - |
 | community | `community.getGateConsole` | `GET /v1/orgs/{org_id}/gate/console` | 0.3 | `gate.operate` | - |
 | community | `community.listGateVisitors` | `GET /v1/orgs/{org_id}/gate/visitors` | 0.3 | `gate.operate` | - |
 | community | `community.getGateVisitor` | `GET /v1/orgs/{org_id}/gate/visitors/{entry_id}` | 0.3 | `gate.operate` | - |
@@ -400,6 +401,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | community | `community.createGateDelivery` | `POST /v1/orgs/{org_id}/gate/deliveries` | 0.3 | `gate.operate` | optional |
 | community | `community.collectGateDelivery` | `POST /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect` | 0.3 | `gate.operate` | optional |
 | community | `community.createGuardSession` | `POST /v1/orgs/{org_id}/gate/sessions` | 0.3 | `gate.operate` | optional |
+| community | `gate.listGuards` | `GET /v1/orgs/{org_id}/gate/guards` | 0.3 | `gate.operate` | - |
 | community | `community.setGuardPin` | `PUT /v1/orgs/{org_id}/persons/{person_id}/gate-pin` | 0.3 | `gate.manage` | optional |
 | access | `access.listAccessPoints` | `GET /v1/orgs/{org_id}/access-points` | 0.3 | `access.read` | - |
 | access | `access.createAccessPoint` | `POST /v1/orgs/{org_id}/access-points` | 0.3 | `access.manage` | optional |
@@ -415,7 +417,9 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | access | `access.rotateAgentToken` | `POST /v1/orgs/{org_id}/agents/{agent_id}:rotate-token` | 0.3 | `access.manage` | optional |
 | access | `access.rebuildAllowlist` | `POST /v1/orgs/{org_id}/access/allowlist:rebuild` | 0.3 | `access.manage` | optional |
 | access | `access.listCredentials` | `GET /v1/orgs/{org_id}/credentials` | 0.3 | `access.read` | - |
+| access | `access.createCredential` | `POST /v1/orgs/{org_id}/credentials` | 0.3 | `access.manage` | required |
 | access | `access.getCredential` | `GET /v1/orgs/{org_id}/credentials/{credential_id}` | 0.3 | `access.read` | - |
+| access | `access.revokeCredential` | `DELETE /v1/orgs/{org_id}/credentials/{credential_id}` | 0.3 | `access.manage` | optional |
 | access | `access.listAccessEvents` | `GET /v1/orgs/{org_id}/access/events` | 0.3 | `access.view_events` | - |
 | access | `access.listGuardEvents` | `GET /v1/orgs/{org_id}/gate/events` | 0.3 | `gate.operate` | - |
 | access | `access.openAccessPoint` | `POST /v1/orgs/{org_id}/access-points/{point_id}:open` | 0.3 | `access.open` | required |
@@ -425,6 +429,7 @@ Total: 419 new operations, plus the 15 already served (instance, auth, me) which
 | agent | `agent.rotateToken` | `POST /v1/agent/token:rotate` | 0.3 | agent token | optional |
 | agent | `agent.connect` | `GET /v1/agent/ws` | 0.3 | agent token | - |
 | dashboards | `dashboards.getSiteDashboard` | `GET /v1/orgs/{org_id}/sites/{site_id}/dashboard` | 0.1 | `dashboard.site` | - |
+| dashboards | `dashboards.getStaffDashboard` | `GET /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard` | 0.1 | `dashboard.staff` | - |
 | dashboards | `dashboards.getPortfolioDashboard` | `GET /v1/orgs/{org_id}/dashboard/portfolio` | 0.1 | `dashboard.portfolio` | - |
 | dashboards | `dashboards.getMyDashboard` | `GET /v1/orgs/{org_id}/me/dashboard` | 0.1 | `me.dashboard` | - |
 | codes | `codes.listCodes` | `GET /v1/orgs/{org_id}/codes` | 0.1 | `codes.read` | - |

@@ -13,6 +13,8 @@ get:
   description: |-
     **Release 0.1.** Get bill.
 
+    Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
     Permission: `money.read`.
   tags:
     - money
@@ -46,55 +48,4 @@ get:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
-patch:
-  operationId: money.updateBill
-  summary: Update bill
-  description: |-
-    **Release 0.1.** Update bill.
-
-    Permission: `money.post`.
-
-    Problems: `version_conflict` (409), `conflict` (409).
-  tags:
-    - money
-  security:
-    - cookieAuth: []
-    - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - money.post
-    site_manager:
-      - money.post
-    board_member:
-      - money.post
-    accountant:
-      - money.post
-  x-idempotent: optional
-  x-stability: stable
-  parameters:
-    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
-  requestBody:
-    required: true
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/money.yaml#/schemas/BillUpdate
-  responses:
-    "200":
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: ../../components/money.yaml#/schemas/Bill
-    "401":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    "403":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    "404":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    "409":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    "422":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    default:
-      $ref: ../../components/problem.yaml#/responses/Problem
+  x-requires-setting: bills_enabled

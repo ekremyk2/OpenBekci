@@ -100,6 +100,8 @@ delete:
 
     Permission: `memberships.manage`.
 
+    Sensitive (ending a site-owned membership): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
     Problems: `reauth_required` (403), `conflict` (409), `version_conflict` (409).
   tags:
     - people

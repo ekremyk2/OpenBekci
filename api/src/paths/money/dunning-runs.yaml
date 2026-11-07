@@ -8,7 +8,7 @@ post:
 
     Permission: `collections.manage`.
 
-    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
   tags:
     - money
   security:
@@ -21,10 +21,10 @@ post:
       - collections.manage
     board_member:
       - collections.manage
-  x-idempotent: optional
+  x-idempotent: required
   x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:
     required: true
     content:

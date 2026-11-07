@@ -7,53 +7,13 @@ parameters:
     schema:
       type: string
       format: uuid
-get:
-  operationId: money.listBillPayments
-  summary: List the payments of a bill
-  description: |-
-    **Release 0.1.** List the payments of a bill.
-
-    Permission: `money.read`.
-  tags:
-    - money
-  security:
-    - cookieAuth: []
-    - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - money.read
-    site_manager:
-      - money.read
-    board_member:
-      - money.read
-    auditor:
-      - money.read
-    accountant:
-      - money.read
-  x-stability: stable
-  parameters:
-    - $ref: ../../components/common.yaml#/parameters/Limit
-    - $ref: ../../components/common.yaml#/parameters/Cursor
-  responses:
-    "200":
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: ../../components/money.yaml#/schemas/BillPaymentList
-    "401":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    "403":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    "404":
-      $ref: ../../components/problem.yaml#/responses/Problem
-    default:
-      $ref: ../../components/problem.yaml#/responses/Problem
 post:
   operationId: money.createBillPayment
   summary: Pay a bill (fully or partly)
   description: |-
     **Release 0.1.** Pay a bill (fully or partly).
+
+    Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
 
     Permission: `money.post`.
 
@@ -101,3 +61,4 @@ post:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  x-requires-setting: bills_enabled

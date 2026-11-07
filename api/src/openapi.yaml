@@ -124,6 +124,10 @@ components:
       $ref: './components/auth.yaml#/schemas/OrgAccess'
     Me:
       $ref: './components/auth.yaml#/schemas/Me'
+    MeOccupancy:
+      $ref: './components/auth.yaml#/schemas/MeOccupancy'
+    MePolicies:
+      $ref: './components/auth.yaml#/schemas/MePolicies'
     Session:
       $ref: './components/auth.yaml#/schemas/Session'
     SessionList:

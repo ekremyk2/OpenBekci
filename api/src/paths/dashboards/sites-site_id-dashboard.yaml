@@ -13,6 +13,8 @@ get:
   description: |-
     **Release 0.1.** Site dashboard.
 
+    Contains receivables, cash and bank balances: staff and guards do not hold `dashboard.site`; staff use `dashboards.getStaffDashboard`.
+
     Permission: `dashboard.site`.
   tags:
     - dashboards
@@ -29,8 +31,6 @@ get:
     auditor:
       - dashboard.site
     accountant:
-      - dashboard.site
-    staff:
       - dashboard.site
   x-stability: stable
   responses:

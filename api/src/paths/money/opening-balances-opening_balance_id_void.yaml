@@ -1,21 +1,23 @@
 parameters:
   - $ref: ../../components/draft-common.yaml#/parameters/OrgId
-  - name: bill_id
+  - name: opening_balance_id
     in: path
     required: true
-    description: Id of the bill.
+    description: Id of the opening balance.
     schema:
       type: string
       format: uuid
 post:
-  operationId: money.cancelBill
-  summary: Cancel a bill
+  operationId: money.voidOpeningBalance
+  summary: Void an opening balance
   description: |-
-    **Release 0.1.** Cancel a bill.
+    **Release 0.1.** Reverses the opening entry with a reason and keeps both in the ledger (nothing is edited or deleted after the fact); `locked_period` once the lock date has passed `as_of`. Replaces the former `money.deleteOpeningBalance`.
 
     Permission: `money.post`.
 
-    Problems: `conflict` (409), `idempotency_mismatch` (422).
+    Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+    Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
   tags:
     - money
   security:
@@ -39,14 +41,14 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../../components/money.yaml#/schemas/ExpenseVoid
+          $ref: ../../components/money.yaml#/schemas/OpeningBalanceVoid
   responses:
     "200":
-      description: OK
+      description: The voided opening balance.
       content:
         application/json:
           schema:
-            $ref: ../../components/money.yaml#/schemas/Bill
+            $ref: ../../components/money.yaml#/schemas/OpeningBalance
     "401":
       $ref: ../../components/problem.yaml#/responses/Problem
     "403":
