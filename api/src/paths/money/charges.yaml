@@ -1,0 +1,109 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: money.listCharges
+  summary: List charges
+  description: |-
+    **Release 0.1.** List charges.
+
+    Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+
+    Permission (any one of): `money.read`, `statements.read_own`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.read, statements.read_own]
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: "Debtor side of the unit: owner or tenant."
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+    - name: plan_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `plan_id`.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - open
+          - partially_paid
+          - paid
+          - cancelled
+      description: Filter by `status`.
+    - name: period
+      in: query
+      schema:
+        type: string
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      description: Filter by month, `YYYY-MM`.
+    - name: charge_type
+      in: query
+      schema:
+        type: string
+      description: Filter by `charge_type`.
+    - name: due_from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter by `due_from`.
+    - name: due_to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter by `due_to`.
+    - name: overdue
+      in: query
+      schema:
+        type: boolean
+      description: Only charges past their due date that are still open or partially paid.
+    - name: side
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: "Debtor side of the unit (alias of `debtor_kind`)."
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/ChargeList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

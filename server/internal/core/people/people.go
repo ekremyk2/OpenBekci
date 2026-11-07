@@ -50,6 +50,7 @@ type Config struct {
 
 // Service is the people module.
 type Service struct {
+	hooks  MoneyHooks
 	db     TxRunner
 	ident  *identity.Service
 	cipher *crypto.FieldCipher

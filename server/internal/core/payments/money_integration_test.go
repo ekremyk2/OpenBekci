@@ -40,7 +40,9 @@ func newWorld(t *testing.T) *world {
 }
 
 // invariants asserts rule 13 on every debtor of the site.
-func (w *world) invariants(t *testing.T) {
+func (w *world) invariants(t *testing.T) { t.Helper(); w.invariantsFor(t) }
+
+func (w *world) invariantsFor(t *testing.T, extra ...uuid.UUID) {
 	t.Helper()
 	ctx, e := w.e.Ctx, w.e
 	err := e.DB.InTenantTx(ctx, e.OrgID, func(tx pgx.Tx) error {
@@ -48,7 +50,7 @@ func (w *world) invariants(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		for _, u := range []uuid.UUID{w.a1, w.a2} {
+		for _, u := range append([]uuid.UUID{w.a1, w.a2}, extra...) {
 			for _, side := range []string{"owner", "tenant"} {
 				u := u
 				d := billing.Debtor{UnitID: &u, Kind: side}
@@ -64,6 +66,35 @@ func (w *world) invariants(t *testing.T) {
 				if rec != p+f {
 					t.Errorf("unit %s side %s: receivable %d != open charges %d", u, side, rec, p+f)
 				}
+			}
+		}
+		prows, err := tx.Query(ctx, `SELECT DISTINCT debtor_person_id FROM charge WHERE org_id=$1 AND debtor_kind='person'`, e.OrgID)
+		if err != nil {
+			return err
+		}
+		var persons []uuid.UUID
+		for prows.Next() {
+			var p uuid.UUID
+			if err := prows.Scan(&p); err != nil {
+				return err
+			}
+			persons = append(persons, p)
+		}
+		prows.Close()
+		for _, p := range persons {
+			p := p
+			d := billing.Debtor{PersonID: &p}
+			charges, err := billing.LoadCharges(ctx, tx, e.OrgID, e.SiteID, d)
+			if err != nil {
+				return err
+			}
+			pr, f := billing.OpenTotal(charges)
+			rec, err := billing.ReceivableOf(ctx, tx, e.OrgID, e.SiteID, ch, d)
+			if err != nil {
+				return err
+			}
+			if rec != pr+f {
+				t.Errorf("person %s: receivable %d != open charges %d", p, rec, pr+f)
 			}
 		}
 		// every fund balances

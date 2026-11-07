@@ -4523,6 +4523,791 @@ paths:
           $ref: '#/components/responses/Problem'
       parameters:
         - $ref: '#/components/parameters/IfMatch'
+  /v1/orgs/{org_id}/charge-plans:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listChargePlans
+      summary: List charge plans
+      description: |-
+        **Release 0.1.** Cursor-paginated list of charge plans.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - active
+              - paused
+              - ended
+          description: Filter by `status`.
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - recurring
+              - one_off
+          description: Filter by `kind`.
+        - name: charge_type
+          in: query
+          schema:
+            type: string
+          description: Filter by `charge_type`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlanList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createChargePlan
+      summary: Create charge plan
+      description: |-
+        **Release 0.1.** Creates a charge plan.
+
+        Permission: `money.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargePlanCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargePlan'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/charges:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listCharges
+      summary: List charges
+      description: |-
+        **Release 0.1.** List charges.
+
+        Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+
+        Permission (any one of): `money.read`, `statements.read_own`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.read
+        - statements.read_own
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by person.
+        - name: plan_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `plan_id`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - open
+              - partially_paid
+              - paid
+              - cancelled
+          description: Filter by `status`.
+        - name: period
+          in: query
+          schema:
+            type: string
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: Filter by month, `YYYY-MM`.
+        - name: charge_type
+          in: query
+          schema:
+            type: string
+          description: Filter by `charge_type`.
+        - name: due_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by `due_from`.
+        - name: due_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter by `due_to`.
+        - name: overdue
+          in: query
+          schema:
+            type: boolean
+          description: Only charges past their due date that are still open or partially paid.
+        - name: side
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: Debtor side of the unit (alias of `debtor_kind`).
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listPayments
+      summary: List payments
+      description: |-
+        **Release 0.1.** List payments.
+
+        Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+
+        Permission (any one of): `money.read`, `statements.read_own`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.read
+        - statements.read_own
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by person.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - pending_declared
+              - confirmed
+              - refunded
+              - voided
+          description: Filter by `status`.
+        - name: method
+          in: query
+          schema:
+            type: string
+          description: Filter by `method`.
+        - name: receipt_no
+          in: query
+          schema:
+            type: string
+          description: Filter by `receipt_no`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - name: asset_account_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `asset_account_id`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createPayment
+      summary: Record a payment
+      description: |-
+        **Release 0.1.** Cash (with a gap-free receipt number) or a bank transfer entered by hand. The response shows the allocation actually applied.
+
+        Cash collectors: a person bound to a cash box (a kapici or a board member, M5) holds `payments.record` only for payments recorded into that box (`asset_account_id` is their cash box account); anything else is 403 `insufficient_permission`. They see and void nothing else.
+
+        Permission: `payments.record`.
+
+        Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+
+        `debtor` targets a unit side or a person; payments against a person settle carried debt oldest-first and never touch the unit's current occupants.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - payments.record
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments/{payment_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: payment_id
+        in: path
+        required: true
+        description: Id of the payment.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getPayment
+      summary: Get a payment
+      description: |-
+        **Release 0.1.** Get a payment.
+
+        Permission (any one of): `money.read`, `statements.read_own`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.read
+        - statements.read_own
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/payments/{payment_id}:void:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: payment_id
+        in: path
+        required: true
+        description: Id of the payment.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.voidPayment
+      summary: Void a payment
+      description: |-
+        **Release 0.1.** Reverses the posting dated today with a reason; the receipt number stays used (gap-free, shown as voided).
+
+        Permission: `payments.record`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - payments.record
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentVoid'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/late-fee-policy:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getLateFeePolicy
+      summary: Get the late-fee policy
+      description: |-
+        **Release 0.1.** Get the late-fee policy.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeePolicy'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: money.setLateFeePolicy
+      summary: Set the late-fee policy
+      description: |-
+        **Release 0.1.** Set the late-fee policy.
+
+        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+        Permission: `money.manage`.
+
+        Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LateFeePolicySet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LateFeePolicy'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/opening-balances:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listOpeningBalances
+      summary: List opening balances
+      description: |-
+        **Release 0.1.** Cursor-paginated list of opening balances.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - unit_receivable
+              - bank
+              - cash
+              - vendor
+          description: Filter by `kind`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpeningBalanceList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createOpeningBalance
+      summary: Create opening balance
+      description: |-
+        **Release 0.1.** Creates a opening balance.
+
+        Permission: `money.post`.
+
+        Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+        Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - money.post
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+        - $ref: '#/components/parameters/DryRun'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpeningBalanceCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpeningBalance'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/reports/debtors:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getDebtorReport
+      summary: Debtor list (borclu listesi)
+      description: |-
+        **Release 0.1.** Visible to manager, board and auditor; never public (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+
+        Permission: `reports.debtors`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - reports.debtors
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - name: block_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `block_id`.
+        - name: min_months
+          in: query
+          schema:
+            type: integer
+            format: int64
+          description: Filter by `min_months`.
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtorReport'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: Id of the unit.
+        schema:
+          type: string
+          format: uuid
+      - name: debtor_kind
+        in: path
+        required: true
+        description: Id of the debtor kind.
+        schema:
+          type: string
+          enum:
+            - owner
+            - tenant
+    get:
+      operationId: money.getUnitStatement
+      summary: Statement of a unit side
+      description: |-
+        **Release 0.1.** JSON, or `format=pdf` for the printable statement. A former occupant sees only their own period (S7).
+
+        Permission (any one of): `statements.read`, `statements.read_own` (occupants: their own side and period only).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - statements.read
+        - statements.read_own
+      x-stability: stable
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statement'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     cookieAuth:
@@ -4588,6 +5373,25 @@ components:
         type: string
         minLength: 8
         maxLength: 128
+    DryRun:
+      name: dry_run
+      in: query
+      description: When true, validate and return the row-level report without saving anything.
+      schema:
+        type: boolean
+        default: false
+    Format:
+      name: format
+      in: query
+      description: 'Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it.'
+      schema:
+        type: string
+        enum:
+          - json
+          - csv
+          - xlsx
+          - pdf
+        default: json
   responses:
     Problem:
       description: Error. RFC 9457 problem details with a stable `code`.
@@ -8479,6 +9283,1947 @@ components:
           format: date
           nullable: true
           description: Postings with `entry_date` on or before this date are rejected.
+    AgingBucketAmount:
+      type: object
+      description: One aging bucket of a row or of the totals.
+      required:
+        - bucket
+        - amount
+      properties:
+        bucket:
+          type: string
+          description: The bucket key, one of the report's `buckets`, for example `0-30`.
+        amount:
+          $ref: '#/components/schemas/Money'
+      example:
+        bucket: 0-30
+        amount:
+          amount: 200000
+          currency: TRY
+    AgingRow:
+      type: object
+      required:
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - buckets
+        - total
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        buckets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgingBucketAmount'
+          description: One object per report bucket, in the order of the report `buckets`.
+        total:
+          $ref: '#/components/schemas/Money'
+    AllocationBasis:
+      type: object
+      description: Snapshot of how an allocated amount was derived (M2).
+      required:
+        - key_code
+        - weight
+        - total_weight
+        - remainder_adjusted
+      properties:
+        key_code:
+          type: string
+        weight:
+          type: number
+        total_weight:
+          type: number
+        remainder_adjusted:
+          type: boolean
+    AllocationInput:
+      type: object
+      required:
+        - charge_id
+        - amount
+      properties:
+        charge_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+    Charge:
+      type: object
+      description: 'A receivable of one unit side. Never edited: reverse or adjust with a reason.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - plan_id
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - debtor_person_id
+        - debtor_display_name
+        - charge_type
+        - period
+        - amount
+        - paid
+        - balance
+        - due_date
+        - description
+        - allocation_basis
+        - journal_entry_id
+        - status
+        - cancelled_reason
+        - created_at
+        - updated_at
+        - effective_debtor
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        plan_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        debtor_person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Snapshot of the occupant on the due date; becomes the holder when open charges are carried to a person on move-out.
+        debtor_display_name:
+          type: string
+          nullable: true
+        charge_type:
+          type: string
+          description: Open enum.
+          enum:
+            - dues
+            - special_assessment
+            - reserve_contribution
+            - utility
+            - booking_fee
+            - legal_cost
+            - deposit
+            - adjustment
+            - settlement
+          x-open-enum: true
+        period:
+          type: string
+          nullable: true
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid:
+          $ref: '#/components/schemas/Money'
+        balance:
+          $ref: '#/components/schemas/Money'
+        due_date:
+          type: string
+          format: date
+        description:
+          type: string
+          nullable: true
+        allocation_basis:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/AllocationBasis'
+          nullable: true
+        journal_entry_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          description: Derived and rebuildable. Open enum.
+          enum:
+            - open
+            - partially_paid
+            - paid
+            - cancelled
+          x-open-enum: true
+        cancelled_reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        effective_debtor:
+          $ref: '#/components/schemas/EffectiveDebtor'
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        plan_id: null
+        unit_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_door_number: unit door number
+        debtor_kind: tenant
+        debtor_person_id: null
+        debtor_display_name: null
+        charge_type: dues
+        period: 2026-03
+        amount:
+          amount: 200000
+          currency: TRY
+        paid:
+          amount: 0
+          currency: TRY
+        balance:
+          amount: 200000
+          currency: TRY
+        due_date: '2026-03-05'
+        description: null
+        allocation_basis: null
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000002
+        status: open
+        cancelled_reason: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        effective_debtor:
+          debtor_kind: tenant
+          person_id: null
+          display_name: null
+          source: plan_default
+    ChargeCancel:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    ChargeCreate:
+      type: object
+      required:
+        - site_id
+        - unit_id
+        - charge_type
+        - amount
+        - due_date
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        charge_type:
+          type: string
+          description: Open enum.
+          enum:
+            - dues
+            - special_assessment
+            - reserve_contribution
+            - utility
+            - booking_fee
+            - legal_cost
+            - deposit
+            - adjustment
+            - settlement
+          x-open-enum: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        due_date:
+          type: string
+          format: date
+        description:
+          type: string
+          nullable: true
+        fund_id:
+          type: string
+          format: uuid
+        income_account_id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+    ChargeGenerationPending:
+      type: object
+      required:
+        - plan_id
+        - period
+        - units
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+        period:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+        units:
+          type: integer
+          format: int64
+    ChargeGenerationStatus:
+      type: object
+      required:
+        - up_to_date
+        - last_run_at
+        - next_run_at
+        - pending
+      properties:
+        up_to_date:
+          type: boolean
+        last_run_at:
+          type: string
+          format: date-time
+          nullable: true
+        next_run_at:
+          type: string
+          format: date-time
+          nullable: true
+        pending:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargeGenerationPending'
+    ChargeList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Charge'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            plan_id: null
+            unit_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_door_number: unit door number
+            debtor_kind: tenant
+            debtor_person_id: null
+            debtor_display_name: null
+            charge_type: dues
+            period: 2026-03
+            amount:
+              amount: 200000
+              currency: TRY
+            paid:
+              amount: 0
+              currency: TRY
+            balance:
+              amount: 200000
+              currency: TRY
+            due_date: '2026-03-05'
+            description: null
+            allocation_basis: null
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000002
+            status: open
+            cancelled_reason: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            effective_debtor:
+              debtor_kind: tenant
+              person_id: null
+              display_name: null
+              source: plan_default
+        next_cursor: null
+    ChargePlan:
+      type: object
+      description: A dues or one-off charge plan. Charges are generated by an hourly, idempotent catch-up job on (plan, unit, period). Amounts change through rates.
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - kind
+        - charge_type
+        - default_debtor
+        - frequency
+        - due_day
+        - start
+        - end
+        - amount_mode
+        - allocation_key_id
+        - scope
+        - fund_id
+        - income_account_id
+        - status
+        - decision_id
+        - current_rate
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - recurring
+            - one_off
+          x-open-enum: true
+        charge_type:
+          type: string
+          description: Open enum.
+          enum:
+            - dues
+            - special_assessment
+            - reserve_contribution
+            - utility
+            - booking_fee
+            - legal_cost
+            - deposit
+            - adjustment
+            - settlement
+          x-open-enum: true
+        default_debtor:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        frequency:
+          type: string
+          description: Open enum. Generated charges carry the accrual month in `Charge.period` (`YYYY-MM`) whatever the frequency.
+          enum:
+            - monthly
+            - quarterly
+            - yearly
+            - once
+          x-open-enum: true
+        due_day:
+          type: integer
+          format: int64
+          nullable: true
+          description: Day of month.
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+          nullable: true
+        amount_mode:
+          type: string
+          description: Open enum.
+          enum:
+            - per_unit
+            - total_allocated
+          x-open-enum: true
+        allocation_key_id:
+          type: string
+          format: uuid
+        scope:
+          $ref: '#/components/schemas/ChargeScope'
+        fund_id:
+          type: string
+          format: uuid
+        income_account_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - active
+            - paused
+            - ended
+          x-open-enum: true
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        current_rate:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ChargePlanRate'
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        name: Ali Veli
+        kind: recurring
+        charge_type: dues
+        default_debtor: owner
+        frequency: monthly
+        due_day: null
+        start: '2026-03-01'
+        end: null
+        amount_mode: per_unit
+        allocation_key_id: 0192a3f0-1000-7000-8000-000000000005
+        scope:
+          type: site
+          id: null
+        fund_id: 0192a3f0-1000-7000-8000-000000000006
+        income_account_id: 0192a3f0-1000-7000-8000-000000000007
+        status: active
+        decision_id: null
+        current_rate:
+          id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          plan_id: 0192a3f0-1000-7000-8000-000000000004
+          from: '2026-03-01'
+          to: null
+          amount:
+            amount: 200000
+            currency: TRY
+          decision_id: null
+          created_at: '2026-03-01T09:00:00Z'
+          updated_at: '2026-03-01T09:00:00Z'
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    ChargePlanCreate:
+      type: object
+      required:
+        - site_id
+        - name
+        - kind
+        - charge_type
+        - start
+        - amount_mode
+        - allocation_key_id
+        - scope
+        - amount
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - recurring
+            - one_off
+          x-open-enum: true
+        charge_type:
+          type: string
+          description: Open enum.
+          enum:
+            - dues
+            - special_assessment
+            - reserve_contribution
+            - utility
+            - booking_fee
+            - legal_cost
+            - deposit
+            - adjustment
+            - settlement
+          x-open-enum: true
+        default_debtor:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        frequency:
+          type: string
+          description: Open enum.
+          enum:
+            - monthly
+            - quarterly
+            - yearly
+            - once
+          x-open-enum: true
+        due_day:
+          type: integer
+          format: int64
+          nullable: true
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+          nullable: true
+        amount_mode:
+          type: string
+          description: Open enum.
+          enum:
+            - per_unit
+            - total_allocated
+          x-open-enum: true
+        allocation_key_id:
+          type: string
+          format: uuid
+        scope:
+          $ref: '#/components/schemas/ChargeScope'
+        fund_id:
+          type: string
+          format: uuid
+        income_account_id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+      example:
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        name: Monthly dues
+        kind: recurring
+        charge_type: dues
+        start: '2026-01-01'
+        amount_mode: per_unit
+        allocation_key_id: 0192a3f0-1000-7000-8000-000000000001
+        scope:
+          type: site
+          id: null
+        amount:
+          amount: 200000
+          currency: TRY
+    ChargePlanList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargePlan'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            name: Ali Veli
+            kind: recurring
+            charge_type: dues
+            default_debtor: owner
+            frequency: monthly
+            due_day: null
+            start: '2026-03-01'
+            end: null
+            amount_mode: per_unit
+            allocation_key_id: 0192a3f0-1000-7000-8000-000000000005
+            scope:
+              type: site
+              id: null
+            fund_id: 0192a3f0-1000-7000-8000-000000000006
+            income_account_id: 0192a3f0-1000-7000-8000-000000000007
+            status: active
+            decision_id: null
+            current_rate:
+              id: 0192a3f0-1000-7000-8000-000000000002
+              org_id: 0192a3f0-1000-7000-8000-000000000003
+              plan_id: 0192a3f0-1000-7000-8000-000000000004
+              from: '2026-03-01'
+              to: null
+              amount:
+                amount: 200000
+                currency: TRY
+              decision_id: null
+              created_at: '2026-03-01T09:00:00Z'
+              updated_at: '2026-03-01T09:00:00Z'
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    ChargePlanPreview:
+      type: object
+      required:
+        - period
+        - total
+        - unit_count
+        - lines
+        - remainder_distributed
+      properties:
+        period:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+        total:
+          $ref: '#/components/schemas/Money'
+        unit_count:
+          type: integer
+          format: int64
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChargePreviewLine'
+        remainder_distributed:
+          type: boolean
+          description: Largest-remainder rounding was applied so the lines sum to the total.
+      example:
+        period: 2026-03
+        total:
+          amount: 200000
+          currency: TRY
+        unit_count: 1
+        lines:
+          - unit_id: 0192a3f0-1000-7000-8000-000000000002
+            door_number: door number
+            debtor_kind: owner
+            debtor_person_id: null
+            debtor_display_name: null
+            weight: 1.5
+            amount:
+              amount: 200000
+              currency: TRY
+            effective_debtor:
+              debtor_kind: owner
+              person_id: null
+              display_name: null
+              source: plan_default
+        remainder_distributed: false
+    ChargePlanPreviewRequest:
+      type: object
+      description: Send either `plan_id` or `plan`.
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+          description: Preview an existing plan.
+        plan:
+          allOf:
+            - $ref: '#/components/schemas/ChargePlanCreate'
+          description: Preview an unsaved plan (all fields as for creation).
+        amount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Override of the amount for an existing plan.
+        period:
+          type: string
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. Default: the next period.'
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+    ChargePlanRate:
+      type: object
+      description: Effective-dated amount of a plan (M3).
+      required:
+        - id
+        - org_id
+        - plan_id
+        - from
+        - to
+        - amount
+        - decision_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        plan_id:
+          type: string
+          format: uuid
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        plan_id: 0192a3f0-1000-7000-8000-000000000004
+        from: '2026-03-01'
+        to: null
+        amount:
+          amount: 200000
+          currency: TRY
+        decision_id: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    ChargePlanUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        due_day:
+          type: integer
+          format: int64
+          nullable: true
+        end:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - active
+            - paused
+            - ended
+          x-open-enum: true
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        allocation_key_id:
+          type: string
+          format: uuid
+        scope:
+          $ref: '#/components/schemas/ChargeScope'
+    ChargePreviewLine:
+      type: object
+      required:
+        - unit_id
+        - door_number
+        - debtor_kind
+        - debtor_person_id
+        - debtor_display_name
+        - weight
+        - amount
+        - effective_debtor
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        debtor_person_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_display_name:
+          type: string
+          nullable: true
+        weight:
+          type: number
+        amount:
+          $ref: '#/components/schemas/Money'
+        effective_debtor:
+          $ref: '#/components/schemas/EffectiveDebtor'
+    ChargeScope:
+      type: object
+      required:
+        - type
+        - id
+      properties:
+        type:
+          type: string
+          enum:
+            - site
+            - block
+            - unit_tag
+        id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Block or unit tag id; null for `site`.
+    DebtorRef:
+      type: object
+      description: 'Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.'
+      oneOf:
+        - required:
+            - unit_id
+            - debtor_kind
+        - required:
+            - person_id
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+          description: 'Unit mode: the unit.'
+        debtor_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: 'Unit mode: the side of the unit that owes.'
+        person_id:
+          type: string
+          format: uuid
+          description: 'Person mode: the person who owes; covers charges carried to them and charges keyed on them.'
+      example:
+        unit_id: 0192a3f0-1000-7000-8000-000000000001
+        debtor_kind: tenant
+    DebtorReport:
+      type: object
+      description: Debtor list; never public.
+      required:
+        - as_of
+        - rows
+        - total_principal
+        - total_late_fee
+        - total
+      properties:
+        as_of:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/DebtorRow'
+        total_principal:
+          $ref: '#/components/schemas/Money'
+        total_late_fee:
+          $ref: '#/components/schemas/Money'
+        total:
+          $ref: '#/components/schemas/Money'
+    DebtorRow:
+      type: object
+      required:
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - debtor_person_id
+        - debtor_display_name
+        - principal
+        - late_fee
+        - total
+        - months_overdue
+        - in_collection
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        debtor_person_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_display_name:
+          type: string
+          nullable: true
+        principal:
+          $ref: '#/components/schemas/Money'
+        late_fee:
+          $ref: '#/components/schemas/Money'
+        total:
+          $ref: '#/components/schemas/Money'
+        months_overdue:
+          type: integer
+          format: int64
+        in_collection:
+          type: boolean
+    EffectiveDebtor:
+      type: object
+      description: 'Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.'
+      required:
+        - debtor_kind
+        - person_id
+        - display_name
+        - source
+      properties:
+        debtor_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: Open enum.
+          x-open-enum: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The person on the due date; null when the side is vacant.
+        display_name:
+          type: string
+          nullable: true
+        source:
+          type: string
+          enum:
+            - charge
+            - unit_override
+            - plan_default
+            - carried
+          description: Where the decision came from. Open enum.
+          x-open-enum: true
+      example:
+        debtor_kind: tenant
+        person_id: null
+        display_name: null
+        source: unit_override
+    FundBalanceRow:
+      type: object
+      required:
+        - fund_id
+        - name
+        - kind
+        - balance
+      properties:
+        fund_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+        balance:
+          $ref: '#/components/schemas/Money'
+    FundBalancesReport:
+      type: object
+      required:
+        - as_of
+        - rows
+        - total
+      properties:
+        as_of:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/FundBalanceRow'
+        total:
+          $ref: '#/components/schemas/Money'
+    IncomeExpenseReport:
+      type: object
+      description: Cash-basis gelir-gider by category.
+      required:
+        - from
+        - to
+        - basis
+        - income
+        - expense
+        - total_income
+        - total_expense
+        - net
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        basis:
+          type: string
+          description: Always `cash`.
+        income:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportAmountRow'
+        expense:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportAmountRow'
+        total_income:
+          $ref: '#/components/schemas/Money'
+        total_expense:
+          $ref: '#/components/schemas/Money'
+        net:
+          $ref: '#/components/schemas/Money'
+    LateFeePolicy:
+      type: object
+      required:
+        - site_id
+        - rate_pct_per_month
+        - max_rate_pct_per_month
+        - grace_days
+        - simple
+        - waiver_reauth_threshold
+        - version
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        rate_pct_per_month:
+          type: number
+          description: Default 5; never above `max_rate_pct_per_month`.
+        max_rate_pct_per_month:
+          type: number
+          description: Statutory maximum from the preset.
+        grace_days:
+          type: integer
+          format: int64
+        simple:
+          type: boolean
+          description: Fees never compound.
+        waiver_reauth_threshold:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+          description: Waivers above this need re-authentication.
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on the next write.
+    LateFeePolicySet:
+      type: object
+      required:
+        - rate_pct_per_month
+        - grace_days
+      properties:
+        rate_pct_per_month:
+          type: number
+        grace_days:
+          type: integer
+          format: int64
+        waiver_reauth_threshold:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+    OpeningBalance:
+      type: object
+      description: Opening position against the opening-equity account (M7).
+      required:
+        - id
+        - org_id
+        - site_id
+        - as_of
+        - kind
+        - unit_id
+        - debtor_kind
+        - person_id
+        - account_id
+        - vendor_id
+        - principal
+        - late_fee
+        - journal_entry_id
+        - locked
+        - created_at
+        - updated_at
+        - status
+        - voided_at
+        - void_reason
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        as_of:
+          type: string
+          format: date
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - unit_receivable
+            - bank
+            - cash
+            - vendor
+          x-open-enum: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+          nullable: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        account_id:
+          type: string
+          format: uuid
+          nullable: true
+        vendor_id:
+          type: string
+          format: uuid
+          nullable: true
+        principal:
+          $ref: '#/components/schemas/Money'
+        late_fee:
+          $ref: '#/components/schemas/Money'
+        journal_entry_id:
+          type: string
+          format: uuid
+        locked:
+          type: boolean
+          description: True once `as_of` is on or before the lock date.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - active
+            - voided
+          description: Open enum. A voided opening balance stays in the ledger with its reversal.
+          x-open-enum: true
+        voided_at:
+          type: string
+          format: date-time
+          nullable: true
+        void_reason:
+          type: string
+          nullable: true
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        as_of: '2026-03-01'
+        kind: unit_receivable
+        unit_id: null
+        debtor_kind: owner
+        person_id: null
+        account_id: null
+        vendor_id: null
+        principal:
+          amount: 200000
+          currency: TRY
+        late_fee:
+          amount: 200000
+          currency: TRY
+        journal_entry_id: 0192a3f0-1000-7000-8000-000000000005
+        locked: false
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        status: active
+        voided_at: null
+        void_reason: null
+    OpeningBalanceCreate:
+      type: object
+      required:
+        - site_id
+        - as_of
+        - kind
+        - principal
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        as_of:
+          type: string
+          format: date
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - unit_receivable
+            - bank
+            - cash
+            - vendor
+          x-open-enum: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+          nullable: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        account_id:
+          type: string
+          format: uuid
+          nullable: true
+        vendor_id:
+          type: string
+          format: uuid
+          nullable: true
+        principal:
+          $ref: '#/components/schemas/Money'
+        late_fee:
+          $ref: '#/components/schemas/Money'
+    OpeningBalanceList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpeningBalance'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            as_of: '2026-03-01'
+            kind: unit_receivable
+            unit_id: null
+            debtor_kind: owner
+            person_id: null
+            account_id: null
+            vendor_id: null
+            principal:
+              amount: 200000
+              currency: TRY
+            late_fee:
+              amount: 200000
+              currency: TRY
+            journal_entry_id: 0192a3f0-1000-7000-8000-000000000005
+            locked: false
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            status: active
+            voided_at: null
+            void_reason: null
+        next_cursor: null
+    OpeningBalanceVoid:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          description: Why the opening position is void; audited.
+      example:
+        reason: Imported twice
+    Payment:
+      type: object
+      description: 'A payment. Default allocation: oldest first, principal before fee; over-payment becomes a prepayment credit.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - payer_person_id
+        - payer_display_name
+        - unit_id
+        - debtor_kind
+        - method
+        - gross
+        - fee
+        - net
+        - received_on
+        - recorded_by
+        - asset_account_id
+        - reference
+        - note
+        - status
+        - receipt_no
+        - provider_txn_id
+        - journal_entry_id
+        - allocated
+        - unallocated
+        - allocations
+        - bank_transaction_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        payer_person_id:
+          type: string
+          format: uuid
+          nullable: true
+        payer_display_name:
+          type: string
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+          nullable: true
+        method:
+          type: string
+          description: '`card:<provider>` values arrive in 0.4. Open enum.'
+          enum:
+            - cash
+            - bank_transfer
+            - card
+          x-open-enum: true
+        gross:
+          $ref: '#/components/schemas/Money'
+        fee:
+          $ref: '#/components/schemas/Money'
+        net:
+          $ref: '#/components/schemas/Money'
+        received_on:
+          type: string
+          format: date
+        recorded_by:
+          type: string
+          format: uuid
+          nullable: true
+        asset_account_id:
+          type: string
+          format: uuid
+        reference:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - pending_declared
+            - confirmed
+            - refunded
+            - voided
+          x-open-enum: true
+        receipt_no:
+          type: string
+          nullable: true
+          description: Gap-free per site per year.
+        provider_txn_id:
+          type: string
+          nullable: true
+        journal_entry_id:
+          type: string
+          format: uuid
+          nullable: true
+        allocated:
+          $ref: '#/components/schemas/Money'
+        unallocated:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Becomes credit.
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAllocation'
+        bank_transaction_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        payer_person_id: null
+        payer_display_name: null
+        unit_id: null
+        debtor_kind: null
+        method: cash
+        gross:
+          amount: 200000
+          currency: TRY
+        fee:
+          amount: 0
+          currency: TRY
+        net:
+          amount: 200000
+          currency: TRY
+        received_on: '2026-03-01'
+        recorded_by: null
+        asset_account_id: 0192a3f0-1000-7000-8000-000000000002
+        reference: null
+        note: null
+        status: confirmed
+        receipt_no: 2026/0042
+        provider_txn_id: null
+        journal_entry_id: null
+        allocated:
+          amount: 200000
+          currency: TRY
+        unallocated:
+          amount: 200000
+          currency: TRY
+        allocations:
+          - charge_id: 0192a3f0-1000-7000-8000-000000000001
+            charge_description: null
+            amount:
+              amount: 200000
+              currency: TRY
+        bank_transaction_id: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    PaymentAllocation:
+      type: object
+      required:
+        - charge_id
+        - charge_description
+        - amount
+      properties:
+        charge_id:
+          type: string
+          format: uuid
+        charge_description:
+          type: string
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+    PaymentConfirm:
+      type: object
+      required:
+        - asset_account_id
+      properties:
+        asset_account_id:
+          type: string
+          format: uuid
+        received_on:
+          type: string
+          format: date
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationInput'
+        bank_transaction_id:
+          type: string
+          format: uuid
+    PaymentCreate:
+      type: object
+      required:
+        - site_id
+        - method
+        - amount
+        - received_on
+        - asset_account_id
+        - debtor
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        payer_person_id:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum:
+            - cash
+            - bank_transfer
+        amount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Gross amount.
+        received_on:
+          type: string
+          format: date
+        asset_account_id:
+          type: string
+          format: uuid
+          description: Bank account or the collector cash box account.
+        reference:
+          type: string
+        note:
+          type: string
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationInput'
+          description: 'Manual override; omitted: automatic oldest-first.'
+        send_receipt:
+          $ref: '#/components/schemas/ReceiptDelivery'
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Who the payment settles: a unit side or a person (carried debt).'
+      example:
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        method: cash
+        amount:
+          amount: 200000
+          currency: TRY
+        received_on: '2026-03-05'
+        asset_account_id: 0192a3f0-1000-7000-8000-000000000002
+        debtor:
+          unit_id: 0192a3f0-1000-7000-8000-000000000001
+          debtor_kind: tenant
+    PaymentDeclare:
+      type: object
+      required:
+        - site_id
+        - amount
+        - paid_on
+        - debtor
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        amount:
+          $ref: '#/components/schemas/Money'
+        paid_on:
+          type: string
+          format: date
+        reference:
+          type: string
+        note:
+          type: string
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Who the declared transfer is for. Residents declare for their own side; a former occupant never declares.
+    PaymentList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            payer_person_id: null
+            payer_display_name: null
+            unit_id: null
+            debtor_kind: null
+            method: cash
+            gross:
+              amount: 200000
+              currency: TRY
+            fee:
+              amount: 0
+              currency: TRY
+            net:
+              amount: 200000
+              currency: TRY
+            received_on: '2026-03-01'
+            recorded_by: null
+            asset_account_id: 0192a3f0-1000-7000-8000-000000000002
+            reference: null
+            note: null
+            status: confirmed
+            receipt_no: 2026/0042
+            provider_txn_id: null
+            journal_entry_id: null
+            allocated:
+              amount: 200000
+              currency: TRY
+            unallocated:
+              amount: 200000
+              currency: TRY
+            allocations:
+              - charge_id: 0192a3f0-1000-7000-8000-000000000001
+                charge_description: null
+                amount:
+                  amount: 200000
+                  currency: TRY
+            bank_transaction_id: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    PaymentReject:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    PaymentVoid:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    ReceiptDelivery:
+      type: object
+      required:
+        - channels
+      properties:
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - sms
+              - email
+    ReceivablesAgingReport:
+      type: object
+      required:
+        - as_of
+        - buckets
+        - rows
+        - totals
+      properties:
+        as_of:
+          type: string
+          format: date
+        buckets:
+          type: array
+          items:
+            type: string
+          description: The ordered bucket keys, for example `0-30`, `31-60`, `61-90`, `90+`; rows and totals refer to them by key.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgingRow'
+        totals:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgingBucketAmount'
+          description: Totals per bucket, in the order of `buckets`.
+    ReportAmountRow:
+      type: object
+      required:
+        - account_id
+        - code
+        - name
+        - amount
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Money'
+    Statement:
+      type: object
+      description: 'Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`.'
+      required:
+        - debtor
+        - from
+        - to
+        - opening_balance
+        - lines
+        - closing_balance
+        - accrued_late_fee
+        - total_due
+        - credit
+      properties:
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Whose statement this is: a unit side or a person.'
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        opening_balance:
+          $ref: '#/components/schemas/Money'
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementLine'
+        closing_balance:
+          $ref: '#/components/schemas/Money'
+        accrued_late_fee:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Fee accrued to date and not yet booked; included in `total_due`.
+        total_due:
+          $ref: '#/components/schemas/Money'
+        credit:
+          $ref: '#/components/schemas/Money'
+    StatementLine:
+      type: object
+      required:
+        - date
+        - kind
+        - description
+        - ref_type
+        - ref_id
+        - debtor_kind
+        - debtor_display_name
+        - principal
+        - late_fee
+        - debit
+        - credit
+        - balance
+      properties:
+        date:
+          type: string
+          format: date
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - opening
+            - charge
+            - payment
+            - late_fee
+            - credit
+            - refund
+            - adjustment
+            - reversal
+          x-open-enum: true
+        description:
+          type: string
+        ref_type:
+          type: string
+          nullable: true
+        ref_id:
+          type: string
+          format: uuid
+          nullable: true
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+          nullable: true
+        debtor_display_name:
+          type: string
+          nullable: true
+        principal:
+          $ref: '#/components/schemas/Money'
+        late_fee:
+          $ref: '#/components/schemas/Money'
+        debit:
+          $ref: '#/components/schemas/Money'
+        credit:
+          $ref: '#/components/schemas/Money'
+        balance:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Running balance.
+    TrialBalanceReport:
+      type: object
+      required:
+        - as_of
+        - rows
+        - total_debit
+        - total_credit
+      properties:
+        as_of:
+          type: string
+          format: date
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrialBalanceRow'
+        total_debit:
+          $ref: '#/components/schemas/Money'
+        total_credit:
+          $ref: '#/components/schemas/Money'
+    TrialBalanceRow:
+      type: object
+      required:
+        - account_id
+        - code
+        - name
+        - type
+        - debit
+        - credit
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        debit:
+          $ref: '#/components/schemas/Money'
+        credit:
+          $ref: '#/components/schemas/Money'
     ReauthEmailCode:
       type: object
       required:

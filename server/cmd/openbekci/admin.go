@@ -29,6 +29,8 @@ func newAdminCmd(load configLoader) *cobra.Command {
 		newLoginLinkCmd(load),
 		newDeliveryLogCmd(load),
 		newExportSiteCmd(load),
+		newRebuildChargeStatusCmd(load),
+		newPostEntryCmd(load),
 		newImportSiteCmd(load),
 		newOffboardSiteCmd(load),
 	)

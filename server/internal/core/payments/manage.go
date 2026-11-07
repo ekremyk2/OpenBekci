@@ -177,7 +177,7 @@ func jsonString(s string) string {
 	return string(b)
 }
 
-// Void reverses a confirmed payment (money.post): its entry is reversed dated
+// Void reverses a confirmed payment (payments.record; a collector only in their own cash box): its entry is reversed dated
 // today, its allocations are voided and the charges re-derive their status.
 func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason string) (Payment, error) {
 	var out Payment
@@ -186,9 +186,19 @@ func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason s
 		if err != nil {
 			return err
 		}
-		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyPost, orgID, p.SiteID)
+		site, err := ledger.SiteFor(ctx, tx, ledger.PermPaymentsRecord, orgID, p.SiteID)
 		if err != nil {
 			return err
+		}
+		if !ledger.HasSite(ctx, tx, ledger.PermMoneyManage, p.SiteID) {
+			user := ledger.Actor(ctx)
+			own := uuid.Nil
+			if user != nil {
+				own, _, _ = ledger.CollectorBox(ctx, tx, orgID, p.SiteID, *user)
+			}
+			if own != p.AssetAccountID {
+				return problem.Forbidden("you may void payments only in your own cash box")
+			}
 		}
 		if p.Status == "voided" {
 			out, err = loadPayment(ctx, tx, orgID, paymentID)

@@ -148,11 +148,14 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	d.WarnIfPlatformSuperuser(ctx, log)
 
 	idem := idempotency.NewPG(d)
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
+	jobOpts := jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem}
+	moneyJobs(d, log)(&jobOpts)
+	client, err := jobs.New(d.WorkerPool(), log, jobOpts)
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
+	notifier.client.Store(client)
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()

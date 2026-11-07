@@ -9,6 +9,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/moneyhooks"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
@@ -78,6 +79,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
+	peopleSvc.SetMoneyHooks(moneyhooks.MoveOut{})
 	reg, err := permissions.NewRegistry()
 	if err != nil {
 		return httpapi.Deps{}, err

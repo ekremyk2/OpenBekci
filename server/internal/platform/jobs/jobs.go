@@ -27,6 +27,9 @@ type Options struct {
 	// Idempotency is pruned by the hourly maintenance.prune_idempotency job.
 	// Nil registers neither the worker nor the schedule.
 	Idempotency Pruner
+	// Workers registers the workers of other modules; Periodic are their schedules.
+	Workers  func(*river.Workers)
+	Periodic []*river.PeriodicJob
 }
 
 // Pruner deletes expired idempotency keys (*idempotency.PG).
@@ -84,6 +87,9 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 		river.AddWorker(workers, &pruneIdempotencyWorker{log: log, pruner: o.Idempotency})
 	}
 
+	if o.Workers != nil {
+		o.Workers(workers)
+	}
 	cfg := &river.Config{
 		Logger:   log,
 		Workers:  workers,
@@ -93,16 +99,17 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 		cfg.Queues = map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 10},
 		}
+		cfg.PeriodicJobs = append(cfg.PeriodicJobs, o.Periodic...)
 		if o.Idempotency != nil {
 			// Hourly, and once when the worker starts. River enqueues it from
 			// the elected leader only, so replicas do not prune in parallel.
-			cfg.PeriodicJobs = []*river.PeriodicJob{
+			cfg.PeriodicJobs = append(cfg.PeriodicJobs, []*river.PeriodicJob{
 				river.NewPeriodicJob(
 					river.PeriodicInterval(PruneIdempotencyInterval),
 					func() (river.JobArgs, *river.InsertOpts) { return PruneIdempotencyArgs{}, nil },
 					&river.PeriodicJobOpts{RunOnStart: true},
 				),
-			}
+			}...)
 		}
 	}
 	c, err := river.NewClient(riverpgxv5.New(pool), cfg)

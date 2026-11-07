@@ -1,0 +1,102 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: money.listOpeningBalances
+  summary: List opening balances
+  description: |-
+    **Release 0.1.** Cursor-paginated list of opening balances.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.read]
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - name: kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - unit_receivable
+          - bank
+          - cash
+          - vendor
+      description: Filter by `kind`.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/OpeningBalanceList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: money.createOpeningBalance
+  summary: Create opening balance
+  description: |-
+    **Release 0.1.** Creates a opening balance.
+
+    Permission: `money.post`.
+
+    Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+    Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.post]
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/IdempotencyKeyRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/DryRun
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/OpeningBalanceCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/OpeningBalance
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

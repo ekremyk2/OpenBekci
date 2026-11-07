@@ -11,6 +11,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/money/rates"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
@@ -233,32 +234,44 @@ func (s *Service) ChargeGenerationStatus(ctx context.Context, orgID, siteID uuid
 
 // Charge is a charge as the API shows it.
 type Charge struct {
-	ID              uuid.UUID  `json:"id"`
-	OrgID           uuid.UUID  `json:"org_id"`
-	SiteID          uuid.UUID  `json:"site_id"`
-	PlanID          *uuid.UUID `json:"plan_id"`
-	UnitID          uuid.UUID  `json:"unit_id"`
-	DoorNumber      string     `json:"door_number"`
-	Period          string     `json:"period"`
-	Kind            string     `json:"kind"`
-	ChargeType      string     `json:"charge_type"`
-	DebtorKind      string     `json:"debtor_kind"`
-	DebtorPersonID  *uuid.UUID `json:"debtor_person_id"`
-	Amount          int64      `json:"amount"`
-	DueDate         string     `json:"due_date"`
-	Description     string     `json:"description"`
-	AllocationBasis any        `json:"allocation_basis"`
-	JournalEntryID  uuid.UUID  `json:"journal_entry_id"`
-	Status          string     `json:"status"`
-	CreatedAt       time.Time  `json:"created_at"`
+	ID              uuid.UUID   `json:"id"`
+	OrgID           uuid.UUID   `json:"org_id"`
+	SiteID          uuid.UUID   `json:"site_id"`
+	PlanID          *uuid.UUID  `json:"plan_id"`
+	UnitID          uuid.UUID   `json:"unit_id"`
+	DoorNumber      string      `json:"unit_door_number"`
+	Period          string      `json:"period"`
+	Kind            string      `json:"kind"`
+	ChargeType      string      `json:"charge_type"`
+	DebtorKind      string      `json:"debtor_kind"`
+	DebtorPersonID  *uuid.UUID  `json:"debtor_person_id"`
+	Amount          money.Money `json:"amount"`
+	Paid            money.Money `json:"paid"`
+	Balance         money.Money `json:"balance"`
+	EffectiveDebtor Debtor      `json:"effective_debtor"`
+	DueDate         string      `json:"due_date"`
+	Description     string      `json:"description"`
+	AllocationBasis any         `json:"allocation_basis"`
+	JournalEntryID  uuid.UUID   `json:"journal_entry_id"`
+	Status          string      `json:"status"`
+	CreatedAt       time.Time   `json:"created_at"`
+	UpdatedAt       time.Time   `json:"updated_at"`
 }
 
-const chargeSel = `SELECT c.id, c.org_id, c.site_id, c.plan_id, c.unit_id, u.door_number, c.period, c.kind, c.charge_type, c.debtor_kind, c.debtor_person_id, c.amount, c.due_date::text, c.description, c.allocation_basis, c.journal_entry_id, c.status, c.created_at
-	FROM charge c JOIN unit u ON u.org_id = c.org_id AND u.id = c.unit_id`
+const chargeSel = `SELECT c.id, c.org_id, c.site_id, c.plan_id, c.unit_id, u.door_number, c.period, c.kind, c.charge_type, c.debtor_kind, c.debtor_person_id, c.amount, c.due_date::text, c.description, c.allocation_basis, c.journal_entry_id, c.status, c.created_at, s.currency,
+	COALESCE((SELECT SUM(a.amount) FROM payment_allocation a WHERE a.org_id = c.org_id AND a.charge_id = c.id AND NOT a.voided), 0)::bigint
+	FROM charge c JOIN unit u ON u.org_id = c.org_id AND u.id = c.unit_id JOIN site s ON s.org_id = c.org_id AND s.id = c.site_id`
 
 func scanCharge(r pgx.Row) (c Charge, err error) {
 	var basis []byte
-	err = r.Scan(&c.ID, &c.OrgID, &c.SiteID, &c.PlanID, &c.UnitID, &c.DoorNumber, &c.Period, &c.Kind, &c.ChargeType, &c.DebtorKind, &c.DebtorPersonID, &c.Amount, &c.DueDate, &c.Description, &basis, &c.JournalEntryID, &c.Status, &c.CreatedAt)
+	var amt, paid int64
+	var cur string
+	err = r.Scan(&c.ID, &c.OrgID, &c.SiteID, &c.PlanID, &c.UnitID, &c.DoorNumber, &c.Period, &c.Kind, &c.ChargeType, &c.DebtorKind, &c.DebtorPersonID, &amt, &c.DueDate, &c.Description, &basis, &c.JournalEntryID, &c.Status, &c.CreatedAt, &cur, &paid)
+	cc := money.Code(cur)
+	c.Amount, c.Paid, c.Balance = money.New(amt, cc), money.New(paid, cc), money.New(amt-paid, cc)
+	uid := c.UnitID
+	c.EffectiveDebtor = Debtor{UnitID: &uid, Kind: c.DebtorKind, PersonID: c.DebtorPersonID}
+	c.UpdatedAt = c.CreatedAt
 	if len(basis) > 0 {
 		_ = json.Unmarshal(basis, &c.AllocationBasis)
 	}

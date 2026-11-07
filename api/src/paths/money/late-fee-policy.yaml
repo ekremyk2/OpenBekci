@@ -1,0 +1,78 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: money.getLateFeePolicy
+  summary: Get the late-fee policy
+  description: |-
+    **Release 0.1.** Get the late-fee policy.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.read]
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/LateFeePolicy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: money.setLateFeePolicy
+  summary: Set the late-fee policy
+  description: |-
+    **Release 0.1.** Set the late-fee policy.
+
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+    Permission: `money.manage`.
+
+    Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.manage]
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/money-params.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/LateFeePolicySet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/LateFeePolicy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

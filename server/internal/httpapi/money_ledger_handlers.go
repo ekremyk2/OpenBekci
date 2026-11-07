@@ -7,7 +7,10 @@ import (
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
+	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/payments"
+	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -16,7 +19,10 @@ var errNoMoney = errors.New("money services not configured")
 
 // MoneyDeps are the money services the HTTP layer serves (wired in internal/app).
 type MoneyDeps struct {
-	Ledger *ledger.Service
+	Ledger   *ledger.Service
+	Billing  *billing.Service
+	Payments *payments.Service
+	Reports  *reports.Service
 }
 
 func (s *apiServer) lg() (*ledger.Service, error) {

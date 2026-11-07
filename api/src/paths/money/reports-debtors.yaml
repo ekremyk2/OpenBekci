@@ -1,0 +1,64 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: money.getDebtorReport
+  summary: Debtor list (borclu listesi)
+  description: |-
+    **Release 0.1.** Visible to manager, board and auditor; never public (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+
+    Permission: `reports.debtors`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [reports.debtors]
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - name: block_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `block_id`.
+    - name: min_months
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Filter by `min_months`.
+    - $ref: ../../components/draft-common.yaml#/parameters/Format
+  responses:
+    "200":
+      description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/DebtorReport
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -34,7 +34,8 @@ type Plan struct {
 	End             *string    `json:"end"`
 	AmountMode      string     `json:"amount_mode"`
 	AllocationKey   *string    `json:"allocation_key"`
-	Scope           string     `json:"scope"`
+	AllocationKeyID *uuid.UUID `json:"allocation_key_id"`
+	Scope           string     `json:"scope_ref"`
 	FundID          uuid.UUID  `json:"fund_id"`
 	IncomeAccountID *uuid.UUID `json:"income_account_id"`
 	Status          string     `json:"status"`
@@ -43,11 +44,11 @@ type Plan struct {
 	Version         int        `json:"version"`
 }
 
-const planCols = `id, org_id, site_id, name, kind, charge_type, default_debtor, frequency, due_day, start_on::text, end_on::text, amount_mode, allocation_key, scope, fund_id, income_account_id, status, created_at, updated_at, version`
+const planCols = `id, org_id, site_id, name, kind, charge_type, default_debtor, frequency, due_day, start_on::text, end_on::text, amount_mode, allocation_key, (SELECT k.id FROM allocation_key k WHERE k.org_id = charge_plan.org_id AND k.site_id = charge_plan.site_id AND k.code = charge_plan.allocation_key) AS allocation_key_id, scope, fund_id, income_account_id, status, created_at, updated_at, version`
 
 func scanPlan(r pgx.Row) (p Plan, err error) {
 	err = r.Scan(&p.ID, &p.OrgID, &p.SiteID, &p.Name, &p.Kind, &p.ChargeType, &p.DefaultDebtor, &p.Frequency, &p.DueDay, &p.Start, &p.End, &p.AmountMode,
-		&p.AllocationKey, &p.Scope, &p.FundID, &p.IncomeAccountID, &p.Status, &p.CreatedAt, &p.UpdatedAt, &p.Version)
+		&p.AllocationKey, &p.AllocationKeyID, &p.Scope, &p.FundID, &p.IncomeAccountID, &p.Status, &p.CreatedAt, &p.UpdatedAt, &p.Version)
 	p.CreatedAt, p.UpdatedAt = p.CreatedAt.UTC(), p.UpdatedAt.UTC()
 	return
 }
@@ -65,11 +66,14 @@ type PlanInput struct {
 	End             *string    `json:"end"`
 	AmountMode      string     `json:"amount_mode"`
 	AllocationKey   *string    `json:"allocation_key"`
+	AllocationKeyID *uuid.UUID `json:"allocation_key_id"`
 	Scope           string     `json:"scope"`
 	FundID          *uuid.UUID `json:"fund_id"`
 	IncomeAccountID *uuid.UUID `json:"income_account_id"`
 	Amount          *int64     `json:"amount"`
 }
+
+func Ptr[T any](v T) *T { return &v }
 
 func in(v string, set ...string) bool {
 	for _, s := range set {
@@ -136,6 +140,12 @@ func (p *PlanInput) normalize() error {
 
 // CreatePlan adds a plan (money.manage), with a first rate when Amount is given.
 func (s *Service) CreatePlan(ctx context.Context, orgID uuid.UUID, in PlanInput) (Plan, error) {
+	if in.AllocationKeyID != nil && in.AllocationKey == nil && in.AmountMode == "" {
+		in.AmountMode = "total_allocated"
+	}
+	if in.AllocationKeyID != nil && in.AllocationKey == nil {
+		in.AllocationKey = Ptr("pending")
+	}
 	if err := in.normalize(); err != nil {
 		return Plan{}, err
 	}
@@ -147,6 +157,13 @@ func (s *Service) CreatePlan(ctx context.Context, orgID uuid.UUID, in PlanInput)
 		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
 		if err != nil {
 			return err
+		}
+		if in.AllocationKeyID != nil {
+			var code string
+			if err := tx.QueryRow(ctx, `SELECT code FROM allocation_key WHERE org_id=$1 AND site_id=$2 AND id=$3`, orgID, in.SiteID, *in.AllocationKeyID).Scan(&code); err != nil {
+				return bad("allocation_key_id", "invalid_value")
+			}
+			in.AllocationKey = &code
 		}
 		fund := ch.OperatingFund
 		if in.FundID != nil {

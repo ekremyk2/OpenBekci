@@ -1,0 +1,38 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: payment_id
+    in: path
+    required: true
+    description: Id of the payment.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getPayment
+  summary: Get a payment
+  description: |-
+    **Release 0.1.** Get a payment.
+
+    Permission (any one of): `money.read`, `statements.read_own`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.read, statements.read_own]
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Payment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

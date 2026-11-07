@@ -10,7 +10,10 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/authztest"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/money"
+	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
 
@@ -120,6 +123,44 @@ func init() {
 			f := w.NewSite(t, org)
 			return jsonReq("PUT", orgPath(org, "/sites/"+f.Site.String()+"/lock-date"), `{"lock_date":"2026-01-31"}`, ifm, `"1"`)
 		}},
+
+		"money.listChargePlans": siteQ("GET", "/charge-plans", perms(ledger.PermMoneyRead), 200, ""),
+		"money.createChargePlan": {perms: perms(ledger.PermMoneyManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			seedChart(w, t, org, f.Site)
+			return jsonReq("POST", orgPath(org, "/charge-plans"), fmt.Sprintf(`{"site_id":"%s","name":"Aidat","kind":"recurring","charge_type":"dues","amount_mode":"per_unit","allocation_key_id":"%s","amount":{"amount":1000,"currency":"TRY"},"scope":{"type":"site","id":null},"start":"2026-01-01"}`, f.Site, f.Key))
+		}},
+		"money.listCharges":  siteQ("GET", "/charges", perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, ""),
+		"money.listPayments": siteQ("GET", "/payments", perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, ""),
+		"money.createPayment": {perms: perms(ledger.PermPaymentsRecord), status: 201, override: collectorOverride, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			ch := seedChart(w, t, org, f.Site)
+			return jsonReq("POST", orgPath(org, "/payments"), fmt.Sprintf(`{"site_id":"%s","method":"bank_transfer","amount":{"amount":100,"currency":"TRY"},"received_on":"2026-01-10","asset_account_id":"%s","debtor":{"unit_id":"%s","debtor_kind":"owner"}}`, f.Site, ch.Account(ledger.SubBank), f.Unit), moneyIdem()...)
+		}},
+		"money.getPayment": {perms: perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, "/payments/"+seedPayment(w, t, org).String())}
+		}},
+		"money.voidPayment": {perms: perms(ledger.PermPaymentsRecord), status: 200, override: collectorOverride, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/payments/"+seedPayment(w, t, org).String()+":void"), `{"reason":"matrix"}`, moneyIdem()...)
+		}},
+		"money.listOpeningBalances": siteQ("GET", "/opening-balances", perms(ledger.PermMoneyRead), 200, ""),
+		"money.createOpeningBalance": {perms: perms(ledger.PermMoneyPost), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			seedChart(w, t, org, f.Site)
+			return jsonReq("POST", orgPath(org, "/opening-balances?dry_run=true"), fmt.Sprintf(`{"site_id":"%s","as_of":"2025-12-31","kind":"unit_receivable","unit_id":"%s","debtor_kind":"owner","principal":{"amount":1000,"currency":"TRY"}}`, f.Site, f.Unit), moneyIdem()...)
+		}},
+		"money.getLateFeePolicy": siteQ("GET", "/late-fee-policy", perms(ledger.PermMoneyRead), 200, ""),
+		"money.setLateFeePolicy": {perms: perms(ledger.PermMoneyManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			seedChart(w, t, org, f.Site)
+			return jsonReq("PUT", orgPath(org, "/late-fee-policy?site_id="+f.Site.String()), `{"grace_days":0,"rate_pct_per_month":5}`)
+		}},
+		"money.getDebtorReport": siteQ("GET", "/reports/debtors", perms(ledger.PermReportsDebtors), 200, ""),
+		"money.getUnitStatement": {perms: perms(ledger.PermStatementsRead, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			seedChart(w, t, org, f.Site)
+			return mreq{method: "GET", path: orgPath(org, "/units/"+f.Unit.String()+"/statements/owner")}
+		}},
 	}
 	for k, v := range rows {
 		authzMatrixRows[k] = v
@@ -153,3 +194,27 @@ func fyRow(method, suffix, status string, ps []authz.Permission, code int, heade
 		return jsonReq(method, orgPath(org, "/fiscal-years/"+fy.String()+suffix), body, headers...)
 	}}
 }
+
+// collectorOverride: staff hold payments.record but only for their own cash box (M5), and the matrix staff has none.
+func collectorOverride(actor, target string) (int, bool) {
+	if actor == "staff" && target == "own" {
+		return 403, true
+	}
+	return 0, false
+}
+
+// seedPayment records a payment of 100 through the service on a fresh site and returns its id.
+func seedPayment(w *authztest.World, t *testing.T, org authztest.Org) uuid.UUID {
+	t.Helper()
+	f := w.NewSite(t, org)
+	ch := seedChart(w, t, org, f.Site)
+	unit := f.Unit
+	p, err := payments.NewService(w.DB, nil, nil).Record(ledger.SystemContext(context.Background(), org.ID), org.ID, payments.Input{SiteID: f.Site, Debtor: billing.Debtor{UnitID: &unit, Kind: "owner"},
+		Method: "bank_transfer", Amount: money.New(100, "TRY"), ReceivedOn: "2026-01-10", AssetAccountID: ptrTo(ch.Account(ledger.SubBank))})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return p.ID
+}
+
+func ptrTo[T any](v T) *T { return &v }

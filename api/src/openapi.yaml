@@ -193,6 +193,24 @@ paths:
     $ref: './paths/money/journal-entries-entry_id_reverse.yaml'
   /v1/orgs/{org_id}/sites/{site_id}/lock-date:
     $ref: './paths/money/sites-site_id-lock-date.yaml'
+  /v1/orgs/{org_id}/charge-plans:
+    $ref: './paths/money/charge-plans.yaml'
+  /v1/orgs/{org_id}/charges:
+    $ref: './paths/money/charges.yaml'
+  /v1/orgs/{org_id}/payments:
+    $ref: './paths/money/payments.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:
+    $ref: './paths/money/payments-payment_id.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:void:
+    $ref: './paths/money/payments-payment_id_void.yaml'
+  /v1/orgs/{org_id}/late-fee-policy:
+    $ref: './paths/money/late-fee-policy.yaml'
+  /v1/orgs/{org_id}/opening-balances:
+    $ref: './paths/money/opening-balances.yaml'
+  /v1/orgs/{org_id}/reports/debtors:
+    $ref: './paths/money/reports-debtors.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}:
+    $ref: './paths/money/units-unit_id-statements-debtor_kind.yaml'
 components:
   securitySchemes:
     cookieAuth:
@@ -483,3 +501,97 @@ components:
       $ref: './components/money.yaml#/schemas/LockDate'
     LockDateSet:
       $ref: './components/money.yaml#/schemas/LockDateSet'
+    AgingBucketAmount:
+      $ref: './components/money.yaml#/schemas/AgingBucketAmount'
+    AgingRow:
+      $ref: './components/money.yaml#/schemas/AgingRow'
+    AllocationBasis:
+      $ref: './components/money.yaml#/schemas/AllocationBasis'
+    AllocationInput:
+      $ref: './components/money.yaml#/schemas/AllocationInput'
+    Charge:
+      $ref: './components/money.yaml#/schemas/Charge'
+    ChargeCancel:
+      $ref: './components/money.yaml#/schemas/ChargeCancel'
+    ChargeCreate:
+      $ref: './components/money.yaml#/schemas/ChargeCreate'
+    ChargeGenerationPending:
+      $ref: './components/money.yaml#/schemas/ChargeGenerationPending'
+    ChargeGenerationStatus:
+      $ref: './components/money.yaml#/schemas/ChargeGenerationStatus'
+    ChargeList:
+      $ref: './components/money.yaml#/schemas/ChargeList'
+    ChargePlan:
+      $ref: './components/money.yaml#/schemas/ChargePlan'
+    ChargePlanCreate:
+      $ref: './components/money.yaml#/schemas/ChargePlanCreate'
+    ChargePlanList:
+      $ref: './components/money.yaml#/schemas/ChargePlanList'
+    ChargePlanPreview:
+      $ref: './components/money.yaml#/schemas/ChargePlanPreview'
+    ChargePlanPreviewRequest:
+      $ref: './components/money.yaml#/schemas/ChargePlanPreviewRequest'
+    ChargePlanRate:
+      $ref: './components/money.yaml#/schemas/ChargePlanRate'
+    ChargePlanUpdate:
+      $ref: './components/money.yaml#/schemas/ChargePlanUpdate'
+    ChargePreviewLine:
+      $ref: './components/money.yaml#/schemas/ChargePreviewLine'
+    ChargeScope:
+      $ref: './components/money.yaml#/schemas/ChargeScope'
+    DebtorRef:
+      $ref: './components/money.yaml#/schemas/DebtorRef'
+    DebtorReport:
+      $ref: './components/money.yaml#/schemas/DebtorReport'
+    DebtorRow:
+      $ref: './components/money.yaml#/schemas/DebtorRow'
+    EffectiveDebtor:
+      $ref: './components/money.yaml#/schemas/EffectiveDebtor'
+    FundBalanceRow:
+      $ref: './components/money.yaml#/schemas/FundBalanceRow'
+    FundBalancesReport:
+      $ref: './components/money.yaml#/schemas/FundBalancesReport'
+    IncomeExpenseReport:
+      $ref: './components/money.yaml#/schemas/IncomeExpenseReport'
+    LateFeePolicy:
+      $ref: './components/money.yaml#/schemas/LateFeePolicy'
+    LateFeePolicySet:
+      $ref: './components/money.yaml#/schemas/LateFeePolicySet'
+    OpeningBalance:
+      $ref: './components/money.yaml#/schemas/OpeningBalance'
+    OpeningBalanceCreate:
+      $ref: './components/money.yaml#/schemas/OpeningBalanceCreate'
+    OpeningBalanceList:
+      $ref: './components/money.yaml#/schemas/OpeningBalanceList'
+    OpeningBalanceVoid:
+      $ref: './components/money.yaml#/schemas/OpeningBalanceVoid'
+    Payment:
+      $ref: './components/money.yaml#/schemas/Payment'
+    PaymentAllocation:
+      $ref: './components/money.yaml#/schemas/PaymentAllocation'
+    PaymentConfirm:
+      $ref: './components/money.yaml#/schemas/PaymentConfirm'
+    PaymentCreate:
+      $ref: './components/money.yaml#/schemas/PaymentCreate'
+    PaymentDeclare:
+      $ref: './components/money.yaml#/schemas/PaymentDeclare'
+    PaymentList:
+      $ref: './components/money.yaml#/schemas/PaymentList'
+    PaymentReject:
+      $ref: './components/money.yaml#/schemas/PaymentReject'
+    PaymentVoid:
+      $ref: './components/money.yaml#/schemas/PaymentVoid'
+    ReceiptDelivery:
+      $ref: './components/money.yaml#/schemas/ReceiptDelivery'
+    ReceivablesAgingReport:
+      $ref: './components/money.yaml#/schemas/ReceivablesAgingReport'
+    ReportAmountRow:
+      $ref: './components/money.yaml#/schemas/ReportAmountRow'
+    Statement:
+      $ref: './components/money.yaml#/schemas/Statement'
+    StatementLine:
+      $ref: './components/money.yaml#/schemas/StatementLine'
+    TrialBalanceReport:
+      $ref: './components/money.yaml#/schemas/TrialBalanceReport'
+    TrialBalanceRow:
+      $ref: './components/money.yaml#/schemas/TrialBalanceRow'

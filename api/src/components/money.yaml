@@ -2679,7 +2679,7 @@ schemas:
       - gross
       - fee
       - net
-      - received_at
+      - received_on
       - recorded_by
       - asset_account_id
       - reference
@@ -2737,9 +2737,9 @@ schemas:
         $ref: ./common.yaml#/schemas/Money
       net:
         $ref: ./common.yaml#/schemas/Money
-      received_at:
+      received_on:
         type: string
-        format: date-time
+        format: date
       recorded_by:
         type: string
         format: uuid
@@ -2811,7 +2811,7 @@ schemas:
       net:
         amount: 200000
         currency: TRY
-      received_at: 2026-03-01T09:00:00Z
+      received_on: 2026-03-01
       recorded_by: null
       asset_account_id: 0192a3f0-1000-7000-8000-000000000002
       reference: null
@@ -2868,7 +2868,7 @@ schemas:
           net:
             amount: 200000
             currency: TRY
-          received_at: 2026-03-01T09:00:00Z
+          received_on: 2026-03-01
           recorded_by: null
           asset_account_id: 0192a3f0-1000-7000-8000-000000000002
           reference: null
@@ -2911,7 +2911,7 @@ schemas:
       - site_id
       - method
       - amount
-      - received_at
+      - received_on
       - asset_account_id
       - debtor
     properties:
@@ -2930,9 +2930,9 @@ schemas:
         allOf:
           - $ref: ./common.yaml#/schemas/Money
         description: Gross amount.
-      received_at:
+      received_on:
         type: string
-        format: date-time
+        format: date
       asset_account_id:
         type: string
         format: uuid
@@ -2958,7 +2958,7 @@ schemas:
       amount:
         amount: 200000
         currency: TRY
-      received_at: 2026-03-05T10:15:00Z
+      received_on: 2026-03-05
       asset_account_id: 0192a3f0-1000-7000-8000-000000000002
       debtor:
         unit_id: 0192a3f0-1000-7000-8000-000000000001
@@ -3041,9 +3041,9 @@ schemas:
       asset_account_id:
         type: string
         format: uuid
-      received_at:
+      received_on:
         type: string
-        format: date-time
+        format: date
       allocations:
         type: array
         items:

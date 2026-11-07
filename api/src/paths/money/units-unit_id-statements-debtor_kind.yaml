@@ -1,0 +1,75 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: unit_id
+    in: path
+    required: true
+    description: Id of the unit.
+    schema:
+      type: string
+      format: uuid
+  - name: debtor_kind
+    in: path
+    required: true
+    description: Id of the debtor kind.
+    schema:
+      type: string
+      enum:
+        - owner
+        - tenant
+get:
+  operationId: money.getUnitStatement
+  summary: Statement of a unit side
+  description: |-
+    **Release 0.1.** JSON, or `format=pdf` for the printable statement. A former occupant sees only their own period (S7).
+
+    Permission (any one of): `statements.read`, `statements.read_own` (occupants: their own side and period only).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [statements.read, statements.read_own]
+  x-stability: stable
+  parameters:
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: End of the range (inclusive).
+    - $ref: ../../components/draft-common.yaml#/parameters/Format
+  responses:
+    "200":
+      description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Statement
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

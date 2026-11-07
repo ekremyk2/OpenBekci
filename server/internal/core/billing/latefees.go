@@ -436,6 +436,40 @@ func (s *Service) WaiveLateFee(ctx context.Context, orgID uuid.UUID, in WaiveInp
 	return w, err
 }
 
+// WaiverThreshold returns the amount (minor units) above which a late fee
+// waiver needs re-authentication (the site setting, or the default).
+func (s *Service) WaiverThreshold(ctx context.Context, orgID, siteID uuid.UUID) (int64, error) {
+	limit := int64(DefaultWaiverReauthMinor)
+	err := s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
+		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyRead, orgID, siteID)
+		if err != nil {
+			return err
+		}
+		if v, ok := site.Settings[SettingWaiverReauthMinor].(float64); ok {
+			limit = int64(v)
+		}
+		return nil
+	})
+	return limit, err
+}
+
+// SetWaiverThreshold sets the re-authentication threshold of late fee waivers (money.manage).
+func (s *Service) SetWaiverThreshold(ctx context.Context, orgID, siteID uuid.UUID, minor int64) error {
+	if minor < 0 {
+		return bad("waiver_reauth_threshold", "invalid_value")
+	}
+	return s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
+		if _, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyManage, orgID, siteID); err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `UPDATE site SET settings = jsonb_set(settings, $3, to_jsonb($4::bigint)), updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`,
+			orgID, siteID, []string{SettingWaiverReauthMinor}, minor); err != nil {
+			return err
+		}
+		return ledger.Audit(ctx, tx, orgID, siteID, "late_fee_policy.threshold", "late_fee_policy", siteID, nil, map[string]any{"waiver_reauth_minor": minor})
+	})
+}
+
 // AccrueTx computes the late fee position of a unit side inside an existing
 // transaction (the caller has checked permissions); statements use it to show
 // the accrued but unbooked fee.
