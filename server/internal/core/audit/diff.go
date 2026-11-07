@@ -63,9 +63,13 @@ func Diff(entity string, before, after any) (Changes, error) {
 			continue
 		}
 		c := Change{}
-		if pii.IsPII(entity, k) {
+		switch {
+		case pii.IsPII(entity, k):
 			c.HashBefore, c.HashAfter = HashValue(bv), HashValue(aok)
-		} else {
+		case !pii.KnownEntity(entity):
+			// Fail closed: nothing says which fields of this entity are
+			// personal, so only the fact that the key changed is recorded.
+		default:
 			c.Before, c.After = bv, aok
 		}
 		d[k] = c

@@ -93,10 +93,59 @@ func TestHashValueIsCanonicalAndStable(t *testing.T) {
 		t.Error("an absent value hashes to the empty string")
 	}
 	// object key order does not matter
-	x, _ := Diff("thing", nil, map[string]any{"tags": []any{map[string]any{"b": 1, "a": 2}}})
-	y, _ := Diff("thing", nil, map[string]any{"tags": []any{map[string]any{"a": 2, "b": 1}}})
+	x, _ := Diff("organization", nil, map[string]any{"tags": []any{map[string]any{"b": 1, "a": 2}}})
+	y, _ := Diff("organization", nil, map[string]any{"tags": []any{map[string]any{"a": 2, "b": 1}}})
 	if string(x["tags"].After) != string(y["tags"].After) {
 		t.Error("canonical JSON must sort keys")
+	}
+}
+
+// The cases of the F2 review probe: all of them used to be stored in clear.
+func TestDiffNeverStoresPIIInNestedPluralOrCasedFields(t *testing.T) {
+	state := func() map[string]any {
+		return map[string]any{
+			"billing":       map[string]any{"email": "billing@secret.example", "iban": "TR330006100519786457841326"},
+			"contact_email": "ce@secret.example", "owner_phone": "+905551112233", "Email": "E@secret.example", "PHONE": "+905559998877",
+			"emails": []any{"a@secret.example", "b@secret.example"}, "phones": []any{"+905550000000"},
+			"owner": map[string]any{"national_id": "10000000146"},
+		}
+	}
+	for _, entity := range []string{"organization", "widget"} {
+		d, err := Diff(entity, nil, state())
+		if err != nil {
+			t.Fatal(err)
+		}
+		enc, _ := json.Marshal(d)
+		for _, secret := range []string{"secret.example", "TR33", "+9055", "10000000146"} {
+			if strings.Contains(string(enc), secret) {
+				t.Errorf("%s: diff %s contains %q", entity, enc, secret)
+			}
+		}
+		for _, k := range []string{"billing.email", "billing.iban", "contact_email", "owner_phone", "Email", "PHONE", "emails", "phones", "owner.national_id"} {
+			if c, ok := d[k]; !ok || c.Before != nil || c.After != nil {
+				t.Errorf("%s: %s = %+v, want a change without values", entity, k, c)
+			}
+		}
+	}
+}
+
+func TestDiffUnknownEntityRecordsKeysOnly(t *testing.T) {
+	d, err := Diff("widget", map[string]any{"label": "old"}, map[string]any{"label": "new", "size": 3})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := d.Keys(); len(got) != 2 || got[0] != "label" || got[1] != "size" {
+		t.Fatalf("keys = %v", got)
+	}
+	for k, c := range d {
+		if c.Before != nil || c.After != nil || c.HashBefore != "" || c.HashAfter != "" {
+			t.Errorf("%s leaks: %+v", k, c)
+		}
+	}
+	// a known entity keeps its plain values
+	d, _ = Diff("organization", map[string]any{"name": "old"}, map[string]any{"name": "new"})
+	if string(d["name"].After) != `"new"` {
+		t.Errorf("organization name: %+v", d["name"])
 	}
 }
 
