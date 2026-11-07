@@ -5748,11 +5748,11 @@ export interface components {
         IdempotencyKey: string;
         /** @description The organization id. */
         OrgId: string;
-        /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+        /** @description Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
         /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
         SiteId: string;
-        /** @description The site this resource belongs to. */
+        /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
         SiteIdRequired: string;
         /**
          * @description The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
@@ -8764,9 +8764,9 @@ export interface operations {
     };
     "operations.getTicketWorkflow": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
             };
             header?: never;
             path: {
@@ -8794,9 +8794,9 @@ export interface operations {
     };
     "operations.updateTicketWorkflow": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
             };
             header?: {
                 /**
@@ -8835,9 +8835,9 @@ export interface operations {
     };
     "operations.listTicketCategories": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description `active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`. */
                 archived?: "active" | "archived" | "all";
                 /** @description Page size. */
@@ -8976,9 +8976,9 @@ export interface operations {
     };
     "operations.listTickets": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `category_id`. */
                 category_id?: string;
                 /** @description Filter by `status_id`. */
@@ -9447,9 +9447,9 @@ export interface operations {
     };
     "operations.listAnnouncements": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `status`. */
                 status?: string;
                 /** @description Filter by `pinned`. */
@@ -9664,9 +9664,9 @@ export interface operations {
     "operations.publishAnnouncement": {
         parameters: {
             query?: never;
-            header: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            header?: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description The organization id. */
@@ -9800,9 +9800,9 @@ export interface operations {
     };
     "operations.listFolders": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `parent_id`. */
                 parent_id?: string;
                 /** @description Filter by `kind`. */
@@ -9980,9 +9980,9 @@ export interface operations {
     };
     "operations.listDocuments": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `folder_id`. */
                 folder_id?: string;
                 /** @description Filter by `source`. */
@@ -10294,9 +10294,9 @@ export interface operations {
     };
     "operations.getNotificationDefaults": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
             };
             header?: never;
             path: {
@@ -10324,9 +10324,9 @@ export interface operations {
     };
     "operations.setNotificationDefaults": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
             };
             header?: {
                 /**
@@ -10423,9 +10423,9 @@ export interface operations {
     };
     "operations.getSmsUsage": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by month, `YYYY-MM`. */
                 month?: string;
             };
@@ -10601,9 +10601,9 @@ export interface operations {
     };
     "operations.restoreTicketWorkflow": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 `validation_failed`, field `site_id`, code `required` without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
             };
             header?: {
                 /**

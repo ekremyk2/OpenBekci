@@ -41,7 +41,7 @@ type Document struct {
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	Version       int            `json:"version"`
-	addressed     *uuid.UUID
+	recipient     *uuid.UUID
 }
 
 const docSelect = `SELECT d.id, d.org_id, d.site_id, d.folder_id, d.title, d.file_id, f.mime, f.size, d.visibility_level, d.visibility_unit_ids, d.source,
@@ -54,7 +54,7 @@ func scanDoc(row pgx.Row) (Document, error) {
 	var units []uuid.UUID
 	var gid *uuid.UUID
 	err := row.Scan(&d.ID, &d.OrgID, &d.SiteID, &d.FolderID, &d.Title, &d.FileID, &d.Mime, &d.Size, &level, &units, &d.Source, &gtype, &gid, &d.UploadedBy,
-		&d.CreatedAt, &d.UpdatedAt, &d.Version, &d.addressed)
+		&d.CreatedAt, &d.UpdatedAt, &d.Version, &d.recipient)
 	if err != nil {
 		return d, err
 	}
@@ -69,10 +69,10 @@ func scanDoc(row pgx.Row) (Document, error) {
 }
 
 // canSee: documents in a unit folder follow the folder; others use their own
-// visibility or the folder's. A document addressed to the caller is always
+// visibility or the folder's. A document recipient to the caller is always
 // visible to them (the former occupant's right, O8).
 func (a access) canSee(t tree, d Document) bool {
-	if d.addressed != nil && a.person != uuid.Nil && *d.addressed == a.person {
+	if d.recipient != nil && a.person != uuid.Nil && *d.recipient == a.person {
 		return true
 	}
 	if (!a.read && !a.manage) || !a.folderVisible(t, d.FolderID) {
@@ -161,7 +161,7 @@ type DocFilter struct {
 
 // ListDocuments lists the documents of a site the caller may see, newest
 // first. A former occupant (documents.read_addressed) sees only the documents
-// addressed to them.
+// recipient to them.
 func (s *Service) ListDocuments(ctx context.Context, orgID uuid.UUID, f DocFilter, p tenancy.PageParams) ([]Document, string, error) {
 	limit, after, err := p.Resolve()
 	if err != nil {
@@ -481,9 +481,9 @@ type GeneratedParams struct {
 	// record twice returns the first document.
 	GeneratedType string
 	GeneratedID   uuid.UUID
-	// AddressedPersonID makes the document readable by that person after they
+	// RecipientPersonID makes the document readable by that person after they
 	// moved out (documents.read_addressed).
-	AddressedPersonID *uuid.UUID
+	RecipientPersonID *uuid.UUID
 }
 
 // Filer is what modules that generate documents depend on.
@@ -552,7 +552,7 @@ func (s *Service) FileGenerated(ctx context.Context, tx pgx.Tx, p GeneratedParam
 	}
 	if _, err := tx.Exec(ctx, `INSERT INTO document (id, org_id, site_id, folder_id, title, file_id, visibility_level, visibility_unit_ids, source, generated_type, generated_id, addressed_person_id)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'generated', $9, $10, $11)`,
-		did, p.OrgID, p.SiteID, folderID, p.Title, f.ID, lvl, nilIfEmpty(units), p.GeneratedType, p.GeneratedID, p.AddressedPersonID); err != nil {
+		did, p.OrgID, p.SiteID, folderID, p.Title, f.ID, lvl, nilIfEmpty(units), p.GeneratedType, p.GeneratedID, p.RecipientPersonID); err != nil {
 		return Document{}, err
 	}
 	out, err := scanDoc(tx.QueryRow(ctx, docSelect+` WHERE d.org_id = $1 AND d.id = $2`, p.OrgID, did))

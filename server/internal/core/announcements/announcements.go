@@ -771,7 +771,7 @@ func (s *Service) Archive(ctx context.Context, orgID, annID uuid.UUID) (Announce
 type Preview struct {
 	RecipientCount int `json:"recipient_count"`
 	SMSCount       int `json:"sms_count"`
-	EmailCount     int `json:"email_count"`
+	MailCount      int `json:"email_count"`
 	InAppCount     int `json:"in_app_count"`
 }
 
@@ -815,7 +815,7 @@ func countFor(rs []recipient, channels []string) Preview {
 			p.SMSCount++
 		}
 		if slices.Contains(channels, jobs.ChannelEmail) && r.mail {
-			p.EmailCount++
+			p.MailCount++
 		}
 		if slices.Contains(channels, jobs.ChannelInApp) && r.app {
 			p.InAppCount++

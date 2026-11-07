@@ -777,7 +777,7 @@ func (s *Service) Transition(ctx context.Context, orgID, ticketID uuid.UUID, in 
 			return err
 		}
 		if comment != "" {
-			if vis == "internal" && !(c.manage || c.work) {
+			if vis == "internal" && (!c.manage && !c.work) {
 				return problem.Forbidden("internal notes need tickets.manage or tickets.work")
 			}
 			author := c.person
@@ -1011,7 +1011,7 @@ func (s *Service) CreateComment(ctx context.Context, orgID, ticketID uuid.UUID, 
 		if c.person == uuid.Nil {
 			return problem.Forbidden("this account has no person in the organization")
 		}
-		if visibility == "internal" && !(c.manage || c.canWork(t)) {
+		if visibility == "internal" && (!c.manage && !c.canWork(t)) {
 			return problem.Forbidden("internal notes need tickets.manage or tickets.work")
 		}
 		cid := id.New()

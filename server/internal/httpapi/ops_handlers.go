@@ -164,7 +164,11 @@ func (s *apiServer) OperationsGetNotificationDefaults(ctx context.Context, req g
 	if err != nil {
 		return nil, err
 	}
-	d, err := n.GetDefaults(ctx, req.OrgId, req.Params.SiteId)
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	d, err := n.GetDefaults(ctx, req.OrgId, site)
 	if err != nil {
 		return nil, err
 	}
@@ -174,6 +178,10 @@ func (s *apiServer) OperationsGetNotificationDefaults(ctx context.Context, req g
 
 func (s *apiServer) OperationsSetNotificationDefaults(ctx context.Context, req gen.OperationsSetNotificationDefaultsRequestObject) (gen.OperationsSetNotificationDefaultsResponseObject, error) {
 	n, err := s.nt()
+	if err != nil {
+		return nil, err
+	}
+	site, err := needSite(req.Params.SiteId)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +196,7 @@ func (s *apiServer) OperationsSetNotificationDefaults(ctx context.Context, req g
 	for i, d := range req.Body.Defaults {
 		in[i] = notifications.DefaultInput{Type: d.Type, Channels: channelStrings(d.Channels)}
 	}
-	d, err := n.SetDefaults(ctx, req.OrgId, req.Params.SiteId, ver, in)
+	d, err := n.SetDefaults(ctx, req.OrgId, site, ver, in)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +217,11 @@ func (s *apiServer) OperationsGetSmsUsage(ctx context.Context, req gen.Operation
 	if err != nil {
 		return nil, err
 	}
-	u, err := n.GetSMSUsage(ctx, req.OrgId, req.Params.SiteId, deref(req.Params.Month))
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	u, err := n.GetSMSUsage(ctx, req.OrgId, site, deref(req.Params.Month))
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +236,11 @@ func (s *apiServer) OperationsGetTicketWorkflow(ctx context.Context, req gen.Ope
 	if err != nil {
 		return nil, err
 	}
-	w, err := t.GetWorkflow(ctx, req.OrgId, req.Params.SiteId)
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	w, err := t.GetWorkflow(ctx, req.OrgId, site)
 	if err != nil {
 		return nil, err
 	}
@@ -258,6 +274,10 @@ func (s *apiServer) OperationsUpdateTicketWorkflow(ctx context.Context, req gen.
 	if err != nil {
 		return nil, err
 	}
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	if err := hasBody(req.Body == nil); err != nil {
 		return nil, err
 	}
@@ -277,7 +297,7 @@ func (s *apiServer) OperationsUpdateTicketWorkflow(ctx context.Context, req gen.
 	if err != nil {
 		return nil, err
 	}
-	w, err := t.UpdateWorkflow(ctx, req.OrgId, req.Params.SiteId, ver, in, repl)
+	w, err := t.UpdateWorkflow(ctx, req.OrgId, site, ver, in, repl)
 	if err != nil {
 		return nil, err
 	}
@@ -287,6 +307,10 @@ func (s *apiServer) OperationsUpdateTicketWorkflow(ctx context.Context, req gen.
 
 func (s *apiServer) OperationsRestoreTicketWorkflow(ctx context.Context, req gen.OperationsRestoreTicketWorkflowRequestObject) (gen.OperationsRestoreTicketWorkflowResponseObject, error) {
 	t, err := s.tk()
+	if err != nil {
+		return nil, err
+	}
+	site, err := needSite(req.Params.SiteId)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +328,7 @@ func (s *apiServer) OperationsRestoreTicketWorkflow(ctx context.Context, req gen
 	if err != nil {
 		return nil, err
 	}
-	w, err := t.RestoreDefaultWorkflow(ctx, req.OrgId, req.Params.SiteId, ver, repl)
+	w, err := t.RestoreDefaultWorkflow(ctx, req.OrgId, site, ver, repl)
 	if err != nil {
 		return nil, err
 	}
@@ -317,7 +341,11 @@ func (s *apiServer) OperationsListTicketCategories(ctx context.Context, req gen.
 	if err != nil {
 		return nil, err
 	}
-	items, next, err := t.ListCategories(ctx, req.OrgId, req.Params.SiteId, string(deref(req.Params.Archived)), pageOf(req.Params.Limit, req.Params.Cursor))
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := t.ListCategories(ctx, req.OrgId, site, string(deref(req.Params.Archived)), pageOf(req.Params.Limit, req.Params.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -381,8 +409,12 @@ func (s *apiServer) OperationsListTickets(ctx context.Context, req gen.Operation
 	if err != nil {
 		return nil, err
 	}
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	p := req.Params
-	items, next, err := t.ListTickets(ctx, req.OrgId, tickets.Filter{SiteID: p.SiteId, CategoryID: p.CategoryId, StatusID: p.StatusId, Semantic: deref(p.Semantic),
+	items, next, err := t.ListTickets(ctx, req.OrgId, tickets.Filter{SiteID: site, CategoryID: p.CategoryId, StatusID: p.StatusId, Semantic: deref(p.Semantic),
 		AssigneePersonID: p.AssigneePersonId, AssigneeVendorID: p.AssigneeVendorId, UnitID: p.UnitId, Visibility: deref(p.Visibility), ReporterPersonID: p.ReporterPersonId,
 		Mine: deref(p.Mine), Queue: deref(p.Queue), Q: deref(p.Q)}, pageOf(p.Limit, p.Cursor))
 	if err != nil {
@@ -579,8 +611,12 @@ func (s *apiServer) OperationsListAnnouncements(ctx context.Context, req gen.Ope
 	if err != nil {
 		return nil, err
 	}
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	p := req.Params
-	f := announcements.Filter{SiteID: p.SiteId, Status: deref(p.Status), Pinned: p.Pinned, Unread: deref(p.Unread)}
+	f := announcements.Filter{SiteID: site, Status: deref(p.Status), Pinned: p.Pinned, Unread: deref(p.Unread)}
 	if p.From != nil {
 		t := p.From.Time
 		f.From = &t
@@ -749,8 +785,12 @@ func (s *apiServer) OperationsListFolders(ctx context.Context, req gen.Operation
 	if err != nil {
 		return nil, err
 	}
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	p := req.Params
-	items, next, err := d.ListFolders(ctx, req.OrgId, p.SiteId, p.ParentId, deref(p.Kind), p.UnitId, pageOf(p.Limit, p.Cursor))
+	items, next, err := d.ListFolders(ctx, req.OrgId, site, p.ParentId, deref(p.Kind), p.UnitId, pageOf(p.Limit, p.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -829,8 +869,12 @@ func (s *apiServer) OperationsListDocuments(ctx context.Context, req gen.Operati
 	if err != nil {
 		return nil, err
 	}
+	site, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	p := req.Params
-	items, next, err := d.ListDocuments(ctx, req.OrgId, documents.DocFilter{SiteID: p.SiteId, FolderID: p.FolderId, Source: deref(p.Source), Q: deref(p.Q)}, pageOf(p.Limit, p.Cursor))
+	items, next, err := d.ListDocuments(ctx, req.OrgId, documents.DocFilter{SiteID: site, FolderID: p.FolderId, Source: deref(p.Source), Q: deref(p.Q)}, pageOf(p.Limit, p.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -971,3 +1015,11 @@ func (s *apiServer) CodesListCodes(ctx context.Context, req gen.CodesListCodesRe
 }
 
 var _ = codes.PermRead
+
+// needSite reads the site_id query parameter every site-bound listing requires.
+func needSite(p *gen.SiteIdRequired) (uuid.UUID, error) {
+	if p == nil {
+		return uuid.Nil, problem.Validation(problem.Field{Field: "site_id", Code: "required"})
+	}
+	return *p, nil
+}

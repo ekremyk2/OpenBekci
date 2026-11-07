@@ -710,7 +710,7 @@ func TestIntegrationDocumentsVisibilityAndFormerOccupants(t *testing.T) {
 		var err error
 		gen, err = e.ops.documents.FileGenerated(context.Background(), tx, documents.GeneratedParams{
 			OrgID: org.ID, SiteID: s.Site, Title: "Closing statement", FileName: "closing.txt", Content: strings.NewReader("balance: 0"),
-			UnitID: &s.Unit, GeneratedType: "closing_statement", GeneratedID: id.New(), AddressedPersonID: &former.person})
+			UnitID: &s.Unit, GeneratedType: "closing_statement", GeneratedID: id.New(), RecipientPersonID: &former.person})
 		return err
 	})
 	if err != nil {
