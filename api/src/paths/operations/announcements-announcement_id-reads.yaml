@@ -1,0 +1,47 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: announcement_id
+    in: path
+    required: true
+    description: Id of the announcement.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.listAnnouncementReads
+  summary: Who has read an announcement
+  description: |-
+    Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
+
+    Permission: `announcements.publish`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [announcements.publish]
+  parameters:
+    - name: read
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `read`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/AnnouncementReadList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

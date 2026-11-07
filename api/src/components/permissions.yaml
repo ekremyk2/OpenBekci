@@ -8,22 +8,35 @@ schemas:
     enum:
       - allocation.manage
       - allocation.read
+      - announcements.publish
+      - announcements.read
       - audit.read
       - audit.report
       - claim.manage
+      - codes.read
+      - dashboard.portfolio
+      - dashboard.site
+      - dashboard.staff
       - directory.consent
       - directory.read
+      - documents.manage
+      - documents.read
+      - documents.read_addressed
+      - documents.upload_own
       - files.manage
       - files.read
       - files.upload
       - import.run
       - invitation.household
       - invitation.manage
+      - me.dashboard
       - me.read
       - membership.manage
       - membership.read
       - moveout.manage
       - moveout.read
+      - notifications.manage
+      - notifications.read
       - occupancy.grant_money
       - occupancy.manage
       - occupancy.read
@@ -39,6 +52,11 @@ schemas:
       - site.manage
       - site.offboard
       - site.read
+      - tickets.manage
+      - tickets.open
+      - tickets.read
+      - tickets.read_assigned
+      - tickets.work
       - unit.manage
       - unit.read
       - vehicle.manage
@@ -49,21 +67,31 @@ x-openbekci-roles:
   org_admin:
     - allocation.manage
     - allocation.read
+    - announcements.publish
+    - announcements.read
     - audit.read
     - claim.manage
+    - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.consent
     - directory.read
+    - documents.manage
+    - documents.read
     - files.manage
     - files.read
     - files.upload
     - import.run
     - invitation.household
     - invitation.manage
+    - me.dashboard
     - me.read
     - membership.manage
     - membership.read
     - moveout.manage
     - moveout.read
+    - notifications.manage
+    - notifications.read
     - occupancy.grant_money
     - occupancy.manage
     - occupancy.read
@@ -78,6 +106,9 @@ x-openbekci-roles:
     - site.manage
     - site.offboard
     - site.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - unit.manage
     - unit.read
     - vehicle.manage
@@ -87,20 +118,30 @@ x-openbekci-roles:
   site_manager:
     - allocation.manage
     - allocation.read
+    - announcements.publish
+    - announcements.read
     - claim.manage
+    - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.consent
     - directory.read
+    - documents.manage
+    - documents.read
     - files.manage
     - files.read
     - files.upload
     - import.run
     - invitation.household
     - invitation.manage
+    - me.dashboard
     - me.read
     - membership.manage
     - membership.read
     - moveout.manage
     - moveout.read
+    - notifications.manage
+    - notifications.read
     - occupancy.grant_money
     - occupancy.manage
     - occupancy.read
@@ -110,6 +151,9 @@ x-openbekci-roles:
     - sessions.manage_own
     - site.manage
     - site.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - unit.manage
     - unit.read
     - vehicle.manage
@@ -118,48 +162,73 @@ x-openbekci-roles:
     - vendor.read
   board_member:
     - allocation.read
+    - announcements.publish
+    - announcements.read
+    - codes.read
+    - dashboard.site
     - directory.consent
     - directory.read
+    - documents.manage
+    - documents.read
     - files.read
     - files.upload
+    - me.dashboard
     - me.read
     - membership.read
     - moveout.read
+    - notifications.read
     - occupancy.read
     - org.read
     - person.read
     - sessions.manage_own
     - site.read
+    - tickets.manage
+    - tickets.open
+    - tickets.read
     - unit.read
     - vehicle.read
     - vendor.read
   auditor:
     - allocation.read
+    - announcements.read
     - audit.read
     - audit.report
+    - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.consent
     - directory.read
+    - documents.read
     - files.read
     - files.upload
+    - me.dashboard
     - me.read
     - membership.read
     - moveout.read
+    - notifications.read
     - occupancy.read
     - org.read
     - person.read
     - sessions.manage_own
     - site.read
+    - tickets.read
     - unit.read
     - vehicle.read
     - vendor.read
   accountant:
     - allocation.manage
     - allocation.read
+    - announcements.read
+    - codes.read
+    - dashboard.portfolio
+    - dashboard.site
     - directory.consent
     - files.read
     - files.upload
+    - me.dashboard
     - me.read
     - moveout.read
+    - notifications.read
     - occupancy.read
     - org.read
     - sessions.manage_own
@@ -168,21 +237,33 @@ x-openbekci-roles:
     - vendor.manage
     - vendor.read
   staff:
+    - announcements.read
+    - codes.read
+    - dashboard.staff
     - directory.consent
     - files.read
     - files.upload
+    - me.dashboard
     - me.read
+    - notifications.read
     - org.read
     - sessions.manage_own
     - site.read
+    - tickets.open
+    - tickets.read_assigned
+    - tickets.work
     - unit.read
     - vehicle.read
     - vendor.read
   guard:
+    - announcements.read
+    - codes.read
     - directory.consent
     - files.read
     - files.upload
+    - me.dashboard
     - me.read
+    - notifications.read
     - sessions.manage_own
     - vehicle.read
   platform_admin:

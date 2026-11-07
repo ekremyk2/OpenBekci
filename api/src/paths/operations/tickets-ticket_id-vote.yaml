@@ -1,0 +1,75 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: ticket_id
+    in: path
+    required: true
+    description: Id of the ticket.
+    schema:
+      type: string
+      format: uuid
+put:
+  operationId: operations.voteTicket
+  summary: '"+1" a common ticket'
+  description: |-
+    One vote per person; repeating is harmless. Only common tickets.
+
+    Permission: `tickets.open`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.open]
+  x-idempotent: optional
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketVote
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: operations.unvoteTicket
+  summary: Take back a "+1"
+  description: |-
+    Take back a "+1".
+
+    Permission: `tickets.open`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.open]
+  x-idempotent: optional
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketVote
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

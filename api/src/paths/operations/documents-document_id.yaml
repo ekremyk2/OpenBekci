@@ -1,0 +1,115 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: document_id
+    in: path
+    required: true
+    description: Id of the document.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.getDocument
+  summary: Get document
+  description: |-
+    Get document.
+
+    A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+
+    Permission (any one of): `documents.read`, `documents.read_addressed`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [documents.read|documents.read_addressed]
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Document
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: operations.updateDocument
+  summary: Update document
+  description: |-
+    Update document.
+
+    Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [documents.manage|documents.upload_own]
+  x-idempotent: optional
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/DocumentUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Document
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: operations.deleteDocument
+  summary: Delete document
+  description: |-
+    Deletes the document; generated documents can be regenerated.
+
+    Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [documents.manage|documents.upload_own]
+  x-idempotent: optional
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

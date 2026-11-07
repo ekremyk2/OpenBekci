@@ -1,0 +1,74 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: operations.getTicketWorkflow
+  summary: Get the ticket workflow of a site
+  description: |-
+    Get the ticket workflow of a site.
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketWorkflow
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: operations.updateTicketWorkflow
+  summary: Replace the ticket workflow of a site
+  description: |-
+    Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
+
+    Permission: `tickets.manage`.
+
+    Problems: `conflict` (409), `version_conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.manage]
+  x-idempotent: optional
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/TicketWorkflowUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketWorkflow
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

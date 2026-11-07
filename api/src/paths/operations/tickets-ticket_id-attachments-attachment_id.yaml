@@ -1,0 +1,45 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: ticket_id
+    in: path
+    required: true
+    description: Id of the ticket.
+    schema:
+      type: string
+      format: uuid
+  - name: attachment_id
+    in: path
+    required: true
+    description: Id of the attachment.
+    schema:
+      type: string
+      format: uuid
+delete:
+  operationId: operations.deleteTicketAttachment
+  summary: Remove an attachment
+  description: |-
+    Remove an attachment.
+
+    Permission: `tickets.open`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.open]
+  x-idempotent: optional
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

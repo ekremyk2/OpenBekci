@@ -1,0 +1,37 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: dashboards.getStaffDashboard
+  summary: Staff dashboard (counts only)
+  description: |-
+    Counts of the caller's assigned tickets, common tickets, expected visitors and waiting parcels. Never contains money or debtor data.
+
+    Permission: `dashboard.staff`.
+  tags:
+    - dashboards
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [dashboard.staff]
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/dashboards.yaml#/schemas/StaffDashboard
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

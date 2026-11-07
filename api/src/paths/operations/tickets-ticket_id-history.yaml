@@ -1,0 +1,42 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: ticket_id
+    in: path
+    required: true
+    description: Id of the ticket.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.listTicketHistory
+  summary: Status history of a ticket
+  description: |-
+    Status history of a ticket.
+
+    Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.read|tickets.open|tickets.read_assigned]
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketStatusChangeList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

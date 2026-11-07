@@ -1,0 +1,315 @@
+schemas:
+  MySide:
+    type: object
+    description: "What the caller owes on one side (owner or tenant) of one unit today. Filled by the money module; the draft's `money.MySide`, kept here until the money module lands and owns it."
+    required:
+      - unit_id
+      - unit_door_number
+      - debtor_kind
+      - principal
+      - accrued_late_fee
+      - total
+      - credit
+      - next_due_date
+      - bank_details
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      debtor_kind:
+        type: string
+        description: Open enum.
+        enum:
+          - owner
+          - tenant
+        x-open-enum: true
+      principal:
+        $ref: ./common.yaml#/schemas/Money
+      accrued_late_fee:
+        $ref: ./common.yaml#/schemas/Money
+      total:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: What do I owe today.
+      credit:
+        $ref: ./common.yaml#/schemas/Money
+      next_due_date:
+        type: string
+        format: date
+        nullable: true
+      bank_details:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: The site's bank details shown to payers (IBAN and holder).
+  DashboardMeeting:
+    type: object
+    required:
+      - id
+      - title
+      - scheduled_at
+      - status
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+        nullable: true
+      scheduled_at:
+        type: string
+        format: date-time
+      status:
+        type: string
+  DashboardTerm:
+    type: object
+    required:
+      - membership_id
+      - person_display_name
+      - role
+      - valid_to
+    properties:
+      membership_id:
+        type: string
+        format: uuid
+      person_display_name:
+        type: string
+      role:
+        type: string
+      valid_to:
+        type: string
+        format: date
+  SiteDashboard:
+    type: object
+    description: Per-site dashboard for managers, board, auditors and accountants.
+    required:
+      - site_id
+      - as_of
+      - receivable_owner
+      - receivable_tenant
+      - overdue_total
+      - overdue_units
+      - cash
+      - bank
+      - collection_rate_pct
+      - accrued_late_fees
+      - open_tickets
+      - open_common_tickets
+      - pending_unit_claims
+      - pending_declared_payments
+      - waiting_deliveries
+      - pending_visitor_approvals
+      - upcoming_meeting
+      - expiring_terms
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      as_of:
+        type: string
+        format: date-time
+      receivable_owner:
+        $ref: ./common.yaml#/schemas/Money
+      receivable_tenant:
+        $ref: ./common.yaml#/schemas/Money
+      overdue_total:
+        $ref: ./common.yaml#/schemas/Money
+      overdue_units:
+        type: integer
+        format: int64
+      cash:
+        $ref: ./common.yaml#/schemas/Money
+      bank:
+        $ref: ./common.yaml#/schemas/Money
+      collection_rate_pct:
+        type: number
+      accrued_late_fees:
+        $ref: ./common.yaml#/schemas/Money
+      open_tickets:
+        type: integer
+        format: int64
+      open_common_tickets:
+        type: integer
+        format: int64
+      pending_unit_claims:
+        type: integer
+        format: int64
+      pending_declared_payments:
+        type: integer
+        format: int64
+      waiting_deliveries:
+        type: integer
+        format: int64
+        description: 0 before release 0.3.
+      pending_visitor_approvals:
+        type: integer
+        format: int64
+        description: 0 before release 0.3.
+      upcoming_meeting:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DashboardMeeting"
+        nullable: true
+        description: Null before release 0.2.
+      expiring_terms:
+        type: array
+        items:
+          $ref: "#/schemas/DashboardTerm"
+        description: Empty before release 0.2.
+  PortfolioSite:
+    type: object
+    required:
+      - site_id
+      - name
+      - overdue
+      - overdue_units
+      - cash
+      - bank
+      - open_tickets
+      - collection_rate_pct
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      overdue:
+        $ref: ./common.yaml#/schemas/Money
+      overdue_units:
+        type: integer
+        format: int64
+      cash:
+        $ref: ./common.yaml#/schemas/Money
+      bank:
+        $ref: ./common.yaml#/schemas/Money
+      open_tickets:
+        type: integer
+        format: int64
+      collection_rate_pct:
+        type: number
+  PortfolioTotals:
+    type: object
+    required:
+      - overdue
+      - cash
+      - bank
+      - open_tickets
+    properties:
+      overdue:
+        $ref: ./common.yaml#/schemas/Money
+      cash:
+        $ref: ./common.yaml#/schemas/Money
+      bank:
+        $ref: ./common.yaml#/schemas/Money
+      open_tickets:
+        type: integer
+        format: int64
+  PortfolioDashboard:
+    type: object
+    description: "Cross-site view for management companies (S5): overdue, cash and open tickets per site."
+    required:
+      - as_of
+      - sites
+      - totals
+    properties:
+      as_of:
+        type: string
+        format: date-time
+      sites:
+        type: array
+        items:
+          $ref: "#/schemas/PortfolioSite"
+      totals:
+        $ref: "#/schemas/PortfolioTotals"
+  MeDashboard:
+    type: object
+    description: The caller's home summary in the organization.
+    required:
+      - home
+      - sides
+      - unread_notifications
+      - unread_announcements
+      - my_open_tickets
+      - upcoming_meetings
+      - pending_visitor_approvals
+      - waiting_deliveries
+    properties:
+      home:
+        type: string
+        description: Which home the web app should show. Open enum.
+        enum:
+          - portfolio
+          - site
+          - resident
+        x-open-enum: true
+      sides:
+        type: array
+        items:
+          $ref: "#/schemas/MySide"
+        description: Resident money summary (what do I owe today); empty without money visibility.
+      unread_notifications:
+        type: integer
+        format: int64
+      unread_announcements:
+        type: integer
+        format: int64
+      my_open_tickets:
+        type: integer
+        format: int64
+      upcoming_meetings:
+        type: array
+        items:
+          $ref: "#/schemas/DashboardMeeting"
+      pending_visitor_approvals:
+        type: integer
+        format: int64
+      waiting_deliveries:
+        type: integer
+        format: int64
+  StaffDashboard:
+    type: object
+    description: "Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names."
+    required:
+      - site_id
+      - as_of
+      - assigned_open_tickets
+      - assigned_overdue_tickets
+      - open_common_tickets
+      - expected_visitors_today
+      - waiting_deliveries
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      as_of:
+        type: string
+        format: date-time
+      assigned_open_tickets:
+        type: integer
+        format: int64
+        description: Open tickets assigned to the caller.
+      assigned_overdue_tickets:
+        type: integer
+        format: int64
+        description: Assigned tickets past their category's target time.
+      open_common_tickets:
+        type: integer
+        format: int64
+        description: Open common (site-wide) tickets.
+      expected_visitors_today:
+        type: integer
+        format: int64
+      waiting_deliveries:
+        type: integer
+        format: int64
+        description: Parcels logged and not yet collected.
+    example:
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      as_of: 2026-03-05T09:00:00Z
+      assigned_open_tickets: 3
+      assigned_overdue_tickets: 0
+      open_common_tickets: 5
+      expected_visitors_today: 4
+      waiting_deliveries: 2

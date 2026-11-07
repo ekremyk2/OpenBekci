@@ -238,7 +238,13 @@ func (s *Service) applyWorkflow(ctx context.Context, orgID, siteID uuid.UUID, ex
 					name = d.tr
 				}
 				var sid uuid.UUID
-				if err := tx.QueryRow(ctx, `SELECT id FROM ticket_status WHERE org_id = $1 AND site_id = $2 AND key = $3`, orgID, siteID, d.key).Scan(&sid); err != nil {
+				err := tx.QueryRow(ctx, `SELECT id FROM ticket_status WHERE org_id = $1 AND site_id = $2 AND key = $3`, orgID, siteID, d.key).Scan(&sid)
+				if errors.Is(err, pgx.ErrNoRows) {
+					sid = id.New()
+					_, err = tx.Exec(ctx, `INSERT INTO ticket_status (id, org_id, site_id, name, semantic, position, key, archived) VALUES ($1, $2, $3, $4, $5, 99, $6, true)`,
+						sid, orgID, siteID, name, d.semantic, d.key)
+				}
+				if err != nil {
 					return err
 				}
 				in = append(in, StatusInput{ID: &sid, Name: name, Semantic: d.semantic})

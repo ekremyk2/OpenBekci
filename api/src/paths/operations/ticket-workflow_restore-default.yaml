@@ -1,0 +1,46 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+post:
+  operationId: operations.restoreTicketWorkflow
+  summary: Restore the default ticket workflow of a site
+  description: |-
+    Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+
+    Permission: `tickets.manage`.
+
+    Problems: `version_conflict` (409), `validation_failed` (422).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [tickets.manage]
+  x-idempotent: optional
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/common.yaml#/parameters/IfMatch
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/TicketWorkflowRestore
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketWorkflow
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

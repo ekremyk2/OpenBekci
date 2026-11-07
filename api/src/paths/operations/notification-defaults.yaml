@@ -1,0 +1,76 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: operations.getNotificationDefaults
+  summary: Get the site defaults for automatic messages
+  description: |-
+    Get the site defaults for automatic messages.
+
+    Permission: `notifications.manage`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [notifications.manage]
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/NotificationDefaults
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: operations.setNotificationDefaults
+  summary: Set the site defaults for automatic messages
+  description: |-
+    Set the site defaults for automatic messages.
+
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+    Permission: `notifications.manage`.
+
+    Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [notifications.manage]
+  x-idempotent: optional
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/NotificationDefaultsSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/NotificationDefaults
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

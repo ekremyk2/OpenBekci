@@ -98,6 +98,177 @@ func (e AllocationKeyDetailKind) Valid() bool {
 	}
 }
 
+// Defines values for AnnouncementChannels.
+const (
+	AnnouncementChannelsEmail AnnouncementChannels = "email"
+	AnnouncementChannelsInApp AnnouncementChannels = "in_app"
+	AnnouncementChannelsPush  AnnouncementChannels = "push"
+	AnnouncementChannelsSms   AnnouncementChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementChannels enum.
+func (e AnnouncementChannels) Valid() bool {
+	switch e {
+	case AnnouncementChannelsEmail:
+		return true
+	case AnnouncementChannelsInApp:
+		return true
+	case AnnouncementChannelsPush:
+		return true
+	case AnnouncementChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AnnouncementStatus.
+const (
+	AnnouncementStatusArchived  AnnouncementStatus = "archived"
+	AnnouncementStatusDraft     AnnouncementStatus = "draft"
+	AnnouncementStatusPublished AnnouncementStatus = "published"
+	AnnouncementStatusScheduled AnnouncementStatus = "scheduled"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementStatus enum.
+func (e AnnouncementStatus) Valid() bool {
+	switch e {
+	case AnnouncementStatusArchived:
+		return true
+	case AnnouncementStatusDraft:
+		return true
+	case AnnouncementStatusPublished:
+		return true
+	case AnnouncementStatusScheduled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AnnouncementAudienceKind.
+const (
+	AnnouncementAudienceKindBlock   AnnouncementAudienceKind = "block"
+	AnnouncementAudienceKindOwners  AnnouncementAudienceKind = "owners"
+	AnnouncementAudienceKindSite    AnnouncementAudienceKind = "site"
+	AnnouncementAudienceKindTenants AnnouncementAudienceKind = "tenants"
+	AnnouncementAudienceKindUnits   AnnouncementAudienceKind = "units"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementAudienceKind enum.
+func (e AnnouncementAudienceKind) Valid() bool {
+	switch e {
+	case AnnouncementAudienceKindBlock:
+		return true
+	case AnnouncementAudienceKindOwners:
+		return true
+	case AnnouncementAudienceKindSite:
+		return true
+	case AnnouncementAudienceKindTenants:
+		return true
+	case AnnouncementAudienceKindUnits:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AnnouncementCreateChannels.
+const (
+	AnnouncementCreateChannelsEmail AnnouncementCreateChannels = "email"
+	AnnouncementCreateChannelsInApp AnnouncementCreateChannels = "in_app"
+	AnnouncementCreateChannelsPush  AnnouncementCreateChannels = "push"
+	AnnouncementCreateChannelsSms   AnnouncementCreateChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementCreateChannels enum.
+func (e AnnouncementCreateChannels) Valid() bool {
+	switch e {
+	case AnnouncementCreateChannelsEmail:
+		return true
+	case AnnouncementCreateChannelsInApp:
+		return true
+	case AnnouncementCreateChannelsPush:
+		return true
+	case AnnouncementCreateChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AnnouncementPreviewRequestChannels.
+const (
+	AnnouncementPreviewRequestChannelsEmail AnnouncementPreviewRequestChannels = "email"
+	AnnouncementPreviewRequestChannelsInApp AnnouncementPreviewRequestChannels = "in_app"
+	AnnouncementPreviewRequestChannelsPush  AnnouncementPreviewRequestChannels = "push"
+	AnnouncementPreviewRequestChannelsSms   AnnouncementPreviewRequestChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementPreviewRequestChannels enum.
+func (e AnnouncementPreviewRequestChannels) Valid() bool {
+	switch e {
+	case AnnouncementPreviewRequestChannelsEmail:
+		return true
+	case AnnouncementPreviewRequestChannelsInApp:
+		return true
+	case AnnouncementPreviewRequestChannelsPush:
+		return true
+	case AnnouncementPreviewRequestChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AnnouncementPublishChannels.
+const (
+	AnnouncementPublishChannelsEmail AnnouncementPublishChannels = "email"
+	AnnouncementPublishChannelsInApp AnnouncementPublishChannels = "in_app"
+	AnnouncementPublishChannelsPush  AnnouncementPublishChannels = "push"
+	AnnouncementPublishChannelsSms   AnnouncementPublishChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementPublishChannels enum.
+func (e AnnouncementPublishChannels) Valid() bool {
+	switch e {
+	case AnnouncementPublishChannelsEmail:
+		return true
+	case AnnouncementPublishChannelsInApp:
+		return true
+	case AnnouncementPublishChannelsPush:
+		return true
+	case AnnouncementPublishChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AnnouncementUpdateChannels.
+const (
+	AnnouncementUpdateChannelsEmail AnnouncementUpdateChannels = "email"
+	AnnouncementUpdateChannelsInApp AnnouncementUpdateChannels = "in_app"
+	AnnouncementUpdateChannelsPush  AnnouncementUpdateChannels = "push"
+	AnnouncementUpdateChannelsSms   AnnouncementUpdateChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the AnnouncementUpdateChannels enum.
+func (e AnnouncementUpdateChannels) Valid() bool {
+	switch e {
+	case AnnouncementUpdateChannelsEmail:
+		return true
+	case AnnouncementUpdateChannelsInApp:
+		return true
+	case AnnouncementUpdateChannelsPush:
+		return true
+	case AnnouncementUpdateChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AuditEventActorKind.
 const (
 	AuditEventActorKindJob    AuditEventActorKind = "job"
@@ -194,6 +365,48 @@ func (e CredentialsClient) Valid() bool {
 	}
 }
 
+// Defines values for DocumentSource.
+const (
+	DocumentSourceGenerated DocumentSource = "generated"
+	DocumentSourceUploaded  DocumentSource = "uploaded"
+)
+
+// Valid indicates whether the value is a known member of the DocumentSource enum.
+func (e DocumentSource) Valid() bool {
+	switch e {
+	case DocumentSourceGenerated:
+		return true
+	case DocumentSourceUploaded:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DocumentVisibilityLevel.
+const (
+	DocumentVisibilityLevelBoard    DocumentVisibilityLevel = "board"
+	DocumentVisibilityLevelEveryone DocumentVisibilityLevel = "everyone"
+	DocumentVisibilityLevelOwners   DocumentVisibilityLevel = "owners"
+	DocumentVisibilityLevelUnits    DocumentVisibilityLevel = "units"
+)
+
+// Valid indicates whether the value is a known member of the DocumentVisibilityLevel enum.
+func (e DocumentVisibilityLevel) Valid() bool {
+	switch e {
+	case DocumentVisibilityLevelBoard:
+		return true
+	case DocumentVisibilityLevelEveryone:
+		return true
+	case DocumentVisibilityLevelOwners:
+		return true
+	case DocumentVisibilityLevelUnits:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FileSource.
 const (
 	FileSourceGenerated FileSource = "generated"
@@ -224,6 +437,24 @@ func (e FileStatus) Valid() bool {
 	case FileStatusQuarantined:
 		return true
 	case FileStatusReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FolderKind.
+const (
+	FolderKindSite FolderKind = "site"
+	FolderKindUnit FolderKind = "unit"
+)
+
+// Valid indicates whether the value is a known member of the FolderKind enum.
+func (e FolderKind) Valid() bool {
+	switch e {
+	case FolderKindSite:
+		return true
+	case FolderKindUnit:
 		return true
 	default:
 		return false
@@ -572,6 +803,27 @@ func (e MagicLinkRequestClient) Valid() bool {
 	}
 }
 
+// Defines values for MeDashboardHome.
+const (
+	MeDashboardHomePortfolio MeDashboardHome = "portfolio"
+	MeDashboardHomeResident  MeDashboardHome = "resident"
+	MeDashboardHomeSite      MeDashboardHome = "site"
+)
+
+// Valid indicates whether the value is a known member of the MeDashboardHome enum.
+func (e MeDashboardHome) Valid() bool {
+	switch e {
+	case MeDashboardHomePortfolio:
+		return true
+	case MeDashboardHomeResident:
+		return true
+	case MeDashboardHomeSite:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MeOccupancyKind.
 const (
 	MeOccupancyKindHousehold MeOccupancyKind = "household"
@@ -797,6 +1049,72 @@ func (e MoveOutRequestOpenCharges) Valid() bool {
 	}
 }
 
+// Defines values for MySideDebtorKind.
+const (
+	MySideDebtorKindOwner  MySideDebtorKind = "owner"
+	MySideDebtorKindTenant MySideDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the MySideDebtorKind enum.
+func (e MySideDebtorKind) Valid() bool {
+	switch e {
+	case MySideDebtorKindOwner:
+		return true
+	case MySideDebtorKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NotificationDefaultChannels.
+const (
+	NotificationDefaultChannelsEmail NotificationDefaultChannels = "email"
+	NotificationDefaultChannelsInApp NotificationDefaultChannels = "in_app"
+	NotificationDefaultChannelsPush  NotificationDefaultChannels = "push"
+	NotificationDefaultChannelsSms   NotificationDefaultChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the NotificationDefaultChannels enum.
+func (e NotificationDefaultChannels) Valid() bool {
+	switch e {
+	case NotificationDefaultChannelsEmail:
+		return true
+	case NotificationDefaultChannelsInApp:
+		return true
+	case NotificationDefaultChannelsPush:
+		return true
+	case NotificationDefaultChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NotificationDefaultInputChannels.
+const (
+	NotificationDefaultInputChannelsEmail NotificationDefaultInputChannels = "email"
+	NotificationDefaultInputChannelsInApp NotificationDefaultInputChannels = "in_app"
+	NotificationDefaultInputChannelsPush  NotificationDefaultInputChannels = "push"
+	NotificationDefaultInputChannelsSms   NotificationDefaultInputChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the NotificationDefaultInputChannels enum.
+func (e NotificationDefaultInputChannels) Valid() bool {
+	switch e {
+	case NotificationDefaultInputChannelsEmail:
+		return true
+	case NotificationDefaultInputChannelsInApp:
+		return true
+	case NotificationDefaultInputChannelsPush:
+		return true
+	case NotificationDefaultInputChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for OccupancyKind.
 const (
 	OccupancyKindHousehold OccupancyKind = "household"
@@ -892,45 +1210,63 @@ func (e OrganizationStatus) Valid() bool {
 
 // Defines values for Permission.
 const (
-	PermissionAllocationManage    Permission = "allocation.manage"
-	PermissionAllocationRead      Permission = "allocation.read"
-	PermissionAuditRead           Permission = "audit.read"
-	PermissionAuditReport         Permission = "audit.report"
-	PermissionClaimManage         Permission = "claim.manage"
-	PermissionDirectoryConsent    Permission = "directory.consent"
-	PermissionDirectoryRead       Permission = "directory.read"
-	PermissionFilesManage         Permission = "files.manage"
-	PermissionFilesRead           Permission = "files.read"
-	PermissionFilesUpload         Permission = "files.upload"
-	PermissionImportRun           Permission = "import.run"
-	PermissionInvitationHousehold Permission = "invitation.household"
-	PermissionInvitationManage    Permission = "invitation.manage"
-	PermissionMeRead              Permission = "me.read"
-	PermissionMembershipManage    Permission = "membership.manage"
-	PermissionMembershipRead      Permission = "membership.read"
-	PermissionMoveoutManage       Permission = "moveout.manage"
-	PermissionMoveoutRead         Permission = "moveout.read"
-	PermissionOccupancyGrantMoney Permission = "occupancy.grant_money"
-	PermissionOccupancyManage     Permission = "occupancy.manage"
-	PermissionOccupancyRead       Permission = "occupancy.read"
-	PermissionOrgManage           Permission = "org.manage"
-	PermissionOrgRead             Permission = "org.read"
-	PermissionPersonManage        Permission = "person.manage"
-	PermissionPersonRead          Permission = "person.read"
-	PermissionPlatformManage      Permission = "platform.manage"
-	PermissionSessionsManageOwn   Permission = "sessions.manage_own"
-	PermissionSiteCreate          Permission = "site.create"
-	PermissionSiteExport          Permission = "site.export"
-	PermissionSiteImport          Permission = "site.import"
-	PermissionSiteManage          Permission = "site.manage"
-	PermissionSiteOffboard        Permission = "site.offboard"
-	PermissionSiteRead            Permission = "site.read"
-	PermissionUnitManage          Permission = "unit.manage"
-	PermissionUnitRead            Permission = "unit.read"
-	PermissionVehicleManage       Permission = "vehicle.manage"
-	PermissionVehicleRead         Permission = "vehicle.read"
-	PermissionVendorManage        Permission = "vendor.manage"
-	PermissionVendorRead          Permission = "vendor.read"
+	PermissionAllocationManage       Permission = "allocation.manage"
+	PermissionAllocationRead         Permission = "allocation.read"
+	PermissionAnnouncementsPublish   Permission = "announcements.publish"
+	PermissionAnnouncementsRead      Permission = "announcements.read"
+	PermissionAuditRead              Permission = "audit.read"
+	PermissionAuditReport            Permission = "audit.report"
+	PermissionClaimManage            Permission = "claim.manage"
+	PermissionCodesRead              Permission = "codes.read"
+	PermissionDashboardPortfolio     Permission = "dashboard.portfolio"
+	PermissionDashboardSite          Permission = "dashboard.site"
+	PermissionDashboardStaff         Permission = "dashboard.staff"
+	PermissionDirectoryConsent       Permission = "directory.consent"
+	PermissionDirectoryRead          Permission = "directory.read"
+	PermissionDocumentsManage        Permission = "documents.manage"
+	PermissionDocumentsRead          Permission = "documents.read"
+	PermissionDocumentsReadAddressed Permission = "documents.read_addressed"
+	PermissionDocumentsUploadOwn     Permission = "documents.upload_own"
+	PermissionFilesManage            Permission = "files.manage"
+	PermissionFilesRead              Permission = "files.read"
+	PermissionFilesUpload            Permission = "files.upload"
+	PermissionImportRun              Permission = "import.run"
+	PermissionInvitationHousehold    Permission = "invitation.household"
+	PermissionInvitationManage       Permission = "invitation.manage"
+	PermissionMeDashboard            Permission = "me.dashboard"
+	PermissionMeRead                 Permission = "me.read"
+	PermissionMembershipManage       Permission = "membership.manage"
+	PermissionMembershipRead         Permission = "membership.read"
+	PermissionMoveoutManage          Permission = "moveout.manage"
+	PermissionMoveoutRead            Permission = "moveout.read"
+	PermissionNotificationsManage    Permission = "notifications.manage"
+	PermissionNotificationsRead      Permission = "notifications.read"
+	PermissionOccupancyGrantMoney    Permission = "occupancy.grant_money"
+	PermissionOccupancyManage        Permission = "occupancy.manage"
+	PermissionOccupancyRead          Permission = "occupancy.read"
+	PermissionOrgManage              Permission = "org.manage"
+	PermissionOrgRead                Permission = "org.read"
+	PermissionPersonManage           Permission = "person.manage"
+	PermissionPersonRead             Permission = "person.read"
+	PermissionPlatformManage         Permission = "platform.manage"
+	PermissionSessionsManageOwn      Permission = "sessions.manage_own"
+	PermissionSiteCreate             Permission = "site.create"
+	PermissionSiteExport             Permission = "site.export"
+	PermissionSiteImport             Permission = "site.import"
+	PermissionSiteManage             Permission = "site.manage"
+	PermissionSiteOffboard           Permission = "site.offboard"
+	PermissionSiteRead               Permission = "site.read"
+	PermissionTicketsManage          Permission = "tickets.manage"
+	PermissionTicketsOpen            Permission = "tickets.open"
+	PermissionTicketsRead            Permission = "tickets.read"
+	PermissionTicketsReadAssigned    Permission = "tickets.read_assigned"
+	PermissionTicketsWork            Permission = "tickets.work"
+	PermissionUnitManage             Permission = "unit.manage"
+	PermissionUnitRead               Permission = "unit.read"
+	PermissionVehicleManage          Permission = "vehicle.manage"
+	PermissionVehicleRead            Permission = "vehicle.read"
+	PermissionVendorManage           Permission = "vendor.manage"
+	PermissionVendorRead             Permission = "vendor.read"
 )
 
 // Valid indicates whether the value is a known member of the Permission enum.
@@ -940,15 +1276,35 @@ func (e Permission) Valid() bool {
 		return true
 	case PermissionAllocationRead:
 		return true
+	case PermissionAnnouncementsPublish:
+		return true
+	case PermissionAnnouncementsRead:
+		return true
 	case PermissionAuditRead:
 		return true
 	case PermissionAuditReport:
 		return true
 	case PermissionClaimManage:
 		return true
+	case PermissionCodesRead:
+		return true
+	case PermissionDashboardPortfolio:
+		return true
+	case PermissionDashboardSite:
+		return true
+	case PermissionDashboardStaff:
+		return true
 	case PermissionDirectoryConsent:
 		return true
 	case PermissionDirectoryRead:
+		return true
+	case PermissionDocumentsManage:
+		return true
+	case PermissionDocumentsRead:
+		return true
+	case PermissionDocumentsReadAddressed:
+		return true
+	case PermissionDocumentsUploadOwn:
 		return true
 	case PermissionFilesManage:
 		return true
@@ -962,6 +1318,8 @@ func (e Permission) Valid() bool {
 		return true
 	case PermissionInvitationManage:
 		return true
+	case PermissionMeDashboard:
+		return true
 	case PermissionMeRead:
 		return true
 	case PermissionMembershipManage:
@@ -971,6 +1329,10 @@ func (e Permission) Valid() bool {
 	case PermissionMoveoutManage:
 		return true
 	case PermissionMoveoutRead:
+		return true
+	case PermissionNotificationsManage:
+		return true
+	case PermissionNotificationsRead:
 		return true
 	case PermissionOccupancyGrantMoney:
 		return true
@@ -1001,6 +1363,16 @@ func (e Permission) Valid() bool {
 	case PermissionSiteOffboard:
 		return true
 	case PermissionSiteRead:
+		return true
+	case PermissionTicketsManage:
+		return true
+	case PermissionTicketsOpen:
+		return true
+	case PermissionTicketsRead:
+		return true
+	case PermissionTicketsReadAssigned:
+		return true
+	case PermissionTicketsWork:
 		return true
 	case PermissionUnitManage:
 		return true
@@ -1250,6 +1622,303 @@ func (e SiteSettingsAppurtenanceDefault) Valid() bool {
 	}
 }
 
+// Defines values for TicketVisibility.
+const (
+	TicketVisibilityCommon  TicketVisibility = "common"
+	TicketVisibilityPrivate TicketVisibility = "private"
+)
+
+// Valid indicates whether the value is a known member of the TicketVisibility enum.
+func (e TicketVisibility) Valid() bool {
+	switch e {
+	case TicketVisibilityCommon:
+		return true
+	case TicketVisibilityPrivate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketAssigneeKind.
+const (
+	TicketAssigneeKindPerson TicketAssigneeKind = "person"
+	TicketAssigneeKindVendor TicketAssigneeKind = "vendor"
+)
+
+// Valid indicates whether the value is a known member of the TicketAssigneeKind enum.
+func (e TicketAssigneeKind) Valid() bool {
+	switch e {
+	case TicketAssigneeKindPerson:
+		return true
+	case TicketAssigneeKindVendor:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCategoryDefaultAssigneeRole.
+const (
+	TicketCategoryDefaultAssigneeRoleBoardMember TicketCategoryDefaultAssigneeRole = "board_member"
+	TicketCategoryDefaultAssigneeRoleSiteManager TicketCategoryDefaultAssigneeRole = "site_manager"
+	TicketCategoryDefaultAssigneeRoleStaff       TicketCategoryDefaultAssigneeRole = "staff"
+)
+
+// Valid indicates whether the value is a known member of the TicketCategoryDefaultAssigneeRole enum.
+func (e TicketCategoryDefaultAssigneeRole) Valid() bool {
+	switch e {
+	case TicketCategoryDefaultAssigneeRoleBoardMember:
+		return true
+	case TicketCategoryDefaultAssigneeRoleSiteManager:
+		return true
+	case TicketCategoryDefaultAssigneeRoleStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCategoryDefaultVisibility.
+const (
+	TicketCategoryDefaultVisibilityCommon  TicketCategoryDefaultVisibility = "common"
+	TicketCategoryDefaultVisibilityPrivate TicketCategoryDefaultVisibility = "private"
+)
+
+// Valid indicates whether the value is a known member of the TicketCategoryDefaultVisibility enum.
+func (e TicketCategoryDefaultVisibility) Valid() bool {
+	switch e {
+	case TicketCategoryDefaultVisibilityCommon:
+		return true
+	case TicketCategoryDefaultVisibilityPrivate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCategoryCreateDefaultAssigneeRole.
+const (
+	TicketCategoryCreateDefaultAssigneeRoleBoardMember TicketCategoryCreateDefaultAssigneeRole = "board_member"
+	TicketCategoryCreateDefaultAssigneeRoleSiteManager TicketCategoryCreateDefaultAssigneeRole = "site_manager"
+	TicketCategoryCreateDefaultAssigneeRoleStaff       TicketCategoryCreateDefaultAssigneeRole = "staff"
+)
+
+// Valid indicates whether the value is a known member of the TicketCategoryCreateDefaultAssigneeRole enum.
+func (e TicketCategoryCreateDefaultAssigneeRole) Valid() bool {
+	switch e {
+	case TicketCategoryCreateDefaultAssigneeRoleBoardMember:
+		return true
+	case TicketCategoryCreateDefaultAssigneeRoleSiteManager:
+		return true
+	case TicketCategoryCreateDefaultAssigneeRoleStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCategoryCreateDefaultVisibility.
+const (
+	TicketCategoryCreateDefaultVisibilityCommon  TicketCategoryCreateDefaultVisibility = "common"
+	TicketCategoryCreateDefaultVisibilityPrivate TicketCategoryCreateDefaultVisibility = "private"
+)
+
+// Valid indicates whether the value is a known member of the TicketCategoryCreateDefaultVisibility enum.
+func (e TicketCategoryCreateDefaultVisibility) Valid() bool {
+	switch e {
+	case TicketCategoryCreateDefaultVisibilityCommon:
+		return true
+	case TicketCategoryCreateDefaultVisibilityPrivate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCategoryUpdateDefaultAssigneeRole.
+const (
+	TicketCategoryUpdateDefaultAssigneeRoleBoardMember TicketCategoryUpdateDefaultAssigneeRole = "board_member"
+	TicketCategoryUpdateDefaultAssigneeRoleSiteManager TicketCategoryUpdateDefaultAssigneeRole = "site_manager"
+	TicketCategoryUpdateDefaultAssigneeRoleStaff       TicketCategoryUpdateDefaultAssigneeRole = "staff"
+)
+
+// Valid indicates whether the value is a known member of the TicketCategoryUpdateDefaultAssigneeRole enum.
+func (e TicketCategoryUpdateDefaultAssigneeRole) Valid() bool {
+	switch e {
+	case TicketCategoryUpdateDefaultAssigneeRoleBoardMember:
+		return true
+	case TicketCategoryUpdateDefaultAssigneeRoleSiteManager:
+		return true
+	case TicketCategoryUpdateDefaultAssigneeRoleStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCategoryUpdateDefaultVisibility.
+const (
+	TicketCategoryUpdateDefaultVisibilityCommon  TicketCategoryUpdateDefaultVisibility = "common"
+	TicketCategoryUpdateDefaultVisibilityPrivate TicketCategoryUpdateDefaultVisibility = "private"
+)
+
+// Valid indicates whether the value is a known member of the TicketCategoryUpdateDefaultVisibility enum.
+func (e TicketCategoryUpdateDefaultVisibility) Valid() bool {
+	switch e {
+	case TicketCategoryUpdateDefaultVisibilityCommon:
+		return true
+	case TicketCategoryUpdateDefaultVisibilityPrivate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCommentVisibility.
+const (
+	TicketCommentVisibilityInternal TicketCommentVisibility = "internal"
+	TicketCommentVisibilityPublic   TicketCommentVisibility = "public"
+)
+
+// Valid indicates whether the value is a known member of the TicketCommentVisibility enum.
+func (e TicketCommentVisibility) Valid() bool {
+	switch e {
+	case TicketCommentVisibilityInternal:
+		return true
+	case TicketCommentVisibilityPublic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCommentCreateVisibility.
+const (
+	TicketCommentCreateVisibilityInternal TicketCommentCreateVisibility = "internal"
+	TicketCommentCreateVisibilityPublic   TicketCommentCreateVisibility = "public"
+)
+
+// Valid indicates whether the value is a known member of the TicketCommentCreateVisibility enum.
+func (e TicketCommentCreateVisibility) Valid() bool {
+	switch e {
+	case TicketCommentCreateVisibilityInternal:
+		return true
+	case TicketCommentCreateVisibilityPublic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketCreateVisibility.
+const (
+	TicketCreateVisibilityCommon  TicketCreateVisibility = "common"
+	TicketCreateVisibilityPrivate TicketCreateVisibility = "private"
+)
+
+// Valid indicates whether the value is a known member of the TicketCreateVisibility enum.
+func (e TicketCreateVisibility) Valid() bool {
+	switch e {
+	case TicketCreateVisibilityCommon:
+		return true
+	case TicketCreateVisibilityPrivate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketSemantic.
+const (
+	TicketSemanticClosedLike TicketSemantic = "closed_like"
+	TicketSemanticOpenLike   TicketSemantic = "open_like"
+)
+
+// Valid indicates whether the value is a known member of the TicketSemantic enum.
+func (e TicketSemantic) Valid() bool {
+	switch e {
+	case TicketSemanticClosedLike:
+		return true
+	case TicketSemanticOpenLike:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketStatusSemantic.
+const (
+	TicketStatusSemanticClosedLike TicketStatusSemantic = "closed_like"
+	TicketStatusSemanticOpenLike   TicketStatusSemantic = "open_like"
+)
+
+// Valid indicates whether the value is a known member of the TicketStatusSemantic enum.
+func (e TicketStatusSemantic) Valid() bool {
+	switch e {
+	case TicketStatusSemanticClosedLike:
+		return true
+	case TicketStatusSemanticOpenLike:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketStatusInputSemantic.
+const (
+	TicketStatusInputSemanticClosedLike TicketStatusInputSemantic = "closed_like"
+	TicketStatusInputSemanticOpenLike   TicketStatusInputSemantic = "open_like"
+)
+
+// Valid indicates whether the value is a known member of the TicketStatusInputSemantic enum.
+func (e TicketStatusInputSemantic) Valid() bool {
+	switch e {
+	case TicketStatusInputSemanticClosedLike:
+		return true
+	case TicketStatusInputSemanticOpenLike:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketTransitionCommentVisibility.
+const (
+	TicketTransitionCommentVisibilityInternal TicketTransitionCommentVisibility = "internal"
+	TicketTransitionCommentVisibilityPublic   TicketTransitionCommentVisibility = "public"
+)
+
+// Valid indicates whether the value is a known member of the TicketTransitionCommentVisibility enum.
+func (e TicketTransitionCommentVisibility) Valid() bool {
+	switch e {
+	case TicketTransitionCommentVisibilityInternal:
+		return true
+	case TicketTransitionCommentVisibilityPublic:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TicketUpdateVisibility.
+const (
+	TicketUpdateVisibilityCommon  TicketUpdateVisibility = "common"
+	TicketUpdateVisibilityPrivate TicketUpdateVisibility = "private"
+)
+
+// Valid indicates whether the value is a known member of the TicketUpdateVisibility enum.
+func (e TicketUpdateVisibility) Valid() bool {
+	switch e {
+	case TicketUpdateVisibilityCommon:
+		return true
+	case TicketUpdateVisibilityPrivate:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UnitAppurtenanceOverride.
 const (
 	UnitAppurtenanceOverrideAppurtenance UnitAppurtenanceOverride = "appurtenance"
@@ -1472,6 +2141,27 @@ func (e FilesDownloadParamsVariant) Valid() bool {
 	}
 }
 
+// Defines values for OperationsListTicketCategoriesParamsArchived.
+const (
+	OperationsListTicketCategoriesParamsArchivedActive   OperationsListTicketCategoriesParamsArchived = "active"
+	OperationsListTicketCategoriesParamsArchivedAll      OperationsListTicketCategoriesParamsArchived = "all"
+	OperationsListTicketCategoriesParamsArchivedArchived OperationsListTicketCategoriesParamsArchived = "archived"
+)
+
+// Valid indicates whether the value is a known member of the OperationsListTicketCategoriesParamsArchived enum.
+func (e OperationsListTicketCategoriesParamsArchived) Valid() bool {
+	switch e {
+	case OperationsListTicketCategoriesParamsArchivedActive:
+		return true
+	case OperationsListTicketCategoriesParamsArchivedAll:
+		return true
+	case OperationsListTicketCategoriesParamsArchivedArchived:
+		return true
+	default:
+		return false
+	}
+}
+
 // AcceptInvitation defines model for AcceptInvitation.
 type AcceptInvitation struct {
 	Locale *string `json:"locale,omitempty"`
@@ -1565,6 +2255,155 @@ type AllocationKeyUpdate struct {
 type AllocationKeyValues struct {
 	Values []KeyValue `json:"values"`
 }
+
+// Announcement A one-way announcement (O4): no comments, reactions or polls.
+//
+// Example: {"attachments":[{"id":"0192a3f0-1000-7000-8000-000000000003","mime":"application/pdf","name":"schedule.pdf","size":48211}],"audience":{"kind":"site"},"body_md":"body md","channels":["in_app","sms"],"created_at":"2026-03-01T09:00:00Z","created_by":null,"expires_at":null,"id":"0192a3f0-1000-7000-8000-000000000003","org_id":"0192a3f0-1000-7000-8000-000000000001","pinned":false,"publish_at":null,"published_at":null,"read_at":null,"read_count":1,"recipient_count":120,"site_id":"0192a3f0-1000-7000-8000-000000000002","sms_count":80,"status":"published","title":"Water cut on Saturday","updated_at":"2026-03-01T09:00:00Z","version":1}
+type Announcement struct {
+	// Attachments The attached files with what a client needs to show them; download through `files.download` with the `id`.
+	Attachments []AnnouncementAttachment `json:"attachments"`
+	Audience    AnnouncementAudience     `json:"audience"`
+	BodyMd      string                   `json:"body_md"`
+
+	// Channels Chosen by the sender (O5).
+	Channels    []AnnouncementChannels                `json:"channels"`
+	CreatedAt   time.Time                             `json:"created_at"`
+	CreatedBy   nullable.Nullable[openapi_types.UUID] `json:"created_by"`
+	ExpiresAt   nullable.Nullable[time.Time]          `json:"expires_at"`
+	Id          openapi_types.UUID                    `json:"id"`
+	OrgId       openapi_types.UUID                    `json:"org_id"`
+	Pinned      bool                                  `json:"pinned"`
+	PublishAt   nullable.Nullable[time.Time]          `json:"publish_at"`
+	PublishedAt nullable.Nullable[time.Time]          `json:"published_at"`
+
+	// ReadAt When the caller read it.
+	ReadAt nullable.Nullable[time.Time] `json:"read_at"`
+
+	// ReadCount Opened in web or app; a delivered SMS or email is not a read.
+	ReadCount int64 `json:"read_count"`
+
+	// RecipientCount Set at publish.
+	RecipientCount nullable.Nullable[int64] `json:"recipient_count"`
+	SiteId         openapi_types.UUID       `json:"site_id"`
+	SmsCount       nullable.Nullable[int64] `json:"sms_count"`
+
+	// Status Open enum.
+	Status    AnnouncementStatus `json:"status"`
+	Title     string             `json:"title"`
+	UpdatedAt time.Time          `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// AnnouncementChannels Open enum.
+type AnnouncementChannels string
+
+// AnnouncementStatus Open enum.
+type AnnouncementStatus string
+
+// AnnouncementAttachment A file attached to an announcement.
+type AnnouncementAttachment struct {
+	// Id The file id; download it with `files.download`.
+	Id   openapi_types.UUID `json:"id"`
+	Mime string             `json:"mime"`
+	Name string             `json:"name"`
+
+	// Size Bytes.
+	Size int64 `json:"size"`
+}
+
+// AnnouncementAudience defines model for AnnouncementAudience.
+type AnnouncementAudience struct {
+	BlockId *openapi_types.UUID      `json:"block_id,omitempty"`
+	Kind    AnnouncementAudienceKind `json:"kind"`
+	UnitIds *[]openapi_types.UUID    `json:"unit_ids,omitempty"`
+}
+
+// AnnouncementAudienceKind defines model for AnnouncementAudience.Kind.
+type AnnouncementAudienceKind string
+
+// AnnouncementCreate defines model for AnnouncementCreate.
+type AnnouncementCreate struct {
+	Audience  AnnouncementAudience          `json:"audience"`
+	BodyMd    string                        `json:"body_md"`
+	Channels  *[]AnnouncementCreateChannels `json:"channels,omitempty"`
+	ExpiresAt nullable.Nullable[time.Time]  `json:"expires_at,omitempty"`
+	FileIds   *[]openapi_types.UUID         `json:"file_ids,omitempty"`
+	Pinned    *bool                         `json:"pinned,omitempty"`
+	PublishAt nullable.Nullable[time.Time]  `json:"publish_at,omitempty"`
+	SiteId    openapi_types.UUID            `json:"site_id"`
+	Title     string                        `json:"title"`
+}
+
+// AnnouncementCreateChannels Open enum.
+type AnnouncementCreateChannels string
+
+// AnnouncementList Example: {"items":[{"attachments":[{"id":"0192a3f0-1000-7000-8000-000000000003","mime":"application/pdf","name":"schedule.pdf","size":48211}],"audience":{"kind":"site"},"body_md":"body md","channels":["in_app","sms"],"created_at":"2026-03-01T09:00:00Z","created_by":null,"expires_at":null,"id":"0192a3f0-1000-7000-8000-000000000003","org_id":"0192a3f0-1000-7000-8000-000000000001","pinned":false,"publish_at":null,"published_at":null,"read_at":null,"read_count":1,"recipient_count":120,"site_id":"0192a3f0-1000-7000-8000-000000000002","sms_count":80,"status":"published","title":"Water cut on Saturday","updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type AnnouncementList struct {
+	Items []Announcement `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// AnnouncementPreview What publishing would cost, before the sender presses publish (O5).
+type AnnouncementPreview struct {
+	EmailCount     int64 `json:"email_count"`
+	InAppCount     int64 `json:"in_app_count"`
+	RecipientCount int64 `json:"recipient_count"`
+	SmsCount       int64 `json:"sms_count"`
+}
+
+// AnnouncementPreviewRequest defines model for AnnouncementPreviewRequest.
+type AnnouncementPreviewRequest struct {
+	Audience AnnouncementAudience                 `json:"audience"`
+	Channels []AnnouncementPreviewRequestChannels `json:"channels"`
+	SiteId   openapi_types.UUID                   `json:"site_id"`
+}
+
+// AnnouncementPreviewRequestChannels defines model for AnnouncementPreviewRequest.Channels.
+type AnnouncementPreviewRequestChannels string
+
+// AnnouncementPublish defines model for AnnouncementPublish.
+type AnnouncementPublish struct {
+	// Channels Overrides the stored channels.
+	Channels *[]AnnouncementPublishChannels `json:"channels,omitempty"`
+}
+
+// AnnouncementPublishChannels defines model for AnnouncementPublish.Channels.
+type AnnouncementPublishChannels string
+
+// AnnouncementRead Example: {"display_name":"Ali Veli","person_id":"0192a3f0-1000-7000-8000-000000000002","read_at":null,"unit_door_numbers":["unit door numbers"]}
+type AnnouncementRead struct {
+	DisplayName     string                       `json:"display_name"`
+	PersonId        openapi_types.UUID           `json:"person_id"`
+	ReadAt          nullable.Nullable[time.Time] `json:"read_at"`
+	UnitDoorNumbers []string                     `json:"unit_door_numbers"`
+}
+
+// AnnouncementReadList Example: {"audience_count":3,"items":[{"display_name":"Ali Veli","person_id":"0192a3f0-1000-7000-8000-000000000002","read_at":null,"unit_door_numbers":["unit door numbers"]}],"next_cursor":null,"read_count":3}
+type AnnouncementReadList struct {
+	AudienceCount int                       `json:"audience_count"`
+	Items         []AnnouncementRead        `json:"items"`
+	NextCursor    nullable.Nullable[string] `json:"next_cursor"`
+	ReadCount     int                       `json:"read_count"`
+}
+
+// AnnouncementUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type AnnouncementUpdate struct {
+	Audience  *AnnouncementAudience         `json:"audience,omitempty"`
+	BodyMd    *string                       `json:"body_md,omitempty"`
+	Channels  *[]AnnouncementUpdateChannels `json:"channels,omitempty"`
+	ExpiresAt nullable.Nullable[time.Time]  `json:"expires_at,omitempty"`
+	FileIds   *[]openapi_types.UUID         `json:"file_ids,omitempty"`
+	Pinned    *bool                         `json:"pinned,omitempty"`
+	PublishAt nullable.Nullable[time.Time]  `json:"publish_at,omitempty"`
+	Title     *string                       `json:"title,omitempty"`
+}
+
+// AnnouncementUpdateChannels Open enum.
+type AnnouncementUpdateChannels string
 
 // ArchiveUpload defines model for ArchiveUpload.
 type ArchiveUpload struct {
@@ -1743,6 +2582,13 @@ type ClaimReject struct {
 	Note nullable.Nullable[string] `json:"note,omitempty"`
 }
 
+// CodeLabel defines model for CodeLabel.
+type CodeLabel struct {
+	Code        string  `json:"code"`
+	Description *string `json:"description,omitempty"`
+	Label       string  `json:"label"`
+}
+
 // Codes defines model for Codes.
 type Codes struct {
 	// Locale The locale the labels are in (en or tr).
@@ -1774,6 +2620,22 @@ type Credentials struct {
 
 // CredentialsClient `mobile` makes an emailed link use the `openbekci://` scheme.
 type CredentialsClient string
+
+// DashboardMeeting defines model for DashboardMeeting.
+type DashboardMeeting struct {
+	Id          openapi_types.UUID        `json:"id"`
+	ScheduledAt time.Time                 `json:"scheduled_at"`
+	Status      string                    `json:"status"`
+	Title       nullable.Nullable[string] `json:"title"`
+}
+
+// DashboardTerm defines model for DashboardTerm.
+type DashboardTerm struct {
+	MembershipId      openapi_types.UUID `json:"membership_id"`
+	PersonDisplayName string             `json:"person_display_name"`
+	Role              string             `json:"role"`
+	ValidTo           openapi_types.Date `json:"valid_to"`
+}
 
 // DirectoryConsent defines model for DirectoryConsent.
 type DirectoryConsent struct {
@@ -1835,6 +2697,72 @@ type DiscoveryDocument struct {
 	// ServerVersion Example: 0.1.0
 	ServerVersion string `json:"server_version"`
 }
+
+// Document A document. No versions: replacing the file (`file_id`) overwrites it.
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","file_id":"0192a3f0-1000-7000-8000-000000000006","folder_id":"0192a3f0-1000-7000-8000-000000000005","generated_from":{"id":"0192a3f0-1000-7000-8000-000000000008","type":"type"},"id":"0192a3f0-1000-7000-8000-000000000002","mime":"mime","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","size":1,"source":"uploaded","title":"Ali Veli","updated_at":"2026-03-01T09:00:00Z","uploaded_by":null,"version":1,"visibility":{"level":"board","unit_ids":["0192a3f0-1000-7000-8000-000000000007"]}}
+type Document struct {
+	CreatedAt     time.Time                        `json:"created_at"`
+	FileId        openapi_types.UUID               `json:"file_id"`
+	FolderId      openapi_types.UUID               `json:"folder_id"`
+	GeneratedFrom nullable.Nullable[GeneratedFrom] `json:"generated_from"`
+	Id            openapi_types.UUID               `json:"id"`
+	Mime          string                           `json:"mime"`
+	OrgId         openapi_types.UUID               `json:"org_id"`
+	SiteId        openapi_types.UUID               `json:"site_id"`
+	Size          int64                            `json:"size"`
+
+	// Source Open enum.
+	Source     DocumentSource                        `json:"source"`
+	Title      string                                `json:"title"`
+	UpdatedAt  time.Time                             `json:"updated_at"`
+	UploadedBy nullable.Nullable[openapi_types.UUID] `json:"uploaded_by"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+
+	// Visibility Null: inherits the folder.
+	Visibility nullable.Nullable[DocumentVisibility] `json:"visibility"`
+}
+
+// DocumentSource Open enum.
+type DocumentSource string
+
+// DocumentCreate defines model for DocumentCreate.
+type DocumentCreate struct {
+	FileId     openapi_types.UUID                    `json:"file_id"`
+	FolderId   openapi_types.UUID                    `json:"folder_id"`
+	SiteId     openapi_types.UUID                    `json:"site_id"`
+	Title      string                                `json:"title"`
+	Visibility nullable.Nullable[DocumentVisibility] `json:"visibility,omitempty"`
+}
+
+// DocumentList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","file_id":"0192a3f0-1000-7000-8000-000000000006","folder_id":"0192a3f0-1000-7000-8000-000000000005","generated_from":{"id":"0192a3f0-1000-7000-8000-000000000008","type":"type"},"id":"0192a3f0-1000-7000-8000-000000000002","mime":"mime","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","size":1,"source":"uploaded","title":"Ali Veli","updated_at":"2026-03-01T09:00:00Z","uploaded_by":null,"version":1,"visibility":{"level":"board","unit_ids":["0192a3f0-1000-7000-8000-000000000007"]}}],"next_cursor":null}
+type DocumentList struct {
+	Items []Document `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// DocumentUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type DocumentUpdate struct {
+	FileId     *openapi_types.UUID                   `json:"file_id,omitempty"`
+	FolderId   *openapi_types.UUID                   `json:"folder_id,omitempty"`
+	Title      *string                               `json:"title,omitempty"`
+	Visibility nullable.Nullable[DocumentVisibility] `json:"visibility,omitempty"`
+}
+
+// DocumentVisibility defines model for DocumentVisibility.
+type DocumentVisibility struct {
+	Level DocumentVisibilityLevel `json:"level"`
+
+	// UnitIds With `level: units`.
+	UnitIds *[]openapi_types.UUID `json:"unit_ids,omitempty"`
+}
+
+// DocumentVisibilityLevel defines model for DocumentVisibility.Level.
+type DocumentVisibilityLevel string
 
 // File defines model for File.
 type File struct {
@@ -1934,6 +2862,69 @@ type FileVariant struct {
 	// Size Bytes.
 	Size  int64 `json:"size"`
 	Width int   `json:"width"`
+}
+
+// Folder A site folder or the private folder of a unit (O8).
+//
+// Example: {"breadcrumb":[{"id":"0192a3f0-1000-7000-8000-000000000006","name":"Ali Veli"}],"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","is_system":false,"kind":"site","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","parent_id":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","unit_id":null,"updated_at":"2026-03-01T09:00:00Z","version":1,"visibility":{"level":"board","unit_ids":["0192a3f0-1000-7000-8000-000000000005"]}}
+type Folder struct {
+	Breadcrumb []FolderCrumb      `json:"breadcrumb"`
+	CreatedAt  time.Time          `json:"created_at"`
+	Id         openapi_types.UUID `json:"id"`
+	IsSystem   bool               `json:"is_system"`
+
+	// Kind Unit folders are private and created with the unit. Open enum.
+	Kind      FolderKind                            `json:"kind"`
+	Name      string                                `json:"name"`
+	OrgId     openapi_types.UUID                    `json:"org_id"`
+	ParentId  nullable.Nullable[openapi_types.UUID] `json:"parent_id"`
+	SiteId    openapi_types.UUID                    `json:"site_id"`
+	UnitId    nullable.Nullable[openapi_types.UUID] `json:"unit_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version    int64              `json:"version"`
+	Visibility DocumentVisibility `json:"visibility"`
+}
+
+// FolderKind Unit folders are private and created with the unit. Open enum.
+type FolderKind string
+
+// FolderCreate defines model for FolderCreate.
+type FolderCreate struct {
+	Name       string                                `json:"name"`
+	ParentId   nullable.Nullable[openapi_types.UUID] `json:"parent_id,omitempty"`
+	SiteId     openapi_types.UUID                    `json:"site_id"`
+	Visibility *DocumentVisibility                   `json:"visibility,omitempty"`
+}
+
+// FolderCrumb defines model for FolderCrumb.
+type FolderCrumb struct {
+	Id   openapi_types.UUID `json:"id"`
+	Name string             `json:"name"`
+}
+
+// FolderList Example: {"items":[{"breadcrumb":[{"id":"0192a3f0-1000-7000-8000-000000000006","name":"Ali Veli"}],"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","is_system":false,"kind":"site","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","parent_id":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","unit_id":null,"updated_at":"2026-03-01T09:00:00Z","version":1,"visibility":{"level":"board","unit_ids":["0192a3f0-1000-7000-8000-000000000005"]}}],"next_cursor":null}
+type FolderList struct {
+	Items []Folder `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// FolderUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type FolderUpdate struct {
+	Name       *string                               `json:"name,omitempty"`
+	ParentId   nullable.Nullable[openapi_types.UUID] `json:"parent_id,omitempty"`
+	Visibility *DocumentVisibility                   `json:"visibility,omitempty"`
+}
+
+// GeneratedFrom defines model for GeneratedFrom.
+type GeneratedFrom struct {
+	Id openapi_types.UUID `json:"id"`
+
+	// Type For example statement, receipt, certificate, closing_statement, minutes.
+	Type string `json:"type"`
 }
 
 // HouseholdInvitationCreate Invite a household member to this unit. They get no money access.
@@ -2228,6 +3219,24 @@ type Me struct {
 	User MeUser `json:"user"`
 }
 
+// MeDashboard The caller's home summary in the organization.
+type MeDashboard struct {
+	// Home Which home the web app should show. Open enum.
+	Home                    MeDashboardHome `json:"home"`
+	MyOpenTickets           int64           `json:"my_open_tickets"`
+	PendingVisitorApprovals int64           `json:"pending_visitor_approvals"`
+
+	// Sides Resident money summary (what do I owe today); empty without money visibility.
+	Sides               []MySide           `json:"sides"`
+	UnreadAnnouncements int64              `json:"unread_announcements"`
+	UnreadNotifications int64              `json:"unread_notifications"`
+	UpcomingMeetings    []DashboardMeeting `json:"upcoming_meetings"`
+	WaitingDeliveries   int64              `json:"waiting_deliveries"`
+}
+
+// MeDashboardHome Which home the web app should show. Open enum.
+type MeDashboardHome string
+
 // MeOccupancy One occupancy of the caller, as `GET /v1/me` lists it.
 type MeOccupancy struct {
 	BlockName string `json:"block_name"`
@@ -2350,6 +3359,15 @@ type MinAppVersion struct {
 	Ios string `json:"ios"`
 }
 
+// Money Integer minor units with an ISO 4217 currency code.
+type Money struct {
+	// Amount Example: 123450
+	Amount int64 `json:"amount"`
+
+	// Currency Example: TRY
+	Currency string `json:"currency"`
+}
+
 // MoneyAccess defines model for MoneyAccess.
 type MoneyAccess struct {
 	MaySeeMoney bool `json:"may_see_money"`
@@ -2412,6 +3430,116 @@ type MoveOutRequest struct {
 
 // MoveOutRequestOpenCharges What happens to the leaving person's open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.
 type MoveOutRequestOpenCharges string
+
+// MySide What the caller owes on one side (owner or tenant) of one unit today. Filled by the money module; the draft's `money.MySide`, kept here until the money module lands and owns it.
+type MySide struct {
+	// AccruedLateFee Integer minor units with an ISO 4217 currency code.
+	AccruedLateFee Money `json:"accrued_late_fee"`
+
+	// BankDetails The site's bank details shown to payers (IBAN and holder).
+	BankDetails nullable.Nullable[map[string]interface{}] `json:"bank_details"`
+
+	// Credit Integer minor units with an ISO 4217 currency code.
+	Credit Money `json:"credit"`
+
+	// DebtorKind Open enum.
+	DebtorKind  MySideDebtorKind                      `json:"debtor_kind"`
+	NextDueDate nullable.Nullable[openapi_types.Date] `json:"next_due_date"`
+
+	// Principal Integer minor units with an ISO 4217 currency code.
+	Principal Money `json:"principal"`
+
+	// Total What do I owe today.
+	Total          Money              `json:"total"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+	UnitId         openapi_types.UUID `json:"unit_id"`
+}
+
+// MySideDebtorKind Open enum.
+type MySideDebtorKind string
+
+// Notification An in-app notification of the caller.
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","link":null,"payload":{},"read_at":null,"site_id":null,"type":"type"}
+type Notification struct {
+	CreatedAt time.Time                             `json:"created_at"`
+	Id        openapi_types.UUID                    `json:"id"`
+	Link      nullable.Nullable[string]             `json:"link"`
+	Payload   map[string]interface{}                `json:"payload"`
+	ReadAt    nullable.Nullable[time.Time]          `json:"read_at"`
+	SiteId    nullable.Nullable[openapi_types.UUID] `json:"site_id"`
+
+	// Type Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values.
+	Type NotificationType `json:"type"`
+}
+
+// NotificationDefault defines model for NotificationDefault.
+type NotificationDefault struct {
+	Channels []NotificationDefaultChannels `json:"channels"`
+
+	// Locked Sign-in codes and invitations always go by SMS or email and cannot be changed.
+	Locked bool `json:"locked"`
+
+	// Type Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values.
+	Type NotificationType `json:"type"`
+}
+
+// NotificationDefaultChannels Open enum.
+type NotificationDefaultChannels string
+
+// NotificationDefaultInput defines model for NotificationDefaultInput.
+type NotificationDefaultInput struct {
+	Channels []NotificationDefaultInputChannels `json:"channels"`
+	Type     string                             `json:"type"`
+}
+
+// NotificationDefaultInputChannels defines model for NotificationDefaultInput.Channels.
+type NotificationDefaultInputChannels string
+
+// NotificationDefaults Site defaults for automatic messages (O5): reminders and receipts in-app plus SMS, ticket updates in-app plus email, the rest in-app.
+type NotificationDefaults struct {
+	Defaults []NotificationDefault `json:"defaults"`
+	SiteId   openapi_types.UUID    `json:"site_id"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on the next write.
+	Version int64 `json:"version"`
+}
+
+// NotificationDefaultsSet defines model for NotificationDefaultsSet.
+type NotificationDefaultsSet struct {
+	Defaults []NotificationDefaultInput `json:"defaults"`
+}
+
+// NotificationList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","link":null,"payload":{},"read_at":null,"site_id":null,"type":"type"}],"next_cursor":null}
+type NotificationList struct {
+	Items []Notification `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// NotificationMutes defines model for NotificationMutes.
+type NotificationMutes struct {
+	// AvailableTypes The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own.
+	AvailableTypes []string `json:"available_types"`
+	MutedTypes     []string `json:"muted_types"`
+
+	// UnmutableTypes Sign-in codes and invitations.
+	UnmutableTypes []string `json:"unmutable_types"`
+}
+
+// NotificationMutesSet defines model for NotificationMutesSet.
+type NotificationMutesSet struct {
+	MutedTypes []string `json:"muted_types"`
+}
+
+// NotificationType Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values.
+type NotificationType = string
+
+// NotificationsReadAll defines model for NotificationsReadAll.
+type NotificationsReadAll struct {
+	SiteId *openapi_types.UUID `json:"site_id,omitempty"`
+}
 
 // Occupancy defines model for Occupancy.
 type Occupancy struct {
@@ -2505,6 +3633,19 @@ type OrgAccess struct {
 	// Sites Sites of the organization the caller can see through a membership or an occupancy.
 	Sites []MeSite `json:"sites"`
 	Slug  string   `json:"slug"`
+}
+
+// OrgCodes defines model for OrgCodes.
+type OrgCodes struct {
+	// Enums Labels per open enum, keyed by enum name (for example `charge_type`, `occupancy_kind`), pack labels included.
+	Enums map[string][]CodeLabel `json:"enums"`
+
+	// Errors Problem codes.
+	Errors []CodeLabel `json:"errors"`
+	Locale string      `json:"locale"`
+
+	// TicketStatuses Site-defined ticket statuses when `site_id` is given.
+	TicketStatuses []CodeLabel `json:"ticket_statuses"`
 }
 
 // Organization defines model for Organization.
@@ -2621,6 +3762,43 @@ type PersonUpdate struct {
 	NationalIdCountry *string                   `json:"national_id_country,omitempty"`
 	Notes             nullable.Nullable[string] `json:"notes,omitempty"`
 	Phone             nullable.Nullable[string] `json:"phone,omitempty"`
+}
+
+// PortfolioDashboard Cross-site view for management companies (S5): overdue, cash and open tickets per site.
+type PortfolioDashboard struct {
+	AsOf   time.Time       `json:"as_of"`
+	Sites  []PortfolioSite `json:"sites"`
+	Totals PortfolioTotals `json:"totals"`
+}
+
+// PortfolioSite defines model for PortfolioSite.
+type PortfolioSite struct {
+	// Bank Integer minor units with an ISO 4217 currency code.
+	Bank Money `json:"bank"`
+
+	// Cash Integer minor units with an ISO 4217 currency code.
+	Cash              Money   `json:"cash"`
+	CollectionRatePct float32 `json:"collection_rate_pct"`
+	Name              string  `json:"name"`
+	OpenTickets       int64   `json:"open_tickets"`
+
+	// Overdue Integer minor units with an ISO 4217 currency code.
+	Overdue      Money              `json:"overdue"`
+	OverdueUnits int64              `json:"overdue_units"`
+	SiteId       openapi_types.UUID `json:"site_id"`
+}
+
+// PortfolioTotals defines model for PortfolioTotals.
+type PortfolioTotals struct {
+	// Bank Integer minor units with an ISO 4217 currency code.
+	Bank Money `json:"bank"`
+
+	// Cash Integer minor units with an ISO 4217 currency code.
+	Cash        Money `json:"cash"`
+	OpenTickets int64 `json:"open_tickets"`
+
+	// Overdue Integer minor units with an ISO 4217 currency code.
+	Overdue Money `json:"overdue"`
 }
 
 // Problem RFC 9457 problem details, served as application/problem+json. Clients
@@ -2828,6 +4006,47 @@ type SiteCreate struct {
 	Timezone *string       `json:"timezone,omitempty"`
 }
 
+// SiteDashboard Per-site dashboard for managers, board, auditors and accountants.
+type SiteDashboard struct {
+	// AccruedLateFees Integer minor units with an ISO 4217 currency code.
+	AccruedLateFees Money     `json:"accrued_late_fees"`
+	AsOf            time.Time `json:"as_of"`
+
+	// Bank Integer minor units with an ISO 4217 currency code.
+	Bank Money `json:"bank"`
+
+	// Cash Integer minor units with an ISO 4217 currency code.
+	Cash              Money   `json:"cash"`
+	CollectionRatePct float32 `json:"collection_rate_pct"`
+
+	// ExpiringTerms Empty before release 0.2.
+	ExpiringTerms     []DashboardTerm `json:"expiring_terms"`
+	OpenCommonTickets int64           `json:"open_common_tickets"`
+	OpenTickets       int64           `json:"open_tickets"`
+
+	// OverdueTotal Integer minor units with an ISO 4217 currency code.
+	OverdueTotal            Money `json:"overdue_total"`
+	OverdueUnits            int64 `json:"overdue_units"`
+	PendingDeclaredPayments int64 `json:"pending_declared_payments"`
+	PendingUnitClaims       int64 `json:"pending_unit_claims"`
+
+	// PendingVisitorApprovals 0 before release 0.3.
+	PendingVisitorApprovals int64 `json:"pending_visitor_approvals"`
+
+	// ReceivableOwner Integer minor units with an ISO 4217 currency code.
+	ReceivableOwner Money `json:"receivable_owner"`
+
+	// ReceivableTenant Integer minor units with an ISO 4217 currency code.
+	ReceivableTenant Money              `json:"receivable_tenant"`
+	SiteId           openapi_types.UUID `json:"site_id"`
+
+	// UpcomingMeeting Null before release 0.2.
+	UpcomingMeeting nullable.Nullable[DashboardMeeting] `json:"upcoming_meeting"`
+
+	// WaitingDeliveries 0 before release 0.3.
+	WaitingDeliveries int64 `json:"waiting_deliveries"`
+}
+
 // SiteExport defines model for SiteExport.
 type SiteExport struct {
 	At time.Time `json:"at"`
@@ -2895,6 +4114,386 @@ type SiteUpdate struct {
 	Name                 *string                               `json:"name,omitempty"`
 	Settings             *map[string]interface{}               `json:"settings,omitempty"`
 	Timezone             *string                               `json:"timezone,omitempty"`
+}
+
+// SmsUsage defines model for SmsUsage.
+type SmsUsage struct {
+	Delivered int64 `json:"delivered"`
+	Failed    int64 `json:"failed"`
+
+	// Month The month, `YYYY-MM`.
+	Month        string                   `json:"month"`
+	MonthlyLimit nullable.Nullable[int64] `json:"monthly_limit"`
+	Sent         int64                    `json:"sent"`
+	SiteId       openapi_types.UUID       `json:"site_id"`
+}
+
+// StaffDashboard Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names.
+//
+// Example: {"as_of":"2026-03-05T09:00:00Z","assigned_open_tickets":3,"assigned_overdue_tickets":0,"expected_visitors_today":4,"open_common_tickets":5,"site_id":"0192a3f0-1000-7000-8000-000000000002","waiting_deliveries":2}
+type StaffDashboard struct {
+	AsOf time.Time `json:"as_of"`
+
+	// AssignedOpenTickets Open tickets assigned to the caller.
+	AssignedOpenTickets int64 `json:"assigned_open_tickets"`
+
+	// AssignedOverdueTickets Assigned tickets past their category's target time.
+	AssignedOverdueTickets int64 `json:"assigned_overdue_tickets"`
+	ExpectedVisitorsToday  int64 `json:"expected_visitors_today"`
+
+	// OpenCommonTickets Open common (site-wide) tickets.
+	OpenCommonTickets int64              `json:"open_common_tickets"`
+	SiteId            openapi_types.UUID `json:"site_id"`
+
+	// WaitingDeliveries Parcels logged and not yet collected.
+	WaitingDeliveries int64 `json:"waiting_deliveries"`
+}
+
+// Ticket A ticket. Every request is a ticket; there is no chat (O6).
+//
+// Example: {"assignee":null,"attachments":[{"comment_id":null,"created_at":"2026-03-01T09:00:00Z","file_id":"0192a3f0-1000-7000-8000-000000000002","id":"0192a3f0-1000-7000-8000-000000000003","mime":"mime","org_id":"0192a3f0-1000-7000-8000-000000000001","size":1,"ticket_id":"0192a3f0-1000-7000-8000-000000000001","updated_at":"2026-03-01T09:00:00Z"}],"category_id":"0192a3f0-1000-7000-8000-000000000003","closed_at":null,"comment_count":1,"created_at":"2026-03-01T09:00:00Z","description":"description","id":"0192a3f0-1000-7000-8000-000000000003","merged_into_id":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","reporter_display_name":"reporter display name","reporter_person_id":"0192a3f0-1000-7000-8000-000000000001","site_id":"0192a3f0-1000-7000-8000-000000000002","status_id":"0192a3f0-1000-7000-8000-000000000001","status_name":"Open","status_semantic":"open_like","title":"Elevator stuck on floor 3","unit_door_number":null,"unit_id":null,"updated_at":"2026-03-01T09:00:00Z","version":1,"visibility":"common","vote_count":4,"voted_by_me":false}
+type Ticket struct {
+	Assignee            nullable.Nullable[TicketAssignee]     `json:"assignee"`
+	Attachments         []TicketAttachment                    `json:"attachments"`
+	CategoryId          openapi_types.UUID                    `json:"category_id"`
+	ClosedAt            nullable.Nullable[time.Time]          `json:"closed_at"`
+	CommentCount        int64                                 `json:"comment_count"`
+	CreatedAt           time.Time                             `json:"created_at"`
+	Description         string                                `json:"description"`
+	Id                  openapi_types.UUID                    `json:"id"`
+	MergedIntoId        nullable.Nullable[openapi_types.UUID] `json:"merged_into_id"`
+	OrgId               openapi_types.UUID                    `json:"org_id"`
+	ReporterDisplayName string                                `json:"reporter_display_name"`
+	ReporterPersonId    openapi_types.UUID                    `json:"reporter_person_id"`
+	SiteId              openapi_types.UUID                    `json:"site_id"`
+	StatusId            openapi_types.UUID                    `json:"status_id"`
+	StatusName          string                                `json:"status_name"`
+
+	// StatusSemantic Whether a status counts as open work or as finished. Open enum.
+	StatusSemantic TicketSemantic                        `json:"status_semantic"`
+	Title          string                                `json:"title"`
+	UnitDoorNumber nullable.Nullable[string]             `json:"unit_door_number"`
+	UnitId         nullable.Nullable[openapi_types.UUID] `json:"unit_id"`
+	UpdatedAt      time.Time                             `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+
+	// Visibility Private: that unit and management. Common: the whole site or block. Open enum.
+	Visibility TicketVisibility `json:"visibility"`
+
+	// VoteCount "+1" count; visible to residents.
+	VoteCount int64 `json:"vote_count"`
+	VotedByMe bool  `json:"voted_by_me"`
+}
+
+// TicketVisibility Private: that unit and management. Common: the whole site or block. Open enum.
+type TicketVisibility string
+
+// TicketAssignee defines model for TicketAssignee.
+type TicketAssignee struct {
+	DisplayName string `json:"display_name"`
+
+	// Kind Open enum.
+	Kind     TicketAssigneeKind                    `json:"kind"`
+	PersonId nullable.Nullable[openapi_types.UUID] `json:"person_id"`
+	VendorId nullable.Nullable[openapi_types.UUID] `json:"vendor_id"`
+}
+
+// TicketAssigneeKind Open enum.
+type TicketAssigneeKind string
+
+// TicketAttachment A photo or file on a ticket (up to 10 per ticket or comment).
+type TicketAttachment struct {
+	CommentId nullable.Nullable[openapi_types.UUID] `json:"comment_id"`
+	CreatedAt time.Time                             `json:"created_at"`
+	FileId    openapi_types.UUID                    `json:"file_id"`
+	Id        openapi_types.UUID                    `json:"id"`
+	Mime      string                                `json:"mime"`
+	OrgId     openapi_types.UUID                    `json:"org_id"`
+	Size      int64                                 `json:"size"`
+	TicketId  openapi_types.UUID                    `json:"ticket_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+}
+
+// TicketAttachmentCreate defines model for TicketAttachmentCreate.
+type TicketAttachmentCreate struct {
+	CommentId *openapi_types.UUID `json:"comment_id,omitempty"`
+	FileId    openapi_types.UUID  `json:"file_id"`
+}
+
+// TicketCategory Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.
+//
+// Example: {"archived":false,"created_at":"2026-03-01T09:00:00Z","default_assignee_role":"site_manager","default_visibility":"private","id":"0192a3f0-1000-7000-8000-000000000002","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","position":1,"site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}
+type TicketCategory struct {
+	Archived  bool      `json:"archived"`
+	CreatedAt time.Time `json:"created_at"`
+
+	// DefaultAssigneeRole Open enum.
+	DefaultAssigneeRole nullable.Nullable[TicketCategoryDefaultAssigneeRole] `json:"default_assignee_role"`
+
+	// DefaultVisibility Open enum.
+	DefaultVisibility TicketCategoryDefaultVisibility `json:"default_visibility"`
+	Id                openapi_types.UUID              `json:"id"`
+	Name              string                          `json:"name"`
+	OrgId             openapi_types.UUID              `json:"org_id"`
+	Position          int64                           `json:"position"`
+	SiteId            openapi_types.UUID              `json:"site_id"`
+	UpdatedAt         time.Time                       `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// TicketCategoryDefaultAssigneeRole Open enum.
+type TicketCategoryDefaultAssigneeRole string
+
+// TicketCategoryDefaultVisibility Open enum.
+type TicketCategoryDefaultVisibility string
+
+// TicketCategoryCreate defines model for TicketCategoryCreate.
+type TicketCategoryCreate struct {
+	Archived *bool `json:"archived,omitempty"`
+
+	// DefaultAssigneeRole Open enum.
+	DefaultAssigneeRole nullable.Nullable[TicketCategoryCreateDefaultAssigneeRole] `json:"default_assignee_role,omitempty"`
+
+	// DefaultVisibility Open enum.
+	DefaultVisibility *TicketCategoryCreateDefaultVisibility `json:"default_visibility,omitempty"`
+	Name              string                                 `json:"name"`
+	Position          *int64                                 `json:"position,omitempty"`
+	SiteId            openapi_types.UUID                     `json:"site_id"`
+}
+
+// TicketCategoryCreateDefaultAssigneeRole Open enum.
+type TicketCategoryCreateDefaultAssigneeRole string
+
+// TicketCategoryCreateDefaultVisibility Open enum.
+type TicketCategoryCreateDefaultVisibility string
+
+// TicketCategoryList Example: {"items":[{"archived":false,"created_at":"2026-03-01T09:00:00Z","default_assignee_role":"site_manager","default_visibility":"private","id":"0192a3f0-1000-7000-8000-000000000002","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","position":1,"site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type TicketCategoryList struct {
+	Items []TicketCategory `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// TicketCategoryUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type TicketCategoryUpdate struct {
+	Archived *bool `json:"archived,omitempty"`
+
+	// DefaultAssigneeRole Open enum.
+	DefaultAssigneeRole nullable.Nullable[TicketCategoryUpdateDefaultAssigneeRole] `json:"default_assignee_role,omitempty"`
+
+	// DefaultVisibility Open enum.
+	DefaultVisibility *TicketCategoryUpdateDefaultVisibility `json:"default_visibility,omitempty"`
+	Name              *string                                `json:"name,omitempty"`
+	Position          *int64                                 `json:"position,omitempty"`
+}
+
+// TicketCategoryUpdateDefaultAssigneeRole Open enum.
+type TicketCategoryUpdateDefaultAssigneeRole string
+
+// TicketCategoryUpdateDefaultVisibility Open enum.
+type TicketCategoryUpdateDefaultVisibility string
+
+// TicketComment A comment. Internal notes are hidden from residents.
+//
+// Example: {"attachments":[{"comment_id":null,"created_at":"2026-03-01T09:00:00Z","file_id":"0192a3f0-1000-7000-8000-000000000009","id":"0192a3f0-1000-7000-8000-000000000006","mime":"mime","org_id":"0192a3f0-1000-7000-8000-000000000007","size":1,"ticket_id":"0192a3f0-1000-7000-8000-000000000008","updated_at":"2026-03-01T09:00:00Z"}],"author_display_name":"Ali Veli","author_person_id":"0192a3f0-1000-7000-8000-000000000005","body":"body","created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","ticket_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","visibility":"public"}
+type TicketComment struct {
+	Attachments       []TicketAttachment `json:"attachments"`
+	AuthorDisplayName string             `json:"author_display_name"`
+	AuthorPersonId    openapi_types.UUID `json:"author_person_id"`
+	Body              string             `json:"body"`
+	CreatedAt         time.Time          `json:"created_at"`
+	Id                openapi_types.UUID `json:"id"`
+	OrgId             openapi_types.UUID `json:"org_id"`
+	TicketId          openapi_types.UUID `json:"ticket_id"`
+	UpdatedAt         time.Time          `json:"updated_at"`
+
+	// Visibility Open enum.
+	Visibility TicketCommentVisibility `json:"visibility"`
+}
+
+// TicketCommentVisibility Open enum.
+type TicketCommentVisibility string
+
+// TicketCommentCreate defines model for TicketCommentCreate.
+type TicketCommentCreate struct {
+	AttachmentFileIds *[]openapi_types.UUID `json:"attachment_file_ids,omitempty"`
+	Body              string                `json:"body"`
+
+	// Visibility Open enum.
+	Visibility *TicketCommentCreateVisibility `json:"visibility,omitempty"`
+}
+
+// TicketCommentCreateVisibility Open enum.
+type TicketCommentCreateVisibility string
+
+// TicketCommentList Example: {"items":[{"attachments":[{"comment_id":null,"created_at":"2026-03-01T09:00:00Z","file_id":"0192a3f0-1000-7000-8000-000000000009","id":"0192a3f0-1000-7000-8000-000000000006","mime":"mime","org_id":"0192a3f0-1000-7000-8000-000000000007","size":1,"ticket_id":"0192a3f0-1000-7000-8000-000000000008","updated_at":"2026-03-01T09:00:00Z"}],"author_display_name":"Ali Veli","author_person_id":"0192a3f0-1000-7000-8000-000000000005","body":"body","created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","ticket_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","visibility":"public"}],"next_cursor":null}
+type TicketCommentList struct {
+	Items []TicketComment `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// TicketCreate defines model for TicketCreate.
+type TicketCreate struct {
+	AttachmentFileIds *[]openapi_types.UUID                 `json:"attachment_file_ids,omitempty"`
+	CategoryId        openapi_types.UUID                    `json:"category_id"`
+	Description       string                                `json:"description"`
+	ReporterPersonId  *openapi_types.UUID                   `json:"reporter_person_id,omitempty"`
+	SiteId            openapi_types.UUID                    `json:"site_id"`
+	Title             string                                `json:"title"`
+	UnitId            nullable.Nullable[openapi_types.UUID] `json:"unit_id,omitempty"`
+
+	// Visibility Open enum.
+	Visibility *TicketCreateVisibility `json:"visibility,omitempty"`
+}
+
+// TicketCreateVisibility Open enum.
+type TicketCreateVisibility string
+
+// TicketList Example: {"items":[{"assignee":null,"attachments":[{"comment_id":null,"created_at":"2026-03-01T09:00:00Z","file_id":"0192a3f0-1000-7000-8000-000000000002","id":"0192a3f0-1000-7000-8000-000000000003","mime":"mime","org_id":"0192a3f0-1000-7000-8000-000000000001","size":1,"ticket_id":"0192a3f0-1000-7000-8000-000000000001","updated_at":"2026-03-01T09:00:00Z"}],"category_id":"0192a3f0-1000-7000-8000-000000000003","closed_at":null,"comment_count":1,"created_at":"2026-03-01T09:00:00Z","description":"description","id":"0192a3f0-1000-7000-8000-000000000003","merged_into_id":null,"org_id":"0192a3f0-1000-7000-8000-000000000001","reporter_display_name":"reporter display name","reporter_person_id":"0192a3f0-1000-7000-8000-000000000001","site_id":"0192a3f0-1000-7000-8000-000000000002","status_id":"0192a3f0-1000-7000-8000-000000000001","status_name":"Open","status_semantic":"open_like","title":"Elevator stuck on floor 3","unit_door_number":null,"unit_id":null,"updated_at":"2026-03-01T09:00:00Z","version":1,"visibility":"common","vote_count":4,"voted_by_me":false}],"next_cursor":null}
+type TicketList struct {
+	Items []Ticket `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// TicketMerge defines model for TicketMerge.
+type TicketMerge struct {
+	IntoTicketId openapi_types.UUID `json:"into_ticket_id"`
+}
+
+// TicketSemantic Whether a status counts as open work or as finished. Open enum.
+type TicketSemantic string
+
+// TicketStatus defines model for TicketStatus.
+type TicketStatus struct {
+	Id openapi_types.UUID `json:"id"`
+
+	// Key Stable key of the built-in statuses: open, in_progress, done.
+	Key      nullable.Nullable[string] `json:"key"`
+	Name     string                    `json:"name"`
+	Position int64                     `json:"position"`
+
+	// Semantic Open enum.
+	Semantic TicketStatusSemantic `json:"semantic"`
+}
+
+// TicketStatusSemantic Open enum.
+type TicketStatusSemantic string
+
+// TicketStatusChange Append-only status history.
+//
+// Example: {"at":"2026-03-01T09:00:00Z","changed_by":{"display_name":"Ayse Yilmaz","id":"0192a3f0-1000-7000-8000-000000000006"},"comment":null,"created_at":"2026-03-01T09:00:00Z","from_status_id":null,"from_status_name":null,"id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","ticket_id":"0192a3f0-1000-7000-8000-000000000004","to_status_id":"0192a3f0-1000-7000-8000-000000000005","to_status_name":"Open","updated_at":"2026-03-01T09:00:00Z"}
+type TicketStatusChange struct {
+	At time.Time `json:"at"`
+
+	// ChangedBy Who made the change, with the name they had then. Null for changes made by the system.
+	ChangedBy nullable.Nullable[struct {
+		DisplayName string `json:"display_name"`
+
+		// Id The user id.
+		Id openapi_types.UUID `json:"id"`
+	}] `json:"changed_by"`
+
+	// Comment The comment given with a transition; an internal one is null for people who may not read internal notes.
+	Comment      nullable.Nullable[string]             `json:"comment"`
+	CreatedAt    time.Time                             `json:"created_at"`
+	FromStatusId nullable.Nullable[openapi_types.UUID] `json:"from_status_id"`
+
+	// FromStatusName Name of the status at the time of reading; statuses removed from the workflow keep their name.
+	FromStatusName nullable.Nullable[string] `json:"from_status_name"`
+	Id             openapi_types.UUID        `json:"id"`
+	OrgId          openapi_types.UUID        `json:"org_id"`
+	TicketId       openapi_types.UUID        `json:"ticket_id"`
+	ToStatusId     openapi_types.UUID        `json:"to_status_id"`
+	ToStatusName   string                    `json:"to_status_name"`
+	UpdatedAt      time.Time                 `json:"updated_at"`
+}
+
+// TicketStatusChangeList Example: {"items":[{"at":"2026-03-01T09:00:00Z","changed_by":{"display_name":"Ayse Yilmaz","id":"0192a3f0-1000-7000-8000-000000000006"},"comment":null,"created_at":"2026-03-01T09:00:00Z","from_status_id":null,"from_status_name":null,"id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","ticket_id":"0192a3f0-1000-7000-8000-000000000004","to_status_id":"0192a3f0-1000-7000-8000-000000000005","to_status_name":"Open","updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type TicketStatusChangeList struct {
+	Items []TicketStatusChange `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// TicketStatusInput defines model for TicketStatusInput.
+type TicketStatusInput struct {
+	// Id Existing status; omitted: a new one.
+	Id       *openapi_types.UUID       `json:"id,omitempty"`
+	Name     string                    `json:"name"`
+	Semantic TicketStatusInputSemantic `json:"semantic"`
+}
+
+// TicketStatusInputSemantic defines model for TicketStatusInput.Semantic.
+type TicketStatusInputSemantic string
+
+// TicketTransition defines model for TicketTransition.
+type TicketTransition struct {
+	Comment           *string                            `json:"comment,omitempty"`
+	CommentVisibility *TicketTransitionCommentVisibility `json:"comment_visibility,omitempty"`
+	StatusId          openapi_types.UUID                 `json:"status_id"`
+}
+
+// TicketTransitionCommentVisibility defines model for TicketTransition.CommentVisibility.
+type TicketTransitionCommentVisibility string
+
+// TicketUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type TicketUpdate struct {
+	// AssigneePersonId A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.
+	AssigneePersonId nullable.Nullable[openapi_types.UUID] `json:"assignee_person_id,omitempty"`
+
+	// AssigneeVendorId A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+	AssigneeVendorId nullable.Nullable[openapi_types.UUID] `json:"assignee_vendor_id,omitempty"`
+	CategoryId       *openapi_types.UUID                   `json:"category_id,omitempty"`
+	Description      *string                               `json:"description,omitempty"`
+	Title            *string                               `json:"title,omitempty"`
+	UnitId           nullable.Nullable[openapi_types.UUID] `json:"unit_id,omitempty"`
+
+	// Visibility Open enum.
+	Visibility *TicketUpdateVisibility `json:"visibility,omitempty"`
+}
+
+// TicketUpdateVisibility Open enum.
+type TicketUpdateVisibility string
+
+// TicketVote defines model for TicketVote.
+type TicketVote struct {
+	TicketId  openapi_types.UUID `json:"ticket_id"`
+	VoteCount int64              `json:"vote_count"`
+	Voted     bool               `json:"voted"`
+}
+
+// TicketWorkflow Ordered statuses per site (O1). A site inherits the default until it edits it.
+type TicketWorkflow struct {
+	// IsDefault The site still uses the default open, in progress, done flow.
+	IsDefault bool               `json:"is_default"`
+	SiteId    openapi_types.UUID `json:"site_id"`
+	Statuses  []TicketStatus     `json:"statuses"`
+	Version   int64              `json:"version"`
+}
+
+// TicketWorkflowRestore Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
+type TicketWorkflowRestore struct {
+	// Replacements For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`.
+	Replacements *map[string]openapi_types.UUID `json:"replacements,omitempty"`
+}
+
+// TicketWorkflowUpdate defines model for TicketWorkflowUpdate.
+type TicketWorkflowUpdate struct {
+	// Replacements Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`.
+	Replacements *map[string]openapi_types.UUID `json:"replacements,omitempty"`
+
+	// Statuses The complete ordered list.
+	Statuses []TicketStatusInput `json:"statuses"`
 }
 
 // TokenResponse A mobile or integration session. The access token is short-lived and
@@ -3049,6 +4648,14 @@ type UnitUpdateAppurtenanceOverride string
 // UnitUpdatePayerOverrides defines model for UnitUpdate.PayerOverrides.
 type UnitUpdatePayerOverrides string
 
+// UnreadCount defines model for UnreadCount.
+type UnreadCount struct {
+	Unread int64 `json:"unread"`
+
+	// VisitorApprovalsPending Pending visitor approval requests (0.3); polled together.
+	VisitorApprovalsPending int64 `json:"visitor_approvals_pending"`
+}
+
 // Vehicle defines model for Vehicle.
 type Vehicle struct {
 	CreatedAt  time.Time                 `json:"created_at"`
@@ -3121,11 +4728,26 @@ type Cursor = string
 // FileId defines model for FileId.
 type FileId = openapi_types.UUID
 
+// IdempotencyKey defines model for IdempotencyKey.
+type IdempotencyKey = string
+
+// IdempotencyKeyRequired defines model for IdempotencyKeyRequired.
+type IdempotencyKeyRequired = string
+
+// IfMatch Example: "3"
+type IfMatch = string
+
 // Limit defines model for Limit.
 type Limit = int
 
 // OrgId defines model for OrgId.
 type OrgId = openapi_types.UUID
+
+// SiteId defines model for SiteId.
+type SiteId = openapi_types.UUID
+
+// SiteIdRequired defines model for SiteIdRequired.
+type SiteIdRequired = openapi_types.UUID
 
 // InstanceGetCodesParams defines parameters for InstanceGetCodes.
 type InstanceGetCodesParams struct {
@@ -3153,6 +4775,77 @@ type TenancySetAllocationKeyValuesParams struct {
 	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
 	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
 	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// OperationsListAnnouncementsParams defines parameters for OperationsListAnnouncements.
+type OperationsListAnnouncementsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Pinned Filter by `pinned`.
+	Pinned *bool `form:"pinned,omitempty" json:"pinned,omitempty"`
+
+	// Unread Filter by `unread`.
+	Unread *bool `form:"unread,omitempty" json:"unread,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsCreateAnnouncementParams defines parameters for OperationsCreateAnnouncement.
+type OperationsCreateAnnouncementParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsDeleteAnnouncementParams defines parameters for OperationsDeleteAnnouncement.
+type OperationsDeleteAnnouncementParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsUpdateAnnouncementParams defines parameters for OperationsUpdateAnnouncement.
+type OperationsUpdateAnnouncementParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsListAnnouncementReadsParams defines parameters for OperationsListAnnouncementReads.
+type OperationsListAnnouncementReadsParams struct {
+	// Read Filter by `read`.
+	Read *bool `form:"read,omitempty" json:"read,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsArchiveAnnouncementParams defines parameters for OperationsArchiveAnnouncement.
+type OperationsArchiveAnnouncementParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsPublishAnnouncementParams defines parameters for OperationsPublishAnnouncement.
+type OperationsPublishAnnouncementParams struct {
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
 }
 
 // AuditListParams defines parameters for AuditList.
@@ -3186,6 +4879,56 @@ type TenancyUpdateBlockParams struct {
 	IfMatch *string `json:"If-Match,omitempty"`
 }
 
+// CodesListCodesParams defines parameters for CodesListCodes.
+type CodesListCodesParams struct {
+	// Locale Filter by `locale`.
+	Locale *string `form:"locale,omitempty" json:"locale,omitempty"`
+
+	// SiteId Restrict to one site. Omitted: all sites the caller may see in the organization.
+	SiteId *SiteId `form:"site_id,omitempty" json:"site_id,omitempty"`
+}
+
+// OperationsListDocumentsParams defines parameters for OperationsListDocuments.
+type OperationsListDocumentsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// FolderId Filter by `folder_id`.
+	FolderId *openapi_types.UUID `form:"folder_id,omitempty" json:"folder_id,omitempty"`
+
+	// Source Filter by `source`.
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsCreateDocumentParams defines parameters for OperationsCreateDocument.
+type OperationsCreateDocumentParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsDeleteDocumentParams defines parameters for OperationsDeleteDocument.
+type OperationsDeleteDocumentParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsUpdateDocumentParams defines parameters for OperationsUpdateDocument.
+type OperationsUpdateDocumentParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
 // FilesListParams defines parameters for FilesList.
 type FilesListParams struct {
 	// Limit Page size.
@@ -3216,6 +4959,47 @@ type FilesDownloadParams struct {
 // FilesDownloadParamsVariant defines parameters for FilesDownload.
 type FilesDownloadParamsVariant string
 
+// OperationsListFoldersParams defines parameters for OperationsListFolders.
+type OperationsListFoldersParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// ParentId Filter by `parent_id`.
+	ParentId *openapi_types.UUID `form:"parent_id,omitempty" json:"parent_id,omitempty"`
+
+	// Kind Filter by `kind`.
+	Kind *string `form:"kind,omitempty" json:"kind,omitempty"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsCreateFolderParams defines parameters for OperationsCreateFolder.
+type OperationsCreateFolderParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsDeleteFolderParams defines parameters for OperationsDeleteFolder.
+type OperationsDeleteFolderParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsUpdateFolderParams defines parameters for OperationsUpdateFolder.
+type OperationsUpdateFolderParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
 // PeopleListInvitationsParams defines parameters for PeopleListInvitations.
 type PeopleListInvitationsParams struct {
 	// Limit Page size.
@@ -3231,6 +5015,48 @@ type PeopleListInvitationsParams struct {
 	Status *string `form:"status,omitempty" json:"status,omitempty"`
 }
 
+// DashboardsGetMyDashboardParams defines parameters for DashboardsGetMyDashboard.
+type DashboardsGetMyDashboardParams struct {
+	// SiteId Restrict to one site. Omitted: all sites the caller may see in the organization.
+	SiteId *SiteId `form:"site_id,omitempty" json:"site_id,omitempty"`
+}
+
+// OperationsListNotificationsParams defines parameters for OperationsListNotifications.
+type OperationsListNotificationsParams struct {
+	// SiteId Restrict to one site. Omitted: all sites the caller may see in the organization.
+	SiteId *SiteId `form:"site_id,omitempty" json:"site_id,omitempty"`
+
+	// Unread Filter by `unread`.
+	Unread *bool `form:"unread,omitempty" json:"unread,omitempty"`
+
+	// Type Filter by `type`.
+	Type *string `form:"type,omitempty" json:"type,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsGetUnreadCountParams defines parameters for OperationsGetUnreadCount.
+type OperationsGetUnreadCountParams struct {
+	// SiteId Restrict to one site. Omitted: all sites the caller may see in the organization.
+	SiteId *SiteId `form:"site_id,omitempty" json:"site_id,omitempty"`
+}
+
+// OperationsMarkNotificationReadParams defines parameters for OperationsMarkNotificationRead.
+type OperationsMarkNotificationReadParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsMarkAllNotificationsReadParams defines parameters for OperationsMarkAllNotificationsRead.
+type OperationsMarkAllNotificationsReadParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
 // PeopleListMembershipsParams defines parameters for PeopleListMemberships.
 type PeopleListMembershipsParams struct {
 	// Limit Page size.
@@ -3244,6 +5070,22 @@ type PeopleListMembershipsParams struct {
 
 	// SiteId Only memberships scoped to this site or its blocks.
 	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+}
+
+// OperationsGetNotificationDefaultsParams defines parameters for OperationsGetNotificationDefaults.
+type OperationsGetNotificationDefaultsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+}
+
+// OperationsSetNotificationDefaultsParams defines parameters for OperationsSetNotificationDefaults.
+type OperationsSetNotificationDefaultsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
 }
 
 // PeopleListOccupanciesParams defines parameters for PeopleListOccupancies.
@@ -3373,6 +5215,172 @@ type TenancyListVehiclesParams struct {
 	Q *string `form:"q,omitempty" json:"q,omitempty"`
 }
 
+// OperationsGetSmsUsageParams defines parameters for OperationsGetSmsUsage.
+type OperationsGetSmsUsageParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Month Filter by month, `YYYY-MM`.
+	Month *string `form:"month,omitempty" json:"month,omitempty"`
+}
+
+// OperationsListTicketCategoriesParams defines parameters for OperationsListTicketCategories.
+type OperationsListTicketCategoriesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Archived `active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`.
+	Archived *OperationsListTicketCategoriesParamsArchived `form:"archived,omitempty" json:"archived,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsListTicketCategoriesParamsArchived defines parameters for OperationsListTicketCategories.
+type OperationsListTicketCategoriesParamsArchived string
+
+// OperationsCreateTicketCategoryParams defines parameters for OperationsCreateTicketCategory.
+type OperationsCreateTicketCategoryParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsUpdateTicketCategoryParams defines parameters for OperationsUpdateTicketCategory.
+type OperationsUpdateTicketCategoryParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsGetTicketWorkflowParams defines parameters for OperationsGetTicketWorkflow.
+type OperationsGetTicketWorkflowParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+}
+
+// OperationsUpdateTicketWorkflowParams defines parameters for OperationsUpdateTicketWorkflow.
+type OperationsUpdateTicketWorkflowParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsRestoreTicketWorkflowParams defines parameters for OperationsRestoreTicketWorkflow.
+type OperationsRestoreTicketWorkflowParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsListTicketsParams defines parameters for OperationsListTickets.
+type OperationsListTicketsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// CategoryId Filter by `category_id`.
+	CategoryId *openapi_types.UUID `form:"category_id,omitempty" json:"category_id,omitempty"`
+
+	// StatusId Filter by `status_id`.
+	StatusId *openapi_types.UUID `form:"status_id,omitempty" json:"status_id,omitempty"`
+
+	// Semantic Filter by `semantic`.
+	Semantic *string `form:"semantic,omitempty" json:"semantic,omitempty"`
+
+	// AssigneePersonId Filter by `assignee_person_id`.
+	AssigneePersonId *openapi_types.UUID `form:"assignee_person_id,omitempty" json:"assignee_person_id,omitempty"`
+
+	// AssigneeVendorId Filter by `assignee_vendor_id`.
+	AssigneeVendorId *openapi_types.UUID `form:"assignee_vendor_id,omitempty" json:"assignee_vendor_id,omitempty"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Visibility Filter by `visibility`.
+	Visibility *string `form:"visibility,omitempty" json:"visibility,omitempty"`
+
+	// ReporterPersonId Filter by `reporter_person_id`.
+	ReporterPersonId *openapi_types.UUID `form:"reporter_person_id,omitempty" json:"reporter_person_id,omitempty"`
+
+	// Mine Filter by `mine`.
+	Mine *bool `form:"mine,omitempty" json:"mine,omitempty"`
+
+	// Queue Filter by `queue`.
+	Queue *bool `form:"queue,omitempty" json:"queue,omitempty"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsCreateTicketParams defines parameters for OperationsCreateTicket.
+type OperationsCreateTicketParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsUpdateTicketParams defines parameters for OperationsUpdateTicket.
+type OperationsUpdateTicketParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`/`version`), as a quoted or bare integer (`"3"`). Required: without it the answer
+	// is 422 `validation_failed`; a stale value is 409 `version_conflict`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *IfMatch `json:"If-Match,omitempty"`
+}
+
+// OperationsCreateTicketAttachmentParams defines parameters for OperationsCreateTicketAttachment.
+type OperationsCreateTicketAttachmentParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsListTicketCommentsParams defines parameters for OperationsListTicketComments.
+type OperationsListTicketCommentsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsCreateTicketCommentParams defines parameters for OperationsCreateTicketComment.
+type OperationsCreateTicketCommentParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsListTicketHistoryParams defines parameters for OperationsListTicketHistory.
+type OperationsListTicketHistoryParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// OperationsMergeTicketParams defines parameters for OperationsMergeTicket.
+type OperationsMergeTicketParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// OperationsTransitionTicketParams defines parameters for OperationsTransitionTicket.
+type OperationsTransitionTicketParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
 // PeopleListClaimsParams defines parameters for PeopleListClaims.
 type PeopleListClaimsParams struct {
 	// Limit Page size.
@@ -3478,17 +5486,50 @@ type TenancyUpdateAllocationKeyJSONRequestBody = AllocationKeyUpdate
 // TenancySetAllocationKeyValuesJSONRequestBody defines body for TenancySetAllocationKeyValues for application/json ContentType.
 type TenancySetAllocationKeyValuesJSONRequestBody = AllocationKeyValues
 
+// OperationsCreateAnnouncementJSONRequestBody defines body for OperationsCreateAnnouncement for application/json ContentType.
+type OperationsCreateAnnouncementJSONRequestBody = AnnouncementCreate
+
+// OperationsUpdateAnnouncementJSONRequestBody defines body for OperationsUpdateAnnouncement for application/json ContentType.
+type OperationsUpdateAnnouncementJSONRequestBody = AnnouncementUpdate
+
+// OperationsPublishAnnouncementJSONRequestBody defines body for OperationsPublishAnnouncement for application/json ContentType.
+type OperationsPublishAnnouncementJSONRequestBody = AnnouncementPublish
+
+// OperationsPreviewAnnouncementJSONRequestBody defines body for OperationsPreviewAnnouncement for application/json ContentType.
+type OperationsPreviewAnnouncementJSONRequestBody = AnnouncementPreviewRequest
+
 // TenancyUpdateBlockJSONRequestBody defines body for TenancyUpdateBlock for application/json ContentType.
 type TenancyUpdateBlockJSONRequestBody = BlockUpdate
+
+// OperationsCreateDocumentJSONRequestBody defines body for OperationsCreateDocument for application/json ContentType.
+type OperationsCreateDocumentJSONRequestBody = DocumentCreate
+
+// OperationsUpdateDocumentJSONRequestBody defines body for OperationsUpdateDocument for application/json ContentType.
+type OperationsUpdateDocumentJSONRequestBody = DocumentUpdate
 
 // FilesUploadMultipartRequestBody defines body for FilesUpload for multipart/form-data ContentType.
 type FilesUploadMultipartRequestBody = FileUpload
 
+// OperationsCreateFolderJSONRequestBody defines body for OperationsCreateFolder for application/json ContentType.
+type OperationsCreateFolderJSONRequestBody = FolderCreate
+
+// OperationsUpdateFolderJSONRequestBody defines body for OperationsUpdateFolder for application/json ContentType.
+type OperationsUpdateFolderJSONRequestBody = FolderUpdate
+
 // PeopleCreateInvitationJSONRequestBody defines body for PeopleCreateInvitation for application/json ContentType.
 type PeopleCreateInvitationJSONRequestBody = InvitationCreate
 
+// OperationsSetNotificationMutesJSONRequestBody defines body for OperationsSetNotificationMutes for application/json ContentType.
+type OperationsSetNotificationMutesJSONRequestBody = NotificationMutesSet
+
+// OperationsMarkAllNotificationsReadJSONRequestBody defines body for OperationsMarkAllNotificationsRead for application/json ContentType.
+type OperationsMarkAllNotificationsReadJSONRequestBody = NotificationsReadAll
+
 // PeopleCreateMembershipJSONRequestBody defines body for PeopleCreateMembership for application/json ContentType.
 type PeopleCreateMembershipJSONRequestBody = MembershipCreate
+
+// OperationsSetNotificationDefaultsJSONRequestBody defines body for OperationsSetNotificationDefaults for application/json ContentType.
+type OperationsSetNotificationDefaultsJSONRequestBody = NotificationDefaultsSet
 
 // PeopleUpdateOccupancyJSONRequestBody defines body for PeopleUpdateOccupancy for application/json ContentType.
 type PeopleUpdateOccupancyJSONRequestBody = OccupancyUpdate
@@ -3528,6 +5569,36 @@ type TenancyImportUnitsMultipartRequestBody = ImportUpload
 
 // TenancyCreateUnitJSONRequestBody defines body for TenancyCreateUnit for application/json ContentType.
 type TenancyCreateUnitJSONRequestBody = UnitCreate
+
+// OperationsCreateTicketCategoryJSONRequestBody defines body for OperationsCreateTicketCategory for application/json ContentType.
+type OperationsCreateTicketCategoryJSONRequestBody = TicketCategoryCreate
+
+// OperationsUpdateTicketCategoryJSONRequestBody defines body for OperationsUpdateTicketCategory for application/json ContentType.
+type OperationsUpdateTicketCategoryJSONRequestBody = TicketCategoryUpdate
+
+// OperationsUpdateTicketWorkflowJSONRequestBody defines body for OperationsUpdateTicketWorkflow for application/json ContentType.
+type OperationsUpdateTicketWorkflowJSONRequestBody = TicketWorkflowUpdate
+
+// OperationsRestoreTicketWorkflowJSONRequestBody defines body for OperationsRestoreTicketWorkflow for application/json ContentType.
+type OperationsRestoreTicketWorkflowJSONRequestBody = TicketWorkflowRestore
+
+// OperationsCreateTicketJSONRequestBody defines body for OperationsCreateTicket for application/json ContentType.
+type OperationsCreateTicketJSONRequestBody = TicketCreate
+
+// OperationsUpdateTicketJSONRequestBody defines body for OperationsUpdateTicket for application/json ContentType.
+type OperationsUpdateTicketJSONRequestBody = TicketUpdate
+
+// OperationsCreateTicketAttachmentJSONRequestBody defines body for OperationsCreateTicketAttachment for application/json ContentType.
+type OperationsCreateTicketAttachmentJSONRequestBody = TicketAttachmentCreate
+
+// OperationsCreateTicketCommentJSONRequestBody defines body for OperationsCreateTicketComment for application/json ContentType.
+type OperationsCreateTicketCommentJSONRequestBody = TicketCommentCreate
+
+// OperationsMergeTicketJSONRequestBody defines body for OperationsMergeTicket for application/json ContentType.
+type OperationsMergeTicketJSONRequestBody = TicketMerge
+
+// OperationsTransitionTicketJSONRequestBody defines body for OperationsTransitionTicket for application/json ContentType.
+type OperationsTransitionTicketJSONRequestBody = TicketTransition
 
 // PeopleApproveClaimJSONRequestBody defines body for PeopleApproveClaim for application/json ContentType.
 type PeopleApproveClaimJSONRequestBody = ClaimApprove
@@ -3886,12 +5957,63 @@ type ServerInterface interface {
 	// TenancySetAllocationKeyValues Replace a share or table key's values
 	// (PUT /v1/orgs/{org_id}/allocation-keys/{key_id}/values)
 	TenancySetAllocationKeyValues(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancySetAllocationKeyValuesParams)
+	// OperationsListAnnouncements List announcements
+	// (GET /v1/orgs/{org_id}/announcements)
+	OperationsListAnnouncements(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListAnnouncementsParams)
+	// OperationsCreateAnnouncement Create an announcement
+	// (POST /v1/orgs/{org_id}/announcements)
+	OperationsCreateAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateAnnouncementParams)
+	// OperationsDeleteAnnouncement Delete a draft announcement
+	// (DELETE /v1/orgs/{org_id}/announcements/{announcement_id})
+	OperationsDeleteAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsDeleteAnnouncementParams)
+	// OperationsGetAnnouncement Get an announcement
+	// (GET /v1/orgs/{org_id}/announcements/{announcement_id})
+	OperationsGetAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID)
+	// OperationsUpdateAnnouncement Edit an announcement
+	// (PATCH /v1/orgs/{org_id}/announcements/{announcement_id})
+	OperationsUpdateAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsUpdateAnnouncementParams)
+	// OperationsMarkAnnouncementRead Mark an announcement read
+	// (PUT /v1/orgs/{org_id}/announcements/{announcement_id}/read)
+	OperationsMarkAnnouncementRead(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID)
+	// OperationsListAnnouncementReads Who has read an announcement
+	// (GET /v1/orgs/{org_id}/announcements/{announcement_id}/reads)
+	OperationsListAnnouncementReads(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsListAnnouncementReadsParams)
+	// OperationsArchiveAnnouncement Archive an announcement
+	// (POST /v1/orgs/{org_id}/announcements/{announcement_id}:archive)
+	OperationsArchiveAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsArchiveAnnouncementParams)
+	// OperationsPublishAnnouncement Publish an announcement now
+	// (POST /v1/orgs/{org_id}/announcements/{announcement_id}:publish)
+	OperationsPublishAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsPublishAnnouncementParams)
+	// OperationsPreviewAnnouncement Preview recipient and SMS counts
+	// (POST /v1/orgs/{org_id}/announcements:preview)
+	OperationsPreviewAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId)
 	// AuditList List the organization's audit events
 	// (GET /v1/orgs/{org_id}/audit)
 	AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams)
 	// TenancyUpdateBlock Rename, hide or reorder a block
 	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 	TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams)
+	// CodesListCodes Labels for enums, error codes and site statuses
+	// (GET /v1/orgs/{org_id}/codes)
+	CodesListCodes(w http.ResponseWriter, r *http.Request, orgId OrgId, params CodesListCodesParams)
+	// DashboardsGetPortfolioDashboard Organization portfolio dashboard
+	// (GET /v1/orgs/{org_id}/dashboard/portfolio)
+	DashboardsGetPortfolioDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// OperationsListDocuments List documents
+	// (GET /v1/orgs/{org_id}/documents)
+	OperationsListDocuments(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListDocumentsParams)
+	// OperationsCreateDocument Create document
+	// (POST /v1/orgs/{org_id}/documents)
+	OperationsCreateDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateDocumentParams)
+	// OperationsDeleteDocument Delete document
+	// (DELETE /v1/orgs/{org_id}/documents/{document_id})
+	OperationsDeleteDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID, params OperationsDeleteDocumentParams)
+	// OperationsGetDocument Get document
+	// (GET /v1/orgs/{org_id}/documents/{document_id})
+	OperationsGetDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID)
+	// OperationsUpdateDocument Update document
+	// (PATCH /v1/orgs/{org_id}/documents/{document_id})
+	OperationsUpdateDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID, params OperationsUpdateDocumentParams)
 	// FilesList List files
 	// (GET /v1/orgs/{org_id}/files)
 	FilesList(w http.ResponseWriter, r *http.Request, orgId OrgId, params FilesListParams)
@@ -3907,6 +6029,21 @@ type ServerInterface interface {
 	// FilesDownload Download a file
 	// (GET /v1/orgs/{org_id}/files/{file_id}/content)
 	FilesDownload(w http.ResponseWriter, r *http.Request, orgId OrgId, fileId FileId, params FilesDownloadParams)
+	// OperationsListFolders List folders
+	// (GET /v1/orgs/{org_id}/folders)
+	OperationsListFolders(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListFoldersParams)
+	// OperationsCreateFolder Create folder
+	// (POST /v1/orgs/{org_id}/folders)
+	OperationsCreateFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateFolderParams)
+	// OperationsDeleteFolder Delete folder
+	// (DELETE /v1/orgs/{org_id}/folders/{folder_id})
+	OperationsDeleteFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID, params OperationsDeleteFolderParams)
+	// OperationsGetFolder Get folder
+	// (GET /v1/orgs/{org_id}/folders/{folder_id})
+	OperationsGetFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID)
+	// OperationsUpdateFolder Update folder
+	// (PATCH /v1/orgs/{org_id}/folders/{folder_id})
+	OperationsUpdateFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID, params OperationsUpdateFolderParams)
 	// PeopleListInvitations List invitations
 	// (GET /v1/orgs/{org_id}/invitations)
 	PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams)
@@ -3919,6 +6056,27 @@ type ServerInterface interface {
 	// PeopleResendInvitation Send an invitation again with a new link
 	// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
 	PeopleResendInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID)
+	// DashboardsGetMyDashboard My home summary
+	// (GET /v1/orgs/{org_id}/me/dashboard)
+	DashboardsGetMyDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, params DashboardsGetMyDashboardParams)
+	// OperationsGetNotificationMutes My muted notification types
+	// (GET /v1/orgs/{org_id}/me/notification-mutes)
+	OperationsGetNotificationMutes(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// OperationsSetNotificationMutes Set my muted notification types
+	// (PUT /v1/orgs/{org_id}/me/notification-mutes)
+	OperationsSetNotificationMutes(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// OperationsListNotifications List my notifications
+	// (GET /v1/orgs/{org_id}/me/notifications)
+	OperationsListNotifications(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListNotificationsParams)
+	// OperationsGetUnreadCount Unread notification count
+	// (GET /v1/orgs/{org_id}/me/notifications/unread-count)
+	OperationsGetUnreadCount(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetUnreadCountParams)
+	// OperationsMarkNotificationRead Mark a notification read
+	// (POST /v1/orgs/{org_id}/me/notifications/{notification_id}:read)
+	OperationsMarkNotificationRead(w http.ResponseWriter, r *http.Request, orgId OrgId, notificationId openapi_types.UUID, params OperationsMarkNotificationReadParams)
+	// OperationsMarkAllNotificationsRead Mark all notifications read
+	// (POST /v1/orgs/{org_id}/me/notifications:read-all)
+	OperationsMarkAllNotificationsRead(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsMarkAllNotificationsReadParams)
 	// PeopleListMemberships List role memberships
 	// (GET /v1/orgs/{org_id}/memberships)
 	PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams)
@@ -3931,6 +6089,12 @@ type ServerInterface interface {
 	// PeopleGetMoveOut Read a move-out
 	// (GET /v1/orgs/{org_id}/move-outs/{move_out_id})
 	PeopleGetMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, moveOutId openapi_types.UUID)
+	// OperationsGetNotificationDefaults Get the site defaults for automatic messages
+	// (GET /v1/orgs/{org_id}/notification-defaults)
+	OperationsGetNotificationDefaults(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetNotificationDefaultsParams)
+	// OperationsSetNotificationDefaults Set the site defaults for automatic messages
+	// (PUT /v1/orgs/{org_id}/notification-defaults)
+	OperationsSetNotificationDefaults(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsSetNotificationDefaultsParams)
 	// PeopleListOccupancies List occupancies
 	// (GET /v1/orgs/{org_id}/occupancies)
 	PeopleListOccupancies(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListOccupanciesParams)
@@ -3988,6 +6152,9 @@ type ServerInterface interface {
 	// TenancyCreateBlock Add a block
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/blocks)
 	TenancyCreateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// DashboardsGetSiteDashboard Site dashboard
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/dashboard)
+	DashboardsGetSiteDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
 	// PeopleListDirectory The site directory
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/directory)
 	PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params PeopleListDirectoryParams)
@@ -4009,6 +6176,9 @@ type ServerInterface interface {
 	// TenancyOffboardSite Offboard a site after its hand-over
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/offboard)
 	TenancyOffboardSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// DashboardsGetStaffDashboard Staff dashboard (counts only)
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard)
+	DashboardsGetStaffDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
 	// TenancyListUnits List a site's units
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/units)
 	TenancyListUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListUnitsParams)
@@ -4021,6 +6191,69 @@ type ServerInterface interface {
 	// TenancyExportVehicles Export the site's plates as CSV
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
 	TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// OperationsGetSmsUsage Monthly SMS counter of a site
+	// (GET /v1/orgs/{org_id}/sms-usage)
+	OperationsGetSmsUsage(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetSmsUsageParams)
+	// OperationsListTicketCategories List ticket categories
+	// (GET /v1/orgs/{org_id}/ticket-categories)
+	OperationsListTicketCategories(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListTicketCategoriesParams)
+	// OperationsCreateTicketCategory Create ticket category
+	// (POST /v1/orgs/{org_id}/ticket-categories)
+	OperationsCreateTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateTicketCategoryParams)
+	// OperationsGetTicketCategory Get ticket category
+	// (GET /v1/orgs/{org_id}/ticket-categories/{category_id})
+	OperationsGetTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, categoryId openapi_types.UUID)
+	// OperationsUpdateTicketCategory Update ticket category
+	// (PATCH /v1/orgs/{org_id}/ticket-categories/{category_id})
+	OperationsUpdateTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, categoryId openapi_types.UUID, params OperationsUpdateTicketCategoryParams)
+	// OperationsGetTicketWorkflow Get the ticket workflow of a site
+	// (GET /v1/orgs/{org_id}/ticket-workflow)
+	OperationsGetTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetTicketWorkflowParams)
+	// OperationsUpdateTicketWorkflow Replace the ticket workflow of a site
+	// (PUT /v1/orgs/{org_id}/ticket-workflow)
+	OperationsUpdateTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsUpdateTicketWorkflowParams)
+	// OperationsRestoreTicketWorkflow Restore the default ticket workflow of a site
+	// (POST /v1/orgs/{org_id}/ticket-workflow:restore-default)
+	OperationsRestoreTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsRestoreTicketWorkflowParams)
+	// OperationsListTickets List tickets
+	// (GET /v1/orgs/{org_id}/tickets)
+	OperationsListTickets(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListTicketsParams)
+	// OperationsCreateTicket Open a ticket
+	// (POST /v1/orgs/{org_id}/tickets)
+	OperationsCreateTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateTicketParams)
+	// OperationsGetTicket Get a ticket
+	// (GET /v1/orgs/{org_id}/tickets/{ticket_id})
+	OperationsGetTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID)
+	// OperationsUpdateTicket Edit, reassign or change visibility of a ticket
+	// (PATCH /v1/orgs/{org_id}/tickets/{ticket_id})
+	OperationsUpdateTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsUpdateTicketParams)
+	// OperationsCreateTicketAttachment Attach an uploaded file to a ticket
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}/attachments)
+	OperationsCreateTicketAttachment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsCreateTicketAttachmentParams)
+	// OperationsDeleteTicketAttachment Remove an attachment
+	// (DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id})
+	OperationsDeleteTicketAttachment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, attachmentId openapi_types.UUID)
+	// OperationsListTicketComments List ticket comments
+	// (GET /v1/orgs/{org_id}/tickets/{ticket_id}/comments)
+	OperationsListTicketComments(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsListTicketCommentsParams)
+	// OperationsCreateTicketComment Comment on a ticket
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}/comments)
+	OperationsCreateTicketComment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsCreateTicketCommentParams)
+	// OperationsListTicketHistory Status history of a ticket
+	// (GET /v1/orgs/{org_id}/tickets/{ticket_id}/history)
+	OperationsListTicketHistory(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsListTicketHistoryParams)
+	// OperationsUnvoteTicket Take back a "+1"
+	// (DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/vote)
+	OperationsUnvoteTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID)
+	// OperationsVoteTicket "+1" a common ticket
+	// (PUT /v1/orgs/{org_id}/tickets/{ticket_id}/vote)
+	OperationsVoteTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID)
+	// OperationsMergeTicket Merge a duplicate into another ticket
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}:merge)
+	OperationsMergeTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsMergeTicketParams)
+	// OperationsTransitionTicket Move a ticket to another status
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}:transition)
+	OperationsTransitionTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsTransitionTicketParams)
 	// PeopleListClaims List unit claims
 	// (GET /v1/orgs/{org_id}/unit-claims)
 	PeopleListClaims(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListClaimsParams)
@@ -4240,6 +6473,66 @@ func (_ Unimplemented) TenancySetAllocationKeyValues(w http.ResponseWriter, r *h
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// OperationsListAnnouncements List announcements
+// (GET /v1/orgs/{org_id}/announcements)
+func (_ Unimplemented) OperationsListAnnouncements(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListAnnouncementsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateAnnouncement Create an announcement
+// (POST /v1/orgs/{org_id}/announcements)
+func (_ Unimplemented) OperationsCreateAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateAnnouncementParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsDeleteAnnouncement Delete a draft announcement
+// (DELETE /v1/orgs/{org_id}/announcements/{announcement_id})
+func (_ Unimplemented) OperationsDeleteAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsDeleteAnnouncementParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetAnnouncement Get an announcement
+// (GET /v1/orgs/{org_id}/announcements/{announcement_id})
+func (_ Unimplemented) OperationsGetAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUpdateAnnouncement Edit an announcement
+// (PATCH /v1/orgs/{org_id}/announcements/{announcement_id})
+func (_ Unimplemented) OperationsUpdateAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsUpdateAnnouncementParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsMarkAnnouncementRead Mark an announcement read
+// (PUT /v1/orgs/{org_id}/announcements/{announcement_id}/read)
+func (_ Unimplemented) OperationsMarkAnnouncementRead(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListAnnouncementReads Who has read an announcement
+// (GET /v1/orgs/{org_id}/announcements/{announcement_id}/reads)
+func (_ Unimplemented) OperationsListAnnouncementReads(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsListAnnouncementReadsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsArchiveAnnouncement Archive an announcement
+// (POST /v1/orgs/{org_id}/announcements/{announcement_id}:archive)
+func (_ Unimplemented) OperationsArchiveAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsArchiveAnnouncementParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsPublishAnnouncement Publish an announcement now
+// (POST /v1/orgs/{org_id}/announcements/{announcement_id}:publish)
+func (_ Unimplemented) OperationsPublishAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsPublishAnnouncementParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsPreviewAnnouncement Preview recipient and SMS counts
+// (POST /v1/orgs/{org_id}/announcements:preview)
+func (_ Unimplemented) OperationsPreviewAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // AuditList List the organization's audit events
 // (GET /v1/orgs/{org_id}/audit)
 func (_ Unimplemented) AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams) {
@@ -4249,6 +6542,48 @@ func (_ Unimplemented) AuditList(w http.ResponseWriter, r *http.Request, orgId O
 // TenancyUpdateBlock Rename, hide or reorder a block
 // (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 func (_ Unimplemented) TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CodesListCodes Labels for enums, error codes and site statuses
+// (GET /v1/orgs/{org_id}/codes)
+func (_ Unimplemented) CodesListCodes(w http.ResponseWriter, r *http.Request, orgId OrgId, params CodesListCodesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DashboardsGetPortfolioDashboard Organization portfolio dashboard
+// (GET /v1/orgs/{org_id}/dashboard/portfolio)
+func (_ Unimplemented) DashboardsGetPortfolioDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListDocuments List documents
+// (GET /v1/orgs/{org_id}/documents)
+func (_ Unimplemented) OperationsListDocuments(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListDocumentsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateDocument Create document
+// (POST /v1/orgs/{org_id}/documents)
+func (_ Unimplemented) OperationsCreateDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateDocumentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsDeleteDocument Delete document
+// (DELETE /v1/orgs/{org_id}/documents/{document_id})
+func (_ Unimplemented) OperationsDeleteDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID, params OperationsDeleteDocumentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetDocument Get document
+// (GET /v1/orgs/{org_id}/documents/{document_id})
+func (_ Unimplemented) OperationsGetDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUpdateDocument Update document
+// (PATCH /v1/orgs/{org_id}/documents/{document_id})
+func (_ Unimplemented) OperationsUpdateDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID, params OperationsUpdateDocumentParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4282,6 +6617,36 @@ func (_ Unimplemented) FilesDownload(w http.ResponseWriter, r *http.Request, org
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// OperationsListFolders List folders
+// (GET /v1/orgs/{org_id}/folders)
+func (_ Unimplemented) OperationsListFolders(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListFoldersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateFolder Create folder
+// (POST /v1/orgs/{org_id}/folders)
+func (_ Unimplemented) OperationsCreateFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateFolderParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsDeleteFolder Delete folder
+// (DELETE /v1/orgs/{org_id}/folders/{folder_id})
+func (_ Unimplemented) OperationsDeleteFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID, params OperationsDeleteFolderParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetFolder Get folder
+// (GET /v1/orgs/{org_id}/folders/{folder_id})
+func (_ Unimplemented) OperationsGetFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUpdateFolder Update folder
+// (PATCH /v1/orgs/{org_id}/folders/{folder_id})
+func (_ Unimplemented) OperationsUpdateFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID, params OperationsUpdateFolderParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // PeopleListInvitations List invitations
 // (GET /v1/orgs/{org_id}/invitations)
 func (_ Unimplemented) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
@@ -4306,6 +6671,48 @@ func (_ Unimplemented) PeopleResendInvitation(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// DashboardsGetMyDashboard My home summary
+// (GET /v1/orgs/{org_id}/me/dashboard)
+func (_ Unimplemented) DashboardsGetMyDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, params DashboardsGetMyDashboardParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetNotificationMutes My muted notification types
+// (GET /v1/orgs/{org_id}/me/notification-mutes)
+func (_ Unimplemented) OperationsGetNotificationMutes(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsSetNotificationMutes Set my muted notification types
+// (PUT /v1/orgs/{org_id}/me/notification-mutes)
+func (_ Unimplemented) OperationsSetNotificationMutes(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListNotifications List my notifications
+// (GET /v1/orgs/{org_id}/me/notifications)
+func (_ Unimplemented) OperationsListNotifications(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListNotificationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetUnreadCount Unread notification count
+// (GET /v1/orgs/{org_id}/me/notifications/unread-count)
+func (_ Unimplemented) OperationsGetUnreadCount(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetUnreadCountParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsMarkNotificationRead Mark a notification read
+// (POST /v1/orgs/{org_id}/me/notifications/{notification_id}:read)
+func (_ Unimplemented) OperationsMarkNotificationRead(w http.ResponseWriter, r *http.Request, orgId OrgId, notificationId openapi_types.UUID, params OperationsMarkNotificationReadParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsMarkAllNotificationsRead Mark all notifications read
+// (POST /v1/orgs/{org_id}/me/notifications:read-all)
+func (_ Unimplemented) OperationsMarkAllNotificationsRead(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsMarkAllNotificationsReadParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // PeopleListMemberships List role memberships
 // (GET /v1/orgs/{org_id}/memberships)
 func (_ Unimplemented) PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams) {
@@ -4327,6 +6734,18 @@ func (_ Unimplemented) PeopleEndMembership(w http.ResponseWriter, r *http.Reques
 // PeopleGetMoveOut Read a move-out
 // (GET /v1/orgs/{org_id}/move-outs/{move_out_id})
 func (_ Unimplemented) PeopleGetMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, moveOutId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetNotificationDefaults Get the site defaults for automatic messages
+// (GET /v1/orgs/{org_id}/notification-defaults)
+func (_ Unimplemented) OperationsGetNotificationDefaults(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetNotificationDefaultsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsSetNotificationDefaults Set the site defaults for automatic messages
+// (PUT /v1/orgs/{org_id}/notification-defaults)
+func (_ Unimplemented) OperationsSetNotificationDefaults(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsSetNotificationDefaultsParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4444,6 +6863,12 @@ func (_ Unimplemented) TenancyCreateBlock(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// DashboardsGetSiteDashboard Site dashboard
+// (GET /v1/orgs/{org_id}/sites/{site_id}/dashboard)
+func (_ Unimplemented) DashboardsGetSiteDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // PeopleListDirectory The site directory
 // (GET /v1/orgs/{org_id}/sites/{site_id}/directory)
 func (_ Unimplemented) PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params PeopleListDirectoryParams) {
@@ -4486,6 +6911,12 @@ func (_ Unimplemented) TenancyOffboardSite(w http.ResponseWriter, r *http.Reques
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// DashboardsGetStaffDashboard Staff dashboard (counts only)
+// (GET /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard)
+func (_ Unimplemented) DashboardsGetStaffDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // TenancyListUnits List a site's units
 // (GET /v1/orgs/{org_id}/sites/{site_id}/units)
 func (_ Unimplemented) TenancyListUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListUnitsParams) {
@@ -4507,6 +6938,132 @@ func (_ Unimplemented) TenancyListVehicles(w http.ResponseWriter, r *http.Reques
 // TenancyExportVehicles Export the site's plates as CSV
 // (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
 func (_ Unimplemented) TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetSmsUsage Monthly SMS counter of a site
+// (GET /v1/orgs/{org_id}/sms-usage)
+func (_ Unimplemented) OperationsGetSmsUsage(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetSmsUsageParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListTicketCategories List ticket categories
+// (GET /v1/orgs/{org_id}/ticket-categories)
+func (_ Unimplemented) OperationsListTicketCategories(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListTicketCategoriesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateTicketCategory Create ticket category
+// (POST /v1/orgs/{org_id}/ticket-categories)
+func (_ Unimplemented) OperationsCreateTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateTicketCategoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetTicketCategory Get ticket category
+// (GET /v1/orgs/{org_id}/ticket-categories/{category_id})
+func (_ Unimplemented) OperationsGetTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, categoryId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUpdateTicketCategory Update ticket category
+// (PATCH /v1/orgs/{org_id}/ticket-categories/{category_id})
+func (_ Unimplemented) OperationsUpdateTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, categoryId openapi_types.UUID, params OperationsUpdateTicketCategoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetTicketWorkflow Get the ticket workflow of a site
+// (GET /v1/orgs/{org_id}/ticket-workflow)
+func (_ Unimplemented) OperationsGetTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetTicketWorkflowParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUpdateTicketWorkflow Replace the ticket workflow of a site
+// (PUT /v1/orgs/{org_id}/ticket-workflow)
+func (_ Unimplemented) OperationsUpdateTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsUpdateTicketWorkflowParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsRestoreTicketWorkflow Restore the default ticket workflow of a site
+// (POST /v1/orgs/{org_id}/ticket-workflow:restore-default)
+func (_ Unimplemented) OperationsRestoreTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsRestoreTicketWorkflowParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListTickets List tickets
+// (GET /v1/orgs/{org_id}/tickets)
+func (_ Unimplemented) OperationsListTickets(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListTicketsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateTicket Open a ticket
+// (POST /v1/orgs/{org_id}/tickets)
+func (_ Unimplemented) OperationsCreateTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateTicketParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsGetTicket Get a ticket
+// (GET /v1/orgs/{org_id}/tickets/{ticket_id})
+func (_ Unimplemented) OperationsGetTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUpdateTicket Edit, reassign or change visibility of a ticket
+// (PATCH /v1/orgs/{org_id}/tickets/{ticket_id})
+func (_ Unimplemented) OperationsUpdateTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsUpdateTicketParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateTicketAttachment Attach an uploaded file to a ticket
+// (POST /v1/orgs/{org_id}/tickets/{ticket_id}/attachments)
+func (_ Unimplemented) OperationsCreateTicketAttachment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsCreateTicketAttachmentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsDeleteTicketAttachment Remove an attachment
+// (DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id})
+func (_ Unimplemented) OperationsDeleteTicketAttachment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, attachmentId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListTicketComments List ticket comments
+// (GET /v1/orgs/{org_id}/tickets/{ticket_id}/comments)
+func (_ Unimplemented) OperationsListTicketComments(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsListTicketCommentsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsCreateTicketComment Comment on a ticket
+// (POST /v1/orgs/{org_id}/tickets/{ticket_id}/comments)
+func (_ Unimplemented) OperationsCreateTicketComment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsCreateTicketCommentParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsListTicketHistory Status history of a ticket
+// (GET /v1/orgs/{org_id}/tickets/{ticket_id}/history)
+func (_ Unimplemented) OperationsListTicketHistory(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsListTicketHistoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsUnvoteTicket Take back a "+1"
+// (DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/vote)
+func (_ Unimplemented) OperationsUnvoteTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsVoteTicket "+1" a common ticket
+// (PUT /v1/orgs/{org_id}/tickets/{ticket_id}/vote)
+func (_ Unimplemented) OperationsVoteTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsMergeTicket Merge a duplicate into another ticket
+// (POST /v1/orgs/{org_id}/tickets/{ticket_id}:merge)
+func (_ Unimplemented) OperationsMergeTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsMergeTicketParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// OperationsTransitionTicket Move a ticket to another status
+// (POST /v1/orgs/{org_id}/tickets/{ticket_id}:transition)
+func (_ Unimplemented) OperationsTransitionTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsTransitionTicketParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5235,6 +7792,602 @@ func (siw *ServerInterfaceWrapper) TenancySetAllocationKeyValues(w http.Response
 	handler.ServeHTTP(w, r)
 }
 
+// OperationsListAnnouncements operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListAnnouncements(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListAnnouncementsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "pinned" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "pinned", r.URL.Query(), &params.Pinned, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "pinned"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "pinned", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unread" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unread", r.URL.Query(), &params.Unread, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unread"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unread", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListAnnouncements(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateAnnouncementParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateAnnouncement(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsDeleteAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsDeleteAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsDeleteAnnouncementParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsDeleteAnnouncement(w, r, orgId, announcementId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetAnnouncement(w, r, orgId, announcementId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUpdateAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUpdateAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsUpdateAnnouncementParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUpdateAnnouncement(w, r, orgId, announcementId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsMarkAnnouncementRead operation middleware
+func (siw *ServerInterfaceWrapper) OperationsMarkAnnouncementRead(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsMarkAnnouncementRead(w, r, orgId, announcementId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListAnnouncementReads operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListAnnouncementReads(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListAnnouncementReadsParams
+
+	// ------------- Optional query parameter "read" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "read", r.URL.Query(), &params.Read, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "read"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "read", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListAnnouncementReads(w, r, orgId, announcementId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsArchiveAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsArchiveAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsArchiveAnnouncementParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsArchiveAnnouncement(w, r, orgId, announcementId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsPublishAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsPublishAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "announcement_id" -------------
+	var announcementId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "announcement_id", chi.URLParam(r, "announcement_id"), &announcementId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "announcement_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsPublishAnnouncementParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsPublishAnnouncement(w, r, orgId, announcementId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsPreviewAnnouncement operation middleware
+func (siw *ServerInterfaceWrapper) OperationsPreviewAnnouncement(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsPreviewAnnouncement(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // AuditList operation middleware
 func (siw *ServerInterfaceWrapper) AuditList(w http.ResponseWriter, r *http.Request) {
 
@@ -5405,6 +8558,397 @@ func (siw *ServerInterfaceWrapper) TenancyUpdateBlock(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.TenancyUpdateBlock(w, r, orgId, blockId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CodesListCodes operation middleware
+func (siw *ServerInterfaceWrapper) CodesListCodes(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CodesListCodesParams
+
+	// ------------- Optional query parameter "locale" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "locale", r.URL.Query(), &params.Locale, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "locale"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "locale", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CodesListCodes(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DashboardsGetPortfolioDashboard operation middleware
+func (siw *ServerInterfaceWrapper) DashboardsGetPortfolioDashboard(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DashboardsGetPortfolioDashboard(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListDocuments operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListDocuments(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListDocumentsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "folder_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "folder_id", r.URL.Query(), &params.FolderId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "folder_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "folder_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "source" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "source", r.URL.Query(), &params.Source, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "source"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "source", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListDocuments(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateDocument operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateDocument(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateDocumentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateDocument(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsDeleteDocument operation middleware
+func (siw *ServerInterfaceWrapper) OperationsDeleteDocument(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "document_id" -------------
+	var documentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "document_id", chi.URLParam(r, "document_id"), &documentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "document_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsDeleteDocumentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsDeleteDocument(w, r, orgId, documentId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetDocument operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetDocument(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "document_id" -------------
+	var documentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "document_id", chi.URLParam(r, "document_id"), &documentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "document_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetDocument(w, r, orgId, documentId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUpdateDocument operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUpdateDocument(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "document_id" -------------
+	var documentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "document_id", chi.URLParam(r, "document_id"), &documentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "document_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsUpdateDocumentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUpdateDocument(w, r, orgId, documentId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5668,6 +9212,316 @@ func (siw *ServerInterfaceWrapper) FilesDownload(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
+// OperationsListFolders operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListFolders(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListFoldersParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "parent_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "parent_id", r.URL.Query(), &params.ParentId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "parent_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "parent_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListFolders(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateFolder operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateFolder(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateFolderParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateFolder(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsDeleteFolder operation middleware
+func (siw *ServerInterfaceWrapper) OperationsDeleteFolder(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "folder_id" -------------
+	var folderId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "folder_id", chi.URLParam(r, "folder_id"), &folderId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "folder_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsDeleteFolderParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsDeleteFolder(w, r, orgId, folderId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetFolder operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetFolder(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "folder_id" -------------
+	var folderId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "folder_id", chi.URLParam(r, "folder_id"), &folderId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "folder_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetFolder(w, r, orgId, folderId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUpdateFolder operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUpdateFolder(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "folder_id" -------------
+	var folderId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "folder_id", chi.URLParam(r, "folder_id"), &folderId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "folder_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsUpdateFolderParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUpdateFolder(w, r, orgId, folderId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // PeopleListInvitations operation middleware
 func (siw *ServerInterfaceWrapper) PeopleListInvitations(w http.ResponseWriter, r *http.Request) {
 
@@ -5845,6 +9699,345 @@ func (siw *ServerInterfaceWrapper) PeopleResendInvitation(w http.ResponseWriter,
 	handler.ServeHTTP(w, r)
 }
 
+// DashboardsGetMyDashboard operation middleware
+func (siw *ServerInterfaceWrapper) DashboardsGetMyDashboard(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DashboardsGetMyDashboardParams
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DashboardsGetMyDashboard(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetNotificationMutes operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetNotificationMutes(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetNotificationMutes(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsSetNotificationMutes operation middleware
+func (siw *ServerInterfaceWrapper) OperationsSetNotificationMutes(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsSetNotificationMutes(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListNotifications operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListNotifications(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListNotificationsParams
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unread" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unread", r.URL.Query(), &params.Unread, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unread"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unread", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "type" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "type", r.URL.Query(), &params.Type, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "type"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "type", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListNotifications(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetUnreadCount operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetUnreadCount(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsGetUnreadCountParams
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetUnreadCount(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsMarkNotificationRead operation middleware
+func (siw *ServerInterfaceWrapper) OperationsMarkNotificationRead(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "notification_id" -------------
+	var notificationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "notification_id", chi.URLParam(r, "notification_id"), &notificationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "notification_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsMarkNotificationReadParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsMarkNotificationRead(w, r, orgId, notificationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsMarkAllNotificationsRead operation middleware
+func (siw *ServerInterfaceWrapper) OperationsMarkAllNotificationsRead(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsMarkAllNotificationsReadParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsMarkAllNotificationsRead(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // PeopleListMemberships operation middleware
 func (siw *ServerInterfaceWrapper) PeopleListMemberships(w http.ResponseWriter, r *http.Request) {
 
@@ -6013,6 +10206,111 @@ func (siw *ServerInterfaceWrapper) PeopleGetMoveOut(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PeopleGetMoveOut(w, r, orgId, moveOutId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetNotificationDefaults operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetNotificationDefaults(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsGetNotificationDefaultsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetNotificationDefaults(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsSetNotificationDefaults operation middleware
+func (siw *ServerInterfaceWrapper) OperationsSetNotificationDefaults(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsSetNotificationDefaultsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsSetNotificationDefaults(w, r, orgId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6914,6 +11212,41 @@ func (siw *ServerInterfaceWrapper) TenancyCreateBlock(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// DashboardsGetSiteDashboard operation middleware
+func (siw *ServerInterfaceWrapper) DashboardsGetSiteDashboard(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DashboardsGetSiteDashboard(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // PeopleListDirectory operation middleware
 func (siw *ServerInterfaceWrapper) PeopleListDirectory(w http.ResponseWriter, r *http.Request) {
 
@@ -7166,6 +11499,41 @@ func (siw *ServerInterfaceWrapper) TenancyOffboardSite(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.TenancyOffboardSite(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DashboardsGetStaffDashboard operation middleware
+func (siw *ServerInterfaceWrapper) DashboardsGetStaffDashboard(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DashboardsGetStaffDashboard(w, r, orgId, siteId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -7455,6 +11823,1287 @@ func (siw *ServerInterfaceWrapper) TenancyExportVehicles(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.TenancyExportVehicles(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetSmsUsage operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetSmsUsage(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsGetSmsUsageParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "month" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "month", r.URL.Query(), &params.Month, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "month"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "month", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetSmsUsage(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListTicketCategories operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListTicketCategories(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListTicketCategoriesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "archived" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "archived", r.URL.Query(), &params.Archived, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "archived"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "archived", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListTicketCategories(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateTicketCategory operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateTicketCategory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateTicketCategoryParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateTicketCategory(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetTicketCategory operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetTicketCategory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "category_id" -------------
+	var categoryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "category_id", chi.URLParam(r, "category_id"), &categoryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "category_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetTicketCategory(w, r, orgId, categoryId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUpdateTicketCategory operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUpdateTicketCategory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "category_id" -------------
+	var categoryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "category_id", chi.URLParam(r, "category_id"), &categoryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "category_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsUpdateTicketCategoryParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUpdateTicketCategory(w, r, orgId, categoryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetTicketWorkflow operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetTicketWorkflow(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsGetTicketWorkflowParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetTicketWorkflow(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUpdateTicketWorkflow operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUpdateTicketWorkflow(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsUpdateTicketWorkflowParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUpdateTicketWorkflow(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsRestoreTicketWorkflow operation middleware
+func (siw *ServerInterfaceWrapper) OperationsRestoreTicketWorkflow(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsRestoreTicketWorkflowParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsRestoreTicketWorkflow(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListTickets operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListTickets(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListTicketsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "category_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "category_id", r.URL.Query(), &params.CategoryId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "category_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "category_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status_id", r.URL.Query(), &params.StatusId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "semantic" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "semantic", r.URL.Query(), &params.Semantic, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "semantic"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "semantic", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "assignee_person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assignee_person_id", r.URL.Query(), &params.AssigneePersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assignee_person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assignee_person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "assignee_vendor_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assignee_vendor_id", r.URL.Query(), &params.AssigneeVendorId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assignee_vendor_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assignee_vendor_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "visibility" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "visibility", r.URL.Query(), &params.Visibility, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "visibility"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "visibility", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "reporter_person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "reporter_person_id", r.URL.Query(), &params.ReporterPersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "reporter_person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "reporter_person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "mine" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "mine", r.URL.Query(), &params.Mine, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "mine"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "mine", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "queue" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "queue", r.URL.Query(), &params.Queue, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "queue"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "queue", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListTickets(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateTicketParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateTicket(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsGetTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsGetTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsGetTicket(w, r, orgId, ticketId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUpdateTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUpdateTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsUpdateTicketParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUpdateTicket(w, r, orgId, ticketId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateTicketAttachment operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateTicketAttachment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateTicketAttachmentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateTicketAttachment(w, r, orgId, ticketId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsDeleteTicketAttachment operation middleware
+func (siw *ServerInterfaceWrapper) OperationsDeleteTicketAttachment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "attachment_id" -------------
+	var attachmentId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "attachment_id", chi.URLParam(r, "attachment_id"), &attachmentId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "attachment_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsDeleteTicketAttachment(w, r, orgId, ticketId, attachmentId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListTicketComments operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListTicketComments(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListTicketCommentsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListTicketComments(w, r, orgId, ticketId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsCreateTicketComment operation middleware
+func (siw *ServerInterfaceWrapper) OperationsCreateTicketComment(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsCreateTicketCommentParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsCreateTicketComment(w, r, orgId, ticketId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsListTicketHistory operation middleware
+func (siw *ServerInterfaceWrapper) OperationsListTicketHistory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsListTicketHistoryParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsListTicketHistory(w, r, orgId, ticketId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsUnvoteTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsUnvoteTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsUnvoteTicket(w, r, orgId, ticketId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsVoteTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsVoteTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsVoteTicket(w, r, orgId, ticketId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsMergeTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsMergeTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsMergeTicketParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsMergeTicket(w, r, orgId, ticketId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// OperationsTransitionTicket operation middleware
+func (siw *ServerInterfaceWrapper) OperationsTransitionTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "ticket_id" -------------
+	var ticketId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "ticket_id", chi.URLParam(r, "ticket_id"), &ticketId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ticket_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params OperationsTransitionTicketParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.OperationsTransitionTicket(w, r, orgId, ticketId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8721,6 +14370,168 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/orgs/{org_id}/files/{file_id}/content", wrapper.FilesDownload)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/ticket-workflow", wrapper.OperationsGetTicketWorkflow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/ticket-workflow", wrapper.OperationsUpdateTicketWorkflow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/ticket-categories", wrapper.OperationsListTicketCategories)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/ticket-categories", wrapper.OperationsCreateTicketCategory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/ticket-categories/{category_id}", wrapper.OperationsGetTicketCategory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/ticket-categories/{category_id}", wrapper.OperationsUpdateTicketCategory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/tickets", wrapper.OperationsListTickets)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/tickets", wrapper.OperationsCreateTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}", wrapper.OperationsGetTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}", wrapper.OperationsUpdateTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}:transition", wrapper.OperationsTransitionTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}:merge", wrapper.OperationsMergeTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/vote", wrapper.OperationsUnvoteTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/vote", wrapper.OperationsVoteTicket)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/comments", wrapper.OperationsListTicketComments)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/comments", wrapper.OperationsCreateTicketComment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/attachments", wrapper.OperationsCreateTicketAttachment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id}", wrapper.OperationsDeleteTicketAttachment)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/tickets/{ticket_id}/history", wrapper.OperationsListTicketHistory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/announcements", wrapper.OperationsListAnnouncements)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/announcements", wrapper.OperationsCreateAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}", wrapper.OperationsDeleteAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}", wrapper.OperationsGetAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}", wrapper.OperationsUpdateAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/announcements:preview", wrapper.OperationsPreviewAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}:publish", wrapper.OperationsPublishAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}:archive", wrapper.OperationsArchiveAnnouncement)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}/reads", wrapper.OperationsListAnnouncementReads)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/announcements/{announcement_id}/read", wrapper.OperationsMarkAnnouncementRead)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/folders", wrapper.OperationsListFolders)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/folders", wrapper.OperationsCreateFolder)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/folders/{folder_id}", wrapper.OperationsDeleteFolder)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/folders/{folder_id}", wrapper.OperationsGetFolder)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/folders/{folder_id}", wrapper.OperationsUpdateFolder)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/documents", wrapper.OperationsListDocuments)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/documents", wrapper.OperationsCreateDocument)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/documents/{document_id}", wrapper.OperationsDeleteDocument)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/documents/{document_id}", wrapper.OperationsGetDocument)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/documents/{document_id}", wrapper.OperationsUpdateDocument)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/me/notifications", wrapper.OperationsListNotifications)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/me/notifications/unread-count", wrapper.OperationsGetUnreadCount)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/me/notifications/{notification_id}:read", wrapper.OperationsMarkNotificationRead)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/me/notifications:read-all", wrapper.OperationsMarkAllNotificationsRead)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/notification-defaults", wrapper.OperationsGetNotificationDefaults)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/notification-defaults", wrapper.OperationsSetNotificationDefaults)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/me/notification-mutes", wrapper.OperationsGetNotificationMutes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/me/notification-mutes", wrapper.OperationsSetNotificationMutes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sms-usage", wrapper.OperationsGetSmsUsage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/dashboard", wrapper.DashboardsGetSiteDashboard)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/staff-dashboard", wrapper.DashboardsGetStaffDashboard)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/dashboard/portfolio", wrapper.DashboardsGetPortfolioDashboard)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/me/dashboard", wrapper.DashboardsGetMyDashboard)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/codes", wrapper.CodesListCodes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/ticket-workflow:restore-default", wrapper.OperationsRestoreTicketWorkflow)
 	})
 
 	return r
@@ -12556,6 +18367,1836 @@ func (response TenancySetAllocationKeyValuesdefaultApplicationProblemPlusJSONRes
 	return err
 }
 
+type OperationsListAnnouncementsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsListAnnouncementsParams
+}
+
+type OperationsListAnnouncementsResponseObject interface {
+	VisitOperationsListAnnouncementsResponse(w http.ResponseWriter) error
+}
+
+type OperationsListAnnouncements200JSONResponse AnnouncementList
+
+func (response OperationsListAnnouncements200JSONResponse) VisitOperationsListAnnouncementsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncements401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListAnnouncements401ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncements403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncements403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListAnnouncements403ResponseHeaders
+}
+
+func (response OperationsListAnnouncements403ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncements422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncements422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListAnnouncements422ResponseHeaders
+}
+
+func (response OperationsListAnnouncements422ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncementsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListAnnouncementsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListAnnouncementsdefaultApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateAnnouncementRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsCreateAnnouncementParams
+	Body   *OperationsCreateAnnouncementJSONRequestBody
+}
+
+type OperationsCreateAnnouncementResponseObject interface {
+	VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateAnnouncement201JSONResponse Announcement
+
+func (response OperationsCreateAnnouncement201JSONResponse) VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateAnnouncement403ResponseHeaders
+}
+
+func (response OperationsCreateAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateAnnouncement409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateAnnouncement409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateAnnouncement409ResponseHeaders
+}
+
+func (response OperationsCreateAnnouncement409ApplicationProblemPlusJSONResponse) VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateAnnouncement422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateAnnouncement422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateAnnouncement422ResponseHeaders
+}
+
+func (response OperationsCreateAnnouncement422ApplicationProblemPlusJSONResponse) VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteAnnouncementRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+	Params         OperationsDeleteAnnouncementParams
+}
+
+type OperationsDeleteAnnouncementResponseObject interface {
+	VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsDeleteAnnouncement204Response struct {
+}
+
+func (response OperationsDeleteAnnouncement204Response) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type OperationsDeleteAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsDeleteAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteAnnouncement403ResponseHeaders
+}
+
+func (response OperationsDeleteAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteAnnouncement404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteAnnouncement404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteAnnouncement404ResponseHeaders
+}
+
+func (response OperationsDeleteAnnouncement404ApplicationProblemPlusJSONResponse) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteAnnouncement409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteAnnouncement409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteAnnouncement409ResponseHeaders
+}
+
+func (response OperationsDeleteAnnouncement409ApplicationProblemPlusJSONResponse) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteAnnouncement422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteAnnouncement422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteAnnouncement422ResponseHeaders
+}
+
+func (response OperationsDeleteAnnouncement422ApplicationProblemPlusJSONResponse) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsDeleteAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsDeleteAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsDeleteAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetAnnouncementRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+}
+
+type OperationsGetAnnouncementResponseObject interface {
+	VisitOperationsGetAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetAnnouncement200JSONResponse Announcement
+
+func (response OperationsGetAnnouncement200JSONResponse) VisitOperationsGetAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsGetAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetAnnouncement403ResponseHeaders
+}
+
+func (response OperationsGetAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsGetAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetAnnouncement404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetAnnouncement404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetAnnouncement404ResponseHeaders
+}
+
+func (response OperationsGetAnnouncement404ApplicationProblemPlusJSONResponse) VisitOperationsGetAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncementRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+	Params         OperationsUpdateAnnouncementParams
+	Body           *OperationsUpdateAnnouncementJSONRequestBody
+}
+
+type OperationsUpdateAnnouncementResponseObject interface {
+	VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsUpdateAnnouncement200JSONResponse Announcement
+
+func (response OperationsUpdateAnnouncement200JSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUpdateAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateAnnouncement403ResponseHeaders
+}
+
+func (response OperationsUpdateAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncement404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateAnnouncement404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateAnnouncement404ResponseHeaders
+}
+
+func (response OperationsUpdateAnnouncement404ApplicationProblemPlusJSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncement409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateAnnouncement409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateAnnouncement409ResponseHeaders
+}
+
+func (response OperationsUpdateAnnouncement409ApplicationProblemPlusJSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncement422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateAnnouncement422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateAnnouncement422ResponseHeaders
+}
+
+func (response OperationsUpdateAnnouncement422ApplicationProblemPlusJSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUpdateAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUpdateAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsUpdateAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAnnouncementReadRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+}
+
+type OperationsMarkAnnouncementReadResponseObject interface {
+	VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error
+}
+
+type OperationsMarkAnnouncementRead204Response struct {
+}
+
+func (response OperationsMarkAnnouncementRead204Response) VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type OperationsMarkAnnouncementRead401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsMarkAnnouncementRead401ApplicationProblemPlusJSONResponse) VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAnnouncementRead403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAnnouncementRead403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkAnnouncementRead403ResponseHeaders
+}
+
+func (response OperationsMarkAnnouncementRead403ApplicationProblemPlusJSONResponse) VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAnnouncementRead404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAnnouncementRead404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkAnnouncementRead404ResponseHeaders
+}
+
+func (response OperationsMarkAnnouncementRead404ApplicationProblemPlusJSONResponse) VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAnnouncementRead409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAnnouncementRead409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkAnnouncementRead409ResponseHeaders
+}
+
+func (response OperationsMarkAnnouncementRead409ApplicationProblemPlusJSONResponse) VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAnnouncementReaddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAnnouncementReaddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsMarkAnnouncementReaddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsMarkAnnouncementReaddefaultApplicationProblemPlusJSONResponse) VisitOperationsMarkAnnouncementReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementReadsRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+	Params         OperationsListAnnouncementReadsParams
+}
+
+type OperationsListAnnouncementReadsResponseObject interface {
+	VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error
+}
+
+type OperationsListAnnouncementReads200JSONResponse AnnouncementReadList
+
+func (response OperationsListAnnouncementReads200JSONResponse) VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementReads401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListAnnouncementReads401ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementReads403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncementReads403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListAnnouncementReads403ResponseHeaders
+}
+
+func (response OperationsListAnnouncementReads403ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementReads404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncementReads404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListAnnouncementReads404ResponseHeaders
+}
+
+func (response OperationsListAnnouncementReads404ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementReads422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncementReads422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListAnnouncementReads422ResponseHeaders
+}
+
+func (response OperationsListAnnouncementReads422ApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListAnnouncementReadsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListAnnouncementReadsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListAnnouncementReadsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListAnnouncementReadsdefaultApplicationProblemPlusJSONResponse) VisitOperationsListAnnouncementReadsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsArchiveAnnouncementRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+	Params         OperationsArchiveAnnouncementParams
+}
+
+type OperationsArchiveAnnouncementResponseObject interface {
+	VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsArchiveAnnouncement200JSONResponse Announcement
+
+func (response OperationsArchiveAnnouncement200JSONResponse) VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsArchiveAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsArchiveAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsArchiveAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsArchiveAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsArchiveAnnouncement403ResponseHeaders
+}
+
+func (response OperationsArchiveAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsArchiveAnnouncement404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsArchiveAnnouncement404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsArchiveAnnouncement404ResponseHeaders
+}
+
+func (response OperationsArchiveAnnouncement404ApplicationProblemPlusJSONResponse) VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsArchiveAnnouncement409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsArchiveAnnouncement409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsArchiveAnnouncement409ResponseHeaders
+}
+
+func (response OperationsArchiveAnnouncement409ApplicationProblemPlusJSONResponse) VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsArchiveAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsArchiveAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsArchiveAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsArchiveAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsArchiveAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncementRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	AnnouncementId openapi_types.UUID `json:"announcement_id"`
+	Params         OperationsPublishAnnouncementParams
+	Body           *OperationsPublishAnnouncementJSONRequestBody
+}
+
+type OperationsPublishAnnouncementResponseObject interface {
+	VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsPublishAnnouncement200JSONResponse Announcement
+
+func (response OperationsPublishAnnouncement200JSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsPublishAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPublishAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPublishAnnouncement403ResponseHeaders
+}
+
+func (response OperationsPublishAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncement404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPublishAnnouncement404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPublishAnnouncement404ResponseHeaders
+}
+
+func (response OperationsPublishAnnouncement404ApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncement409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPublishAnnouncement409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPublishAnnouncement409ResponseHeaders
+}
+
+func (response OperationsPublishAnnouncement409ApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncement422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPublishAnnouncement422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPublishAnnouncement422ResponseHeaders
+}
+
+func (response OperationsPublishAnnouncement422ApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncement503ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPublishAnnouncement503ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPublishAnnouncement503ResponseHeaders
+}
+
+func (response OperationsPublishAnnouncement503ApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPublishAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPublishAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsPublishAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsPublishAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsPublishAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPreviewAnnouncementRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *OperationsPreviewAnnouncementJSONRequestBody
+}
+
+type OperationsPreviewAnnouncementResponseObject interface {
+	VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error
+}
+
+type OperationsPreviewAnnouncement200JSONResponse AnnouncementPreview
+
+func (response OperationsPreviewAnnouncement200JSONResponse) VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPreviewAnnouncement401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsPreviewAnnouncement401ApplicationProblemPlusJSONResponse) VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPreviewAnnouncement403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPreviewAnnouncement403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPreviewAnnouncement403ResponseHeaders
+}
+
+func (response OperationsPreviewAnnouncement403ApplicationProblemPlusJSONResponse) VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPreviewAnnouncement409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPreviewAnnouncement409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPreviewAnnouncement409ResponseHeaders
+}
+
+func (response OperationsPreviewAnnouncement409ApplicationProblemPlusJSONResponse) VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPreviewAnnouncement422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPreviewAnnouncement422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsPreviewAnnouncement422ResponseHeaders
+}
+
+func (response OperationsPreviewAnnouncement422ApplicationProblemPlusJSONResponse) VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsPreviewAnnouncementdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsPreviewAnnouncementdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsPreviewAnnouncementdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsPreviewAnnouncementdefaultApplicationProblemPlusJSONResponse) VisitOperationsPreviewAnnouncementResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type AuditListRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params AuditListParams
@@ -12934,6 +20575,1146 @@ type TenancyUpdateBlockdefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response TenancyUpdateBlockdefaultApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CodesListCodesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CodesListCodesParams
+}
+
+type CodesListCodesResponseObject interface {
+	VisitCodesListCodesResponse(w http.ResponseWriter) error
+}
+
+type CodesListCodes200JSONResponse OrgCodes
+
+func (response CodesListCodes200JSONResponse) VisitCodesListCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CodesListCodes401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CodesListCodes401ApplicationProblemPlusJSONResponse) VisitCodesListCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CodesListCodes403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CodesListCodes403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CodesListCodes403ResponseHeaders
+}
+
+func (response CodesListCodes403ApplicationProblemPlusJSONResponse) VisitCodesListCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CodesListCodes422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CodesListCodes422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CodesListCodes422ResponseHeaders
+}
+
+func (response CodesListCodes422ApplicationProblemPlusJSONResponse) VisitCodesListCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CodesListCodesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CodesListCodesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CodesListCodesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CodesListCodesdefaultApplicationProblemPlusJSONResponse) VisitCodesListCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetPortfolioDashboardRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+}
+
+type DashboardsGetPortfolioDashboardResponseObject interface {
+	VisitDashboardsGetPortfolioDashboardResponse(w http.ResponseWriter) error
+}
+
+type DashboardsGetPortfolioDashboard200JSONResponse PortfolioDashboard
+
+func (response DashboardsGetPortfolioDashboard200JSONResponse) VisitDashboardsGetPortfolioDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetPortfolioDashboard401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response DashboardsGetPortfolioDashboard401ApplicationProblemPlusJSONResponse) VisitDashboardsGetPortfolioDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetPortfolioDashboard403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetPortfolioDashboard403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetPortfolioDashboard403ResponseHeaders
+}
+
+func (response DashboardsGetPortfolioDashboard403ApplicationProblemPlusJSONResponse) VisitDashboardsGetPortfolioDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetPortfolioDashboarddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetPortfolioDashboarddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    DashboardsGetPortfolioDashboarddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response DashboardsGetPortfolioDashboarddefaultApplicationProblemPlusJSONResponse) VisitDashboardsGetPortfolioDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListDocumentsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsListDocumentsParams
+}
+
+type OperationsListDocumentsResponseObject interface {
+	VisitOperationsListDocumentsResponse(w http.ResponseWriter) error
+}
+
+type OperationsListDocuments200JSONResponse DocumentList
+
+func (response OperationsListDocuments200JSONResponse) VisitOperationsListDocumentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListDocuments401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListDocuments401ApplicationProblemPlusJSONResponse) VisitOperationsListDocumentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListDocuments403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListDocuments403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListDocuments403ResponseHeaders
+}
+
+func (response OperationsListDocuments403ApplicationProblemPlusJSONResponse) VisitOperationsListDocumentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListDocuments422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListDocuments422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListDocuments422ResponseHeaders
+}
+
+func (response OperationsListDocuments422ApplicationProblemPlusJSONResponse) VisitOperationsListDocumentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListDocumentsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListDocumentsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListDocumentsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListDocumentsdefaultApplicationProblemPlusJSONResponse) VisitOperationsListDocumentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateDocumentRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsCreateDocumentParams
+	Body   *OperationsCreateDocumentJSONRequestBody
+}
+
+type OperationsCreateDocumentResponseObject interface {
+	VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateDocument201JSONResponse Document
+
+func (response OperationsCreateDocument201JSONResponse) VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateDocument401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateDocument401ApplicationProblemPlusJSONResponse) VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateDocument403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateDocument403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateDocument403ResponseHeaders
+}
+
+func (response OperationsCreateDocument403ApplicationProblemPlusJSONResponse) VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateDocument409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateDocument409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateDocument409ResponseHeaders
+}
+
+func (response OperationsCreateDocument409ApplicationProblemPlusJSONResponse) VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateDocument422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateDocument422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateDocument422ResponseHeaders
+}
+
+func (response OperationsCreateDocument422ApplicationProblemPlusJSONResponse) VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateDocumentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateDocumentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateDocumentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateDocumentdefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteDocumentRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	DocumentId openapi_types.UUID `json:"document_id"`
+	Params     OperationsDeleteDocumentParams
+}
+
+type OperationsDeleteDocumentResponseObject interface {
+	VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error
+}
+
+type OperationsDeleteDocument204Response struct {
+}
+
+func (response OperationsDeleteDocument204Response) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type OperationsDeleteDocument401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsDeleteDocument401ApplicationProblemPlusJSONResponse) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteDocument403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteDocument403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteDocument403ResponseHeaders
+}
+
+func (response OperationsDeleteDocument403ApplicationProblemPlusJSONResponse) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteDocument404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteDocument404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteDocument404ResponseHeaders
+}
+
+func (response OperationsDeleteDocument404ApplicationProblemPlusJSONResponse) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteDocument409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteDocument409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteDocument409ResponseHeaders
+}
+
+func (response OperationsDeleteDocument409ApplicationProblemPlusJSONResponse) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteDocument422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteDocument422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteDocument422ResponseHeaders
+}
+
+func (response OperationsDeleteDocument422ApplicationProblemPlusJSONResponse) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteDocumentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteDocumentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsDeleteDocumentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsDeleteDocumentdefaultApplicationProblemPlusJSONResponse) VisitOperationsDeleteDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetDocumentRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	DocumentId openapi_types.UUID `json:"document_id"`
+}
+
+type OperationsGetDocumentResponseObject interface {
+	VisitOperationsGetDocumentResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetDocument200JSONResponse Document
+
+func (response OperationsGetDocument200JSONResponse) VisitOperationsGetDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetDocument401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetDocument401ApplicationProblemPlusJSONResponse) VisitOperationsGetDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetDocument403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetDocument403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetDocument403ResponseHeaders
+}
+
+func (response OperationsGetDocument403ApplicationProblemPlusJSONResponse) VisitOperationsGetDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetDocument404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetDocument404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetDocument404ResponseHeaders
+}
+
+func (response OperationsGetDocument404ApplicationProblemPlusJSONResponse) VisitOperationsGetDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetDocumentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetDocumentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetDocumentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetDocumentdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocumentRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	DocumentId openapi_types.UUID `json:"document_id"`
+	Params     OperationsUpdateDocumentParams
+	Body       *OperationsUpdateDocumentJSONRequestBody
+}
+
+type OperationsUpdateDocumentResponseObject interface {
+	VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error
+}
+
+type OperationsUpdateDocument200JSONResponse Document
+
+func (response OperationsUpdateDocument200JSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocument401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUpdateDocument401ApplicationProblemPlusJSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocument403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateDocument403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateDocument403ResponseHeaders
+}
+
+func (response OperationsUpdateDocument403ApplicationProblemPlusJSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocument404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateDocument404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateDocument404ResponseHeaders
+}
+
+func (response OperationsUpdateDocument404ApplicationProblemPlusJSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocument409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateDocument409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateDocument409ResponseHeaders
+}
+
+func (response OperationsUpdateDocument409ApplicationProblemPlusJSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocument422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateDocument422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateDocument422ResponseHeaders
+}
+
+func (response OperationsUpdateDocument422ApplicationProblemPlusJSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateDocumentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateDocumentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUpdateDocumentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUpdateDocumentdefaultApplicationProblemPlusJSONResponse) VisitOperationsUpdateDocumentResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -13963,6 +22744,889 @@ func (response FilesDownloaddefaultApplicationProblemPlusJSONResponse) VisitFile
 	return err
 }
 
+type OperationsListFoldersRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsListFoldersParams
+}
+
+type OperationsListFoldersResponseObject interface {
+	VisitOperationsListFoldersResponse(w http.ResponseWriter) error
+}
+
+type OperationsListFolders200JSONResponse FolderList
+
+func (response OperationsListFolders200JSONResponse) VisitOperationsListFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListFolders401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListFolders401ApplicationProblemPlusJSONResponse) VisitOperationsListFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListFolders403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListFolders403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListFolders403ResponseHeaders
+}
+
+func (response OperationsListFolders403ApplicationProblemPlusJSONResponse) VisitOperationsListFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListFolders422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListFolders422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListFolders422ResponseHeaders
+}
+
+func (response OperationsListFolders422ApplicationProblemPlusJSONResponse) VisitOperationsListFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListFoldersdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListFoldersdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListFoldersdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListFoldersdefaultApplicationProblemPlusJSONResponse) VisitOperationsListFoldersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateFolderRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsCreateFolderParams
+	Body   *OperationsCreateFolderJSONRequestBody
+}
+
+type OperationsCreateFolderResponseObject interface {
+	VisitOperationsCreateFolderResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateFolder201JSONResponse Folder
+
+func (response OperationsCreateFolder201JSONResponse) VisitOperationsCreateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateFolder401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateFolder401ApplicationProblemPlusJSONResponse) VisitOperationsCreateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateFolder403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateFolder403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateFolder403ResponseHeaders
+}
+
+func (response OperationsCreateFolder403ApplicationProblemPlusJSONResponse) VisitOperationsCreateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateFolder409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateFolder409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateFolder409ResponseHeaders
+}
+
+func (response OperationsCreateFolder409ApplicationProblemPlusJSONResponse) VisitOperationsCreateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateFolder422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateFolder422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateFolder422ResponseHeaders
+}
+
+func (response OperationsCreateFolder422ApplicationProblemPlusJSONResponse) VisitOperationsCreateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateFolderdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateFolderdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateFolderdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateFolderdefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteFolderRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	FolderId openapi_types.UUID `json:"folder_id"`
+	Params   OperationsDeleteFolderParams
+}
+
+type OperationsDeleteFolderResponseObject interface {
+	VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error
+}
+
+type OperationsDeleteFolder204Response struct {
+}
+
+func (response OperationsDeleteFolder204Response) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type OperationsDeleteFolder401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsDeleteFolder401ApplicationProblemPlusJSONResponse) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteFolder403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteFolder403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteFolder403ResponseHeaders
+}
+
+func (response OperationsDeleteFolder403ApplicationProblemPlusJSONResponse) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteFolder404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteFolder404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteFolder404ResponseHeaders
+}
+
+func (response OperationsDeleteFolder404ApplicationProblemPlusJSONResponse) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteFolder409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteFolder409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteFolder409ResponseHeaders
+}
+
+func (response OperationsDeleteFolder409ApplicationProblemPlusJSONResponse) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteFolder422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteFolder422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteFolder422ResponseHeaders
+}
+
+func (response OperationsDeleteFolder422ApplicationProblemPlusJSONResponse) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteFolderdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteFolderdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsDeleteFolderdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsDeleteFolderdefaultApplicationProblemPlusJSONResponse) VisitOperationsDeleteFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetFolderRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	FolderId openapi_types.UUID `json:"folder_id"`
+}
+
+type OperationsGetFolderResponseObject interface {
+	VisitOperationsGetFolderResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetFolder200JSONResponse Folder
+
+func (response OperationsGetFolder200JSONResponse) VisitOperationsGetFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetFolder401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetFolder401ApplicationProblemPlusJSONResponse) VisitOperationsGetFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetFolder403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetFolder403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetFolder403ResponseHeaders
+}
+
+func (response OperationsGetFolder403ApplicationProblemPlusJSONResponse) VisitOperationsGetFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetFolder404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetFolder404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetFolder404ResponseHeaders
+}
+
+func (response OperationsGetFolder404ApplicationProblemPlusJSONResponse) VisitOperationsGetFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetFolderdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetFolderdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetFolderdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetFolderdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolderRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	FolderId openapi_types.UUID `json:"folder_id"`
+	Params   OperationsUpdateFolderParams
+	Body     *OperationsUpdateFolderJSONRequestBody
+}
+
+type OperationsUpdateFolderResponseObject interface {
+	VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error
+}
+
+type OperationsUpdateFolder200JSONResponse Folder
+
+func (response OperationsUpdateFolder200JSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolder401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUpdateFolder401ApplicationProblemPlusJSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolder403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateFolder403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateFolder403ResponseHeaders
+}
+
+func (response OperationsUpdateFolder403ApplicationProblemPlusJSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolder404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateFolder404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateFolder404ResponseHeaders
+}
+
+func (response OperationsUpdateFolder404ApplicationProblemPlusJSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolder409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateFolder409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateFolder409ResponseHeaders
+}
+
+func (response OperationsUpdateFolder409ApplicationProblemPlusJSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolder422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateFolder422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateFolder422ResponseHeaders
+}
+
+func (response OperationsUpdateFolder422ApplicationProblemPlusJSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateFolderdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateFolderdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUpdateFolderdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUpdateFolderdefaultApplicationProblemPlusJSONResponse) VisitOperationsUpdateFolderResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PeopleListInvitationsRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params PeopleListInvitationsParams
@@ -14793,6 +24457,1080 @@ func (response PeopleResendInvitationdefaultApplicationProblemPlusJSONResponse) 
 	return err
 }
 
+type DashboardsGetMyDashboardRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params DashboardsGetMyDashboardParams
+}
+
+type DashboardsGetMyDashboardResponseObject interface {
+	VisitDashboardsGetMyDashboardResponse(w http.ResponseWriter) error
+}
+
+type DashboardsGetMyDashboard200JSONResponse MeDashboard
+
+func (response DashboardsGetMyDashboard200JSONResponse) VisitDashboardsGetMyDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetMyDashboard401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response DashboardsGetMyDashboard401ApplicationProblemPlusJSONResponse) VisitDashboardsGetMyDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetMyDashboard403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetMyDashboard403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetMyDashboard403ResponseHeaders
+}
+
+func (response DashboardsGetMyDashboard403ApplicationProblemPlusJSONResponse) VisitDashboardsGetMyDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetMyDashboard422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetMyDashboard422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetMyDashboard422ResponseHeaders
+}
+
+func (response DashboardsGetMyDashboard422ApplicationProblemPlusJSONResponse) VisitDashboardsGetMyDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetMyDashboarddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetMyDashboarddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    DashboardsGetMyDashboarddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response DashboardsGetMyDashboarddefaultApplicationProblemPlusJSONResponse) VisitDashboardsGetMyDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationMutesRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+}
+
+type OperationsGetNotificationMutesResponseObject interface {
+	VisitOperationsGetNotificationMutesResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetNotificationMutes200JSONResponse NotificationMutes
+
+func (response OperationsGetNotificationMutes200JSONResponse) VisitOperationsGetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationMutes401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetNotificationMutes401ApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationMutes403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetNotificationMutes403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetNotificationMutes403ResponseHeaders
+}
+
+func (response OperationsGetNotificationMutes403ApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationMutesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetNotificationMutesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetNotificationMutesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetNotificationMutesdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationMutesRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *OperationsSetNotificationMutesJSONRequestBody
+}
+
+type OperationsSetNotificationMutesResponseObject interface {
+	VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error
+}
+
+type OperationsSetNotificationMutes200JSONResponse NotificationMutes
+
+func (response OperationsSetNotificationMutes200JSONResponse) VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationMutes401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsSetNotificationMutes401ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationMutes403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationMutes403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsSetNotificationMutes403ResponseHeaders
+}
+
+func (response OperationsSetNotificationMutes403ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationMutes409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationMutes409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsSetNotificationMutes409ResponseHeaders
+}
+
+func (response OperationsSetNotificationMutes409ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationMutes422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationMutes422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsSetNotificationMutes422ResponseHeaders
+}
+
+func (response OperationsSetNotificationMutes422ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationMutesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationMutesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsSetNotificationMutesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsSetNotificationMutesdefaultApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationMutesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListNotificationsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsListNotificationsParams
+}
+
+type OperationsListNotificationsResponseObject interface {
+	VisitOperationsListNotificationsResponse(w http.ResponseWriter) error
+}
+
+type OperationsListNotifications200JSONResponse NotificationList
+
+func (response OperationsListNotifications200JSONResponse) VisitOperationsListNotificationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListNotifications401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListNotifications401ApplicationProblemPlusJSONResponse) VisitOperationsListNotificationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListNotifications403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListNotifications403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListNotifications403ResponseHeaders
+}
+
+func (response OperationsListNotifications403ApplicationProblemPlusJSONResponse) VisitOperationsListNotificationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListNotifications422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListNotifications422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListNotifications422ResponseHeaders
+}
+
+func (response OperationsListNotifications422ApplicationProblemPlusJSONResponse) VisitOperationsListNotificationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListNotificationsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListNotificationsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListNotificationsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListNotificationsdefaultApplicationProblemPlusJSONResponse) VisitOperationsListNotificationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetUnreadCountRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsGetUnreadCountParams
+}
+
+type OperationsGetUnreadCountResponseObject interface {
+	VisitOperationsGetUnreadCountResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetUnreadCount200JSONResponse UnreadCount
+
+func (response OperationsGetUnreadCount200JSONResponse) VisitOperationsGetUnreadCountResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetUnreadCount401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetUnreadCount401ApplicationProblemPlusJSONResponse) VisitOperationsGetUnreadCountResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetUnreadCount403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetUnreadCount403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetUnreadCount403ResponseHeaders
+}
+
+func (response OperationsGetUnreadCount403ApplicationProblemPlusJSONResponse) VisitOperationsGetUnreadCountResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetUnreadCount422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetUnreadCount422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetUnreadCount422ResponseHeaders
+}
+
+func (response OperationsGetUnreadCount422ApplicationProblemPlusJSONResponse) VisitOperationsGetUnreadCountResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetUnreadCountdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetUnreadCountdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetUnreadCountdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetUnreadCountdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetUnreadCountResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkNotificationReadRequestObject struct {
+	OrgId          OrgId              `json:"org_id"`
+	NotificationId openapi_types.UUID `json:"notification_id"`
+	Params         OperationsMarkNotificationReadParams
+}
+
+type OperationsMarkNotificationReadResponseObject interface {
+	VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error
+}
+
+type OperationsMarkNotificationRead200JSONResponse Notification
+
+func (response OperationsMarkNotificationRead200JSONResponse) VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkNotificationRead401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsMarkNotificationRead401ApplicationProblemPlusJSONResponse) VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkNotificationRead403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkNotificationRead403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkNotificationRead403ResponseHeaders
+}
+
+func (response OperationsMarkNotificationRead403ApplicationProblemPlusJSONResponse) VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkNotificationRead404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkNotificationRead404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkNotificationRead404ResponseHeaders
+}
+
+func (response OperationsMarkNotificationRead404ApplicationProblemPlusJSONResponse) VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkNotificationRead409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkNotificationRead409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkNotificationRead409ResponseHeaders
+}
+
+func (response OperationsMarkNotificationRead409ApplicationProblemPlusJSONResponse) VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkNotificationReaddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkNotificationReaddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsMarkNotificationReaddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsMarkNotificationReaddefaultApplicationProblemPlusJSONResponse) VisitOperationsMarkNotificationReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAllNotificationsReadRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsMarkAllNotificationsReadParams
+	Body   *OperationsMarkAllNotificationsReadJSONRequestBody
+}
+
+type OperationsMarkAllNotificationsReadResponseObject interface {
+	VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error
+}
+
+type OperationsMarkAllNotificationsRead204Response struct {
+}
+
+func (response OperationsMarkAllNotificationsRead204Response) VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type OperationsMarkAllNotificationsRead401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsMarkAllNotificationsRead401ApplicationProblemPlusJSONResponse) VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAllNotificationsRead403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAllNotificationsRead403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkAllNotificationsRead403ResponseHeaders
+}
+
+func (response OperationsMarkAllNotificationsRead403ApplicationProblemPlusJSONResponse) VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAllNotificationsRead409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAllNotificationsRead409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkAllNotificationsRead409ResponseHeaders
+}
+
+func (response OperationsMarkAllNotificationsRead409ApplicationProblemPlusJSONResponse) VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAllNotificationsRead422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAllNotificationsRead422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMarkAllNotificationsRead422ResponseHeaders
+}
+
+func (response OperationsMarkAllNotificationsRead422ApplicationProblemPlusJSONResponse) VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMarkAllNotificationsReaddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMarkAllNotificationsReaddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsMarkAllNotificationsReaddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsMarkAllNotificationsReaddefaultApplicationProblemPlusJSONResponse) VisitOperationsMarkAllNotificationsReadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PeopleListMembershipsRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params PeopleListMembershipsParams
@@ -15603,6 +26341,329 @@ type PeopleGetMoveOutdefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response PeopleGetMoveOutdefaultApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationDefaultsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsGetNotificationDefaultsParams
+}
+
+type OperationsGetNotificationDefaultsResponseObject interface {
+	VisitOperationsGetNotificationDefaultsResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetNotificationDefaults200JSONResponse NotificationDefaults
+
+func (response OperationsGetNotificationDefaults200JSONResponse) VisitOperationsGetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationDefaults401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetNotificationDefaults401ApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationDefaults403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetNotificationDefaults403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetNotificationDefaults403ResponseHeaders
+}
+
+func (response OperationsGetNotificationDefaults403ApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationDefaults422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetNotificationDefaults422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetNotificationDefaults422ResponseHeaders
+}
+
+func (response OperationsGetNotificationDefaults422ApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetNotificationDefaultsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetNotificationDefaultsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetNotificationDefaultsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetNotificationDefaultsdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationDefaultsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsSetNotificationDefaultsParams
+	Body   *OperationsSetNotificationDefaultsJSONRequestBody
+}
+
+type OperationsSetNotificationDefaultsResponseObject interface {
+	VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error
+}
+
+type OperationsSetNotificationDefaults200JSONResponse NotificationDefaults
+
+func (response OperationsSetNotificationDefaults200JSONResponse) VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationDefaults401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsSetNotificationDefaults401ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationDefaults403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationDefaults403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsSetNotificationDefaults403ResponseHeaders
+}
+
+func (response OperationsSetNotificationDefaults403ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationDefaults409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationDefaults409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsSetNotificationDefaults409ResponseHeaders
+}
+
+func (response OperationsSetNotificationDefaults409ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationDefaults422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationDefaults422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsSetNotificationDefaults422ResponseHeaders
+}
+
+func (response OperationsSetNotificationDefaults422ApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsSetNotificationDefaultsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsSetNotificationDefaultsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsSetNotificationDefaultsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsSetNotificationDefaultsdefaultApplicationProblemPlusJSONResponse) VisitOperationsSetNotificationDefaultsResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -19661,6 +30722,151 @@ func (response TenancyCreateBlockdefaultApplicationProblemPlusJSONResponse) Visi
 	return err
 }
 
+type DashboardsGetSiteDashboardRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type DashboardsGetSiteDashboardResponseObject interface {
+	VisitDashboardsGetSiteDashboardResponse(w http.ResponseWriter) error
+}
+
+type DashboardsGetSiteDashboard200JSONResponse SiteDashboard
+
+func (response DashboardsGetSiteDashboard200JSONResponse) VisitDashboardsGetSiteDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetSiteDashboard401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response DashboardsGetSiteDashboard401ApplicationProblemPlusJSONResponse) VisitDashboardsGetSiteDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetSiteDashboard403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetSiteDashboard403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetSiteDashboard403ResponseHeaders
+}
+
+func (response DashboardsGetSiteDashboard403ApplicationProblemPlusJSONResponse) VisitDashboardsGetSiteDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetSiteDashboard404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetSiteDashboard404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetSiteDashboard404ResponseHeaders
+}
+
+func (response DashboardsGetSiteDashboard404ApplicationProblemPlusJSONResponse) VisitDashboardsGetSiteDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetSiteDashboarddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetSiteDashboarddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    DashboardsGetSiteDashboarddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response DashboardsGetSiteDashboarddefaultApplicationProblemPlusJSONResponse) VisitDashboardsGetSiteDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PeopleListDirectoryRequestObject struct {
 	OrgId  OrgId              `json:"org_id"`
 	SiteId openapi_types.UUID `json:"site_id"`
@@ -21127,6 +32333,151 @@ func (response TenancyOffboardSitedefaultApplicationProblemPlusJSONResponse) Vis
 	return err
 }
 
+type DashboardsGetStaffDashboardRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type DashboardsGetStaffDashboardResponseObject interface {
+	VisitDashboardsGetStaffDashboardResponse(w http.ResponseWriter) error
+}
+
+type DashboardsGetStaffDashboard200JSONResponse StaffDashboard
+
+func (response DashboardsGetStaffDashboard200JSONResponse) VisitDashboardsGetStaffDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetStaffDashboard401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response DashboardsGetStaffDashboard401ApplicationProblemPlusJSONResponse) VisitDashboardsGetStaffDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetStaffDashboard403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetStaffDashboard403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetStaffDashboard403ResponseHeaders
+}
+
+func (response DashboardsGetStaffDashboard403ApplicationProblemPlusJSONResponse) VisitDashboardsGetStaffDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetStaffDashboard404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetStaffDashboard404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers DashboardsGetStaffDashboard404ResponseHeaders
+}
+
+func (response DashboardsGetStaffDashboard404ApplicationProblemPlusJSONResponse) VisitDashboardsGetStaffDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DashboardsGetStaffDashboarddefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type DashboardsGetStaffDashboarddefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    DashboardsGetStaffDashboarddefaultResponseHeaders
+	StatusCode int
+}
+
+func (response DashboardsGetStaffDashboarddefaultApplicationProblemPlusJSONResponse) VisitDashboardsGetStaffDashboardResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type TenancyListUnitsRequestObject struct {
 	OrgId  OrgId              `json:"org_id"`
 	SiteId openapi_types.UUID `json:"site_id"`
@@ -21952,6 +33303,3704 @@ type TenancyExportVehiclesdefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response TenancyExportVehiclesdefaultApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetSmsUsageRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsGetSmsUsageParams
+}
+
+type OperationsGetSmsUsageResponseObject interface {
+	VisitOperationsGetSmsUsageResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetSmsUsage200JSONResponse SmsUsage
+
+func (response OperationsGetSmsUsage200JSONResponse) VisitOperationsGetSmsUsageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetSmsUsage401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetSmsUsage401ApplicationProblemPlusJSONResponse) VisitOperationsGetSmsUsageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetSmsUsage403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetSmsUsage403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetSmsUsage403ResponseHeaders
+}
+
+func (response OperationsGetSmsUsage403ApplicationProblemPlusJSONResponse) VisitOperationsGetSmsUsageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetSmsUsage422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetSmsUsage422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetSmsUsage422ResponseHeaders
+}
+
+func (response OperationsGetSmsUsage422ApplicationProblemPlusJSONResponse) VisitOperationsGetSmsUsageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetSmsUsagedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetSmsUsagedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetSmsUsagedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetSmsUsagedefaultApplicationProblemPlusJSONResponse) VisitOperationsGetSmsUsageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCategoriesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsListTicketCategoriesParams
+}
+
+type OperationsListTicketCategoriesResponseObject interface {
+	VisitOperationsListTicketCategoriesResponse(w http.ResponseWriter) error
+}
+
+type OperationsListTicketCategories200JSONResponse TicketCategoryList
+
+func (response OperationsListTicketCategories200JSONResponse) VisitOperationsListTicketCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCategories401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListTicketCategories401ApplicationProblemPlusJSONResponse) VisitOperationsListTicketCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCategories403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketCategories403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTicketCategories403ResponseHeaders
+}
+
+func (response OperationsListTicketCategories403ApplicationProblemPlusJSONResponse) VisitOperationsListTicketCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCategories422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketCategories422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTicketCategories422ResponseHeaders
+}
+
+func (response OperationsListTicketCategories422ApplicationProblemPlusJSONResponse) VisitOperationsListTicketCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCategoriesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketCategoriesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListTicketCategoriesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListTicketCategoriesdefaultApplicationProblemPlusJSONResponse) VisitOperationsListTicketCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCategoryRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsCreateTicketCategoryParams
+	Body   *OperationsCreateTicketCategoryJSONRequestBody
+}
+
+type OperationsCreateTicketCategoryResponseObject interface {
+	VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateTicketCategory201JSONResponse TicketCategory
+
+func (response OperationsCreateTicketCategory201JSONResponse) VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCategory401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateTicketCategory401ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCategory403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketCategory403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketCategory403ResponseHeaders
+}
+
+func (response OperationsCreateTicketCategory403ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCategory409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketCategory409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketCategory409ResponseHeaders
+}
+
+func (response OperationsCreateTicketCategory409ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCategory422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketCategory422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketCategory422ResponseHeaders
+}
+
+func (response OperationsCreateTicketCategory422ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCategorydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketCategorydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateTicketCategorydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateTicketCategorydefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketCategoryRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	CategoryId openapi_types.UUID `json:"category_id"`
+}
+
+type OperationsGetTicketCategoryResponseObject interface {
+	VisitOperationsGetTicketCategoryResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetTicketCategory200JSONResponse TicketCategory
+
+func (response OperationsGetTicketCategory200JSONResponse) VisitOperationsGetTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketCategory401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetTicketCategory401ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketCategory403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketCategory403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetTicketCategory403ResponseHeaders
+}
+
+func (response OperationsGetTicketCategory403ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketCategory404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketCategory404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetTicketCategory404ResponseHeaders
+}
+
+func (response OperationsGetTicketCategory404ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketCategorydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketCategorydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetTicketCategorydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetTicketCategorydefaultApplicationProblemPlusJSONResponse) VisitOperationsGetTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategoryRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	CategoryId openapi_types.UUID `json:"category_id"`
+	Params     OperationsUpdateTicketCategoryParams
+	Body       *OperationsUpdateTicketCategoryJSONRequestBody
+}
+
+type OperationsUpdateTicketCategoryResponseObject interface {
+	VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error
+}
+
+type OperationsUpdateTicketCategory200JSONResponse TicketCategory
+
+func (response OperationsUpdateTicketCategory200JSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategory401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUpdateTicketCategory401ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategory403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketCategory403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketCategory403ResponseHeaders
+}
+
+func (response OperationsUpdateTicketCategory403ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategory404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketCategory404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketCategory404ResponseHeaders
+}
+
+func (response OperationsUpdateTicketCategory404ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategory409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketCategory409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketCategory409ResponseHeaders
+}
+
+func (response OperationsUpdateTicketCategory409ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategory422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketCategory422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketCategory422ResponseHeaders
+}
+
+func (response OperationsUpdateTicketCategory422ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketCategorydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketCategorydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUpdateTicketCategorydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUpdateTicketCategorydefaultApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketWorkflowRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsGetTicketWorkflowParams
+}
+
+type OperationsGetTicketWorkflowResponseObject interface {
+	VisitOperationsGetTicketWorkflowResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetTicketWorkflow200JSONResponse TicketWorkflow
+
+func (response OperationsGetTicketWorkflow200JSONResponse) VisitOperationsGetTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketWorkflow401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetTicketWorkflow401ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketWorkflow403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketWorkflow403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetTicketWorkflow403ResponseHeaders
+}
+
+func (response OperationsGetTicketWorkflow403ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketWorkflow422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketWorkflow422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetTicketWorkflow422ResponseHeaders
+}
+
+func (response OperationsGetTicketWorkflow422ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketWorkflowdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketWorkflowdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetTicketWorkflowdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetTicketWorkflowdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketWorkflowRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsUpdateTicketWorkflowParams
+	Body   *OperationsUpdateTicketWorkflowJSONRequestBody
+}
+
+type OperationsUpdateTicketWorkflowResponseObject interface {
+	VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error
+}
+
+type OperationsUpdateTicketWorkflow200JSONResponse TicketWorkflow
+
+func (response OperationsUpdateTicketWorkflow200JSONResponse) VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketWorkflow401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUpdateTicketWorkflow401ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketWorkflow403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketWorkflow403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketWorkflow403ResponseHeaders
+}
+
+func (response OperationsUpdateTicketWorkflow403ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketWorkflow409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketWorkflow409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketWorkflow409ResponseHeaders
+}
+
+func (response OperationsUpdateTicketWorkflow409ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketWorkflow422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketWorkflow422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicketWorkflow422ResponseHeaders
+}
+
+func (response OperationsUpdateTicketWorkflow422ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketWorkflowdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketWorkflowdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUpdateTicketWorkflowdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUpdateTicketWorkflowdefaultApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflowRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsRestoreTicketWorkflowParams
+	Body   *OperationsRestoreTicketWorkflowJSONRequestBody
+}
+
+type OperationsRestoreTicketWorkflowResponseObject interface {
+	VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error
+}
+
+type OperationsRestoreTicketWorkflow200JSONResponse TicketWorkflow
+
+func (response OperationsRestoreTicketWorkflow200JSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflow401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsRestoreTicketWorkflow401ApplicationProblemPlusJSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflow403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsRestoreTicketWorkflow403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsRestoreTicketWorkflow403ResponseHeaders
+}
+
+func (response OperationsRestoreTicketWorkflow403ApplicationProblemPlusJSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflow404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsRestoreTicketWorkflow404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsRestoreTicketWorkflow404ResponseHeaders
+}
+
+func (response OperationsRestoreTicketWorkflow404ApplicationProblemPlusJSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflow409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsRestoreTicketWorkflow409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsRestoreTicketWorkflow409ResponseHeaders
+}
+
+func (response OperationsRestoreTicketWorkflow409ApplicationProblemPlusJSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflow422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsRestoreTicketWorkflow422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsRestoreTicketWorkflow422ResponseHeaders
+}
+
+func (response OperationsRestoreTicketWorkflow422ApplicationProblemPlusJSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsRestoreTicketWorkflowdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsRestoreTicketWorkflowdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsRestoreTicketWorkflowdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsRestoreTicketWorkflowdefaultApplicationProblemPlusJSONResponse) VisitOperationsRestoreTicketWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsListTicketsParams
+}
+
+type OperationsListTicketsResponseObject interface {
+	VisitOperationsListTicketsResponse(w http.ResponseWriter) error
+}
+
+type OperationsListTickets200JSONResponse TicketList
+
+func (response OperationsListTickets200JSONResponse) VisitOperationsListTicketsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTickets401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListTickets401ApplicationProblemPlusJSONResponse) VisitOperationsListTicketsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTickets403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTickets403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTickets403ResponseHeaders
+}
+
+func (response OperationsListTickets403ApplicationProblemPlusJSONResponse) VisitOperationsListTicketsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTickets422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTickets422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTickets422ResponseHeaders
+}
+
+func (response OperationsListTickets422ApplicationProblemPlusJSONResponse) VisitOperationsListTicketsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListTicketsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListTicketsdefaultApplicationProblemPlusJSONResponse) VisitOperationsListTicketsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params OperationsCreateTicketParams
+	Body   *OperationsCreateTicketJSONRequestBody
+}
+
+type OperationsCreateTicketResponseObject interface {
+	VisitOperationsCreateTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateTicket201JSONResponse Ticket
+
+func (response OperationsCreateTicket201JSONResponse) VisitOperationsCreateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateTicket401ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicket403ResponseHeaders
+}
+
+func (response OperationsCreateTicket403ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicket409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicket409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicket409ResponseHeaders
+}
+
+func (response OperationsCreateTicket409ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicket422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicket422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicket422ResponseHeaders
+}
+
+func (response OperationsCreateTicket422ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+}
+
+type OperationsGetTicketResponseObject interface {
+	VisitOperationsGetTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsGetTicket200JSONResponse Ticket
+
+func (response OperationsGetTicket200JSONResponse) VisitOperationsGetTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsGetTicket401ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetTicket403ResponseHeaders
+}
+
+func (response OperationsGetTicket403ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicket404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicket404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsGetTicket404ResponseHeaders
+}
+
+func (response OperationsGetTicket404ApplicationProblemPlusJSONResponse) VisitOperationsGetTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsGetTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsGetTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsGetTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsGetTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsGetTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsUpdateTicketParams
+	Body     *OperationsUpdateTicketJSONRequestBody
+}
+
+type OperationsUpdateTicketResponseObject interface {
+	VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsUpdateTicket200JSONResponse Ticket
+
+func (response OperationsUpdateTicket200JSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUpdateTicket401ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicket403ResponseHeaders
+}
+
+func (response OperationsUpdateTicket403ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicket404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicket404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicket404ResponseHeaders
+}
+
+func (response OperationsUpdateTicket404ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicket409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicket409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicket409ResponseHeaders
+}
+
+func (response OperationsUpdateTicket409ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicket422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicket422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUpdateTicket422ResponseHeaders
+}
+
+func (response OperationsUpdateTicket422ApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUpdateTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUpdateTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUpdateTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUpdateTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsUpdateTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachmentRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsCreateTicketAttachmentParams
+	Body     *OperationsCreateTicketAttachmentJSONRequestBody
+}
+
+type OperationsCreateTicketAttachmentResponseObject interface {
+	VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateTicketAttachment201JSONResponse TicketAttachment
+
+func (response OperationsCreateTicketAttachment201JSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachment401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateTicketAttachment401ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachment403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketAttachment403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketAttachment403ResponseHeaders
+}
+
+func (response OperationsCreateTicketAttachment403ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachment404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketAttachment404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketAttachment404ResponseHeaders
+}
+
+func (response OperationsCreateTicketAttachment404ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachment409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketAttachment409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketAttachment409ResponseHeaders
+}
+
+func (response OperationsCreateTicketAttachment409ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachment422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketAttachment422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketAttachment422ResponseHeaders
+}
+
+func (response OperationsCreateTicketAttachment422ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketAttachmentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketAttachmentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateTicketAttachmentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateTicketAttachmentdefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteTicketAttachmentRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	TicketId     openapi_types.UUID `json:"ticket_id"`
+	AttachmentId openapi_types.UUID `json:"attachment_id"`
+}
+
+type OperationsDeleteTicketAttachmentResponseObject interface {
+	VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error
+}
+
+type OperationsDeleteTicketAttachment204Response struct {
+}
+
+func (response OperationsDeleteTicketAttachment204Response) VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type OperationsDeleteTicketAttachment401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsDeleteTicketAttachment401ApplicationProblemPlusJSONResponse) VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteTicketAttachment403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteTicketAttachment403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteTicketAttachment403ResponseHeaders
+}
+
+func (response OperationsDeleteTicketAttachment403ApplicationProblemPlusJSONResponse) VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteTicketAttachment404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteTicketAttachment404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteTicketAttachment404ResponseHeaders
+}
+
+func (response OperationsDeleteTicketAttachment404ApplicationProblemPlusJSONResponse) VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteTicketAttachment409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteTicketAttachment409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsDeleteTicketAttachment409ResponseHeaders
+}
+
+func (response OperationsDeleteTicketAttachment409ApplicationProblemPlusJSONResponse) VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsDeleteTicketAttachmentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsDeleteTicketAttachmentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsDeleteTicketAttachmentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsDeleteTicketAttachmentdefaultApplicationProblemPlusJSONResponse) VisitOperationsDeleteTicketAttachmentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCommentsRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsListTicketCommentsParams
+}
+
+type OperationsListTicketCommentsResponseObject interface {
+	VisitOperationsListTicketCommentsResponse(w http.ResponseWriter) error
+}
+
+type OperationsListTicketComments200JSONResponse TicketCommentList
+
+func (response OperationsListTicketComments200JSONResponse) VisitOperationsListTicketCommentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketComments401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListTicketComments401ApplicationProblemPlusJSONResponse) VisitOperationsListTicketCommentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketComments403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketComments403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTicketComments403ResponseHeaders
+}
+
+func (response OperationsListTicketComments403ApplicationProblemPlusJSONResponse) VisitOperationsListTicketCommentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketComments404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketComments404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTicketComments404ResponseHeaders
+}
+
+func (response OperationsListTicketComments404ApplicationProblemPlusJSONResponse) VisitOperationsListTicketCommentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketCommentsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketCommentsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListTicketCommentsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListTicketCommentsdefaultApplicationProblemPlusJSONResponse) VisitOperationsListTicketCommentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCommentRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsCreateTicketCommentParams
+	Body     *OperationsCreateTicketCommentJSONRequestBody
+}
+
+type OperationsCreateTicketCommentResponseObject interface {
+	VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error
+}
+
+type OperationsCreateTicketComment201JSONResponse TicketComment
+
+func (response OperationsCreateTicketComment201JSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketComment401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsCreateTicketComment401ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketComment403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketComment403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketComment403ResponseHeaders
+}
+
+func (response OperationsCreateTicketComment403ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketComment404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketComment404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketComment404ResponseHeaders
+}
+
+func (response OperationsCreateTicketComment404ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketComment409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketComment409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketComment409ResponseHeaders
+}
+
+func (response OperationsCreateTicketComment409ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketComment422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketComment422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsCreateTicketComment422ResponseHeaders
+}
+
+func (response OperationsCreateTicketComment422ApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsCreateTicketCommentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsCreateTicketCommentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsCreateTicketCommentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsCreateTicketCommentdefaultApplicationProblemPlusJSONResponse) VisitOperationsCreateTicketCommentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketHistoryRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsListTicketHistoryParams
+}
+
+type OperationsListTicketHistoryResponseObject interface {
+	VisitOperationsListTicketHistoryResponse(w http.ResponseWriter) error
+}
+
+type OperationsListTicketHistory200JSONResponse TicketStatusChangeList
+
+func (response OperationsListTicketHistory200JSONResponse) VisitOperationsListTicketHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketHistory401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsListTicketHistory401ApplicationProblemPlusJSONResponse) VisitOperationsListTicketHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketHistory403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketHistory403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTicketHistory403ResponseHeaders
+}
+
+func (response OperationsListTicketHistory403ApplicationProblemPlusJSONResponse) VisitOperationsListTicketHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketHistory404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketHistory404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsListTicketHistory404ResponseHeaders
+}
+
+func (response OperationsListTicketHistory404ApplicationProblemPlusJSONResponse) VisitOperationsListTicketHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsListTicketHistorydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsListTicketHistorydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsListTicketHistorydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsListTicketHistorydefaultApplicationProblemPlusJSONResponse) VisitOperationsListTicketHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUnvoteTicketRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+}
+
+type OperationsUnvoteTicketResponseObject interface {
+	VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsUnvoteTicket200JSONResponse TicketVote
+
+func (response OperationsUnvoteTicket200JSONResponse) VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUnvoteTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsUnvoteTicket401ApplicationProblemPlusJSONResponse) VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUnvoteTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUnvoteTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUnvoteTicket403ResponseHeaders
+}
+
+func (response OperationsUnvoteTicket403ApplicationProblemPlusJSONResponse) VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUnvoteTicket404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUnvoteTicket404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUnvoteTicket404ResponseHeaders
+}
+
+func (response OperationsUnvoteTicket404ApplicationProblemPlusJSONResponse) VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUnvoteTicket409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUnvoteTicket409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsUnvoteTicket409ResponseHeaders
+}
+
+func (response OperationsUnvoteTicket409ApplicationProblemPlusJSONResponse) VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsUnvoteTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsUnvoteTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsUnvoteTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsUnvoteTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsUnvoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsVoteTicketRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+}
+
+type OperationsVoteTicketResponseObject interface {
+	VisitOperationsVoteTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsVoteTicket200JSONResponse TicketVote
+
+func (response OperationsVoteTicket200JSONResponse) VisitOperationsVoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsVoteTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsVoteTicket401ApplicationProblemPlusJSONResponse) VisitOperationsVoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsVoteTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsVoteTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsVoteTicket403ResponseHeaders
+}
+
+func (response OperationsVoteTicket403ApplicationProblemPlusJSONResponse) VisitOperationsVoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsVoteTicket404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsVoteTicket404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsVoteTicket404ResponseHeaders
+}
+
+func (response OperationsVoteTicket404ApplicationProblemPlusJSONResponse) VisitOperationsVoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsVoteTicket409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsVoteTicket409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsVoteTicket409ResponseHeaders
+}
+
+func (response OperationsVoteTicket409ApplicationProblemPlusJSONResponse) VisitOperationsVoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsVoteTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsVoteTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsVoteTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsVoteTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsVoteTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicketRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsMergeTicketParams
+	Body     *OperationsMergeTicketJSONRequestBody
+}
+
+type OperationsMergeTicketResponseObject interface {
+	VisitOperationsMergeTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsMergeTicket200JSONResponse Ticket
+
+func (response OperationsMergeTicket200JSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsMergeTicket401ApplicationProblemPlusJSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMergeTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMergeTicket403ResponseHeaders
+}
+
+func (response OperationsMergeTicket403ApplicationProblemPlusJSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicket404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMergeTicket404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMergeTicket404ResponseHeaders
+}
+
+func (response OperationsMergeTicket404ApplicationProblemPlusJSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicket409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMergeTicket409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMergeTicket409ResponseHeaders
+}
+
+func (response OperationsMergeTicket409ApplicationProblemPlusJSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicket422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMergeTicket422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsMergeTicket422ResponseHeaders
+}
+
+func (response OperationsMergeTicket422ApplicationProblemPlusJSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsMergeTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsMergeTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsMergeTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsMergeTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsMergeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicketRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	TicketId openapi_types.UUID `json:"ticket_id"`
+	Params   OperationsTransitionTicketParams
+	Body     *OperationsTransitionTicketJSONRequestBody
+}
+
+type OperationsTransitionTicketResponseObject interface {
+	VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error
+}
+
+type OperationsTransitionTicket200JSONResponse Ticket
+
+func (response OperationsTransitionTicket200JSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicket401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response OperationsTransitionTicket401ApplicationProblemPlusJSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicket403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsTransitionTicket403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsTransitionTicket403ResponseHeaders
+}
+
+func (response OperationsTransitionTicket403ApplicationProblemPlusJSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicket404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsTransitionTicket404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsTransitionTicket404ResponseHeaders
+}
+
+func (response OperationsTransitionTicket404ApplicationProblemPlusJSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicket409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsTransitionTicket409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsTransitionTicket409ResponseHeaders
+}
+
+func (response OperationsTransitionTicket409ApplicationProblemPlusJSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicket422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsTransitionTicket422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers OperationsTransitionTicket422ResponseHeaders
+}
+
+func (response OperationsTransitionTicket422ApplicationProblemPlusJSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type OperationsTransitionTicketdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type OperationsTransitionTicketdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    OperationsTransitionTicketdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response OperationsTransitionTicketdefaultApplicationProblemPlusJSONResponse) VisitOperationsTransitionTicketResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -25987,12 +41036,63 @@ type StrictServerInterface interface {
 	// TenancySetAllocationKeyValues Replace a share or table key's values
 	// (PUT /v1/orgs/{org_id}/allocation-keys/{key_id}/values)
 	TenancySetAllocationKeyValues(ctx context.Context, request TenancySetAllocationKeyValuesRequestObject) (TenancySetAllocationKeyValuesResponseObject, error)
+	// OperationsListAnnouncements List announcements
+	// (GET /v1/orgs/{org_id}/announcements)
+	OperationsListAnnouncements(ctx context.Context, request OperationsListAnnouncementsRequestObject) (OperationsListAnnouncementsResponseObject, error)
+	// OperationsCreateAnnouncement Create an announcement
+	// (POST /v1/orgs/{org_id}/announcements)
+	OperationsCreateAnnouncement(ctx context.Context, request OperationsCreateAnnouncementRequestObject) (OperationsCreateAnnouncementResponseObject, error)
+	// OperationsDeleteAnnouncement Delete a draft announcement
+	// (DELETE /v1/orgs/{org_id}/announcements/{announcement_id})
+	OperationsDeleteAnnouncement(ctx context.Context, request OperationsDeleteAnnouncementRequestObject) (OperationsDeleteAnnouncementResponseObject, error)
+	// OperationsGetAnnouncement Get an announcement
+	// (GET /v1/orgs/{org_id}/announcements/{announcement_id})
+	OperationsGetAnnouncement(ctx context.Context, request OperationsGetAnnouncementRequestObject) (OperationsGetAnnouncementResponseObject, error)
+	// OperationsUpdateAnnouncement Edit an announcement
+	// (PATCH /v1/orgs/{org_id}/announcements/{announcement_id})
+	OperationsUpdateAnnouncement(ctx context.Context, request OperationsUpdateAnnouncementRequestObject) (OperationsUpdateAnnouncementResponseObject, error)
+	// OperationsMarkAnnouncementRead Mark an announcement read
+	// (PUT /v1/orgs/{org_id}/announcements/{announcement_id}/read)
+	OperationsMarkAnnouncementRead(ctx context.Context, request OperationsMarkAnnouncementReadRequestObject) (OperationsMarkAnnouncementReadResponseObject, error)
+	// OperationsListAnnouncementReads Who has read an announcement
+	// (GET /v1/orgs/{org_id}/announcements/{announcement_id}/reads)
+	OperationsListAnnouncementReads(ctx context.Context, request OperationsListAnnouncementReadsRequestObject) (OperationsListAnnouncementReadsResponseObject, error)
+	// OperationsArchiveAnnouncement Archive an announcement
+	// (POST /v1/orgs/{org_id}/announcements/{announcement_id}:archive)
+	OperationsArchiveAnnouncement(ctx context.Context, request OperationsArchiveAnnouncementRequestObject) (OperationsArchiveAnnouncementResponseObject, error)
+	// OperationsPublishAnnouncement Publish an announcement now
+	// (POST /v1/orgs/{org_id}/announcements/{announcement_id}:publish)
+	OperationsPublishAnnouncement(ctx context.Context, request OperationsPublishAnnouncementRequestObject) (OperationsPublishAnnouncementResponseObject, error)
+	// OperationsPreviewAnnouncement Preview recipient and SMS counts
+	// (POST /v1/orgs/{org_id}/announcements:preview)
+	OperationsPreviewAnnouncement(ctx context.Context, request OperationsPreviewAnnouncementRequestObject) (OperationsPreviewAnnouncementResponseObject, error)
 	// AuditList List the organization's audit events
 	// (GET /v1/orgs/{org_id}/audit)
 	AuditList(ctx context.Context, request AuditListRequestObject) (AuditListResponseObject, error)
 	// TenancyUpdateBlock Rename, hide or reorder a block
 	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 	TenancyUpdateBlock(ctx context.Context, request TenancyUpdateBlockRequestObject) (TenancyUpdateBlockResponseObject, error)
+	// CodesListCodes Labels for enums, error codes and site statuses
+	// (GET /v1/orgs/{org_id}/codes)
+	CodesListCodes(ctx context.Context, request CodesListCodesRequestObject) (CodesListCodesResponseObject, error)
+	// DashboardsGetPortfolioDashboard Organization portfolio dashboard
+	// (GET /v1/orgs/{org_id}/dashboard/portfolio)
+	DashboardsGetPortfolioDashboard(ctx context.Context, request DashboardsGetPortfolioDashboardRequestObject) (DashboardsGetPortfolioDashboardResponseObject, error)
+	// OperationsListDocuments List documents
+	// (GET /v1/orgs/{org_id}/documents)
+	OperationsListDocuments(ctx context.Context, request OperationsListDocumentsRequestObject) (OperationsListDocumentsResponseObject, error)
+	// OperationsCreateDocument Create document
+	// (POST /v1/orgs/{org_id}/documents)
+	OperationsCreateDocument(ctx context.Context, request OperationsCreateDocumentRequestObject) (OperationsCreateDocumentResponseObject, error)
+	// OperationsDeleteDocument Delete document
+	// (DELETE /v1/orgs/{org_id}/documents/{document_id})
+	OperationsDeleteDocument(ctx context.Context, request OperationsDeleteDocumentRequestObject) (OperationsDeleteDocumentResponseObject, error)
+	// OperationsGetDocument Get document
+	// (GET /v1/orgs/{org_id}/documents/{document_id})
+	OperationsGetDocument(ctx context.Context, request OperationsGetDocumentRequestObject) (OperationsGetDocumentResponseObject, error)
+	// OperationsUpdateDocument Update document
+	// (PATCH /v1/orgs/{org_id}/documents/{document_id})
+	OperationsUpdateDocument(ctx context.Context, request OperationsUpdateDocumentRequestObject) (OperationsUpdateDocumentResponseObject, error)
 	// FilesList List files
 	// (GET /v1/orgs/{org_id}/files)
 	FilesList(ctx context.Context, request FilesListRequestObject) (FilesListResponseObject, error)
@@ -26008,6 +41108,21 @@ type StrictServerInterface interface {
 	// FilesDownload Download a file
 	// (GET /v1/orgs/{org_id}/files/{file_id}/content)
 	FilesDownload(ctx context.Context, request FilesDownloadRequestObject) (FilesDownloadResponseObject, error)
+	// OperationsListFolders List folders
+	// (GET /v1/orgs/{org_id}/folders)
+	OperationsListFolders(ctx context.Context, request OperationsListFoldersRequestObject) (OperationsListFoldersResponseObject, error)
+	// OperationsCreateFolder Create folder
+	// (POST /v1/orgs/{org_id}/folders)
+	OperationsCreateFolder(ctx context.Context, request OperationsCreateFolderRequestObject) (OperationsCreateFolderResponseObject, error)
+	// OperationsDeleteFolder Delete folder
+	// (DELETE /v1/orgs/{org_id}/folders/{folder_id})
+	OperationsDeleteFolder(ctx context.Context, request OperationsDeleteFolderRequestObject) (OperationsDeleteFolderResponseObject, error)
+	// OperationsGetFolder Get folder
+	// (GET /v1/orgs/{org_id}/folders/{folder_id})
+	OperationsGetFolder(ctx context.Context, request OperationsGetFolderRequestObject) (OperationsGetFolderResponseObject, error)
+	// OperationsUpdateFolder Update folder
+	// (PATCH /v1/orgs/{org_id}/folders/{folder_id})
+	OperationsUpdateFolder(ctx context.Context, request OperationsUpdateFolderRequestObject) (OperationsUpdateFolderResponseObject, error)
 	// PeopleListInvitations List invitations
 	// (GET /v1/orgs/{org_id}/invitations)
 	PeopleListInvitations(ctx context.Context, request PeopleListInvitationsRequestObject) (PeopleListInvitationsResponseObject, error)
@@ -26020,6 +41135,27 @@ type StrictServerInterface interface {
 	// PeopleResendInvitation Send an invitation again with a new link
 	// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
 	PeopleResendInvitation(ctx context.Context, request PeopleResendInvitationRequestObject) (PeopleResendInvitationResponseObject, error)
+	// DashboardsGetMyDashboard My home summary
+	// (GET /v1/orgs/{org_id}/me/dashboard)
+	DashboardsGetMyDashboard(ctx context.Context, request DashboardsGetMyDashboardRequestObject) (DashboardsGetMyDashboardResponseObject, error)
+	// OperationsGetNotificationMutes My muted notification types
+	// (GET /v1/orgs/{org_id}/me/notification-mutes)
+	OperationsGetNotificationMutes(ctx context.Context, request OperationsGetNotificationMutesRequestObject) (OperationsGetNotificationMutesResponseObject, error)
+	// OperationsSetNotificationMutes Set my muted notification types
+	// (PUT /v1/orgs/{org_id}/me/notification-mutes)
+	OperationsSetNotificationMutes(ctx context.Context, request OperationsSetNotificationMutesRequestObject) (OperationsSetNotificationMutesResponseObject, error)
+	// OperationsListNotifications List my notifications
+	// (GET /v1/orgs/{org_id}/me/notifications)
+	OperationsListNotifications(ctx context.Context, request OperationsListNotificationsRequestObject) (OperationsListNotificationsResponseObject, error)
+	// OperationsGetUnreadCount Unread notification count
+	// (GET /v1/orgs/{org_id}/me/notifications/unread-count)
+	OperationsGetUnreadCount(ctx context.Context, request OperationsGetUnreadCountRequestObject) (OperationsGetUnreadCountResponseObject, error)
+	// OperationsMarkNotificationRead Mark a notification read
+	// (POST /v1/orgs/{org_id}/me/notifications/{notification_id}:read)
+	OperationsMarkNotificationRead(ctx context.Context, request OperationsMarkNotificationReadRequestObject) (OperationsMarkNotificationReadResponseObject, error)
+	// OperationsMarkAllNotificationsRead Mark all notifications read
+	// (POST /v1/orgs/{org_id}/me/notifications:read-all)
+	OperationsMarkAllNotificationsRead(ctx context.Context, request OperationsMarkAllNotificationsReadRequestObject) (OperationsMarkAllNotificationsReadResponseObject, error)
 	// PeopleListMemberships List role memberships
 	// (GET /v1/orgs/{org_id}/memberships)
 	PeopleListMemberships(ctx context.Context, request PeopleListMembershipsRequestObject) (PeopleListMembershipsResponseObject, error)
@@ -26032,6 +41168,12 @@ type StrictServerInterface interface {
 	// PeopleGetMoveOut Read a move-out
 	// (GET /v1/orgs/{org_id}/move-outs/{move_out_id})
 	PeopleGetMoveOut(ctx context.Context, request PeopleGetMoveOutRequestObject) (PeopleGetMoveOutResponseObject, error)
+	// OperationsGetNotificationDefaults Get the site defaults for automatic messages
+	// (GET /v1/orgs/{org_id}/notification-defaults)
+	OperationsGetNotificationDefaults(ctx context.Context, request OperationsGetNotificationDefaultsRequestObject) (OperationsGetNotificationDefaultsResponseObject, error)
+	// OperationsSetNotificationDefaults Set the site defaults for automatic messages
+	// (PUT /v1/orgs/{org_id}/notification-defaults)
+	OperationsSetNotificationDefaults(ctx context.Context, request OperationsSetNotificationDefaultsRequestObject) (OperationsSetNotificationDefaultsResponseObject, error)
 	// PeopleListOccupancies List occupancies
 	// (GET /v1/orgs/{org_id}/occupancies)
 	PeopleListOccupancies(ctx context.Context, request PeopleListOccupanciesRequestObject) (PeopleListOccupanciesResponseObject, error)
@@ -26089,6 +41231,9 @@ type StrictServerInterface interface {
 	// TenancyCreateBlock Add a block
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/blocks)
 	TenancyCreateBlock(ctx context.Context, request TenancyCreateBlockRequestObject) (TenancyCreateBlockResponseObject, error)
+	// DashboardsGetSiteDashboard Site dashboard
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/dashboard)
+	DashboardsGetSiteDashboard(ctx context.Context, request DashboardsGetSiteDashboardRequestObject) (DashboardsGetSiteDashboardResponseObject, error)
 	// PeopleListDirectory The site directory
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/directory)
 	PeopleListDirectory(ctx context.Context, request PeopleListDirectoryRequestObject) (PeopleListDirectoryResponseObject, error)
@@ -26110,6 +41255,9 @@ type StrictServerInterface interface {
 	// TenancyOffboardSite Offboard a site after its hand-over
 	// (POST /v1/orgs/{org_id}/sites/{site_id}/offboard)
 	TenancyOffboardSite(ctx context.Context, request TenancyOffboardSiteRequestObject) (TenancyOffboardSiteResponseObject, error)
+	// DashboardsGetStaffDashboard Staff dashboard (counts only)
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/staff-dashboard)
+	DashboardsGetStaffDashboard(ctx context.Context, request DashboardsGetStaffDashboardRequestObject) (DashboardsGetStaffDashboardResponseObject, error)
 	// TenancyListUnits List a site's units
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/units)
 	TenancyListUnits(ctx context.Context, request TenancyListUnitsRequestObject) (TenancyListUnitsResponseObject, error)
@@ -26122,6 +41270,69 @@ type StrictServerInterface interface {
 	// TenancyExportVehicles Export the site's plates as CSV
 	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
 	TenancyExportVehicles(ctx context.Context, request TenancyExportVehiclesRequestObject) (TenancyExportVehiclesResponseObject, error)
+	// OperationsGetSmsUsage Monthly SMS counter of a site
+	// (GET /v1/orgs/{org_id}/sms-usage)
+	OperationsGetSmsUsage(ctx context.Context, request OperationsGetSmsUsageRequestObject) (OperationsGetSmsUsageResponseObject, error)
+	// OperationsListTicketCategories List ticket categories
+	// (GET /v1/orgs/{org_id}/ticket-categories)
+	OperationsListTicketCategories(ctx context.Context, request OperationsListTicketCategoriesRequestObject) (OperationsListTicketCategoriesResponseObject, error)
+	// OperationsCreateTicketCategory Create ticket category
+	// (POST /v1/orgs/{org_id}/ticket-categories)
+	OperationsCreateTicketCategory(ctx context.Context, request OperationsCreateTicketCategoryRequestObject) (OperationsCreateTicketCategoryResponseObject, error)
+	// OperationsGetTicketCategory Get ticket category
+	// (GET /v1/orgs/{org_id}/ticket-categories/{category_id})
+	OperationsGetTicketCategory(ctx context.Context, request OperationsGetTicketCategoryRequestObject) (OperationsGetTicketCategoryResponseObject, error)
+	// OperationsUpdateTicketCategory Update ticket category
+	// (PATCH /v1/orgs/{org_id}/ticket-categories/{category_id})
+	OperationsUpdateTicketCategory(ctx context.Context, request OperationsUpdateTicketCategoryRequestObject) (OperationsUpdateTicketCategoryResponseObject, error)
+	// OperationsGetTicketWorkflow Get the ticket workflow of a site
+	// (GET /v1/orgs/{org_id}/ticket-workflow)
+	OperationsGetTicketWorkflow(ctx context.Context, request OperationsGetTicketWorkflowRequestObject) (OperationsGetTicketWorkflowResponseObject, error)
+	// OperationsUpdateTicketWorkflow Replace the ticket workflow of a site
+	// (PUT /v1/orgs/{org_id}/ticket-workflow)
+	OperationsUpdateTicketWorkflow(ctx context.Context, request OperationsUpdateTicketWorkflowRequestObject) (OperationsUpdateTicketWorkflowResponseObject, error)
+	// OperationsRestoreTicketWorkflow Restore the default ticket workflow of a site
+	// (POST /v1/orgs/{org_id}/ticket-workflow:restore-default)
+	OperationsRestoreTicketWorkflow(ctx context.Context, request OperationsRestoreTicketWorkflowRequestObject) (OperationsRestoreTicketWorkflowResponseObject, error)
+	// OperationsListTickets List tickets
+	// (GET /v1/orgs/{org_id}/tickets)
+	OperationsListTickets(ctx context.Context, request OperationsListTicketsRequestObject) (OperationsListTicketsResponseObject, error)
+	// OperationsCreateTicket Open a ticket
+	// (POST /v1/orgs/{org_id}/tickets)
+	OperationsCreateTicket(ctx context.Context, request OperationsCreateTicketRequestObject) (OperationsCreateTicketResponseObject, error)
+	// OperationsGetTicket Get a ticket
+	// (GET /v1/orgs/{org_id}/tickets/{ticket_id})
+	OperationsGetTicket(ctx context.Context, request OperationsGetTicketRequestObject) (OperationsGetTicketResponseObject, error)
+	// OperationsUpdateTicket Edit, reassign or change visibility of a ticket
+	// (PATCH /v1/orgs/{org_id}/tickets/{ticket_id})
+	OperationsUpdateTicket(ctx context.Context, request OperationsUpdateTicketRequestObject) (OperationsUpdateTicketResponseObject, error)
+	// OperationsCreateTicketAttachment Attach an uploaded file to a ticket
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}/attachments)
+	OperationsCreateTicketAttachment(ctx context.Context, request OperationsCreateTicketAttachmentRequestObject) (OperationsCreateTicketAttachmentResponseObject, error)
+	// OperationsDeleteTicketAttachment Remove an attachment
+	// (DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/attachments/{attachment_id})
+	OperationsDeleteTicketAttachment(ctx context.Context, request OperationsDeleteTicketAttachmentRequestObject) (OperationsDeleteTicketAttachmentResponseObject, error)
+	// OperationsListTicketComments List ticket comments
+	// (GET /v1/orgs/{org_id}/tickets/{ticket_id}/comments)
+	OperationsListTicketComments(ctx context.Context, request OperationsListTicketCommentsRequestObject) (OperationsListTicketCommentsResponseObject, error)
+	// OperationsCreateTicketComment Comment on a ticket
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}/comments)
+	OperationsCreateTicketComment(ctx context.Context, request OperationsCreateTicketCommentRequestObject) (OperationsCreateTicketCommentResponseObject, error)
+	// OperationsListTicketHistory Status history of a ticket
+	// (GET /v1/orgs/{org_id}/tickets/{ticket_id}/history)
+	OperationsListTicketHistory(ctx context.Context, request OperationsListTicketHistoryRequestObject) (OperationsListTicketHistoryResponseObject, error)
+	// OperationsUnvoteTicket Take back a "+1"
+	// (DELETE /v1/orgs/{org_id}/tickets/{ticket_id}/vote)
+	OperationsUnvoteTicket(ctx context.Context, request OperationsUnvoteTicketRequestObject) (OperationsUnvoteTicketResponseObject, error)
+	// OperationsVoteTicket "+1" a common ticket
+	// (PUT /v1/orgs/{org_id}/tickets/{ticket_id}/vote)
+	OperationsVoteTicket(ctx context.Context, request OperationsVoteTicketRequestObject) (OperationsVoteTicketResponseObject, error)
+	// OperationsMergeTicket Merge a duplicate into another ticket
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}:merge)
+	OperationsMergeTicket(ctx context.Context, request OperationsMergeTicketRequestObject) (OperationsMergeTicketResponseObject, error)
+	// OperationsTransitionTicket Move a ticket to another status
+	// (POST /v1/orgs/{org_id}/tickets/{ticket_id}:transition)
+	OperationsTransitionTicket(ctx context.Context, request OperationsTransitionTicketRequestObject) (OperationsTransitionTicketResponseObject, error)
 	// PeopleListClaims List unit claims
 	// (GET /v1/orgs/{org_id}/unit-claims)
 	PeopleListClaims(ctx context.Context, request PeopleListClaimsRequestObject) (PeopleListClaimsResponseObject, error)
@@ -26963,6 +42174,311 @@ func (sh *strictHandler) TenancySetAllocationKeyValues(w http.ResponseWriter, r 
 	}
 }
 
+// OperationsListAnnouncements operation middleware
+func (sh *strictHandler) OperationsListAnnouncements(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListAnnouncementsParams) {
+	var request OperationsListAnnouncementsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListAnnouncements(ctx, request.(OperationsListAnnouncementsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListAnnouncements")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListAnnouncementsResponseObject); ok {
+		if err := validResponse.VisitOperationsListAnnouncementsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateAnnouncement operation middleware
+func (sh *strictHandler) OperationsCreateAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateAnnouncementParams) {
+	var request OperationsCreateAnnouncementRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsCreateAnnouncementJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateAnnouncement(ctx, request.(OperationsCreateAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsDeleteAnnouncement operation middleware
+func (sh *strictHandler) OperationsDeleteAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsDeleteAnnouncementParams) {
+	var request OperationsDeleteAnnouncementRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsDeleteAnnouncement(ctx, request.(OperationsDeleteAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsDeleteAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsDeleteAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsDeleteAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetAnnouncement operation middleware
+func (sh *strictHandler) OperationsGetAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID) {
+	var request OperationsGetAnnouncementRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetAnnouncement(ctx, request.(OperationsGetAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsGetAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUpdateAnnouncement operation middleware
+func (sh *strictHandler) OperationsUpdateAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsUpdateAnnouncementParams) {
+	var request OperationsUpdateAnnouncementRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+	request.Params = params
+
+	var body OperationsUpdateAnnouncementJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUpdateAnnouncement(ctx, request.(OperationsUpdateAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUpdateAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUpdateAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsUpdateAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsMarkAnnouncementRead operation middleware
+func (sh *strictHandler) OperationsMarkAnnouncementRead(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID) {
+	var request OperationsMarkAnnouncementReadRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsMarkAnnouncementRead(ctx, request.(OperationsMarkAnnouncementReadRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsMarkAnnouncementRead")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsMarkAnnouncementReadResponseObject); ok {
+		if err := validResponse.VisitOperationsMarkAnnouncementReadResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListAnnouncementReads operation middleware
+func (sh *strictHandler) OperationsListAnnouncementReads(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsListAnnouncementReadsParams) {
+	var request OperationsListAnnouncementReadsRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListAnnouncementReads(ctx, request.(OperationsListAnnouncementReadsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListAnnouncementReads")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListAnnouncementReadsResponseObject); ok {
+		if err := validResponse.VisitOperationsListAnnouncementReadsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsArchiveAnnouncement operation middleware
+func (sh *strictHandler) OperationsArchiveAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsArchiveAnnouncementParams) {
+	var request OperationsArchiveAnnouncementRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsArchiveAnnouncement(ctx, request.(OperationsArchiveAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsArchiveAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsArchiveAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsArchiveAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsPublishAnnouncement operation middleware
+func (sh *strictHandler) OperationsPublishAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId, announcementId openapi_types.UUID, params OperationsPublishAnnouncementParams) {
+	var request OperationsPublishAnnouncementRequestObject
+
+	request.OrgId = orgId
+	request.AnnouncementId = announcementId
+	request.Params = params
+
+	var body OperationsPublishAnnouncementJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsPublishAnnouncement(ctx, request.(OperationsPublishAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsPublishAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsPublishAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsPublishAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsPreviewAnnouncement operation middleware
+func (sh *strictHandler) OperationsPreviewAnnouncement(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request OperationsPreviewAnnouncementRequestObject
+
+	request.OrgId = orgId
+
+	var body OperationsPreviewAnnouncementJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsPreviewAnnouncement(ctx, request.(OperationsPreviewAnnouncementRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsPreviewAnnouncement")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsPreviewAnnouncementResponseObject); ok {
+		if err := validResponse.VisitOperationsPreviewAnnouncementResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // AuditList operation middleware
 func (sh *strictHandler) AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams) {
 	var request AuditListRequestObject
@@ -27018,6 +42534,210 @@ func (sh *strictHandler) TenancyUpdateBlock(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(TenancyUpdateBlockResponseObject); ok {
 		if err := validResponse.VisitTenancyUpdateBlockResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CodesListCodes operation middleware
+func (sh *strictHandler) CodesListCodes(w http.ResponseWriter, r *http.Request, orgId OrgId, params CodesListCodesParams) {
+	var request CodesListCodesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CodesListCodes(ctx, request.(CodesListCodesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CodesListCodes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CodesListCodesResponseObject); ok {
+		if err := validResponse.VisitCodesListCodesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DashboardsGetPortfolioDashboard operation middleware
+func (sh *strictHandler) DashboardsGetPortfolioDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request DashboardsGetPortfolioDashboardRequestObject
+
+	request.OrgId = orgId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DashboardsGetPortfolioDashboard(ctx, request.(DashboardsGetPortfolioDashboardRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DashboardsGetPortfolioDashboard")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DashboardsGetPortfolioDashboardResponseObject); ok {
+		if err := validResponse.VisitDashboardsGetPortfolioDashboardResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListDocuments operation middleware
+func (sh *strictHandler) OperationsListDocuments(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListDocumentsParams) {
+	var request OperationsListDocumentsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListDocuments(ctx, request.(OperationsListDocumentsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListDocuments")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListDocumentsResponseObject); ok {
+		if err := validResponse.VisitOperationsListDocumentsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateDocument operation middleware
+func (sh *strictHandler) OperationsCreateDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateDocumentParams) {
+	var request OperationsCreateDocumentRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsCreateDocumentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateDocument(ctx, request.(OperationsCreateDocumentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateDocument")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateDocumentResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateDocumentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsDeleteDocument operation middleware
+func (sh *strictHandler) OperationsDeleteDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID, params OperationsDeleteDocumentParams) {
+	var request OperationsDeleteDocumentRequestObject
+
+	request.OrgId = orgId
+	request.DocumentId = documentId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsDeleteDocument(ctx, request.(OperationsDeleteDocumentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsDeleteDocument")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsDeleteDocumentResponseObject); ok {
+		if err := validResponse.VisitOperationsDeleteDocumentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetDocument operation middleware
+func (sh *strictHandler) OperationsGetDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID) {
+	var request OperationsGetDocumentRequestObject
+
+	request.OrgId = orgId
+	request.DocumentId = documentId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetDocument(ctx, request.(OperationsGetDocumentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetDocument")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetDocumentResponseObject); ok {
+		if err := validResponse.VisitOperationsGetDocumentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUpdateDocument operation middleware
+func (sh *strictHandler) OperationsUpdateDocument(w http.ResponseWriter, r *http.Request, orgId OrgId, documentId openapi_types.UUID, params OperationsUpdateDocumentParams) {
+	var request OperationsUpdateDocumentRequestObject
+
+	request.OrgId = orgId
+	request.DocumentId = documentId
+	request.Params = params
+
+	var body OperationsUpdateDocumentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUpdateDocument(ctx, request.(OperationsUpdateDocumentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUpdateDocument")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUpdateDocumentResponseObject); ok {
+		if err := validResponse.VisitOperationsUpdateDocumentResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -27167,6 +42887,157 @@ func (sh *strictHandler) FilesDownload(w http.ResponseWriter, r *http.Request, o
 	}
 }
 
+// OperationsListFolders operation middleware
+func (sh *strictHandler) OperationsListFolders(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListFoldersParams) {
+	var request OperationsListFoldersRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListFolders(ctx, request.(OperationsListFoldersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListFolders")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListFoldersResponseObject); ok {
+		if err := validResponse.VisitOperationsListFoldersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateFolder operation middleware
+func (sh *strictHandler) OperationsCreateFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateFolderParams) {
+	var request OperationsCreateFolderRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsCreateFolderJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateFolder(ctx, request.(OperationsCreateFolderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateFolder")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateFolderResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateFolderResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsDeleteFolder operation middleware
+func (sh *strictHandler) OperationsDeleteFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID, params OperationsDeleteFolderParams) {
+	var request OperationsDeleteFolderRequestObject
+
+	request.OrgId = orgId
+	request.FolderId = folderId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsDeleteFolder(ctx, request.(OperationsDeleteFolderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsDeleteFolder")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsDeleteFolderResponseObject); ok {
+		if err := validResponse.VisitOperationsDeleteFolderResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetFolder operation middleware
+func (sh *strictHandler) OperationsGetFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID) {
+	var request OperationsGetFolderRequestObject
+
+	request.OrgId = orgId
+	request.FolderId = folderId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetFolder(ctx, request.(OperationsGetFolderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetFolder")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetFolderResponseObject); ok {
+		if err := validResponse.VisitOperationsGetFolderResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUpdateFolder operation middleware
+func (sh *strictHandler) OperationsUpdateFolder(w http.ResponseWriter, r *http.Request, orgId OrgId, folderId openapi_types.UUID, params OperationsUpdateFolderParams) {
+	var request OperationsUpdateFolderRequestObject
+
+	request.OrgId = orgId
+	request.FolderId = folderId
+	request.Params = params
+
+	var body OperationsUpdateFolderJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUpdateFolder(ctx, request.(OperationsUpdateFolderRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUpdateFolder")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUpdateFolderResponseObject); ok {
+		if err := validResponse.VisitOperationsUpdateFolderResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PeopleListInvitations operation middleware
 func (sh *strictHandler) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
 	var request PeopleListInvitationsRequestObject
@@ -27281,6 +43152,211 @@ func (sh *strictHandler) PeopleResendInvitation(w http.ResponseWriter, r *http.R
 	}
 }
 
+// DashboardsGetMyDashboard operation middleware
+func (sh *strictHandler) DashboardsGetMyDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, params DashboardsGetMyDashboardParams) {
+	var request DashboardsGetMyDashboardRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DashboardsGetMyDashboard(ctx, request.(DashboardsGetMyDashboardRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DashboardsGetMyDashboard")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DashboardsGetMyDashboardResponseObject); ok {
+		if err := validResponse.VisitDashboardsGetMyDashboardResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetNotificationMutes operation middleware
+func (sh *strictHandler) OperationsGetNotificationMutes(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request OperationsGetNotificationMutesRequestObject
+
+	request.OrgId = orgId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetNotificationMutes(ctx, request.(OperationsGetNotificationMutesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetNotificationMutes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetNotificationMutesResponseObject); ok {
+		if err := validResponse.VisitOperationsGetNotificationMutesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsSetNotificationMutes operation middleware
+func (sh *strictHandler) OperationsSetNotificationMutes(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request OperationsSetNotificationMutesRequestObject
+
+	request.OrgId = orgId
+
+	var body OperationsSetNotificationMutesJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsSetNotificationMutes(ctx, request.(OperationsSetNotificationMutesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsSetNotificationMutes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsSetNotificationMutesResponseObject); ok {
+		if err := validResponse.VisitOperationsSetNotificationMutesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListNotifications operation middleware
+func (sh *strictHandler) OperationsListNotifications(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListNotificationsParams) {
+	var request OperationsListNotificationsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListNotifications(ctx, request.(OperationsListNotificationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListNotifications")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListNotificationsResponseObject); ok {
+		if err := validResponse.VisitOperationsListNotificationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetUnreadCount operation middleware
+func (sh *strictHandler) OperationsGetUnreadCount(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetUnreadCountParams) {
+	var request OperationsGetUnreadCountRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetUnreadCount(ctx, request.(OperationsGetUnreadCountRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetUnreadCount")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetUnreadCountResponseObject); ok {
+		if err := validResponse.VisitOperationsGetUnreadCountResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsMarkNotificationRead operation middleware
+func (sh *strictHandler) OperationsMarkNotificationRead(w http.ResponseWriter, r *http.Request, orgId OrgId, notificationId openapi_types.UUID, params OperationsMarkNotificationReadParams) {
+	var request OperationsMarkNotificationReadRequestObject
+
+	request.OrgId = orgId
+	request.NotificationId = notificationId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsMarkNotificationRead(ctx, request.(OperationsMarkNotificationReadRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsMarkNotificationRead")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsMarkNotificationReadResponseObject); ok {
+		if err := validResponse.VisitOperationsMarkNotificationReadResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsMarkAllNotificationsRead operation middleware
+func (sh *strictHandler) OperationsMarkAllNotificationsRead(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsMarkAllNotificationsReadParams) {
+	var request OperationsMarkAllNotificationsReadRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsMarkAllNotificationsReadJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsMarkAllNotificationsRead(ctx, request.(OperationsMarkAllNotificationsReadRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsMarkAllNotificationsRead")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsMarkAllNotificationsReadResponseObject); ok {
+		if err := validResponse.VisitOperationsMarkAllNotificationsReadResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PeopleListMemberships operation middleware
 func (sh *strictHandler) PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams) {
 	var request PeopleListMembershipsRequestObject
@@ -27388,6 +43464,67 @@ func (sh *strictHandler) PeopleGetMoveOut(w http.ResponseWriter, r *http.Request
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PeopleGetMoveOutResponseObject); ok {
 		if err := validResponse.VisitPeopleGetMoveOutResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetNotificationDefaults operation middleware
+func (sh *strictHandler) OperationsGetNotificationDefaults(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetNotificationDefaultsParams) {
+	var request OperationsGetNotificationDefaultsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetNotificationDefaults(ctx, request.(OperationsGetNotificationDefaultsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetNotificationDefaults")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetNotificationDefaultsResponseObject); ok {
+		if err := validResponse.VisitOperationsGetNotificationDefaultsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsSetNotificationDefaults operation middleware
+func (sh *strictHandler) OperationsSetNotificationDefaults(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsSetNotificationDefaultsParams) {
+	var request OperationsSetNotificationDefaultsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsSetNotificationDefaultsJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsSetNotificationDefaults(ctx, request.(OperationsSetNotificationDefaultsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsSetNotificationDefaults")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsSetNotificationDefaultsResponseObject); ok {
+		if err := validResponse.VisitOperationsSetNotificationDefaultsResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -27979,6 +44116,33 @@ func (sh *strictHandler) TenancyCreateBlock(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// DashboardsGetSiteDashboard operation middleware
+func (sh *strictHandler) DashboardsGetSiteDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request DashboardsGetSiteDashboardRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DashboardsGetSiteDashboard(ctx, request.(DashboardsGetSiteDashboardRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DashboardsGetSiteDashboard")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DashboardsGetSiteDashboardResponseObject); ok {
+		if err := validResponse.VisitDashboardsGetSiteDashboardResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PeopleListDirectory operation middleware
 func (sh *strictHandler) PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params PeopleListDirectoryParams) {
 	var request PeopleListDirectoryRequestObject
@@ -28183,6 +44347,33 @@ func (sh *strictHandler) TenancyOffboardSite(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// DashboardsGetStaffDashboard operation middleware
+func (sh *strictHandler) DashboardsGetStaffDashboard(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request DashboardsGetStaffDashboardRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DashboardsGetStaffDashboard(ctx, request.(DashboardsGetStaffDashboardRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DashboardsGetStaffDashboard")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DashboardsGetStaffDashboardResponseObject); ok {
+		if err := validResponse.VisitDashboardsGetStaffDashboardResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // TenancyListUnits operation middleware
 func (sh *strictHandler) TenancyListUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListUnitsParams) {
 	var request TenancyListUnitsRequestObject
@@ -28293,6 +44484,655 @@ func (sh *strictHandler) TenancyExportVehicles(w http.ResponseWriter, r *http.Re
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(TenancyExportVehiclesResponseObject); ok {
 		if err := validResponse.VisitTenancyExportVehiclesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetSmsUsage operation middleware
+func (sh *strictHandler) OperationsGetSmsUsage(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetSmsUsageParams) {
+	var request OperationsGetSmsUsageRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetSmsUsage(ctx, request.(OperationsGetSmsUsageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetSmsUsage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetSmsUsageResponseObject); ok {
+		if err := validResponse.VisitOperationsGetSmsUsageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListTicketCategories operation middleware
+func (sh *strictHandler) OperationsListTicketCategories(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListTicketCategoriesParams) {
+	var request OperationsListTicketCategoriesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListTicketCategories(ctx, request.(OperationsListTicketCategoriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListTicketCategories")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListTicketCategoriesResponseObject); ok {
+		if err := validResponse.VisitOperationsListTicketCategoriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateTicketCategory operation middleware
+func (sh *strictHandler) OperationsCreateTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateTicketCategoryParams) {
+	var request OperationsCreateTicketCategoryRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsCreateTicketCategoryJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateTicketCategory(ctx, request.(OperationsCreateTicketCategoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateTicketCategory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateTicketCategoryResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateTicketCategoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetTicketCategory operation middleware
+func (sh *strictHandler) OperationsGetTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, categoryId openapi_types.UUID) {
+	var request OperationsGetTicketCategoryRequestObject
+
+	request.OrgId = orgId
+	request.CategoryId = categoryId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetTicketCategory(ctx, request.(OperationsGetTicketCategoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetTicketCategory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetTicketCategoryResponseObject); ok {
+		if err := validResponse.VisitOperationsGetTicketCategoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUpdateTicketCategory operation middleware
+func (sh *strictHandler) OperationsUpdateTicketCategory(w http.ResponseWriter, r *http.Request, orgId OrgId, categoryId openapi_types.UUID, params OperationsUpdateTicketCategoryParams) {
+	var request OperationsUpdateTicketCategoryRequestObject
+
+	request.OrgId = orgId
+	request.CategoryId = categoryId
+	request.Params = params
+
+	var body OperationsUpdateTicketCategoryJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUpdateTicketCategory(ctx, request.(OperationsUpdateTicketCategoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUpdateTicketCategory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUpdateTicketCategoryResponseObject); ok {
+		if err := validResponse.VisitOperationsUpdateTicketCategoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetTicketWorkflow operation middleware
+func (sh *strictHandler) OperationsGetTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsGetTicketWorkflowParams) {
+	var request OperationsGetTicketWorkflowRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetTicketWorkflow(ctx, request.(OperationsGetTicketWorkflowRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetTicketWorkflow")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetTicketWorkflowResponseObject); ok {
+		if err := validResponse.VisitOperationsGetTicketWorkflowResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUpdateTicketWorkflow operation middleware
+func (sh *strictHandler) OperationsUpdateTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsUpdateTicketWorkflowParams) {
+	var request OperationsUpdateTicketWorkflowRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsUpdateTicketWorkflowJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUpdateTicketWorkflow(ctx, request.(OperationsUpdateTicketWorkflowRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUpdateTicketWorkflow")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUpdateTicketWorkflowResponseObject); ok {
+		if err := validResponse.VisitOperationsUpdateTicketWorkflowResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsRestoreTicketWorkflow operation middleware
+func (sh *strictHandler) OperationsRestoreTicketWorkflow(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsRestoreTicketWorkflowParams) {
+	var request OperationsRestoreTicketWorkflowRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsRestoreTicketWorkflowJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsRestoreTicketWorkflow(ctx, request.(OperationsRestoreTicketWorkflowRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsRestoreTicketWorkflow")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsRestoreTicketWorkflowResponseObject); ok {
+		if err := validResponse.VisitOperationsRestoreTicketWorkflowResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListTickets operation middleware
+func (sh *strictHandler) OperationsListTickets(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsListTicketsParams) {
+	var request OperationsListTicketsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListTickets(ctx, request.(OperationsListTicketsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListTickets")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListTicketsResponseObject); ok {
+		if err := validResponse.VisitOperationsListTicketsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateTicket operation middleware
+func (sh *strictHandler) OperationsCreateTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, params OperationsCreateTicketParams) {
+	var request OperationsCreateTicketRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body OperationsCreateTicketJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateTicket(ctx, request.(OperationsCreateTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateTicketResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsGetTicket operation middleware
+func (sh *strictHandler) OperationsGetTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID) {
+	var request OperationsGetTicketRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsGetTicket(ctx, request.(OperationsGetTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsGetTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsGetTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsGetTicketResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUpdateTicket operation middleware
+func (sh *strictHandler) OperationsUpdateTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsUpdateTicketParams) {
+	var request OperationsUpdateTicketRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	var body OperationsUpdateTicketJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUpdateTicket(ctx, request.(OperationsUpdateTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUpdateTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUpdateTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsUpdateTicketResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateTicketAttachment operation middleware
+func (sh *strictHandler) OperationsCreateTicketAttachment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsCreateTicketAttachmentParams) {
+	var request OperationsCreateTicketAttachmentRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	var body OperationsCreateTicketAttachmentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateTicketAttachment(ctx, request.(OperationsCreateTicketAttachmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateTicketAttachment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateTicketAttachmentResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateTicketAttachmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsDeleteTicketAttachment operation middleware
+func (sh *strictHandler) OperationsDeleteTicketAttachment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, attachmentId openapi_types.UUID) {
+	var request OperationsDeleteTicketAttachmentRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.AttachmentId = attachmentId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsDeleteTicketAttachment(ctx, request.(OperationsDeleteTicketAttachmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsDeleteTicketAttachment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsDeleteTicketAttachmentResponseObject); ok {
+		if err := validResponse.VisitOperationsDeleteTicketAttachmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListTicketComments operation middleware
+func (sh *strictHandler) OperationsListTicketComments(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsListTicketCommentsParams) {
+	var request OperationsListTicketCommentsRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListTicketComments(ctx, request.(OperationsListTicketCommentsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListTicketComments")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListTicketCommentsResponseObject); ok {
+		if err := validResponse.VisitOperationsListTicketCommentsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsCreateTicketComment operation middleware
+func (sh *strictHandler) OperationsCreateTicketComment(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsCreateTicketCommentParams) {
+	var request OperationsCreateTicketCommentRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	var body OperationsCreateTicketCommentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsCreateTicketComment(ctx, request.(OperationsCreateTicketCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsCreateTicketComment")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsCreateTicketCommentResponseObject); ok {
+		if err := validResponse.VisitOperationsCreateTicketCommentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsListTicketHistory operation middleware
+func (sh *strictHandler) OperationsListTicketHistory(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsListTicketHistoryParams) {
+	var request OperationsListTicketHistoryRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsListTicketHistory(ctx, request.(OperationsListTicketHistoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsListTicketHistory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsListTicketHistoryResponseObject); ok {
+		if err := validResponse.VisitOperationsListTicketHistoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsUnvoteTicket operation middleware
+func (sh *strictHandler) OperationsUnvoteTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID) {
+	var request OperationsUnvoteTicketRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsUnvoteTicket(ctx, request.(OperationsUnvoteTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsUnvoteTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsUnvoteTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsUnvoteTicketResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsVoteTicket operation middleware
+func (sh *strictHandler) OperationsVoteTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID) {
+	var request OperationsVoteTicketRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsVoteTicket(ctx, request.(OperationsVoteTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsVoteTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsVoteTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsVoteTicketResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsMergeTicket operation middleware
+func (sh *strictHandler) OperationsMergeTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsMergeTicketParams) {
+	var request OperationsMergeTicketRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	var body OperationsMergeTicketJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsMergeTicket(ctx, request.(OperationsMergeTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsMergeTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsMergeTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsMergeTicketResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// OperationsTransitionTicket operation middleware
+func (sh *strictHandler) OperationsTransitionTicket(w http.ResponseWriter, r *http.Request, orgId OrgId, ticketId openapi_types.UUID, params OperationsTransitionTicketParams) {
+	var request OperationsTransitionTicketRequestObject
+
+	request.OrgId = orgId
+	request.TicketId = ticketId
+	request.Params = params
+
+	var body OperationsTransitionTicketJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.OperationsTransitionTicket(ctx, request.(OperationsTransitionTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "OperationsTransitionTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(OperationsTransitionTicketResponseObject); ok {
+		if err := validResponse.VisitOperationsTransitionTicketResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -28884,386 +45724,605 @@ func (sh *strictHandler) PlatformListAudit(w http.ResponseWriter, r *http.Reques
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"dkLxFsd5u7j+8uX/HwA=",
+	"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",
+	"/w8A",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

@@ -1,0 +1,28 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: dashboards.getPortfolioDashboard
+  summary: Organization portfolio dashboard
+  description: |-
+    In release 0.1 (S5).
+
+    Permission: `dashboard.portfolio`.
+  tags:
+    - dashboards
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [dashboard.portfolio]
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/dashboards.yaml#/schemas/PortfolioDashboard
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

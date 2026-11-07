@@ -1,0 +1,39 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: dashboards.getSiteDashboard
+  summary: Site dashboard
+  description: |-
+    Site dashboard.
+
+    Contains receivables, cash and bank balances: staff and guards do not hold `dashboard.site`; staff use `dashboards.getStaffDashboard`.
+
+    Permission: `dashboard.site`.
+  tags:
+    - dashboards
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [dashboard.site]
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/dashboards.yaml#/schemas/SiteDashboard
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

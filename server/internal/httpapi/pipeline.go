@@ -24,11 +24,22 @@ func init() {
 		`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`))
 }
 
-// Idempotency modes of the x-idempotent extension.
+// Idempotency modes of the x-idempotent extension. "none" marks a read-only
+// POST (a preview or dry run): it takes no Idempotency-Key.
 const (
 	idemOptional = "optional"
 	idemRequired = "required"
+	idemNone     = "none"
 )
+
+// idemMode turns the extension value into the mode the middleware acts on:
+// none behaves like an operation without the extension.
+func idemMode(v string) string {
+	if v == idemNone {
+		return ""
+	}
+	return v
+}
 
 const (
 	headerIdempotencyKey = "Idempotency-Key"
@@ -117,7 +128,7 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
 			info := opInfo{
-				idempotent: extString(op.Extensions, "x-idempotent"),
+				idempotent: idemMode(extString(op.Extensions, "x-idempotent")),
 				preview:    extString(op.Extensions, "x-stability") == "preview",
 				auth:       authModeOf(spec, op),
 				query:      queryParams(item, op),

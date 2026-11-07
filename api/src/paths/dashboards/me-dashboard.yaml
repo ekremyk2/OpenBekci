@@ -1,0 +1,32 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: dashboards.getMyDashboard
+  summary: My home summary
+  description: |-
+    Resident summary, or the role-appropriate home.
+
+    Permission: `me.dashboard`.
+  tags:
+    - dashboards
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [me.dashboard]
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/SiteId
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/dashboards.yaml#/schemas/MeDashboard
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

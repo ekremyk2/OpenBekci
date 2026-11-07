@@ -33,7 +33,7 @@ const (
 )
 
 // AnyView is the permission set of the read operations.
-var AnyView = authz.AnyOf(PermPublish, PermRead)
+var AnyView = authz.AnyOf(PermRead, PermPublish)
 
 // Permissions declares the module's permissions; the wiring registers them.
 func Permissions() []authz.PermissionDef {
