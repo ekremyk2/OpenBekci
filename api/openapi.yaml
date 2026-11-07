@@ -1065,13 +1065,97 @@ components:
             $ref: '#/components/schemas/OrgAccess'
         occupancies:
           type: array
-          description: The caller's unit occupancies (owner, tenant, household); empty until the people module lands.
+          description: The caller's unit occupancies across organizations (owner, tenant, household; former ones only inside their dates). Empty until the people module lands.
           items:
-            type: object
-            additionalProperties: true
+            $ref: '#/components/schemas/MeOccupancy'
         policies:
-          type: object
-          additionalProperties: true
+          $ref: '#/components/schemas/MePolicies'
+    MeOccupancy:
+      type: object
+      description: One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - unit_label
+        - kind
+        - side
+        - may_see_money
+        - valid_from
+        - valid_to
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        unit_label:
+          type: string
+          description: What people say, for example `A Blok D:12`.
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+            - household
+            - former_occupant
+          x-open-enum: true
+        side:
+          type: string
+          nullable: true
+          description: The debtor side the occupant belongs to (`owner` or `tenant`); null for household members. Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        may_see_money:
+          type: boolean
+          description: Always true for owners and tenants; for household members whether the owner or tenant granted money visibility (S3).
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+          description: Null while the occupancy is current.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000005
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_id: 0192a3f0-1000-7000-8000-000000000003
+        unit_label: A Blok D:12
+        kind: tenant
+        side: tenant
+        may_see_money: true
+        valid_from: '2025-09-01'
+        valid_to: null
+    MePolicies:
+      type: object
+      description: Instance policies that apply to the signed-in user, so clients can enforce them without a second call.
+      required:
+        - app_lock_required
+        - reauth_window_minutes
+      properties:
+        app_lock_required:
+          type: boolean
+          description: The mobile app must be protected by a device lock (biometrics or passcode) before it shows money or personal data.
+        reauth_window_minutes:
+          type: integer
+          format: int64
+          description: How long a re-authentication (`POST /v1/auth/reauth`) stays valid for sensitive operations (default 10).
+      example:
+        app_lock_required: false
+        reauth_window_minutes: 10
     Session:
       type: object
       description: One open session of the caller. Mobile sessions keep their id across token rotation.
@@ -1119,6 +1203,16 @@ components:
         current:
           type: boolean
           description: True for the session that made this request.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        client: web
+        device_name: null
+        ip: null
+        user_agent: null
+        created_at: '2026-03-01T09:00:00Z'
+        last_used_at: null
+        expires_at: '2026-03-01T09:00:00Z'
+        current: false
     SessionList:
       type: object
       required:
@@ -1133,6 +1227,18 @@ components:
           type: string
           nullable: true
           description: Always null; the list is short and returned whole.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            client: web
+            device_name: null
+            ip: null
+            user_agent: null
+            created_at: '2026-03-01T09:00:00Z'
+            last_used_at: null
+            expires_at: '2026-03-01T09:00:00Z'
+            current: false
+        next_cursor: null
     MeUser:
       type: object
       description: The signed-in account as `GET /v1/me` shows it.

@@ -906,9 +906,11 @@ export interface paths {
          * Set the units carrying a tag
          * @description **Release 0.1.** Set the units carrying a tag.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `sites.manage`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `version_conflict` (409).
          */
         put: operations["tenancy.setUnitTagMembers"];
         post?: never;
@@ -1230,6 +1232,37 @@ export interface paths {
         patch: operations["people.updatePerson"];
         trace?: never;
     };
+    "/v1/orgs/{org_id}/persons/{person_id}:erase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Erase a person (privacy)
+         * @description **Release 0.1.** Anonymizes the person for a KVKK/GDPR erasure request. Irreversible. Occupancies keep unit and dates.
+         *
+         *     Permission: `people.erase`.
+         *
+         *     Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `conflict` (409, open balance without override), `idempotency_mismatch` (422).
+         */
+        post: operations["people.erasePerson"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/persons/{person_id}/national-id": {
         parameters: {
             query?: never;
@@ -1399,6 +1432,8 @@ export interface paths {
          *     Permission: `people.move_out`.
          *
          *     Problems: `conflict` (409).
+         *
+         *     The preview lists the open charges that would be carried (`carried`) under the default `carry_to_person`.
          */
         post: operations["people.previewMoveOut"];
         delete?: never;
@@ -1423,7 +1458,7 @@ export interface paths {
         put?: never;
         /**
          * Record a move-out or sale
-         * @description **Release 0.1.** Ends the occupancy at `as_of`, files the closing statement and the debt / no-debt certificate (O8), and records the disposition: remaining debt stays on the person unless overridden (audited).
+         * @description **Release 0.1.** Ends the occupancy at `as_of`, files the closing statement and the debt / no-debt certificate (O8), and handles open charges per `open_charges`: by default (`carry_to_person`) they become the leaving person's personal receivable and the next occupant starts at zero; the response lists every carried charge. Overrides are audited.
          *
          *     Permission: `people.move_out`.
          *
@@ -1547,6 +1582,8 @@ export interface paths {
          * @description **Release 0.1.** Removing a site-owned membership needs re-authentication and is audited; an organization admin cannot otherwise remove board or auditor memberships.
          *
          *     Permission: `memberships.manage`.
+         *
+         *     Sensitive (ending a site-owned membership): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
          *
          *     Problems: `reauth_required` (403), `conflict` (409), `version_conflict` (409).
          */
@@ -1678,6 +1715,8 @@ export interface paths {
         /**
          * Invite a household member to my unit
          * @description **Release 0.1.** Invite a household member to my unit.
+         *
+         *     Listing and revoking what the caller sent: `me.listHouseholdInvitations`, `me.revokeHouseholdInvitation`; removing a member: `me.endHouseholdOccupancy`.
          *
          *     Permission: `invitations.household` (own unit only).
          *
@@ -2212,6 +2251,89 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/me/household-invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the household invitations I sent
+         * @description **Release 0.1.** The pending, accepted, expired and revoked household invitations the caller sent for their own unit(s). Owners and tenants manage their own household; managers use `people.listInvitations`.
+         *
+         *     Permission: `invitations.household` (own unit only; invitations sent by someone else for the same unit are not listed).
+         */
+        get: operations["me.listHouseholdInvitations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-invitations/{invitation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Revoke a household invitation I sent
+         * @description **Release 0.1.** Revokes a pending household invitation the caller sent; the link stops working. An accepted invitation cannot be revoked here: end the household occupancy instead (`me.endHouseholdOccupancy`).
+         *
+         *     Permission: `invitations.household` (own invitations only).
+         *
+         *     Problems: `conflict` (409, not pending).
+         */
+        delete: operations["me.revokeHouseholdInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-occupancies/{occupancy_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of a household occupancy on the caller's own unit. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * End a household member's occupancy
+         * @description **Release 0.1.** Ends the occupancy of a household member of the caller's own unit (`kind = household` only) and withdraws their access and money visibility from that day. Owner and tenant occupancies are ended by managers (`people.deleteOccupancy`, `people.moveOut`).
+         *
+         *     Permission: `occupancies.household` (own unit, household occupancies only).
+         *
+         *     Problems: `conflict` (409, not a household occupancy or already ended).
+         */
+        delete: operations["me.endHouseholdOccupancy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/accounts": {
         parameters: {
             query?: never;
@@ -2496,7 +2618,7 @@ export interface paths {
          *
          *     Permission: `money.lock`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.closeFiscalYear"];
         delete?: never;
@@ -2525,7 +2647,7 @@ export interface paths {
          *
          *     Permission: `money.lock`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
          */
         post: operations["money.approveFiscalYear"];
         delete?: never;
@@ -2557,11 +2679,13 @@ export interface paths {
          * Set the lock date
          * @description **Release 0.1.** Moving the lock date back (earlier) needs re-authentication and is audited.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `money.lock`.
          *
          *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
          *
-         *     Problems: `reauth_required` (403), `locked_period` (409), `conflict` (409).
+         *     Problems: `reauth_required` (403), `locked_period` (409), `conflict` (409), `version_conflict` (409).
          */
         put: operations["money.setLockDate"];
         post?: never;
@@ -2676,6 +2800,8 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
+         *     Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
          *     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
          */
         post: operations["money.createOpeningBalance"];
@@ -2706,15 +2832,38 @@ export interface paths {
         get: operations["money.getOpeningBalance"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the opening balance. */
+                opening_balance_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /**
-         * Delete opening balance
-         * @description **Release 0.1.** Reverses the opening entry; `locked_period` once the lock date has passed it.
+         * Void an opening balance
+         * @description **Release 0.1.** Reverses the opening entry with a reason and keeps both in the ledger (nothing is edited or deleted after the fact); `locked_period` once the lock date has passed `as_of`. Replaces the former `money.deleteOpeningBalance`.
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `locked_period` (409), `conflict` (409).
+         *     Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
          */
-        delete: operations["money.deleteOpeningBalance"];
+        post: operations["money.voidOpeningBalance"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2737,6 +2886,8 @@ export interface paths {
          * @description **Release 0.1.** Per-unit principal and known late fee by owner or tenant side, plus bank and cash balances (M7). Always run with `dry_run=true` first.
          *
          *     Permission: `money.post`.
+         *
+         *     Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
          *
          *     Problems: `locked_period` (409), `payload_too_large` (413), `idempotency_mismatch` (422), `conflict` (409).
          */
@@ -2846,9 +2997,11 @@ export interface paths {
          * Replace the lines of a draft budget
          * @description **Release 0.1.** Replace the lines of a draft budget.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `money.manage`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `version_conflict` (409).
          */
         put: operations["money.putBudgetLines"];
         post?: never;
@@ -2981,7 +3134,7 @@ export interface paths {
          *
          *     Permission: `money.manage`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
          */
         post: operations["money.createChargePlanRate"];
         delete?: never;
@@ -3013,7 +3166,7 @@ export interface paths {
          *
          *     Permission: `money.manage`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
          */
         delete: operations["money.deleteChargePlanRate"];
         options?: never;
@@ -3118,7 +3271,7 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `idempotency_mismatch` (422), `conflict` (409).
+         *     Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
          */
         post: operations["money.createExpenseAllocation"];
         delete?: never;
@@ -3141,7 +3294,9 @@ export interface paths {
          * List charges
          * @description **Release 0.1.** List charges.
          *
-         *     Permission: `money.read`.
+         *     Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+         *
+         *     Permission (any one of): `money.read`, `statements.read_own`.
          */
         get: operations["money.listCharges"];
         put?: never;
@@ -3151,7 +3306,7 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `idempotency_mismatch` (422), `conflict` (409).
+         *     Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
          */
         post: operations["money.createCharge"];
         delete?: never;
@@ -3207,7 +3362,7 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.cancelCharge"];
         delete?: never;
@@ -3236,7 +3391,7 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.adjustCharge"];
         delete?: never;
@@ -3266,9 +3421,11 @@ export interface paths {
          * Set the late-fee policy
          * @description **Release 0.1.** Set the late-fee policy.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `money.manage`.
          *
-         *     Problems: `validation_failed` (422), `conflict` (409).
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
          */
         put: operations["money.setLateFeePolicy"];
         post?: never;
@@ -3352,7 +3509,9 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `reauth_required` (403), `idempotency_mismatch` (422), `conflict` (409).
+         *     Sensitive (waivers above the site threshold): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
          */
         post: operations["money.createLateFeeWaiver"];
         delete?: never;
@@ -3443,7 +3602,9 @@ export interface paths {
          * List payments
          * @description **Release 0.1.** List payments.
          *
-         *     Permission: `money.read`.
+         *     Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+         *
+         *     Permission (any one of): `money.read`, `statements.read_own`.
          */
         get: operations["money.listPayments"];
         put?: never;
@@ -3451,9 +3612,13 @@ export interface paths {
          * Record a payment
          * @description **Release 0.1.** Cash (with a gap-free receipt number) or a bank transfer entered by hand. The response shows the allocation actually applied.
          *
+         *     Cash collectors: a person bound to a cash box (a kapici or a board member, M5) holds `payments.record` only for payments recorded into that box (`asset_account_id` is their cash box account); anything else is 403 `insufficient_permission`. They see and void nothing else.
+         *
          *     Permission: `payments.record`.
          *
          *     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+         *
+         *     `debtor` targets a unit side or a person; payments against a person settle carried debt oldest-first and never touch the unit's current occupants.
          */
         post: operations["money.createPayment"];
         delete?: never;
@@ -3509,7 +3674,7 @@ export interface paths {
          *
          *     Permission: `payments.record`.
          *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.voidPayment"];
         delete?: never;
@@ -3760,7 +3925,7 @@ export interface paths {
          *
          *     Permission: `payments.record`.
          *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.applyCredit"];
         delete?: never;
@@ -4110,7 +4275,7 @@ export interface paths {
          *
          *     Permission: `payments.record`.
          *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.unmatchBankTransaction"];
         delete?: never;
@@ -4228,7 +4393,7 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
          */
         post: operations["money.voidExpense"];
         delete?: never;
@@ -4261,7 +4426,7 @@ export interface paths {
          *
          *     Permission: `money.post`.
          *
-         *     Problems: `idempotency_mismatch` (422), `conflict` (409).
+         *     Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
          */
         post: operations["money.createRecurringExpense"];
         delete?: never;
@@ -4327,6 +4492,8 @@ export interface paths {
          * List bills
          * @description **Release 0.1.** Cursor-paginated list of bills.
          *
+         *     Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+         *
          *     Permission: `money.read`.
          */
         get: operations["money.listBills"];
@@ -4334,6 +4501,8 @@ export interface paths {
         /**
          * Create bill
          * @description **Release 0.1.** Creates a bill.
+         *
+         *     Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
          *
          *     Permission: `money.post`.
          *
@@ -4362,48 +4531,13 @@ export interface paths {
          * Get bill
          * @description **Release 0.1.** Get bill.
          *
+         *     Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+         *
          *     Permission: `money.read`.
          */
         get: operations["money.getBill"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Update bill
-         * @description **Release 0.1.** Update bill.
-         *
-         *     Permission: `money.post`.
-         *
-         *     Problems: `version_conflict` (409), `conflict` (409).
-         */
-        patch: operations["money.updateBill"];
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/bills/{bill_id}:cancel": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the bill. */
-                bill_id: string;
-            };
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Cancel a bill
-         * @description **Release 0.1.** Cancel a bill.
-         *
-         *     Permission: `money.post`.
-         *
-         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
-         */
-        post: operations["money.cancelBill"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4422,17 +4556,13 @@ export interface paths {
             };
             cookie?: never;
         };
-        /**
-         * List the payments of a bill
-         * @description **Release 0.1.** List the payments of a bill.
-         *
-         *     Permission: `money.read`.
-         */
-        get: operations["money.listBillPayments"];
+        get?: never;
         put?: never;
         /**
          * Pay a bill (fully or partly)
          * @description **Release 0.1.** Pay a bill (fully or partly).
+         *
+         *     Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
          *
          *     Permission: `money.post`.
          *
@@ -4566,7 +4696,7 @@ export interface paths {
          *
          *     Permission: `collections.manage`.
          *
-         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
          */
         post: operations["money.createDunningRun"];
         delete?: never;
@@ -4711,6 +4841,8 @@ export interface paths {
          * Debt breakdown for a unit side (ihtarname attachment)
          * @description **Release 0.1.** Principal and fee per period as of a date; JSON, or a CSV/XLSX/PDF export.
          *
+         *     Targeting: `unit_id` and `debtor_kind` together, or `person_id` (carried debt of a person); exactly one mode.
+         *
          *     Permission: `collections.manage`.
          */
         get: operations["money.getDebtBreakdown"];
@@ -4796,7 +4928,9 @@ export interface paths {
          *
          *     Permission: `statements.read`.
          *
-         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+         *
+         *     `debtor` is a unit side or a person (carried debt).
          */
         post: operations["money.sendStatement"];
         delete?: never;
@@ -5069,7 +5203,7 @@ export interface paths {
          * Get the ticket workflow of a site
          * @description **Release 0.1.** Get the ticket workflow of a site.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`.
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.getTicketWorkflow"];
         /**
@@ -5102,7 +5236,7 @@ export interface paths {
          * List ticket categories
          * @description **Release 0.1.** Cursor-paginated list of ticket categorys.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`.
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.listTicketCategories"];
         put?: never;
@@ -5137,7 +5271,7 @@ export interface paths {
          * Get ticket category
          * @description **Release 0.1.** Get ticket category.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`.
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.getTicketCategory"];
         put?: never;
@@ -5170,7 +5304,9 @@ export interface paths {
          * List tickets
          * @description **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open` (residents: own private and all common tickets of their site).
+         *     Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
          */
         get: operations["operations.listTickets"];
         put?: never;
@@ -5205,7 +5341,9 @@ export interface paths {
          * Get a ticket
          * @description **Release 0.1.** Get a ticket.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`.
+         *     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.getTicket"];
         put?: never;
@@ -5335,7 +5473,9 @@ export interface paths {
          * List ticket comments
          * @description **Release 0.1.** Residents never receive internal comments.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`.
+         *     Internal notes are returned only to holders of `tickets.manage` or `tickets.work`; staff without `tickets.work` on that ticket see public comments only.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.listTicketComments"];
         put?: never;
@@ -5343,7 +5483,7 @@ export interface paths {
          * Comment on a ticket
          * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.work`.
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
          *
          *     Problems: `conflict` (409).
          */
@@ -5430,7 +5570,9 @@ export interface paths {
          * Status history of a ticket
          * @description **Release 0.1.** Status history of a ticket.
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`.
+         *     Staff (`tickets.read_assigned`) see the history of assigned and common tickets only; internal notes are omitted unless the caller holds `tickets.manage` or `tickets.work`.
+         *
+         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.listTicketHistory"];
         put?: never;
@@ -5564,7 +5706,7 @@ export interface paths {
          *
          *     Permission: `announcements.publish`.
          *
-         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
          */
         post: operations["operations.publishAnnouncement"];
         delete?: never;
@@ -5748,7 +5890,9 @@ export interface paths {
          * List documents
          * @description **Release 0.1.** Cursor-paginated list of documents.
          *
-         *     Permission: `documents.read`.
+         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+         *
+         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
          */
         get: operations["operations.listDocuments"];
         put?: never;
@@ -5783,7 +5927,9 @@ export interface paths {
          * Get document
          * @description **Release 0.1.** Get document.
          *
-         *     Permission: `documents.read`.
+         *     A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+         *
+         *     Permission (any one of): `documents.read`, `documents.read_addressed`.
          */
         get: operations["operations.getDocument"];
         put?: never;
@@ -5937,9 +6083,11 @@ export interface paths {
          * Set the site defaults for automatic messages
          * @description **Release 0.1.** Set the site defaults for automatic messages.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `notifications.manage`.
          *
-         *     Problems: `validation_failed` (422), `conflict` (409).
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
          */
         put: operations["operations.setNotificationDefaults"];
         post?: never;
@@ -6283,9 +6431,11 @@ export interface paths {
          * Replace the governance settings of a site
          * @description **Release 0.2.** Applies from the next meeting; the eligibility snapshot of a called meeting does not change.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `meetings.manage`.
          *
-         *     Problems: `validation_failed` (422), `conflict` (409).
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
          */
         put: operations["governance.setGovernanceSettings"];
         post?: never;
@@ -6783,7 +6933,7 @@ export interface paths {
          *
          *     Permission: `meetings.manage`.
          *
-         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
          */
         post: operations["governance.notifyMeetingDecisions"];
         delete?: never;
@@ -6916,9 +7066,11 @@ export interface paths {
          * Create or change the poll
          * @description **Release 0.2.** Create or change the poll.
          *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
          *     Permission: `meetings.manage`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `version_conflict` (409).
          */
         put: operations["governance.setPoll"];
         post?: never;
@@ -7229,7 +7381,7 @@ export interface paths {
          *
          *     Permission: `decisions.manage`.
          *
-         *     Problems: `conflict` (409), `locked_period` (409).
+         *     Problems: `conflict` (409), `locked_period` (409), `idempotency_mismatch` (422).
          */
         post: operations["governance.applyDecision"];
         delete?: never;
@@ -7862,6 +8014,8 @@ export interface paths {
          * Guard console snapshot
          * @description **Release 0.3.** Today's expected visitors, pending approvals, waiting parcels and the access agent state.
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          */
         get: operations["community.getGateConsole"];
@@ -7886,6 +8040,8 @@ export interface paths {
         /**
          * Search visitors by name or plate
          * @description **Release 0.3.** Search visitors by name or plate.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
          *
          *     Permission: `gate.operate`.
          */
@@ -7914,6 +8070,8 @@ export interface paths {
          * Poll one visitor (approval status)
          * @description **Release 0.3.** Poll one visitor (approval status).
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          */
         get: operations["community.getGateVisitor"];
@@ -7941,6 +8099,8 @@ export interface paths {
          * Scan a visitor QR
          * @description **Release 0.3.** Online validation against the visitor entry; does not need the access agent. If valid, admit with `community.arriveGateVisitor`.
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          *
          *     Problems: `conflict` (409).
@@ -7967,6 +8127,8 @@ export interface paths {
         /**
          * Register a walk-in and ask the resident
          * @description **Release 0.3.** Creates an entry with `approval_status = requested` and sends the resident an approve / deny request (in-app and SMS).
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
          *
          *     Permission: `gate.operate`.
          *
@@ -7997,6 +8159,8 @@ export interface paths {
          * Mark a visitor arrived
          * @description **Release 0.3.** Only for a valid pre-approved or approved entry.
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          *
          *     Problems: `conflict` (409).
@@ -8025,6 +8189,8 @@ export interface paths {
         /**
          * Mark a visitor left
          * @description **Release 0.3.** Mark a visitor left.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
          *
          *     Permission: `gate.operate`.
          *
@@ -8080,6 +8246,8 @@ export interface paths {
          * Look up a plate
          * @description **Release 0.3.** Registered resident plates: plate and door number only.
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          */
         get: operations["community.searchGatePlates"];
@@ -8105,6 +8273,8 @@ export interface paths {
          * Waiting parcels
          * @description **Release 0.3.** Waiting parcels.
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          */
         get: operations["community.listGateDeliveries"];
@@ -8112,6 +8282,8 @@ export interface paths {
         /**
          * Log a parcel against a unit
          * @description **Release 0.3.** Notifies the resident (in-app plus their preferred channel).
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
          *
          *     Permission: `gate.operate`.
          *
@@ -8142,6 +8314,8 @@ export interface paths {
          * Mark a parcel collected
          * @description **Release 0.3.** Mark a parcel collected.
          *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
          *     Permission: `gate.operate`.
          *
          *     Problems: `conflict` (409).
@@ -8167,13 +8341,40 @@ export interface paths {
         put?: never;
         /**
          * Switch guard with a quick PIN
-         * @description **Release 0.3.** The console is a shared booth device: the PIN identifies the guard so every action is attributed to a person.
+         * @description **Release 0.3.** The console is a shared booth device: the guard picks their name (`gate.listGuards`) and enters their PIN so every action is attributed to a person. A wrong PIN, an unknown person, a person without a PIN and a person who is not a guard of the site all answer the same `invalid_grant` (401).
+         *
+         *     **Rate limit.** PIN attempts are limited per person and per console: 5 failed attempts in 15 minutes lock that guard for 15 minutes (429 `rate_limited` with `Retry-After`, also for a correct PIN during the lock), and a console that fails 20 times in an hour is locked for an hour. Every failed attempt is audited.
          *
          *     Permission: `gate.operate`.
          *
          *     Problems: `rate_limited` (429), `invalid_grant` (401), `conflict` (409).
          */
         post: operations["community.createGuardSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/guards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the guards of a site (booth picker)
+         * @description **Release 0.3.** The people holding an active guard membership on the site, by display name and id only: the booth shows them as buttons so the guard picks their name and then enters a PIN (`community.createGuardSession`). Guards hold no `people.read`, so this is their only way to see colleagues; no phone, e-mail or other data is returned.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["gate.listGuards"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -8195,7 +8396,7 @@ export interface paths {
         get?: never;
         /**
          * Set or reset a guard PIN
-         * @description **Release 0.3.** For a person with a guard membership; stored hashed.
+         * @description **Release 0.3.** For a person with a guard membership; stored hashed; 4 to 8 digits. PINs are per person and are checked together with `person_id` at the booth, so they need not be unique. Setting a PIN clears a lock.
          *
          *     Permission: `gate.manage`.
          *
@@ -8485,7 +8686,15 @@ export interface paths {
          */
         get: operations["access.listCredentials"];
         put?: never;
-        post?: never;
+        /**
+         * Create a tag or PIN credential
+         * @description **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
+         */
+        post: operations["access.createCredential"];
         delete?: never;
         options?: never;
         head?: never;
@@ -8513,7 +8722,15 @@ export interface paths {
         get: operations["access.getCredential"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Revoke a manual credential
+         * @description **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["access.revokeCredential"];
         options?: never;
         head?: never;
         patch?: never;
@@ -8585,7 +8802,7 @@ export interface paths {
         put?: never;
         /**
          * Open an access point manually
-         * @description **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds; there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
+         * @description **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds (`expires_at - issued_at` is at most 60 seconds for every `open_point`; the agent refuses a longer lifetime with `ack: refused`, reason `ttl`, and a failed or interrupted result is never retried); there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
          *
          *     Permission: `access.open`.
          *
@@ -8636,9 +8853,9 @@ export interface paths {
         put?: never;
         /**
          * Enrol an agent with a one-time token
-         * @description **Release 0.3.** The one-time token is the credential (10 per minute per IP). An unknown, expired or used token answers one identical 404 body. Re-enrolling needs a new token (`access.reenrolAgent`).
+         * @description **Release 0.3.** The one-time token is the credential (10 per minute per IP). An unknown, expired or already used token answers one identical 404 body, so the three cases cannot be told apart. Re-enrolling needs a new token (`access.reenrolAgent`).
          *
-         *     Problems: `not_found` (404), `rate_limited` (429), `conflict` (409).
+         *     Problems: `not_found` (404), `validation_failed` (422), `rate_limited` (429).
          */
         post: operations["agent.enrol"];
         delete?: never;
@@ -8658,9 +8875,11 @@ export interface paths {
         put?: never;
         /**
          * Long-poll transport (WebSocket fallback)
-         * @description **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with `hello` and ends after 60 seconds of silence (a later call then fails non-2xx so the agent re-hellos). Idempotency is built into the protocol (events by id, commands by id, deltas by version), not the header.
+         * @description **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with a `hello` call (no `session`); the server hello carries the `session` handle that every later call sends. Each response has a per-session `seq` (ordered delivery, see `AgentPollResponse`). An empty poll is 200 with an empty `messages` array, never 204.
          *
-         *     Problems: `rate_limited` (429), `conflict` (409).
+         *     A session ends after 60 seconds without a request: the next call fails with 410 `agent_session_expired` and the agent starts a new session with `hello`. A bare 401 means an unknown token only (the agent quarantines itself and does not wipe); a revoked agent receives the `revoked` command (the WebSocket closes with 4401) and wipes. Idempotency is built into the protocol (events by id, commands by id, deltas by version); `Idempotency-Key` is ignored.
+         *
+         *     Problems: `agent_session_expired` (410), `rate_limited` (429), `conflict` (409).
          */
         post: operations["agent.poll"];
         delete?: never;
@@ -8680,7 +8899,7 @@ export interface paths {
         put?: never;
         /**
          * Rotate the agent token
-         * @description **Release 0.3.** The old token stays valid for 10 minutes so a crash between steps recovers. The server hello carries `rotate_by` (default 180 days).
+         * @description **Release 0.3.** Returns a new token. The retired token stays valid for 10 minutes (`previous_valid_until`) so a crash between steps recovers, and calling again with the retired token inside that window is idempotent: it returns the same new token. After the window the retired token is 401. `rotate_by` is also in the server hello (default 180 days); the hello may set `rotate_now`.
          *
          *     Problems: `rate_limited` (429), `conflict` (409).
          */
@@ -8700,7 +8919,7 @@ export interface paths {
         };
         /**
          * WebSocket transport
-         * @description **Release 0.3.** Upgrade with subprotocol `openbekci.agent.v1` and `Authorization: Bearer <agent token>`. One JSON envelope per text frame, at most 1 MiB. Close codes: 4401 revoked or unauthorized, 4409 replaced by a newer session, 4426 no common protocol version, 4429 rate limited. Server ping every 30 s, 60 s pong deadline.
+         * @description **Release 0.3.** Upgrade with subprotocol `openbekci.agent.v1` and `Authorization: Bearer <agent token>`. One JSON envelope per text frame, at most 1 MiB. Close codes: 4401 revoked or unauthorized, 4409 replaced by a newer session, 4426 no common protocol version, 4429 rate limited. Server ping every 30 s, 60 s pong deadline; the server answers the agent's pings with a pong and acks heartbeats, so the agent's contact clock advances. Revocation is the `revoked` command followed by close 4401; a bare 401 on upgrade means an unknown token only.
          *
          *     Problems: `rate_limited` (429).
          */
@@ -8729,9 +8948,38 @@ export interface paths {
          * Site dashboard
          * @description **Release 0.1.** Site dashboard.
          *
+         *     Contains receivables, cash and bank balances: staff and guards do not hold `dashboard.site`; staff use `dashboards.getStaffDashboard`.
+         *
          *     Permission: `dashboard.site`.
          */
         get: operations["dashboards.getSiteDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/staff-dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Staff dashboard (counts only)
+         * @description **Release 0.1.** Counts of the caller's assigned tickets, common tickets, expected visitors and waiting parcels. Never contains money or debtor data.
+         *
+         *     Permission: `dashboard.staff`.
+         */
+        get: operations["dashboards.getStaffDashboard"];
         put?: never;
         post?: never;
         delete?: never;
@@ -9382,15 +9630,24 @@ export interface components {
         Me: {
             user: components["schemas"]["MeUser"];
             organizations: components["schemas"]["OrgAccess"][];
-            /** @description The caller's unit occupancies (owner, tenant, household); empty until the people module lands. */
-            occupancies: {
-                [key: string]: unknown;
-            }[];
-            policies: {
-                [key: string]: unknown;
-            };
+            /** @description The caller's unit occupancies across organizations (owner, tenant, household; former ones only inside their dates). Empty until the people module lands. */
+            occupancies: components["schemas"]["MeOccupancy"][];
+            policies: components["schemas"]["MePolicies"];
         };
-        /** @description One open session of the caller. Mobile sessions keep their id across token rotation. */
+        /**
+         * @description One open session of the caller. Mobile sessions keep their id across token rotation.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "client": "web",
+         *       "device_name": null,
+         *       "ip": null,
+         *       "user_agent": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "last_used_at": null,
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "current": false
+         *     }
+         */
         Session: {
             /** Format: uuid */
             id: string;
@@ -9412,6 +9669,24 @@ export interface components {
             /** @description True for the session that made this request. */
             current: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "client": "web",
+         *           "device_name": null,
+         *           "ip": null,
+         *           "user_agent": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "last_used_at": null,
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "current": false
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         SessionList: {
             items: components["schemas"]["Session"][];
             /** @description Always null; the list is short and returned whole. */
@@ -9531,7 +9806,24 @@ export interface components {
             /** @description Remember this mapping for the organization. */
             remember: boolean | null;
         };
-        /** @description A background job (River). */
+        /**
+         * @description A background job (River).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "kind": "import",
+         *       "status": "queued",
+         *       "progress": null,
+         *       "result_file_id": null,
+         *       "result": null,
+         *       "error": null,
+         *       "started_at": null,
+         *       "finished_at": null,
+         *       "created_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Job: {
             /** Format: uuid */
             id: string;
@@ -9573,18 +9865,33 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "kind": "import",
+         *           "status": "queued",
+         *           "progress": null,
+         *           "result_file_id": null,
+         *           "result": null,
+         *           "error": null,
+         *           "started_at": null,
+         *           "finished_at": null,
+         *           "created_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         JobList: {
             items: components["schemas"]["Job"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description A permission name, `<module>.<verb>`. The full list with the role matrix is api/PERMISSIONS.md and the `x-openbekci-roles` extension. Open: clients tolerate unknown values. */
-        Permission: string;
-        /**
-         * @description A role key used in `x-openbekci-roles`: a membership role, an occupancy kind, or the pseudo roles `member` and `platform_admin`. Open enum.
-         * @enum {string}
-         */
-        Role: "platform_admin" | "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard" | "owner" | "tenant" | "household" | "former_occupant" | "member";
         /** @description The access boundary (D2). */
         Organization: {
             /** Format: uuid */
@@ -9609,15 +9916,6 @@ export interface components {
             /** Format: int64 */
             version: number;
         };
-        OrganizationCreate: {
-            name?: string;
-            default_locale?: string;
-            timezone?: string;
-            country_code?: string;
-            settings?: {
-                [key: string]: unknown;
-            };
-        };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         OrganizationUpdate: {
             name?: string;
@@ -9632,7 +9930,7 @@ export interface components {
         AccessSettings: {
             /**
              * Format: int64
-             * @description Hours an offline agent keeps deciding locally before it stops (default 72).
+             * @description Hours an offline agent keeps deciding locally before it stops (1 to 336, default 72). Sent to the agent as `update_config.settings.offline_grace_hours`.
              */
             offline_grace_hours: number;
             /**
@@ -9727,7 +10025,30 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
-        /** @description The data-owning unit. */
+        /**
+         * @description The data-owning unit.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "name": "Ali Veli",
+         *       "address": {
+         *         "line1": "line1",
+         *         "line2": null,
+         *         "district": null,
+         *         "city": null,
+         *         "postal_code": null,
+         *         "country_code": "country code"
+         *       },
+         *       "timezone": "timezone",
+         *       "currency": "currency",
+         *       "fiscal_year_start_month": 1,
+         *       "lock_date": null,
+         *       "status": "active",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Site: {
             /** Format: uuid */
             id: string;
@@ -9781,6 +10102,34 @@ export interface components {
             /** Format: int64 */
             fiscal_year_start_month?: number;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "Ali Veli",
+         *           "address": {
+         *             "line1": "line1",
+         *             "line2": null,
+         *             "district": null,
+         *             "city": null,
+         *             "postal_code": null,
+         *             "country_code": "country code"
+         *           },
+         *           "timezone": "timezone",
+         *           "currency": "currency",
+         *           "fiscal_year_start_month": 1,
+         *           "lock_date": null,
+         *           "status": "active",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         SiteList: {
             items: components["schemas"]["Site"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -9802,7 +10151,19 @@ export interface components {
             bank_name?: string | null;
             reference_hint?: string | null;
         };
-        /** @description A building within a site (S1). */
+        /**
+         * @description A building within a site (S1).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "is_default": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Block: {
             /** Format: uuid */
             id: string;
@@ -9832,6 +10193,23 @@ export interface components {
         BlockUpdate: {
             name?: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "is_default": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BlockList: {
             items: components["schemas"]["Block"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -9866,7 +10244,8 @@ export interface components {
          *       },
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z",
-         *       "version": 1
+         *       "version": 1,
+         *       "payer_overrides": {}
          *     }
          */
         Unit: {
@@ -9910,6 +10289,16 @@ export interface components {
              * @description Optimistic-lock counter; send it back as If-Match on updates.
              */
             version: number;
+            /**
+             * @description Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed.
+             * @example {
+             *       "dues": "owner",
+             *       "utility": "tenant"
+             *     }
+             */
+            payer_overrides: {
+                [key: string]: "owner" | "tenant";
+            };
         };
         UnitCreate: {
             /** Format: uuid */
@@ -9926,6 +10315,16 @@ export interface components {
             area_m2?: number | null;
             /** Format: uuid */
             parent_unit_id?: string | null;
+            /**
+             * @description Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed.
+             * @example {
+             *       "dues": "owner",
+             *       "utility": "tenant"
+             *     }
+             */
+            payer_overrides?: {
+                [key: string]: "owner" | "tenant";
+            };
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         UnitUpdate: {
@@ -9941,13 +10340,66 @@ export interface components {
             area_m2?: number | null;
             /** Format: uuid */
             parent_unit_id?: string | null;
+            /**
+             * @description Per charge type, who pays on this unit, overriding the plan default (M1). Keys are charge types (open enum: `dues`, `utility`, ...), values `owner` or `tenant`. Missing key: the plan default applies. Affects charges generated from now on; existing charges are never re-keyed. PATCH merges by key; a `null` value removes that override.
+             * @example {
+             *       "dues": "owner",
+             *       "utility": "tenant"
+             *     }
+             */
+            payer_overrides?: {
+                [key: string]: "owner" | "tenant" | null;
+            };
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "block_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "door_number": "A-12",
+         *           "legal_ref": "12/34",
+         *           "type": "flat",
+         *           "area_m2": 96.5,
+         *           "parent_unit_id": null,
+         *           "status": "active",
+         *           "vacant": false,
+         *           "occupancy": {
+         *             "owners": 1,
+         *             "tenants": 1,
+         *             "household": 1
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1,
+         *           "payer_overrides": {}
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         UnitList: {
             items: components["schemas"]["Unit"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description How a cost is split (M2). */
+        /**
+         * @description How a cost is split (M2).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "code": "code",
+         *       "name": "Ali Veli",
+         *       "kind": "share",
+         *       "is_system": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         AllocationKey: {
             /** Format: uuid */
             id: string;
@@ -9995,11 +10447,37 @@ export interface components {
              */
             kind?: "share" | "equal" | "area" | "table";
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "code": "code",
+         *           "name": "Ali Veli",
+         *           "kind": "share",
+         *           "is_system": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AllocationKeyList: {
             items: components["schemas"]["AllocationKey"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
+        /**
+         * @example {
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "value": 1.5,
+         *       "computed": false
+         *     }
+         */
         AllocationKeyValue: {
             /** Format: uuid */
             unit_id: string;
@@ -10007,6 +10485,20 @@ export interface components {
             value: number;
             computed: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "value": 1.5,
+         *           "computed": false
+         *         }
+         *       ],
+         *       "next_cursor": null,
+         *       "total": 1.5,
+         *       "complete": false
+         *     }
+         */
         AllocationKeyValueList: {
             items: components["schemas"]["AllocationKeyValue"][];
             next_cursor: string | null;
@@ -10023,7 +10515,19 @@ export interface components {
             count: number;
             total: number;
         };
-        /** @description Cost-group tag such as `lift` or `pool`. */
+        /**
+         * @description Cost-group tag such as `lift` or `pool`.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "code": "code",
+         *       "name": "Ali Veli",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         UnitTag: {
             /** Format: uuid */
             id: string;
@@ -10054,6 +10558,23 @@ export interface components {
             code?: string;
             name?: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "code": "code",
+         *           "name": "Ali Veli",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         UnitTagList: {
             items: components["schemas"]["UnitTag"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10061,8 +10582,29 @@ export interface components {
         };
         UnitTagMembers: {
             unit_ids: string[];
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
         };
-        /** @description A plate registered to a unit (D6). */
+        /**
+         * @description A plate registered to a unit (D6).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "plate": "plate",
+         *       "plate_normalized": "plate normalized",
+         *       "description": null,
+         *       "archived": false,
+         *       "warning": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Vehicle: {
             /** Format: uuid */
             id: string;
@@ -10107,12 +10649,49 @@ export interface components {
             description?: string | null;
             archived?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "plate": "plate",
+         *           "plate_normalized": "plate normalized",
+         *           "description": null,
+         *           "archived": false,
+         *           "warning": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         VehicleList: {
             items: components["schemas"]["Vehicle"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Record of a site export, import or offboarding (D2). */
+        /**
+         * @description Record of a site export, import or offboarding (D2).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "direction": "export",
+         *       "site_id": null,
+         *       "archive_file_id": null,
+         *       "source_org_id": null,
+         *       "target_org_id": null,
+         *       "status": "queued",
+         *       "job_id": null,
+         *       "at": "2026-03-01T09:00:00Z",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         SiteTransfer: {
             /** Format: uuid */
             id: string;
@@ -10145,6 +10724,27 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "direction": "export",
+         *           "site_id": null,
+         *           "archive_file_id": null,
+         *           "source_org_id": null,
+         *           "target_org_id": null,
+         *           "status": "queued",
+         *           "job_id": null,
+         *           "at": "2026-03-01T09:00:00Z",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         SiteTransferList: {
             items: components["schemas"]["SiteTransfer"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10251,6 +10851,35 @@ export interface components {
             gate_contact_phone?: string | null;
             notes?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "user_id": null,
+         *           "display_name": "Ayse Yilmaz",
+         *           "contact": {},
+         *           "national_id_masked": "*******1234",
+         *           "national_id_country": "TR",
+         *           "gate_contact_phone": null,
+         *           "notes": null,
+         *           "join_status": "no_account",
+         *           "directory_consent": [
+         *             {
+         *               "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *               "consent": false,
+         *               "show_phone": false
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         PersonList: {
             items: components["schemas"]["Person"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10375,6 +11004,31 @@ export interface components {
             /** Format: date */
             valid_to?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "person_display_name": "Ayse Yilmaz",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "A-12",
+         *           "kind": "owner",
+         *           "side": "owner",
+         *           "share_pct": 100,
+         *           "is_correspondent": false,
+         *           "may_see_money": false,
+         *           "valid_from": "2024-01-01",
+         *           "valid_to": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         OccupancyList: {
             items: components["schemas"]["Occupancy"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10397,9 +11051,74 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            default_disposition: "stays_with_person" | "transferred" | "written_off";
+            default_open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /** @description Open charges the move-out would handle under the default. */
+            carried: components["schemas"]["CarriedCharge"][];
         };
-        /** @description A move-out or sale (S7). */
+        /**
+         * @description A move-out or sale (S7).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "occupancy_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "as_of": "2026-03-01",
+         *       "closing_statement_file_id": null,
+         *       "certificate_file_id": null,
+         *       "open_charges": "carry_to_person",
+         *       "carried": [
+         *         {
+         *           "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "charge_type": "dues",
+         *           "period": "2026-02",
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "outcome": "carried_to_person",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *         }
+         *       ],
+         *       "disposition_reason": null,
+         *       "transferred_to_person_id": null,
+         *       "decided_by": "0192a3f0-1000-7000-8000-000000000005",
+         *       "balance": {
+         *         "occupancy_id": "0192a3f0-1000-7000-8000-000000000006",
+         *         "as_of": "2026-03-01",
+         *         "principal": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "late_fee": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "credit": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "total": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "default_open_charges": "carry_to_person",
+         *         "carried": [
+         *           {
+         *             "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *             "charge_type": "dues",
+         *             "period": "2026-02",
+         *             "balance": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "outcome": "carried_to_person",
+         *             "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *           }
+         *         ]
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         MoveOut: {
             /** Format: uuid */
             id: string;
@@ -10414,10 +11133,12 @@ export interface components {
             /** Format: uuid */
             certificate_file_id: string | null;
             /**
-             * @description Open enum.
+             * @description The decision taken. Open enum.
              * @enum {string}
              */
-            debt_disposition: "stays_with_person" | "transferred" | "written_off";
+            open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /** @description Every open charge the move-out handled and where it went; sums to `balance.principal` plus fee. */
+            carried: components["schemas"]["CarriedCharge"][];
             disposition_reason: string | null;
             /** Format: uuid */
             transferred_to_person_id: string | null;
@@ -10429,6 +11150,74 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "occupancy_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "as_of": "2026-03-01",
+         *           "closing_statement_file_id": null,
+         *           "certificate_file_id": null,
+         *           "open_charges": "carry_to_person",
+         *           "carried": [
+         *             {
+         *               "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "charge_type": "dues",
+         *               "period": "2026-02",
+         *               "balance": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "outcome": "carried_to_person",
+         *               "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *             }
+         *           ],
+         *           "disposition_reason": null,
+         *           "transferred_to_person_id": null,
+         *           "decided_by": "0192a3f0-1000-7000-8000-000000000005",
+         *           "balance": {
+         *             "occupancy_id": "0192a3f0-1000-7000-8000-000000000006",
+         *             "as_of": "2026-03-01",
+         *             "principal": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "late_fee": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "credit": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "total": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "default_open_charges": "carry_to_person",
+         *             "carried": [
+         *               {
+         *                 "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *                 "charge_type": "dues",
+         *                 "period": "2026-02",
+         *                 "balance": {
+         *                   "amount": 200000,
+         *                   "currency": "TRY"
+         *                 },
+         *                 "outcome": "carried_to_person",
+         *                 "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *               }
+         *             ]
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         MoveOutList: {
             items: components["schemas"]["MoveOut"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10438,16 +11227,38 @@ export interface components {
             /** Format: date */
             as_of: string;
             /**
-             * @description Default `stays_with_person`.
+             * @description What happens to the leaving person's open charges (S7). `carry_to_person` (default): they become that person's personal receivable and the next occupant starts at zero, collectible through `DebtorRef.person_id`. `keep_on_unit`: they stay on the unit side. `write_off`: written off (needs `disposition_reason`; audited).
+             * @default carry_to_person
              * @enum {string}
              */
-            debt_disposition?: "stays_with_person" | "transferred" | "written_off";
-            /** @description Required for an override of the default. */
+            open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /** @description Required for `write_off` and `keep_on_unit` (an override of the default). */
             disposition_reason?: string;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description With `carry_to_person`: carry to this person instead of the leaving one (for example the seller's estate); audited.
+             */
             transferred_to_person_id?: string;
         };
-        /** @description A role of a person with a scope and a term. */
+        /**
+         * @description A role of a person with a scope and a term.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_display_name": "Ali Veli",
+         *       "role": "org_admin",
+         *       "scope_type": "org",
+         *       "scope_id": null,
+         *       "valid_from": "2026-03-01",
+         *       "valid_to": null,
+         *       "decision_id": null,
+         *       "site_owned": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Membership: {
             /** Format: uuid */
             id: string;
@@ -10536,12 +11347,53 @@ export interface components {
             decision_id?: string | null;
             site_owned?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_display_name": "Ali Veli",
+         *           "role": "org_admin",
+         *           "scope_type": "org",
+         *           "scope_id": null,
+         *           "valid_from": "2026-03-01",
+         *           "valid_to": null,
+         *           "decision_id": null,
+         *           "site_owned": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         MembershipList: {
             items: components["schemas"]["Membership"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description An invitation to join. Links: `{BASE_URL}/invite/{token}`. */
+        /**
+         * @description An invitation to join. Links: `{BASE_URL}/invite/{token}`.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "kind": "manager",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": null,
+         *       "unit_id": null,
+         *       "channel": "sms",
+         *       "destination": "destination",
+         *       "status": "pending",
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "accepted_at": null,
+         *       "invited_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Invitation: {
             /** Format: uuid */
             id: string;
@@ -10581,6 +11433,29 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "kind": "manager",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": null,
+         *           "unit_id": null,
+         *           "channel": "sms",
+         *           "destination": "destination",
+         *           "status": "pending",
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "accepted_at": null,
+         *           "invited_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         InvitationList: {
             items: components["schemas"]["Invitation"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10654,12 +11529,31 @@ export interface components {
             id: string;
             name: string;
         };
+        /**
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "door_number": "door number",
+         *       "block_name": "Ali Veli"
+         *     }
+         */
         JoinUnit: {
             /** Format: uuid */
             id: string;
             door_number: string;
             block_name: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "door_number": "door number",
+         *           "block_name": "Ali Veli"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         JoinUnitList: {
             items: components["schemas"]["JoinUnit"][];
             next_cursor: string | null;
@@ -10671,7 +11565,25 @@ export interface components {
             claimed_role: "owner" | "tenant" | "household";
             note?: string;
         };
-        /** @description A request from the site QR path to be linked to a unit (S4). */
+        /**
+         * @description A request from the site QR path to be linked to a unit (S4).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "user_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "display_name": "Ali Veli",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "unit_door_number": "unit door number",
+         *       "claimed_role": "owner",
+         *       "status": "pending",
+         *       "decided_by": null,
+         *       "decided_at": null,
+         *       "decision_note": null,
+         *       "note": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         UnitClaim: {
             /** Format: uuid */
             id: string;
@@ -10704,6 +11616,29 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "user_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "display_name": "Ali Veli",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "unit_door_number": "unit door number",
+         *           "claimed_role": "owner",
+         *           "status": "pending",
+         *           "decided_by": null,
+         *           "decided_at": null,
+         *           "decision_note": null,
+         *           "note": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         UnitClaimList: {
             items: components["schemas"]["UnitClaim"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10728,6 +11663,21 @@ export interface components {
              */
             kind: "owner" | "tenant" | "household";
         };
+        /**
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "display_name": "Ali Veli",
+         *       "units": [
+         *         {
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "door_number": "door number",
+         *           "kind": "owner"
+         *         }
+         *       ],
+         *       "phone": null,
+         *       "email": null
+         *     }
+         */
         DirectoryEntry: {
             /** Format: uuid */
             person_id: string;
@@ -10741,11 +11691,57 @@ export interface components {
              */
             email: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "display_name": "Ali Veli",
+         *           "units": [
+         *             {
+         *               "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "door_number": "door number",
+         *               "kind": "owner"
+         *             }
+         *           ],
+         *           "phone": null,
+         *           "email": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         DirectoryEntryList: {
             items: components["schemas"]["DirectoryEntry"][];
             next_cursor: string | null;
         };
-        /** @description A supplier, also used as a ticket assignee label (O2). */
+        /**
+         * @description A supplier, also used as a ticket assignee label (O2).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "name": "Ali Veli",
+         *       "tax_id": null,
+         *       "contact": {
+         *         "email": null,
+         *         "phone": null,
+         *         "preferred_channel": "sms",
+         *         "address": {
+         *           "line1": "line1",
+         *           "line2": null,
+         *           "district": null,
+         *           "city": null,
+         *           "postal_code": null,
+         *           "country_code": "country code"
+         *         }
+         *       },
+         *       "default_expense_category_id": null,
+         *       "archived": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Vendor: {
             /** Format: uuid */
             id: string;
@@ -10784,6 +11780,37 @@ export interface components {
             default_expense_category_id?: string | null;
             archived?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "Ali Veli",
+         *           "tax_id": null,
+         *           "contact": {
+         *             "email": null,
+         *             "phone": null,
+         *             "preferred_channel": "sms",
+         *             "address": {
+         *               "line1": "line1",
+         *               "line2": null,
+         *               "district": null,
+         *               "city": null,
+         *               "postal_code": null,
+         *               "country_code": "country code"
+         *             }
+         *           },
+         *           "default_expense_category_id": null,
+         *           "archived": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         VendorList: {
             items: components["schemas"]["Vendor"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -10861,7 +11888,24 @@ export interface components {
             total_weight: number;
             remainder_adjusted: boolean;
         };
-        /** @description Chart-of-accounts entry of a site. */
+        /**
+         * @description Chart-of-accounts entry of a site.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "code": "code",
+         *       "name": "Ali Veli",
+         *       "type": "asset",
+         *       "subtype": null,
+         *       "fund_id": null,
+         *       "is_system": false,
+         *       "archived": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Account: {
             /** Format: uuid */
             id: string;
@@ -10921,12 +11965,47 @@ export interface components {
             fund_id?: string | null;
             archived?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "code": "code",
+         *           "name": "Ali Veli",
+         *           "type": "asset",
+         *           "subtype": null,
+         *           "fund_id": null,
+         *           "is_system": false,
+         *           "archived": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AccountList: {
             items: components["schemas"]["Account"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Operating, reserve (demirbas / yedek akce) or custom fund; every journal line carries one. */
+        /**
+         * @description Operating, reserve (demirbas / yedek akce) or custom fund; every journal line carries one.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "operating",
+         *       "is_default": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Fund: {
             /** Format: uuid */
             id: string;
@@ -10970,12 +12049,48 @@ export interface components {
              */
             kind?: "operating" | "reserve" | "custom";
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "operating",
+         *           "is_default": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         FundList: {
             items: components["schemas"]["Fund"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description An asset account bound to a collector (M5). */
+        /**
+         * @description An asset account bound to a collector (M5).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "collector_person_id": null,
+         *       "collector_display_name": null,
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         CashBox: {
             /** Format: uuid */
             id: string;
@@ -11016,12 +12131,49 @@ export interface components {
             /** Format: uuid */
             collector_person_id?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "collector_person_id": null,
+         *           "collector_display_name": null,
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         CashBoxList: {
             items: components["schemas"]["CashBox"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description A reporting group with an approval status; the lock date, not the year, blocks postings. */
+        /**
+         * @description A reporting group with an approval status; the lock date, not the year, blocks postings.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "start": "2026-03-01",
+         *       "end": "2026-03-01",
+         *       "status": "open",
+         *       "approved_by_decision_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         FiscalYear: {
             /** Format: uuid */
             id: string;
@@ -11058,13 +12210,25 @@ export interface components {
             /** Format: date */
             end: string;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        FiscalYearUpdate: {
-            /** Format: date */
-            start?: string;
-            /** Format: date */
-            end?: string;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "start": "2026-03-01",
+         *           "end": "2026-03-01",
+         *           "status": "open",
+         *           "approved_by_decision_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         FiscalYearList: {
             items: components["schemas"]["FiscalYear"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -11086,6 +12250,11 @@ export interface components {
             changed_by: string | null;
             /** Format: date-time */
             changed_at: string | null;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
         };
         LockDateSet: {
             /**
@@ -11118,7 +12287,47 @@ export interface components {
             /** Format: uuid */
             vendor_id: string | null;
         };
-        /** @description Append-only; a correction is a new entry dated today that reverses this one. */
+        /**
+         * @description Append-only; a correction is a new entry dated today that reverses this one.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "entry_date": "2026-03-01",
+         *       "document_date": "2026-03-01",
+         *       "fiscal_year_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "memo": null,
+         *       "source_type": "source type",
+         *       "source_id": null,
+         *       "posted_by": null,
+         *       "posted_at": "2026-03-01T09:00:00Z",
+         *       "reverses_entry_id": null,
+         *       "reversed_by_entry_id": null,
+         *       "lines": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "account_code": "account code",
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000008",
+         *           "debit": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "credit": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "unit_id": null,
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "block_id": null,
+         *           "vendor_id": null
+         *         }
+         *       ],
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         JournalEntry: {
             /** Format: uuid */
             id: string;
@@ -11151,6 +12360,51 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "entry_date": "2026-03-01",
+         *           "document_date": "2026-03-01",
+         *           "fiscal_year_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "memo": null,
+         *           "source_type": "source type",
+         *           "source_id": null,
+         *           "posted_by": null,
+         *           "posted_at": "2026-03-01T09:00:00Z",
+         *           "reverses_entry_id": null,
+         *           "reversed_by_entry_id": null,
+         *           "lines": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *               "account_code": "account code",
+         *               "fund_id": "0192a3f0-1000-7000-8000-000000000008",
+         *               "debit": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "credit": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "unit_id": null,
+         *               "debtor_kind": "owner",
+         *               "person_id": null,
+         *               "block_id": null,
+         *               "vendor_id": null
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         JournalEntryList: {
             items: components["schemas"]["JournalEntry"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -11159,7 +12413,36 @@ export interface components {
         JournalReverse: {
             reason: string;
         };
-        /** @description Opening position against the opening-equity account (M7). */
+        /**
+         * @description Opening position against the opening-equity account (M7).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "as_of": "2026-03-01",
+         *       "kind": "unit_receivable",
+         *       "unit_id": null,
+         *       "debtor_kind": "owner",
+         *       "person_id": null,
+         *       "account_id": null,
+         *       "vendor_id": null,
+         *       "principal": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "late_fee": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "locked": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "status": "active",
+         *       "voided_at": null,
+         *       "void_reason": null
+         *     }
+         */
         OpeningBalance: {
             /** Format: uuid */
             id: string;
@@ -11197,6 +12480,14 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /**
+             * @description Open enum. A voided opening balance stays in the ledger with its reversal.
+             * @enum {string}
+             */
+            status: "active" | "voided";
+            /** Format: date-time */
+            voided_at: string | null;
+            void_reason: string | null;
         };
         OpeningBalanceCreate: {
             /** Format: uuid */
@@ -11224,37 +12515,63 @@ export interface components {
             principal: components["schemas"]["Money"];
             late_fee?: components["schemas"]["Money"];
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        OpeningBalanceUpdate: {
-            /** Format: date */
-            as_of?: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            kind?: "unit_receivable" | "bank" | "cash" | "vendor";
-            /** Format: uuid */
-            unit_id?: string | null;
-            /**
-             * @description Open enum.
-             * @enum {string|null}
-             */
-            debtor_kind?: "owner" | "tenant" | null;
-            /** Format: uuid */
-            person_id?: string | null;
-            /** Format: uuid */
-            account_id?: string | null;
-            /** Format: uuid */
-            vendor_id?: string | null;
-            principal?: components["schemas"]["Money"];
-            late_fee?: components["schemas"]["Money"];
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "as_of": "2026-03-01",
+         *           "kind": "unit_receivable",
+         *           "unit_id": null,
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "account_id": null,
+         *           "vendor_id": null,
+         *           "principal": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "late_fee": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "locked": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "status": "active",
+         *           "voided_at": null,
+         *           "void_reason": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         OpeningBalanceList: {
             items: components["schemas"]["OpeningBalance"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Light, optional category budget (M3); it does not drive dues. */
+        /**
+         * @description Light, optional category budget (M3); it does not drive dues.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "fiscal_year_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "status": "draft",
+         *       "decision_id": null,
+         *       "total": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Budget: {
             /** Format: uuid */
             id: string;
@@ -11295,6 +12612,28 @@ export interface components {
             /** Format: uuid */
             decision_id?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "fiscal_year_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "status": "draft",
+         *           "decision_id": null,
+         *           "total": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BudgetList: {
             items: components["schemas"]["Budget"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -11309,12 +12648,33 @@ export interface components {
         };
         BudgetLines: {
             lines: components["schemas"]["BudgetLine"][];
+            /**
+             * Format: int64
+             * @description The `version` of the budget; send it back as If-Match on `putBudgetLines`.
+             */
+            version: number;
         };
         BudgetFinalize: {
             /** Format: uuid */
             decision_id?: string;
         };
-        /** @description Effective-dated amount of a plan (M3). */
+        /**
+         * @description Effective-dated amount of a plan (M3).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "from": "2026-03-01",
+         *       "to": null,
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "decision_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         ChargePlanRate: {
             /** Format: uuid */
             id: string;
@@ -11343,22 +12703,75 @@ export interface components {
             /** Format: uuid */
             decision_id?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        ChargePlanRateUpdate: {
-            /** Format: date */
-            from?: string;
-            /** Format: date */
-            to?: string | null;
-            amount?: components["schemas"]["Money"];
-            /** Format: uuid */
-            decision_id?: string | null;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "from": "2026-03-01",
+         *           "to": null,
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "decision_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         ChargePlanRateList: {
             items: components["schemas"]["ChargePlanRate"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description A dues or one-off charge plan. Charges are generated by an hourly, idempotent catch-up job on (plan, unit, period). Amounts change through rates. */
+        /**
+         * @description A dues or one-off charge plan. Charges are generated by an hourly, idempotent catch-up job on (plan, unit, period). Amounts change through rates.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "recurring",
+         *       "charge_type": "dues",
+         *       "default_debtor": "owner",
+         *       "frequency": "monthly",
+         *       "due_day": null,
+         *       "start": "2026-03-01",
+         *       "end": null,
+         *       "amount_mode": "per_unit",
+         *       "allocation_key_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "scope": {
+         *         "type": "site",
+         *         "id": null
+         *       },
+         *       "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "income_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "status": "active",
+         *       "decision_id": null,
+         *       "current_rate": {
+         *         "id": "0192a3f0-1000-7000-8000-000000000002",
+         *         "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *         "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *         "from": "2026-03-01",
+         *         "to": null,
+         *         "amount": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "decision_id": null,
+         *         "created_at": "2026-03-01T09:00:00Z",
+         *         "updated_at": "2026-03-01T09:00:00Z"
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         ChargePlan: {
             /** Format: uuid */
             id: string;
@@ -11383,7 +12796,7 @@ export interface components {
              */
             default_debtor: "owner" | "tenant";
             /**
-             * @description Open enum.
+             * @description Open enum. Generated charges carry the accrual month in `Charge.period` (`YYYY-MM`) whatever the frequency.
              * @enum {string}
              */
             frequency: "monthly" | "quarterly" | "yearly" | "once";
@@ -11509,6 +12922,53 @@ export interface components {
             allocation_key_id?: string;
             scope?: components["schemas"]["ChargeScope"];
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "recurring",
+         *           "charge_type": "dues",
+         *           "default_debtor": "owner",
+         *           "frequency": "monthly",
+         *           "due_day": null,
+         *           "start": "2026-03-01",
+         *           "end": null,
+         *           "amount_mode": "per_unit",
+         *           "allocation_key_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "scope": {
+         *             "type": "site",
+         *             "id": null
+         *           },
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "income_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "status": "active",
+         *           "decision_id": null,
+         *           "current_rate": {
+         *             "id": "0192a3f0-1000-7000-8000-000000000002",
+         *             "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *             "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *             "from": "2026-03-01",
+         *             "to": null,
+         *             "amount": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "decision_id": null,
+         *             "created_at": "2026-03-01T09:00:00Z",
+         *             "updated_at": "2026-03-01T09:00:00Z"
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         ChargePlanList: {
             items: components["schemas"]["ChargePlan"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -11525,7 +12985,7 @@ export interface components {
             plan?: components["schemas"]["ChargePlanCreate"];
             /** @description Override of the amount for an existing plan. */
             amount?: components["schemas"]["Money"];
-            /** @description `YYYY-MM`; default: the next period. */
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. Default: the next period. */
             period?: string;
         };
         ChargePreviewLine: {
@@ -11542,6 +13002,7 @@ export interface components {
             debtor_display_name: string | null;
             weight: number;
             amount: components["schemas"]["Money"];
+            effective_debtor: components["schemas"]["EffectiveDebtor"];
         };
         /**
          * @example {
@@ -11562,6 +13023,12 @@ export interface components {
          *           "amount": {
          *             "amount": 200000,
          *             "currency": "TRY"
+         *           },
+         *           "effective_debtor": {
+         *             "debtor_kind": "owner",
+         *             "person_id": null,
+         *             "display_name": null,
+         *             "source": "plan_default"
          *           }
          *         }
          *       ],
@@ -11569,6 +13036,7 @@ export interface components {
          *     }
          */
         ChargePlanPreview: {
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
             period: string;
             total: components["schemas"]["Money"];
             /** Format: int64 */
@@ -11580,6 +13048,7 @@ export interface components {
         ChargeGenerationPending: {
             /** Format: uuid */
             plan_id: string;
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
             period: string;
             /** Format: int64 */
             units: number;
@@ -11662,7 +13131,13 @@ export interface components {
          *       "status": "open",
          *       "cancelled_reason": null,
          *       "created_at": "2026-03-01T09:00:00Z",
-         *       "updated_at": "2026-03-01T09:00:00Z"
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "effective_debtor": {
+         *         "debtor_kind": "tenant",
+         *         "person_id": null,
+         *         "display_name": null,
+         *         "source": "plan_default"
+         *       }
          *     }
          */
         Charge: {
@@ -11684,7 +13159,7 @@ export interface components {
             debtor_kind: "owner" | "tenant";
             /**
              * Format: uuid
-             * @description Snapshot of the occupant on the due date.
+             * @description Snapshot of the occupant on the due date; becomes the holder when open charges are carried to a person on move-out.
              */
             debtor_person_id: string | null;
             debtor_display_name: string | null;
@@ -11693,7 +13168,7 @@ export interface components {
              * @enum {string}
              */
             charge_type: "dues" | "special_assessment" | "reserve_contribution" | "utility" | "booking_fee" | "legal_cost" | "deposit" | "adjustment" | "settlement";
-            /** @description `YYYY-MM` for plan charges. */
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
             period: string | null;
             amount: components["schemas"]["Money"];
             paid: components["schemas"]["Money"];
@@ -11714,6 +13189,7 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            effective_debtor: components["schemas"]["EffectiveDebtor"];
         };
         ChargeCreate: {
             /** Format: uuid */
@@ -11741,31 +13217,52 @@ export interface components {
             /** Format: uuid */
             decision_id?: string;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        ChargeUpdate: {
-            /** Format: uuid */
-            unit_id?: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind?: "owner" | "tenant";
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            charge_type?: "dues" | "special_assessment" | "reserve_contribution" | "utility" | "booking_fee" | "legal_cost" | "deposit" | "adjustment" | "settlement";
-            amount?: components["schemas"]["Money"];
-            /** Format: date */
-            due_date?: string;
-            description?: string | null;
-            /** Format: uuid */
-            fund_id?: string;
-            /** Format: uuid */
-            income_account_id?: string;
-            /** Format: uuid */
-            decision_id?: string;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "plan_id": null,
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "debtor_kind": "tenant",
+         *           "debtor_person_id": null,
+         *           "debtor_display_name": null,
+         *           "charge_type": "dues",
+         *           "period": "2026-03",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "paid": {
+         *             "amount": 0,
+         *             "currency": "TRY"
+         *           },
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "due_date": "2026-03-05",
+         *           "description": null,
+         *           "allocation_basis": null,
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "status": "open",
+         *           "cancelled_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "effective_debtor": {
+         *             "debtor_kind": "tenant",
+         *             "person_id": null,
+         *             "display_name": null,
+         *             "source": "plan_default"
+         *           }
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         ChargeList: {
             items: components["schemas"]["Charge"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -11792,6 +13289,11 @@ export interface components {
             simple: boolean;
             /** @description Waivers above this need re-authentication. */
             waiver_reauth_threshold: components["schemas"]["Money"] | null;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
         };
         LateFeePolicySet: {
             rate_pct_per_month: number;
@@ -11799,7 +13301,32 @@ export interface components {
             grace_days: number;
             waiver_reauth_threshold?: components["schemas"]["Money"] | null;
         };
-        /** @description Computed on demand, never stored (M4). */
+        /**
+         * @description Computed on demand, never stored (M4).
+         * @example {
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "unit door number",
+         *       "debtor_kind": "owner",
+         *       "as_of": "2026-03-01",
+         *       "open_principal": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "accrued": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "booked": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "frozen": false,
+         *       "waived": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       }
+         *     }
+         */
         LateFeeAccrual: {
             /** Format: uuid */
             unit_id: string;
@@ -11818,11 +13345,70 @@ export interface components {
             frozen: boolean;
             waived: components["schemas"]["Money"];
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "debtor_kind": "owner",
+         *           "as_of": "2026-03-01",
+         *           "open_principal": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "accrued": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "booked": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "frozen": false,
+         *           "waived": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           }
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         LateFeeAccrualList: {
             items: components["schemas"]["LateFeeAccrual"][];
             next_cursor: string | null;
         };
-        /** @description Monthly crystallization of accrued fees. */
+        /**
+         * @description Monthly crystallization of accrued fees.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "debtor_kind": "owner",
+         *       "period": "2026-03",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "charge_id": null,
+         *       "expected_to_date": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "booked_to_date": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "delta": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         LateFeeBooking: {
             /** Format: uuid */
             id: string;
@@ -11837,6 +13423,7 @@ export interface components {
              * @enum {string}
              */
             debtor_kind: "owner" | "tenant";
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
             period: string;
             amount: components["schemas"]["Money"];
             /** Format: uuid */
@@ -11850,12 +13437,64 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "debtor_kind": "owner",
+         *           "period": "2026-03",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "charge_id": null,
+         *           "expected_to_date": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "booked_to_date": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "delta": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         LateFeeBookingList: {
             items: components["schemas"]["LateFeeBooking"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description A waiver reverses accrued or booked fee with a reason. */
+        /**
+         * @description A waiver reverses accrued or booked fee with a reason.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "debtor_kind": "owner",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "reason": "reason",
+         *       "by": "0192a3f0-1000-7000-8000-000000000006",
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         LateFeeWaiver: {
             /** Format: uuid */
             id: string;
@@ -11884,34 +13523,56 @@ export interface components {
         LateFeeWaiverCreate: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind: "owner" | "tenant";
             amount: components["schemas"]["Money"];
             reason: string;
+            /** @description Who owes: a unit side or a person (see DebtorRef). */
+            debtor: components["schemas"]["DebtorRef"];
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        LateFeeWaiverUpdate: {
-            /** Format: uuid */
-            unit_id?: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind?: "owner" | "tenant";
-            amount?: components["schemas"]["Money"];
-            reason?: string;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "debtor_kind": "owner",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "reason": "reason",
+         *           "by": "0192a3f0-1000-7000-8000-000000000006",
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         LateFeeWaiverList: {
             items: components["schemas"]["LateFeeWaiver"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Stops fee accrual (unit in legal collection). */
+        /**
+         * @description Stops fee accrual (unit in legal collection).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "debtor_kind": "owner",
+         *       "from": "2026-03-01",
+         *       "to": null,
+         *       "reason": "reason",
+         *       "case_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         LateFeeFreeze: {
             /** Format: uuid */
             id: string;
@@ -11946,18 +13607,13 @@ export interface components {
         LateFeeFreezeCreate: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind: "owner" | "tenant";
             /** Format: date */
             from: string;
             /** Format: date */
             to?: string | null;
             reason: string;
+            /** @description Who owes: a unit side or a person (see DebtorRef). */
+            debtor: components["schemas"]["DebtorRef"];
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         LateFeeFreezeUpdate: {
@@ -11965,6 +13621,27 @@ export interface components {
             to?: string | null;
             reason?: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "debtor_kind": "owner",
+         *           "from": "2026-03-01",
+         *           "to": null,
+         *           "reason": "reason",
+         *           "case_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         LateFeeFreezeList: {
             items: components["schemas"]["LateFeeFreeze"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12085,6 +13762,65 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "payer_person_id": null,
+         *           "payer_display_name": null,
+         *           "unit_id": null,
+         *           "debtor_kind": null,
+         *           "method": "cash",
+         *           "gross": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "fee": {
+         *             "amount": 0,
+         *             "currency": "TRY"
+         *           },
+         *           "net": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "recorded_by": null,
+         *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "reference": null,
+         *           "note": null,
+         *           "status": "confirmed",
+         *           "receipt_no": "2026/0042",
+         *           "provider_txn_id": null,
+         *           "journal_entry_id": null,
+         *           "allocated": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "unallocated": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "allocations": [
+         *             {
+         *               "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "charge_description": null,
+         *               "amount": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               }
+         *             }
+         *           ],
+         *           "bank_transaction_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         PaymentList: {
             items: components["schemas"]["Payment"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12096,15 +13832,17 @@ export interface components {
         /**
          * @example {
          *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
-         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
-         *       "debtor_kind": "tenant",
          *       "method": "cash",
          *       "amount": {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
          *       "received_at": "2026-03-05T10:15:00Z",
-         *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002"
+         *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "debtor": {
+         *         "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *         "debtor_kind": "tenant"
+         *       }
          *     }
          */
         PaymentCreate: {
@@ -12112,10 +13850,6 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             payer_person_id?: string;
-            /** Format: uuid */
-            unit_id: string;
-            /** @enum {string} */
-            debtor_kind: "owner" | "tenant";
             /** @enum {string} */
             method: "cash" | "bank_transfer";
             /** @description Gross amount. */
@@ -12132,6 +13866,8 @@ export interface components {
             /** @description Manual override; omitted: automatic oldest-first. */
             allocations?: components["schemas"]["AllocationInput"][];
             send_receipt?: components["schemas"]["ReceiptDelivery"];
+            /** @description Who the payment settles: a unit side or a person (carried debt). */
+            debtor: components["schemas"]["DebtorRef"];
         };
         PaymentVoid: {
             reason: string;
@@ -12142,11 +13878,9 @@ export interface components {
         AllocationPreviewRequest: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /** @enum {string} */
-            debtor_kind: "owner" | "tenant";
             amount: components["schemas"]["Money"];
+            /** @description Who owes: a unit side or a person (see DebtorRef). */
+            debtor: components["schemas"]["DebtorRef"];
         };
         AllocationPreview: {
             allocations: components["schemas"]["PaymentAllocation"][];
@@ -12156,15 +13890,13 @@ export interface components {
         PaymentDeclare: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /** @enum {string} */
-            debtor_kind: "owner" | "tenant";
             amount: components["schemas"]["Money"];
             /** Format: date */
             paid_on: string;
             reference?: string;
             note?: string;
+            /** @description Who the declared transfer is for. Residents declare for their own side; a former occupant never declares. */
+            debtor: components["schemas"]["DebtorRef"];
         };
         PaymentConfirm: {
             /** Format: uuid */
@@ -12178,7 +13910,24 @@ export interface components {
         PaymentReject: {
             reason: string;
         };
-        /** @description Unallocated money held as a prepayment liability, per unit side or person. */
+        /**
+         * @description Unallocated money held as a prepayment liability, per unit side or person.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": null,
+         *       "debtor_kind": "owner",
+         *       "person_id": null,
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "source_payment_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Credit: {
             /** Format: uuid */
             id: string;
@@ -12203,6 +13952,28 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": null,
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "source_payment_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         CreditList: {
             items: components["schemas"]["Credit"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12211,7 +13982,27 @@ export interface components {
         CreditApply: {
             allocations: components["schemas"]["AllocationInput"][];
         };
-        /** @description Asset to asset: cash handover, bank deposit. */
+        /**
+         * @description Asset to asset: cash handover, bank deposit.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "from_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "to_account_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "transferred_at": "2026-03-01T09:00:00Z",
+         *       "memo": null,
+         *       "kind": "cash_handover",
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "created_by": "0192a3f0-1000-7000-8000-000000000008",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Transfer: {
             /** Format: uuid */
             id: string;
@@ -12258,28 +14049,60 @@ export interface components {
              */
             kind?: "cash_handover" | "bank_deposit" | "other";
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        TransferUpdate: {
-            /** Format: uuid */
-            from_account_id?: string;
-            /** Format: uuid */
-            to_account_id?: string;
-            amount?: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at?: string;
-            memo?: string | null;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            kind?: "cash_handover" | "bank_deposit" | "other";
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "from_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "to_account_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "transferred_at": "2026-03-01T09:00:00Z",
+         *           "memo": null,
+         *           "kind": "cash_handover",
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "created_by": "0192a3f0-1000-7000-8000-000000000008",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         TransferList: {
             items: components["schemas"]["Transfer"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Outgoing money to a person or unit. */
+        /**
+         * @description Outgoing money to a person or unit.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": null,
+         *       "unit_id": null,
+         *       "debtor_kind": "owner",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "reason": "reason",
+         *       "kind": "overpayment",
+         *       "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "refunded_at": "2026-03-01T09:00:00Z",
+         *       "credit_id": null,
+         *       "payment_id": null,
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Refund: {
             /** Format: uuid */
             id: string;
@@ -12346,38 +14169,55 @@ export interface components {
             /** Format: uuid */
             payment_id?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        RefundUpdate: {
-            /** Format: uuid */
-            person_id?: string | null;
-            /** Format: uuid */
-            unit_id?: string | null;
-            /**
-             * @description Open enum.
-             * @enum {string|null}
-             */
-            debtor_kind?: "owner" | "tenant" | null;
-            amount?: components["schemas"]["Money"];
-            reason?: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            kind?: "overpayment" | "deposit_return" | "other";
-            /** Format: uuid */
-            paid_from_account_id?: string;
-            /** Format: date-time */
-            refunded_at?: string;
-            /** Format: uuid */
-            credit_id?: string | null;
-            /** Format: uuid */
-            payment_id?: string | null;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": null,
+         *           "unit_id": null,
+         *           "debtor_kind": "owner",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "reason": "reason",
+         *           "kind": "overpayment",
+         *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "refunded_at": "2026-03-01T09:00:00Z",
+         *           "credit_id": null,
+         *           "payment_id": null,
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         RefundList: {
             items: components["schemas"]["Refund"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
+        /**
+         * @example {
+         *       "id": "id",
+         *       "name": "Ali Veli",
+         *       "formats": [
+         *         "formats"
+         *       ],
+         *       "default_mapping": {
+         *         "columns": {},
+         *         "date_format": null,
+         *         "delimiter": null,
+         *         "sheet": null,
+         *         "remember": null
+         *       }
+         *     }
+         */
         BankImporter: {
             /** @description `core_csv` or a pack importer id. */
             id: string;
@@ -12385,11 +14225,58 @@ export interface components {
             formats: string[];
             default_mapping?: components["schemas"]["ColumnMapping"] | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "id",
+         *           "name": "Ali Veli",
+         *           "formats": [
+         *             "formats"
+         *           ],
+         *           "default_mapping": {
+         *             "columns": {},
+         *             "date_format": null,
+         *             "delimiter": null,
+         *             "sheet": null,
+         *             "remember": null
+         *           }
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BankImporterList: {
             items: components["schemas"]["BankImporter"][];
             next_cursor: string | null;
         };
-        /** @description An uploaded bank statement (M5). */
+        /**
+         * @description An uploaded bank statement (M5).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "importer": "importer",
+         *       "file_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "status": "parsing",
+         *       "opening_balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "closing_balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "period_from": null,
+         *       "period_to": null,
+         *       "transaction_count": 3,
+         *       "unmatched_count": 3,
+         *       "error": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         BankStatementImport: {
             /** Format: uuid */
             id: string;
@@ -12423,6 +14310,37 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "importer": "importer",
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "status": "parsing",
+         *           "opening_balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "closing_balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "period_from": null,
+         *           "period_to": null,
+         *           "transaction_count": 3,
+         *           "unmatched_count": 3,
+         *           "error": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BankStatementImportList: {
             items: components["schemas"]["BankStatementImport"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12453,7 +14371,37 @@ export interface components {
             /** @description For example `reference`, `payer_name`, `amount`. */
             reason: string;
         };
-        /** @description A statement line. The raw payload is stripped after reconciliation. */
+        /**
+         * @description A statement line. The raw payload is stripped after reconciliation.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "import_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "booked_on": "2026-03-01",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "counterparty": null,
+         *       "description": null,
+         *       "match_status": "unmatched",
+         *       "payment_id": null,
+         *       "expense_id": null,
+         *       "suggestions": [
+         *         {
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "unit_door_number": "unit door number",
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "score": 1.5,
+         *           "reason": "reason"
+         *         }
+         *       ],
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         BankTransaction: {
             /** Format: uuid */
             id: string;
@@ -12464,7 +14412,7 @@ export interface components {
             /** Format: uuid */
             import_id: string;
             /** Format: date */
-            booked_at: string;
+            booked_on: string;
             /** @description Positive: money in; negative: money out. */
             amount: components["schemas"]["Money"];
             counterparty: string | null;
@@ -12484,16 +14432,47 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "import_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "booked_on": "2026-03-01",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "counterparty": null,
+         *           "description": null,
+         *           "match_status": "unmatched",
+         *           "payment_id": null,
+         *           "expense_id": null,
+         *           "suggestions": [
+         *             {
+         *               "unit_id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "unit_door_number": "unit door number",
+         *               "debtor_kind": "owner",
+         *               "person_id": null,
+         *               "score": 1.5,
+         *               "reason": "reason"
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BankTransactionList: {
             items: components["schemas"]["BankTransaction"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
         BankTransactionMatch: {
-            /** Format: uuid */
-            unit_id?: string;
-            /** @enum {string} */
-            debtor_kind?: "owner" | "tenant";
             /** Format: uuid */
             payer_person_id?: string;
             allocations?: components["schemas"]["AllocationInput"][];
@@ -12507,11 +14486,39 @@ export interface components {
              * @description For an outgoing line: link an expense.
              */
             expense_id?: string;
+            /** @description Who the line pays; omitted when matching to `payment_id` or `expense_id`. */
+            debtor?: components["schemas"]["DebtorRef"];
         };
         BankTransactionReason: {
             reason?: string;
         };
-        /** @description Light expense entry; no approval workflow (M6). */
+        /**
+         * @description Light expense entry; no approval workflow (M6).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "category_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "paid_on": "2026-03-01",
+         *       "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "vendor_id": null,
+         *       "vendor_name": null,
+         *       "description": "description",
+         *       "document_no": null,
+         *       "file_id": null,
+         *       "recurring_expense_id": null,
+         *       "status": "posted",
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000008",
+         *       "voided_reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Expense: {
             /** Format: uuid */
             id: string;
@@ -12525,7 +14532,7 @@ export interface components {
             fund_id: string;
             amount: components["schemas"]["Money"];
             /** Format: date */
-            paid_at: string;
+            paid_on: string;
             /** Format: uuid */
             paid_from_account_id: string;
             /** Format: uuid */
@@ -12559,7 +14566,7 @@ export interface components {
             fund_id: string;
             amount: components["schemas"]["Money"];
             /** Format: date */
-            paid_at: string;
+            paid_on: string;
             /** Format: uuid */
             paid_from_account_id: string;
             /** Format: uuid */
@@ -12569,24 +14576,37 @@ export interface components {
             /** Format: uuid */
             file_id?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        ExpenseUpdate: {
-            /** Format: uuid */
-            category_account_id?: string;
-            /** Format: uuid */
-            fund_id?: string;
-            amount?: components["schemas"]["Money"];
-            /** Format: date */
-            paid_at?: string;
-            /** Format: uuid */
-            paid_from_account_id?: string;
-            /** Format: uuid */
-            vendor_id?: string | null;
-            description?: string;
-            document_no?: string | null;
-            /** Format: uuid */
-            file_id?: string | null;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "category_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "paid_on": "2026-03-01",
+         *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "vendor_id": null,
+         *           "vendor_name": null,
+         *           "description": "description",
+         *           "document_no": null,
+         *           "file_id": null,
+         *           "recurring_expense_id": null,
+         *           "status": "posted",
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000008",
+         *           "voided_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         ExpenseList: {
             items: components["schemas"]["Expense"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12595,7 +14615,31 @@ export interface components {
         ExpenseVoid: {
             reason: string;
         };
-        /** @description A monthly repeating expense (electricity, kapici salary, elevator maintenance). */
+        /**
+         * @description A monthly repeating expense (electricity, kapici salary, elevator maintenance).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "category_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "vendor_id": null,
+         *       "description": "description",
+         *       "day_of_month": 1,
+         *       "start": "2026-03-01",
+         *       "end": null,
+         *       "status": "active",
+         *       "next_run_on": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         RecurringExpense: {
             /** Format: uuid */
             id: string;
@@ -12669,12 +14713,90 @@ export interface components {
             /** Format: date */
             end?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "category_account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "vendor_id": null,
+         *           "description": "description",
+         *           "day_of_month": 1,
+         *           "start": "2026-03-01",
+         *           "end": null,
+         *           "status": "active",
+         *           "next_run_on": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         RecurringExpenseList: {
             items: components["schemas"]["RecurringExpense"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Optional vendor invoice with a due date and partial payments (enabled per site). */
+        /**
+         * @description Optional vendor invoice with a due date and partial payments (enabled per site).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "vendor_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "document_no": null,
+         *       "issue_date": "2026-03-01",
+         *       "due_date": "2026-03-01",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "paid": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "category_account_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "fund_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "file_id": null,
+         *       "description": null,
+         *       "status": "open",
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000008",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1,
+         *       "payments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000009",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "bill_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "paid_on": "2026-03-01",
+         *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "reference": null,
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ]
+         *     }
+         */
         Bill: {
             /** Format: uuid */
             id: string;
@@ -12715,6 +14837,8 @@ export interface components {
              * @description Optimistic-lock counter; send it back as If-Match on updates.
              */
             version: number;
+            /** @description The payments made against the bill, oldest first. */
+            payments: components["schemas"]["BillPayment"][];
         };
         BillCreate: {
             /** Format: uuid */
@@ -12735,15 +14859,60 @@ export interface components {
             file_id?: string | null;
             description?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        BillUpdate: {
-            document_no?: string | null;
-            /** Format: date */
-            due_date?: string;
-            /** Format: uuid */
-            file_id?: string | null;
-            description?: string | null;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "vendor_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "document_no": null,
+         *           "issue_date": "2026-03-01",
+         *           "due_date": "2026-03-01",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "paid": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "category_account_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "file_id": null,
+         *           "description": null,
+         *           "status": "open",
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000008",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1,
+         *           "payments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000009",
+         *               "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "bill_id": "0192a3f0-1000-7000-8000-000000000002",
+         *               "amount": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "paid_on": "2026-03-01",
+         *               "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "reference": null,
+         *               "journal_entry_id": "0192a3f0-1000-7000-8000-000000000004",
+         *               "created_at": "2026-03-01T09:00:00Z",
+         *               "updated_at": "2026-03-01T09:00:00Z"
+         *             }
+         *           ]
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BillList: {
             items: components["schemas"]["Bill"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12759,7 +14928,7 @@ export interface components {
             bill_id: string;
             amount: components["schemas"]["Money"];
             /** Format: date */
-            paid_at: string;
+            paid_on: string;
             /** Format: uuid */
             paid_from_account_id: string;
             reference: string | null;
@@ -12773,26 +14942,31 @@ export interface components {
         BillPaymentCreate: {
             amount: components["schemas"]["Money"];
             /** Format: date */
-            paid_at: string;
+            paid_on: string;
             /** Format: uuid */
             paid_from_account_id: string;
             reference?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        BillPaymentUpdate: {
-            amount?: components["schemas"]["Money"];
-            /** Format: date */
-            paid_at?: string;
-            /** Format: uuid */
-            paid_from_account_id?: string;
-            reference?: string | null;
-        };
-        BillPaymentList: {
-            items: components["schemas"]["BillPayment"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
-        /** @description Site-defined collection stage: reminder 1 at N days, reminder 2, ihtarname. */
+        /**
+         * @description Site-defined collection stage: reminder 1 at N days, reminder 2, ihtarname.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "reminder",
+         *       "days_after_due": 1,
+         *       "channels": [
+         *         "in_app"
+         *       ],
+         *       "template_key": null,
+         *       "position": 1,
+         *       "enabled": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         DunningStage: {
             /** Format: uuid */
             id: string;
@@ -12856,6 +15030,30 @@ export interface components {
             position?: number;
             enabled?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "reminder",
+         *           "days_after_due": 1,
+         *           "channels": [
+         *             "in_app"
+         *           ],
+         *           "template_key": null,
+         *           "position": 1,
+         *           "enabled": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         DunningStageList: {
             items: components["schemas"]["DunningStage"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -12866,9 +15064,8 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             stage_id: string;
-            unit_ids?: string[];
-            /** @enum {string} */
-            debtor_kind?: "owner" | "tenant";
+            /** @description Restrict the run to these debtors; omitted: every debtor above `min_balance`. Person targets reach carried debt of former occupants. */
+            debtors?: components["schemas"]["DebtorRef"][];
             min_balance?: components["schemas"]["Money"];
             /** @description Chosen by the sender (O5). */
             channels: ("in_app" | "email" | "sms")[];
@@ -12898,7 +15095,24 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
-        /** @description A reminder or notice sent to a unit side. */
+        /**
+         * @description A reminder or notice sent to a unit side.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "run_id": null,
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "debtor_kind": "owner",
+         *       "person_id": null,
+         *       "stage_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "sent_at": "2026-03-01T09:00:00Z",
+         *       "channel": "in_app",
+         *       "document_file_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         DunningEvent: {
             /** Format: uuid */
             id: string;
@@ -12933,12 +15147,57 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "run_id": null,
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "stage_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "sent_at": "2026-03-01T09:00:00Z",
+         *           "channel": "in_app",
+         *           "document_file_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         DunningEventList: {
             items: components["schemas"]["DunningEvent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Legal collection; while open, late fees and reminders are frozen. */
+        /**
+         * @description Legal collection; while open, late fees and reminders are frozen.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "debtor_kind": "owner",
+         *       "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "opened_on": "2026-03-01",
+         *       "lawyer": null,
+         *       "file_no": null,
+         *       "status": "open",
+         *       "closed_on": null,
+         *       "costs_charged": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "notes": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         CollectionCase: {
             /** Format: uuid */
             id: string;
@@ -12956,7 +15215,7 @@ export interface components {
             /** Format: uuid */
             debtor_person_id: string;
             /** Format: date */
-            opened_at: string;
+            opened_on: string;
             lawyer: string | null;
             file_no: string | null;
             /**
@@ -12965,7 +15224,7 @@ export interface components {
              */
             status: "open" | "closed";
             /** Format: date */
-            closed_at: string | null;
+            closed_on: string | null;
             costs_charged: components["schemas"]["Money"];
             notes: string | null;
             /** Format: date-time */
@@ -12991,7 +15250,7 @@ export interface components {
             /** Format: uuid */
             debtor_person_id: string;
             /** Format: date */
-            opened_at: string;
+            opened_on: string;
             lawyer?: string | null;
             file_no?: string | null;
             notes?: string | null;
@@ -13002,6 +15261,34 @@ export interface components {
             file_no?: string | null;
             notes?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "debtor_kind": "owner",
+         *           "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "opened_on": "2026-03-01",
+         *           "lawyer": null,
+         *           "file_no": null,
+         *           "status": "open",
+         *           "closed_on": null,
+         *           "costs_charged": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "notes": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         CollectionCaseList: {
             items: components["schemas"]["CollectionCase"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -13013,6 +15300,7 @@ export interface components {
             note?: string;
         };
         DebtBreakdownLine: {
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
             period: string | null;
             /** Format: uuid */
             charge_id: string;
@@ -13022,15 +15310,8 @@ export interface components {
             late_fee: components["schemas"]["Money"];
         };
         DebtBreakdown: {
-            /** Format: uuid */
-            unit_id: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind: "owner" | "tenant";
-            /** Format: uuid */
-            debtor_person_id: string | null;
+            /** @description Whose debt this is. */
+            debtor: components["schemas"]["DebtorRef"];
             /** Format: date */
             as_of: string;
             lines: components["schemas"]["DebtBreakdownLine"][];
@@ -13064,15 +15345,8 @@ export interface components {
         };
         /** @description Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`. */
         Statement: {
-            /** Format: uuid */
-            unit_id: string | null;
-            /**
-             * @description Open enum.
-             * @enum {string|null}
-             */
-            debtor_kind: "owner" | "tenant" | null;
-            /** Format: uuid */
-            person_id: string | null;
+            /** @description Whose statement this is: a unit side or a person. */
+            debtor: components["schemas"]["DebtorRef"];
             /** Format: date */
             from: string;
             /** Format: date */
@@ -13086,12 +15360,8 @@ export interface components {
             credit: components["schemas"]["Money"];
         };
         StatementSend: {
-            /** Format: uuid */
-            unit_id?: string;
-            /** @enum {string} */
-            debtor_kind?: "owner" | "tenant";
-            /** Format: uuid */
-            person_id?: string;
+            /** @description Whose statement to send. */
+            debtor: components["schemas"]["DebtorRef"];
             /** Format: date */
             from: string;
             /** Format: date */
@@ -13223,17 +15493,18 @@ export interface components {
              * @enum {string}
              */
             debtor_kind: "owner" | "tenant";
-            /** @description Parallel to the report `buckets` labels. */
-            buckets: components["schemas"]["Money"][];
+            /** @description One object per report bucket, in the order of the report `buckets`. */
+            buckets: components["schemas"]["AgingBucketAmount"][];
             total: components["schemas"]["Money"];
         };
         ReceivablesAgingReport: {
             /** Format: date */
             as_of: string;
-            /** @description For example `0-30`, `31-60`, `61-90`, `90+`. */
+            /** @description The ordered bucket keys, for example `0-30`, `31-60`, `61-90`, `90+`; rows and totals refer to them by key. */
             buckets: string[];
             rows: components["schemas"]["AgingRow"][];
-            totals: components["schemas"]["Money"][];
+            /** @description Totals per bucket, in the order of `buckets`. */
+            totals: components["schemas"]["AgingBucketAmount"][];
         };
         CollectorRow: {
             /** Format: uuid */
@@ -13331,7 +15602,22 @@ export interface components {
                 [key: string]: string;
             };
         };
-        /** @description Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other. */
+        /**
+         * @description Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "default_visibility": "private",
+         *       "default_assignee_role": "site_manager",
+         *       "position": 1,
+         *       "archived": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         TicketCategory: {
             /** Format: uuid */
             id: string;
@@ -13398,6 +15684,26 @@ export interface components {
             position?: number;
             archived?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "default_visibility": "private",
+         *           "default_assignee_role": "site_manager",
+         *           "position": 1,
+         *           "archived": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         TicketCategoryList: {
             items: components["schemas"]["TicketCategory"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -13434,11 +15740,6 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
-        };
-        TicketAttachmentList: {
-            items: components["schemas"]["TicketAttachment"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
         };
         TicketAttachmentCreate: {
             /** Format: uuid */
@@ -13577,6 +15878,51 @@ export interface components {
             /** Format: uuid */
             assignee_vendor_id?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": null,
+         *           "unit_door_number": null,
+         *           "reporter_person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "reporter_display_name": "reporter display name",
+         *           "category_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "title": "Elevator stuck on floor 3",
+         *           "description": "description",
+         *           "status_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "status_name": "Open",
+         *           "status_semantic": "open_like",
+         *           "visibility": "common",
+         *           "assignee": null,
+         *           "vote_count": 4,
+         *           "voted_by_me": false,
+         *           "merged_into_id": null,
+         *           "comment_count": 1,
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "ticket_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "comment_id": null,
+         *               "file_id": "0192a3f0-1000-7000-8000-000000000002",
+         *               "mime": "mime",
+         *               "size": 1,
+         *               "created_at": "2026-03-01T09:00:00Z",
+         *               "updated_at": "2026-03-01T09:00:00Z"
+         *             }
+         *           ],
+         *           "closed_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         TicketList: {
             items: components["schemas"]["Ticket"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -13600,7 +15946,33 @@ export interface components {
             vote_count: number;
             voted: boolean;
         };
-        /** @description A comment. Internal notes are hidden from residents. */
+        /**
+         * @description A comment. Internal notes are hidden from residents.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "author_person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "author_display_name": "Ali Veli",
+         *       "body": "body",
+         *       "visibility": "public",
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000008",
+         *           "comment_id": null,
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000009",
+         *           "mime": "mime",
+         *           "size": 1,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         TicketComment: {
             /** Format: uuid */
             id: string;
@@ -13632,22 +16004,57 @@ export interface components {
             visibility?: "public" | "internal";
             attachment_file_ids?: string[];
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        TicketCommentUpdate: {
-            body?: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            visibility?: "public" | "internal";
-            attachment_file_ids?: string[];
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "author_person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "author_display_name": "Ali Veli",
+         *           "body": "body",
+         *           "visibility": "public",
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "org_id": "0192a3f0-1000-7000-8000-000000000007",
+         *               "ticket_id": "0192a3f0-1000-7000-8000-000000000008",
+         *               "comment_id": null,
+         *               "file_id": "0192a3f0-1000-7000-8000-000000000009",
+         *               "mime": "mime",
+         *               "size": 1,
+         *               "created_at": "2026-03-01T09:00:00Z",
+         *               "updated_at": "2026-03-01T09:00:00Z"
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         TicketCommentList: {
             items: components["schemas"]["TicketComment"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description Append-only status history. */
+        /**
+         * @description Append-only status history.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "from_status_id": null,
+         *       "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "changed_by": null,
+         *       "comment": null,
+         *       "at": "2026-03-01T09:00:00Z",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         TicketStatusChange: {
             /** Format: uuid */
             id: string;
@@ -13669,6 +16076,25 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "from_status_id": null,
+         *           "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "changed_by": null,
+         *           "comment": null,
+         *           "at": "2026-03-01T09:00:00Z",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         TicketStatusChangeList: {
             items: components["schemas"]["TicketStatusChange"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -13795,6 +16221,43 @@ export interface components {
             channels?: ("in_app" | "email" | "sms" | "push")[];
             file_ids?: string[];
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "title": "Water cut on Saturday",
+         *           "body_md": "body md",
+         *           "status": "published",
+         *           "audience": {
+         *             "kind": "site"
+         *           },
+         *           "publish_at": null,
+         *           "expires_at": null,
+         *           "pinned": false,
+         *           "channels": [
+         *             "in_app",
+         *             "sms"
+         *           ],
+         *           "recipient_count": 120,
+         *           "sms_count": 80,
+         *           "read_count": 1,
+         *           "read_at": null,
+         *           "file_ids": [
+         *             "0192a3f0-1000-7000-8000-000000000003"
+         *           ],
+         *           "published_at": null,
+         *           "created_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AnnouncementList: {
             items: components["schemas"]["Announcement"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -13821,6 +16284,16 @@ export interface components {
             /** @description Overrides the stored channels. */
             channels?: ("in_app" | "email" | "sms" | "push")[];
         };
+        /**
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "display_name": "Ali Veli",
+         *       "unit_door_numbers": [
+         *         "unit door numbers"
+         *       ],
+         *       "read_at": null
+         *     }
+         */
         AnnouncementRead: {
             /** Format: uuid */
             person_id: string;
@@ -13829,6 +16302,23 @@ export interface components {
             /** Format: date-time */
             read_at: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "display_name": "Ali Veli",
+         *           "unit_door_numbers": [
+         *             "unit door numbers"
+         *           ],
+         *           "read_at": null
+         *         }
+         *       ],
+         *       "next_cursor": null,
+         *       "audience_count": 3,
+         *       "read_count": 3
+         *     }
+         */
         AnnouncementReadList: {
             items: components["schemas"]["AnnouncementRead"][];
             next_cursor: string | null;
@@ -13846,7 +16336,34 @@ export interface components {
             id: string;
             name: string;
         };
-        /** @description A site folder or the private folder of a unit (O8). */
+        /**
+         * @description A site folder or the private folder of a unit (O8).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "parent_id": null,
+         *       "name": "Ali Veli",
+         *       "kind": "site",
+         *       "unit_id": null,
+         *       "visibility": {
+         *         "level": "board",
+         *         "unit_ids": [
+         *           "0192a3f0-1000-7000-8000-000000000005"
+         *         ]
+         *       },
+         *       "breadcrumb": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "name": "Ali Veli"
+         *         }
+         *       ],
+         *       "is_system": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Folder: {
             /** Format: uuid */
             id: string;
@@ -13892,6 +16409,38 @@ export interface components {
             name?: string;
             visibility?: components["schemas"]["DocumentVisibility"];
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "parent_id": null,
+         *           "name": "Ali Veli",
+         *           "kind": "site",
+         *           "unit_id": null,
+         *           "visibility": {
+         *             "level": "board",
+         *             "unit_ids": [
+         *               "0192a3f0-1000-7000-8000-000000000005"
+         *             ]
+         *           },
+         *           "breadcrumb": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "name": "Ali Veli"
+         *             }
+         *           ],
+         *           "is_system": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         FolderList: {
             items: components["schemas"]["Folder"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -13903,7 +16452,34 @@ export interface components {
             /** Format: uuid */
             id: string;
         };
-        /** @description A document. No versions: replacing the file (`file_id`) overwrites it. */
+        /**
+         * @description A document. No versions: replacing the file (`file_id`) overwrites it.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "folder_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "title": "Ali Veli",
+         *       "file_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "mime": "mime",
+         *       "size": 1,
+         *       "visibility": {
+         *         "level": "board",
+         *         "unit_ids": [
+         *           "0192a3f0-1000-7000-8000-000000000007"
+         *         ]
+         *       },
+         *       "source": "uploaded",
+         *       "generated_from": {
+         *         "type": "type",
+         *         "id": "0192a3f0-1000-7000-8000-000000000008"
+         *       },
+         *       "uploaded_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Document: {
             /** Format: uuid */
             id: string;
@@ -13958,12 +16534,55 @@ export interface components {
             file_id?: string;
             visibility?: components["schemas"]["DocumentVisibility"] | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "folder_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "title": "Ali Veli",
+         *           "file_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "mime": "mime",
+         *           "size": 1,
+         *           "visibility": {
+         *             "level": "board",
+         *             "unit_ids": [
+         *               "0192a3f0-1000-7000-8000-000000000007"
+         *             ]
+         *           },
+         *           "source": "uploaded",
+         *           "generated_from": {
+         *             "type": "type",
+         *             "id": "0192a3f0-1000-7000-8000-000000000008"
+         *           },
+         *           "uploaded_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         DocumentList: {
             items: components["schemas"]["Document"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description An in-app notification of the caller. */
+        /**
+         * @description An in-app notification of the caller.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "site_id": null,
+         *       "type": "type",
+         *       "payload": {},
+         *       "read_at": null,
+         *       "link": null,
+         *       "created_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Notification: {
             /** Format: uuid */
             id: string;
@@ -13979,6 +16598,22 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "site_id": null,
+         *           "type": "type",
+         *           "payload": {},
+         *           "read_at": null,
+         *           "link": null,
+         *           "created_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         NotificationList: {
             items: components["schemas"]["Notification"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14008,6 +16643,11 @@ export interface components {
             /** Format: uuid */
             site_id: string;
             defaults: components["schemas"]["NotificationDefault"][];
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
         };
         NotificationDefaultsSet: {
             defaults: components["schemas"]["NotificationDefaultInput"][];
@@ -14027,7 +16667,7 @@ export interface components {
         SmsUsage: {
             /** Format: uuid */
             site_id: string;
-            /** @description `YYYY-MM` */
+            /** @description The month, `YYYY-MM`. */
             month: string;
             /** Format: int64 */
             sent: number;
@@ -14067,11 +16707,6 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
-        FileList: {
-            items: components["schemas"]["File"][];
-            /** @description Pass as `cursor` for the next page; null on the last page. */
-            next_cursor: string | null;
-        };
         ExportRequest: {
             /** Format: uuid */
             site_id?: string;
@@ -14083,7 +16718,25 @@ export interface components {
                 [key: string]: unknown;
             };
         };
-        /** @description Append-only audit record. */
+        /**
+         * @description Append-only audit record.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": null,
+         *       "actor_user_id": null,
+         *       "actor_display_name": null,
+         *       "action": "action",
+         *       "target_type": "target type",
+         *       "target_id": null,
+         *       "diff": {},
+         *       "ip": null,
+         *       "request_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "at": "2026-03-01T09:00:00Z",
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         AuditEvent: {
             /** Format: uuid */
             id: string;
@@ -14111,12 +16764,49 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": null,
+         *           "actor_user_id": null,
+         *           "actor_display_name": null,
+         *           "action": "action",
+         *           "target_type": "target type",
+         *           "target_id": null,
+         *           "diff": {},
+         *           "ip": null,
+         *           "request_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "at": "2026-03-01T09:00:00Z",
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AuditEventList: {
             items: components["schemas"]["AuditEvent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description An auditor's note. */
+        /**
+         * @description An auditor's note.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "target_type": null,
+         *       "target_id": null,
+         *       "body": "body",
+         *       "author_person_id": null,
+         *       "author_display_name": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         AuditNote: {
             /** Format: uuid */
             id: string;
@@ -14144,15 +16834,25 @@ export interface components {
             target_id?: string | null;
             body: string;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        AuditNoteUpdate: {
-            /** Format: uuid */
-            site_id?: string;
-            target_type?: string | null;
-            /** Format: uuid */
-            target_id?: string | null;
-            body?: string;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "target_type": null,
+         *           "target_id": null,
+         *           "body": "body",
+         *           "author_person_id": null,
+         *           "author_display_name": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AuditNoteList: {
             items: components["schemas"]["AuditNote"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14220,6 +16920,42 @@ export interface components {
             /** Format: int64 */
             version: number;
         };
+        /**
+         * @example {
+         *       "id": "id",
+         *       "country_code": "country code",
+         *       "name": "Ali Veli",
+         *       "settings": {
+         *         "quorum": {
+         *           "first_call_by_count_pct": 1.5,
+         *           "first_call_by_share_pct": 1.5,
+         *           "second_call_requires_quorum": false
+         *         },
+         *         "thresholds": [
+         *           {
+         *             "topic": "topic",
+         *             "rule": "simple_majority_present",
+         *             "note": null
+         *           }
+         *         ],
+         *         "max_votes_per_person_pct": 1.5,
+         *         "proxy_cap_pct": 1.5,
+         *         "proxy_cap_small_building_max": 1,
+         *         "small_building_unit_limit": 1,
+         *         "call_min_days": 1,
+         *         "second_call_min_days": 1,
+         *         "second_call_max_days": 1,
+         *         "term_reminder_days": 1
+         *       },
+         *       "notes": [
+         *         {
+         *           "key": "key",
+         *           "note": "note",
+         *           "verify": false
+         *         }
+         *       ]
+         *     }
+         */
         GovernancePreset: {
             id: string;
             country_code: string;
@@ -14227,6 +16963,47 @@ export interface components {
             settings: components["schemas"]["GovernanceSettingsSet"];
             notes: components["schemas"]["PresetNote"][];
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "id",
+         *           "country_code": "country code",
+         *           "name": "Ali Veli",
+         *           "settings": {
+         *             "quorum": {
+         *               "first_call_by_count_pct": 1.5,
+         *               "first_call_by_share_pct": 1.5,
+         *               "second_call_requires_quorum": false
+         *             },
+         *             "thresholds": [
+         *               {
+         *                 "topic": "topic",
+         *                 "rule": "simple_majority_present",
+         *                 "note": null
+         *               }
+         *             ],
+         *             "max_votes_per_person_pct": 1.5,
+         *             "proxy_cap_pct": 1.5,
+         *             "proxy_cap_small_building_max": 1,
+         *             "small_building_unit_limit": 1,
+         *             "call_min_days": 1,
+         *             "second_call_min_days": 1,
+         *             "second_call_max_days": 1,
+         *             "term_reminder_days": 1
+         *           },
+         *           "notes": [
+         *             {
+         *               "key": "key",
+         *               "note": "note",
+         *               "verify": false
+         *             }
+         *           ]
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         GovernancePresetList: {
             items: components["schemas"]["GovernancePreset"][];
             next_cursor: string | null;
@@ -14330,6 +17107,32 @@ export interface components {
             second_call_at?: string;
             location?: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "kind": "general_assembly",
+         *           "scope": "site",
+         *           "title": null,
+         *           "scheduled_at": "2026-01-18T10:00:00Z",
+         *           "second_call_at": "2026-01-28T10:00:00Z",
+         *           "location": "location",
+         *           "status": "called",
+         *           "eligibility_snapshot": null,
+         *           "call_letter_document_id": null,
+         *           "minutes_document_id": null,
+         *           "called_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         MeetingList: {
             items: components["schemas"]["Meeting"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14388,7 +17191,25 @@ export interface components {
             /** Format: uuid */
             file_id: string;
         };
-        /** @description Per-owner delivery record of the call or of the decisions (G3). */
+        /**
+         * @description Per-owner delivery record of the call or of the decisions (G3).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "person_display_name": "Ali Veli",
+         *       "phase": "call",
+         *       "method": "registered_mail",
+         *       "status": "pending",
+         *       "sent_at": null,
+         *       "tracking_no": null,
+         *       "proof_file_id": null,
+         *       "note": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         MeetingNotice: {
             /** Format: uuid */
             id: string;
@@ -14425,6 +17246,29 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "person_display_name": "Ali Veli",
+         *           "phase": "call",
+         *           "method": "registered_mail",
+         *           "status": "pending",
+         *           "sent_at": null,
+         *           "tracking_no": null,
+         *           "proof_file_id": null,
+         *           "note": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         MeetingNoticeList: {
             items: components["schemas"]["MeetingNotice"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14466,7 +17310,23 @@ export interface components {
             /** Format: int64 */
             sms_count: number;
         };
-        /** @description An agenda item, marked whether it will be voted on (G1). */
+        /**
+         * @description An agenda item, marked whether it will be voted on (G1).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "position": 1,
+         *       "title": "Ali Veli",
+         *       "description": null,
+         *       "will_be_voted": false,
+         *       "topic": null,
+         *       "decision_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         AgendaItem: {
             /** Format: uuid */
             id: string;
@@ -14506,6 +17366,27 @@ export interface components {
             will_be_voted?: boolean;
             topic?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "position": 1,
+         *           "title": "Ali Veli",
+         *           "description": null,
+         *           "will_be_voted": false,
+         *           "topic": null,
+         *           "decision_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AgendaItemList: {
             items: components["schemas"]["AgendaItem"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14528,6 +17409,11 @@ export interface components {
              * @enum {string}
              */
             status: "draft" | "open" | "closed";
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
         };
         PollSet: {
             question?: string;
@@ -14542,6 +17428,16 @@ export interface components {
             /** @enum {string} */
             answer: "yes" | "no" | "abstain";
         };
+        /**
+         * @example {
+         *       "agenda_item_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "unit_door_number": "unit door number",
+         *       "answer": "yes",
+         *       "answered_by": "0192a3f0-1000-7000-8000-000000000004",
+         *       "answered_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         PollAnswer: {
             /** Format: uuid */
             agenda_item_id: string;
@@ -14558,6 +17454,21 @@ export interface components {
             /** Format: date-time */
             answered_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "agenda_item_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "unit_door_number": "unit door number",
+         *           "answer": "yes",
+         *           "answered_by": "0192a3f0-1000-7000-8000-000000000004",
+         *           "answered_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         PollAnswerList: {
             items: components["schemas"]["PollAnswer"][];
             next_cursor: string | null;
@@ -14612,7 +17523,29 @@ export interface components {
              */
             outcome_hint: "accepted" | "rejected" | "undetermined";
         };
-        /** @description Who is present, and for which units. */
+        /**
+         * @description Who is present, and for which units.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "person_display_name": "Ali Veli",
+         *       "unit_ids": [
+         *         "0192a3f0-1000-7000-8000-000000000006"
+         *       ],
+         *       "unit_labels": [
+         *         "Ali Veli"
+         *       ],
+         *       "mode": "in_person",
+         *       "proxy_for_person_id": null,
+         *       "source": "desk",
+         *       "checked_in_at": "2026-03-01T09:00:00Z",
+         *       "checked_in_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Attendance: {
             /** Format: uuid */
             id: string;
@@ -14646,6 +17579,33 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "person_display_name": "Ali Veli",
+         *           "unit_ids": [
+         *             "0192a3f0-1000-7000-8000-000000000006"
+         *           ],
+         *           "unit_labels": [
+         *             "Ali Veli"
+         *           ],
+         *           "mode": "in_person",
+         *           "proxy_for_person_id": null,
+         *           "source": "desk",
+         *           "checked_in_at": "2026-03-01T09:00:00Z",
+         *           "checked_in_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AttendanceList: {
             items: components["schemas"]["Attendance"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14785,6 +17745,38 @@ export interface components {
             dissents?: components["schemas"]["DissentInput"][];
             concerns_residents?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "agenda_item_id": null,
+         *           "sequence_no": 3,
+         *           "year": 2026,
+         *           "text": "Dues become 2,000 TRY from March.",
+         *           "outcome": "accepted",
+         *           "vote_count": null,
+         *           "dissents": [
+         *             {
+         *               "person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "display_name": null,
+         *               "text": "text"
+         *             }
+         *           ],
+         *           "concerns_residents": true,
+         *           "notified_at": null,
+         *           "effect": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         DecisionList: {
             items: components["schemas"]["Decision"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14849,7 +17841,23 @@ export interface components {
             /** @description When committed: the decision with its `effect`. */
             decision: components["schemas"]["Decision"] | null;
         };
-        /** @description A board, auditor or manager term nearing its end (G6). */
+        /**
+         * @description A board, auditor or manager term nearing its end (G6).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "membership_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "person_display_name": "Ali Veli",
+         *       "role": "role",
+         *       "valid_to": "2026-03-01",
+         *       "days_left": 1,
+         *       "status": "upcoming",
+         *       "notified_at": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         TermReminder: {
             /** Format: uuid */
             id: string;
@@ -14877,6 +17885,27 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "membership_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "person_display_name": "Ali Veli",
+         *           "role": "role",
+         *           "valid_to": "2026-03-01",
+         *           "days_left": 1,
+         *           "status": "upcoming",
+         *           "notified_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         TermReminderList: {
             items: components["schemas"]["TermReminder"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14919,7 +17948,42 @@ export interface components {
              */
             cancel_refund_cutoff_hours: number | null;
         };
-        /** @description A bookable thing: hall, barbecue area, court, guest flat. */
+        /**
+         * @description A bookable thing: hall, barbecue area, court, guest flat.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "description": null,
+         *       "rules": {
+         *         "opening_hours": [
+         *           {
+         *             "days": [],
+         *             "start": "09:00",
+         *             "end": "09:00"
+         *           }
+         *         ],
+         *         "max_duration_minutes": 1,
+         *         "max_days_ahead": 1,
+         *         "min_notice_minutes": null,
+         *         "quota_per_unit": null,
+         *         "quota_period": "week",
+         *         "who_may_book": [
+         *           "owner"
+         *         ],
+         *         "fee": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "cancel_refund_cutoff_hours": null
+         *       },
+         *       "enabled": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         Facility: {
             /** Format: uuid */
             id: string;
@@ -14956,6 +18020,46 @@ export interface components {
             rules?: components["schemas"]["FacilityRules"];
             enabled?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "description": null,
+         *           "rules": {
+         *             "opening_hours": [
+         *               {
+         *                 "days": [],
+         *                 "start": "09:00",
+         *                 "end": "09:00"
+         *               }
+         *             ],
+         *             "max_duration_minutes": 1,
+         *             "max_days_ahead": 1,
+         *             "min_notice_minutes": null,
+         *             "quota_per_unit": null,
+         *             "quota_period": "week",
+         *             "who_may_book": [
+         *               "owner"
+         *             ],
+         *             "fee": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "cancel_refund_cutoff_hours": null
+         *           },
+         *           "enabled": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         FacilityList: {
             items: components["schemas"]["Facility"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -14967,7 +18071,19 @@ export interface components {
             /** Format: date-time */
             end: string;
         };
-        /** @description Dates the manager blocks. */
+        /**
+         * @description Dates the manager blocks.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "facility_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "start": "2026-03-01T09:00:00Z",
+         *       "end": "2026-03-01T09:00:00Z",
+         *       "reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         FacilityBlock: {
             /** Format: uuid */
             id: string;
@@ -14992,14 +18108,23 @@ export interface components {
             end: string;
             reason?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        FacilityBlockUpdate: {
-            /** Format: date-time */
-            start?: string;
-            /** Format: date-time */
-            end?: string;
-            reason?: string | null;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "facility_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "start": "2026-03-01T09:00:00Z",
+         *           "end": "2026-03-01T09:00:00Z",
+         *           "reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         FacilityBlockList: {
             items: components["schemas"]["FacilityBlock"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15075,6 +18200,33 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "facility_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "facility_name": "Community hall",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "person_id": null,
+         *           "person_display_name": null,
+         *           "start": "2026-03-14T18:00:00Z",
+         *           "end": "2026-03-14T22:00:00Z",
+         *           "status": "confirmed",
+         *           "charge_id": null,
+         *           "fee": null,
+         *           "refund": null,
+         *           "cancelled_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         BookingList: {
             items: components["schemas"]["Booking"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15155,7 +18307,7 @@ export interface components {
              * @enum {string}
              */
             source: "pre_registered" | "walk_in" | "recurring";
-            /** @description Shown to the resident who created the entry and to managers; the QR encodes `obk1.<token>`. */
+            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: uuid */
             decided_by: string | null;
@@ -15199,12 +18351,64 @@ export interface components {
             /** Format: date-time */
             window_to?: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "name": "Mehmet Kaya",
+         *           "plate": "34ABC123",
+         *           "window_from": "2026-03-01T09:00:00Z",
+         *           "window_to": "2026-03-01T09:00:00Z",
+         *           "approval_status": "pre_approved",
+         *           "source": "pre_registered",
+         *           "qr_token": null,
+         *           "decided_by": null,
+         *           "decided_at": null,
+         *           "arrived_at": null,
+         *           "left_at": null,
+         *           "cancelled": false,
+         *           "recurring_visitor_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         VisitorEntryList: {
             items: components["schemas"]["VisitorEntry"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone. */
+        /**
+         * @description A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "name": "Ali Veli",
+         *       "plate": null,
+         *       "days": [
+         *         1
+         *       ],
+         *       "start": "09:00",
+         *       "end": "09:00",
+         *       "valid_from": "2026-03-01",
+         *       "valid_to": null,
+         *       "status": "active",
+         *       "qr_token": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         RecurringVisitor: {
             /** Format: uuid */
             id: string;
@@ -15231,6 +18435,7 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "revoked" | "expired";
+            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: date-time */
             created_at: string;
@@ -15271,12 +18476,57 @@ export interface components {
             /** Format: date */
             valid_to?: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "name": "Ali Veli",
+         *           "plate": null,
+         *           "days": [
+         *             1
+         *           ],
+         *           "start": "09:00",
+         *           "end": "09:00",
+         *           "valid_from": "2026-03-01",
+         *           "valid_to": null,
+         *           "status": "active",
+         *           "qr_token": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         RecurringVisitorList: {
             items: components["schemas"]["RecurringVisitor"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
-        /** @description The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS). */
+        /**
+         * @description The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "entry_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "unit_door_number": "unit door number",
+         *       "visitor_name": "Ali Veli",
+         *       "plate": null,
+         *       "requested_at": "2026-03-01T09:00:00Z",
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "status": "pending",
+         *       "decided_by": null,
+         *       "decided_at": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         VisitorApprovalRequest: {
             /** Format: uuid */
             id: string;
@@ -15307,6 +18557,29 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "entry_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "unit_door_number": "unit door number",
+         *           "visitor_name": "Ali Veli",
+         *           "plate": null,
+         *           "requested_at": "2026-03-01T09:00:00Z",
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "status": "pending",
+         *           "decided_by": null,
+         *           "decided_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         VisitorApprovalRequestList: {
             items: components["schemas"]["VisitorApprovalRequest"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15316,7 +18589,24 @@ export interface components {
             /** @enum {string} */
             decision: "approve" | "deny";
         };
-        /** @description A parcel logged by the guard. */
+        /**
+         * @description A parcel logged by the guard.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "unit_door_number": "unit door number",
+         *       "received_at": "2026-03-01T09:00:00Z",
+         *       "received_by_display_name": null,
+         *       "description": null,
+         *       "status": "waiting",
+         *       "collected_at": null,
+         *       "collected_by_name": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Delivery: {
             /** Format: uuid */
             id: string;
@@ -15351,12 +18641,28 @@ export interface components {
             unit_id: string;
             description?: string | null;
         };
-        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
-        DeliveryUpdate: {
-            /** Format: uuid */
-            unit_id?: string;
-            description?: string | null;
-        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "unit_door_number": "unit door number",
+         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "received_by_display_name": null,
+         *           "description": null,
+         *           "status": "waiting",
+         *           "collected_at": null,
+         *           "collected_by_name": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         DeliveryList: {
             items: components["schemas"]["Delivery"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15365,7 +18671,22 @@ export interface components {
         DeliveryCollect: {
             collected_by_name: string;
         };
-        /** @description What a guard sees of a visitor: never balances, other contacts or national ids. */
+        /**
+         * @description What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "name": "Ali Veli",
+         *       "plate": null,
+         *       "unit_door_number": "unit door number",
+         *       "window_from": "2026-03-01T09:00:00Z",
+         *       "window_to": "2026-03-01T09:00:00Z",
+         *       "approval_status": "pre_approved",
+         *       "approval_expires_at": null,
+         *       "arrived_at": null,
+         *       "left_at": null,
+         *       "recurring": false
+         *     }
+         */
         GuardVisitor: {
             /** Format: uuid */
             id: string;
@@ -15389,6 +18710,26 @@ export interface components {
             left_at: string | null;
             recurring: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "name": "Ali Veli",
+         *           "plate": null,
+         *           "unit_door_number": "unit door number",
+         *           "window_from": "2026-03-01T09:00:00Z",
+         *           "window_to": "2026-03-01T09:00:00Z",
+         *           "approval_status": "pre_approved",
+         *           "approval_expires_at": null,
+         *           "arrived_at": null,
+         *           "left_at": null,
+         *           "recurring": false
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         GuardVisitorList: {
             items: components["schemas"]["GuardVisitor"][];
             next_cursor: string | null;
@@ -15417,6 +18758,16 @@ export interface components {
             /** @description Absent when the site has no access agent. */
             agent: components["schemas"]["GateAgentStatus"] | null;
         };
+        /**
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "unit door number",
+         *       "received_at": "2026-03-01T09:00:00Z",
+         *       "description": null,
+         *       "status": "waiting",
+         *       "collected_by_name": null
+         *     }
+         */
         GateDelivery: {
             /** Format: uuid */
             id: string;
@@ -15431,14 +18782,46 @@ export interface components {
             status: "waiting" | "collected";
             collected_by_name: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "description": null,
+         *           "status": "waiting",
+         *           "collected_by_name": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         GateDeliveryList: {
             items: components["schemas"]["GateDelivery"][];
             next_cursor: string | null;
         };
+        /**
+         * @example {
+         *       "plate": "plate",
+         *       "unit_door_number": "unit door number"
+         *     }
+         */
         GatePlate: {
             plate: string;
             unit_door_number: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "plate": "plate",
+         *           "unit_door_number": "unit door number"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         GatePlateList: {
             items: components["schemas"]["GatePlate"][];
             next_cursor: string | null;
@@ -15470,18 +18853,34 @@ export interface components {
             /** Format: uuid */
             point_id?: string;
         };
+        /** @description The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident's number the visitor entry points to, with no other contact data. */
         CallContact: {
             display_name: string | null;
             /** @description E.164. */
             phone: string;
         };
+        /**
+         * @description Quick PIN switch at the booth: the guard picks their name from `gate.listGuards`, then types the PIN. The PIN is checked against that one person, so PINs need not be unique per site.
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "pin": "1234"
+         *     }
+         */
         GuardSessionCreate: {
             /** Format: uuid */
             site_id: string;
+            /**
+             * Format: uuid
+             * @description The guard, from `gate.listGuards`.
+             */
+            person_id: string;
+            /** @description 4 to 8 digits (`community.setGuardPin`). */
             pin: string;
         };
+        /** @description A short-lived guard session. Send `token` as `X-Guard-Session` on guard operations (semantics: the header parameter). */
         GuardSession: {
-            /** @description Send as `X-Guard-Session` on guard operations. */
+            /** @description Opaque bearer for the `X-Guard-Session` header. Valid until `expires_at` (12 hours), bound to the console login session and the site it was created for; ends earlier on logout of the console, on a new `createGuardSession` by the same console, or when the guard membership ends. */
             token: string;
             /** Format: date-time */
             expires_at: string;
@@ -15510,7 +18909,26 @@ export interface components {
             /** @description A mock driver is configured; the UI shows it. */
             mock: boolean;
         };
-        /** @description A gate or door driven by an agent. */
+        /**
+         * @description A gate or door driven by an agent.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "vehicle_gate",
+         *       "direction": "in",
+         *       "agent_id": null,
+         *       "driver_ref": {
+         *         "instance": "instance",
+         *         "channel": "channel"
+         *       },
+         *       "enabled": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         AccessPoint: {
             /** Format: uuid */
             id: string;
@@ -15581,6 +18999,30 @@ export interface components {
             driver_ref?: components["schemas"]["DriverRef"] | null;
             enabled?: boolean;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "vehicle_gate",
+         *           "direction": "in",
+         *           "agent_id": null,
+         *           "driver_ref": {
+         *             "instance": "instance",
+         *             "channel": "channel"
+         *           },
+         *           "enabled": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AccessPointList: {
             items: components["schemas"]["AccessPoint"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15615,7 +19057,10 @@ export interface components {
          *       "revoked_at": null,
          *       "created_by": null,
          *       "created_at": "2026-03-01T09:00:00Z",
-         *       "updated_at": "2026-03-01T09:00:00Z"
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "lost_events": null,
+         *       "store_error": null,
+         *       "dead_letters": null
          *     }
          */
         Agent: {
@@ -15650,7 +19095,7 @@ export interface components {
             drivers: components["schemas"]["DriverState"][];
             /** Format: int64 */
             clock_offset_ms: number | null;
-            /** @description True when the offset exceeds 120 seconds; a manual open is refused beyond 24 hours. */
+            /** @description True when the offset exceeds 120 seconds or the agent reports a clock jump; a manual open is refused beyond 24 hours. */
             clock_suspect: boolean;
             /** Format: date-time */
             rotate_by: string | null;
@@ -15664,6 +19109,18 @@ export interface components {
             created_at: string;
             /** Format: date-time */
             updated_at: string;
+            /**
+             * Format: int64
+             * @description From the last heartbeat: events the agent had to discard.
+             */
+            lost_events: number | null;
+            /** @description From the last heartbeat: the agent's local store error, null when healthy. */
+            store_error: string | null;
+            /**
+             * Format: int64
+             * @description From the last heartbeat: events set aside after final rejection.
+             */
+            dead_letters: number | null;
         };
         AgentCreate: {
             /** Format: uuid */
@@ -15674,6 +19131,45 @@ export interface components {
         AgentUpdate: {
             name?: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "name": "Main gate Pi",
+         *           "status": "active",
+         *           "connected": true,
+         *           "version": 1,
+         *           "platform": null,
+         *           "protocol_version": null,
+         *           "last_seen": null,
+         *           "snapshot_version": null,
+         *           "queue_depth": null,
+         *           "drivers": [
+         *             {
+         *               "instance": "instance",
+         *               "state": "ok",
+         *               "mock": false
+         *             }
+         *           ],
+         *           "clock_offset_ms": null,
+         *           "clock_suspect": false,
+         *           "rotate_by": null,
+         *           "enrol_expires_at": null,
+         *           "revoked_at": null,
+         *           "created_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "lost_events": null,
+         *           "store_error": null,
+         *           "dead_letters": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AgentList: {
             items: components["schemas"]["Agent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15701,7 +19197,40 @@ export interface components {
              */
             end: string;
         };
-        /** @description Derived view of a vehicle or visitor entry; never edited by hand in 0.3. Unit and person are for display and are never sent to the agent. */
+        /**
+         * @description A credential the agent can match. Plates and visitor QR codes are derived from vehicles and visitor entries and never edited by hand; `tag` and `pin` credentials are created manually (`access.createCredential`, `source_type: manual`).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "kind": "plate",
+         *       "value": "value",
+         *       "source_type": "vehicle",
+         *       "source_id": null,
+         *       "unit_id": null,
+         *       "unit_door_number": null,
+         *       "person_id": null,
+         *       "point_scope": "all_vehicle",
+         *       "point_ids": [
+         *         "0192a3f0-1000-7000-8000-000000000005"
+         *       ],
+         *       "valid_from": "2026-03-01T09:00:00Z",
+         *       "valid_to": null,
+         *       "recurring": {
+         *         "days": [
+         *           1
+         *         ],
+         *         "start": "09:00",
+         *         "end": "09:00"
+         *       },
+         *       "max_uses": null,
+         *       "uses": 1,
+         *       "status": "active",
+         *       "status_reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
         Credential: {
             /** Format: uuid */
             id: string;
@@ -15754,6 +19283,44 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "kind": "plate",
+         *           "value": "value",
+         *           "source_type": "vehicle",
+         *           "source_id": null,
+         *           "unit_id": null,
+         *           "unit_door_number": null,
+         *           "person_id": null,
+         *           "point_scope": "all_vehicle",
+         *           "point_ids": [
+         *             "0192a3f0-1000-7000-8000-000000000005"
+         *           ],
+         *           "valid_from": "2026-03-01T09:00:00Z",
+         *           "valid_to": null,
+         *           "recurring": {
+         *             "days": [
+         *               1
+         *             ],
+         *             "start": "09:00",
+         *             "end": "09:00"
+         *           },
+         *           "max_uses": null,
+         *           "uses": 1,
+         *           "status": "active",
+         *           "status_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         CredentialList: {
             items: components["schemas"]["Credential"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15837,6 +19404,36 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "point_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "point_name": null,
+         *           "agent_id": null,
+         *           "credential_id": null,
+         *           "decision": "allow",
+         *           "reason": "match",
+         *           "presented_kind": null,
+         *           "observed_plate": "34ABC123",
+         *           "unit_door_number": null,
+         *           "actor_user_id": null,
+         *           "actor_display_name": null,
+         *           "command_id": null,
+         *           "visitor_entry_id": null,
+         *           "occurred_at": "2026-03-01T09:00:00Z",
+         *           "synced_at": "2026-03-01T09:00:00Z",
+         *           "sync_seq": 1,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         AccessEventList: {
             items: components["schemas"]["AccessEvent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15856,7 +19453,25 @@ export interface components {
             unit_label: string | null;
             visitor_name: string | null;
         };
-        /** @description Data-minimized for the guard console: door number and visitor name only, never contacts or balances. */
+        /**
+         * @description Data-minimized for the guard console: door number and visitor name only, never contacts or balances.
+         * @example {
+         *       "sync_seq": 1,
+         *       "occurred_at": "2026-03-01T09:00:00Z",
+         *       "point": {
+         *         "id": "0192a3f0-1000-7000-8000-000000000002",
+         *         "name": "Ali Veli"
+         *       },
+         *       "decision": "allow",
+         *       "reason": "reason",
+         *       "plate": null,
+         *       "who": {
+         *         "kind": "resident",
+         *         "unit_label": null,
+         *         "visitor_name": null
+         *       }
+         *     }
+         */
         GuardAccessEvent: {
             /** Format: int64 */
             sync_seq: number;
@@ -15872,6 +19487,29 @@ export interface components {
             plate: string | null;
             who: components["schemas"]["GuardEventWho"];
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "sync_seq": 1,
+         *           "occurred_at": "2026-03-01T09:00:00Z",
+         *           "point": {
+         *             "id": "0192a3f0-1000-7000-8000-000000000002",
+         *             "name": "Ali Veli"
+         *           },
+         *           "decision": "allow",
+         *           "reason": "reason",
+         *           "plate": null,
+         *           "who": {
+         *             "kind": "resident",
+         *             "unit_label": null,
+         *             "visitor_name": null
+         *           }
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         GuardAccessEventList: {
             items: components["schemas"]["GuardAccessEvent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -15956,20 +19594,62 @@ export interface components {
             poll_url: string;
             protocol_versions: number[];
         };
+        /**
+         * @example {
+         *       "session": "sess_0192a3f0100070008000000000000001",
+         *       "messages": [],
+         *       "wait_seconds": 25
+         *     }
+         */
         AgentPollRequest: {
             messages: components["schemas"]["AgentEnvelope"][];
             /**
              * Format: int64
-             * @description 0 to 30.
+             * @description 0 to 30 seconds to hold the request open when the server has nothing to send.
              */
             wait_seconds: number;
+            /** @description The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`. */
+            session?: string;
         };
+        /**
+         * @description Messages for the agent. An empty poll is still 200 with `messages: []` (it also refreshes the agent's contact clock).
+         * @example {
+         *       "session": "sess_0192a3f0100070008000000000000001",
+         *       "seq": 1,
+         *       "messages": []
+         *     }
+         */
         AgentPollResponse: {
+            /** @description The session handle (also in the server hello). */
+            session: string;
+            /**
+             * Format: int64
+             * @description Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+             */
+            seq: number;
             messages: components["schemas"]["AgentEnvelope"][];
         };
+        /**
+         * @description Rotation is idempotent for the retired token: calling again with the previous token inside the 10 minute window returns the same new token.
+         * @example {
+         *       "agent_token": "obk_agt_0192a3f0-1000-7000-8000-000000000001.secret",
+         *       "rotate_by": "2026-09-01T00:00:00Z",
+         *       "previous_valid_until": "2026-03-05T10:10:00Z"
+         *     }
+         */
         AgentTokenRotated: {
-            /** @description The previous token stays valid 10 minutes. */
+            /** @description The new token, `obk_agt_<agent_id>.<secret>`; stored by the agent before it reports success. */
             agent_token: string;
+            /**
+             * Format: date-time
+             * @description Rotate again before this time (default 180 days from now).
+             */
+            rotate_by: string;
+            /**
+             * Format: date-time
+             * @description The retired token keeps working until then (10 minutes after the first rotation) so a crash between steps recovers.
+             */
+            previous_valid_until: string;
         };
         DashboardMeeting: {
             /** Format: uuid */
@@ -16089,7 +19769,22 @@ export interface components {
             /** @description Site-defined ticket statuses when `site_id` is given. */
             ticket_statuses: components["schemas"]["CodeLabel"][];
         };
-        /** @description An organization as the instance operator sees it. */
+        /**
+         * @description An organization as the instance operator sees it.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "slug": "slug",
+         *       "name": "Ali Veli",
+         *       "status": "active",
+         *       "default_locale": "default locale",
+         *       "timezone": "timezone",
+         *       "country_code": "country code",
+         *       "site_count": 3,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
         PlatformOrg: {
             /** Format: uuid */
             id: string;
@@ -16112,6 +19807,26 @@ export interface components {
             /** Format: int64 */
             version: number;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "slug": "slug",
+         *           "name": "Ali Veli",
+         *           "status": "active",
+         *           "default_locale": "default locale",
+         *           "timezone": "timezone",
+         *           "country_code": "country code",
+         *           "site_count": 3,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         PlatformOrgList: {
             items: components["schemas"]["PlatformOrg"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
@@ -16189,6 +19904,19 @@ export interface components {
             /** Format: date-time */
             next_backup_at: string | null;
         };
+        /**
+         * @example {
+         *       "id": "id",
+         *       "kind": "kind",
+         *       "queue": "queue",
+         *       "state": "available",
+         *       "attempts": 1,
+         *       "org_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "finalized_at": null,
+         *       "error": null
+         *     }
+         */
         PlatformJob: {
             id: string;
             kind: string;
@@ -16208,9 +19936,335 @@ export interface components {
             finalized_at: string | null;
             error: string | null;
         };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "id",
+         *           "kind": "kind",
+         *           "queue": "queue",
+         *           "state": "available",
+         *           "attempts": 1,
+         *           "org_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "finalized_at": null,
+         *           "error": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
         PlatformJobList: {
             items: components["schemas"]["PlatformJob"][];
             next_cursor: string | null;
+        };
+        /**
+         * @description Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.
+         * @example {
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "debtor_kind": "tenant"
+         *     }
+         */
+        DebtorRef: {
+            /**
+             * Format: uuid
+             * @description Unit mode: the unit.
+             */
+            unit_id?: string;
+            /**
+             * @description Unit mode: the side of the unit that owes.
+             * @enum {string}
+             */
+            debtor_kind?: "owner" | "tenant";
+            /**
+             * Format: uuid
+             * @description Person mode: the person who owes; covers charges carried to them and charges keyed on them.
+             */
+            person_id?: string;
+        } & (unknown | unknown);
+        /**
+         * @description Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.
+         * @example {
+         *       "debtor_kind": "tenant",
+         *       "person_id": null,
+         *       "display_name": null,
+         *       "source": "unit_override"
+         *     }
+         */
+        EffectiveDebtor: {
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            /**
+             * Format: uuid
+             * @description The person on the due date; null when the side is vacant.
+             */
+            person_id: string | null;
+            display_name: string | null;
+            /**
+             * @description Where the decision came from. Open enum.
+             * @enum {string}
+             */
+            source: "charge" | "unit_override" | "plan_default" | "carried";
+        };
+        /**
+         * @description An open charge handled by a move-out.
+         * @example {
+         *       "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "charge_type": "dues",
+         *       "period": "2026-02",
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "outcome": "carried_to_person",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000001"
+         *     }
+         */
+        CarriedCharge: {
+            /** Format: uuid */
+            charge_id: string;
+            /** @description Open enum, see `Charge.charge_type`. */
+            charge_type: string;
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
+            period: string | null;
+            balance: components["schemas"]["Money"];
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            outcome: "carried_to_person" | "kept_on_unit" | "written_off";
+            /**
+             * Format: uuid
+             * @description The person now holding the receivable (`carried_to_person`).
+             */
+            person_id: string | null;
+        };
+        /**
+         * @description Counts-only dashboard for staff (S3/S8): their own work and the gate, with no money, no debtor data and no resident names.
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "as_of": "2026-03-05T09:00:00Z",
+         *       "assigned_open_tickets": 3,
+         *       "assigned_overdue_tickets": 0,
+         *       "open_common_tickets": 5,
+         *       "expected_visitors_today": 4,
+         *       "waiting_deliveries": 2
+         *     }
+         */
+        StaffDashboard: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date-time */
+            as_of: string;
+            /**
+             * Format: int64
+             * @description Open tickets assigned to the caller.
+             */
+            assigned_open_tickets: number;
+            /**
+             * Format: int64
+             * @description Assigned tickets past their category's target time.
+             */
+            assigned_overdue_tickets: number;
+            /**
+             * Format: int64
+             * @description Open common (site-wide) tickets.
+             */
+            open_common_tickets: number;
+            /** Format: int64 */
+            expected_visitors_today: number;
+            /**
+             * Format: int64
+             * @description Parcels logged and not yet collected.
+             */
+            waiting_deliveries: number;
+        };
+        /**
+         * @description A guard of the site as the booth shows it: name and id only, no contact data.
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "display_name": "Ali Veli",
+         *       "has_pin": true
+         *     }
+         */
+        GuardRef: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            /** @description False until a manager has set a PIN (`community.setGuardPin`); such a guard cannot switch in. */
+            has_pin: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "display_name": "Ali Veli",
+         *           "has_pin": true
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GuardList: {
+            items: components["schemas"]["GuardRef"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @example {
+         *       "reason": "Imported twice"
+         *     }
+         */
+        OpeningBalanceVoid: {
+            /** @description Why the opening position is void; audited. */
+            reason: string;
+        };
+        BudgetLinesSet: {
+            lines: components["schemas"]["BudgetLine"][];
+        };
+        /**
+         * @description Erasure = `privacy_erase(person_id)`: the person row is anonymized, the user unlinked; ledger lines, ballots and attendance keep their rows with the name replaced by "Former owner #n". Blocked (409 `conflict`) while the person has an open balance unless `override_open_balance` is set (audited).
+         * @example {
+         *       "reason": "Data subject request 2026/17",
+         *       "override_open_balance": false
+         *     }
+         */
+        PersonErase: {
+            /** @description Why (a data-subject request, a court order, ...); audited. */
+            reason: string;
+            /**
+             * @description Erase although the person still owes or is owed money.
+             * @default false
+             */
+            override_open_balance: boolean;
+        };
+        UnitTagMembersSet: {
+            unit_ids: string[];
+        };
+        /**
+         * @description A manual credential: an RFID/BLE tag or a keypad PIN. Plates and QR codes are not created here.
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "kind": "tag",
+         *       "value": "04a224b1c2",
+         *       "label": "Kapici tag",
+         *       "point_scope": "all_pedestrian"
+         *     }
+         */
+        CredentialCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** @enum {string} */
+            kind: "tag" | "pin";
+            /** @description The tag id as the reader reports it, or the PIN digits. Write-only: stored as a salted hash and never returned; the agent compares the lowercased, trimmed raw value from its snapshot. */
+            value: string;
+            /**
+             * Format: uuid
+             * @description Whose credential it is, for display and the audit.
+             */
+            person_id?: string | null;
+            /** Format: uuid */
+            unit_id?: string | null;
+            /** @description For example "Kapici tag". */
+            label?: string | null;
+            /**
+             * @description Open on input; see `Credential.point_scope`.
+             * @enum {string}
+             */
+            point_scope: "all_vehicle" | "all_pedestrian" | "all" | "ids";
+            /** @description Required with `point_scope: ids`. */
+            point_ids?: string[];
+            /**
+             * Format: date-time
+             * @description Default now.
+             */
+            valid_from?: string;
+            /** Format: date-time */
+            valid_to?: string | null;
+            recurring?: components["schemas"]["RecurringWindow"] | null;
+            /** Format: int64 */
+            max_uses?: number | null;
+        };
+        /**
+         * @description One aging bucket of a row or of the totals.
+         * @example {
+         *       "bucket": "0-30",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       }
+         *     }
+         */
+        AgingBucketAmount: {
+            /** @description The bucket key, one of the report's `buckets`, for example `0-30`. */
+            bucket: string;
+            amount: components["schemas"]["Money"];
+        };
+        /**
+         * @description One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "unit_label": "A Blok D:12",
+         *       "kind": "tenant",
+         *       "side": "tenant",
+         *       "may_see_money": true,
+         *       "valid_from": "2025-09-01",
+         *       "valid_to": null
+         *     }
+         */
+        MeOccupancy: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /** @description What people say, for example `A Blok D:12`. */
+            unit_label: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household" | "former_occupant";
+            /**
+             * @description The debtor side the occupant belongs to (`owner` or `tenant`); null for household members. Open enum.
+             * @enum {string|null}
+             */
+            side: "owner" | "tenant" | null;
+            /** @description Always true for owners and tenants; for household members whether the owner or tenant granted money visibility (S3). */
+            may_see_money: boolean;
+            /** Format: date */
+            valid_from: string;
+            /**
+             * Format: date
+             * @description Null while the occupancy is current.
+             */
+            valid_to: string | null;
+        };
+        /**
+         * @description Instance policies that apply to the signed-in user, so clients can enforce them without a second call.
+         * @example {
+         *       "app_lock_required": false,
+         *       "reauth_window_minutes": 10
+         *     }
+         */
+        MePolicies: {
+            /** @description The mobile app must be protected by a device lock (biometrics or passcode) before it shows money or personal data. */
+            app_lock_required: boolean;
+            /**
+             * Format: int64
+             * @description How long a re-authentication (`POST /v1/auth/reauth`) stays valid for sensitive operations (default 10).
+             */
+            reauth_window_minutes: number;
         };
     };
     responses: {
@@ -16254,7 +20308,7 @@ export interface components {
         AsOfDate: string;
         /** @description BCP 47 locale for labels (default: the caller locale). */
         Locale: string;
-        /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+        /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
         GuardSession: string;
     };
     requestBodies: never;
@@ -17946,7 +22000,10 @@ export interface operations {
     "tenancy.setUnitTagMembers": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -17957,7 +22014,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UnitTagMembers"];
+                "application/json": components["schemas"]["UnitTagMembersSet"];
             };
         };
         responses: {
@@ -18496,6 +22553,42 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Person"];
                 };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.erasePerson": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonErase"];
+            };
+        };
+        responses: {
+            /** @description Erased. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
@@ -20108,6 +24201,110 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "me.listHouseholdInvitations": {
+        parameters: {
+            query?: {
+                /** @description Only invitations for this unit of the caller. */
+                unit_id?: string;
+                /** @description Filter by `status` (open enum: `pending`, `accepted`, `expired`, `revoked`). */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.revokeHouseholdInvitation": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the invitation. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.endHouseholdOccupancy": {
+        parameters: {
+            query?: {
+                /** @description Last day of the occupancy; default today. Not in the past by more than the lock date allows. */
+                valid_to?: string;
+            };
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of a household occupancy on the caller's own unit. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The ended occupancy. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "money.listAccounts": {
         parameters: {
             query: {
@@ -20625,9 +24822,9 @@ export interface operations {
     "money.closeFiscalYear": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -20663,9 +24860,9 @@ export interface operations {
     "money.approveFiscalYear": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -20730,7 +24927,10 @@ export interface operations {
     "money.setLockDate": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -20979,10 +25179,13 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "money.deleteOpeningBalance": {
+    "money.voidOpeningBalance": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -20991,19 +25194,26 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpeningBalanceVoid"];
+            };
+        };
         responses: {
-            /** @description No content */
-            204: {
+            /** @description The voided opening balance. */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["OpeningBalance"];
+                };
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -21269,7 +25479,10 @@ export interface operations {
     "money.putBudgetLines": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -21280,7 +25493,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["BudgetLines"];
+                "application/json": components["schemas"]["BudgetLinesSet"];
             };
         };
         responses: {
@@ -21518,9 +25731,9 @@ export interface operations {
     "money.createChargePlanRate": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -21556,7 +25769,10 @@ export interface operations {
     "money.deleteChargePlanRate": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -21580,6 +25796,7 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -21733,7 +25950,7 @@ export interface operations {
                 plan_id?: string;
                 /** @description Filter by `status`. */
                 status?: string;
-                /** @description Filter by `period`. */
+                /** @description Filter by month, `YYYY-MM`. */
                 period?: string;
                 /** @description Filter by `charge_type`. */
                 charge_type?: string;
@@ -21946,7 +26163,10 @@ export interface operations {
                 /** @description The site this resource belongs to. */
                 site_id: components["parameters"]["SiteIdRequired"];
             };
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -22026,7 +26246,7 @@ export interface operations {
                 unit_id?: string;
                 /** @description Debtor side of the unit: owner or tenant. */
                 debtor_kind?: string;
-                /** @description Filter by `period`. */
+                /** @description Filter by month, `YYYY-MM`. */
                 period?: string;
                 /** @description Page size. */
                 limit?: components["parameters"]["Limit"];
@@ -23785,116 +28005,6 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "money.updateBill": {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the bill. */
-                bill_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BillUpdate"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Bill"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "money.cancelBill": {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the bill. */
-                bill_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ExpenseVoid"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Bill"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "money.listBillPayments": {
-        parameters: {
-            query?: {
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-            };
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the bill. */
-                bill_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BillPaymentList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
     "money.createBillPayment": {
         parameters: {
             query?: never;
@@ -24139,9 +28249,9 @@ export interface operations {
     "money.createDunningRun": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -24399,10 +28509,12 @@ export interface operations {
             query: {
                 /** @description The site this resource belongs to. */
                 site_id: components["parameters"]["SiteIdRequired"];
-                /** @description Filter by unit. */
-                unit_id: string;
-                /** @description Debtor side of the unit: owner or tenant. */
-                debtor_kind: "owner" | "tenant";
+                /** @description Filter by unit. Unit mode: send with the other. */
+                unit_id?: string;
+                /** @description Debtor side of the unit: owner or tenant. Unit mode: send with the other. */
+                debtor_kind?: "owner" | "tenant";
+                /** @description Person mode: the person whose debt to break down (instead of `unit_id` + `debtor_kind`). */
+                person_id?: string;
                 /** @description Evaluate as of this date (default today). */
                 as_of?: string;
                 /** @description Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it. */
@@ -24520,9 +28632,9 @@ export interface operations {
     "money.sendStatement": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -25817,9 +29929,9 @@ export interface operations {
     "operations.publishAnnouncement": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -26469,7 +30581,10 @@ export interface operations {
                 /** @description The site this resource belongs to. */
                 site_id: components["parameters"]["SiteIdRequired"];
             };
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -26561,7 +30676,7 @@ export interface operations {
             query: {
                 /** @description The site this resource belongs to. */
                 site_id: components["parameters"]["SiteIdRequired"];
-                /** @description Filter by `month`. */
+                /** @description Filter by month, `YYYY-MM`. */
                 month?: string;
             };
             header?: never;
@@ -27008,7 +31123,10 @@ export interface operations {
     "governance.setGovernanceSettings": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -27696,9 +31814,9 @@ export interface operations {
                 /** @description When true, validate and return the row-level report without saving anything. */
                 dry_run?: components["parameters"]["DryRun"];
             };
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -27939,7 +32057,10 @@ export interface operations {
     "governance.setPoll": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -28430,9 +32551,9 @@ export interface operations {
                 /** @description When true, validate and return the row-level report without saving anything. */
                 dry_run?: components["parameters"]["DryRun"];
             };
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description Organization id. */
@@ -29494,7 +33615,7 @@ export interface operations {
                 site_id: components["parameters"]["SiteIdRequired"];
             };
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -29541,7 +33662,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -29571,7 +33692,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -29603,7 +33724,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -29640,7 +33761,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -29678,7 +33799,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -29718,7 +33839,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -29753,7 +33874,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -29795,7 +33916,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -29836,7 +33957,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -29866,7 +33987,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -29903,7 +34024,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -29972,6 +34093,40 @@ export interface operations {
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "gate.listGuards": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -30498,6 +34653,41 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "access.createCredential": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CredentialCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Credential"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "access.getCredential": {
         parameters: {
             query?: never;
@@ -30524,6 +34714,37 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.revokeCredential": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -30590,7 +34811,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -30620,7 +34841,7 @@ export interface operations {
         parameters: {
             query?: never;
             header: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
                 "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
@@ -30661,7 +34882,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login. */
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -30712,7 +34933,6 @@ export interface operations {
                 };
             };
             404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
@@ -30743,6 +34963,7 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            410: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
@@ -30816,6 +35037,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SiteDashboard"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "dashboards.getStaffDashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffDashboard"];
                 };
             };
             401: components["responses"]["Problem"];
