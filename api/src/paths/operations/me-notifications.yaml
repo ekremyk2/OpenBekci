@@ -1,0 +1,47 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.listNotifications
+  summary: List my notifications
+  description: |-
+    **Release 0.1.** List my notifications.
+
+    Permission: `notifications.read`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - notifications.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
+    - name: unread
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `unread`.
+    - name: type
+      in: query
+      schema:
+        type: string
+      description: Filter by `type`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/NotificationList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

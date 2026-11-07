@@ -1,0 +1,61 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: ticket_id
+    in: path
+    required: true
+    description: Id of the ticket.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: operations.transitionTicket
+  summary: Move a ticket to another status
+  description: |-
+    **Release 0.1.** Appends to the status history.
+
+    Permission (any one of): `tickets.manage`, `tickets.work` (staff: assigned tickets).
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - tickets.manage
+    site_manager:
+      - tickets.manage
+    board_member:
+      - tickets.manage
+    staff:
+      - tickets.work
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/TicketTransition
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Ticket
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

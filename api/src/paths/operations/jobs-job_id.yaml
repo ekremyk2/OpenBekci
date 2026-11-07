@@ -1,0 +1,40 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: job_id
+    in: path
+    required: true
+    description: Id of the job.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.getJob
+  summary: Get a background job
+  description: |-
+    **Release 0.1.** Get a background job.
+
+    Permission: `jobs.read`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - jobs.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/Job
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
