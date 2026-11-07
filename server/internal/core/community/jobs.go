@@ -169,7 +169,10 @@ func (s *Service) ExpireVisitorsOrg(ctx context.Context, orgID uuid.UUID) (int, 
 			return err
 		}
 		total += int(tag.RowsAffected())
-		return nil
+		// credentials of people whose occupancy has ended since (an end date that lay in the future)
+		n, err := s.revokeDeparted(ctx, tx, orgID, nil, nil)
+		total += n
+		return err
 	})
 	return total, err
 }

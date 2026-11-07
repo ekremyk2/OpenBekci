@@ -74,9 +74,28 @@ func VisitorCredentialsTx(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUI
 	if err != nil {
 		loc = time.UTC
 	}
+	// a credential of a unit nobody currently lives in is not active, whatever its source says
+	occupied := map[uuid.UUID]bool{}
+	orows, err := tx.Query(ctx, `SELECT DISTINCT unit_id FROM occupancy WHERE org_id = $1 AND site_id = $2 AND valid_from <= $3::date AND (valid_to IS NULL OR valid_to > $3::date)`,
+		orgID, siteID, now.In(loc).Format("2006-01-02"))
+	if err != nil {
+		return nil, err
+	}
+	for orows.Next() {
+		var u uuid.UUID
+		if err := orows.Scan(&u); err != nil {
+			orows.Close()
+			return nil, err
+		}
+		occupied[u] = true
+	}
+	orows.Close()
+	if err := orows.Err(); err != nil {
+		return nil, err
+	}
 	var out []VisitorCredential
 	// single entries: pre-registered with a QR, walk-ins approved on the spot (plate only)
-	rows, err := tx.Query(ctx, `SELECT id, qr_token_hash, plate, window_from, window_to, approval_status, cancelled, arrived_at, updated_at, recurring_visitor_id
+	rows, err := tx.Query(ctx, `SELECT id, unit_id, qr_token_hash, plate, window_from, window_to, approval_status, cancelled, arrived_at, updated_at, recurring_visitor_id
 		FROM visitor_entry WHERE org_id = $1 AND site_id = $2 AND recurring_visitor_id IS NULL AND ($3::timestamptz IS NULL OR updated_at >= $3) ORDER BY updated_at, id`,
 		orgID, siteID, nilTime(since))
 	if err != nil {
@@ -84,7 +103,7 @@ func VisitorCredentialsTx(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUI
 	}
 	for rows.Next() {
 		var (
-			id         uuid.UUID
+			id, unit   uuid.UUID
 			hash       []byte
 			plate      *string
 			from, to   time.Time
@@ -94,12 +113,12 @@ func VisitorCredentialsTx(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUI
 			updated    time.Time
 			recurrence *uuid.UUID
 		)
-		if err := rows.Scan(&id, &hash, &plate, &from, &to, &status, &cancelled, &arrived, &updated, &recurrence); err != nil {
+		if err := rows.Scan(&id, &unit, &hash, &plate, &from, &to, &status, &cancelled, &arrived, &updated, &recurrence); err != nil {
 			rows.Close()
 			return nil, err
 		}
 		approved := status == "pre_approved" || status == "approved"
-		active := approved && !cancelled && arrived == nil && now.Before(to.Add(visitorSlack))
+		active := approved && !cancelled && arrived == nil && now.Before(to.Add(visitorSlack)) && occupied[unit]
 		if since.IsZero() && !active {
 			continue
 		}
@@ -122,7 +141,7 @@ func VisitorCredentialsTx(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUI
 		return nil, err
 	}
 	// recurring visitors: their own long-lived QR, plus the plate
-	rrows, err := tx.Query(ctx, `SELECT id, qr_token_hash, plate, days, start_time, end_time, valid_from, valid_to, status, updated_at
+	rrows, err := tx.Query(ctx, `SELECT id, unit_id, qr_token_hash, plate, days, start_time, end_time, valid_from, valid_to, status, updated_at
 		FROM recurring_visitor WHERE org_id = $1 AND site_id = $2 AND ($3::timestamptz IS NULL OR updated_at >= $3) ORDER BY updated_at, id`, orgID, siteID, nilTime(since))
 	if err != nil {
 		return nil, err
@@ -130,23 +149,23 @@ func VisitorCredentialsTx(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUI
 	defer rrows.Close()
 	for rrows.Next() {
 		var (
-			id      uuid.UUID
-			hash    []byte
-			plate   *string
-			days    []int16
-			start   string
-			end     string
-			vfrom   time.Time
-			vto     *time.Time
-			status  string
-			updated time.Time
+			id, unit uuid.UUID
+			hash     []byte
+			plate    *string
+			days     []int16
+			start    string
+			end      string
+			vfrom    time.Time
+			vto      *time.Time
+			status   string
+			updated  time.Time
 		)
-		if err := rrows.Scan(&id, &hash, &plate, &days, &start, &end, &vfrom, &vto, &status, &updated); err != nil {
+		if err := rrows.Scan(&id, &unit, &hash, &plate, &days, &start, &end, &vfrom, &vto, &status, &updated); err != nil {
 			return nil, err
 		}
 		from := time.Date(vfrom.Year(), vfrom.Month(), vfrom.Day(), 0, 0, 0, 0, loc).UTC()
 		var to *time.Time
-		active := status == "active"
+		active := status == "active" && occupied[unit]
 		if vto != nil {
 			t := time.Date(vto.Year(), vto.Month(), vto.Day()+1, 0, 0, 0, 0, loc).UTC()
 			to = &t

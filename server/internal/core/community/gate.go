@@ -305,12 +305,26 @@ func (s *Service) ScanGateVisitor(ctx context.Context, orgID uuid.UUID, text, gu
 		if err != nil {
 			return err
 		}
+		unitID := entry.UnitID
+		if !isEntry {
+			unitID = rv.UnitID
+		}
+		occupied, err := unitOccupied(ctx, tx, orgID, unitID, now, si.Loc)
+		if err != nil {
+			return err
+		}
 		var visit *VisitorEntry
 		if isEntry {
 			out.Reason = evalEntry(entry, now)
+			if out.Reason == ReasonMatch && !occupied {
+				out.Reason = ReasonRevoked // nobody lives in the unit any more
+			}
 			visit = &entry
 		} else {
 			out.Reason = evalRecurring(rv, now, si.Loc)
+			if out.Reason == ReasonMatch && !occupied {
+				out.Reason = ReasonRevoked
+			}
 			if out.Reason == ReasonMatch {
 				v, err := s.recurringVisit(ctx, tx, orgID, rv, now)
 				if err != nil {
@@ -474,6 +488,14 @@ func (s *Service) ArriveGateVisitor(ctx context.Context, orgID, entryID uuid.UUI
 		if err != nil {
 			return err
 		}
+		si, err := loadSite(ctx, tx, orgID, v.SiteID)
+		if err != nil {
+			return err
+		}
+		occupied, err := unitOccupied(ctx, tx, orgID, v.UnitID, now, si.Loc)
+		if err != nil {
+			return err
+		}
 		switch reason := evalEntry(v, now); {
 		case v.ApprovalStatus == "requested":
 			return problem.Conflict("the resident has not answered yet")
@@ -481,6 +503,8 @@ func (s *Service) ArriveGateVisitor(ctx context.Context, orgID, entryID uuid.UUI
 			return problem.Conflict("the visitor already arrived")
 		case reason != ReasonMatch:
 			return problem.Conflict("the visitor is not admitted: " + reason)
+		case !occupied:
+			return problem.Conflict("the visitor is not admitted: " + ReasonRevoked)
 		}
 		if _, err := tx.Exec(ctx, `UPDATE visitor_entry SET arrived_at = $3, arrived_by = $4, updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`,
 			orgID, entryID, now, g.Person); err != nil {

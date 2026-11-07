@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/community"
@@ -48,7 +50,7 @@ func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, err
 
 // newPeople builds the people service: national ids are sealed with
 // ENCRYPTION_KEY and invitations go out through the SMS and mail gateways.
-func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) (*people.Service, error) {
+func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service, comm *community.Service) (*people.Service, error) {
 	gw, err := newSMSGateway(cfg, log)
 	if err != nil {
 		return nil, err
@@ -64,7 +66,18 @@ func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) 
 		SMS:           gw,
 		Mail:          mailer,
 		Log:           log,
+		Hooks:         peopleHooks(comm),
 	})
+}
+
+// peopleHooks subscribes the community module to the people module's events:
+// when an occupancy ends, the visitor credentials its person registered end.
+func peopleHooks(comm *community.Service) people.Hooks {
+	return people.Hooks{
+		OnOccupancyEnded: func(ctx context.Context, tx pgx.Tx, e people.OccupancyEnded) error {
+			return comm.OnOccupancyEnded(ctx, tx, e.OrgID, e.UnitID, e.PersonID)
+		},
+	}
 }
 
 // newCommunity builds the community service. The money, notifications and QR
@@ -88,11 +101,11 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 		return httpapi.Deps{}, err
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{}) // sites and blocks exist from phase B on
-	peopleSvc, err := newPeople(cfg, log, d, ident)
+	communitySvc, err := newCommunity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
-	communitySvc, err := newCommunity(cfg, log, d)
+	peopleSvc, err := newPeople(cfg, log, d, ident, communitySvc)
 	if err != nil {
 		return httpapi.Deps{}, err
 	}

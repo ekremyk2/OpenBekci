@@ -218,6 +218,7 @@ func init() {
 		}},
 		"community.arriveGateVisitor": {perms: p(community.PermGateOperate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
+			w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "owner") // a unit nobody lives in admits nobody
 			e := cmEntry(w, t, f, "pre_approved", time.Now().Add(-time.Minute), time.Now().Add(time.Hour))
 			return jsonReq("POST", orgPath(org, "/gate/visitors/"+e.String()+":arrive"), "")
 		}},

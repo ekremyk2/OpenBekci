@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -11,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
@@ -67,7 +69,10 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	authz.SetScopeLoader(tenancy.ScopeLoader{})
 	t.Cleanup(func() { authz.SetScopeLoader(nil) })
 	var perr error
-	e.people, perr = people.NewService(d, e.svc, people.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, InstanceName: "Test", SMS: e.sms, Mail: e.mail, Log: cfg.Log})
+	e.people, perr = people.NewService(d, e.svc, people.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, InstanceName: "Test", SMS: e.sms, Mail: e.mail, Log: cfg.Log,
+		Hooks: people.Hooks{OnOccupancyEnded: func(ctx context.Context, tx pgx.Tx, ev people.OccupancyEnded) error {
+			return e.comm.OnOccupancyEnded(ctx, tx, ev.OrgID, ev.UnitID, ev.PersonID)
+		}}})
 	if perr != nil {
 		t.Fatal(perr)
 	}

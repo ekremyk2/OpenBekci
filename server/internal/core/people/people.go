@@ -31,8 +31,31 @@ type TxRunner interface {
 	InTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error
 }
 
+// OccupancyEnded describes an occupancy that was ended or got an end date:
+// by a move-out (the leaving person and, with it, their household), by editing
+// valid_to, or by ending a household member.
+type OccupancyEnded struct {
+	OrgID, SiteID, UnitID, PersonID, OccupancyID uuid.UUID
+	Kind, Side                                   string
+	// EndsOn is the first day the person no longer lives there (valid_to);
+	// it may lie in the future.
+	EndsOn time.Time
+}
+
+// Hooks are the events other modules subscribe to. They run inside the
+// transaction of the change, so what they do is atomic with it. Nil hooks are
+// skipped.
+type Hooks struct {
+	// OnOccupancyEnded runs after an occupancy was given an end date (move-out,
+	// household member ended, or valid_to set by an update); the community
+	// module revokes the visitor credentials the person registered.
+	OnOccupancyEnded func(ctx context.Context, tx pgx.Tx, e OccupancyEnded) error
+}
+
 // Config configures the Service.
 type Config struct {
+	// Hooks are the events other modules subscribe to.
+	Hooks Hooks
 	// EncryptionKey seals national ids; without it they cannot be stored.
 	EncryptionKey []byte
 	// BaseURL is the public URL without trailing slash (invitation links).
@@ -81,6 +104,15 @@ func NewService(db TxRunner, ident *identity.Service, cfg Config) (*Service, err
 		s.now = time.Now
 	}
 	return s, nil
+}
+
+// occupancyEnded runs the OnOccupancyEnded hook for an occupancy that now ends on endsOn.
+func (s *Service) occupancyEnded(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, occ Occupancy, endsOn time.Time) error {
+	h := s.cfg.Hooks.OnOccupancyEnded
+	if h == nil {
+		return nil
+	}
+	return h(ctx, tx, OccupancyEnded{OrgID: orgID, SiteID: occ.SiteID, UnitID: occ.UnitID, PersonID: occ.PersonID, OccupancyID: occ.ID, Kind: occ.Kind, Side: occ.Side, EndsOn: endsOn})
 }
 
 // siteGrants says where perm is held: organization-wide, or for the listed
