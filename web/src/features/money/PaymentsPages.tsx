@@ -8,7 +8,7 @@ import { downloadFile } from '@/api/download'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
-import { SidePicker, type DebtorSide } from '@/components/forms/SidePicker'
+import type { DebtorSide } from '@/components/forms/SidePicker'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -44,15 +44,9 @@ import {
   type S,
 } from './api'
 import { isoDate, MoneyFormField, positiveMinor, useDebounced, useZodMessages } from './forms'
+import { DebtorPicker, debtorRef, emptyTarget, targetId, type DebtorTarget } from './DebtorPicker'
 import { useLabels } from './labels'
-import {
-  CashOrBankPicker,
-  PersonPicker,
-  UnitPicker,
-  useAccounts,
-  useCashBoxes,
-  useUnits,
-} from './pickers'
+import { CashOrBankPicker, PersonPicker, useAccounts, useCashBoxes, useUnits } from './pickers'
 import {
   applyServerErrors,
   Checkbox,
@@ -495,7 +489,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   const msg = useZodMessages()
   const idem = useIdempotencyKey()
   const cashBoxes = useCashBoxes(ctx)
-  const [side, setSide] = useState<DebtorSide>('owner')
+  const [target, setTarget] = useState<DebtorTarget>(emptyTarget())
   const [manual, setManual] = useState(false)
   const [edits, setEdits] = useState<Record<string, bigint | null>>({})
   const [receipt, setReceipt] = useState<S['Payment'] | null>(null)
@@ -536,17 +530,16 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
   }, [defaultAccount, form])
   const account = v.asset_account_id || defaultAccount
   const amount = typeof v.amount === 'bigint' && v.amount > 0n ? v.amount : null
-  const key = useDebounced(v.unit_id && amount ? { unit: v.unit_id, side, amount } : null)
+  const key = useDebounced(v.unit_id && amount ? { ref: debtorRef(target), amount } : null)
   const preview = useMoneyQuery(
-    ['alloc-preview', key?.unit, key?.side, String(key?.amount)],
+    ['alloc-preview', JSON.stringify(key?.ref), String(key?.amount)],
     () =>
       unwrap(
         moneyApi.POST('/v1/orgs/{org_id}/payments:preview-allocation', {
           params: { path: { org_id: ctx.orgId } },
           body: {
             site_id: ctx.siteId,
-            unit_id: key!.unit,
-            debtor_kind: side,
+            debtor: key!.ref,
             amount: minorMoney(key!.amount, ctx.currency),
           },
         }),
@@ -554,13 +547,21 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
     { enabled: key !== null },
   )
   const open = useMoneyQuery(
-    ['open-charges', v.unit_id, side],
+    ['open-charges', JSON.stringify(debtorRef(target))],
     () =>
       unwrap(
         moneyApi.GET('/v1/orgs/{org_id}/charges', {
           params: {
             path: { org_id: ctx.orgId },
-            query: { site_id: ctx.siteId, unit_id: v.unit_id!, debtor_kind: side, limit: 100 },
+            query:
+              target.mode === 'unit'
+                ? {
+                    site_id: ctx.siteId,
+                    unit_id: target.unitId,
+                    debtor_kind: target.side,
+                    limit: 100,
+                  }
+                : { site_id: ctx.siteId, person_id: target.personId, limit: 100 },
           },
         }),
       ).then((r) =>
@@ -595,8 +596,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
         site_id: ctx.siteId,
-        unit_id: values.unit_id,
-        debtor_kind: side,
+        debtor: debtorRef(target),
         payer_person_id: values.payer_person_id || undefined,
         method: values.method,
         amount: minorMoney(values.amount, ctx.currency),
@@ -671,6 +671,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
                 search={{
                   unit: receipt.unit_id ?? undefined,
                   side: (receipt.debtor_kind as DebtorSide) ?? undefined,
+                  person: receipt.unit_id ? undefined : (receipt.payer_person_id ?? undefined),
                 }}
                 className={buttonVariants({ variant: 'outline' })}
               >
@@ -695,28 +696,18 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
           noValidate
           onSubmit={(e) => void form.handleSubmit(onSubmit)(e)}
         >
-          <Field label={t`Unit`} htmlFor="pay-unit" error={err.unit_id?.message}>
-            <UnitPicker
-              ctx={ctx}
-              id="pay-unit"
-              value={v.unit_id ?? ''}
-              onChange={(id) => {
-                form.setValue('unit_id', id, { shouldValidate: true })
-                setManual(false)
-                setEdits({})
-              }}
-            />
-          </Field>
-          <Field label={t`Side`}>
-            <SidePicker
-              value={side}
-              onChange={(s) => {
-                setSide(s)
-                setManual(false)
-                setEdits({})
-              }}
-            />
-          </Field>
+          <DebtorPicker
+            ctx={ctx}
+            idPrefix="pay"
+            value={target}
+            error={err.unit_id?.message}
+            onChange={(next) => {
+              setTarget(next)
+              form.setValue('unit_id', targetId(next), { shouldValidate: true })
+              setManual(false)
+              setEdits({})
+            }}
+          />
           <Field label={t`Paid by (optional)`} htmlFor="pay-person">
             <PersonPicker
               ctx={ctx}

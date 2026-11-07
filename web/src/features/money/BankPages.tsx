@@ -1,7 +1,6 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { SidePicker, type DebtorSide } from '@/components/forms/SidePicker'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
@@ -28,27 +27,11 @@ import {
   type MoneyCtx,
   type S,
 } from './api'
-import { AccountPicker, UnitPicker } from './pickers'
+import { useIdempotencyKeys } from './forms'
+import { DebtorPicker, debtorRef, emptyTarget, type DebtorTarget } from './DebtorPicker'
+import { AccountPicker } from './pickers'
 import { Field, FormRootError, Gate, PageHeader, QueryBoundary, Select, StatusBadge } from './ui'
 import { Input } from '@/components/ui/input'
-
-/** One Idempotency-Key per row action, kept until it succeeds so a retry reuses it. */
-export function useIdempotencyKeys() {
-  const keys = useRef(new Map<string, string>())
-  return {
-    get(id: string) {
-      let k = keys.current.get(id)
-      if (!k) {
-        k = crypto.randomUUID()
-        keys.current.set(id, k)
-      }
-      return k
-    },
-    done(id: string) {
-      keys.current.delete(id)
-    },
-  }
-}
 
 /* ───────────────────────── imports list + upload ───────────────────────── */
 
@@ -364,13 +347,13 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
   )
   const current = rows[Math.min(cursor, rows.length - 1)]
   const match = useMoneyMutation(
-    async (a: { tx: S['BankTransaction']; unit_id: string; side: DebtorSide }) => {
+    async (a: { tx: S['BankTransaction']; debtor: ReturnType<typeof debtorRef> }) => {
       await moneyApi.POST('/v1/orgs/{org_id}/bank-transactions/{transaction_id}:match', {
         params: {
           path: { org_id: ctx.orgId, transaction_id: a.tx.id },
           header: idemHeader(keys.get(a.tx.id)),
         },
-        body: { unit_id: a.unit_id, debtor_kind: a.side },
+        body: { debtor: a.debtor },
       })
       keys.done(a.tx.id)
     },
@@ -400,7 +383,7 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
     const s = tx.suggestions[0]
     if (!s) return setManualFor(tx.id)
     match.mutate(
-      { tx, unit_id: s.unit_id, side: s.debtor_kind },
+      { tx, debtor: { unit_id: s.unit_id, debtor_kind: s.debtor_kind } },
       {
         onSuccess: () => toast.info(t`Matched to ${s.unit_door_number}.`),
         onError: () => toast.error(t`Could not match the line.`),
@@ -495,7 +478,7 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
                       )}
                     >
                       <TableCell>
-                        <SiteDate value={tx.booked_at} timeZone={ctx.timeZone} />
+                        <SiteDate value={tx.booked_on} timeZone={ctx.timeZone} />
                       </TableCell>
                       <TableCell>{tx.counterparty ?? '–'}</TableCell>
                       <TableCell>{tx.description ?? '–'}</TableCell>
@@ -560,11 +543,11 @@ export function MatchList({ ctx, importId }: { ctx: MoneyCtx; importId: string }
         <ManualMatch
           ctx={ctx}
           onCancel={() => setManualFor(null)}
-          onMatch={(unit_id, side) => {
+          onMatch={(debtor) => {
             const tx = q.data?.find((x) => x.id === manualFor)
             if (!tx) return
             match.mutate(
-              { tx, unit_id, side },
+              { tx, debtor },
               {
                 onSuccess: () => setManualFor(null),
                 onError: () => toast.error(t`Could not match the line.`),
@@ -583,12 +566,11 @@ function ManualMatch({
   onCancel,
 }: {
   ctx: MoneyCtx
-  onMatch: (unitId: string, side: DebtorSide) => void
+  onMatch: (debtor: ReturnType<typeof debtorRef>) => void
   onCancel: () => void
 }) {
-  const { t } = useLingui()
-  const [unit, setUnit] = useState('')
-  const [side, setSide] = useState<DebtorSide>('owner')
+  const [target, setTarget] = useState<DebtorTarget>(emptyTarget())
+  const ready = target.mode === 'unit' ? !!target.unitId : !!target.personId
   return (
     <Card>
       <CardHeader>
@@ -597,13 +579,8 @@ function ManualMatch({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-wrap items-end gap-4">
-        <Field label={t`Unit`} htmlFor="mm-unit">
-          <UnitPicker ctx={ctx} id="mm-unit" value={unit} onChange={setUnit} />
-        </Field>
-        <Field label={t`Side`}>
-          <SidePicker value={side} onChange={setSide} />
-        </Field>
-        <Button disabled={!unit} onClick={() => onMatch(unit, side)}>
+        <DebtorPicker ctx={ctx} idPrefix="mm" value={target} onChange={setTarget} />
+        <Button disabled={!ready} onClick={() => onMatch(debtorRef(target))}>
           <Trans>Match</Trans>
         </Button>
         <Button variant="ghost" onClick={onCancel}>

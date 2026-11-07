@@ -247,8 +247,7 @@ function PayContent({ ctx, sides }: { ctx: MoneyCtx; sides: S['MySide'][] }) {
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
         site_id: ctx.siteId,
-        unit_id,
-        debtor_kind: kind,
+        debtor: { unit_id, debtor_kind: kind },
         amount: minorToMoney(v.amount, ctx.currency),
         paid_on: v.paid_on,
         reference: v.reference || undefined,

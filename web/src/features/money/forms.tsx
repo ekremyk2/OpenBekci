@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
 import { useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
@@ -13,6 +13,24 @@ export function useDebounced<T>(value: T, ms = 400): T {
     return () => clearTimeout(id)
   }, [value, ms])
   return v
+}
+
+/** One Idempotency-Key per row action, kept until it succeeds so a retry reuses it. */
+export function useIdempotencyKeys() {
+  const keys = useRef(new Map<string, string>())
+  return {
+    get(id: string) {
+      let k = keys.current.get(id)
+      if (!k) {
+        k = crypto.randomUUID()
+        keys.current.set(id, k)
+      }
+      return k
+    },
+    done(id: string) {
+      keys.current.delete(id)
+    },
+  }
 }
 
 /** Amount held as bigint minor units in the form state; null while empty or unreadable. */

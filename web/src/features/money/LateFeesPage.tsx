@@ -356,8 +356,7 @@ export function WaiveDialog({
         params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
         body: {
           site_id: ctx.siteId,
-          unit_id: accrual.unit_id,
-          debtor_kind: accrual.debtor_kind,
+          debtor: { unit_id: accrual.unit_id, debtor_kind: accrual.debtor_kind },
           amount: minorMoney(amount!, ctx.currency),
           reason,
         },
@@ -449,8 +448,7 @@ function FreezeDialog({
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
         site_id: ctx.siteId,
-        unit_id: accrual.unit_id,
-        debtor_kind: accrual.debtor_kind,
+        debtor: { unit_id: accrual.unit_id, debtor_kind: accrual.debtor_kind },
         from: v.from,
         to: v.to || null,
         reason: v.reason,
@@ -600,7 +598,11 @@ function PolicyForm({ ctx, policy }: { ctx: MoneyCtx; policy: S['LateFeePolicy']
   })
   const m = useMoneyMutation(async (v: V) => {
     await moneyApi.PUT('/v1/orgs/{org_id}/late-fee-policy', {
-      params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId } },
+      params: {
+        path: { org_id: ctx.orgId },
+        query: { site_id: ctx.siteId },
+        header: ifMatch(policy.version),
+      },
       body: {
         rate_pct_per_month: v.rate,
         grace_days: v.grace,

@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw'
 import type { components } from '@/api/draft'
 import {
   CUR,
+  effectiveOf,
   accruedFee,
   addMonths,
   applyToCharge,
@@ -88,6 +89,21 @@ function route(method: 'get' | 'post' | 'patch' | 'put' | 'delete', path: string
     let form: FormData | null = null
     if (ct.includes('application/json')) body = await request.json().catch(() => null)
     else if (ct.includes('multipart/form-data')) form = await request.formData().catch(() => null)
+    if (body && typeof body === 'object' && 'debtor' in body && body.debtor) {
+      // DebtorRef: exactly one of {unit_id + debtor_kind} or {person_id}
+      const d = (body as any).debtor // eslint-disable-line @typescript-eslint/no-explicit-any
+      const b = body as any // eslint-disable-line @typescript-eslint/no-explicit-any
+      b.unit_id = d.unit_id
+      b.debtor_kind = d.debtor_kind
+      if (d.person_id) {
+        b.target_person_id = d.person_id
+        const c = db.charges.find((ch) => ch.debtor_person_id === d.person_id)
+        if (c) {
+          b.unit_id = c.unit_id
+          b.debtor_kind = c.debtor_kind
+        }
+      }
+    }
     const key = request.headers.get('Idempotency-Key')
     if (method === 'post' && key) {
       db.idemKeysSeen.push(key)
@@ -134,7 +150,7 @@ function toPayment(c: Ctx, status: S['Payment']['status']): S['Payment'] {
   const pre = b.allocations
     ? { allocations: b.allocations as S['AllocationInput'][], credit: m(0) }
     : null
-  const auto = autoAllocate(db, unitId, s, amount)
+  const auto = autoAllocate(db, unitId, s, amount, b.target_person_id)
   const allocs: S['PaymentAllocation'][] = pre
     ? pre.allocations.map((a) => ({
         charge_id: a.charge_id,
@@ -309,9 +325,9 @@ function statementFor(
     )
     .reduce((a, c) => a + c.balance.amount, 0)
   return {
-    unit_id: unitId,
-    debtor_kind: s,
-    person_id: personId,
+    debtor: unitId
+      ? { unit_id: unitId, debtor_kind: s ?? undefined }
+      : { person_id: personId ?? undefined },
     from,
     to,
     opening_balance: m(opening),
@@ -404,7 +420,7 @@ function agingBuckets(asOf: string): S['ReceivablesAgingReport'] {
         unit_id: unit.id,
         unit_door_number: unit.door_number,
         debtor_kind: sd,
-        buckets: b.map(m),
+        buckets: b.map((v, i) => ({ bucket: labels[i]!, amount: m(v) })),
         total: m(total),
       })
   }
@@ -412,8 +428,15 @@ function agingBuckets(asOf: string): S['ReceivablesAgingReport'] {
     as_of: asOf,
     buckets: labels,
     rows,
-    totals: labels.map((_, i) => m(rows.reduce((a, r) => a + r.buckets[i]!.amount, 0))),
+    totals: labels.map((l, i) => ({
+      bucket: l,
+      amount: m(rows.reduce((a, r) => a + r.buckets[i]!.amount.amount, 0)),
+    })),
   }
+}
+
+function withPayments(b: S['Bill']): S['Bill'] {
+  return { ...b, payments: db.billPayments.filter((p) => p.bill_id === b.id) }
 }
 
 function bankBalance() {
@@ -553,6 +576,7 @@ export const moneyHandlers = [
       lock_date: db.lockDate,
       changed_by: null,
       changed_at: null,
+      version: 1,
     } satisfies S['LockDate']),
   ),
   route('put', 'sites/:siteId/lock-date', ({ body }) => {
@@ -562,6 +586,7 @@ export const moneyHandlers = [
       lock_date: db.lockDate,
       changed_by: 'u1',
       changed_at: stamp(),
+      version: 2,
     } satisfies S['LockDate'])
   }),
 
@@ -731,6 +756,7 @@ export const moneyHandlers = [
         debtor_kind: l.debtor_kind,
         debtor_person_id: l.debtor_person_id,
         debtor_display_name: l.debtor_display_name,
+        effective_debtor: l.effective_debtor,
         charge_type: body.charge_type ?? 'special_assessment',
         period: null,
         amount: l.amount,
@@ -793,6 +819,7 @@ export const moneyHandlers = [
       debtor_kind: s,
       debtor_person_id: d.id,
       debtor_display_name: d.name,
+      effective_debtor: effectiveOf(s, d),
       charge_type: body.charge_type,
       period: null,
       amount: body.amount,
@@ -1056,6 +1083,7 @@ export const moneyHandlers = [
         body.unit_id,
         side(body.debtor_kind),
         body.amount.amount,
+        body.target_person_id,
       ) satisfies S['AllocationPreview'],
     ),
   ),
@@ -1278,7 +1306,7 @@ export const moneyHandlers = [
         debtor_kind: s,
         method: 'bank_transfer',
         amount: t.amount,
-        received_at: t.booked_at,
+        received_at: t.booked_on,
         asset_account_id: 'a-bank',
         payer_person_id: body.payer_person_id ?? d.id,
         allocations: body.allocations,
@@ -1333,7 +1361,7 @@ export const moneyHandlers = [
       need(body.paid_from_account_id, 'paid_from_account_id'),
     )
     if (e) return e
-    if (db.lockDate && body.paid_at <= db.lockDate) return fail(409, 'locked_period')
+    if (db.lockDate && body.paid_on <= db.lockDate) return fail(409, 'locked_period')
     const id = nextId(db, 'exp')
     const x: S['Expense'] = {
       id,
@@ -1342,7 +1370,7 @@ export const moneyHandlers = [
       category_account_id: body.category_account_id,
       fund_id: body.fund_id,
       amount: body.amount,
-      paid_at: body.paid_at,
+      paid_on: body.paid_on,
       paid_from_account_id: body.paid_from_account_id,
       vendor_id: body.vendor_id ?? null,
       vendor_name: db.vendors.find((v) => v.id === body.vendor_id)?.name ?? null,
@@ -1409,7 +1437,7 @@ export const moneyHandlers = [
     if (r) r.status = 'ended'
     return noContent()
   }),
-  route('get', 'bills', () => list(db.bills)),
+  route('get', 'bills', () => list(db.bills.map(withPayments))),
   route('post', 'bills', ({ body }) => {
     const e = validate(
       need(body.vendor_id, 'vendor_id'),
@@ -1438,23 +1466,15 @@ export const moneyHandlers = [
       created_at: stamp(),
       updated_at: stamp(),
       version: 1,
+      payments: [],
     }
     db.bills.push(b)
     return created(b)
   }),
   route('get', 'bills/:id', ({ params }) => {
     const b = db.bills.find((x) => x.id === params.id)
-    return b ? ok(b) : fail(404, 'not_found')
+    return b ? ok(withPayments(b)) : fail(404, 'not_found')
   }),
-  route('post', 'bills/:id\\:cancel', ({ params }) => {
-    const b = db.bills.find((x) => x.id === params.id)
-    if (!b) return fail(404, 'not_found')
-    b.status = 'cancelled'
-    return ok(b)
-  }),
-  route('get', 'bills/:id/payments', ({ params }) =>
-    list(db.billPayments.filter((p) => p.bill_id === params.id)),
-  ),
   route('post', 'bills/:id/payments', ({ params, body }) => {
     const b = db.bills.find((x) => x.id === params.id)
     if (!b) return fail(404, 'not_found')
@@ -1470,7 +1490,7 @@ export const moneyHandlers = [
       org_id: db.orgId,
       bill_id: b.id,
       amount: body.amount,
-      paid_at: body.paid_at,
+      paid_on: body.paid_on,
       paid_from_account_id: body.paid_from_account_id,
       reference: body.reference ?? null,
       journal_entry_id: 'je-bp',
@@ -1573,7 +1593,7 @@ export const moneyHandlers = [
     list(db.cases.filter((c) => !query.get('status') || c.status === query.get('status'))),
   ),
   route('post', 'collection-cases', ({ body }) => {
-    const e = validate(need(body.unit_id, 'unit_id'), need(body.opened_at, 'opened_at'))
+    const e = validate(need(body.unit_id, 'unit_id'), need(body.opened_on, 'opened_on'))
     if (e) return e
     const c: S['CollectionCase'] = {
       id: nextId(db, 'case'),
@@ -1583,11 +1603,11 @@ export const moneyHandlers = [
       debtor_kind: side(body.debtor_kind),
       debtor_person_id:
         body.debtor_person_id ?? debtorFor(db, body.unit_id, side(body.debtor_kind)).id ?? '',
-      opened_at: body.opened_at,
+      opened_on: body.opened_on,
       lawyer: body.lawyer ?? null,
       file_no: body.file_no ?? null,
       status: 'open',
-      closed_at: null,
+      closed_on: null,
       costs_charged: m(0),
       notes: body.notes ?? null,
       created_at: stamp(),
@@ -1602,7 +1622,7 @@ export const moneyHandlers = [
       site_id: db.siteId,
       unit_id: c.unit_id,
       debtor_kind: c.debtor_kind,
-      from: c.opened_at,
+      from: c.opened_on,
       to: null,
       reason: 'Legal collection',
       case_id: c.id,
@@ -1626,7 +1646,7 @@ export const moneyHandlers = [
     const c = db.cases.find((x) => x.id === params.id)
     if (!c) return fail(404, 'not_found')
     c.status = 'closed'
-    c.closed_at = db.today
+    c.closed_on = db.today
     if (body.costs) {
       c.costs_charged = body.costs
       const id = nextId(db, 'ch')
@@ -1641,6 +1661,7 @@ export const moneyHandlers = [
         debtor_kind: c.debtor_kind,
         debtor_person_id: d.id,
         debtor_display_name: d.name,
+        effective_debtor: effectiveOf(c.debtor_kind, d),
         charge_type: 'legal_cost',
         period: null,
         amount: body.costs,
@@ -1678,9 +1699,7 @@ export const moneyHandlers = [
         late_fee: m(0),
       }))
     return ok({
-      unit_id: unitId,
-      debtor_kind: s,
-      debtor_person_id: debtorFor(db, unitId, s).id,
+      debtor: { unit_id: unitId, debtor_kind: s },
       as_of: db.today,
       lines,
       total_principal: m(lines.reduce((a, l) => a + l.principal.amount, 0)),
@@ -1755,6 +1774,7 @@ export const moneyHandlers = [
   route('post', 'opening-balances', ({ body }) => {
     const e = validate(need(body.as_of, 'as_of'), need(body.principal?.amount, 'principal'))
     if (e) return e
+    if (Date.now() > db.reauthUntil) return fail(403, 'reauth_required')
     const ob: S['OpeningBalance'] = {
       id: nextId(db, 'ob'),
       org_id: db.orgId,
@@ -1772,16 +1792,24 @@ export const moneyHandlers = [
       locked: false,
       created_at: stamp(),
       updated_at: stamp(),
+      status: 'active',
+      voided_at: null,
+      void_reason: null,
     }
     db.openings.push(ob)
     return created(ob)
   }),
-  route('delete', 'opening-balances/:id', ({ params }) => {
+  route('post', 'opening-balances/:id\\:void', ({ params, body }) => {
     const ob = db.openings.find((x) => x.id === params.id)
-    if (ob?.locked) return fail(409, 'locked_period')
+    if (!ob) return fail(404, 'not_found')
+    const e = validate(need(body.reason, 'reason'))
+    if (e) return e
+    if (ob.locked) return fail(409, 'locked_period')
     if (Date.now() > db.reauthUntil) return fail(403, 'reauth_required')
-    db.openings = db.openings.filter((x) => x.id !== params.id)
-    return noContent()
+    ob.status = 'voided'
+    ob.voided_at = stamp()
+    ob.void_reason = body.reason
+    return ok(ob)
   }),
   http.post('*/v1/orgs/:orgId/opening-balances\\:import', async ({ request }) => {
     const url = new URL(request.url)
@@ -1825,6 +1853,11 @@ export const moneyHandlers = [
       job_id: dry ? null : 'job-1',
     }
     if (dry) return HttpResponse.json(report)
+    if (Date.now() > db.reauthUntil)
+      return HttpResponse.json(
+        { status: 403, code: 'reauth_required' },
+        { status: 403, headers: { 'content-type': 'application/problem+json' } },
+      )
     if (errorRows > 0)
       return HttpResponse.json(
         { status: 422, code: 'validation_failed' },
@@ -1850,6 +1883,9 @@ export const moneyHandlers = [
         locked: false,
         created_at: stamp(),
         updated_at: stamp(),
+        status: 'active',
+        voided_at: null,
+        void_reason: null,
       })
     }
     return HttpResponse.json(report, { status: 202 })
@@ -1879,13 +1915,16 @@ export const moneyHandlers = [
     return b ? ok(b) : fail(404, 'not_found')
   }),
   route('get', 'budgets/:id/lines', ({ params }) =>
-    ok({ lines: db.budgetLines[params.id!] ?? [] } satisfies S['BudgetLines']),
+    ok({
+      lines: db.budgetLines[params.id!] ?? [],
+      version: db.budgets.find((x) => x.id === params.id)?.version ?? 1,
+    } satisfies S['BudgetLines']),
   ),
   route('put', 'budgets/:id/lines', ({ params, body }) => {
     db.budgetLines[params.id!] = body.lines
     const b = db.budgets.find((x) => x.id === params.id)
     if (b) b.total = m((body.lines as S['BudgetLine'][]).reduce((a, l) => a + l.amount.amount, 0))
-    return ok({ lines: body.lines })
+    return ok({ lines: body.lines, version: (b?.version ?? 1) + 1 })
   }),
   route('post', 'budgets/:id\\:finalize', ({ params }) => {
     const b = db.budgets.find((x) => x.id === params.id)
@@ -1904,7 +1943,7 @@ export const moneyHandlers = [
       .reduce((a, p) => a + p.allocated.amount, 0)
     const byCat = new Map<string, number>()
     for (const e of db.expenses.filter(
-      (x) => x.status === 'posted' && x.paid_at >= from && x.paid_at <= to,
+      (x) => x.status === 'posted' && x.paid_on >= from && x.paid_on <= to,
     ))
       byCat.set(e.category_account_id, (byCat.get(e.category_account_id) ?? 0) + e.amount.amount)
     const expense = [...byCat].map(([id, amount]) => {

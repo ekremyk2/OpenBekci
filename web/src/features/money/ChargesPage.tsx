@@ -4,6 +4,7 @@ import { useIdempotencyKey } from '@/lib/idempotency'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { MoneyInput } from '@/components/forms/MoneyInput'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -207,15 +208,22 @@ export function ChargesPage() {
                           type="checkbox"
                           className="size-4 accent-primary"
                           aria-label={`${t`Select`} ${c.unit_door_number}`}
-                          checked={selected.has(c.unit_id)}
-                          onChange={() => toggle(c.unit_id)}
+                          checked={selected.has(`${c.unit_id}:${c.debtor_kind}`)}
+                          onChange={() => toggle(`${c.unit_id}:${c.debtor_kind}`)}
                         />
                       </TableCell>
                       <TableCell>{c.unit_door_number}</TableCell>
                       <TableCell>
                         <SideBadge side={c.debtor_kind} />
                       </TableCell>
-                      <TableCell>{c.debtor_display_name ?? '–'}</TableCell>
+                      <TableCell>
+                        {c.effective_debtor.display_name ?? c.debtor_display_name ?? '–'}
+                        {c.effective_debtor.source === 'carried' ? (
+                          <Badge variant="info" className="ms-2">
+                            <Trans>Carried debt</Trans>
+                          </Badge>
+                        ) : null}
+                      </TableCell>
                       <TableCell>
                         {c.description ?? labels.chargeType[c.charge_type]}
                         {c.period ? (
@@ -288,7 +296,7 @@ export function ChargesPage() {
         <AdjustChargeDialog charge={adjustFor} ctx={ctx} onClose={() => setAdjustFor(null)} />
       ) : null}
       {remindOpen ? (
-        <RemindDialog ctx={ctx} unitIds={[...selected]} onClose={() => setRemindOpen(false)} />
+        <RemindDialog ctx={ctx} selection={[...selected]} onClose={() => setRemindOpen(false)} />
       ) : null}
     </div>
   )
@@ -406,11 +414,11 @@ function AdjustChargeDialog({
 
 function RemindDialog({
   ctx,
-  unitIds,
+  selection,
   onClose,
 }: {
   ctx: MoneyCtx
-  unitIds: string[]
+  selection: string[]
   onClose: () => void
 }) {
   const { t } = useLingui()
@@ -435,11 +443,16 @@ function RemindDialog({
         ? {
             site_id: ctx.siteId,
             stage_id: stage,
-            unit_ids: unitIds.length ? unitIds : undefined,
+            debtors: selection.length
+              ? selection.map((k) => {
+                  const [unit_id, debtor_kind] = k.split(':') as [string, 'owner' | 'tenant']
+                  return { unit_id, debtor_kind }
+                })
+              : undefined,
             channels: [...channels],
           }
         : null,
-    [ctx.siteId, stage, channels, unitIds],
+    [ctx.siteId, stage, channels, selection],
   )
   const preview = useMoneyQuery(
     ['dunning-preview', body],
@@ -474,8 +487,8 @@ function RemindDialog({
             <Trans>Send reminders</Trans>
           </DialogTitle>
           <DialogDescription>
-            {unitIds.length > 0 ? (
-              <Trans>To the {unitIds.length} selected units with an overdue balance.</Trans>
+            {selection.length > 0 ? (
+              <Trans>To the {selection.length} selected unit sides with an overdue balance.</Trans>
             ) : (
               <Trans>
                 To every unit side with an overdue balance. Select rows first to narrow it down.

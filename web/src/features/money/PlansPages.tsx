@@ -41,6 +41,7 @@ import {
   MoneyFormField,
   positiveMinor,
   useDebounced,
+  useIdempotencyKeys,
   useZodMessages,
 } from './forms'
 import { CHARGE_TYPES, defaultDebtorFor, useLabels } from './labels'
@@ -253,7 +254,9 @@ export function PreviewTable({
               <TableCell>
                 <SideBadge side={l.debtor_kind} />
               </TableCell>
-              <TableCell>{l.debtor_display_name ?? '–'}</TableCell>
+              <TableCell>
+                {l.effective_debtor.display_name ?? l.debtor_display_name ?? '–'}
+              </TableCell>
               <TableCell className="text-end tabular-nums">{l.weight}</TableCell>
               <TableCell className="text-end">
                 <Money minor={l.amount.amount} currency={ctx.currency} />
@@ -751,10 +754,15 @@ function RatesCard({ plan, ctx }: { plan: S['ChargePlan']; ctx: MoneyCtx }) {
     })
     return res.data!
   })
+  const rateKeys = useIdempotencyKeys()
   const remove = useMoneyMutation(async (rateId: string) => {
     await moneyApi.DELETE('/v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}', {
-      params: { path: { org_id: ctx.orgId, plan_id: plan.id, rate_id: rateId } },
+      params: {
+        path: { org_id: ctx.orgId, plan_id: plan.id, rate_id: rateId },
+        header: idemHeader(rateKeys.get(rateId)),
+      },
     })
+    rateKeys.done(rateId)
   })
   async function onSubmit(values: RateValues) {
     try {

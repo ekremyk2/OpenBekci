@@ -17,6 +17,7 @@ From the repo root: `tools/task.ps1 web:dev` and `tools/task.ps1 web:check` (lin
 
 | Command          | What it does                                                                                                                           |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev:mock`  | Vite in mock mode: in-memory MSW handlers (the money module so far) answer instead of a backend. Signed in as a site manager; add `?mockRole=resident` for the portal view. |
 | `pnpm lint`      | ESLint flat config: `typescript-eslint`, `react-hooks`, `jsx-a11y`, no `dangerouslySetInnerHTML`, and `openbekci/logical-properties`   |
 | `pnpm typecheck` | `tsc -b --noEmit`                                                                                                                      |
 | `pnpm test`      | Vitest + Testing Library + MSW                                                                                                         |

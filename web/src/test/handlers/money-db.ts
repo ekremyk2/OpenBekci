@@ -120,6 +120,7 @@ export function createMoneyDb(today = '2026-11-07'): MoneyDb {
       grace_days: 5,
       simple: true,
       waiver_reauth_threshold: m(50_000),
+      version: 1,
     },
     blocks: [
       { id: 'blk-a', ...org, name: 'A Blok', is_default: true, ...base, version: 1 },
@@ -139,6 +140,7 @@ export function createMoneyDb(today = '2026-11-07'): MoneyDb {
       occupancy: { owners: 1, tenants: tenant ? 1 : 0, household: 0 },
       ...base,
       version: 1,
+      payer_overrides: {},
       weights: { 'k-share': share, 'k-equal': 1, 'k-area': area },
       ownerPerson: owner,
       tenantPerson: tenant,
@@ -386,6 +388,14 @@ export function createMoneyDb(today = '2026-11-07'): MoneyDb {
 export const personName = (db: MoneyDb, id: string | null) =>
   db.persons.find((p) => p.id === id)?.display_name ?? null
 
+export function effectiveOf(
+  side: Side,
+  d: { id: string | null; name: string | null },
+  source: S['EffectiveDebtor']['source'] = 'plan_default',
+): S['EffectiveDebtor'] {
+  return { debtor_kind: side, person_id: d.id, display_name: d.name, source }
+}
+
 export function debtorFor(db: MoneyDb, unitId: string, side: Side) {
   const u = db.units.find((x) => x.id === unitId)
   const id = side === 'tenant' ? u?.tenantPerson : u?.ownerPerson
@@ -435,6 +445,7 @@ export function previewSplit(
       debtor_kind: side,
       debtor_person_id: d.id,
       debtor_display_name: d.name,
+      effective_debtor: effectiveOf(side, d),
       weight: weights[i]!,
       amount: m(amounts[i]!),
     }
@@ -489,6 +500,7 @@ export function generateCharges(db: MoneyDb, plan: S['ChargePlan'], period: stri
       debtor_kind: l.debtor_kind,
       debtor_person_id: l.debtor_person_id,
       debtor_display_name: l.debtor_display_name,
+      effective_debtor: l.effective_debtor,
       charge_type: plan.charge_type,
       period,
       amount: l.amount,
@@ -518,12 +530,19 @@ export function applyToCharge(c: S['Charge'], amount: number) {
 }
 
 /** Oldest first, principal before fee; whatever is left over becomes a prepayment credit. */
-export function autoAllocate(db: MoneyDb, unitId: string, side: Side, amount: number) {
+export function autoAllocate(
+  db: MoneyDb,
+  unitId: string,
+  side: Side,
+  amount: number,
+  personId?: string,
+) {
   const open = db.charges
     .filter(
       (c) =>
-        c.unit_id === unitId &&
-        c.debtor_kind === side &&
+        (personId
+          ? c.debtor_person_id === personId
+          : c.unit_id === unitId && c.debtor_kind === side) &&
         c.balance.amount > 0 &&
         c.status !== 'cancelled',
     )
@@ -607,7 +626,7 @@ export function seedBankImport(
     org_id: db.orgId,
     site_id: db.siteId,
     import_id: id,
-    booked_at: `2026-11-0${i + 1}`,
+    booked_on: `2026-11-0${i + 1}`,
     amount: c.balance,
     counterparty: c.debtor_display_name,
     description: `Dues ${c.unit_door_number}`,
@@ -635,7 +654,7 @@ export function seedBankImport(
     org_id: db.orgId,
     site_id: db.siteId,
     import_id: id,
-    booked_at: '2026-11-06',
+    booked_on: '2026-11-06',
     amount: m(-45_000),
     counterparty: 'Işık Elektrik',
     description: 'Invoice payment',

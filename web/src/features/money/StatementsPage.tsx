@@ -345,8 +345,8 @@ function SendStatement({
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body:
         mode === 'unit'
-          ? { unit_id: unit, debtor_kind: side, from, to, channels }
-          : { person_id: person, from, to, channels },
+          ? { debtor: { unit_id: unit, debtor_kind: side }, from, to, channels }
+          : { debtor: { person_id: person }, from, to, channels },
     })
     return res.data!
   })

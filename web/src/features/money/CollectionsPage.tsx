@@ -34,7 +34,7 @@ import {
   type S,
 } from './api'
 import { useLabels } from './labels'
-import { UnitPicker, useUnits } from './pickers'
+import { PersonPicker, UnitPicker, useUnits } from './pickers'
 import {
   Checkbox,
   ExportButtons,
@@ -430,7 +430,7 @@ function CasesCard({ ctx }: { ctx: MoneyCtx }) {
                         <SideBadge side={c.debtor_kind} />
                       </TableCell>
                       <TableCell>
-                        <SiteDate value={c.opened_at} timeZone={ctx.timeZone} />
+                        <SiteDate value={c.opened_on} timeZone={ctx.timeZone} />
                       </TableCell>
                       <TableCell>{c.lawyer ?? '–'}</TableCell>
                       <TableCell>{c.file_no ?? '–'}</TableCell>
@@ -473,6 +473,7 @@ function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
   const idem = useIdempotencyKey()
   const [unit, setUnit] = useState('')
   const [side, setSide] = useState<DebtorSide>('owner')
+  const [person, setPerson] = useState('')
   const [lawyer, setLawyer] = useState('')
   const [fileNo, setFileNo] = useState('')
   const [error, setError] = useState<string>()
@@ -483,8 +484,8 @@ function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
         site_id: ctx.siteId,
         unit_id: unit,
         debtor_kind: side,
-        debtor_person_id: '',
-        opened_at: todayIn(ctx.timeZone),
+        debtor_person_id: person,
+        opened_on: todayIn(ctx.timeZone),
         lawyer: lawyer || null,
         file_no: fileNo || null,
       },
@@ -502,7 +503,7 @@ function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
           className="flex flex-col gap-4"
           onSubmit={(e) => {
             e.preventDefault()
-            if (!unit) return setError(t`Choose a unit.`)
+            if (!unit || !person) return setError(t`Choose the unit and the debtor.`)
             m.mutateAsync().then(
               () => {
                 idem.renew()
@@ -518,6 +519,9 @@ function NewCase({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void }) {
           </Field>
           <Field label={t`Side`}>
             <SidePicker value={side} onChange={setSide} />
+          </Field>
+          <Field label={t`Debtor person`} htmlFor="nc-person">
+            <PersonPicker ctx={ctx} id="nc-person" value={person} onChange={setPerson} />
           </Field>
           <Field label={t`Lawyer`} htmlFor="nc-lawyer">
             <Input id="nc-lawyer" value={lawyer} onChange={(e) => setLawyer(e.target.value)} />

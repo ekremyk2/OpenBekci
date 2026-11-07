@@ -82,6 +82,33 @@ describe('record a payment', () => {
     expect(newest.status).toBe('paid')
   })
 
+  it('records a payment against a person (carried debt), not a unit side', async () => {
+    const { db } = mountMoney('/orgs/org-1/money/payments/new')
+    await screen.findByRole('heading', { name: 'Record a payment' })
+    await waitFor(() =>
+      expect((screen.getByLabelText('Received into') as HTMLSelectElement).value).not.toBe(''),
+    )
+    await userEvent.selectOptions(screen.getByLabelText('For'), 'person')
+    const person = await screen.findByLabelText('Person')
+    await userEvent.selectOptions(
+      person,
+      await within(person).findByRole('option', { name: 'Deniz Çelik' }),
+    )
+    await userEvent.type(screen.getByLabelText('Amount'), '900')
+    const table = await screen.findByRole(
+      'table',
+      { name: 'Automatic allocation' },
+      { timeout: 4000 },
+    )
+    expect(within(table).getAllByRole('row')).toHaveLength(1)
+    await userEvent.click(screen.getByRole('button', { name: 'Record payment' }))
+    await screen.findByTestId('receipt-no')
+    expect(db.payments.at(-1)!.allocations).toHaveLength(1)
+    expect(
+      db.charges.filter((c) => c.debtor_person_id === 'p-deniz' && c.status === 'paid'),
+    ).toHaveLength(1)
+  })
+
   it('confirms a transfer declared from the portal', async () => {
     const { db } = mountMoney('/orgs/org-1/money/payments')
     const section = await screen.findByText('Declared by residents, awaiting confirmation')

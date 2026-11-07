@@ -500,7 +500,7 @@ function BudgetEditor({ ctx, fiscalYearId }: { ctx: MoneyCtx; fiscalYearId: stri
         moneyApi.GET('/v1/orgs/{org_id}/budgets/{budget_id}/lines', {
           params: { path: { org_id: ctx.orgId, budget_id: budget!.id } },
         }),
-      ).then((r) => r.lines),
+      ),
     { enabled: !!budget },
   )
   const create = useMoneyMutation(async () => {
@@ -518,13 +518,15 @@ function BudgetEditor({ ctx, fiscalYearId }: { ctx: MoneyCtx; fiscalYearId: stri
           c.id in edits
             ? edits[c.id]
             : BigInt(
-                lines.data?.find((l) => l.expense_category_account_id === c.id)?.amount.amount ?? 0,
+                lines.data?.lines.find((l) => l.expense_category_account_id === c.id)?.amount
+                  .amount ?? 0,
               )
         return v && v > 0n
           ? {
               expense_category_account_id: c.id,
               fund_id:
-                lines.data?.find((l) => l.expense_category_account_id === c.id)?.fund_id ?? fund,
+                lines.data?.lines.find((l) => l.expense_category_account_id === c.id)?.fund_id ??
+                fund,
               amount: minorMoney(v, ctx.currency),
             }
           : null
@@ -533,7 +535,7 @@ function BudgetEditor({ ctx, fiscalYearId }: { ctx: MoneyCtx; fiscalYearId: stri
     await moneyApi.PUT('/v1/orgs/{org_id}/budgets/{budget_id}/lines', {
       params: {
         path: { org_id: ctx.orgId, budget_id: budget!.id },
-        header: ifMatch(budget!.version) as never,
+        header: ifMatch(lines.data!.version),
       },
       body: { lines: next },
     })
@@ -574,10 +576,11 @@ function BudgetEditor({ ctx, fiscalYearId }: { ctx: MoneyCtx; fiscalYearId: stri
                         value={
                           c.id in edits
                             ? edits[c.id]!
-                            : lines.data?.find((l) => l.expense_category_account_id === c.id)
+                            : lines.data?.lines.find((l) => l.expense_category_account_id === c.id)
                               ? BigInt(
-                                  lines.data.find((l) => l.expense_category_account_id === c.id)!
-                                    .amount.amount,
+                                  lines.data.lines.find(
+                                    (l) => l.expense_category_account_id === c.id,
+                                  )!.amount.amount,
                                 )
                               : null
                         }
@@ -736,7 +739,7 @@ function Aging({ ctx }: { ctx: MoneyCtx }) {
                   </TableCell>
                   {r.buckets.map((b, i) => (
                     <TableCell key={i} className="text-end">
-                      <Money minor={b.amount} currency={ctx.currency} />
+                      <Money minor={b.amount.amount} currency={ctx.currency} />
                     </TableCell>
                   ))}
                   <TableCell className="text-end">
@@ -752,12 +755,12 @@ function Aging({ ctx }: { ctx: MoneyCtx }) {
                 </TableCell>
                 {d.totals.map((b, i) => (
                   <TableCell key={i} className="text-end">
-                    <Money minor={b.amount} currency={ctx.currency} />
+                    <Money minor={b.amount.amount} currency={ctx.currency} />
                   </TableCell>
                 ))}
                 <TableCell className="text-end">
                   <Money
-                    minor={d.totals.reduce((a, b) => a + b.amount, 0)}
+                    minor={d.totals.reduce((a, b) => a + b.amount.amount, 0)}
                     currency={ctx.currency}
                   />
                 </TableCell>

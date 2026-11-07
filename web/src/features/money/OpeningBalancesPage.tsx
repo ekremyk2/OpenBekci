@@ -31,7 +31,7 @@ import {
   type S,
 } from './api'
 import { useAccounts, useUnits } from './pickers'
-import { Field, FormRootError, Gate, PageHeader, QueryBoundary } from './ui'
+import { Field, FormRootError, Gate, PageHeader, QueryBoundary, ReasonDialog } from './ui'
 
 type Cells = Record<string, bigint | null>
 
@@ -66,28 +66,7 @@ export function OpeningBalancesPage() {
       <QueryBoundary query={existing} skeleton="page">
         {(items) => (
           <>
-            {items.length > 0 ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    <Trans>Already entered</Trans>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">
-                    <Trans>
-                      {items.length} opening entries as of{' '}
-                      <SiteDate value={items[0]!.as_of} timeZone={ctx.timeZone} />.
-                    </Trans>{' '}
-                    {items.some((i) => i.locked) ? (
-                      <Badge variant="secondary">
-                        <Trans>Locked</Trans>
-                      </Badge>
-                    ) : null}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : null}
+            {items.length > 0 ? <EnteredCard ctx={ctx} items={items} /> : null}
             <Gate permission="money.post">
               <Wizard ctx={ctx} lockDate={lock.data?.lock_date ?? null} />
             </Gate>
@@ -340,5 +319,142 @@ function Wizard({ ctx, lockDate }: { ctx: MoneyCtx; lockDate: string | null }) {
         {guard.dialog}
       </CardContent>
     </Card>
+  )
+}
+
+function EnteredCard({ ctx, items }: { ctx: MoneyCtx; items: S['OpeningBalance'][] }) {
+  const { t } = useLingui()
+  const units = useUnits(ctx)
+  const door = (id: string | null) => units.data?.find((u) => u.id === id)?.door_number ?? '–'
+  const [voidFor, setVoidFor] = useState<S['OpeningBalance'] | null>(null)
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <Trans>Already entered</Trans>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table aria-label={t`Entered opening balances`}>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <Trans>As of</Trans>
+              </TableHead>
+              <TableHead>
+                <Trans>Kind</Trans>
+              </TableHead>
+              <TableHead>
+                <Trans>Unit</Trans>
+              </TableHead>
+              <TableHead className="text-end">
+                <Trans>Principal</Trans>
+              </TableHead>
+              <TableHead className="text-end">
+                <Trans>Late fee</Trans>
+              </TableHead>
+              <TableHead />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.map((o) => (
+              <TableRow
+                key={o.id}
+                className={o.status === 'voided' ? 'text-muted-foreground' : undefined}
+              >
+                <TableCell>
+                  <SiteDate value={o.as_of} timeZone={ctx.timeZone} />
+                </TableCell>
+                <TableCell>{o.kind}</TableCell>
+                <TableCell>{door(o.unit_id)}</TableCell>
+                <TableCell className="text-end">
+                  <Money minor={o.principal.amount} currency={ctx.currency} />
+                </TableCell>
+                <TableCell className="text-end">
+                  <Money minor={o.late_fee.amount} currency={ctx.currency} />
+                </TableCell>
+                <TableCell className="text-end whitespace-nowrap">
+                  {o.status === 'voided' ? (
+                    <Badge variant="secondary">
+                      <Trans>Voided</Trans>
+                    </Badge>
+                  ) : o.locked ? (
+                    <Badge variant="secondary">
+                      <Trans>Locked</Trans>
+                    </Badge>
+                  ) : (
+                    <Gate permission="money.post" fallback={null}>
+                      <Button size="sm" variant="ghost" onClick={() => setVoidFor(o)}>
+                        <Trans>Void</Trans>
+                      </Button>
+                    </Gate>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {voidFor ? (
+          <VoidOpening ctx={ctx} entry={voidFor} onClose={() => setVoidFor(null)} />
+        ) : null}
+      </CardContent>
+    </Card>
+  )
+}
+
+/** Voiding an opening entry needs a reason and a fresh sign-in; the replay keeps the same key. */
+function VoidOpening({
+  ctx,
+  entry,
+  onClose,
+}: {
+  ctx: MoneyCtx
+  entry: S['OpeningBalance']
+  onClose: () => void
+}) {
+  const { t } = useLingui()
+  const idem = useIdempotencyKey()
+  const guard = useReauthGuard()
+  const [error, setError] = useState<string>()
+  const m = useMoneyMutation(async (reason: string) => {
+    const done = await guard.run(() =>
+      moneyApi.POST('/v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void', {
+        params: {
+          path: { org_id: ctx.orgId, opening_balance_id: entry.id },
+          header: idemHeader(idem.key),
+        },
+        body: { reason },
+      }),
+    )
+    if (!done) throw new Error('reauth_cancelled')
+  })
+  return (
+    <>
+      <ReasonDialog
+        open
+        onOpenChange={(o) => !o && onClose()}
+        title={t`Void this opening entry?`}
+        description={t`The entry stays visible as voided. You will be asked to confirm your password.`}
+        confirmLabel={t`Void entry`}
+        destructive
+        pending={m.isPending}
+        error={error}
+        onConfirm={(reason) =>
+          m.mutateAsync(reason).then(
+            () => {
+              idem.renew()
+              onClose()
+            },
+            (e) =>
+              setError(
+                e instanceof Error && e.message === 'reauth_cancelled'
+                  ? undefined
+                  : t`Could not void the entry.`,
+              ),
+          )
+        }
+      />
+      {guard.dialog}
+    </>
   )
 }

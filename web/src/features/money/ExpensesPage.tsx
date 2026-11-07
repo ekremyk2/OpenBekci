@@ -180,7 +180,7 @@ export function ExpensesPage() {
                   className={x.status === 'voided' ? 'text-muted-foreground' : undefined}
                 >
                   <TableCell>
-                    <SiteDate value={x.paid_at} timeZone={ctx.timeZone} />
+                    <SiteDate value={x.paid_on} timeZone={ctx.timeZone} />
                   </TableCell>
                   <TableCell>{x.description}</TableCell>
                   <TableCell>{catName(x.category_account_id)}</TableCell>
@@ -353,7 +353,7 @@ function NewExpenseDialog({ ctx, onClose }: { ctx: MoneyCtx; onClose: () => void
         category_account_id: values.category_account_id,
         fund_id: fund,
         amount: minorMoney(values.amount, ctx.currency),
-        paid_at: values.paid_at,
+        paid_on: values.paid_at,
         paid_from_account_id: values.paid_from_account_id,
         vendor_id: values.vendor_id || null,
         description: values.description,
@@ -761,7 +761,7 @@ function PayBill({ ctx, bill, onClose }: { ctx: MoneyCtx; bill: S['Bill']; onClo
       params: { path: { org_id: ctx.orgId, bill_id: bill.id }, header: idemHeader(idem.key) },
       body: {
         amount: minorMoney(amount!, ctx.currency),
-        paid_at: date,
+        paid_on: date,
         paid_from_account_id: from,
       },
     })
