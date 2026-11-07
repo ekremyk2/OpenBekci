@@ -39,7 +39,7 @@ afterEach(() => act(() => clearToasts()))
 describe('ErrorEffects', () => {
   it('on 401 clears the whole query cache and redirects to /login?next=', async () => {
     const { router, queryClient } = await mount('/orgs/org-1/me')
-    expect(await screen.findByText('Ayşe Yılmaz', {}, { timeout: 5000 })).toBeInTheDocument()
+    expect(await screen.findByText('Ayşe Yılmaz', {}, { timeout: 30_000 })).toBeInTheDocument()
     queryClient.setQueryData(['org', 'org-1', 'units'], [1, 2, 3])
 
     act(() => emitApiEvent({ type: 'unauthorized', error: error(401, 'invalid_grant') }))
@@ -52,7 +52,7 @@ describe('ErrorEffects', () => {
 
   it('signs the shell out when the /v1/me refetch (window focus) returns 401', async () => {
     const { router, queryClient } = await mount('/orgs/org-1/me')
-    expect(await screen.findByText('Ayşe Yılmaz', {}, { timeout: 5000 })).toBeInTheDocument()
+    expect(await screen.findByText('Ayşe Yılmaz', {}, { timeout: 30_000 })).toBeInTheDocument()
 
     server.use(expired())
     await act(() => queryClient.refetchQueries({ queryKey: ['me'] }))

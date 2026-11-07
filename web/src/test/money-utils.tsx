@@ -1,6 +1,6 @@
 import { i18n } from '@lingui/core'
 import { RouterProvider, createMemoryHistory } from '@tanstack/react-router'
-import { configure, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import type { Me } from '@/api/schema'
@@ -10,26 +10,14 @@ import { meFixture } from '@/test/handlers'
 import { resetMoneyDb } from '@/test/handlers/money'
 import { server } from '@/test/setup'
 
-// Route chunks are transformed on first use, which is slow on a cold run.
-configure({ asyncUtilTimeout: 10_000 })
-vi.setConfig({ testTimeout: 40_000 })
 // jsdom's File/Blob cannot be serialised by Node's fetch (multipart uploads); use Node's own.
 // Node hands out its own classes through Response.formData().
-const multipart = [
-  '--b',
-  'Content-Disposition: form-data; name="f"; filename="a.txt"',
-  'Content-Type: text/plain',
-  '',
-  'x',
-  '--b--',
-  '',
-].join('\r\n')
-const sample = await new Response(multipart, {
-  headers: { 'content-type': 'multipart/form-data; boundary=b' },
-}).formData()
-const NodeFile = sample.get('f')!.constructor as typeof File
-vi.stubGlobal('File', NodeFile)
-vi.stubGlobal('Blob', Object.getPrototypeOf(NodeFile.prototype).constructor as typeof Blob)
+const nodeBuffer = (await import(/* @vite-ignore */ ['node', 'buffer'].join(':'))) as {
+  File: typeof File
+  Blob: typeof Blob
+}
+vi.stubGlobal('File', nodeBuffer.File)
+vi.stubGlobal('Blob', nodeBuffer.Blob)
 // ...and its FormData (Node hands one out through Response.formData()).
 vi.stubGlobal(
   'FormData',

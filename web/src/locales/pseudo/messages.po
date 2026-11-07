@@ -7,10 +7,6 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pseudo\n"
 
-#. placeholder {0}: items.length
-msgid "{0} opening entries as of <0/>."
-msgstr ""
-
 #. placeholder {0}: preview.data.recipient_count
 #. placeholder {1}: preview.data.sms_count
 #. placeholder {2}: preview.data.skipped_frozen
@@ -27,6 +23,9 @@ msgid "A name is required."
 msgstr ""
 
 msgid "A person"
+msgstr ""
+
+msgid "A person (carried debt)"
 msgstr ""
 
 msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
@@ -260,6 +259,9 @@ msgstr ""
 msgid "Card"
 msgstr ""
 
+msgid "Carried debt"
+msgstr ""
+
 msgid "Case opened; late fees are frozen for this unit side."
 msgstr ""
 
@@ -323,9 +325,6 @@ msgstr ""
 msgid "Choose a unit to see what was sent to it."
 msgstr ""
 
-msgid "Choose a unit."
-msgstr ""
-
 msgid "Choose an organization"
 msgstr ""
 
@@ -336,6 +335,9 @@ msgid "Choose one."
 msgstr ""
 
 msgid "Choose the file, the importer and the bank account."
+msgstr ""
+
+msgid "Choose the unit and the debtor."
 msgstr ""
 
 msgid "Choose who the statement is for."
@@ -471,6 +473,9 @@ msgstr ""
 msgid "Could not sign out. Please try again."
 msgstr ""
 
+msgid "Could not void the entry."
+msgstr ""
+
 msgid "Could not void the expense."
 msgstr ""
 
@@ -524,6 +529,9 @@ msgid "Days after due"
 msgstr ""
 
 msgid "Debit"
+msgstr ""
+
+msgid "Debtor person"
 msgstr ""
 
 msgid "Debtors"
@@ -686,6 +694,9 @@ msgid "Enter your password."
 msgstr ""
 
 msgid "Enter your phone number"
+msgstr ""
+
+msgid "Entered opening balances"
 msgstr ""
 
 msgid "Equal per unit"
@@ -1736,6 +1747,9 @@ msgstr ""
 msgid "The dry run failed."
 msgstr ""
 
+msgid "The entry stays visible as voided. You will be asked to confirm your password."
+msgstr ""
+
 msgid "The file could not be imported."
 msgstr ""
 
@@ -1824,8 +1838,8 @@ msgstr ""
 msgid "To match"
 msgstr ""
 
-#. placeholder {0}: unitIds.length
-msgid "To the {0} selected units with an overdue balance."
+#. placeholder {0}: selection.length
+msgid "To the {0} selected unit sides with an overdue balance."
 msgstr ""
 
 msgid "Too many attempts. Please wait and try again."
@@ -1941,6 +1955,9 @@ msgstr ""
 msgid "Void"
 msgstr ""
 
+msgid "Void entry"
+msgstr ""
+
 msgid "Void expense"
 msgstr ""
 
@@ -1952,6 +1969,9 @@ msgid "Void receipt {0}?"
 msgstr ""
 
 msgid "Void this expense?"
+msgstr ""
+
+msgid "Void this opening entry?"
 msgstr ""
 
 msgid "Voided"

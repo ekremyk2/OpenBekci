@@ -7,10 +7,6 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: tr\n"
 
-#. placeholder {0}: items.length
-msgid "{0} opening entries as of <0/>."
-msgstr "{0} açılış kaydı, <0/> tarihi itibarıyla."
-
 #. placeholder {0}: preview.data.recipient_count
 #. placeholder {1}: preview.data.sms_count
 #. placeholder {2}: preview.data.skipped_frozen
@@ -28,6 +24,9 @@ msgstr "Bir ad gerekli."
 
 msgid "A person"
 msgstr "Bir kişi"
+
+msgid "A person (carried debt)"
+msgstr "Bir kişi (devredilen borç)"
 
 msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
 msgstr "Plan, her dönemin tahakkuklarını oluşturur. Tutarlar geçmiş düzenlenerek değil, tarihli oranlarla değişir."
@@ -260,6 +259,9 @@ msgstr "İptal edildi"
 msgid "Card"
 msgstr "Kart"
 
+msgid "Carried debt"
+msgstr "Devredilen borç"
+
 msgid "Case opened; late fees are frozen for this unit side."
 msgstr "Dosya açıldı; bu birim tarafı için gecikme tazminatı donduruldu."
 
@@ -323,9 +325,6 @@ msgstr "Bir birim ve tutar seçin."
 msgid "Choose a unit to see what was sent to it."
 msgstr "Neler gönderildiğini görmek için bir birim seçin."
 
-msgid "Choose a unit."
-msgstr "Bir birim seçin."
-
 msgid "Choose an organization"
 msgstr "Bir kuruluş seçin"
 
@@ -337,6 +336,9 @@ msgstr "Birini seçin."
 
 msgid "Choose the file, the importer and the bank account."
 msgstr "Dosyayı, aktarıcıyı ve banka hesabını seçin."
+
+msgid "Choose the unit and the debtor."
+msgstr "Birimi ve borçluyu seçin."
 
 msgid "Choose who the statement is for."
 msgstr "Ekstrenin kimin için olduğunu seçin."
@@ -471,6 +473,9 @@ msgstr "Bildiriminiz gönderilemedi."
 msgid "Could not sign out. Please try again."
 msgstr "Çıkış yapılamadı. Lütfen tekrar deneyin."
 
+msgid "Could not void the entry."
+msgstr "Kayıt iptal edilemedi."
+
 msgid "Could not void the expense."
 msgstr "Gider iptal edilemedi."
 
@@ -525,6 +530,9 @@ msgstr "Vadeden sonraki gün"
 
 msgid "Debit"
 msgstr "Borç"
+
+msgid "Debtor person"
+msgstr "Borçlu kişi"
 
 msgid "Debtors"
 msgstr "Borçlular"
@@ -687,6 +695,9 @@ msgstr "Parolanızı girin."
 
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
+
+msgid "Entered opening balances"
+msgstr "Girilen açılış bakiyeleri"
 
 msgid "Equal per unit"
 msgstr "Birim başına eşit"
@@ -1736,6 +1747,9 @@ msgstr "İndirme başarısız oldu. Lütfen tekrar deneyin."
 msgid "The dry run failed."
 msgstr "Deneme çalıştırması başarısız oldu."
 
+msgid "The entry stays visible as voided. You will be asked to confirm your password."
+msgstr "Kayıt iptal edildi olarak görünür kalır. Parolanızı onaylamanız istenecek."
+
 msgid "The file could not be imported."
 msgstr "Dosya aktarılamadı."
 
@@ -1824,9 +1838,9 @@ msgstr "Gecikmiş bakiyesi olan her birim tarafına. Daraltmak için önce satı
 msgid "To match"
 msgstr "Eşleştirilecek"
 
-#. placeholder {0}: unitIds.length
-msgid "To the {0} selected units with an overdue balance."
-msgstr "Gecikmiş bakiyesi olan {0} seçili birime."
+#. placeholder {0}: selection.length
+msgid "To the {0} selected unit sides with an overdue balance."
+msgstr "Gecikmiş bakiyesi olan {0} seçili birim tarafına."
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Çok fazla deneme yapıldı. Lütfen bekleyip tekrar deneyin."
@@ -1941,6 +1955,9 @@ msgstr "Yalnızca yönetici ve kurul görür. Asla herkese açık paylaşmayın.
 msgid "Void"
 msgstr "İptal et"
 
+msgid "Void entry"
+msgstr "Kaydı iptal et"
+
 msgid "Void expense"
 msgstr "Gideri iptal et"
 
@@ -1953,6 +1970,9 @@ msgstr "{0} numaralı makbuz iptal edilsin mi?"
 
 msgid "Void this expense?"
 msgstr "Bu gider iptal edilsin mi?"
+
+msgid "Void this opening entry?"
+msgstr "Bu açılış kaydı iptal edilsin mi?"
 
 msgid "Voided"
 msgstr "İptal edildi"

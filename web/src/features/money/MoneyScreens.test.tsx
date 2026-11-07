@@ -159,7 +159,48 @@ describe('opening balances', () => {
     expect(await screen.findByText(/Dry run: 1 of 1 rows are fine/)).toBeInTheDocument()
     expect(db.openings).toHaveLength(0) // nothing saved by a dry run
     await userEvent.click(screen.getByRole('button', { name: 'Save opening balances' }))
+    // creating opening entries needs a fresh sign-in; the import is replayed after the challenge
+    const reauth = await screen.findByRole('dialog', { name: 'Confirm it is you' })
+    expect(db.openings).toHaveLength(0)
+    await userEvent.type(within(reauth).getByLabelText('Password'), 'secret')
+    await userEvent.click(within(reauth).getByRole('button', { name: 'Confirm' }))
     await waitFor(() => expect(db.openings.length).toBe(1))
     expect(db.openings[0]!.principal.amount).toBe(150_000)
+  })
+})
+
+describe('opening balances: void', () => {
+  it('voids an entered entry with a reason after re-authentication', async () => {
+    const { db } = mountMoney('/orgs/org-1/money/opening-balances')
+    db.openings.push({
+      id: 'ob-1',
+      org_id: 'org-1',
+      site_id: 'site-a',
+      as_of: '2026-01-01',
+      kind: 'unit_receivable',
+      unit_id: 'u-a3',
+      debtor_kind: 'owner',
+      person_id: null,
+      account_id: null,
+      vendor_id: null,
+      principal: { amount: 50_000, currency: 'TRY' },
+      late_fee: { amount: 0, currency: 'TRY' },
+      journal_entry_id: 'je',
+      locked: false,
+      created_at: '2026-01-01T00:00:00Z',
+      updated_at: '2026-01-01T00:00:00Z',
+      status: 'active',
+      voided_at: null,
+      void_reason: null,
+    })
+    await userEvent.click(await screen.findByRole('button', { name: 'Void' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Void this opening entry?' })
+    await userEvent.type(within(dialog).getByLabelText('Reason'), 'Entered twice')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Void entry' }))
+    const reauth = await screen.findByRole('dialog', { name: 'Confirm it is you' })
+    await userEvent.type(within(reauth).getByLabelText('Password'), 'secret')
+    await userEvent.click(within(reauth).getByRole('button', { name: 'Confirm' }))
+    await waitFor(() => expect(db.openings[0]!.status).toBe('voided'))
+    expect(db.openings[0]!.void_reason).toBe('Entered twice')
   })
 })

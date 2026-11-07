@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { afterEach } from 'vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { i18n } from '@lingui/core'
 import { setupServer } from 'msw/node'
 import { handlers } from './handlers'
@@ -20,6 +20,9 @@ if (!window.matchMedia) {
     dispatchEvent: () => false,
   })) as unknown as typeof window.matchMedia
 }
+
+// Route chunks are transformed on first use; a cold, parallel run needs more than the 1s default.
+configure({ asyncUtilTimeout: 30_000 })
 
 i18n.load('en', {})
 i18n.activate('en')

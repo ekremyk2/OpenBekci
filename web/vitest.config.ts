@@ -10,6 +10,8 @@ export default mergeConfig(
       setupFiles: ['./src/test/setup.ts'],
       include: ['src/**/*.test.{ts,tsx}'],
       css: false,
+      // Route chunks and feature code are transformed on first use; a cold parallel run is slow.
+      testTimeout: 60_000,
     },
   }),
 )
