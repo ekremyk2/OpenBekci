@@ -1356,6 +1356,7 @@ schemas:
       - debtor_display_name
       - weight
       - amount
+      - effective_debtor
     properties:
       unit_id:
         type: string
@@ -1380,6 +1381,8 @@ schemas:
         type: number
       amount:
         $ref: ./common.yaml#/schemas/Money
+      effective_debtor:
+        $ref: "#/schemas/EffectiveDebtor"
   ChargePlanPreview:
     type: object
     required:
@@ -1566,6 +1569,7 @@ schemas:
       - cancelled_reason
       - created_at
       - updated_at
+      - effective_debtor
     properties:
       id:
         type: string
@@ -1596,7 +1600,7 @@ schemas:
         type: string
         format: uuid
         nullable: true
-        description: Snapshot of the occupant on the due date.
+        description: Snapshot of the occupant on the due date; becomes the holder when open charges are carried to a person on move-out.
       debtor_display_name:
         type: string
         nullable: true
@@ -1656,6 +1660,8 @@ schemas:
       updated_at:
         type: string
         format: date-time
+      effective_debtor:
+        $ref: "#/schemas/EffectiveDebtor"
     example:
       id: 0192a3f0-1000-7000-8000-000000000003
       org_id: 0192a3f0-1000-7000-8000-000000000001
@@ -1685,6 +1691,11 @@ schemas:
       cancelled_reason: null
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
+      effective_debtor:
+        debtor_kind: tenant
+        person_id: null
+        display_name: null
+        source: plan_default
   ChargeCreate:
     type: object
     required:
@@ -2045,28 +2056,21 @@ schemas:
     type: object
     required:
       - site_id
-      - unit_id
-      - debtor_kind
       - amount
       - reason
+      - debtor
     properties:
       site_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
       amount:
         $ref: ./common.yaml#/schemas/Money
       reason:
         type: string
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: "Who owes: a unit side or a person (see DebtorRef)."
   LateFeeWaiverUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
@@ -2162,24 +2166,13 @@ schemas:
     type: object
     required:
       - site_id
-      - unit_id
-      - debtor_kind
       - from
       - reason
+      - debtor
     properties:
       site_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
       from:
         type: string
         format: date
@@ -2189,6 +2182,10 @@ schemas:
         nullable: true
       reason:
         type: string
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: "Who owes: a unit side or a person (see DebtorRef)."
   LateFeeFreezeUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
@@ -2429,12 +2426,11 @@ schemas:
     type: object
     required:
       - site_id
-      - unit_id
-      - debtor_kind
       - method
       - amount
       - received_at
       - asset_account_id
+      - debtor
     properties:
       site_id:
         type: string
@@ -2442,14 +2438,6 @@ schemas:
       payer_person_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        enum:
-          - owner
-          - tenant
       method:
         type: string
         enum:
@@ -2477,16 +2465,21 @@ schemas:
         description: "Manual override; omitted: automatic oldest-first."
       send_receipt:
         $ref: "#/schemas/ReceiptDelivery"
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: "Who the payment settles: a unit side or a person (carried debt)."
     example:
       site_id: 0192a3f0-1000-7000-8000-000000000002
-      unit_id: 0192a3f0-1000-7000-8000-000000000001
-      debtor_kind: tenant
       method: cash
       amount:
         amount: 200000
         currency: TRY
       received_at: 2026-03-05T10:15:00Z
       asset_account_id: 0192a3f0-1000-7000-8000-000000000002
+      debtor:
+        unit_id: 0192a3f0-1000-7000-8000-000000000001
+        debtor_kind: tenant
   PaymentVoid:
     type: object
     required:
@@ -2507,23 +2500,18 @@ schemas:
     type: object
     required:
       - site_id
-      - unit_id
-      - debtor_kind
       - amount
+      - debtor
     properties:
       site_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        enum:
-          - owner
-          - tenant
       amount:
         $ref: ./common.yaml#/schemas/Money
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: "Who owes: a unit side or a person (see DebtorRef)."
   AllocationPreview:
     type: object
     required:
@@ -2542,22 +2530,13 @@ schemas:
     type: object
     required:
       - site_id
-      - unit_id
-      - debtor_kind
       - amount
       - paid_on
+      - debtor
     properties:
       site_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        enum:
-          - owner
-          - tenant
       amount:
         $ref: ./common.yaml#/schemas/Money
       paid_on:
@@ -2567,6 +2546,10 @@ schemas:
         type: string
       note:
         type: string
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: Who the declared transfer is for. Residents declare for their own side; a former occupant never declares.
   PaymentConfirm:
     type: object
     required:
@@ -3276,14 +3259,6 @@ schemas:
   BankTransactionMatch:
     type: object
     properties:
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        enum:
-          - owner
-          - tenant
       payer_person_id:
         type: string
         format: uuid
@@ -3299,6 +3274,10 @@ schemas:
         type: string
         format: uuid
         description: "For an outgoing line: link an expense."
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: Who the line pays; omitted when matching to `payment_id` or `expense_id`.
   BankTransactionReason:
     type: object
     properties:
@@ -4058,16 +4037,11 @@ schemas:
       stage_id:
         type: string
         format: uuid
-      unit_ids:
+      debtors:
         type: array
         items:
-          type: string
-          format: uuid
-      debtor_kind:
-        type: string
-        enum:
-          - owner
-          - tenant
+          $ref: "#/schemas/DebtorRef"
+        description: "Restrict the run to these debtors; omitted: every debtor above `min_balance`. Person targets reach carried debt of former occupants."
       min_balance:
         $ref: ./common.yaml#/schemas/Money
       channels:
@@ -4384,28 +4358,16 @@ schemas:
   DebtBreakdown:
     type: object
     required:
-      - unit_id
-      - debtor_kind
-      - debtor_person_id
+      - debtor
       - as_of
       - lines
       - total_principal
       - total_late_fee
     properties:
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-      debtor_person_id:
-        type: string
-        format: uuid
-        nullable: true
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: Whose debt this is.
       as_of:
         type: string
         format: date
@@ -4485,9 +4447,7 @@ schemas:
     type: object
     description: "Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`."
     required:
-      - unit_id
-      - debtor_kind
-      - person_id
+      - debtor
       - from
       - to
       - opening_balance
@@ -4497,22 +4457,10 @@ schemas:
       - total_due
       - credit
     properties:
-      unit_id:
-        type: string
-        format: uuid
-        nullable: true
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-        nullable: true
-      person_id:
-        type: string
-        format: uuid
-        nullable: true
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: "Whose statement this is: a unit side or a person."
       from:
         type: string
         format: date
@@ -4538,21 +4486,15 @@ schemas:
   StatementSend:
     type: object
     required:
+      - debtor
       - from
       - to
       - channels
     properties:
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        enum:
-          - owner
-          - tenant
-      person_id:
-        type: string
-        format: uuid
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: Whose statement to send.
       from:
         type: string
         format: date
@@ -5039,3 +4981,68 @@ schemas:
         type: number
       aging:
         $ref: "#/schemas/ReceivablesAgingReport"
+  DebtorRef:
+    type: object
+    description: "Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`."
+    oneOf:
+      - required:
+          - unit_id
+          - debtor_kind
+      - required:
+          - person_id
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+        description: "Unit mode: the unit."
+      debtor_kind:
+        type: string
+        enum:
+          - owner
+          - tenant
+        description: "Unit mode: the side of the unit that owes."
+      person_id:
+        type: string
+        format: uuid
+        description: "Person mode: the person who owes; covers charges carried to them and charges keyed on them."
+    example:
+      unit_id: 0192a3f0-1000-7000-8000-000000000001
+      debtor_kind: tenant
+  EffectiveDebtor:
+    type: object
+    description: "Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`."
+    required:
+      - debtor_kind
+      - person_id
+      - display_name
+      - source
+    properties:
+      debtor_kind:
+        type: string
+        enum:
+          - owner
+          - tenant
+        description: Open enum.
+        x-open-enum: true
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The person on the due date; null when the side is vacant.
+      display_name:
+        type: string
+        nullable: true
+      source:
+        type: string
+        enum:
+          - charge
+          - unit_override
+          - plan_default
+          - carried
+        description: Where the decision came from. Open enum.
+        x-open-enum: true
+    example:
+      debtor_kind: tenant
+      person_id: null
+      display_name: null
+      source: unit_override

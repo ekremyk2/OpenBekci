@@ -404,7 +404,8 @@ schemas:
       - late_fee
       - credit
       - total
-      - default_disposition
+      - default_open_charges
+      - carried
     properties:
       occupancy_id:
         type: string
@@ -422,14 +423,19 @@ schemas:
         allOf:
           - $ref: ./common.yaml#/schemas/Money
         description: Principal plus fee minus credit.
-      default_disposition:
+      default_open_charges:
         type: string
-        description: Open enum.
         enum:
-          - stays_with_person
-          - transferred
-          - written_off
+          - carry_to_person
+          - keep_on_unit
+          - write_off
+        description: Open enum.
         x-open-enum: true
+      carried:
+        type: array
+        items:
+          $ref: "#/schemas/CarriedCharge"
+        description: Open charges the move-out would handle under the default.
   MoveOut:
     type: object
     description: A move-out or sale (S7).
@@ -440,7 +446,8 @@ schemas:
       - as_of
       - closing_statement_file_id
       - certificate_file_id
-      - debt_disposition
+      - open_charges
+      - carried
       - disposition_reason
       - transferred_to_person_id
       - decided_by
@@ -468,14 +475,19 @@ schemas:
         type: string
         format: uuid
         nullable: true
-      debt_disposition:
+      open_charges:
         type: string
-        description: Open enum.
         enum:
-          - stays_with_person
-          - transferred
-          - written_off
+          - carry_to_person
+          - keep_on_unit
+          - write_off
+        description: The decision taken. Open enum.
         x-open-enum: true
+      carried:
+        type: array
+        items:
+          $ref: "#/schemas/CarriedCharge"
+        description: Every open charge the move-out handled and where it went; sums to `balance.principal` plus fee.
       disposition_reason:
         type: string
         nullable: true
@@ -516,19 +528,21 @@ schemas:
       as_of:
         type: string
         format: date
-      debt_disposition:
+      open_charges:
         type: string
         enum:
-          - stays_with_person
-          - transferred
-          - written_off
-        description: Default `stays_with_person`.
+          - carry_to_person
+          - keep_on_unit
+          - write_off
+        default: carry_to_person
+        description: "What happens to the leaving person's open charges (S7). `carry_to_person` (default): they become that person's personal receivable and the next occupant starts at zero, collectible through `DebtorRef.person_id`. `keep_on_unit`: they stay on the unit side. `write_off`: written off (needs `disposition_reason`; audited)."
       disposition_reason:
         type: string
-        description: Required for an override of the default.
+        description: Required for `write_off` and `keep_on_unit` (an override of the default).
       transferred_to_person_id:
         type: string
         format: uuid
+        description: "With `carry_to_person`: carry to this person instead of the leaving one (for example the seller's estate); audited."
   Membership:
     type: object
     description: A role of a person with a scope and a term.
@@ -1366,3 +1380,48 @@ schemas:
       new_password:
         type: string
         description: Minimum 10 characters.
+  CarriedCharge:
+    type: object
+    description: An open charge handled by a move-out.
+    required:
+      - charge_id
+      - charge_type
+      - period
+      - balance
+      - outcome
+      - person_id
+    properties:
+      charge_id:
+        type: string
+        format: uuid
+      charge_type:
+        type: string
+        description: Open enum, see `Charge.charge_type`.
+      period:
+        type: string
+        nullable: true
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      balance:
+        $ref: ./common.yaml#/schemas/Money
+      outcome:
+        type: string
+        enum:
+          - carried_to_person
+          - kept_on_unit
+          - written_off
+        description: Open enum.
+        x-open-enum: true
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The person now holding the receivable (`carried_to_person`).
+    example:
+      charge_id: 0192a3f0-1000-7000-8000-000000000001
+      charge_type: dues
+      period: 2026-02
+      balance:
+        amount: 200000
+        currency: TRY
+      outcome: carried_to_person
+      person_id: 0192a3f0-1000-7000-8000-000000000001

@@ -110,6 +110,8 @@ post:
     Permission: `payments.record`.
 
     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+
+    `debtor` targets a unit side or a person; payments against a person settle carried debt oldest-first and never touch the unit's current occupants.
   tags:
     - money
   security:

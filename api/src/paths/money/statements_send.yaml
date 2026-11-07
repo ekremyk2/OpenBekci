@@ -9,6 +9,8 @@ post:
     Permission: `statements.read`.
 
     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+
+    `debtor` is a unit side or a person (carried debt).
   tags:
     - money
   security:

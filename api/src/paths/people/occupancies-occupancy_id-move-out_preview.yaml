@@ -16,6 +16,8 @@ post:
     Permission: `people.move_out`.
 
     Problems: `conflict` (409).
+
+    The preview lists the open charges that would be carried (`carried`) under the default `carry_to_person`.
   tags:
     - people
   security:
