@@ -57,7 +57,10 @@ func isOrgPath(pattern string) bool {
 // caller's memberships in that organization once: without an active
 // membership (or for an unknown or malformed organization id) the answer is
 // 404 not_found, so the existence of an organization does not leak. The
-// handlers then call authz.Require through their service.
+// operation's x-openbekci-roles permissions are then checked against the
+// grants (403 insufficient_permission), so a stored idempotent response is
+// never replayed to a caller who lost the permission. The handlers call
+// authz.Require through their service for the concrete scope.
 func (p *pipeline) authzContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		pr := authz.PrincipalFromContext(r.Context())
@@ -80,6 +83,16 @@ func (p *pipeline) authzContext(next http.Handler) http.Handler {
 			if !member {
 				problem.Write(w, r, problem.NotFound("no such organization"))
 				return
+			}
+			// The operation's permissions (x-openbekci-roles) are checked here, before
+			// validation, the idempotency store (a stored response is replayed
+			// without reaching the service) and the handler. The services check
+			// again with the concrete scope (defence in depth).
+			for _, perm := range p.op(r).perms {
+				if !g.HasInOrg(perm, orgID) {
+					problem.Write(w, r, problem.Forbidden("you do not have the "+string(perm)+" permission here"))
+					return
+				}
 			}
 			ctx = authz.WithGrants(ctx, g)
 			ctx = context.WithValue(ctx, orgScopeKey{}, orgScope{id: orgID, db: p.tenantDB})

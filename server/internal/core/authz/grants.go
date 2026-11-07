@@ -69,6 +69,31 @@ func (g Grants) Has(perm Permission, want Scope) bool {
 	return false
 }
 
+// HasInOrg reports whether a grant of perm reaches anything inside the
+// organization orgID: org-wide, or limited to a site or block of it. It is the
+// coarse check "may this caller attempt perm in this organization at all"; the
+// service then narrows with Has for the concrete scope. Instance grants do not
+// count.
+func (g Grants) HasInOrg(perm Permission, orgID uuid.UUID) bool {
+	if orgID == uuid.Nil || orgID != g.OrgID {
+		return false
+	}
+	for _, it := range g.Items {
+		if it.Permission != perm {
+			continue
+		}
+		switch it.ScopeType {
+		case ScopeOrg:
+			return true
+		case ScopeSite, ScopeBlock:
+			if it.ScopeID != nil {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // merge returns g plus the grants of o (the org id of o wins when set).
 func (g Grants) merge(o Grants) Grants {
 	if o.OrgID != uuid.Nil {
@@ -103,6 +128,20 @@ func Require(ctx context.Context, perm Permission, scope Scope) error {
 		return problem.Unauthenticated("authentication is required")
 	}
 	if !GrantsFromContext(ctx).Has(perm, scope) {
+		return problem.Forbidden("you do not have the " + string(perm) + " permission here")
+	}
+	return nil
+}
+
+// RequireInOrg checks that the caller holds perm somewhere in the
+// organization (org-wide, or at a site or block of it); see Grants.HasInOrg.
+// Services of operations that site- and block-scoped members may use call it
+// and then filter by the scopes the caller holds (Grants.ScopesOf).
+func RequireInOrg(ctx context.Context, perm Permission, orgID uuid.UUID) error {
+	if PrincipalFromContext(ctx) == nil {
+		return problem.Unauthenticated("authentication is required")
+	}
+	if !GrantsFromContext(ctx).HasInOrg(perm, orgID) {
 		return problem.Forbidden("you do not have the " + string(perm) + " permission here")
 	}
 	return nil
