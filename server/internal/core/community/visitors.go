@@ -970,6 +970,10 @@ func (s *Service) RevokeRecurringVisitor(ctx context.Context, orgID, rvID uuid.U
 		if _, err := tx.Exec(ctx, `UPDATE recurring_visitor SET status = 'revoked', updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`, orgID, rvID); err != nil {
 			return err
 		}
+		// a visit a scan opened before the revocation must not be admitted afterwards
+		if _, err := s.cancelOpenVisits(ctx, tx, orgID, []uuid.UUID{rvID}, "recurring_visitor_revoked"); err != nil {
+			return err
+		}
 		out, err = loadRecurring(ctx, tx, orgID, rvID, false)
 		if err != nil {
 			return err

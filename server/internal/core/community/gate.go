@@ -365,6 +365,15 @@ func evalEntry(e VisitorEntry, now time.Time) string {
 	return ReasonMatch
 }
 
+// evalVisit judges an entry at arrival: a visit of a recurring visitor is only
+// as good as the recurring visitor (rvStatus, "" for other entries).
+func evalVisit(e VisitorEntry, now time.Time, rvStatus string) string {
+	if e.RecurringVisitorID != nil && rvStatus != "active" && !e.Cancelled {
+		return ReasonRevoked
+	}
+	return evalEntry(e, now)
+}
+
 // evalRecurring judges a recurring visitor at time now in the site's zone.
 func evalRecurring(r RecurringVisitor, now time.Time, loc *time.Location) string {
 	if r.Status == "revoked" {
@@ -496,7 +505,15 @@ func (s *Service) ArriveGateVisitor(ctx context.Context, orgID, entryID uuid.UUI
 		if err != nil {
 			return err
 		}
-		switch reason := evalEntry(v, now); {
+		rvStatus := ""
+		if v.RecurringVisitorID != nil {
+			rv, err := loadRecurring(ctx, tx, orgID, *v.RecurringVisitorID, false)
+			if err != nil {
+				return err
+			}
+			rvStatus = rv.Status
+		}
+		switch reason := evalVisit(v, now, rvStatus); {
 		case v.ApprovalStatus == "requested":
 			return problem.Conflict("the resident has not answered yet")
 		case reason == ReasonUsedUp:

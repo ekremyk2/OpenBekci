@@ -75,7 +75,7 @@ func (s *Service) revokeDeparted(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 	rvIDs := make([]uuid.UUID, len(revoked))
 	for i, r := range revoked {
 		rvIDs[i] = r.ID
-		if err := s.credentialAudit(ctx, tx, orgID, r, "recurring_visitor.revoke", "recurring_visitor"); err != nil {
+		if err := s.credentialAudit(ctx, tx, orgID, r, "recurring_visitor.revoke", "recurring_visitor", "occupancy_ended"); err != nil {
 			return 0, err
 		}
 		if err := s.visitorChanged(ctx, tx, r.SiteID, "recurring_visitor", r.ID); err != nil {
@@ -95,21 +95,21 @@ func (s *Service) revokeDeparted(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 	}
 	n += len(cancelled)
 	for _, r := range cancelled {
-		if err := s.credentialAudit(ctx, tx, orgID, r, "visitor.cancel", "visitor_entry"); err != nil {
+		if err := s.credentialAudit(ctx, tx, orgID, r, "visitor.cancel", "visitor_entry", "occupancy_ended"); err != nil {
 			return n, err
 		}
 		if err := s.visitorChanged(ctx, tx, r.SiteID, "visitor_entry", r.ID); err != nil {
 			return n, err
 		}
 	}
-	visits, err := s.cancelOpenVisits(ctx, tx, orgID, rvIDs)
+	visits, err := s.cancelOpenVisits(ctx, tx, orgID, rvIDs, "occupancy_ended")
 	return n + visits, err
 }
 
-// credentialAudit records that a credential ended because its registrant left.
-func (s *Service) credentialAudit(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, r changedRow, action, targetType string) error {
+// credentialAudit records that a credential was ended by the system for a reason.
+func (s *Service) credentialAudit(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, r changedRow, action, targetType, reason string) error {
 	ev := audit.Event{OrgID: orgID, SiteID: &r.SiteID, Action: action, TargetType: targetType, TargetID: r.ID,
-		Diff: audit.Changes{"reason": {After: mustJSON("occupancy_ended")}}}
+		Diff: audit.Changes{"reason": {After: mustJSON(reason)}}}
 	if principalUser(ctx) == nil {
 		ev.ActorKind = audit.ActorJob
 	}
@@ -119,7 +119,7 @@ func (s *Service) credentialAudit(ctx context.Context, tx pgx.Tx, orgID uuid.UUI
 // cancelOpenVisits cancels the visits (entries) of recurring visitors that
 // have not arrived yet, so a revoked recurring visitor cannot be admitted
 // through a visit a scan opened before. It returns how many it cancelled.
-func (s *Service) cancelOpenVisits(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, rvIDs []uuid.UUID) (int, error) {
+func (s *Service) cancelOpenVisits(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, rvIDs []uuid.UUID, reason string) (int, error) {
 	if len(rvIDs) == 0 {
 		return 0, nil
 	}
@@ -133,7 +133,7 @@ func (s *Service) cancelOpenVisits(ctx context.Context, tx pgx.Tx, orgID uuid.UU
 		return 0, err
 	}
 	for _, r := range cancelled {
-		if err := s.credentialAudit(ctx, tx, orgID, r, "visitor.cancel", "visitor_entry"); err != nil {
+		if err := s.credentialAudit(ctx, tx, orgID, r, "visitor.cancel", "visitor_entry", reason); err != nil {
 			return 0, err
 		}
 		if err := s.visitorChanged(ctx, tx, r.SiteID, "visitor_entry", r.ID); err != nil {
