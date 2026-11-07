@@ -22,7 +22,7 @@ delete:
 
     Permission: `money.manage`.
 
-    Problems: `conflict` (409).
+    Problems: `conflict` (409), `idempotency_mismatch` (422).
   tags:
     - money
   security:
@@ -37,7 +37,7 @@ delete:
       - money.manage
     accountant:
       - money.manage
-  x-idempotent: optional
+  x-idempotent: required
   x-stability: stable
   responses:
     "204":
@@ -50,5 +50,9 @@ delete:
       $ref: ../../components/problem.yaml#/responses/Problem
     "409":
       $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired

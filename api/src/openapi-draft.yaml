@@ -122,6 +122,8 @@ paths:
     $ref: ./paths/people/persons.yaml
   /v1/orgs/{org_id}/persons/{person_id}:
     $ref: ./paths/people/persons-person_id.yaml
+  /v1/orgs/{org_id}/persons/{person_id}:erase:
+    $ref: ./paths/people/persons-person_id_erase.yaml
   /v1/orgs/{org_id}/persons/{person_id}/national-id:
     $ref: ./paths/people/persons-person_id-national-id.yaml
   /v1/orgs/{org_id}/occupancies:
@@ -226,6 +228,8 @@ paths:
     $ref: ./paths/money/opening-balances.yaml
   /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:
     $ref: ./paths/money/opening-balances-opening_balance_id.yaml
+  /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void:
+    $ref: ./paths/money/opening-balances-opening_balance_id_void.yaml
   /v1/orgs/{org_id}/opening-balances:import:
     $ref: ./paths/money/opening-balances_import.yaml
   /v1/orgs/{org_id}/budgets:
@@ -1760,3 +1764,11 @@ components:
       $ref: ./components/community.yaml#/schemas/GuardRef
     GuardList:
       $ref: ./components/community.yaml#/schemas/GuardList
+    OpeningBalanceVoid:
+      $ref: ./components/money.yaml#/schemas/OpeningBalanceVoid
+    BudgetLinesSet:
+      $ref: ./components/money.yaml#/schemas/BudgetLinesSet
+    PersonErase:
+      $ref: ./components/people.yaml#/schemas/PersonErase
+    UnitTagMembersSet:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTagMembersSet

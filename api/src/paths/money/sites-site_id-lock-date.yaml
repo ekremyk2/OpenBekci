@@ -52,11 +52,13 @@ put:
   description: |-
     **Release 0.1.** Moving the lock date back (earlier) needs re-authentication and is audited.
 
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
     Permission: `money.lock`.
 
     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
 
-    Problems: `reauth_required` (403), `locked_period` (409), `conflict` (409).
+    Problems: `reauth_required` (403), `locked_period` (409), `conflict` (409), `version_conflict` (409).
   tags:
     - money
   security:
@@ -96,3 +98,5 @@ put:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch

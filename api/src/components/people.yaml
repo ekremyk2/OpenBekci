@@ -1425,3 +1425,19 @@ schemas:
         currency: TRY
       outcome: carried_to_person
       person_id: 0192a3f0-1000-7000-8000-000000000001
+  PersonErase:
+    type: object
+    description: 'Erasure = `privacy_erase(person_id)`: the person row is anonymized, the user unlinked; ledger lines, ballots and attendance keep their rows with the name replaced by "Former owner #n". Blocked (409 `conflict`) while the person has an open balance unless `override_open_balance` is set (audited).'
+    required:
+      - reason
+    properties:
+      reason:
+        type: string
+        description: Why (a data-subject request, a court order, ...); audited.
+      override_open_balance:
+        type: boolean
+        default: false
+        description: Erase although the person still owes or is owed money.
+    example:
+      reason: Data subject request 2026/17
+      override_open_balance: false

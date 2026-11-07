@@ -8,7 +8,7 @@ post:
 
     Permission: `statements.read`.
 
-    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409).
+    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
 
     `debtor` is a unit side or a person (carried debt).
   tags:
@@ -27,10 +27,10 @@ post:
       - statements.read
     accountant:
       - statements.read
-  x-idempotent: optional
+  x-idempotent: required
   x-stability: stable
   parameters:
-    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:
     required: true
     content:

@@ -1472,6 +1472,7 @@ schemas:
     required:
       - site_id
       - defaults
+      - version
     properties:
       site_id:
         type: string
@@ -1480,6 +1481,10 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/NotificationDefault"
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   NotificationDefaultsSet:
     type: object
     required:

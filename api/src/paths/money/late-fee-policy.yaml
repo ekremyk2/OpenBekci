@@ -47,9 +47,11 @@ put:
   description: |-
     **Release 0.1.** Set the late-fee policy.
 
+    `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
     Permission: `money.manage`.
 
-    Problems: `validation_failed` (422), `conflict` (409).
+    Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
   tags:
     - money
   security:
@@ -68,6 +70,7 @@ put:
   x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:

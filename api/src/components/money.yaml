@@ -470,6 +470,7 @@ schemas:
       - lock_date
       - changed_by
       - changed_at
+      - version
     properties:
       site_id:
         type: string
@@ -486,6 +487,10 @@ schemas:
         type: string
         format: date-time
         nullable: true
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   LockDateSet:
     type: object
     required:
@@ -665,6 +670,9 @@ schemas:
       - locked
       - created_at
       - updated_at
+      - status
+      - voided_at
+      - void_reason
     properties:
       id:
         type: string
@@ -727,6 +735,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+      status:
+        type: string
+        enum:
+          - active
+          - voided
+        description: Open enum. A voided opening balance stays in the ledger with its reversal.
+        x-open-enum: true
+      voided_at:
+        type: string
+        format: date-time
+        nullable: true
+      void_reason:
+        type: string
+        nullable: true
   OpeningBalanceCreate:
     type: object
     required:
@@ -943,11 +965,16 @@ schemas:
     type: object
     required:
       - lines
+      - version
     properties:
       lines:
         type: array
         items:
           $ref: "#/schemas/BudgetLine"
+      version:
+        type: integer
+        format: int64
+        description: The `version` of the budget; send it back as If-Match on `putBudgetLines`.
   BudgetFinalize:
     type: object
     properties:
@@ -1836,6 +1863,7 @@ schemas:
       - grace_days
       - simple
       - waiver_reauth_threshold
+      - version
     properties:
       site_id:
         type: string
@@ -1858,6 +1886,10 @@ schemas:
           - $ref: ./common.yaml#/schemas/Money
         nullable: true
         description: Waivers above this need re-authentication.
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   LateFeePolicySet:
     type: object
     required:
@@ -5046,3 +5078,22 @@ schemas:
       person_id: null
       display_name: null
       source: unit_override
+  OpeningBalanceVoid:
+    type: object
+    required:
+      - reason
+    properties:
+      reason:
+        type: string
+        description: Why the opening position is void; audited.
+    example:
+      reason: Imported twice
+  BudgetLinesSet:
+    type: object
+    required:
+      - lines
+    properties:
+      lines:
+        type: array
+        items:
+          $ref: "#/schemas/BudgetLine"

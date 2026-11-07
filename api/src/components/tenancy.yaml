@@ -896,12 +896,17 @@ schemas:
     type: object
     required:
       - unit_ids
+      - version
     properties:
       unit_ids:
         type: array
         items:
           type: string
           format: uuid
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   Vehicle:
     type: object
     description: A plate registered to a unit (D6).
@@ -1104,3 +1109,13 @@ schemas:
         description: Must equal the site name.
       reason:
         type: string
+  UnitTagMembersSet:
+    type: object
+    required:
+      - unit_ids
+    properties:
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid

@@ -774,6 +774,7 @@ schemas:
       - opens_at
       - closes_at
       - status
+      - version
     properties:
       agenda_item_id:
         type: string
@@ -795,6 +796,10 @@ schemas:
           - open
           - closed
         x-open-enum: true
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
   PollSet:
     type: object
     required:

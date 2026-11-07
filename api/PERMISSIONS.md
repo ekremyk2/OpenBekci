@@ -30,6 +30,7 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `people.read` | Read persons and their contact data. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 | `people.manage` | Create and edit persons. | `org_admin`, `site_manager`, `board_member` |
 | `people.national_id` | Read the masked national id and set or clear it. | `org_admin`, `site_manager` |
+| `people.erase` | Erase a person for a privacy request (re-authentication required; blocked while they have an open balance unless overridden). | `org_admin` |
 | `people.move_out` | Record a move-out or sale and issue the closing statement and certificate. | `org_admin`, `site_manager` |
 | `occupancies.read` | Read occupancies (occupants: the people of their own unit). | `org_admin`, `site_manager`, `board_member`, `auditor`, `owner`, `tenant`, `household` |
 | `occupancies.manage` | Create, change and end occupancies. | `org_admin`, `site_manager`, `board_member` |
