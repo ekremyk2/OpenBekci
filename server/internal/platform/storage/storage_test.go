@@ -148,7 +148,7 @@ func TestSignedURLs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantPath := "/v1/orgs/" + org.String() + "/files/" + id.String() + "/content"
+	wantPath := "/v1/orgs/" + org.String() + "/files/" + id.String()
 	if u.Path != wantPath {
 		t.Fatalf("path = %q, want %q", u.Path, wantPath)
 	}

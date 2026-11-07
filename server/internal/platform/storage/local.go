@@ -73,7 +73,48 @@ func (l *Local) Put(ctx context.Context, key string, r io.Reader, size int64, _ 
 	if err = os.Rename(tmp.Name(), p); err != nil {
 		return fmt.Errorf("storage: rename into place: %w", err)
 	}
+	syncDir(filepath.Dir(p))
 	return nil
+}
+
+// syncDir flushes a directory entry so a rename survives a power cut. It is
+// best effort: some platforms cannot fsync a directory, and the blob itself
+// was already synced.
+func syncDir(dir string) {
+	d, err := os.Open(dir) //nolint:gosec // dir is built from a validated key under root
+	if err != nil {
+		return
+	}
+	_ = d.Sync()
+	_ = d.Close()
+}
+
+// SweepTemp removes the ".tmp-*" files that a crash in the middle of Put left
+// behind, when they are older than olderThan (a write in progress is younger).
+// The server calls it at start-up. It returns how many files it removed.
+func (l *Local) SweepTemp(olderThan time.Duration) (int, error) {
+	removed := 0
+	cutoff := time.Now().Add(-olderThan)
+	err := filepath.WalkDir(l.root, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				return nil // no root yet: nothing was ever written
+			}
+			return err
+		}
+		if d.IsDir() || !strings.HasPrefix(d.Name(), ".tmp-") {
+			return nil
+		}
+		info, ierr := d.Info()
+		if ierr != nil || info.ModTime().After(cutoff) {
+			return nil
+		}
+		if rerr := os.Remove(p); rerr == nil {
+			removed++
+		}
+		return nil
+	})
+	return removed, err
 }
 
 // ctxReader stops a copy when the context ends.
@@ -135,7 +176,7 @@ func (l *Local) Stat(_ context.Context, key string) (Info, error) {
 
 // SignedURL implements Blob. The key must follow the file layout
 // "<org uuid>/<yy>/<mm>/<file uuid>[.<variant>]"; the result is the path
-// /v1/orgs/<org>/files/<id>/content with variant, exp and sig query parameters.
+// /v1/orgs/<org>/files/<id> with variant, exp and sig query parameters.
 func (l *Local) SignedURL(_ context.Context, key string, ttl time.Duration, _ ...SignOption) (string, error) {
 	if l.signer == nil {
 		return "", ErrUnsupported
@@ -151,7 +192,7 @@ func (l *Local) SignedURL(_ context.Context, key string, ttl time.Duration, _ ..
 	}
 	q.Set("exp", strconv.FormatInt(exp.Unix(), 10))
 	q.Set("sig", l.signer.Sign(DownloadMessage(org, id, variant), exp))
-	return "/v1/orgs/" + org + "/files/" + id + "/content?" + q.Encode(), nil
+	return "/v1/orgs/" + org + "/files/" + id + "?" + q.Encode(), nil
 }
 
 // FileKey builds the key of a file (or of one of its variants when variant is
