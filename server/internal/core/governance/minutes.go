@@ -32,7 +32,7 @@ func (s *Service) minutesData(ctx context.Context, tx pgx.Tx, m Meeting) (Minute
 		return MinutesData{}, err
 	}
 	var attended int
-	if err := tx.QueryRow(ctx, `SELECT count(DISTINCT person_id) FROM attendance WHERE org_id = $1 AND meeting_id = $2`, m.OrgID, m.ID).Scan(&attended); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT count(DISTINCT person_id) FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $3`, m.OrgID, m.ID, m.heldCall()).Scan(&attended); err != nil {
 		return MinutesData{}, err
 	}
 	d := MinutesData{SiteName: si.Name, Kind: m.Kind, Locale: si.Locale, Loc: si.Loc, ScheduledAt: m.ScheduledAt, SecondCall: m.SecondCallAt, Location: m.Location,

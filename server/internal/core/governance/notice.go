@@ -280,8 +280,8 @@ func absentees(ctx context.Context, tx pgx.Tx, m Meeting) ([]SnapOwner, Snapshot
 	if err != nil {
 		return nil, snap, problem.Conflict("the meeting was never called, so there is nobody to notify")
 	}
-	rows, err := tx.Query(ctx, `SELECT person_id FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND mode = 'in_person'
-		UNION SELECT proxy_for_person_id FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND proxy_for_person_id IS NOT NULL`, m.OrgID, m.ID)
+	rows, err := tx.Query(ctx, `SELECT person_id FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $3 AND mode = 'in_person'
+		UNION SELECT proxy_for_person_id FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $3 AND proxy_for_person_id IS NOT NULL`, m.OrgID, m.ID, m.heldCall())
 	if err != nil {
 		return nil, snap, err
 	}

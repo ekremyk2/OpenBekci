@@ -59,6 +59,7 @@ type Attendance struct {
 	MeetingID        pgtype.UUID
 	PersonID         pgtype.UUID
 	UnitIds          []pgtype.UUID
+	Call             string
 	Mode             string
 	ProxyForPersonID pgtype.UUID
 	Source           string
@@ -291,6 +292,8 @@ type Meeting struct {
 	MinutesDocumentID    pgtype.UUID
 	MinutesFileID        pgtype.UUID
 	CalledAt             pgtype.Timestamptz
+	HeldCall             pgtype.Text
+	FirstCallFailedAt    pgtype.Timestamptz
 	StartedAt            pgtype.Timestamptz
 	ClosedAt             pgtype.Timestamptz
 	CancelReason         pgtype.Text

@@ -188,17 +188,30 @@ func (s *apiServer) GovernanceCallMeeting(ctx context.Context, req gen.Governanc
 	return gen.GovernanceCallMeeting200JSONResponse(out), err
 }
 
-func (s *apiServer) GovernanceStartMeeting(ctx context.Context, req gen.GovernanceStartMeetingRequestObject) (gen.GovernanceStartMeetingResponseObject, error) {
+func (s *apiServer) GovernanceOpenFirstCall(ctx context.Context, req gen.GovernanceOpenFirstCallRequestObject) (gen.GovernanceOpenFirstCallResponseObject, error) {
 	g, err := s.gv()
 	if err != nil {
 		return nil, err
 	}
-	v, err := g.StartMeeting(ctx, req.OrgId, req.MeetingId)
+	v, err := g.OpenFirstCall(ctx, req.OrgId, req.MeetingId)
 	if err != nil {
 		return nil, err
 	}
 	out, err := conv[gen.Meeting](v)
-	return gen.GovernanceStartMeeting200JSONResponse(out), err
+	return gen.GovernanceOpenFirstCall200JSONResponse(out), err
+}
+
+func (s *apiServer) GovernanceOpenSecondCall(ctx context.Context, req gen.GovernanceOpenSecondCallRequestObject) (gen.GovernanceOpenSecondCallResponseObject, error) {
+	g, err := s.gv()
+	if err != nil {
+		return nil, err
+	}
+	v, err := g.OpenSecondCall(ctx, req.OrgId, req.MeetingId)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.Meeting](v)
+	return gen.GovernanceOpenSecondCall200JSONResponse(out), err
 }
 
 func (s *apiServer) GovernanceCloseMeeting(ctx context.Context, req gen.GovernanceCloseMeetingRequestObject) (gen.GovernanceCloseMeetingResponseObject, error) {

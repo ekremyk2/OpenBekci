@@ -1723,7 +1723,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}/meetings/{meeting_id}:start": {
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call": {
         parameters: {
             query?: never;
             header?: never;
@@ -1738,14 +1738,43 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Open the session
-         * @description **Release 0.2.** Open the session.
+         * Open the session at the first call
+         * @description **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
          *
          *     Permission: `meetings.manage`.
          *
          *     Problems: `conflict` (409).
          */
-        post: operations["governance.startMeeting"];
+        post: operations["governance.openFirstCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId-2"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the second call
+         * @description **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openSecondCall"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4175,6 +4204,8 @@ export interface components {
          *       "call_letter_document_id": null,
          *       "minutes_document_id": null,
          *       "called_at": null,
+         *       "held_call": null,
+         *       "first_call_failed_at": null,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z",
          *       "version": 1
@@ -4218,6 +4249,16 @@ export interface components {
             minutes_document_id: string | null;
             /** Format: date-time */
             called_at: string | null;
+            /**
+             * @description The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+             * @enum {string|null}
+             */
+            held_call: "first" | "second" | null;
+            /**
+             * Format: date-time
+             * @description When the first call was found without quorum and the second call opened.
+             */
+            first_call_failed_at: string | null;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -4275,6 +4316,8 @@ export interface components {
          *           "call_letter_document_id": null,
          *           "minutes_document_id": null,
          *           "called_at": null,
+         *           "held_call": null,
+         *           "first_call_failed_at": null,
          *           "created_at": "2026-03-01T09:00:00Z",
          *           "updated_at": "2026-03-01T09:00:00Z",
          *           "version": 1
@@ -4688,6 +4731,7 @@ export interface components {
          *         "Ali Veli"
          *       ],
          *       "mode": "in_person",
+         *       "call": "first",
          *       "proxy_for_person_id": null,
          *       "source": "desk",
          *       "checked_in_at": "2026-03-01T09:00:00Z",
@@ -4713,6 +4757,11 @@ export interface components {
              * @enum {string}
              */
             mode: "in_person" | "proxy";
+            /**
+             * @description The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+             * @enum {string}
+             */
+            call: "first" | "second";
             /** Format: uuid */
             proxy_for_person_id: string | null;
             /**
@@ -4745,6 +4794,7 @@ export interface components {
          *             "Ali Veli"
          *           ],
          *           "mode": "in_person",
+         *           "call": "first",
          *           "proxy_for_person_id": null,
          *           "source": "desk",
          *           "checked_in_at": "2026-03-01T09:00:00Z",
@@ -8254,7 +8304,40 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "governance.startMeeting": {
+    "governance.openFirstCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId-2"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.openSecondCall": {
         parameters: {
             query?: never;
             header?: {

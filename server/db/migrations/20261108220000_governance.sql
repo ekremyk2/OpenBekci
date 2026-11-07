@@ -41,6 +41,12 @@ CREATE TABLE meeting (
     minutes_document_id     uuid,
     minutes_file_id         uuid,
     called_at               timestamptz,
+    -- which sitting actually took place, set by the explicit open-first-call and
+    -- open-second-call transitions and never inferred from the clock: quorum, vote
+    -- evaluation and the minutes read it. The second call may only open after the
+    -- first one failed its quorum, recorded in first_call_failed_at.
+    held_call               text        CHECK (held_call IN ('first', 'second')),
+    first_call_failed_at    timestamptz,
     started_at              timestamptz,
     closed_at               timestamptz,
     cancel_reason           text,
@@ -51,7 +57,8 @@ CREATE TABLE meeting (
     PRIMARY KEY (org_id, id),
     UNIQUE (org_id, site_id, id),
     FOREIGN KEY (org_id, site_id) REFERENCES site (org_id, id),
-    CHECK (second_call_at > scheduled_at)
+    CHECK (second_call_at > scheduled_at),
+    CHECK ((held_call = 'second') = (first_call_failed_at IS NOT NULL))
 );
 CREATE INDEX meeting_org_site_time ON meeting (org_id, site_id, scheduled_at);
 SELECT openbekci_enable_rls('meeting');
@@ -167,6 +174,8 @@ CREATE TABLE attendance (
     meeting_id          uuid          NOT NULL,
     person_id           uuid          NOT NULL,
     unit_ids            uuid[]        NOT NULL,
+    -- the sitting this row belongs to: attendance of the first call does not carry into the second
+    call                text          NOT NULL DEFAULT 'first' CHECK (call IN ('first', 'second')),
     mode                text          NOT NULL CHECK (mode IN ('in_person', 'proxy')),
     proxy_for_person_id uuid,
     source              text          NOT NULL DEFAULT 'desk' CHECK (source IN ('desk', 'qr')),
@@ -183,7 +192,7 @@ CREATE TABLE attendance (
     CHECK ((mode = 'proxy') = (proxy_for_person_id IS NOT NULL))
 );
 CREATE UNIQUE INDEX attendance_one_per_represented ON attendance
-    (org_id, meeting_id, person_id, COALESCE(proxy_for_person_id, '00000000-0000-0000-0000-000000000000'::uuid));
+    (org_id, meeting_id, call, person_id, COALESCE(proxy_for_person_id, '00000000-0000-0000-0000-000000000000'::uuid));
 SELECT openbekci_enable_rls('attendance');
 
 -- The QR check-in token of an owner for one meeting (in the call letter and

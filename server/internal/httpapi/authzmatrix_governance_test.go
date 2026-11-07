@@ -46,8 +46,16 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 	w.NewOccupancy(t, f, g.u2, g.p2, "owner")
 	now := time.Now().UTC()
 	scheduled, second := now.Add(40*24*time.Hour), now.Add(50*24*time.Hour)
-	if status == "in_session" || status == "closed" {
+	if status == "in_session" || status == "closed" || status == "open" {
 		scheduled, second = now.Add(-time.Hour), now.Add(10*24*time.Hour)
+	}
+	// "open" is an in_session meeting without attendance or decisions
+	dbStatus, heldCall := status, any(nil)
+	if status == "open" {
+		dbStatus = "in_session"
+	}
+	if dbStatus == "in_session" || dbStatus == "closed" {
+		heldCall = "first"
 	}
 	var snap, rules any
 	var calledAt any
@@ -61,8 +69,8 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 		r, _ := json.Marshal(governance.TurkishPreset())
 		snap, rules, calledAt = string(b), string(r), now
 	}
-	w.Exec(t, `INSERT INTO meeting (id, org_id, site_id, kind, scope, scheduled_at, second_call_at, location, status, eligibility_snapshot, settings_snapshot, called_at)
-		VALUES ($1, $2, $3, 'general_assembly', 'site', $4, $5, 'Community room', $6, $7::jsonb, $8::jsonb, $9)`, g.meeting, org.ID, f.Site, scheduled, second, status, snap, rules, calledAt)
+	w.Exec(t, `INSERT INTO meeting (id, org_id, site_id, kind, scope, scheduled_at, second_call_at, location, status, eligibility_snapshot, settings_snapshot, called_at, held_call)
+		VALUES ($1, $2, $3, 'general_assembly', 'site', $4, $5, 'Community room', $6, $7::jsonb, $8::jsonb, $9, $10)`, g.meeting, org.ID, f.Site, scheduled, second, dbStatus, snap, rules, calledAt, heldCall)
 	w.Exec(t, `INSERT INTO agenda_item (id, org_id, site_id, meeting_id, position, title, will_be_voted) VALUES ($1, $2, $3, $4, 1, 'Budget', true)`, g.item, org.ID, f.Site, g.meeting)
 	if status == "draft" {
 		return g
@@ -71,6 +79,9 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 		tok := fmt.Sprintf("tok%d-%d", i+1, n)
 		w.Exec(t, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token) VALUES ($1, $2, $3, $4, $5)`, org.ID, f.Site, g.meeting, p, tok)
 		w.Exec(t, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase) VALUES ($1, $2, $3, $4, $5, 'call')`, id.New(), org.ID, f.Site, g.meeting, p)
+	}
+	if status == "open" {
+		return g
 	}
 	if status == "called" {
 		w.Exec(t, `INSERT INTO poll (org_id, site_id, agenda_item_id, question, opens_at, closes_at) VALUES ($1, $2, $3, 'Agree?', $4, $5)`,
@@ -134,7 +145,8 @@ func init() {
 		"governance.updateMeeting": onMeeting("draft", "PATCH", "", perms(manage), 200, `{"location":"Garden"}`, ifm, `"1"`),
 		"governance.deleteMeeting": onMeeting("draft", "DELETE", "", perms(manage), 204, "", ifm, `"1"`),
 		"governance.callMeeting":   onMeeting("draft", "POST", ":call", perms(manage), 200, `{}`),
-		"governance.startMeeting":  onMeeting("called", "POST", ":start", perms(manage), 200, ``),
+		"governance.openFirstCall":  onMeeting("called", "POST", ":open-first-call", perms(manage), 200, ``),
+		"governance.openSecondCall": onMeeting("open", "POST", ":open-second-call", perms(manage), 200, ``),
 		"governance.closeMeeting":  onMeeting("in_session", "POST", ":close", perms(manage), 200, ``),
 		"governance.cancelMeeting": onMeeting("draft", "POST", ":cancel", perms(manage), 200, `{"reason":"no quorum expected"}`),
 
@@ -190,7 +202,7 @@ func init() {
 		}},
 	}
 	rows["governance.recordAttendance"] = mrow{perms: perms(attend), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-		g := govSeed(t, w, org, "called")
+		g := govSeed(t, w, org, "open")
 		return jsonReq("POST", orgPath(org, "/meetings/"+g.meeting.String()+"/attendance"), fmt.Sprintf(`{"person_id":%q,"unit_ids":[%q],"mode":"in_person"}`, g.p1, g.u1))
 	}}
 	rows["governance.recordMeetingNotice"] = mrow{perms: perms(manage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
@@ -210,7 +222,7 @@ func init() {
 		return jsonReq("POST", orgPath(org, "/meetings/"+g.meeting.String()+":notify-decisions?dry_run=true"), `{"channels":["in_app","sms"]}`, "Idempotency-Key", idem())
 	}}
 	rows["governance.checkInAttendance"] = mrow{perms: perms(attend), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-		g := govSeed(t, w, org, "called")
+		g := govSeed(t, w, org, "open")
 		return jsonReq("POST", orgPath(org, "/meetings/"+g.meeting.String()+"/attendance:checkin"), fmt.Sprintf(`{"token":%q}`, g.token1))
 	}}
 	rows["governance.removeAttendance"] = mrow{perms: perms(attend), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {

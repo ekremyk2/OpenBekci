@@ -243,6 +243,8 @@ schemas:
       - call_letter_document_id
       - minutes_document_id
       - called_at
+      - held_call
+      - first_call_failed_at
       - created_at
       - updated_at
       - version
@@ -309,6 +311,19 @@ schemas:
         type: string
         format: date-time
         nullable: true
+      held_call:
+        type: string
+        nullable: true
+        description: The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+        enum:
+          - first
+          - second
+        x-open-enum: true
+      first_call_failed_at:
+        type: string
+        format: date-time
+        nullable: true
+        description: When the first call was found without quorum and the second call opened.
       created_at:
         type: string
         format: date-time
@@ -334,6 +349,8 @@ schemas:
       call_letter_document_id: null
       minutes_document_id: null
       called_at: null
+      held_call: null
+      first_call_failed_at: null
       created_at: 2026-03-01T09:00:00Z
       updated_at: 2026-03-01T09:00:00Z
       version: 1
@@ -420,6 +437,8 @@ schemas:
           call_letter_document_id: null
           minutes_document_id: null
           called_at: null
+          held_call: null
+          first_call_failed_at: null
           created_at: 2026-03-01T09:00:00Z
           updated_at: 2026-03-01T09:00:00Z
           version: 1
@@ -1157,6 +1176,7 @@ schemas:
       - unit_ids
       - unit_labels
       - mode
+      - call
       - proxy_for_person_id
       - source
       - checked_in_at
@@ -1194,6 +1214,13 @@ schemas:
           - in_person
           - proxy
         x-open-enum: true
+      call:
+        type: string
+        description: The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+        enum:
+          - first
+          - second
+        x-open-enum: true
       proxy_for_person_id:
         type: string
         format: uuid
@@ -1229,6 +1256,7 @@ schemas:
       unit_labels:
         - Ali Veli
       mode: in_person
+      call: first
       proxy_for_person_id: null
       source: desk
       checked_in_at: 2026-03-01T09:00:00Z
@@ -1261,6 +1289,7 @@ schemas:
           unit_labels:
             - Ali Veli
           mode: in_person
+          call: first
           proxy_for_person_id: null
           source: desk
           checked_in_at: 2026-03-01T09:00:00Z

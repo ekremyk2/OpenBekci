@@ -241,7 +241,7 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	c.must(403, owner2, "GET", base("/agenda-items/"+item1+"/poll/answers"), "")
 
 	// the session: nobody present, then QR and desk check-in; the per-person cap holds p1 to one vote
-	c.must(200, mgr, "POST", base(mpath+":start"), ``)
+	c.must(200, mgr, "POST", base(mpath+":open-first-call"), ``)
 	q := c.must(200, mgr, "GET", base(mpath+"/quorum"), "")
 	if gnum(q, "present_count") != 0 || q["reached"] != false || gstr(q, "call") != "first" || gnum(q, "eligible_count") != 5 {
 		t.Fatalf("quorum before anybody arrives = %v", q)

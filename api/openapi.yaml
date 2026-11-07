@@ -3930,7 +3930,7 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/meetings/{meeting_id}:start:
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
     parameters:
       - $ref: '#/components/parameters/OrgId-2'
       - name: meeting_id
@@ -3941,10 +3941,57 @@ paths:
           type: string
           format: uuid
     post:
-      operationId: governance.startMeeting
-      summary: Open the session
+      operationId: governance.openFirstCall
+      summary: Open the session at the first call
       description: |-
-        **Release 0.2.** Open the session.
+        **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.openSecondCall
+      summary: Open the second call
+      description: |-
+        **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
 
         Permission: `meetings.manage`.
 
@@ -9061,6 +9108,8 @@ components:
         - call_letter_document_id
         - minutes_document_id
         - called_at
+        - held_call
+        - first_call_failed_at
         - created_at
         - updated_at
         - version
@@ -9127,6 +9176,19 @@ components:
           type: string
           format: date-time
           nullable: true
+        held_call:
+          type: string
+          nullable: true
+          description: The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
+        first_call_failed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the first call was found without quorum and the second call opened.
         created_at:
           type: string
           format: date-time
@@ -9152,6 +9214,8 @@ components:
         call_letter_document_id: null
         minutes_document_id: null
         called_at: null
+        held_call: null
+        first_call_failed_at: null
         created_at: '2026-03-01T09:00:00Z'
         updated_at: '2026-03-01T09:00:00Z'
         version: 1
@@ -9238,6 +9302,8 @@ components:
             call_letter_document_id: null
             minutes_document_id: null
             called_at: null
+            held_call: null
+            first_call_failed_at: null
             created_at: '2026-03-01T09:00:00Z'
             updated_at: '2026-03-01T09:00:00Z'
             version: 1
@@ -9975,6 +10041,7 @@ components:
         - unit_ids
         - unit_labels
         - mode
+        - call
         - proxy_for_person_id
         - source
         - checked_in_at
@@ -10012,6 +10079,13 @@ components:
             - in_person
             - proxy
           x-open-enum: true
+        call:
+          type: string
+          description: The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
         proxy_for_person_id:
           type: string
           format: uuid
@@ -10047,6 +10121,7 @@ components:
         unit_labels:
           - Ali Veli
         mode: in_person
+        call: first
         proxy_for_person_id: null
         source: desk
         checked_in_at: '2026-03-01T09:00:00Z'
@@ -10079,6 +10154,7 @@ components:
             unit_labels:
               - Ali Veli
             mode: in_person
+            call: first
             proxy_for_person_id: null
             source: desk
             checked_in_at: '2026-03-01T09:00:00Z'

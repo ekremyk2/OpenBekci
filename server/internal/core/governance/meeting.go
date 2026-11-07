@@ -46,6 +46,9 @@ type Meeting struct {
 	CallLetterDocumentID *uuid.UUID      `json:"call_letter_document_id"`
 	MinutesDocumentID    *uuid.UUID      `json:"minutes_document_id"`
 	CalledAt             *time.Time      `json:"called_at"`
+	// HeldCall is the sitting that actually took place (first or second); nil until the session is opened.
+	HeldCall          *string    `json:"held_call"`
+	FirstCallFailedAt *time.Time `json:"first_call_failed_at"`
 	CreatedAt            time.Time       `json:"created_at"`
 	UpdatedAt            time.Time       `json:"updated_at"`
 	Version              int             `json:"version"`
@@ -55,17 +58,21 @@ type Meeting struct {
 }
 
 const meetingColumns = `id, org_id, site_id, kind, scope, title, scheduled_at, second_call_at, location, status, eligibility_snapshot, settings_snapshot,
-	call_letter_document_id, minutes_document_id, minutes_file_id, called_at, created_at, updated_at, version`
+	call_letter_document_id, minutes_document_id, minutes_file_id, called_at, held_call, first_call_failed_at, created_at, updated_at, version`
 
 func scanMeeting(row pgx.Row) (Meeting, error) {
 	var m Meeting
 	var snap, set []byte
 	err := row.Scan(&m.ID, &m.OrgID, &m.SiteID, &m.Kind, &m.Scope, &m.Title, &m.ScheduledAt, &m.SecondCallAt, &m.Location, &m.Status, &snap, &set,
-		&m.CallLetterDocumentID, &m.MinutesDocumentID, &m.minutesFileID, &m.CalledAt, &m.CreatedAt, &m.UpdatedAt, &m.Version)
+		&m.CallLetterDocumentID, &m.MinutesDocumentID, &m.minutesFileID, &m.CalledAt, &m.HeldCall, &m.FirstCallFailedAt, &m.CreatedAt, &m.UpdatedAt, &m.Version)
 	m.ScheduledAt, m.SecondCallAt, m.CreatedAt, m.UpdatedAt = m.ScheduledAt.UTC(), m.SecondCallAt.UTC(), m.CreatedAt.UTC(), m.UpdatedAt.UTC()
 	if m.CalledAt != nil {
 		t := m.CalledAt.UTC()
 		m.CalledAt = &t
+	}
+	if m.FirstCallFailedAt != nil {
+		t := m.FirstCallFailedAt.UTC()
+		m.FirstCallFailedAt = &t
 	}
 	m.EligibilitySnapshot, m.settings = snap, set
 	return m, err
@@ -104,7 +111,7 @@ func (m Meeting) redact(v viewer) Meeting {
 
 func (m Meeting) auditView() map[string]any {
 	return map[string]any{"kind": m.Kind, "scope": m.Scope, "title": m.Title, "scheduled_at": m.ScheduledAt, "second_call_at": m.SecondCallAt,
-		"location": m.Location, "status": m.Status}
+		"location": m.Location, "status": m.Status, "held_call": m.HeldCall}
 }
 
 // MeetingFilter narrows ListMeetings.
@@ -541,7 +548,7 @@ func (s *Service) transition(ctx context.Context, orgID, id uuid.UUID, from []st
 			}
 		}
 		if _, err = tx.Exec(ctx, `UPDATE meeting SET status = $3, updated_at = now(), version = version + 1,
-			started_at = CASE WHEN $3 = 'in_session' THEN now() ELSE started_at END, closed_at = CASE WHEN $3 = 'closed' THEN now() ELSE closed_at END
+			started_at = CASE WHEN $3 = 'in_session' AND started_at IS NULL THEN now() ELSE started_at END, closed_at = CASE WHEN $3 = 'closed' THEN now() ELSE closed_at END
 			WHERE org_id = $1 AND id = $2`, orgID, id, to); err != nil {
 			return err
 		}
@@ -557,9 +564,35 @@ func (s *Service) transition(ctx context.Context, orgID, id uuid.UUID, from []st
 	return out, dbErr(err, "meeting")
 }
 
-// StartMeeting opens the session of a called meeting (the attendance desk opens). It needs meetings.manage.
-func (s *Service) StartMeeting(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
-	return s.transition(ctx, orgID, id, []string{StatusCalled}, StatusInSession, "meeting.start", nil)
+// OpenFirstCall opens the session of a called meeting at its first call (the
+// attendance desk opens). The call held is recorded, never inferred from the
+// clock. It needs meetings.manage.
+func (s *Service) OpenFirstCall(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
+	return s.transition(ctx, orgID, id, []string{StatusCalled}, StatusInSession, "meeting.open_first_call", func(tx pgx.Tx, m Meeting) error {
+		_, err := tx.Exec(ctx, `UPDATE meeting SET held_call = 'first' WHERE org_id = $1 AND id = $2`, orgID, m.ID)
+		return err
+	})
+}
+
+// OpenSecondCall moves a session whose first call failed its quorum to the
+// second call. It is refused while the first call has its quorum; the failure
+// is recorded as first_call_failed_at. Attendance of the first call does not
+// carry over: everybody checks in again. It needs meetings.manage.
+func (s *Service) OpenSecondCall(ctx context.Context, orgID, id uuid.UUID) (Meeting, error) {
+	return s.transition(ctx, orgID, id, []string{StatusInSession}, StatusInSession, "meeting.open_second_call", func(tx pgx.Tx, m Meeting) error {
+		if m.heldCall() != callFirst {
+			return problem.Conflict("the second call is already open")
+		}
+		q, _, _, _, err := s.quorumOf(ctx, tx, m)
+		if err != nil {
+			return err
+		}
+		if q.Reached {
+			return problem.Conflict("the first call reached its quorum; the second call cannot be opened")
+		}
+		_, err = tx.Exec(ctx, `UPDATE meeting SET held_call = 'second', first_call_failed_at = $3 WHERE org_id = $1 AND id = $2`, orgID, m.ID, s.now())
+		return err
+	})
 }
 
 // CloseMeeting closes a session. The decisions go to the absent owners

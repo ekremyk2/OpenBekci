@@ -28,9 +28,10 @@ type Attendance struct {
 	UnitIDs          []uuid.UUID `json:"unit_ids"`
 	UnitLabels       []string    `json:"unit_labels"`
 	Mode             string      `json:"mode"`
+	Call             string      `json:"call"`
 	ProxyForPersonID *uuid.UUID  `json:"proxy_for_person_id"`
 	Source           string      `json:"source"`
-	CheckedInAt      time.Time   `json:"checked_in_at"`
+	CheckedInAt     time.Time   `json:"checked_in_at"`
 	CheckedInBy      *uuid.UUID  `json:"checked_in_by"`
 	CreatedAt        time.Time   `json:"created_at"`
 	UpdatedAt        time.Time   `json:"updated_at"`
@@ -41,12 +42,12 @@ type Attendance struct {
 
 const attendanceSelect = `SELECT a.id, a.org_id, a.meeting_id, a.person_id, p.display_name, a.unit_ids,
 	(SELECT COALESCE(array_agg(u.door_number ORDER BY u.door_number), '{}') FROM unit u WHERE u.org_id = a.org_id AND u.id = ANY(a.unit_ids)),
-	a.mode, a.proxy_for_person_id, a.source, a.checked_in_at, a.checked_in_by, a.created_at, a.updated_at, a.votes, a.share::float8
+	a.mode, a.call, a.proxy_for_person_id, a.source, a.checked_in_at, a.checked_in_by, a.created_at, a.updated_at, a.votes, a.share::float8
 	FROM attendance a JOIN person p ON p.org_id = a.org_id AND p.id = a.person_id`
 
 func scanAttendance(row pgx.Row) (Attendance, error) {
 	var a Attendance
-	err := row.Scan(&a.ID, &a.OrgID, &a.MeetingID, &a.PersonID, &a.PersonName, &a.UnitIDs, &a.UnitLabels, &a.Mode, &a.ProxyForPersonID, &a.Source,
+	err := row.Scan(&a.ID, &a.OrgID, &a.MeetingID, &a.PersonID, &a.PersonName, &a.UnitIDs, &a.UnitLabels, &a.Mode, &a.Call, &a.ProxyForPersonID, &a.Source,
 		&a.CheckedInAt, &a.CheckedInBy, &a.CreatedAt, &a.UpdatedAt, &a.votes, &a.share)
 	a.CheckedInAt, a.CreatedAt, a.UpdatedAt = a.CheckedInAt.UTC(), a.CreatedAt.UTC(), a.UpdatedAt.UTC()
 	return a, err
@@ -66,9 +67,14 @@ func (m Meeting) rules() Settings {
 	return set
 }
 
-// callName says which call the meeting is at: the second once its time has come.
-func (m Meeting) callName(now time.Time) string {
-	return CallOf(!now.Before(m.SecondCallAt))
+// heldCall is the sitting that took place, recorded by the open-first-call and
+// open-second-call transitions and never read from the clock; before the
+// session opens it is the first.
+func (m Meeting) heldCall() string {
+	if m.HeldCall != nil {
+		return *m.HeldCall
+	}
+	return callFirst
 }
 
 // presence is who is in the room, with the per-person cap applied.
@@ -78,8 +84,8 @@ type presence struct {
 	People int
 }
 
-func loadPresence(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID, snap Snapshot, set Settings) (presence, error) {
-	rows, err := tx.Query(ctx, `SELECT person_id, votes, share::float8 FROM attendance WHERE org_id = $1 AND meeting_id = $2 ORDER BY checked_in_at, id`, orgID, meetingID)
+func loadPresence(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID, call string, snap Snapshot, set Settings) (presence, error) {
+	rows, err := tx.Query(ctx, `SELECT person_id, votes, share::float8 FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $3 ORDER BY checked_in_at, id`, orgID, meetingID, call)
 	if err != nil {
 		return presence{}, err
 	}
@@ -133,12 +139,12 @@ func (s *Service) quorumOf(ctx context.Context, tx pgx.Tx, m Meeting) (Quorum, Q
 		return Quorum{}, QuorumResult{}, presence{}, snap, problem.Conflict("the meeting has not been called yet")
 	}
 	set := m.rules()
-	pr, err := loadPresence(ctx, tx, m.OrgID, m.ID, snap, set)
+	call := m.heldCall()
+	pr, err := loadPresence(ctx, tx, m.OrgID, m.ID, call, snap, set)
 	if err != nil {
 		return Quorum{}, QuorumResult{}, pr, snap, err
 	}
 	now := s.now().UTC()
-	call := m.callName(now)
 	res := EvalQuorum(set.Quorum, call, snap.Total(), pr.Capped)
 	return Quorum{MeetingID: m.ID, Call: call, PresentCount: pr.Capped.Votes, EligibleCount: snap.TotalVotes, PresentShare: pr.Capped.Share, EligibleShare: snap.TotalShare,
 		RequiredByCountPct: res.RequiredCountPct, RequiredBySharePct: res.RequiredSharePct, Reached: res.Reached, AsOf: now}, res, pr, snap, nil
@@ -216,15 +222,15 @@ type AttendanceCreate struct {
 }
 
 func attendanceOpen(m Meeting) error {
-	if m.Status != StatusCalled && m.Status != StatusInSession {
-		return problem.Conflict("attendance can only be recorded for a called meeting that has not closed")
+	if m.Status != StatusInSession || m.HeldCall == nil {
+		return problem.Conflict("attendance is recorded while the session is open: open the first call first")
 	}
 	return nil
 }
 
-// represented returns the units already represented in the meeting.
-func represented(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID) (map[uuid.UUID]bool, error) {
-	rows, err := tx.Query(ctx, `SELECT unnest(unit_ids) FROM attendance WHERE org_id = $1 AND meeting_id = $2`, orgID, meetingID)
+// represented returns the units already represented at the call held.
+func represented(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID, call string) (map[uuid.UUID]bool, error) {
+	rows, err := tx.Query(ctx, `SELECT unnest(unit_ids) FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $3`, orgID, meetingID, call)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +287,8 @@ func (s *Service) insertAttendance(ctx context.Context, tx pgx.Tx, m Meeting, sc
 			return Attendance{}, problem.Validation(problem.Field{Field: "unit_ids", Code: "invalid_value", Params: map[string]any{"reason": "unit_not_voted_by_this_owner"}})
 		}
 	}
-	already, err := represented(ctx, tx, m.OrgID, m.ID)
+	call := m.heldCall()
+	already, err := represented(ctx, tx, m.OrgID, m.ID, call)
 	if err != nil {
 		return Attendance{}, err
 	}
@@ -293,8 +300,8 @@ func (s *Service) insertAttendance(ctx context.Context, tx pgx.Tx, m Meeting, sc
 	w := snap.WeightOf(owner, units)
 	if in.Mode == "proxy" {
 		var held ProxyHeld
-		if err := tx.QueryRow(ctx, `SELECT count(*), COALESCE(sum(votes), 0) FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND person_id = $3 AND mode = 'proxy'`,
-			m.OrgID, m.ID, holder).Scan(&held.Grantors, &held.Votes); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT count(*), COALESCE(sum(votes), 0) FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $4 AND person_id = $3 AND mode = 'proxy'`,
+			m.OrgID, m.ID, holder, call).Scan(&held.Grantors, &held.Votes); err != nil {
 			return Attendance{}, err
 		}
 		if reason := CheckProxyCap(set, snap.UnitCount, snap.TotalVotes, held, w.Votes); reason != "" {
@@ -302,8 +309,8 @@ func (s *Service) insertAttendance(ctx context.Context, tx pgx.Tx, m Meeting, sc
 		}
 	}
 	aid := newID()
-	if _, err := tx.Exec(ctx, `INSERT INTO attendance (id, org_id, site_id, meeting_id, person_id, unit_ids, mode, proxy_for_person_id, source, votes, share, checked_in_by)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`, aid, m.OrgID, m.SiteID, m.ID, holder, units, in.Mode, in.ProxyForPersonID, source, w.Votes, w.Share, principalID(ctx)); err != nil {
+	if _, err := tx.Exec(ctx, `INSERT INTO attendance (id, org_id, site_id, meeting_id, person_id, unit_ids, mode, proxy_for_person_id, source, votes, share, checked_in_by, call)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`, aid, m.OrgID, m.SiteID, m.ID, holder, units, in.Mode, in.ProxyForPersonID, source, w.Votes, w.Share, principalID(ctx), call); err != nil {
 		if tenancy.IsUnique(err, "attendance_one_per_represented") {
 			return Attendance{}, problem.Conflict("this person is already recorded for this owner")
 		}
@@ -352,7 +359,7 @@ func (s *Service) RemoveAttendance(ctx context.Context, orgID, meetingID, attend
 		if err := attendanceOpen(m); err != nil {
 			return err
 		}
-		a, err := scanAttendance(tx.QueryRow(ctx, attendanceSelect+` WHERE a.org_id = $1 AND a.meeting_id = $2 AND a.id = $3`, orgID, meetingID, attendanceID))
+		a, err := scanAttendance(tx.QueryRow(ctx, attendanceSelect+` WHERE a.org_id = $1 AND a.meeting_id = $2 AND a.id = $3 AND a.call = $4`, orgID, meetingID, attendanceID, m.heldCall()))
 		if errors.Is(err, pgx.ErrNoRows) {
 			return problem.NotFound("no such attendance record")
 		}
@@ -385,6 +392,9 @@ func (s *Service) CheckIn(ctx context.Context, orgID, meetingID uuid.UUID, token
 		if err != nil {
 			return err
 		}
+		if err := attendanceOpen(m); err != nil {
+			return err
+		}
 		var person uuid.UUID
 		err = tx.QueryRow(ctx, `SELECT person_id FROM attendance_token WHERE org_id = $1 AND meeting_id = $2 AND token = $3`, orgID, meetingID, token).Scan(&person)
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -393,7 +403,7 @@ func (s *Service) CheckIn(ctx context.Context, orgID, meetingID uuid.UUID, token
 		if err != nil {
 			return err
 		}
-		existing, err := scanAttendance(tx.QueryRow(ctx, attendanceSelect+` WHERE a.org_id = $1 AND a.meeting_id = $2 AND a.person_id = $3 AND a.mode = 'in_person'`, orgID, meetingID, person))
+		existing, err := scanAttendance(tx.QueryRow(ctx, attendanceSelect+` WHERE a.org_id = $1 AND a.meeting_id = $2 AND a.call = $4 AND a.person_id = $3 AND a.mode = 'in_person'`, orgID, meetingID, person, m.heldCall()))
 		if err == nil {
 			out = existing
 			return nil
@@ -406,7 +416,7 @@ func (s *Service) CheckIn(ctx context.Context, orgID, meetingID uuid.UUID, token
 			return err
 		}
 		owner, _ := snap.Owner(person)
-		already, err := represented(ctx, tx, orgID, meetingID)
+		already, err := represented(ctx, tx, orgID, meetingID, m.heldCall())
 		if err != nil {
 			return err
 		}
@@ -435,7 +445,7 @@ func (s *Service) sheetData(ctx context.Context, tx pgx.Tx, m Meeting) (Attendan
 	if err != nil {
 		return AttendanceSheetData{}, err
 	}
-	rows, err := tx.Query(ctx, attendanceSelect+` WHERE a.org_id = $1 AND a.meeting_id = $2 ORDER BY a.checked_in_at, a.id`, m.OrgID, m.ID)
+	rows, err := tx.Query(ctx, attendanceSelect+` WHERE a.org_id = $1 AND a.meeting_id = $2 AND a.call = $3 ORDER BY a.checked_in_at, a.id`, m.OrgID, m.ID, m.heldCall())
 	if err != nil {
 		return AttendanceSheetData{}, err
 	}
@@ -679,7 +689,7 @@ func (s *Service) GetMyMeeting(ctx context.Context, orgID, meetingID uuid.UUID) 
 				return err
 			}
 		}
-		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND (person_id = $3 OR proxy_for_person_id = $3))`, orgID, meetingID, me).Scan(&out.CheckedIn); err != nil {
+		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM attendance WHERE org_id = $1 AND meeting_id = $2 AND call = $4 AND (person_id = $3 OR proxy_for_person_id = $3))`, orgID, meetingID, me, m.heldCall()).Scan(&out.CheckedIn); err != nil {
 			return err
 		}
 		prows, err := tx.Query(ctx, `SELECT a.id, a.title, COALESCE((SELECT array_agg(pa.unit_id) FROM poll_answer pa WHERE pa.org_id = a.org_id AND pa.agenda_item_id = a.id AND pa.answered_by = $3), '{}')

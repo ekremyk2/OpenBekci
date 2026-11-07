@@ -49,7 +49,7 @@ func (s *Service) evaluate(ctx context.Context, tx pgx.Tx, m Meeting, a AgendaIt
 		return HintUndetermined, nil
 	}
 	set := m.rules()
-	pr, err := loadPresence(ctx, tx, m.OrgID, m.ID, snap, set)
+	pr, err := loadPresence(ctx, tx, m.OrgID, m.ID, m.heldCall(), snap, set)
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +58,7 @@ func (s *Service) evaluate(ctx context.Context, tx pgx.Tx, m Meeting, a AgendaIt
 		topic = *a.Topic
 	}
 	rule := set.RuleFor(topic)
-	return EvalThreshold(rule.Rule, c, Basis{Eligible: snap.Total(), Present: pr.Capped, Call: m.callName(s.now()), NoQuorumSecondCall: !set.Quorum.SecondCallRequiresQuorum}), nil
+	return EvalThreshold(rule.Rule, c, Basis{Eligible: snap.Total(), Present: pr.Capped, Call: m.heldCall(), NoQuorumSecondCall: !set.Quorum.SecondCallRequiresQuorum}), nil
 }
 
 func loadVoteCount(ctx context.Context, tx pgx.Tx, orgID, itemID uuid.UUID) (VoteCount, Counts, bool, error) {
