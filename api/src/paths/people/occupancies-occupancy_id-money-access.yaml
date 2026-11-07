@@ -1,0 +1,59 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: occupancy_id
+    in: path
+    required: true
+    description: Id of the occupancy.
+    schema:
+      type: string
+      format: uuid
+put:
+  operationId: people.setMoneyAccess
+  summary: Grant or withdraw money visibility for a household member
+  description: |-
+    **Release 0.1.** Callable by the owner or tenant of the same unit side (S3) and by managers.
+
+    Permission: `occupancies.grant_money`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.grant_money
+    site_manager:
+      - occupancies.grant_money
+    owner:
+      - occupancies.grant_money
+    tenant:
+      - occupancies.grant_money
+  x-idempotent: optional
+  x-stability: stable
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/MoneyAccessSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Occupancy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,29 @@
+get:
+  operationId: platform.getBackupStatus
+  summary: Backup status marker
+  description: |-
+    **Release 0.1.** Backup status marker.
+
+    Permission: `platform.read`.
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/BackupStatus
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

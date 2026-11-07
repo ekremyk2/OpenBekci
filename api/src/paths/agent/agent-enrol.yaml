@@ -1,0 +1,35 @@
+post:
+  operationId: agent.enrol
+  summary: Enrol an agent with a one-time token
+  description: |-
+    **Release 0.3.** The one-time token is the credential (10 per minute per IP). An unknown, expired or used token answers one identical 404 body. Re-enrolling needs a new token (`access.reenrolAgent`).
+
+    Problems: `not_found` (404), `rate_limited` (429), `conflict` (409).
+  tags:
+    - agent
+  security: []
+  x-idempotent: optional
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/access.yaml#/schemas/AgentEnrolRequest
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentEnrolResponse
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,21 @@
+get:
+  operationId: instance.getInstance
+  summary: Instance information (authenticated)
+  tags: [instance]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-stability: stable
+  x-openbekci-roles:
+    any_authenticated: []
+  responses:
+    '200':
+      description: The discovery document plus policies.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/instance.yaml#/schemas/Instance'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

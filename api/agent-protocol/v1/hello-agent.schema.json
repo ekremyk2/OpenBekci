@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/hello-agent.schema.json",
+  "title": "hello payload, agent to server (always the first message of a session)",
+  "type": "object",
+  "required": [
+    "from",
+    "agent_id",
+    "agent_version",
+    "protocol_versions",
+    "snapshot_version",
+    "config_version",
+    "drivers",
+    "queue_depth"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "from": {
+      "const": "agent"
+    },
+    "agent_id": {
+      "$ref": "defs.schema.json#/$defs/uuid"
+    },
+    "agent_version": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "protocol_versions": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "snapshot_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "config_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "drivers": {
+      "type": "array",
+      "items": {
+        "$ref": "defs.schema.json#/$defs/driver_state"
+      }
+    },
+    "queue_depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "clock_offset_ms": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    }
+  }
+}

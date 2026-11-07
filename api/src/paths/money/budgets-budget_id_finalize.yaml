@@ -1,0 +1,61 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: budget_id
+    in: path
+    required: true
+    description: Id of the budget.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: money.finalizeBudget
+  summary: Mark a budget final
+  description: |-
+    **Release 0.1.** From release 0.2 a decision can do this through `governance.applyDecision`.
+
+    Permission: `money.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.manage
+    site_manager:
+      - money.manage
+    board_member:
+      - money.manage
+    accountant:
+      - money.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/BudgetFinalize
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Budget
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -50,5 +50,9 @@ linters:
       - path: _test\.go
         linters:
           - gosec
+      # integration tests in core modules open a throwaway database through dbtest
+      - path: internal/core/.*_test\.go
+        linters:
+          - depguard
     paths:
       - internal/platform/db/dbgen

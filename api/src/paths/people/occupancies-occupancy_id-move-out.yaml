@@ -1,0 +1,57 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: occupancy_id
+    in: path
+    required: true
+    description: Id of the occupancy.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: people.moveOut
+  summary: Record a move-out or sale
+  description: |-
+    **Release 0.1.** Ends the occupancy at `as_of`, files the closing statement and the debt / no-debt certificate (O8), and records the disposition: remaining debt stays on the person unless overridden (audited).
+
+    Permission: `people.move_out`.
+
+    Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.move_out
+    site_manager:
+      - people.move_out
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/MoveOutCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/MoveOut
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

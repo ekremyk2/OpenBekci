@@ -1,0 +1,70 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listLateFeeAccruals
+  summary: List accrued late fees per unit side
+  description: |-
+    **Release 0.1.** List accrued late fees per unit side.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: "Debtor side of the unit: owner or tenant."
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - name: nonzero
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `nonzero`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/LateFeeAccrualList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

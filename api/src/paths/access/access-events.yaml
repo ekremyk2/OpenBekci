@@ -1,0 +1,86 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: access.listAccessEvents
+  summary: List access events
+  description: |-
+    **Release 0.3.** Newest first. `after` (a `sync_seq`, exclusive) switches to feed order (oldest first) for pollers; `next_cursor` then continues the feed.
+
+    Permission: `access.view_events`.
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - access.view_events
+    site_manager:
+      - access.view_events
+    board_member:
+      - access.view_events
+    auditor:
+      - access.view_events
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: point_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `point_id`.
+    - name: decision
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - allow
+          - deny
+          - manual_open
+      description: Filter by `decision`.
+    - name: reason
+      in: query
+      schema:
+        type: string
+      description: Filter by `reason`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: End of the range (inclusive).
+    - name: plate
+      in: query
+      schema:
+        type: string
+      description: Filter by `plate`.
+    - name: after
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Filter by `after`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AccessEventList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

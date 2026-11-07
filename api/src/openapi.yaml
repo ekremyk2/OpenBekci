@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: OpenBekci API
+  version: 0.1.0
+  description: |
+    HTTP API of an OpenBekci instance (residential site management).
+    Conventions: see api/README.md. /v1 is not frozen until 1.0.
+  license:
+    name: AGPL-3.0-or-later
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+servers:
+  - url: /
+tags:
+  - name: instance
+    description: Instance discovery and information.
+  - name: auth
+    description: Sign-in, tokens and re-authentication.
+  - name: me
+    description: The signed-in user and their sessions.
+paths:
+  /.well-known/openbekci.json:
+    $ref: './paths/well-known.yaml'
+  /v1/instance:
+    $ref: './paths/instance.yaml'
+  /v1/auth/session:
+    $ref: './paths/auth-session.yaml'
+  /v1/auth/token:
+    $ref: './paths/auth-token.yaml'
+  /v1/auth/token/refresh:
+    $ref: './paths/auth-token-refresh.yaml'
+  /v1/auth/otp:
+    $ref: './paths/auth-otp.yaml'
+  /v1/auth/magic-link:
+    $ref: './paths/auth-magic-link.yaml'
+  /v1/auth/magic-link/consume:
+    $ref: './paths/auth-magic-link-consume.yaml'
+  /v1/auth/reauth:
+    $ref: './paths/auth-reauth.yaml'
+  /v1/auth/password:
+    $ref: './paths/auth-password.yaml'
+  /v1/me:
+    $ref: './paths/me.yaml'
+  /v1/me/sessions:
+    $ref: './paths/me-sessions.yaml'
+  /v1/me/sessions/{id}:
+    $ref: './paths/me-sessions-id.yaml'
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: obk_session
+      description: Browser session cookie issued by the login endpoints.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token (mobile app sessions, later API keys).
+  parameters:
+    Limit:
+      $ref: './components/common.yaml#/parameters/Limit'
+    Cursor:
+      $ref: './components/common.yaml#/parameters/Cursor'
+    IdempotencyKey:
+      $ref: './components/common.yaml#/parameters/IdempotencyKey'
+  responses:
+    Problem:
+      $ref: './components/problem.yaml#/responses/Problem'
+  schemas:
+    Problem:
+      $ref: './components/problem.yaml#/schemas/Problem'
+    ProblemFieldError:
+      $ref: './components/problem.yaml#/schemas/ProblemFieldError'
+    Money:
+      $ref: './components/common.yaml#/schemas/Money'
+    PageInfo:
+      $ref: './components/common.yaml#/schemas/PageInfo'
+    DiscoveryDocument:
+      $ref: './components/instance.yaml#/schemas/DiscoveryDocument'
+    MinAppVersion:
+      $ref: './components/instance.yaml#/schemas/MinAppVersion'
+    AuthMethod:
+      $ref: './components/instance.yaml#/schemas/AuthMethod'
+    PushInfo:
+      $ref: './components/instance.yaml#/schemas/PushInfo'
+    Branding:
+      $ref: './components/instance.yaml#/schemas/Branding'
+    RelayEnrollment:
+      $ref: './components/instance.yaml#/schemas/RelayEnrollment'
+    InstancePolicies:
+      $ref: './components/instance.yaml#/schemas/InstancePolicies'
+    Instance:
+      $ref: './components/instance.yaml#/schemas/Instance'
+    AuthUser:
+      $ref: './components/auth.yaml#/schemas/AuthUser'
+    Credentials:
+      $ref: './components/auth.yaml#/schemas/Credentials'
+    SessionResponse:
+      $ref: './components/auth.yaml#/schemas/SessionResponse'
+    TokenResponse:
+      $ref: './components/auth.yaml#/schemas/TokenResponse'
+    AuthResult:
+      $ref: './components/auth.yaml#/schemas/AuthResult'
+    RefreshRequest:
+      $ref: './components/auth.yaml#/schemas/RefreshRequest'
+    OtpRequest:
+      $ref: './components/auth.yaml#/schemas/OtpRequest'
+    MagicLinkRequest:
+      $ref: './components/auth.yaml#/schemas/MagicLinkRequest'
+    MagicLinkConsumeRequest:
+      $ref: './components/auth.yaml#/schemas/MagicLinkConsumeRequest'
+    ReauthPassword:
+      $ref: './components/auth.yaml#/schemas/ReauthPassword'
+    ReauthSmsOtp:
+      $ref: './components/auth.yaml#/schemas/ReauthSmsOtp'
+    ReauthRequest:
+      $ref: './components/auth.yaml#/schemas/ReauthRequest'
+    ReauthResponse:
+      $ref: './components/auth.yaml#/schemas/ReauthResponse'
+    ChangePasswordRequest:
+      $ref: './components/auth.yaml#/schemas/ChangePasswordRequest'
+    RoleGrant:
+      $ref: './components/auth.yaml#/schemas/RoleGrant'
+    OrgAccess:
+      $ref: './components/auth.yaml#/schemas/OrgAccess'
+    Me:
+      $ref: './components/auth.yaml#/schemas/Me'
+    Session:
+      $ref: './components/auth.yaml#/schemas/Session'
+    SessionList:
+      $ref: './components/auth.yaml#/schemas/SessionList'
+    MeUser:
+      $ref: './components/auth.yaml#/schemas/MeUser'
+    PermissionGrant:
+      $ref: './components/auth.yaml#/schemas/PermissionGrant'
+    MeSite:
+      $ref: './components/auth.yaml#/schemas/MeSite'

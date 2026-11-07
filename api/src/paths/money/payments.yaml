@@ -1,0 +1,153 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listPayments
+  summary: List payments
+  description: |-
+    **Release 0.1.** List payments.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: "Debtor side of the unit: owner or tenant."
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - pending_declared
+          - confirmed
+          - refunded
+          - voided
+      description: Filter by `status`.
+    - name: method
+      in: query
+      schema:
+        type: string
+      description: Filter by `method`.
+    - name: receipt_no
+      in: query
+      schema:
+        type: string
+      description: Filter by `receipt_no`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: End of the range (inclusive).
+    - name: asset_account_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `asset_account_id`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/PaymentList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: money.createPayment
+  summary: Record a payment
+  description: |-
+    **Release 0.1.** Cash (with a gap-free receipt number) or a bank transfer entered by hand. The response shows the allocation actually applied.
+
+    Permission: `payments.record`.
+
+    Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.record
+    site_manager:
+      - payments.record
+    board_member:
+      - payments.record
+    accountant:
+      - payments.record
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/PaymentCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Payment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,28 @@
+post:
+  operationId: auth.requestOtp
+  summary: Send a sign-in code by SMS
+  description: |
+    Sends a six-digit code (valid 5 minutes, 5 attempts) when an account has
+    this phone number. The answer is the same whether or not it does.
+    503 `sms_unavailable` when the instance has no SMS gateway. Limited per
+    phone number and per client address (429 `rate_limited`).
+  tags: [auth]
+  security: []
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/auth.yaml#/schemas/OtpRequest'
+  responses:
+    '202':
+      description: Accepted; a code was sent if the number is registered.
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '503':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

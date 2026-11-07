@@ -1,0 +1,57 @@
+post:
+  operationId: auth.createSession
+  summary: Sign in and start a browser session
+  description: |
+    `method` is `password`, `sms_otp` or `magic_link`; `identifier` is the
+    email address or phone number. For `password` and for `sms_otp` with a
+    `code` this verifies the credentials and sets the session cookie `obk_session`
+    (httpOnly, SameSite=Lax, Secure except in development). `sms_otp` without
+    `code` sends a code by SMS and `magic_link` emails a link (`client`
+    selects the web or `openbekci://` link); both answer 202 whether or not
+    the account exists. Wrong credentials
+    of any kind answer 401 `invalid_grant`; repeated failures lock the
+    identifier out (429 `rate_limited` with `Retry-After`).
+  tags: [auth]
+  security: []
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/auth.yaml#/schemas/Credentials'
+  responses:
+    '200':
+      description: Signed in. The cookie is in the `Set-Cookie` header.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/auth.yaml#/schemas/SessionResponse'
+    '202':
+      description: A code or link was sent if the account exists. No body.
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'
+delete:
+  operationId: auth.deleteSession
+  summary: Sign out the current session
+  description: Revokes the current session and clears the cookie (same as `DELETE /v1/me/sessions/current`).
+  tags: [auth]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: optional
+  responses:
+    '204':
+      description: Signed out.
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

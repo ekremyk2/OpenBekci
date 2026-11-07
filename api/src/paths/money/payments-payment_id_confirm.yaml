@@ -1,0 +1,61 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: payment_id
+    in: path
+    required: true
+    description: Id of the payment.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: money.confirmPayment
+  summary: Confirm a declared payment
+  description: |-
+    **Release 0.1.** Confirm a declared payment.
+
+    Permission: `payments.record`.
+
+    Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.record
+    site_manager:
+      - payments.record
+    board_member:
+      - payments.record
+    accountant:
+      - payments.record
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/PaymentConfirm
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Payment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

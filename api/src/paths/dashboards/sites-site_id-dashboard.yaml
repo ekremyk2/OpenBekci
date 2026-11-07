@@ -1,0 +1,50 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: dashboards.getSiteDashboard
+  summary: Site dashboard
+  description: |-
+    **Release 0.1.** Site dashboard.
+
+    Permission: `dashboard.site`.
+  tags:
+    - dashboards
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - dashboard.site
+    site_manager:
+      - dashboard.site
+    board_member:
+      - dashboard.site
+    auditor:
+      - dashboard.site
+    accountant:
+      - dashboard.site
+    staff:
+      - dashboard.site
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/dashboards.yaml#/schemas/SiteDashboard
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -116,6 +116,13 @@ func (d *DB) InTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) er
 	return inTx(ctx, d.app, orgID.String(), fn)
 }
 
+// InAppTx runs fn in a transaction on the RLS-subject pool with no tenant
+// context. Use it only for tables that are not tenant data (instance_setting,
+// idempotency_key); tenant tables return no rows without a tenant context.
+func (d *DB) InAppTx(ctx context.Context, fn func(pgx.Tx) error) error {
+	return inTx(ctx, d.app, "", fn)
+}
+
 // InPlatformTx runs fn in a transaction on the BYPASSRLS platform pool. Only
 // platformadmin and the cross-organization parts of GET /v1/me may use it.
 func (d *DB) InPlatformTx(ctx context.Context, fn func(pgx.Tx) error) error {

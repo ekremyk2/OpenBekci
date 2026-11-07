@@ -1,0 +1,52 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.listJobs
+  summary: List background jobs
+  description: |-
+    **Release 0.1.** List background jobs.
+
+    Permission: `jobs.read`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - jobs.read
+  x-stability: stable
+  parameters:
+    - name: kind
+      in: query
+      schema:
+        type: string
+      description: Filter by `kind`.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - queued
+          - running
+          - succeeded
+          - failed
+          - cancelled
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/JobList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

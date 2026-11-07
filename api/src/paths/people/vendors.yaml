@@ -1,0 +1,106 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: people.listVendors
+  summary: List vendors
+  description: |-
+    **Release 0.1.** Cursor-paginated list of vendors.
+
+    Permission: `vendors.read`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vendors.read
+    site_manager:
+      - vendors.read
+    board_member:
+      - vendors.read
+    auditor:
+      - vendors.read
+    accountant:
+      - vendors.read
+    staff:
+      - vendors.read
+  x-stability: stable
+  parameters:
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - name: archived
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `archived`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/VendorList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: people.createVendor
+  summary: Create vendor
+  description: |-
+    **Release 0.1.** Creates a vendor.
+
+    Permission: `vendors.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vendors.manage
+    site_manager:
+      - vendors.manage
+    board_member:
+      - vendors.manage
+    accountant:
+      - vendors.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/VendorCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/Vendor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
