@@ -5682,8 +5682,7 @@ components:
     SiteIdRequired:
       name: site_id
       in: query
-      required: true
-      description: The site this resource belongs to.
+      description: 'The site this resource belongs to. Required: without it the answer is 422 validation_failed (declared optional so an unauthenticated caller gets 401 first).'
       schema:
         type: string
         format: uuid

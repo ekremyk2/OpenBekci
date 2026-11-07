@@ -5107,7 +5107,7 @@ export interface components {
          *     (served convention; the draft declared it required).
          */
         IfMatch: string;
-        /** @description The site this resource belongs to. */
+        /** @description The site this resource belongs to. Required: without it the answer is 422 validation_failed (declared optional so an unauthenticated caller gets 401 first). */
         SiteIdRequired: string;
         /** @description Client-generated unique key (8..128 chars); mandatory on this operation (`x-idempotent: required`, enforced by the request pipeline after authentication, so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
@@ -8034,9 +8034,9 @@ export interface operations {
     };
     "governance.listMeetings": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required: without it the answer is 422 validation_failed (declared optional so an unauthenticated caller gets 401 first). */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `status`. */
                 status?: string;
                 /** @description Filter by `kind`. */
@@ -9261,9 +9261,9 @@ export interface operations {
     };
     "governance.listDecisions": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required: without it the answer is 422 validation_failed (declared optional so an unauthenticated caller gets 401 first). */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `meeting_id`. */
                 meeting_id?: string;
                 /** @description Filter by `year`. */
@@ -9452,9 +9452,9 @@ export interface operations {
     };
     "governance.listTermReminders": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required: without it the answer is 422 validation_failed (declared optional so an unauthenticated caller gets 401 first). */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `status`. */
                 status?: string;
                 /** @description Page size. */

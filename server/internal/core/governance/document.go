@@ -192,7 +192,7 @@ type msgs struct {
 	minutesTitle, minutesIntro, minutesCall             string
 	minutesQuorum, minutesAtt, minutesItems             string
 	decisionNo, outcome, votes, dissent, noDecision     string
-	chair, secretary, draftNote, outcomes               string
+	chair, secretary, draftNote                         string
 	accepted, rejected, noVote, informed, locationLabel string
 	dateLabel, siteLabel, notVoted                      string
 }

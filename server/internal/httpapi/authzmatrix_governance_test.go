@@ -33,8 +33,6 @@ type govFix struct {
 	att1     uuid.UUID
 }
 
-func (g govFix) path(org authztest.Org, suffix string) string { return orgPath(org, suffix) }
-
 // govSeed seeds a site with owners P1 (unit 1) and P2 (unit 2) and a meeting in
 // the given status. Draft has no snapshot; called has the call data (tokens,
 // notices, poll); in_session adds both owners' attendance, vote counts and an

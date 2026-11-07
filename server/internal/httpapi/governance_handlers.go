@@ -84,8 +84,12 @@ func (s *apiServer) GovernanceListMeetings(ctx context.Context, req gen.Governan
 	if err != nil {
 		return nil, err
 	}
+	siteOf, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	f := governance.MeetingFilter{Status: deref(req.Params.Status), Kind: deref(req.Params.Kind), From: req.Params.From, To: req.Params.To}
-	items, next, err := g.ListMeetings(ctx, req.OrgId, req.Params.SiteId, f, pageOf(req.Params.Limit, req.Params.Cursor))
+	items, next, err := g.ListMeetings(ctx, req.OrgId, siteOf, f, pageOf(req.Params.Limit, req.Params.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -367,7 +371,7 @@ func (s *apiServer) GovernanceNotifyMeetingDecisions(ctx context.Context, req ge
 	if err != nil {
 		return nil, err
 	}
-	dry := req.Params.DryRun != nil && bool(*req.Params.DryRun)
+	dry := req.Params.DryRun != nil && *req.Params.DryRun
 	v, err := g.NotifyMeetingDecisions(ctx, req.OrgId, req.MeetingId, in, dry)
 	if err != nil {
 		return nil, err
@@ -641,8 +645,12 @@ func (s *apiServer) GovernanceListDecisions(ctx context.Context, req gen.Governa
 	if err != nil {
 		return nil, err
 	}
+	siteOf, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
 	f := governance.DecisionFilter{MeetingID: req.Params.MeetingId, Year: req.Params.Year, Outcome: deref(req.Params.Outcome), ConcernsResidents: req.Params.ConcernsResidents, Q: deref(req.Params.Q)}
-	items, next, err := g.ListDecisions(ctx, req.OrgId, req.Params.SiteId, f, pageOf(req.Params.Limit, req.Params.Cursor))
+	items, next, err := g.ListDecisions(ctx, req.OrgId, siteOf, f, pageOf(req.Params.Limit, req.Params.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -723,7 +731,7 @@ func (s *apiServer) GovernanceApplyDecision(ctx context.Context, req gen.Governa
 	if err := json.Unmarshal(raw, &in); err != nil {
 		return nil, problem.BadRequest("the request body could not be read")
 	}
-	dry := req.Params.DryRun != nil && bool(*req.Params.DryRun)
+	dry := req.Params.DryRun != nil && *req.Params.DryRun
 	v, err := g.ApplyDecision(ctx, req.OrgId, req.DecisionId, in, dry)
 	if err != nil {
 		return nil, err
@@ -737,10 +745,21 @@ func (s *apiServer) GovernanceListTermReminders(ctx context.Context, req gen.Gov
 	if err != nil {
 		return nil, err
 	}
-	items, next, err := g.ListTermReminders(ctx, req.OrgId, req.Params.SiteId, deref(req.Params.Status), pageOf(req.Params.Limit, req.Params.Cursor))
+	siteOf, err := needSite(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := g.ListTermReminders(ctx, req.OrgId, siteOf, deref(req.Params.Status), pageOf(req.Params.Limit, req.Params.Cursor))
 	if err != nil {
 		return nil, err
 	}
 	out, err := listOf[gen.TermReminderList](items, next)
 	return gen.GovernanceListTermReminders200JSONResponse(out), err
+}
+
+func needSite(p *gen.SiteIdRequired) (uuid.UUID, error) {
+	if p == nil {
+		return uuid.Nil, problem.Validation(problem.Field{Field: "site_id", Code: "required"})
+	}
+	return *p, nil
 }
