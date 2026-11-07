@@ -653,6 +653,19 @@ func (s *apiServer) CommunitySearchGatePlates(ctx context.Context, req gen.Commu
 	return gen.CommunitySearchGatePlates200JSONResponse(out), err
 }
 
+func (s *apiServer) GateSearchUnits(ctx context.Context, req gen.GateSearchUnitsRequestObject) (gen.GateSearchUnitsResponseObject, error) {
+	c, err := s.cm()
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := c.SearchGateUnits(ctx, req.OrgId, req.Params.SiteId, req.Params.Q, guardToken(req.Params.GuardSessionHeader), pageOf(req.Params.Limit, req.Params.Cursor))
+	if err != nil {
+		return nil, err
+	}
+	out, err := listOf[gen.GateUnitList](items, next)
+	return gen.GateSearchUnits200JSONResponse(out), err
+}
+
 func (s *apiServer) CommunityListGateDeliveries(ctx context.Context, req gen.CommunityListGateDeliveriesRequestObject) (gen.CommunityListGateDeliveriesResponseObject, error) {
 	c, err := s.cm()
 	if err != nil {

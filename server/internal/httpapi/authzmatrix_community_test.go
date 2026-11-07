@@ -242,6 +242,9 @@ func init() {
 			w.NewVehicle(t, f)
 			return mreq{method: "GET", path: orgPath(org, "/gate/plates?site_id="+f.Site.String()+"&q=34TST")}
 		}},
+		"gate.searchUnits": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, "/gate/units?site_id="+w.NewSite(t, org).Site.String()+"&q=1")}
+		}},
 		"community.listGateDeliveries": {perms: p(community.PermGateOperate), status: 401 /* a guard operation needs a guard session: guard_session_required */, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: siteQ(org, w.NewSite(t, org), "/gate/deliveries")}
 		}},

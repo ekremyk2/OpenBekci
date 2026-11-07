@@ -1,0 +1,50 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: gate.searchUnits
+  summary: Find a unit by door number or block
+  description: |-
+    **Release 0.3.** The booth's unit picker for walk-ins and parcels: guards hold no `units.read`, so this is their way to find a unit. It matches the door number or the block name and returns the id, door number and block name only; no occupants, areas, shares or other unit data. Needs a guard session.
+
+    Problems: `guard_session_required` and `guard_session_expired` (401).
+
+    Permission: `gate.operate`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - gate.operate
+    site_manager:
+      - gate.operate
+    guard:
+      - gate.operate
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Part of a door number or block name.
+      required: true
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+    - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/GateUnitList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

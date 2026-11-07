@@ -217,6 +217,8 @@ paths:
     $ref: './paths/community/gate-visitors-entry_id_leave.yaml'
   /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact:
     $ref: './paths/community/gate-visitors-entry_id-call-contact.yaml'
+  /v1/orgs/{org_id}/gate/units:
+    $ref: './paths/community/gate-units.yaml'
   /v1/orgs/{org_id}/gate/plates:
     $ref: './paths/community/gate-plates.yaml'
   /v1/orgs/{org_id}/gate/deliveries:
@@ -551,6 +553,10 @@ components:
       $ref: './components/community.yaml#/schemas/GateDelivery'
     GateDeliveryList:
       $ref: './components/community.yaml#/schemas/GateDeliveryList'
+    GateUnit:
+      $ref: './components/community.yaml#/schemas/GateUnit'
+    GateUnitList:
+      $ref: './components/community.yaml#/schemas/GateUnitList'
     GatePlate:
       $ref: './components/community.yaml#/schemas/GatePlate'
     GatePlateList:

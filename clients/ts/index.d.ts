@@ -2353,6 +2353,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/gate/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Find a unit by door number or block
+         * @description **Release 0.3.** The booth's unit picker for walk-ins and parcels: guards hold no `units.read`, so this is their way to find a unit. It matches the door number or the block name and returns the id, door number and block name only; no occupants, areas, shares or other unit data. Needs a guard session.
+         *
+         *     Problems: `guard_session_required` and `guard_session_expired` (401).
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["gate.searchUnits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/gate/plates": {
         parameters: {
             query?: never;
@@ -4383,7 +4410,7 @@ export interface components {
              * @enum {string}
              */
             source: "pre_registered" | "walk_in" | "recurring";
-            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
+            /** @description The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: uuid */
             decided_by: string | null;
@@ -4511,7 +4538,7 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "revoked" | "expired";
-            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
+            /** @description The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: date-time */
             created_at: string;
@@ -4812,6 +4839,10 @@ export interface components {
         };
         GateAgentStatus: {
             connected: boolean;
+            /** @description Whether the agent has reported recently enough to be trusted with opening a gate. */
+            online: boolean;
+            /** @description Whether the agent's clock disagrees with the server's, so time windows judged on the gate cannot be trusted. */
+            clock_suspect: boolean;
             /** Format: date-time */
             last_seen_at: string | null;
             points: components["schemas"]["GatePoint"][];
@@ -4823,6 +4854,10 @@ export interface components {
             kind: string;
             direction: string;
             enabled: boolean;
+            /** @description Whether the access point's controller is reachable through the agent. */
+            online: boolean;
+            /** @description Whether the access point's clock is suspect; opening it is refused with 409 `clock_suspect`. */
+            clock_suspect: boolean;
         };
         /** @description Everything the booth page shows at once; auto-refreshed. */
         GateConsole: {
@@ -4875,6 +4910,37 @@ export interface components {
          */
         GateDeliveryList: {
             items: components["schemas"]["GateDelivery"][];
+            next_cursor: string | null;
+        };
+        /**
+         * @description A unit as the booth's picker shows it; nothing about who lives there.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "door_number": "A-12",
+         *       "block_name": "A Block"
+         *     }
+         */
+        GateUnit: {
+            /** Format: uuid */
+            id: string;
+            door_number: string;
+            /** @description The block's name; `null` for the hidden block of a single-building site. */
+            block_name: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "door_number": "A-12",
+         *           "block_name": "A Block"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GateUnitList: {
+            items: components["schemas"]["GateUnit"][];
             next_cursor: string | null;
         };
         /**
@@ -9105,6 +9171,45 @@ export interface operations {
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "gate.searchUnits": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Part of a door number or block name. */
+                q: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: {
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateUnitList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

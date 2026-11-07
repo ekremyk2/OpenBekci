@@ -87,13 +87,21 @@ type GatePoint struct {
 	Kind      string    `json:"kind"`
 	Direction string    `json:"direction"`
 	Enabled   bool      `json:"enabled"`
+	// Online is whether the controller is reachable through the agent; ClockSuspect
+	// whether its clock is suspect (opening it is refused with 409 clock_suspect).
+	Online       bool `json:"online"`
+	ClockSuspect bool `json:"clock_suspect"`
 }
 
 // GateAgentStatus is the state of the site's access agent.
 type GateAgentStatus struct {
-	Connected  bool        `json:"connected"`
-	LastSeenAt *time.Time  `json:"last_seen_at"`
-	Points     []GatePoint `json:"points"`
+	Connected bool `json:"connected"`
+	// Online is whether the agent reported recently enough to open a gate;
+	// ClockSuspect whether its clock disagrees with the server's.
+	Online       bool        `json:"online"`
+	ClockSuspect bool        `json:"clock_suspect"`
+	LastSeenAt   *time.Time  `json:"last_seen_at"`
+	Points       []GatePoint `json:"points"`
 }
 
 // GateConsole is everything the booth page shows at once.
@@ -693,6 +701,56 @@ func (s *Service) GetGateVisitorCallContact(ctx context.Context, orgID, entryID 
 		return CallContact{}, throttled
 	}
 	return out, nil
+}
+
+// GateUnit is a unit as the booth's picker shows it: id, door number and block
+// name, nothing about its people.
+type GateUnit struct {
+	ID         uuid.UUID `json:"id"`
+	DoorNumber string    `json:"door_number"`
+	BlockName  *string   `json:"block_name"`
+}
+
+// SearchGateUnits finds units of a site by door number or block name
+// (gate.operate; needs a guard session). Guards hold no units.read, so this is
+// how the booth picks the unit of a walk-in or a parcel.
+func (s *Service) SearchGateUnits(ctx context.Context, orgID, siteID uuid.UUID, q, guardToken string, p tenancy.PageParams) ([]GateUnit, string, error) {
+	limit, after, err := p.Resolve()
+	if err != nil {
+		return nil, "", err
+	}
+	q = strings.TrimSpace(q)
+	if q == "" || len([]rune(q)) > 60 {
+		return nil, "", validation("q", "invalid_value")
+	}
+	var out []GateUnit
+	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		if _, err := s.gateAt(ctx, tx, orgID, siteID, guardToken); err != nil {
+			return err
+		}
+		rows, err := tx.Query(ctx, `SELECT u.id, u.door_number, CASE WHEN b.hidden THEN NULL ELSE b.name END
+			FROM unit u JOIN block b ON b.org_id = u.org_id AND b.id = u.block_id
+			WHERE u.org_id = $1 AND u.site_id = $2 AND u.id > $3 AND u.status = 'active'
+			  AND (u.door_number ILIKE '%' || $4 || '%' OR (NOT b.hidden AND b.name ILIKE '%' || $4 || '%'))
+			ORDER BY u.id LIMIT $5`, orgID, siteID, after, escapeLike(q), limit+1)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var u GateUnit
+			if err := rows.Scan(&u.ID, &u.DoorNumber, &u.BlockName); err != nil {
+				return err
+			}
+			out = append(out, u)
+		}
+		return rows.Err()
+	})
+	if err != nil {
+		return nil, "", tenancy.DBProblem(err, "search units")
+	}
+	items, next := tenancy.Page(out, limit, func(u GateUnit) uuid.UUID { return u.ID })
+	return items, next, nil
 }
 
 // SearchGatePlates looks up registered resident plates (gate.operate): plate
