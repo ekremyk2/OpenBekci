@@ -23,6 +23,22 @@
     "grace_days": 5,
     "rate_bps": 500
   },
+  "lump_payments": [
+    {
+      "covers": "principal",
+      "extra": 3000,
+      "on": "2026-03-20",
+      "side": "tenant",
+      "unit": "A-8"
+    },
+    {
+      "covers": "all",
+      "extra": 20000,
+      "on": "2026-09-20",
+      "side": "owner",
+      "unit": "B-6"
+    }
+  ],
   "occupancies": [
     {
       "correspondent": true,
@@ -531,7 +547,13 @@
       "rates": [
         {
           "amount": 800000,
-          "from": "2026-01-01"
+          "from": "2026-01-01",
+          "to": "2026-07-09"
+        },
+        {
+          "amount": 850000,
+          "decision": "assembly-2026-06-staff-raise",
+          "from": "2026-07-10"
         }
       ],
       "scope": "block:A",
@@ -572,6 +594,24 @@
       ],
       "scope": "block:A",
       "start": "2026-01-01"
+    },
+    {
+      "charge_type": "dues",
+      "default_debtor": "tenant",
+      "due_day": 15,
+      "frequency": "quarterly",
+      "key": {
+        "kind": "equal"
+      },
+      "name": "garden",
+      "rates": [
+        {
+          "amount": 480000,
+          "from": "2026-02-15"
+        }
+      ],
+      "scope": "site",
+      "start": "2026-02-15"
     },
     {
       "charge_type": "utility",

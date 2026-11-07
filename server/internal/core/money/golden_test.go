@@ -61,10 +61,21 @@ type siteJSON struct {
 		Kind          string  `json:"kind"`
 		Person        string  `json:"person"`
 		Correspondent bool    `json:"correspondent"`
+		SharePct      int64   `json:"share_pct"`
 		From          string  `json:"from"`
 		To            *string `json:"to"`
 	} `json:"occupancies"`
 	Plans []planJSON `json:"plans"`
+	// LumpPayments are one-off payments computed on the day: Covers "principal"
+	// pays the principal due plus Extra (which spills into the fee), "all" pays
+	// principal due and the outstanding fee plus Extra (which becomes credit).
+	LumpPayments []struct {
+		Unit   string `json:"unit"`
+		Side   string `json:"side"`
+		On     string `json:"on"`
+		Covers string `json:"covers"`
+		Extra  int64  `json:"extra"`
+	} `json:"lump_payments"`
 	// Tables hold per-unit numbers by door: consumption quantities or amounts.
 	Tables  map[string]map[string]int64 `json:"tables"`
 	Opening []struct {
@@ -144,21 +155,23 @@ func (c *chg) remaining() int64 {
 }
 
 type side struct {
-	unit, kind string
-	charges    []*chg
-	bookings   []latefee.Booking
-	waivers    []latefee.Waiver
-	freezes    []latefee.Freeze
-	feePaid    int64
-	credit     int64
-	lines      []statement.Line
-	monthly    [12]int64
+	unit, kind  string
+	charges     []*chg
+	bookings    []latefee.Booking
+	waivePosted int64 // waiver already shown on the statement
+	freezes     []latefee.Freeze
+	feePaid     int64
+	credit      int64
+	lines       []statement.Line
+	monthly     [12]int64
 }
 
 func (s *side) feeOutstanding() int64 {
 	var b int64
 	for _, bk := range s.bookings {
-		b += bk.Amount.Amount
+		if bk.Kind != latefee.BookingWaiver {
+			b += bk.Amount.Amount
+		}
 	}
 	if o := b - s.feePaid; o > 0 {
 		return o
@@ -210,6 +223,7 @@ type site struct {
 	j      siteJSON
 	tz     *time.Location
 	policy latefee.Policy
+	sched  latefee.PolicySchedule
 	doors  []string
 	ids    map[string]uuid.UUID
 	byID   map[uuid.UUID]string
@@ -240,7 +254,8 @@ func loadSite(t *testing.T) *site {
 	}
 	s := &site{j: j, tz: tz, ids: map[string]uuid.UUID{}, byID: map[uuid.UUID]string{}}
 	s.policy = latefee.Policy{Currency: j.Currency, RateBPSPerMonth: j.LateFee.RateBPS, GraceDays: j.LateFee.GraceDays, Simple: true}
-	if err := s.policy.Validate(); err != nil {
+	s.sched = latefee.Constant(s.policy, time.Date(2000, 1, 1, 0, 0, 0, 0, tz))
+	if err := s.sched.Validate(tz); err != nil {
 		t.Fatal(err)
 	}
 	keys := map[uuid.UUID]string{}
@@ -270,6 +285,27 @@ func (s *site) occupant(unit, kind string, at time.Time) uuid.UUID {
 		}
 	}
 	return uuid.Nil
+}
+
+type coOwner struct {
+	person uuid.UUID
+	pct    int64
+}
+
+// owners lists the owners of a unit on a date with their share_pct (B-2 is
+// co-owned 50/50; its owner-side charges are split between them).
+func (s *site) owners(unit string, at time.Time) []coOwner {
+	d := dayNum(at, s.tz)
+	var out []coOwner
+	for _, o := range s.j.Occupancies {
+		if o.Unit != unit || o.Kind != "owner" {
+			continue
+		}
+		if dayNum(s.date(o.From), s.tz) <= d && (o.To == nil || d <= dayNum(s.date(*o.To), s.tz)) {
+			out = append(out, coOwner{handle("person", o.Person), o.SharePct})
+		}
+	}
+	return out
 }
 
 func (s *site) rat(v string) *big.Rat {
@@ -345,7 +381,7 @@ func (s *site) generate(t *testing.T) ([]*planPeriod, map[string]chargeSetOut) {
 			}
 			sched.Rates = append(sched.Rates, rr)
 		}
-		if err := sched.Validate(false); err != nil {
+		if err := sched.Validate(s.tz, false); err != nil {
 			t.Fatalf("plan %s: %v", p.Name, err)
 		}
 		plan := rates.Plan{Frequency: rates.Frequency(p.Frequency), Start: s.date(p.Start), DueDay: p.DueDay}
@@ -374,11 +410,11 @@ func (s *site) generate(t *testing.T) ([]*planPeriod, map[string]chargeSetOut) {
 		}
 		key := s.buildKey(p.Key)
 		for _, per := range periods {
-			rate, ok := sched.At(per.DueDate)
+			rate, ok := rates.ForPeriod(sched, per, s.tz)
 			if !ok {
 				t.Fatalf("plan %s: no rate on %v", p.Name, per.DueDate)
 			}
-			res, err := allocate.ByKey(rate.Amount, p.Scope, units, key, s.order)
+			res, err := allocate.ByKey(rate.Amount, p.Scope, units, key, s.order, allocate.WithRotation(p.Name+"/"+per.Key))
 			if err != nil {
 				t.Fatalf("plan %s %s: %v", p.Name, per.Key, err)
 			}
@@ -398,7 +434,7 @@ func (s *site) generate(t *testing.T) ([]*planPeriod, map[string]chargeSetOut) {
 			for i := range units {
 				rev[len(units)-1-i] = units[i]
 			}
-			res2, err := allocate.ByKey(rate.Amount, p.Scope, rev, key, s.order)
+			res2, err := allocate.ByKey(rate.Amount, p.Scope, rev, key, s.order, allocate.WithRotation(p.Name+"/"+per.Key))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -469,7 +505,7 @@ func TestGoldenSite(t *testing.T) {
 		line(st, jan1, statement.KindOpening, who, o.Principal, statement.PartPrincipal, "opening principal")
 		openingTotal += o.Principal
 		if o.Fee > 0 {
-			st.bookings = append(st.bookings, latefee.Booking{Period: "opening", Amount: money.New(o.Fee, cur)})
+			st.bookings = append(st.bookings, latefee.Booking{Period: "opening", Kind: latefee.BookingFee, Amount: money.New(o.Fee, cur)})
 			line(st, jan1, statement.KindOpening, who, o.Fee, statement.PartFee, "opening fee")
 			openingTotal += o.Fee
 		}
@@ -493,7 +529,28 @@ func TestGoldenSite(t *testing.T) {
 			personOf[st] = who
 			c := &chg{id: handle("charge", pp.plan.Name+"/"+pp.period.Key+"/"+door), plan: pp.plan.Name, period: pp.period.Key, due: at, amount: sh.Amount.Amount}
 			st.charges = append(st.charges, c)
-			line(st, at, statement.KindCharge, who, c.amount, statement.PartPrincipal, c.plan+"/"+c.period)
+			if os := s.owners(door, at); kind == "owner" && len(os) > 1 {
+				// co-owned unit: the owner side owes the whole charge jointly, the
+				// statement shows each co-owner's share (B-2, 50/50)
+				ws := make([]allocate.Weight, len(os))
+				for i, o := range os {
+					ws[i] = allocate.IntWeight(o.person, o.pct)
+				}
+				split, err := allocate.Allocate(money.New(c.amount, cur), ws, nil, allocate.WithRotation(c.plan+"/"+c.period))
+				if err != nil {
+					t.Fatal(err)
+				}
+				var shown int64
+				for _, sh := range split.Shares {
+					shown += sh.Amount.Amount
+					line(st, at, statement.KindCharge, sh.UnitID, sh.Amount.Amount, statement.PartPrincipal, c.plan+"/"+c.period+" (share)")
+				}
+				if shown != c.amount {
+					t.Fatalf("co-owner shares %d != charge %d", shown, c.amount)
+				}
+			} else {
+				line(st, at, statement.KindCharge, who, c.amount, statement.PartPrincipal, c.plan+"/"+c.period)
+			}
 			b := s.j.Behaviours[behaviour[door]]
 			if b.Mode != "pay" {
 				continue
@@ -528,7 +585,7 @@ func TestGoldenSite(t *testing.T) {
 		return oc
 	}
 	accrue := func(st *side, asOf time.Time) latefee.Accrual {
-		a, err := latefee.Accrue(s.policy, openCharges(st), asOf, s.tz, st.freezes...)
+		a, err := latefee.Accrue(s.sched, openCharges(st), asOf, s.tz, st.freezes...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -545,7 +602,24 @@ func TestGoldenSite(t *testing.T) {
 		for _, pp := range byDue[dn] {
 			createCharges(pp, today)
 		}
-		evs := events[dn]
+		evs := append([]*payEvent(nil), events[dn]...)
+		for _, lp := range s.j.LumpPayments {
+			if dayNum(s.date(lp.On), s.tz) != dn {
+				continue
+			}
+			st := getSide(lp.Unit, lp.Side)
+			var due int64
+			for _, c := range st.charges {
+				if !c.due.After(today) {
+					due += c.remaining()
+				}
+			}
+			amount := due + lp.Extra
+			if lp.Covers == "all" {
+				amount += st.feeOutstanding()
+			}
+			evs = append(evs, &payEvent{st: st, person: personOf[st], on: today, rec: today, recDay: dn, amount: amount, ref: "lump"})
+		}
 		sort.SliceStable(evs, func(i, j int) bool {
 			if evs[i].st.unit != evs[j].st.unit {
 				return evs[i].st.unit < evs[j].st.unit
@@ -565,7 +639,7 @@ func TestGoldenSite(t *testing.T) {
 			if fo := st.feeOutstanding(); fo > 0 {
 				items = append(items, pa.OpenItem{ChargeID: feeID(st), DueDate: jan1, Kind: pa.Fee, Remaining: money.New(fo, cur)})
 			}
-			res, err := pa.Allocate(money.New(ev.amount, cur), items, pa.OldestFirstPrincipalBeforeFee)
+			res, err := pa.Allocate(money.New(ev.amount, cur), items, pa.OldestFirstPrincipalBeforeFee, s.tz)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -592,9 +666,8 @@ func TestGoldenSite(t *testing.T) {
 		for _, wi := range waiversByDay[dn] {
 			w := s.j.Waivers[wi]
 			st := getSide(w.Unit, w.Side)
-			st.waivers = append(st.waivers, latefee.Waiver{Amount: money.New(w.Amount, cur)})
-			st.bookings = append(st.bookings, latefee.Booking{Period: "waiver-" + w.On, Amount: money.New(-w.Amount, cur)})
-			line(st, today, statement.KindWaiver, personOf[st], -w.Amount, statement.PartFee, "waiver "+w.On)
+			// single entry: the waiver is recorded once; the month-end job derives its effect
+			st.bookings = append(st.bookings, latefee.Booking{Period: "waiver-" + w.On, Kind: latefee.BookingWaiver, Amount: money.New(w.Amount, cur)})
 		}
 		if next := today.AddDate(0, 0, 1); next.Month() != today.Month() { // month end: crystallize
 			for _, st := range sortedSides() {
@@ -602,11 +675,11 @@ func TestGoldenSite(t *testing.T) {
 					continue
 				}
 				acc := accrue(st, today)
-				exp, err := latefee.Expected(acc, st.waivers...)
+				exp, err := latefee.Expected(acc, st.bookings)
 				if err != nil {
 					t.Fatal(err)
 				}
-				dl, err := latefee.Reconcile(exp, st.bookings)
+				dl, err := latefee.Reconcile(exp.Fee, st.bookings)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -614,9 +687,30 @@ func TestGoldenSite(t *testing.T) {
 					continue
 				}
 				period := today.Format("2006-01")
-				st.bookings = append(st.bookings, latefee.Booking{Period: period, Amount: dl.Amount})
+				kind := latefee.BookingFee
+				if dl.Amount.Amount < 0 {
+					kind = latefee.BookingReversal
+				}
+				st.bookings = append(st.bookings, latefee.Booking{Period: period, Kind: kind, Amount: dl.Amount})
 				st.monthly[today.Month()-1] = dl.Amount.Amount
-				line(st, today, statement.KindFee, personOf[st], dl.Amount.Amount, statement.PartFee, "fee "+period)
+				if amt := dl.Amount.Amount; amt > 0 {
+					line(st, today, statement.KindFee, personOf[st], amt, statement.PartFee, "fee "+period)
+					continue
+				}
+				// a reversal: the part that comes from a newly effective waiver is shown
+				// as a waiver line, the rest (a backdated payment) as a fee reversal
+				back := -dl.Amount.Amount
+				w := exp.Waived.Amount - st.waivePosted
+				if w > back {
+					w = back
+				}
+				if w > 0 {
+					st.waivePosted += w
+					line(st, today, statement.KindWaiver, personOf[st], -w, statement.PartFee, "waiver "+period)
+				}
+				if back-w > 0 {
+					line(st, today, statement.KindFee, personOf[st], -(back - w), statement.PartFee, "fee reversal "+period)
+				}
 			}
 		}
 	}
@@ -634,10 +728,9 @@ func TestGoldenSite(t *testing.T) {
 		}
 		so.PaidPrincipal = so.ChargedPrincipal - so.OpenPrincipal
 		for _, bk := range st.bookings {
-			so.FeeBooked += bk.Amount.Amount
-		}
-		for _, w := range st.waivers {
-			so.FeeWaived += w.Amount.Amount
+			if bk.Kind != latefee.BookingWaiver {
+				so.FeeBooked += bk.Amount.Amount
+			}
 		}
 		for _, m := range st.monthly {
 			if m < 0 {
@@ -654,9 +747,13 @@ func TestGoldenSite(t *testing.T) {
 		if perCharge != acc.Total.Amount {
 			t.Fatalf("%s/%s: accrual total %d != per-charge sum %d", st.unit, st.kind, acc.Total.Amount, perCharge)
 		}
-		exp, _ := latefee.Expected(acc, st.waivers...)
-		if dl, err := latefee.Reconcile(exp, st.bookings); err != nil || dl.Action != latefee.ActionNone {
+		exp, _ := latefee.Expected(acc, st.bookings)
+		if dl, err := latefee.Reconcile(exp.Fee, st.bookings); err != nil || dl.Action != latefee.ActionNone {
 			t.Fatalf("%s/%s: year-end books do not match expected: %+v %v", st.unit, st.kind, dl, err)
+		}
+		so.FeeWaived = exp.Waived.Amount
+		if st.waivePosted > exp.Waived.Amount {
+			t.Fatalf("%s/%s: waiver shown on the statement %d exceeds applied %d", st.unit, st.kind, st.waivePosted, exp.Waived.Amount)
 		}
 		so.FeeAccrued = acc.Total.Amount
 
@@ -707,7 +804,7 @@ func TestGoldenSite(t *testing.T) {
 		t.Errorf("waiver not reflected: %+v", waived)
 	}
 	frozen := sides["A-10/owner"]
-	if a, b := accrue(frozen, time.Date(s.j.Year, 2, 28, 0, 0, 0, 0, s.tz)), accrue(frozen, yEnd); a.Total != b.Total {
+	if a, b := accrue(frozen, time.Date(s.j.Year, 3, 1, 0, 0, 0, 0, s.tz)), accrue(frozen, yEnd); a.Total != b.Total {
 		t.Errorf("frozen unit kept accruing: %v -> %v", a.Total, b.Total)
 	}
 	if sides["A-5/tenant"] == nil || len(distinctPersons(sides["A-5/tenant"].lines)) != 2 {
@@ -716,8 +813,61 @@ func TestGoldenSite(t *testing.T) {
 	if got := distinctPersons(sides["B-5/owner"].lines); len(got) != 2 {
 		t.Errorf("owner sale should give the owner side two persons, got %d", len(got))
 	}
-	if sides["B-2/tenant"] != nil && len(distinctPersons(sides["B-2/owner"].lines)) != 1 {
-		t.Errorf("co-owned unit is billed to its correspondent only")
+	// co-owned unit (B-2, 50/50): the statement shows each co-owner's share of
+	// every owner-side charge; shares sum to the charge, the side owes it jointly
+	b2 := sides["B-2/owner"]
+	perOwner := map[uuid.UUID]int64{}
+	var b2Charged, b2Lines int64
+	for _, l := range b2.lines {
+		if l.Kind == statement.KindCharge {
+			perOwner[l.PersonID] += l.Amount.Amount
+			b2Lines++
+		}
+	}
+	for _, c := range b2.charges {
+		b2Charged += c.amount
+	}
+	oa, ob := perOwner[handle("person", "owner-B-2-a")], perOwner[handle("person", "owner-B-2-b")]
+	if len(perOwner) != 2 || oa+ob != b2Charged || oa == 0 || ob == 0 {
+		t.Errorf("co-owners not both charged: %v (side charged %d)", perOwner, b2Charged)
+	}
+	if d := oa - ob; d > int64(len(b2.charges)) || -d > int64(len(b2.charges)) {
+		t.Errorf("co-owner split is not 50/50: %d vs %d", oa, ob)
+	}
+	// owner sale (B-5 on 15 Jul): the seller's debt stays on the unit's owner side;
+	// moving it to a personal receivable (backend plan section 9 rule 5) is not
+	// covered by these pure calculators.
+	// fee payments and overpayment credit run through the simulation
+	if out.Sides["A-8/tenant"].FeePaid == 0 {
+		t.Errorf("A-8 lump payment should have paid part of the fee")
+	}
+	if out.Sides["B-6/owner"].Credit != 20000 {
+		t.Errorf("B-6 overpayment credit = %d, want 20000", out.Sides["B-6/owner"].Credit)
+	}
+	// rate change inside a period: staff-A rises on 10 July, after the July due date (5th)
+	staffJul, staffAug := chargeSets["staff-A/2026-07"], chargeSets["staff-A/2026-08"]
+	if staffJul.Total != 800000 || staffAug.Total != 850000 {
+		t.Errorf("staff-A rate by due date: July %d (want 800000), August %d (want 850000)", staffJul.Total, staffAug.Total)
+	}
+	// plan starting mid-quarter (15 Feb): Q1 is billed, due 15 Feb, never before the start
+	if g, ok := chargeSets["garden/2026-Q1"]; !ok || g.Total != 480000 {
+		t.Errorf("garden Q1 missing or wrong: %+v", g)
+	}
+	// hand-verified anchors, committed as literals so -update cannot bless a regression
+	var aidat int64
+	for k, c := range chargeSets {
+		if strings.HasPrefix(k, "aidat/") {
+			aidat += c.Total
+		}
+	}
+	if aidat != 45_360_000 { // 6 x 3,600,000 + 6 x 3,960,000
+		t.Errorf("aidat total %d, want 45360000", aidat)
+	}
+	// A-10 owner, January fee, by hand: 21 late days (due 5 Jan, 5 grace, to 30 Jan) at 5 %/31
+	// per day: aidat 151,200 -> 5121.29 = 5121; staff 66,666 -> 2258.04 = 2258;
+	// elevator 50,526 over 11 days -> 896.43 = 896; heating 106,051 over 1 day -> 171.05 = 171
+	if got := out.Sides["A-10/owner"].MonthlyFeeDelta[0]; got != 5121+2258+896+171 {
+		t.Errorf("A-10 January fee delta %d, want %d (8446)", got, 5121+2258+896+171)
 	}
 	for _, st := range sides {
 		if st.unit == "A-1" {

@@ -42,7 +42,7 @@ func (c config) rank(n int) []int {
 	if c.rotate && n > 0 {
 		h := fnv.New64a()
 		_, _ = h.Write([]byte(c.rotation))
-		off = int(h.Sum64() % uint64(n))
+		off = int(h.Sum64() % uint64(n)) //nolint:gosec // reduced modulo n, fits int
 	}
 	for i := range rank {
 		rank[i] = (i - off + n) % n

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"strings"
 	"testing"
 
 	"pgregory.net/rapid"
@@ -149,13 +150,25 @@ func TestFormat(t *testing.T) {
 	}
 }
 
+func TestFormatMinInt64(t *testing.T) {
+	got, err := money.New(math.MinInt64, money.TRY).Format("en-US")
+	if err != nil || !strings.HasPrefix(got, "-₺92,233,720,368,547,7") {
+		t.Fatalf("%q %v", got, err)
+	}
+	if pos, _ := money.New(math.MaxInt64, money.TRY).Format("en-US"); !strings.HasPrefix(pos, "₺92,233,720,368,547,7") {
+		t.Fatalf("%q", pos)
+	}
+}
+
 func TestString(t *testing.T) {
 	cases := map[money.Money]string{
-		money.New(123450, money.TRY): "1234.50 TRY",
-		money.New(-5, money.TRY):     "-0.05 TRY",
-		money.New(7, money.JPY):      "7 JPY",
-		money.New(1234, money.KWD):   "1.234 KWD",
-		money.New(3, "XXX"):          "3 XXX",
+		money.New(123450, money.TRY):        "1234.50 TRY",
+		money.New(-5, money.TRY):            "-0.05 TRY",
+		money.New(7, money.JPY):             "7 JPY",
+		money.New(1234, money.KWD):          "1.234 KWD",
+		money.New(3, "XXX"):                 "3 XXX",
+		money.New(math.MinInt64, money.TRY): "-92233720368547758.08 TRY",
+		money.New(math.MaxInt64, money.TRY): "92233720368547758.07 TRY",
 	}
 	for m, want := range cases {
 		if m.String() != want {

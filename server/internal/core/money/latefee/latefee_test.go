@@ -350,6 +350,10 @@ func TestExpectedAndReconcile(t *testing.T) {
 		t.Error("overflow")
 	}
 
+	if _, err := latefee.Expected(latefee.Accrual{Total: try(math.MinInt64)}, []latefee.Booking{bk(latefee.BookingWaiver, math.MaxInt64)}); err == nil {
+		t.Error("surplus overflow")
+	}
+
 	cases := []struct {
 		booked []latefee.Booking
 		want   int64
