@@ -18,5 +18,13 @@
 // Closing = Opening + sum(rows). Each line moves either principal or fee (see
 // Line.Part), so Closing.Principal + Closing.Fee = Closing.Total.
 //
+// Line.Part is required (there is no default): KindFee lines must be PartFee,
+// KindCharge lines PartPrincipal, everything else states which component it
+// moves. AccruedFeeLine builds the line for the fee accrued so far but not yet
+// booked, which a statement always shows (money.md M4). Lines of one day keep
+// input order (opening first), so a payment listed before a same-day charge
+// shows a transient negative running balance; renderers should list charges
+// first if that matters.
+//
 // Statement.Check verifies these invariants and Build runs it before returning.
 package statement

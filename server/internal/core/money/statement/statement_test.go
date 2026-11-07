@@ -25,7 +25,11 @@ var (
 )
 
 func line(date time.Time, k st.Kind, side st.DebtorKind, who uuid.UUID, amt int64, ref string) st.Line {
-	return st.Line{Date: date, Kind: k, DebtorKind: side, PersonID: who, Amount: try(amt), Ref: ref}
+	part := st.PartPrincipal
+	if k == st.KindFee {
+		part = st.PartFee
+	}
+	return st.Line{Date: date, Kind: k, DebtorKind: side, PersonID: who, Amount: try(amt), Part: part, Ref: ref}
 }
 
 func sample() []st.Line {
@@ -126,7 +130,7 @@ func TestBuildOrdersByDateAndOpeningFirst(t *testing.T) {
 func TestBuildTimezone(t *testing.T) {
 	ist := time.FixedZone("TRT", 3*3600)
 	// 22:30 UTC on Jan 31 is Feb 1 01:30 in Istanbul: belongs to February there
-	l := st.Line{Date: time.Date(2026, 1, 31, 22, 30, 0, 0, time.UTC), Kind: st.KindCharge, DebtorKind: st.Owner, Amount: try(100)}
+	l := st.Line{Date: time.Date(2026, 1, 31, 22, 30, 0, 0, time.UTC), Kind: st.KindCharge, DebtorKind: st.Owner, Amount: try(100), Part: st.PartPrincipal}
 	from := time.Date(2026, 2, 1, 0, 0, 0, 0, ist)
 	s, err := st.Build(money.TRY, []st.Line{l}, st.Range{From: &from}, ist)
 	if err != nil || len(s.Rows) != 1 {
@@ -153,6 +157,9 @@ func TestBuildErrors(t *testing.T) {
 		{"kind", money.TRY, mut(func(l *st.Line) { l.Kind = "nope" }), st.Range{}, st.ErrBadKind},
 		{"debtor", money.TRY, mut(func(l *st.Line) { l.DebtorKind = "" }), st.Range{}, st.ErrBadDebtor},
 		{"part", money.TRY, mut(func(l *st.Line) { l.Part = "x" }), st.Range{}, st.ErrBadPart},
+		{"missing part", money.TRY, mut(func(l *st.Line) { l.Part = "" }), st.Range{}, st.ErrMissingPart},
+		{"charge with fee part", money.TRY, mut(func(l *st.Line) { l.Part = st.PartFee }), st.Range{}, st.ErrPartKind},
+		{"fee with principal part", money.TRY, mut(func(l *st.Line) { l.Kind = st.KindFee }), st.Range{}, st.ErrPartKind},
 		{"line currency", money.TRY, mut(func(l *st.Line) { l.Amount = money.New(1, money.EUR) }), st.Range{}, money.ErrCurrencyMismatch},
 		{"range", money.TRY, nil, st.Range{From: dp(time.March, 1), To: dp(time.January, 1)}, st.ErrBadRange},
 	}
@@ -215,12 +222,16 @@ func TestPropClosingEqualsOpeningPlusLines(t *testing.T) {
 				PersonID:   rapid.SampledFrom(people).Draw(t, "who"),
 				Amount:     try(rapid.Int64Range(-100000, 100000).Draw(t, "amt")),
 			}
-			if rapid.Bool().Draw(t, "explicit") {
-				l.Part = rapid.SampledFrom([]st.Part{st.PartFee, st.PartPrincipal}).Draw(t, "part")
+			l.Part = rapid.SampledFrom([]st.Part{st.PartFee, st.PartPrincipal}).Draw(t, "part")
+			switch l.Kind {
+			case st.KindFee:
+				l.Part = st.PartFee
+			case st.KindCharge:
+				l.Part = st.PartPrincipal
 			}
 			lines = append(lines, l)
 			total += l.Amount.Amount
-			isFee := l.Part == st.PartFee || (l.Part == "" && (l.Kind == st.KindFee || l.Kind == st.KindWaiver))
+			isFee := l.Part == st.PartFee
 			if isFee {
 				fee += l.Amount.Amount
 			}

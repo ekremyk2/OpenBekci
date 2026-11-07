@@ -17,6 +17,8 @@ var (
 	ErrBadKind     = errors.New("statement: unknown line kind")
 	ErrBadDebtor   = errors.New("statement: unknown debtor kind")
 	ErrBadPart     = errors.New("statement: unknown part")
+	ErrMissingPart = errors.New("statement: line without a part")
+	ErrPartKind    = errors.New("statement: part does not match the line kind")
 	ErrBadRange    = errors.New("statement: range end is before its start")
 	ErrNoCurrency  = errors.New("statement: invalid currency")
 	ErrNotBalanced = errors.New("statement: closing balance does not equal opening plus lines")
@@ -66,21 +68,24 @@ type Line struct {
 	// payer); uuid.Nil if none.
 	PersonID uuid.UUID
 	Amount   money.Money
-	// Part is the debt component the line moves; when empty it is PartFee for
-	// KindFee and KindWaiver and PartPrincipal otherwise. A payment applied to
-	// a fee, or an opening line carrying accrued fee, sets it explicitly.
+	// Part is the debt component the line moves and is required: a waiver or
+	// payment of principal is PartPrincipal, of fee PartFee, so a wrong default
+	// can never turn a principal waiver into a negative fee. KindFee lines
+	// must be PartFee and KindCharge lines PartPrincipal; the others (payment,
+	// waiver, refund, adjustment, opening) carry either, explicitly.
 	Part Part
 	Ref  string
 }
 
-func (l Line) part() Part {
-	if l.Part != "" {
-		return l.Part
-	}
-	if l.Kind == KindFee || l.Kind == KindWaiver {
-		return PartFee
-	}
-	return PartPrincipal
+func (l Line) part() Part { return l.Part }
+
+// AccruedFeeLine is the statement line for the late fee accrued up to asOf
+// that has not been booked yet (money.md M4: a statement always shows the fee
+// accrued so far). amount is the accrual minus what is already booked, as
+// returned by latefee.Reconcile (Delta.Amount); the line is dated asOf, has
+// kind fee and part fee, and Ref "accrued".
+func AccruedFeeLine(asOf time.Time, debtor DebtorKind, amount money.Money) Line {
+	return Line{Date: asOf, Kind: KindFee, DebtorKind: debtor, Amount: amount, Part: PartFee, Ref: "accrued"}
 }
 
 // Range selects the period shown, as inclusive calendar dates in the zone
@@ -283,8 +288,13 @@ func validate(l Line, cur money.Code) error {
 	if l.DebtorKind != Owner && l.DebtorKind != Tenant {
 		return fmt.Errorf("%w: %q", ErrBadDebtor, string(l.DebtorKind))
 	}
-	if l.Part != "" && l.Part != PartPrincipal && l.Part != PartFee {
+	switch {
+	case l.Part == "":
+		return ErrMissingPart
+	case l.Part != PartPrincipal && l.Part != PartFee:
 		return fmt.Errorf("%w: %q", ErrBadPart, string(l.Part))
+	case l.Kind == KindFee && l.Part != PartFee, l.Kind == KindCharge && l.Part != PartPrincipal:
+		return fmt.Errorf("%w: %s line with part %s", ErrPartKind, l.Kind, l.Part)
 	}
 	if l.Amount.Currency != cur {
 		return money.ErrCurrencyMismatch
@@ -303,6 +313,9 @@ func zeroBalance(c money.Code) Balance {
 func (s Statement) Check() error {
 	sum := s.Opening
 	for _, r := range s.Rows {
+		if err := validate(r.Line, s.Currency); err != nil {
+			return fmt.Errorf("row %s: %w", r.Line.Ref, err)
+		}
 		if err := sum.add(r.Line.part(), r.Line.Amount); err != nil {
 			return err
 		}
