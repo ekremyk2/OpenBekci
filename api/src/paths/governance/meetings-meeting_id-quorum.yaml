@@ -1,0 +1,38 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.getMeetingQuorum
+  summary: Live quorum
+  description: |-
+    **Release 0.2.** Polled by the attendance desk.
+
+    Permission (any one of): `meetings.manage`, `attendance.manage`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [attendance.manage]
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/Quorum
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

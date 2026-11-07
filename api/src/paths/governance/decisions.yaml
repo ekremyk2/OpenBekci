@@ -1,0 +1,109 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: governance.listDecisions
+  summary: Search the decision history
+  description: |-
+    **Release 0.2.** Search the decision history.
+
+    Permission: `meetings.read`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [meetings.read]
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: meeting_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `meeting_id`.
+    - name: year
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Filter by `year`.
+    - name: outcome
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - accepted
+          - rejected
+          - no_vote
+          - noted
+      description: Filter by `outcome`.
+    - name: concerns_residents
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `concerns_residents`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/DecisionList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: governance.createDecision
+  summary: Record a decision
+  description: |-
+    **Release 0.2.** Assigns the next `sequence_no` of the site and year.
+
+    Permission: `decisions.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [decisions.manage]
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/DecisionCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/Decision
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

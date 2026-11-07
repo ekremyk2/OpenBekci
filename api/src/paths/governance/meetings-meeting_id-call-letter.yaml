@@ -1,0 +1,48 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.getCallLetter
+  summary: Download the call letter
+  description: |-
+    **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+
+    Permission: `meetings.read`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [meetings.read]
+  x-stability: preview
+  parameters:
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+  responses:
+    "200":
+      description: The file.
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

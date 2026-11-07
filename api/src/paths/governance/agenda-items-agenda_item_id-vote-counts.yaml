@@ -1,0 +1,80 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: agenda_item_id
+    in: path
+    required: true
+    description: Id of the agenda item.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.getVoteCounts
+  summary: Get the in-room count
+  description: |-
+    **Release 0.2.** Get the in-room count.
+
+    Permission: `meetings.read`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [meetings.read]
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/VoteCount
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: governance.recordVoteCounts
+  summary: Record the in-room count
+  description: |-
+    **Release 0.2.** The binding vote happens in the room; there is no online ballot (G2).
+
+    Permission: `decisions.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [decisions.manage]
+  x-idempotent: optional
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/VoteCountSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/VoteCount
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

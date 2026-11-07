@@ -1,0 +1,54 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: decision_id
+    in: path
+    required: true
+    description: Id of the decision.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: governance.applyDecision
+  summary: Apply the effect of a decision
+  description: |-
+    **Release 0.2.** Creates the dues rate, membership with term, final budget or one-off special-assessment plan and links it to the decision; `dry_run=true` previews it.
+
+    Permission: `decisions.manage`.
+
+    Problems: `conflict` (409), `locked_period` (409), `idempotency_mismatch` (422).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [decisions.manage]
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/DryRun
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/DecisionApply
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/DecisionApplyResult
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

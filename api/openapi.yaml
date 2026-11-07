@@ -27,6 +27,8 @@ tags:
     description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
   - name: platform
     description: Instance operation (platform administrators).
+  - name: governance
+    description: Assemblies, notices, agenda, polls, attendance, decisions, minutes, term reminders (release 0.2).
 paths:
   /.well-known/openbekci.json:
     get:
@@ -3514,6 +3516,2108 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/governance-settings:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: site_id
+        in: path
+        required: true
+        description: Id of the site.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getGovernanceSettings
+      summary: Get the governance settings of a site
+      description: |-
+        **Release 0.2.** Get the governance settings of a site.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernanceSettings'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: governance.setGovernanceSettings
+      summary: Replace the governance settings of a site
+      description: |-
+        **Release 0.2.** Applies from the next meeting; the eligibility snapshot of a called meeting does not change.
+
+        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+        Permission: `meetings.manage`.
+
+        Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GovernanceSettingsSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernanceSettings'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+  /v1/orgs/{org_id}/governance-presets:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+    get:
+      operationId: governance.listGovernancePresets
+      summary: List national governance presets
+      description: |-
+        **Release 0.2.** Presets come from packs (the generic core ships Law 634 defaults); `verify` notes are shown until confirmed.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      parameters:
+        - name: country_code
+          in: query
+          schema:
+            type: string
+          description: Filter by `country_code`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GovernancePresetList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+    get:
+      operationId: governance.listMeetings
+      summary: List meetings
+      description: |-
+        **Release 0.2.** Cursor-paginated list of meetings.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - draft
+              - called
+              - in_session
+              - closed
+              - cancelled
+          description: Filter by `status`.
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - general_assembly
+              - extraordinary
+          description: Filter by `kind`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of the range (inclusive).
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: governance.createMeeting
+      summary: Create meeting
+      description: |-
+        **Release 0.2.** Creates a meeting.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getMeeting
+      summary: Get meeting
+      description: |-
+        **Release 0.2.** Get meeting.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: governance.updateMeeting
+      summary: Update meeting
+      description: |-
+        **Release 0.2.** Update meeting.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: governance.deleteMeeting
+      summary: Delete meeting
+      description: |-
+        **Release 0.2.** Drafts only.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:call:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.callMeeting
+      summary: Issue the call (cagri)
+      description: |-
+        **Release 0.2.** Validates the legal timing (call at least 15 days ahead, second meeting 7 to 15 days after the first, per the site settings), snapshots the eligibility, generates the call letter and creates one pending notice per owner (G3).
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409), `validation_failed` (422).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingCall'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:start:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.startMeeting
+      summary: Open the session
+      description: |-
+        **Release 0.2.** Open the session.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:close:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.closeMeeting
+      summary: Close the meeting and generate the minutes
+      description: |-
+        **Release 0.2.** Generates the minutes (tutanak) and files them into the site documents (O8).
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.cancelMeeting
+      summary: Cancel a meeting
+      description: |-
+        **Release 0.2.** Cancel a meeting.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingCancel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/quorum:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getMeetingQuorum
+      summary: Live quorum
+      description: |-
+        **Release 0.2.** Polled by the attendance desk.
+
+        Permission (any one of): `meetings.manage`, `attendance.manage`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - attendance.manage
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quorum'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getCallLetter
+      summary: Download the call letter
+      description: |-
+        **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      parameters:
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by person.
+      responses:
+        '200':
+          description: The file.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getAttendanceSheet
+      summary: Download the attendance list (hazirun cetveli)
+      description: |-
+        **Release 0.2.** Download the attendance list (hazirun cetveli).
+
+        Permission: `attendance.manage`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - attendance.manage
+      x-stability: preview
+      responses:
+        '200':
+          description: The file.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/me:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getMyMeeting
+      summary: The meeting as the caller sees it
+      description: |-
+        **Release 0.2.** My call letter notice, my check-in QR, my polls. Tenants see only what concerns residents.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyMeeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.generateMinutes
+      summary: Generate or regenerate the minutes
+      description: |-
+        **Release 0.2.** Generate or regenerate the minutes.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinutesResult'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getMinutes
+      summary: The minutes document of a meeting
+      description: |-
+        **Release 0.2.** The minutes document of a meeting.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinutesResult'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.listMeetingNotices
+      summary: Delivery checklist of a meeting
+      description: |-
+        **Release 0.2.** Delivery checklist of a meeting.
+
+        Permission: `meetings.manage`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-stability: preview
+      parameters:
+        - name: phase
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - call
+              - decisions
+          description: Filter by `phase`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - pending
+              - recorded
+          description: Filter by `status`.
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by person.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingNoticeList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+      - name: person_id
+        in: path
+        required: true
+        description: Id of the person.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: governance.recordMeetingNotice
+      summary: Record how a notice reached one owner
+      description: |-
+        **Release 0.2.** Record how a notice reached one owner.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingNoticeRecord'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingNotice'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.recordMeetingNoticesBulk
+      summary: Record one delivery method for many owners
+      description: |-
+        **Release 0.2.** Record one delivery method for many owners.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingNoticeBulk'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeetingNoticeBulkResult'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.notifyMeetingDecisions
+      summary: Send the decisions to absent owners
+      description: |-
+        **Release 0.2.** Creates `decisions` notices and records the delivery like the call; `dry_run=true` returns the counts only.
+
+        Permission: `meetings.manage`.
+
+        Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+        - $ref: '#/components/parameters/DryRun'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionNotify'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionNotifyResult'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.listAgendaItems
+      summary: List agenda items
+      description: |-
+        **Release 0.2.** List agenda items.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgendaItemList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: governance.createAgendaItem
+      summary: Add an agenda item
+      description: |-
+        **Release 0.2.** Add an agenda item.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgendaItemCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgendaItem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: agenda_item_id
+        in: path
+        required: true
+        description: Id of the agenda item.
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: governance.updateAgendaItem
+      summary: Edit an agenda item
+      description: |-
+        **Release 0.2.** Edit an agenda item.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgendaItemUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgendaItem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: governance.deleteAgendaItem
+      summary: Remove an agenda item
+      description: |-
+        **Release 0.2.** Remove an agenda item.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: governance.reorderAgendaItems
+      summary: Reorder the agenda
+      description: |-
+        **Release 0.2.** Reorder the agenda.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgendaOrder'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: agenda_item_id
+        in: path
+        required: true
+        description: Id of the agenda item.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getPoll
+      summary: Get the poll of an agenda item
+      description: |-
+        **Release 0.2.** Get the poll of an agenda item.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Poll'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: governance.setPoll
+      summary: Create or change the poll
+      description: |-
+        **Release 0.2.** Create or change the poll.
+
+        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PollSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Poll'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: agenda_item_id
+        in: path
+        required: true
+        description: Id of the agenda item.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: governance.answerPoll
+      summary: Answer the poll for my unit
+      description: |-
+        **Release 0.2.** One answer per unit; a co-owner may change the unit's answer while the poll is open. Non-binding.
+
+        Permission: `polls.answer`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - polls.answer
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PollAnswerSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollAnswer'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: agenda_item_id
+        in: path
+        required: true
+        description: Id of the agenda item.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getPollResults
+      summary: Aggregate poll results
+      description: |-
+        **Release 0.2.** Aggregate poll results.
+
+        Permission (any one of): `meetings.manage`, `polls.answer`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - polls.answer
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollResults'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: agenda_item_id
+        in: path
+        required: true
+        description: Id of the agenda item.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.listPollAnswers
+      summary: Poll answers per unit
+      description: |-
+        **Release 0.2.** Poll answers per unit.
+
+        Permission: `meetings.manage`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PollAnswerList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: agenda_item_id
+        in: path
+        required: true
+        description: Id of the agenda item.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getVoteCounts
+      summary: Get the in-room count
+      description: |-
+        **Release 0.2.** Get the in-room count.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoteCount'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    put:
+      operationId: governance.recordVoteCounts
+      summary: Record the in-room count
+      description: |-
+        **Release 0.2.** The binding vote happens in the room; there is no online ballot (G2).
+
+        Permission: `decisions.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - decisions.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoteCountSet'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoteCount'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.listAttendance
+      summary: Attendance of a meeting
+      description: |-
+        **Release 0.2.** Attendance of a meeting.
+
+        Permission: `attendance.manage`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - attendance.manage
+      x-stability: preview
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - in_person
+              - proxy
+          description: Filter by `mode`.
+        - name: source
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - desk
+              - qr
+          description: Filter by `source`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: governance.recordAttendance
+      summary: Tick an owner off
+      description: |-
+        **Release 0.2.** Proxy caps from the site settings are enforced (`validation_failed` with the field `proxy_for_person_id`).
+
+        Permission: `attendance.manage`.
+
+        Problems: `conflict` (409), `validation_failed` (422).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - attendance.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+      - name: attendance_id
+        in: path
+        required: true
+        description: Id of the attendance.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: governance.removeAttendance
+      summary: Remove an attendance record
+      description: |-
+        **Release 0.2.** Remove an attendance record.
+
+        Permission: `attendance.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - attendance.manage
+      x-idempotent: optional
+      x-stability: preview
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.checkInAttendance
+      summary: Check an owner in by QR
+      description: |-
+        **Release 0.2.** Marks the same record as the tick-off screen.
+
+        Permission: `attendance.manage`.
+
+        Problems: `conflict` (409), `not_found` (404).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - attendance.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCheckin'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/decisions:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+    get:
+      operationId: governance.listDecisions
+      summary: Search the decision history
+      description: |-
+        **Release 0.2.** Search the decision history.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: meeting_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `meeting_id`.
+        - name: year
+          in: query
+          schema:
+            type: integer
+            format: int64
+          description: Filter by `year`.
+        - name: outcome
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - accepted
+              - rejected
+              - no_vote
+              - noted
+          description: Filter by `outcome`.
+        - name: concerns_residents
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `concerns_residents`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: governance.createDecision
+      summary: Record a decision
+      description: |-
+        **Release 0.2.** Assigns the next `sequence_no` of the site and year.
+
+        Permission: `decisions.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - decisions.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/decisions/{decision_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: decision_id
+        in: path
+        required: true
+        description: Id of the decision.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: governance.getDecision
+      summary: Get a decision
+      description: |-
+        **Release 0.2.** Get a decision.
+
+        Permission: `meetings.read`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: governance.updateDecision
+      summary: Edit a decision
+      description: |-
+        **Release 0.2.** Until the meeting is closed.
+
+        Permission: `decisions.manage`.
+
+        Problems: `conflict` (409), `version_conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - decisions.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/decisions/{decision_id}:apply:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+      - name: decision_id
+        in: path
+        required: true
+        description: Id of the decision.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.applyDecision
+      summary: Apply the effect of a decision
+      description: |-
+        **Release 0.2.** Creates the dues rate, membership with term, final budget or one-off special-assessment plan and links it to the decision; `dry_run=true` previews it.
+
+        Permission: `decisions.manage`.
+
+        Problems: `conflict` (409), `locked_period` (409), `idempotency_mismatch` (422).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - decisions.manage
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+        - $ref: '#/components/parameters/DryRun'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionApply'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionApplyResult'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/term-reminders:
+    parameters:
+      - $ref: '#/components/parameters/OrgId-2'
+    get:
+      operationId: governance.listTermReminders
+      summary: Terms nearing expiry
+      description: |-
+        **Release 0.2.** Shown on the site dashboard; also sent as a notification.
+
+        Permission: `meetings.manage`.
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - upcoming
+              - due
+              - overdue
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TermReminderList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     cookieAuth:
@@ -3557,6 +5661,46 @@ components:
       schema:
         type: string
         format: uuid
+    OrgId-2:
+      name: org_id
+      in: path
+      required: true
+      description: Organization id.
+      schema:
+        type: string
+        format: uuid
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+      schema:
+        type: string
+        example: '"3"'
+    SiteIdRequired:
+      name: site_id
+      in: query
+      required: true
+      description: The site this resource belongs to.
+      schema:
+        type: string
+        format: uuid
+    IdempotencyKeyRequired:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+    DryRun:
+      name: dry_run
+      in: query
+      description: When true, validate and return the row-level report without saving anything.
+      schema:
+        type: boolean
+        default: false
   responses:
     Problem:
       description: Error. RFC 9457 problem details with a stable `code`.
@@ -4290,15 +6434,19 @@ components:
       enum:
         - allocation.manage
         - allocation.read
+        - attendance.manage
         - audit.read
         - audit.report
         - claim.manage
+        - decisions.manage
         - directory.consent
         - directory.read
         - import.run
         - invitation.household
         - invitation.manage
         - me.read
+        - meetings.manage
+        - meetings.read
         - membership.manage
         - membership.read
         - moveout.manage
@@ -4311,6 +6459,7 @@ components:
         - person.manage
         - person.read
         - platform.manage
+        - polls.answer
         - sessions.manage_own
         - site.create
         - site.export
@@ -6668,6 +8817,1773 @@ components:
         current:
           type: boolean
           description: False for a former occupancy (read access bounded by its dates).
+    QuorumRule:
+      type: object
+      required:
+        - first_call_by_count_pct
+        - first_call_by_share_pct
+        - second_call_requires_quorum
+      properties:
+        first_call_by_count_pct:
+          type: number
+          description: 'Law 634 default: a majority by number of owners.'
+        first_call_by_share_pct:
+          type: number
+          description: ...and by arsa payi (land share).
+        second_call_requires_quorum:
+          type: boolean
+          description: 'Default false: decisions by majority of those present (verify).'
+    DecisionThreshold:
+      type: object
+      required:
+        - topic
+        - rule
+        - note
+      properties:
+        topic:
+          type: string
+        rule:
+          type: string
+          description: Open enum.
+          enum:
+            - simple_majority_present
+            - majority_count_and_share
+            - four_fifths
+            - unanimity
+          x-open-enum: true
+        note:
+          type: string
+          nullable: true
+    PresetNote:
+      type: object
+      required:
+        - key
+        - note
+        - verify
+      properties:
+        key:
+          type: string
+        note:
+          type: string
+        verify:
+          type: boolean
+          description: The legal claim must be confirmed by a person with Turkish practice before it is relied on.
+    GovernanceSettingsSet:
+      type: object
+      description: 'Quorum, thresholds, vote weight and proxy caps: site settings with Law 634 defaults, editable where the yonetim plani allows.'
+      required:
+        - quorum
+        - thresholds
+        - max_votes_per_person_pct
+        - proxy_cap_pct
+        - proxy_cap_small_building_max
+        - small_building_unit_limit
+        - call_min_days
+        - second_call_min_days
+        - second_call_max_days
+        - term_reminder_days
+      properties:
+        quorum:
+          $ref: '#/components/schemas/QuorumRule'
+        thresholds:
+          type: array
+          items:
+            $ref: '#/components/schemas/DecisionThreshold'
+        max_votes_per_person_pct:
+          type: number
+          description: Default one third (verify).
+        proxy_cap_pct:
+          type: number
+          description: Default 5 percent of total votes (verify).
+        proxy_cap_small_building_max:
+          type: integer
+          format: int64
+          description: In buildings up to `small_building_unit_limit` units, at most this many others (default 2, verify).
+        small_building_unit_limit:
+          type: integer
+          format: int64
+        call_min_days:
+          type: integer
+          format: int64
+          description: Default 15 (verify).
+        second_call_min_days:
+          type: integer
+          format: int64
+        second_call_max_days:
+          type: integer
+          format: int64
+        term_reminder_days:
+          type: integer
+          format: int64
+          description: Reminder lead time before a term ends.
+        vote_weight:
+          type: string
+          enum:
+            - per_unit
+            - per_owner
+          description: Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+        ordinary_assembly_month:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 12
+          description: Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+        default_term_months:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Additive to the draft. Default length of an elected term in months (default 12).
+    GovernanceSettings:
+      type: object
+      required:
+        - site_id
+        - preset
+        - settings
+        - preset_notes
+        - version
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        preset:
+          type: string
+          nullable: true
+        settings:
+          $ref: '#/components/schemas/GovernanceSettingsSet'
+        preset_notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PresetNote'
+        version:
+          type: integer
+          format: int64
+    GovernancePreset:
+      type: object
+      required:
+        - id
+        - country_code
+        - name
+        - settings
+        - notes
+      properties:
+        id:
+          type: string
+        country_code:
+          type: string
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/GovernanceSettingsSet'
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PresetNote'
+      example:
+        id: id
+        country_code: country code
+        name: Ali Veli
+        settings:
+          quorum:
+            first_call_by_count_pct: 1.5
+            first_call_by_share_pct: 1.5
+            second_call_requires_quorum: false
+          thresholds:
+            - topic: topic
+              rule: simple_majority_present
+              note: null
+          max_votes_per_person_pct: 1.5
+          proxy_cap_pct: 1.5
+          proxy_cap_small_building_max: 1
+          small_building_unit_limit: 1
+          call_min_days: 1
+          second_call_min_days: 1
+          second_call_max_days: 1
+          term_reminder_days: 1
+        notes:
+          - key: key
+            note: note
+            verify: false
+    GovernancePresetList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GovernancePreset'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - id: id
+            country_code: country code
+            name: Ali Veli
+            settings:
+              quorum:
+                first_call_by_count_pct: 1.5
+                first_call_by_share_pct: 1.5
+                second_call_requires_quorum: false
+              thresholds:
+                - topic: topic
+                  rule: simple_majority_present
+                  note: null
+              max_votes_per_person_pct: 1.5
+              proxy_cap_pct: 1.5
+              proxy_cap_small_building_max: 1
+              small_building_unit_limit: 1
+              call_min_days: 1
+              second_call_min_days: 1
+              second_call_max_days: 1
+              term_reminder_days: 1
+            notes:
+              - key: key
+                note: note
+                verify: false
+        next_cursor: null
+    Meeting:
+      type: object
+      description: An owners' assembly (kat malikleri kurulu).
+      required:
+        - id
+        - org_id
+        - site_id
+        - kind
+        - scope
+        - title
+        - scheduled_at
+        - second_call_at
+        - location
+        - status
+        - eligibility_snapshot
+        - call_letter_document_id
+        - minutes_document_id
+        - called_at
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - general_assembly
+            - extraordinary
+          x-open-enum: true
+        scope:
+          type: string
+          description: Only `site` is supported in 0.2; block and council are reserved (G7). Open enum.
+          enum:
+            - site
+            - block
+            - council
+          x-open-enum: true
+        title:
+          type: string
+          nullable: true
+        scheduled_at:
+          type: string
+          format: date-time
+        second_call_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - draft
+            - called
+            - in_session
+            - closed
+            - cancelled
+          x-open-enum: true
+        eligibility_snapshot:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: Who could vote and with what weight as of the call date; fixed at `:call`.
+        call_letter_document_id:
+          type: string
+          format: uuid
+          nullable: true
+        minutes_document_id:
+          type: string
+          format: uuid
+          nullable: true
+        called_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        kind: general_assembly
+        scope: site
+        title: null
+        scheduled_at: '2026-01-18T10:00:00Z'
+        second_call_at: '2026-01-28T10:00:00Z'
+        location: location
+        status: called
+        eligibility_snapshot: null
+        call_letter_document_id: null
+        minutes_document_id: null
+        called_at: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    MeetingCreate:
+      type: object
+      required:
+        - site_id
+        - kind
+        - scheduled_at
+        - second_call_at
+        - location
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - general_assembly
+            - extraordinary
+          x-open-enum: true
+        scope:
+          type: string
+          description: Open enum.
+          enum:
+            - site
+            - block
+            - council
+          x-open-enum: true
+        title:
+          type: string
+          nullable: true
+        scheduled_at:
+          type: string
+          format: date-time
+        second_call_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+    MeetingUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        title:
+          type: string
+          nullable: true
+        scheduled_at:
+          type: string
+          format: date-time
+        second_call_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+    MeetingList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meeting'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            kind: general_assembly
+            scope: site
+            title: null
+            scheduled_at: '2026-01-18T10:00:00Z'
+            second_call_at: '2026-01-28T10:00:00Z'
+            location: location
+            status: called
+            eligibility_snapshot: null
+            call_letter_document_id: null
+            minutes_document_id: null
+            called_at: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    MeetingCall:
+      type: object
+      properties:
+        notify_channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+          description: Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices.
+    MeetingCancel:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+    Quorum:
+      type: object
+      description: Live quorum under the site rules; polled.
+      required:
+        - meeting_id
+        - call
+        - present_count
+        - eligible_count
+        - present_share
+        - eligible_share
+        - required_by_count_pct
+        - required_by_share_pct
+        - reached
+        - as_of
+      properties:
+        meeting_id:
+          type: string
+          format: uuid
+        call:
+          type: string
+          description: Which call the numbers are checked against. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
+        present_count:
+          type: integer
+          format: int64
+        eligible_count:
+          type: integer
+          format: int64
+        present_share:
+          type: number
+          description: Arsa payi present.
+        eligible_share:
+          type: number
+        required_by_count_pct:
+          type: number
+          nullable: true
+        required_by_share_pct:
+          type: number
+          nullable: true
+        reached:
+          type: boolean
+        as_of:
+          type: string
+          format: date-time
+    MyPoll:
+      type: object
+      required:
+        - agenda_item_id
+        - title
+        - answered_units
+      properties:
+        agenda_item_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        answered_units:
+          type: array
+          items:
+            type: string
+            format: uuid
+    MyMeeting:
+      type: object
+      required:
+        - meeting
+        - eligible_unit_ids
+        - notice
+        - attendance_token
+        - attendance_qr
+        - checked_in
+        - polls
+      properties:
+        meeting:
+          $ref: '#/components/schemas/Meeting'
+        eligible_unit_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        notice:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/MeetingNotice'
+          nullable: true
+        attendance_token:
+          type: string
+          nullable: true
+          description: The per-person check-in token; the QR encodes `attendance_qr`.
+        attendance_qr:
+          type: string
+          nullable: true
+        checked_in:
+          type: boolean
+        polls:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyPoll'
+    MinutesResult:
+      type: object
+      required:
+        - meeting_id
+        - document_id
+        - file_id
+      properties:
+        meeting_id:
+          type: string
+          format: uuid
+        document_id:
+          type: string
+          format: uuid
+        file_id:
+          type: string
+          format: uuid
+    MeetingNotice:
+      type: object
+      description: Per-owner delivery record of the call or of the decisions (G3).
+      required:
+        - id
+        - org_id
+        - meeting_id
+        - person_id
+        - person_display_name
+        - phase
+        - method
+        - status
+        - sent_at
+        - tracking_no
+        - proof_file_id
+        - note
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        meeting_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        person_display_name:
+          type: string
+        phase:
+          type: string
+          description: '`decisions`: the post-meeting notification of absent owners. Open enum.'
+          enum:
+            - call
+            - decisions
+          x-open-enum: true
+        method:
+          type: string
+          description: Open enum.
+          enum:
+            - registered_mail
+            - signed
+            - email
+            - sms
+            - other
+          x-open-enum: true
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - pending
+            - recorded
+          x-open-enum: true
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        tracking_no:
+          type: string
+          nullable: true
+        proof_file_id:
+          type: string
+          format: uuid
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        meeting_id: 0192a3f0-1000-7000-8000-000000000004
+        person_id: 0192a3f0-1000-7000-8000-000000000005
+        person_display_name: Ali Veli
+        phase: call
+        method: registered_mail
+        status: pending
+        sent_at: null
+        tracking_no: null
+        proof_file_id: null
+        note: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    MeetingNoticeList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingNotice'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            meeting_id: 0192a3f0-1000-7000-8000-000000000004
+            person_id: 0192a3f0-1000-7000-8000-000000000005
+            person_display_name: Ali Veli
+            phase: call
+            method: registered_mail
+            status: pending
+            sent_at: null
+            tracking_no: null
+            proof_file_id: null
+            note: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    MeetingNoticeRecord:
+      type: object
+      required:
+        - phase
+        - method
+        - sent_at
+      properties:
+        phase:
+          type: string
+          enum:
+            - call
+            - decisions
+        method:
+          type: string
+          enum:
+            - registered_mail
+            - signed
+            - email
+            - sms
+            - other
+        sent_at:
+          type: string
+          format: date-time
+        tracking_no:
+          type: string
+        proof_file_id:
+          type: string
+          format: uuid
+        note:
+          type: string
+    MeetingNoticeBulk:
+      type: object
+      required:
+        - person_ids
+        - phase
+        - method
+        - sent_at
+      properties:
+        person_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        phase:
+          type: string
+          enum:
+            - call
+            - decisions
+        method:
+          type: string
+          enum:
+            - registered_mail
+            - signed
+            - email
+            - sms
+            - other
+        sent_at:
+          type: string
+          format: date-time
+    MeetingNoticeBulkResult:
+      type: object
+      required:
+        - recorded
+      properties:
+        recorded:
+          type: integer
+          format: int64
+    DecisionNotify:
+      type: object
+      required:
+        - channels
+      properties:
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+          description: Chosen by the sender (O5).
+    DecisionNotifyResult:
+      type: object
+      required:
+        - dry_run
+        - recipient_count
+        - sms_count
+      properties:
+        dry_run:
+          type: boolean
+        recipient_count:
+          type: integer
+          format: int64
+        sms_count:
+          type: integer
+          format: int64
+    AgendaItem:
+      type: object
+      description: An agenda item, marked whether it will be voted on (G1).
+      required:
+        - id
+        - org_id
+        - meeting_id
+        - position
+        - title
+        - description
+        - will_be_voted
+        - topic
+        - decision_id
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        meeting_id:
+          type: string
+          format: uuid
+        position:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        will_be_voted:
+          type: boolean
+        topic:
+          type: string
+          nullable: true
+          description: Key into the threshold table.
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        meeting_id: 0192a3f0-1000-7000-8000-000000000004
+        position: 1
+        title: Ali Veli
+        description: null
+        will_be_voted: false
+        topic: null
+        decision_id: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    AgendaItemCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        will_be_voted:
+          type: boolean
+        topic:
+          type: string
+          nullable: true
+    AgendaItemUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        will_be_voted:
+          type: boolean
+        topic:
+          type: string
+          nullable: true
+    AgendaItemList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgendaItem'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            meeting_id: 0192a3f0-1000-7000-8000-000000000004
+            position: 1
+            title: Ali Veli
+            description: null
+            will_be_voted: false
+            topic: null
+            decision_id: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    AgendaOrder:
+      type: object
+      required:
+        - item_ids
+      properties:
+        item_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    Poll:
+      type: object
+      description: Non-binding pre-meeting poll (G2).
+      required:
+        - agenda_item_id
+        - question
+        - opens_at
+        - closes_at
+        - status
+        - version
+      properties:
+        agenda_item_id:
+          type: string
+          format: uuid
+        question:
+          type: string
+          nullable: true
+        opens_at:
+          type: string
+          format: date-time
+        closes_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - draft
+            - open
+            - closed
+          x-open-enum: true
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on the next write.
+    PollSet:
+      type: object
+      required:
+        - opens_at
+        - closes_at
+      properties:
+        question:
+          type: string
+        opens_at:
+          type: string
+          format: date-time
+        closes_at:
+          type: string
+          format: date-time
+    PollAnswerSet:
+      type: object
+      required:
+        - unit_id
+        - answer
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        answer:
+          type: string
+          enum:
+            - 'yes'
+            - 'no'
+            - abstain
+    PollAnswer:
+      type: object
+      required:
+        - agenda_item_id
+        - unit_id
+        - unit_door_number
+        - answer
+        - answered_by
+        - answered_at
+      properties:
+        agenda_item_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        answer:
+          type: string
+          description: Open enum.
+          enum:
+            - 'yes'
+            - 'no'
+            - abstain
+          x-open-enum: true
+        answered_by:
+          type: string
+          format: uuid
+        answered_at:
+          type: string
+          format: date-time
+      example:
+        agenda_item_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_id: 0192a3f0-1000-7000-8000-000000000003
+        unit_door_number: unit door number
+        answer: 'yes'
+        answered_by: 0192a3f0-1000-7000-8000-000000000004
+        answered_at: '2026-03-01T09:00:00Z'
+    PollAnswerList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PollAnswer'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - agenda_item_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_id: 0192a3f0-1000-7000-8000-000000000003
+            unit_door_number: unit door number
+            answer: 'yes'
+            answered_by: 0192a3f0-1000-7000-8000-000000000004
+            answered_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    PollResults:
+      type: object
+      required:
+        - agenda_item_id
+        - 'yes'
+        - 'no'
+        - abstain
+        - units_answered
+        - units_total
+        - binding
+      properties:
+        agenda_item_id:
+          type: string
+          format: uuid
+        'yes':
+          type: integer
+          format: int64
+        'no':
+          type: integer
+          format: int64
+        abstain:
+          type: integer
+          format: int64
+        units_answered:
+          type: integer
+          format: int64
+        units_total:
+          type: integer
+          format: int64
+        binding:
+          type: boolean
+          description: 'Always false: the binding vote is counted in the room.'
+    VoteCountSet:
+      type: object
+      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi.'
+      required:
+        - yes_count
+        - no_count
+        - abstain_count
+      properties:
+        yes_count:
+          type: integer
+          format: int64
+        no_count:
+          type: integer
+          format: int64
+        abstain_count:
+          type: integer
+          format: int64
+        yes_share:
+          type: number
+        no_share:
+          type: number
+        abstain_share:
+          type: number
+    VoteCount:
+      type: object
+      required:
+        - agenda_item_id
+        - yes_count
+        - no_count
+        - abstain_count
+        - yes_share
+        - no_share
+        - abstain_share
+        - recorded_by
+        - recorded_at
+        - outcome_hint
+      properties:
+        agenda_item_id:
+          type: string
+          format: uuid
+        yes_count:
+          type: integer
+          format: int64
+        no_count:
+          type: integer
+          format: int64
+        abstain_count:
+          type: integer
+          format: int64
+        yes_share:
+          type: number
+          nullable: true
+        no_share:
+          type: number
+          nullable: true
+        abstain_share:
+          type: number
+          nullable: true
+        recorded_by:
+          type: string
+          format: uuid
+          nullable: true
+        recorded_at:
+          type: string
+          format: date-time
+          nullable: true
+        outcome_hint:
+          type: string
+          description: Computed from the threshold rule; the decision records the final outcome. Open enum.
+          enum:
+            - accepted
+            - rejected
+            - undetermined
+          x-open-enum: true
+    Attendance:
+      type: object
+      description: Who is present, and for which units.
+      required:
+        - id
+        - org_id
+        - meeting_id
+        - person_id
+        - person_display_name
+        - unit_ids
+        - unit_labels
+        - mode
+        - proxy_for_person_id
+        - source
+        - checked_in_at
+        - checked_in_by
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        meeting_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        person_display_name:
+          type: string
+        unit_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        unit_labels:
+          type: array
+          items:
+            type: string
+        mode:
+          type: string
+          description: Open enum.
+          enum:
+            - in_person
+            - proxy
+          x-open-enum: true
+        proxy_for_person_id:
+          type: string
+          format: uuid
+          nullable: true
+        source:
+          type: string
+          description: Open enum.
+          enum:
+            - desk
+            - qr
+          x-open-enum: true
+        checked_in_at:
+          type: string
+          format: date-time
+        checked_in_by:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        meeting_id: 0192a3f0-1000-7000-8000-000000000004
+        person_id: 0192a3f0-1000-7000-8000-000000000005
+        person_display_name: Ali Veli
+        unit_ids:
+          - 0192a3f0-1000-7000-8000-000000000006
+        unit_labels:
+          - Ali Veli
+        mode: in_person
+        proxy_for_person_id: null
+        source: desk
+        checked_in_at: '2026-03-01T09:00:00Z'
+        checked_in_by: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    AttendanceList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendance'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            meeting_id: 0192a3f0-1000-7000-8000-000000000004
+            person_id: 0192a3f0-1000-7000-8000-000000000005
+            person_display_name: Ali Veli
+            unit_ids:
+              - 0192a3f0-1000-7000-8000-000000000006
+            unit_labels:
+              - Ali Veli
+            mode: in_person
+            proxy_for_person_id: null
+            source: desk
+            checked_in_at: '2026-03-01T09:00:00Z'
+            checked_in_by: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    AttendanceCreate:
+      type: object
+      required:
+        - person_id
+        - unit_ids
+        - mode
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        unit_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        mode:
+          type: string
+          enum:
+            - in_person
+            - proxy
+        proxy_for_person_id:
+          type: string
+          format: uuid
+    AttendanceCheckin:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: From the owner's QR (call letter or app).
+    Dissent:
+      type: object
+      required:
+        - person_id
+        - display_name
+        - text
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+          nullable: true
+        text:
+          type: string
+    DissentInput:
+      type: object
+      required:
+        - person_id
+        - text
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        text:
+          type: string
+    DecisionEffect:
+      type: object
+      required:
+        - kind
+        - record_type
+        - record_id
+        - applied_at
+        - applied_by
+      properties:
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - dues_rate
+            - membership
+            - budget_final
+            - special_assessment
+          x-open-enum: true
+        record_type:
+          type: string
+        record_id:
+          type: string
+          format: uuid
+        applied_at:
+          type: string
+          format: date-time
+        applied_by:
+          type: string
+          format: uuid
+    Decision:
+      type: object
+      description: A recorded decision. The system produces numbered drafts; it does not claim to be the karar defteri.
+      required:
+        - id
+        - org_id
+        - site_id
+        - meeting_id
+        - agenda_item_id
+        - sequence_no
+        - year
+        - text
+        - outcome
+        - vote_count
+        - dissents
+        - concerns_residents
+        - notified_at
+        - effect
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        meeting_id:
+          type: string
+          format: uuid
+        agenda_item_id:
+          type: string
+          format: uuid
+          nullable: true
+        sequence_no:
+          type: integer
+          format: int64
+          description: Gap-free per site per year, for transcription into the notarized karar defteri.
+        year:
+          type: integer
+          format: int64
+        text:
+          type: string
+        outcome:
+          type: string
+          description: Open enum.
+          enum:
+            - accepted
+            - rejected
+            - no_vote
+            - noted
+          x-open-enum: true
+        vote_count:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/VoteCount'
+          nullable: true
+        dissents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dissent'
+        concerns_residents:
+          type: boolean
+          description: Tenants see only decisions marked this way.
+        notified_at:
+          type: string
+          format: date-time
+          nullable: true
+        effect:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DecisionEffect'
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        meeting_id: 0192a3f0-1000-7000-8000-000000000002
+        agenda_item_id: null
+        sequence_no: 3
+        year: 2026
+        text: Dues become 2,000 TRY from March.
+        outcome: accepted
+        vote_count: null
+        dissents:
+          - person_id: 0192a3f0-1000-7000-8000-000000000001
+            display_name: null
+            text: text
+        concerns_residents: true
+        notified_at: null
+        effect: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    DecisionCreate:
+      type: object
+      required:
+        - site_id
+        - meeting_id
+        - text
+        - outcome
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        meeting_id:
+          type: string
+          format: uuid
+        agenda_item_id:
+          type: string
+          format: uuid
+          nullable: true
+        text:
+          type: string
+        outcome:
+          type: string
+          description: Open enum.
+          enum:
+            - accepted
+            - rejected
+            - no_vote
+            - noted
+          x-open-enum: true
+        dissents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DissentInput'
+        concerns_residents:
+          type: boolean
+    DecisionUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        text:
+          type: string
+        outcome:
+          type: string
+          description: Open enum.
+          enum:
+            - accepted
+            - rejected
+            - no_vote
+            - noted
+          x-open-enum: true
+        dissents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DissentInput'
+        concerns_residents:
+          type: boolean
+    DecisionList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Decision'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            meeting_id: 0192a3f0-1000-7000-8000-000000000002
+            agenda_item_id: null
+            sequence_no: 3
+            year: 2026
+            text: Dues become 2,000 TRY from March.
+            outcome: accepted
+            vote_count: null
+            dissents:
+              - person_id: 0192a3f0-1000-7000-8000-000000000001
+                display_name: null
+                text: text
+            concerns_residents: true
+            notified_at: null
+            effect: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    DecisionApplyDuesRate:
+      type: object
+      required:
+        - kind
+        - plan_id
+        - from
+        - amount
+      properties:
+        kind:
+          type: string
+          description: '`dues_rate`'
+        plan_id:
+          type: string
+          format: uuid
+        from:
+          type: string
+          format: date
+        amount:
+          $ref: '#/components/schemas/Money'
+    DecisionApplyMembership:
+      type: object
+      required:
+        - kind
+        - person_id
+        - role
+        - scope_type
+        - scope_id
+        - valid_from
+        - valid_to
+      properties:
+        kind:
+          type: string
+          description: '`membership`'
+        person_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+        scope_type:
+          type: string
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+        end_previous:
+          type: boolean
+          description: A new election ends the old terms (G6).
+    DecisionApplyBudget:
+      type: object
+      required:
+        - kind
+        - budget_id
+      properties:
+        kind:
+          type: string
+          description: '`budget_final`'
+        budget_id:
+          type: string
+          format: uuid
+    DecisionApplySpecialAssessment:
+      type: object
+      required:
+        - kind
+        - plan
+      properties:
+        kind:
+          type: string
+          description: '`special_assessment`'
+        plan:
+          type: object
+          additionalProperties: true
+          description: A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged).
+    DecisionApply:
+      description: The change a decision triggers; the manager confirms each one (G5).
+      oneOf:
+        - $ref: '#/components/schemas/DecisionApplyDuesRate'
+        - $ref: '#/components/schemas/DecisionApplyMembership'
+        - $ref: '#/components/schemas/DecisionApplyBudget'
+        - $ref: '#/components/schemas/DecisionApplySpecialAssessment'
+      discriminator:
+        propertyName: kind
+        mapping:
+          dues_rate: '#/components/schemas/DecisionApplyDuesRate'
+          membership: '#/components/schemas/DecisionApplyMembership'
+          budget_final: '#/components/schemas/DecisionApplyBudget'
+          special_assessment: '#/components/schemas/DecisionApplySpecialAssessment'
+    DecisionApplyResult:
+      type: object
+      required:
+        - dry_run
+        - preview
+        - decision
+      properties:
+        dry_run:
+          type: boolean
+        preview:
+          type: object
+          additionalProperties: true
+          nullable: true
+          description: 'With `dry_run=true`: what would be created.'
+        decision:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Decision'
+          nullable: true
+          description: 'When committed: the decision with its `effect`.'
+    TermReminder:
+      type: object
+      description: A board, auditor or manager term nearing its end (G6).
+      required:
+        - id
+        - org_id
+        - site_id
+        - membership_id
+        - person_display_name
+        - role
+        - valid_to
+        - days_left
+        - status
+        - notified_at
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        membership_id:
+          type: string
+          format: uuid
+        person_display_name:
+          type: string
+        role:
+          type: string
+        valid_to:
+          type: string
+          format: date
+        days_left:
+          type: integer
+          format: int64
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - upcoming
+            - due
+            - overdue
+          x-open-enum: true
+        notified_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        membership_id: 0192a3f0-1000-7000-8000-000000000005
+        person_display_name: Ali Veli
+        role: role
+        valid_to: '2026-03-01'
+        days_left: 1
+        status: upcoming
+        notified_at: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    TermReminderList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TermReminder'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            membership_id: 0192a3f0-1000-7000-8000-000000000005
+            person_display_name: Ali Veli
+            role: role
+            valid_to: '2026-03-01'
+            days_left: 1
+            status: upcoming
+            notified_at: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
     ReauthEmailCode:
       type: object
       required:
@@ -6685,14 +10601,18 @@ x-openbekci-roles:
   org_admin:
     - allocation.manage
     - allocation.read
+    - attendance.manage
     - audit.read
     - claim.manage
+    - decisions.manage
     - directory.consent
     - directory.read
     - import.run
     - invitation.household
     - invitation.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - membership.manage
     - membership.read
     - moveout.manage
@@ -6704,6 +10624,7 @@ x-openbekci-roles:
     - org.read
     - person.manage
     - person.read
+    - polls.answer
     - sessions.manage_own
     - site.create
     - site.export
@@ -6720,13 +10641,17 @@ x-openbekci-roles:
   site_manager:
     - allocation.manage
     - allocation.read
+    - attendance.manage
     - claim.manage
+    - decisions.manage
     - directory.consent
     - directory.read
     - import.run
     - invitation.household
     - invitation.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - membership.manage
     - membership.read
     - moveout.manage
@@ -6737,6 +10662,7 @@ x-openbekci-roles:
     - org.read
     - person.manage
     - person.read
+    - polls.answer
     - sessions.manage_own
     - site.manage
     - site.read
@@ -6748,14 +10674,19 @@ x-openbekci-roles:
     - vendor.read
   board_member:
     - allocation.read
+    - attendance.manage
+    - decisions.manage
     - directory.consent
     - directory.read
     - me.read
+    - meetings.manage
+    - meetings.read
     - membership.read
     - moveout.read
     - occupancy.read
     - org.read
     - person.read
+    - polls.answer
     - sessions.manage_own
     - site.read
     - unit.read
@@ -6768,6 +10699,7 @@ x-openbekci-roles:
     - directory.consent
     - directory.read
     - me.read
+    - meetings.read
     - membership.read
     - moveout.read
     - occupancy.read

@@ -1,0 +1,38 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.getMinutes
+  summary: The minutes document of a meeting
+  description: |-
+    **Release 0.2.** The minutes document of a meeting.
+
+    Permission: `meetings.read`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [meetings.read]
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/MinutesResult
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

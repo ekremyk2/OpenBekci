@@ -8,15 +8,19 @@ schemas:
     enum:
       - allocation.manage
       - allocation.read
+      - attendance.manage
       - audit.read
       - audit.report
       - claim.manage
+      - decisions.manage
       - directory.consent
       - directory.read
       - import.run
       - invitation.household
       - invitation.manage
       - me.read
+      - meetings.manage
+      - meetings.read
       - membership.manage
       - membership.read
       - moveout.manage
@@ -29,6 +33,7 @@ schemas:
       - person.manage
       - person.read
       - platform.manage
+      - polls.answer
       - sessions.manage_own
       - site.create
       - site.export
@@ -46,14 +51,18 @@ x-openbekci-roles:
   org_admin:
     - allocation.manage
     - allocation.read
+    - attendance.manage
     - audit.read
     - claim.manage
+    - decisions.manage
     - directory.consent
     - directory.read
     - import.run
     - invitation.household
     - invitation.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - membership.manage
     - membership.read
     - moveout.manage
@@ -65,6 +74,7 @@ x-openbekci-roles:
     - org.read
     - person.manage
     - person.read
+    - polls.answer
     - sessions.manage_own
     - site.create
     - site.export
@@ -81,13 +91,17 @@ x-openbekci-roles:
   site_manager:
     - allocation.manage
     - allocation.read
+    - attendance.manage
     - claim.manage
+    - decisions.manage
     - directory.consent
     - directory.read
     - import.run
     - invitation.household
     - invitation.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - membership.manage
     - membership.read
     - moveout.manage
@@ -98,6 +112,7 @@ x-openbekci-roles:
     - org.read
     - person.manage
     - person.read
+    - polls.answer
     - sessions.manage_own
     - site.manage
     - site.read
@@ -109,14 +124,19 @@ x-openbekci-roles:
     - vendor.read
   board_member:
     - allocation.read
+    - attendance.manage
+    - decisions.manage
     - directory.consent
     - directory.read
     - me.read
+    - meetings.manage
+    - meetings.read
     - membership.read
     - moveout.read
     - occupancy.read
     - org.read
     - person.read
+    - polls.answer
     - sessions.manage_own
     - site.read
     - unit.read
@@ -129,6 +149,7 @@ x-openbekci-roles:
     - directory.consent
     - directory.read
     - me.read
+    - meetings.read
     - membership.read
     - moveout.read
     - occupancy.read

@@ -1,0 +1,1768 @@
+schemas:
+  QuorumRule:
+    type: object
+    required:
+      - first_call_by_count_pct
+      - first_call_by_share_pct
+      - second_call_requires_quorum
+    properties:
+      first_call_by_count_pct:
+        type: number
+        description: "Law 634 default: a majority by number of owners."
+      first_call_by_share_pct:
+        type: number
+        description: ...and by arsa payi (land share).
+      second_call_requires_quorum:
+        type: boolean
+        description: "Default false: decisions by majority of those present (verify)."
+  DecisionThreshold:
+    type: object
+    required:
+      - topic
+      - rule
+      - note
+    properties:
+      topic:
+        type: string
+      rule:
+        type: string
+        description: Open enum.
+        enum:
+          - simple_majority_present
+          - majority_count_and_share
+          - four_fifths
+          - unanimity
+        x-open-enum: true
+      note:
+        type: string
+        nullable: true
+  PresetNote:
+    type: object
+    required:
+      - key
+      - note
+      - verify
+    properties:
+      key:
+        type: string
+      note:
+        type: string
+      verify:
+        type: boolean
+        description: The legal claim must be confirmed by a person with Turkish practice before it is relied on.
+  GovernanceSettingsSet:
+    type: object
+    description: "Quorum, thresholds, vote weight and proxy caps: site settings with Law 634 defaults, editable where the yonetim plani allows."
+    required:
+      - quorum
+      - thresholds
+      - max_votes_per_person_pct
+      - proxy_cap_pct
+      - proxy_cap_small_building_max
+      - small_building_unit_limit
+      - call_min_days
+      - second_call_min_days
+      - second_call_max_days
+      - term_reminder_days
+    properties:
+      quorum:
+        $ref: "#/schemas/QuorumRule"
+      thresholds:
+        type: array
+        items:
+          $ref: "#/schemas/DecisionThreshold"
+      max_votes_per_person_pct:
+        type: number
+        description: Default one third (verify).
+      proxy_cap_pct:
+        type: number
+        description: Default 5 percent of total votes (verify).
+      proxy_cap_small_building_max:
+        type: integer
+        format: int64
+        description: In buildings up to `small_building_unit_limit` units, at most this many others (default 2, verify).
+      small_building_unit_limit:
+        type: integer
+        format: int64
+      call_min_days:
+        type: integer
+        format: int64
+        description: Default 15 (verify).
+      second_call_min_days:
+        type: integer
+        format: int64
+      second_call_max_days:
+        type: integer
+        format: int64
+      term_reminder_days:
+        type: integer
+        format: int64
+        description: Reminder lead time before a term ends.
+      vote_weight:
+        type: string
+        enum:
+          - per_unit
+          - per_owner
+        description: "Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned."
+      ordinary_assembly_month:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 12
+        description: "Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify)."
+      default_term_months:
+        type: integer
+        format: int64
+        minimum: 1
+        description: "Additive to the draft. Default length of an elected term in months (default 12)."
+  GovernanceSettings:
+    type: object
+    required:
+      - site_id
+      - preset
+      - settings
+      - preset_notes
+      - version
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      preset:
+        type: string
+        nullable: true
+      settings:
+        $ref: "#/schemas/GovernanceSettingsSet"
+      preset_notes:
+        type: array
+        items:
+          $ref: "#/schemas/PresetNote"
+      version:
+        type: integer
+        format: int64
+  GovernancePreset:
+    type: object
+    required:
+      - id
+      - country_code
+      - name
+      - settings
+      - notes
+    properties:
+      id:
+        type: string
+      country_code:
+        type: string
+      name:
+        type: string
+      settings:
+        $ref: "#/schemas/GovernanceSettingsSet"
+      notes:
+        type: array
+        items:
+          $ref: "#/schemas/PresetNote"
+    example:
+      id: id
+      country_code: country code
+      name: Ali Veli
+      settings:
+        quorum:
+          first_call_by_count_pct: 1.5
+          first_call_by_share_pct: 1.5
+          second_call_requires_quorum: false
+        thresholds:
+          - topic: topic
+            rule: simple_majority_present
+            note: null
+        max_votes_per_person_pct: 1.5
+        proxy_cap_pct: 1.5
+        proxy_cap_small_building_max: 1
+        small_building_unit_limit: 1
+        call_min_days: 1
+        second_call_min_days: 1
+        second_call_max_days: 1
+        term_reminder_days: 1
+      notes:
+        - key: key
+          note: note
+          verify: false
+  GovernancePresetList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GovernancePreset"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - id: id
+          country_code: country code
+          name: Ali Veli
+          settings:
+            quorum:
+              first_call_by_count_pct: 1.5
+              first_call_by_share_pct: 1.5
+              second_call_requires_quorum: false
+            thresholds:
+              - topic: topic
+                rule: simple_majority_present
+                note: null
+            max_votes_per_person_pct: 1.5
+            proxy_cap_pct: 1.5
+            proxy_cap_small_building_max: 1
+            small_building_unit_limit: 1
+            call_min_days: 1
+            second_call_min_days: 1
+            second_call_max_days: 1
+            term_reminder_days: 1
+          notes:
+            - key: key
+              note: note
+              verify: false
+      next_cursor: null
+  Meeting:
+    type: object
+    description: An owners' assembly (kat malikleri kurulu).
+    required:
+      - id
+      - org_id
+      - site_id
+      - kind
+      - scope
+      - title
+      - scheduled_at
+      - second_call_at
+      - location
+      - status
+      - eligibility_snapshot
+      - call_letter_document_id
+      - minutes_document_id
+      - called_at
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - general_assembly
+          - extraordinary
+        x-open-enum: true
+      scope:
+        type: string
+        description: Only `site` is supported in 0.2; block and council are reserved (G7). Open enum.
+        enum:
+          - site
+          - block
+          - council
+        x-open-enum: true
+      title:
+        type: string
+        nullable: true
+      scheduled_at:
+        type: string
+        format: date-time
+      second_call_at:
+        type: string
+        format: date-time
+      location:
+        type: string
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - draft
+          - called
+          - in_session
+          - closed
+          - cancelled
+        x-open-enum: true
+      eligibility_snapshot:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: Who could vote and with what weight as of the call date; fixed at `:call`.
+      call_letter_document_id:
+        type: string
+        format: uuid
+        nullable: true
+      minutes_document_id:
+        type: string
+        format: uuid
+        nullable: true
+      called_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      kind: general_assembly
+      scope: site
+      title: null
+      scheduled_at: 2026-01-18T10:00:00Z
+      second_call_at: 2026-01-28T10:00:00Z
+      location: location
+      status: called
+      eligibility_snapshot: null
+      call_letter_document_id: null
+      minutes_document_id: null
+      called_at: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  MeetingCreate:
+    type: object
+    required:
+      - site_id
+      - kind
+      - scheduled_at
+      - second_call_at
+      - location
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - general_assembly
+          - extraordinary
+        x-open-enum: true
+      scope:
+        type: string
+        description: Open enum.
+        enum:
+          - site
+          - block
+          - council
+        x-open-enum: true
+      title:
+        type: string
+        nullable: true
+      scheduled_at:
+        type: string
+        format: date-time
+      second_call_at:
+        type: string
+        format: date-time
+      location:
+        type: string
+  MeetingUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      title:
+        type: string
+        nullable: true
+      scheduled_at:
+        type: string
+        format: date-time
+      second_call_at:
+        type: string
+        format: date-time
+      location:
+        type: string
+  MeetingList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Meeting"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          kind: general_assembly
+          scope: site
+          title: null
+          scheduled_at: 2026-01-18T10:00:00Z
+          second_call_at: 2026-01-28T10:00:00Z
+          location: location
+          status: called
+          eligibility_snapshot: null
+          call_letter_document_id: null
+          minutes_document_id: null
+          called_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  MeetingCall:
+    type: object
+    properties:
+      notify_channels:
+        type: array
+        items:
+          type: string
+          enum:
+            - in_app
+            - email
+            - sms
+        description: Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices.
+  MeetingCancel:
+    type: object
+    required:
+      - reason
+    properties:
+      reason:
+        type: string
+  Quorum:
+    type: object
+    description: Live quorum under the site rules; polled.
+    required:
+      - meeting_id
+      - call
+      - present_count
+      - eligible_count
+      - present_share
+      - eligible_share
+      - required_by_count_pct
+      - required_by_share_pct
+      - reached
+      - as_of
+    properties:
+      meeting_id:
+        type: string
+        format: uuid
+      call:
+        type: string
+        description: Which call the numbers are checked against. Open enum.
+        enum:
+          - first
+          - second
+        x-open-enum: true
+      present_count:
+        type: integer
+        format: int64
+      eligible_count:
+        type: integer
+        format: int64
+      present_share:
+        type: number
+        description: Arsa payi present.
+      eligible_share:
+        type: number
+      required_by_count_pct:
+        type: number
+        nullable: true
+      required_by_share_pct:
+        type: number
+        nullable: true
+      reached:
+        type: boolean
+      as_of:
+        type: string
+        format: date-time
+  MyPoll:
+    type: object
+    required:
+      - agenda_item_id
+      - title
+      - answered_units
+    properties:
+      agenda_item_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      answered_units:
+        type: array
+        items:
+          type: string
+          format: uuid
+  MyMeeting:
+    type: object
+    required:
+      - meeting
+      - eligible_unit_ids
+      - notice
+      - attendance_token
+      - attendance_qr
+      - checked_in
+      - polls
+    properties:
+      meeting:
+        $ref: "#/schemas/Meeting"
+      eligible_unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      notice:
+        type: object
+        allOf:
+          - $ref: "#/schemas/MeetingNotice"
+        nullable: true
+      attendance_token:
+        type: string
+        nullable: true
+        description: The per-person check-in token; the QR encodes `attendance_qr`.
+      attendance_qr:
+        type: string
+        nullable: true
+      checked_in:
+        type: boolean
+      polls:
+        type: array
+        items:
+          $ref: "#/schemas/MyPoll"
+  MinutesResult:
+    type: object
+    required:
+      - meeting_id
+      - document_id
+      - file_id
+    properties:
+      meeting_id:
+        type: string
+        format: uuid
+      document_id:
+        type: string
+        format: uuid
+      file_id:
+        type: string
+        format: uuid
+  MeetingNotice:
+    type: object
+    description: Per-owner delivery record of the call or of the decisions (G3).
+    required:
+      - id
+      - org_id
+      - meeting_id
+      - person_id
+      - person_display_name
+      - phase
+      - method
+      - status
+      - sent_at
+      - tracking_no
+      - proof_file_id
+      - note
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      meeting_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+      person_display_name:
+        type: string
+      phase:
+        type: string
+        description: "`decisions`: the post-meeting notification of absent owners. Open enum."
+        enum:
+          - call
+          - decisions
+        x-open-enum: true
+      method:
+        type: string
+        description: Open enum.
+        enum:
+          - registered_mail
+          - signed
+          - email
+          - sms
+          - other
+        x-open-enum: true
+        nullable: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - recorded
+        x-open-enum: true
+      sent_at:
+        type: string
+        format: date-time
+        nullable: true
+      tracking_no:
+        type: string
+        nullable: true
+      proof_file_id:
+        type: string
+        format: uuid
+        nullable: true
+      note:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      meeting_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: 0192a3f0-1000-7000-8000-000000000005
+      person_display_name: Ali Veli
+      phase: call
+      method: registered_mail
+      status: pending
+      sent_at: null
+      tracking_no: null
+      proof_file_id: null
+      note: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  MeetingNoticeList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/MeetingNotice"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          meeting_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: 0192a3f0-1000-7000-8000-000000000005
+          person_display_name: Ali Veli
+          phase: call
+          method: registered_mail
+          status: pending
+          sent_at: null
+          tracking_no: null
+          proof_file_id: null
+          note: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  MeetingNoticeRecord:
+    type: object
+    required:
+      - phase
+      - method
+      - sent_at
+    properties:
+      phase:
+        type: string
+        enum:
+          - call
+          - decisions
+      method:
+        type: string
+        enum:
+          - registered_mail
+          - signed
+          - email
+          - sms
+          - other
+      sent_at:
+        type: string
+        format: date-time
+      tracking_no:
+        type: string
+      proof_file_id:
+        type: string
+        format: uuid
+      note:
+        type: string
+  MeetingNoticeBulk:
+    type: object
+    required:
+      - person_ids
+      - phase
+      - method
+      - sent_at
+    properties:
+      person_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      phase:
+        type: string
+        enum:
+          - call
+          - decisions
+      method:
+        type: string
+        enum:
+          - registered_mail
+          - signed
+          - email
+          - sms
+          - other
+      sent_at:
+        type: string
+        format: date-time
+  MeetingNoticeBulkResult:
+    type: object
+    required:
+      - recorded
+    properties:
+      recorded:
+        type: integer
+        format: int64
+  DecisionNotify:
+    type: object
+    required:
+      - channels
+    properties:
+      channels:
+        type: array
+        items:
+          type: string
+          enum:
+            - in_app
+            - email
+            - sms
+        description: Chosen by the sender (O5).
+  DecisionNotifyResult:
+    type: object
+    required:
+      - dry_run
+      - recipient_count
+      - sms_count
+    properties:
+      dry_run:
+        type: boolean
+      recipient_count:
+        type: integer
+        format: int64
+      sms_count:
+        type: integer
+        format: int64
+  AgendaItem:
+    type: object
+    description: An agenda item, marked whether it will be voted on (G1).
+    required:
+      - id
+      - org_id
+      - meeting_id
+      - position
+      - title
+      - description
+      - will_be_voted
+      - topic
+      - decision_id
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      meeting_id:
+        type: string
+        format: uuid
+      position:
+        type: integer
+        format: int64
+      title:
+        type: string
+      description:
+        type: string
+        nullable: true
+      will_be_voted:
+        type: boolean
+      topic:
+        type: string
+        nullable: true
+        description: Key into the threshold table.
+      decision_id:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      meeting_id: 0192a3f0-1000-7000-8000-000000000004
+      position: 1
+      title: Ali Veli
+      description: null
+      will_be_voted: false
+      topic: null
+      decision_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  AgendaItemCreate:
+    type: object
+    required:
+      - title
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+        nullable: true
+      will_be_voted:
+        type: boolean
+      topic:
+        type: string
+        nullable: true
+  AgendaItemUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+        nullable: true
+      will_be_voted:
+        type: boolean
+      topic:
+        type: string
+        nullable: true
+  AgendaItemList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AgendaItem"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          meeting_id: 0192a3f0-1000-7000-8000-000000000004
+          position: 1
+          title: Ali Veli
+          description: null
+          will_be_voted: false
+          topic: null
+          decision_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  AgendaOrder:
+    type: object
+    required:
+      - item_ids
+    properties:
+      item_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  Poll:
+    type: object
+    description: Non-binding pre-meeting poll (G2).
+    required:
+      - agenda_item_id
+      - question
+      - opens_at
+      - closes_at
+      - status
+      - version
+    properties:
+      agenda_item_id:
+        type: string
+        format: uuid
+      question:
+        type: string
+        nullable: true
+      opens_at:
+        type: string
+        format: date-time
+      closes_at:
+        type: string
+        format: date-time
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - draft
+          - open
+          - closed
+        x-open-enum: true
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
+  PollSet:
+    type: object
+    required:
+      - opens_at
+      - closes_at
+    properties:
+      question:
+        type: string
+      opens_at:
+        type: string
+        format: date-time
+      closes_at:
+        type: string
+        format: date-time
+  PollAnswerSet:
+    type: object
+    required:
+      - unit_id
+      - answer
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+      answer:
+        type: string
+        enum:
+          - yes
+          - no
+          - abstain
+  PollAnswer:
+    type: object
+    required:
+      - agenda_item_id
+      - unit_id
+      - unit_door_number
+      - answer
+      - answered_by
+      - answered_at
+    properties:
+      agenda_item_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      answer:
+        type: string
+        description: Open enum.
+        enum:
+          - yes
+          - no
+          - abstain
+        x-open-enum: true
+      answered_by:
+        type: string
+        format: uuid
+      answered_at:
+        type: string
+        format: date-time
+    example:
+      agenda_item_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_id: 0192a3f0-1000-7000-8000-000000000003
+      unit_door_number: unit door number
+      answer: yes
+      answered_by: 0192a3f0-1000-7000-8000-000000000004
+      answered_at: 2026-03-01T09:00:00Z
+  PollAnswerList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/PollAnswer"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - agenda_item_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_id: 0192a3f0-1000-7000-8000-000000000003
+          unit_door_number: unit door number
+          answer: yes
+          answered_by: 0192a3f0-1000-7000-8000-000000000004
+          answered_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  PollResults:
+    type: object
+    required:
+      - agenda_item_id
+      - yes
+      - no
+      - abstain
+      - units_answered
+      - units_total
+      - binding
+    properties:
+      agenda_item_id:
+        type: string
+        format: uuid
+      yes:
+        type: integer
+        format: int64
+      no:
+        type: integer
+        format: int64
+      abstain:
+        type: integer
+        format: int64
+      units_answered:
+        type: integer
+        format: int64
+      units_total:
+        type: integer
+        format: int64
+      binding:
+        type: boolean
+        description: "Always false: the binding vote is counted in the room."
+  VoteCountSet:
+    type: object
+    description: "The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi."
+    required:
+      - yes_count
+      - no_count
+      - abstain_count
+    properties:
+      yes_count:
+        type: integer
+        format: int64
+      no_count:
+        type: integer
+        format: int64
+      abstain_count:
+        type: integer
+        format: int64
+      yes_share:
+        type: number
+      no_share:
+        type: number
+      abstain_share:
+        type: number
+  VoteCount:
+    type: object
+    required:
+      - agenda_item_id
+      - yes_count
+      - no_count
+      - abstain_count
+      - yes_share
+      - no_share
+      - abstain_share
+      - recorded_by
+      - recorded_at
+      - outcome_hint
+    properties:
+      agenda_item_id:
+        type: string
+        format: uuid
+      yes_count:
+        type: integer
+        format: int64
+      no_count:
+        type: integer
+        format: int64
+      abstain_count:
+        type: integer
+        format: int64
+      yes_share:
+        type: number
+        nullable: true
+      no_share:
+        type: number
+        nullable: true
+      abstain_share:
+        type: number
+        nullable: true
+      recorded_by:
+        type: string
+        format: uuid
+        nullable: true
+      recorded_at:
+        type: string
+        format: date-time
+        nullable: true
+      outcome_hint:
+        type: string
+        description: Computed from the threshold rule; the decision records the final outcome. Open enum.
+        enum:
+          - accepted
+          - rejected
+          - undetermined
+        x-open-enum: true
+  Attendance:
+    type: object
+    description: Who is present, and for which units.
+    required:
+      - id
+      - org_id
+      - meeting_id
+      - person_id
+      - person_display_name
+      - unit_ids
+      - unit_labels
+      - mode
+      - proxy_for_person_id
+      - source
+      - checked_in_at
+      - checked_in_by
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      meeting_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+      person_display_name:
+        type: string
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      unit_labels:
+        type: array
+        items:
+          type: string
+      mode:
+        type: string
+        description: Open enum.
+        enum:
+          - in_person
+          - proxy
+        x-open-enum: true
+      proxy_for_person_id:
+        type: string
+        format: uuid
+        nullable: true
+      source:
+        type: string
+        description: Open enum.
+        enum:
+          - desk
+          - qr
+        x-open-enum: true
+      checked_in_at:
+        type: string
+        format: date-time
+      checked_in_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      meeting_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: 0192a3f0-1000-7000-8000-000000000005
+      person_display_name: Ali Veli
+      unit_ids:
+        - 0192a3f0-1000-7000-8000-000000000006
+      unit_labels:
+        - Ali Veli
+      mode: in_person
+      proxy_for_person_id: null
+      source: desk
+      checked_in_at: 2026-03-01T09:00:00Z
+      checked_in_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AttendanceList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Attendance"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          meeting_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: 0192a3f0-1000-7000-8000-000000000005
+          person_display_name: Ali Veli
+          unit_ids:
+            - 0192a3f0-1000-7000-8000-000000000006
+          unit_labels:
+            - Ali Veli
+          mode: in_person
+          proxy_for_person_id: null
+          source: desk
+          checked_in_at: 2026-03-01T09:00:00Z
+          checked_in_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  AttendanceCreate:
+    type: object
+    required:
+      - person_id
+      - unit_ids
+      - mode
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      mode:
+        type: string
+        enum:
+          - in_person
+          - proxy
+      proxy_for_person_id:
+        type: string
+        format: uuid
+  AttendanceCheckin:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        description: From the owner's QR (call letter or app).
+  Dissent:
+    type: object
+    required:
+      - person_id
+      - display_name
+      - text
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+        nullable: true
+      text:
+        type: string
+  DissentInput:
+    type: object
+    required:
+      - person_id
+      - text
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      text:
+        type: string
+  DecisionEffect:
+    type: object
+    required:
+      - kind
+      - record_type
+      - record_id
+      - applied_at
+      - applied_by
+    properties:
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - dues_rate
+          - membership
+          - budget_final
+          - special_assessment
+        x-open-enum: true
+      record_type:
+        type: string
+      record_id:
+        type: string
+        format: uuid
+      applied_at:
+        type: string
+        format: date-time
+      applied_by:
+        type: string
+        format: uuid
+  Decision:
+    type: object
+    description: A recorded decision. The system produces numbered drafts; it does not claim to be the karar defteri.
+    required:
+      - id
+      - org_id
+      - site_id
+      - meeting_id
+      - agenda_item_id
+      - sequence_no
+      - year
+      - text
+      - outcome
+      - vote_count
+      - dissents
+      - concerns_residents
+      - notified_at
+      - effect
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      meeting_id:
+        type: string
+        format: uuid
+      agenda_item_id:
+        type: string
+        format: uuid
+        nullable: true
+      sequence_no:
+        type: integer
+        format: int64
+        description: Gap-free per site per year, for transcription into the notarized karar defteri.
+      year:
+        type: integer
+        format: int64
+      text:
+        type: string
+      outcome:
+        type: string
+        description: Open enum.
+        enum:
+          - accepted
+          - rejected
+          - no_vote
+          - noted
+        x-open-enum: true
+      vote_count:
+        type: object
+        allOf:
+          - $ref: "#/schemas/VoteCount"
+        nullable: true
+      dissents:
+        type: array
+        items:
+          $ref: "#/schemas/Dissent"
+      concerns_residents:
+        type: boolean
+        description: Tenants see only decisions marked this way.
+      notified_at:
+        type: string
+        format: date-time
+        nullable: true
+      effect:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DecisionEffect"
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      meeting_id: 0192a3f0-1000-7000-8000-000000000002
+      agenda_item_id: null
+      sequence_no: 3
+      year: 2026
+      text: Dues become 2,000 TRY from March.
+      outcome: accepted
+      vote_count: null
+      dissents:
+        - person_id: 0192a3f0-1000-7000-8000-000000000001
+          display_name: null
+          text: text
+      concerns_residents: true
+      notified_at: null
+      effect: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  DecisionCreate:
+    type: object
+    required:
+      - site_id
+      - meeting_id
+      - text
+      - outcome
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      meeting_id:
+        type: string
+        format: uuid
+      agenda_item_id:
+        type: string
+        format: uuid
+        nullable: true
+      text:
+        type: string
+      outcome:
+        type: string
+        description: Open enum.
+        enum:
+          - accepted
+          - rejected
+          - no_vote
+          - noted
+        x-open-enum: true
+      dissents:
+        type: array
+        items:
+          $ref: "#/schemas/DissentInput"
+      concerns_residents:
+        type: boolean
+  DecisionUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      text:
+        type: string
+      outcome:
+        type: string
+        description: Open enum.
+        enum:
+          - accepted
+          - rejected
+          - no_vote
+          - noted
+        x-open-enum: true
+      dissents:
+        type: array
+        items:
+          $ref: "#/schemas/DissentInput"
+      concerns_residents:
+        type: boolean
+  DecisionList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Decision"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          meeting_id: 0192a3f0-1000-7000-8000-000000000002
+          agenda_item_id: null
+          sequence_no: 3
+          year: 2026
+          text: Dues become 2,000 TRY from March.
+          outcome: accepted
+          vote_count: null
+          dissents:
+            - person_id: 0192a3f0-1000-7000-8000-000000000001
+              display_name: null
+              text: text
+          concerns_residents: true
+          notified_at: null
+          effect: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  DecisionApplyDuesRate:
+    type: object
+    required:
+      - kind
+      - plan_id
+      - from
+      - amount
+    properties:
+      kind:
+        type: string
+        description: "`dues_rate`"
+      plan_id:
+        type: string
+        format: uuid
+      from:
+        type: string
+        format: date
+      amount:
+        $ref: ./common.yaml#/schemas/Money
+  DecisionApplyMembership:
+    type: object
+    required:
+      - kind
+      - person_id
+      - role
+      - scope_type
+      - scope_id
+      - valid_from
+      - valid_to
+    properties:
+      kind:
+        type: string
+        description: "`membership`"
+      person_id:
+        type: string
+        format: uuid
+      role:
+        type: string
+      scope_type:
+        type: string
+      scope_id:
+        type: string
+        format: uuid
+        nullable: true
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+      end_previous:
+        type: boolean
+        description: A new election ends the old terms (G6).
+  DecisionApplyBudget:
+    type: object
+    required:
+      - kind
+      - budget_id
+    properties:
+      kind:
+        type: string
+        description: "`budget_final`"
+      budget_id:
+        type: string
+        format: uuid
+  DecisionApplySpecialAssessment:
+    type: object
+    required:
+      - kind
+      - plan
+    properties:
+      kind:
+        type: string
+        description: "`special_assessment`"
+      plan:
+        type: object
+        additionalProperties: true
+        description: A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged).
+  DecisionApply:
+    description: The change a decision triggers; the manager confirms each one (G5).
+    oneOf:
+      - $ref: "#/schemas/DecisionApplyDuesRate"
+      - $ref: "#/schemas/DecisionApplyMembership"
+      - $ref: "#/schemas/DecisionApplyBudget"
+      - $ref: "#/schemas/DecisionApplySpecialAssessment"
+    discriminator:
+      propertyName: kind
+      mapping:
+        dues_rate: "#/schemas/DecisionApplyDuesRate"
+        membership: "#/schemas/DecisionApplyMembership"
+        budget_final: "#/schemas/DecisionApplyBudget"
+        special_assessment: "#/schemas/DecisionApplySpecialAssessment"
+  DecisionApplyResult:
+    type: object
+    required:
+      - dry_run
+      - preview
+      - decision
+    properties:
+      dry_run:
+        type: boolean
+      preview:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: "With `dry_run=true`: what would be created."
+      decision:
+        type: object
+        allOf:
+          - $ref: "#/schemas/Decision"
+        nullable: true
+        description: "When committed: the decision with its `effect`."
+  TermReminder:
+    type: object
+    description: A board, auditor or manager term nearing its end (G6).
+    required:
+      - id
+      - org_id
+      - site_id
+      - membership_id
+      - person_display_name
+      - role
+      - valid_to
+      - days_left
+      - status
+      - notified_at
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      membership_id:
+        type: string
+        format: uuid
+      person_display_name:
+        type: string
+      role:
+        type: string
+      valid_to:
+        type: string
+        format: date
+      days_left:
+        type: integer
+        format: int64
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - upcoming
+          - due
+          - overdue
+        x-open-enum: true
+      notified_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      membership_id: 0192a3f0-1000-7000-8000-000000000005
+      person_display_name: Ali Veli
+      role: role
+      valid_to: 2026-03-01
+      days_left: 1
+      status: upcoming
+      notified_at: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  TermReminderList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/TermReminder"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          membership_id: 0192a3f0-1000-7000-8000-000000000005
+          person_display_name: Ali Veli
+          role: role
+          valid_to: 2026-03-01
+          days_left: 1
+          status: upcoming
+          notified_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
