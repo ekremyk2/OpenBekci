@@ -268,6 +268,14 @@ func (s *Service) CreateGuardSession(ctx context.Context, orgID, siteID, personI
 		if _, err := loadSite(ctx, tx, orgID, siteID); err != nil {
 			return err
 		}
+		// Serialize the check-and-insert of attempts per guard and per console
+		// (always the person first, then the console, so two requests cannot
+		// wait on each other): without it, parallel guesses all read the same
+		// failure count and are all evaluated before any is recorded.
+		if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('gate_pin:person:' || $1::text || ':' || $2::text, 0)),
+				pg_advisory_xact_lock(hashtextextended('gate_pin:console:' || $1::text || ':' || $3::text, 0))`, orgID, personID, console); err != nil {
+			return err
+		}
 		// locks, derived from the recent failures
 		var pinHash *string
 		var from time.Time
