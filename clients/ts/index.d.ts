@@ -264,7 +264,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The signed-in user, organizations, roles and permissions */
+        /**
+         * The signed-in user, organizations, roles and permissions
+         * @description Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+         *     `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+         *     administrator needs a membership of that organization like anybody else.
+         */
         get: operations["me.get"];
         put?: never;
         post?: never;
