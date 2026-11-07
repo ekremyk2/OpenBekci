@@ -27,6 +27,8 @@ type OrgAccess struct {
 	// DefaultLocale is the organization's default locale.
 	DefaultLocale string
 	Roles         []RoleGrant
+	// Sites the person can see here through a membership or an occupancy.
+	Sites []MeSite
 }
 
 // Me is the caller's identity: the account and its organizations.
@@ -36,6 +38,8 @@ type Me struct {
 	// organization's), else the email or phone.
 	DisplayName   string
 	Organizations []OrgAccess
+	// Occupancies are the caller's occupancies in every organization, current and former.
+	Occupancies []MeOccupancy
 }
 
 // Me loads the account and, through the platform (cross-organization) pool,
@@ -91,7 +95,11 @@ func (s *Service) Me(ctx context.Context, userID uuid.UUID) (Me, error) {
 				me.Organizations[i].Roles = append(me.Organizations[i].Roles, g)
 			}
 		}
-		return rows.Err()
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		rows.Close()
+		return s.loadSitesAndOccupancies(ctx, tx, userID, now, &me)
 	})
 	if err != nil {
 		return Me{}, problem.Internal(fmt.Errorf("load me: %w", err))
