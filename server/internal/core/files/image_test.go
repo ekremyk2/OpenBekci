@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/binary"
+	"hash/crc32"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -159,6 +160,91 @@ func TestProcessImageAppliesOrientation(t *testing.T) {
 	}
 }
 
+// pngWithOrientation is a w x h PNG (red left half, blue right half) with an
+// eXIf chunk carrying the given orientation.
+func pngWithOrientation(t testing.TB, w, h int, orientation uint16) []byte {
+	t.Helper()
+	img := image.NewNRGBA(image.Rect(0, 0, w, h))
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			c := color.NRGBA{R: 220, A: 255}
+			if x >= w/2 {
+				c = color.NRGBA{B: 220, A: 255}
+			}
+			img.SetNRGBA(x, y, c)
+		}
+	}
+	var enc bytes.Buffer
+	if err := png.Encode(&enc, img); err != nil {
+		t.Fatal(err)
+	}
+	raw := enc.Bytes()
+	exif := buildExif(orientation)[6:] // the eXIf chunk holds the TIFF data without the JPEG "Exif\0\0" prefix
+	var chunk bytes.Buffer
+	_ = binary.Write(&chunk, binary.BigEndian, uint32(len(exif)))
+	body := append([]byte("eXIf"), exif...)
+	chunk.Write(body)
+	_ = binary.Write(&chunk, binary.BigEndian, crc32.ChecksumIEEE(body))
+	const afterIHDR = 8 + 4 + 4 + 13 + 4 // signature, IHDR length, type, data, crc
+	var out bytes.Buffer
+	out.Write(raw[:afterIHDR])
+	out.Write(chunk.Bytes())
+	out.Write(raw[afterIHDR:])
+	return out.Bytes()
+}
+
+func TestProcessImageAppliesOrientationOfPNG(t *testing.T) {
+	in := pngWithOrientation(t, 400, 200, 6)
+	if got := imageOrientation(bytes.NewReader(in), int64(len(in)), "png"); got != 6 {
+		t.Fatalf("PNG orientation read as %d, want 6", got)
+	}
+	r, err := processImage(in, 0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	img, _, err := image.Decode(bytes.NewReader(r.original.data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b := img.Bounds(); b.Dx() != 200 || b.Dy() != 400 {
+		t.Fatalf("rotated PNG is %dx%d, want 200x400", b.Dx(), b.Dy())
+	}
+	top, _ := rgb(img.At(100, 50))
+	_, bottom := rgb(img.At(100, 350))
+	if top.R < 150 || bottom.B < 150 {
+		t.Errorf("wrong orientation: top=%v bottom=%v", top, bottom)
+	}
+	if bytes.Contains(r.original.data, []byte("eXIf")) || bytes.Contains(r.original.data, []byte(gpsMarker)) {
+		t.Error("the output still carries the eXIf chunk")
+	}
+}
+
+func TestWebPOrientationChunk(t *testing.T) {
+	exif := buildExif(8)[6:]
+	var riff bytes.Buffer
+	riff.WriteString("RIFF")
+	_ = binary.Write(&riff, binary.LittleEndian, uint32(4+8+len(exif)+len(exif)%2))
+	riff.WriteString("WEBP")
+	riff.WriteString("EXIF")
+	_ = binary.Write(&riff, binary.LittleEndian, uint32(len(exif)))
+	riff.Write(exif)
+	if len(exif)%2 == 1 {
+		riff.WriteByte(0)
+	}
+	in := riff.Bytes()
+	if got := imageOrientation(bytes.NewReader(in), int64(len(in)), "webp"); got != 8 {
+		t.Errorf("WebP orientation read as %d, want 8", got)
+	}
+	// truncated or garbage input reads as upright and never panics
+	for n := 0; n < len(in); n += 7 {
+		_ = imageOrientation(bytes.NewReader(in[:n]), int64(n), "webp")
+		_ = imageOrientation(bytes.NewReader(in[:n]), int64(n), "png")
+	}
+	if got := imageOrientation(bytes.NewReader([]byte("nope")), 4, "gif"); got != 1 {
+		t.Errorf("unknown format = %d", got)
+	}
+}
+
 func rgb(c color.Color) (r, b color.RGBA) {
 	cr, cg, cb, _ := c.RGBA()
 	v := color.RGBA{R: uint8(cr >> 8), G: uint8(cg >> 8), B: uint8(cb >> 8), A: 255}
@@ -261,6 +347,8 @@ func TestCleanName(t *testing.T) {
 		"   spaced name.txt  ": "spaced name.txt",
 		"":                     "",
 		"..":                   "",
+		"evil‮fdp.txt":         "evilfdp.txt",
+		"a⁦b⁩c‏.pdf":           "abc.pdf",
 	} {
 		if got := cleanName(in); got != want {
 			t.Errorf("cleanName(%q) = %q, want %q", in, got, want)
