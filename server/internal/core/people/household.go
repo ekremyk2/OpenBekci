@@ -2,6 +2,7 @@ package people
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,22 +16,43 @@ import (
 
 // householdAuth lets managers and the unit's owner or tenant manage its
 // household (invitations and household occupancies); it needs invitation.household.
-func householdAuth(ctx context.Context, tx pgx.Tx, unit tenancy.Unit) error {
+// It returns the unit sides the caller may act on: nil for managers (all), else
+// the side of the caller's own current owner or tenant occupancy (S3: each side
+// manages its own household).
+func householdAuth(ctx context.Context, tx pgx.Tx, unit tenancy.Unit) ([]string, error) {
 	sc, err := authz.ScopeOfBlock(ctx, tx, unit.BlockID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if err := authz.Require(ctx, PermInvitationHouse, sc); err != nil {
-		return err
+		return nil, err
 	}
 	if authz.Has(ctx, PermInvitationManage, sc) {
-		return nil
+		return nil, nil
 	}
-	own, ok := authz.CurrentOccupancy(ctx, unit.ID)
-	if !ok || own.Kind == authz.OccHousehold {
-		return problem.Forbidden("only the owner or tenant of this unit can manage its household")
+	sides := callerSides(ctx, unit.ID)
+	if len(sides) == 0 {
+		return nil, problem.Forbidden("only the owner or tenant of this unit can manage its household")
 	}
-	return nil
+	return sides, nil
+}
+
+// callerSides lists the unit sides on which the caller is a current owner or tenant.
+func callerSides(ctx context.Context, unitID uuid.UUID) []string {
+	var out []string
+	for _, o := range authz.GrantsFromContext(ctx).Current() {
+		if o.UnitID != unitID || o.Kind == authz.OccHousehold {
+			continue
+		}
+		side := string(o.Side)
+		if side == "" {
+			side = SideOwner
+		}
+		if !slices.Contains(out, side) {
+			out = append(out, side)
+		}
+	}
+	return out
 }
 
 // ListHouseholdInvitations lists the household invitations of a unit. It
@@ -45,13 +67,14 @@ func (s *Service) ListHouseholdInvitations(ctx context.Context, orgID, unitID uu
 		if err != nil {
 			return err
 		}
-		if err := householdAuth(ctx, tx, unit); err != nil {
+		sides, err := householdAuth(ctx, tx, unit)
+		if err != nil {
 			return err
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, unit.SiteID, false, false); err != nil {
 			return err
 		}
-		rows, err := tx.Query(ctx, invSelect+` WHERE i.org_id = $1 AND i.unit_id = $2 AND i.kind = 'household' ORDER BY i.id`, orgID, unitID)
+		rows, err := tx.Query(ctx, invSelect+` WHERE i.org_id = $1 AND i.unit_id = $2 AND i.kind = 'household' AND ($3::text[] IS NULL OR i.occupancy_side = ANY($3)) ORDER BY i.id`, orgID, unitID, sides)
 		if err != nil {
 			return err
 		}
@@ -82,10 +105,11 @@ func (s *Service) RevokeHouseholdInvitation(ctx context.Context, orgID, unitID, 
 		if err != nil {
 			return err
 		}
-		if err := householdAuth(ctx, tx, unit); err != nil {
+		sides, err := householdAuth(ctx, tx, unit)
+		if err != nil {
 			return err
 		}
-		inv, err := scanInv(tx.QueryRow(ctx, invSelect+` WHERE i.org_id = $1 AND i.id = $2 AND i.unit_id = $3 AND i.kind = 'household' FOR UPDATE OF i`, orgID, invID, unitID))
+		inv, err := scanInv(tx.QueryRow(ctx, invSelect+` WHERE i.org_id = $1 AND i.id = $2 AND i.unit_id = $3 AND i.kind = 'household' AND ($4::text[] IS NULL OR i.occupancy_side = ANY($4)) FOR UPDATE OF i`, orgID, invID, unitID, sides))
 		if err != nil {
 			return err
 		}
@@ -111,14 +135,15 @@ func (s *Service) EndHouseholdOccupancy(ctx context.Context, orgID, unitID, occI
 		if err != nil {
 			return err
 		}
-		if err := householdAuth(ctx, tx, unit); err != nil {
+		sides, err := householdAuth(ctx, tx, unit)
+		if err != nil {
 			return err
 		}
 		occ, err := loadOcc(ctx, tx, orgID, occID, true)
 		if err != nil {
 			return err
 		}
-		if occ.UnitID != unitID || occ.Kind != KindHousehold {
+		if occ.UnitID != unitID || occ.Kind != KindHousehold || (sides != nil && !slices.Contains(sides, occ.Side)) {
 			return problem.NotFound("no such household member on this unit")
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, unit.SiteID, false, false); err != nil {

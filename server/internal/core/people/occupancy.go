@@ -530,9 +530,8 @@ func (s *Service) SetMoneyAccess(ctx context.Context, orgID, occID uuid.UUID, ex
 		}
 		if !authz.Has(ctx, PermOccupancyManage, sc) {
 			// a portal user: the owner of the unit, or the tenant for the tenant side
-			own, ok := authz.CurrentOccupancy(ctx, before.UnitID)
-			if !ok || (own.Kind != authz.OccOwner && (own.Kind != authz.OccTenant || before.Side != SideTenant)) {
-				return problem.Forbidden("only the unit's owner or tenant can change a household member's money access")
+			if !slices.Contains(callerSides(ctx, before.UnitID), before.Side) {
+				return problem.Forbidden("only the owner or tenant of a household member's own side can change their money access")
 			}
 		}
 		if _, err := tenancy.LoadSite(ctx, tx, orgID, before.SiteID, false, false); err != nil {
