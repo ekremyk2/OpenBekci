@@ -56,6 +56,8 @@ type Settings struct {
 	VoteWeight               string      `json:"vote_weight"`
 	OrdinaryAssemblyMonth    int64       `json:"ordinary_assembly_month"`
 	DefaultTermMonths        int64       `json:"default_term_months"`
+	// DissentWindowDays is how long after the meeting closed a dissent can still be added to a decision.
+	DissentWindowDays int64 `json:"dissent_window_days"`
 }
 
 // PresetNote is a legal remark attached to a preset; Verify says a person
@@ -92,6 +94,7 @@ func TurkishPreset() Settings {
 		VoteWeight:               VoteWeightPerUnit,
 		OrdinaryAssemblyMonth:    1,
 		DefaultTermMonths:        12,
+		DissentWindowDays:        30,
 	}
 }
 
@@ -157,6 +160,9 @@ func (s Settings) Validate() *problem.Error {
 	}
 	if s.DefaultTermMonths < 1 || s.DefaultTermMonths > 120 {
 		fs = append(fs, invalid("default_term_months", ""))
+	}
+	if s.DissentWindowDays < 1 || s.DissentWindowDays > 365 {
+		fs = append(fs, invalid("dissent_window_days", ""))
 	}
 	seen := map[string]bool{}
 	for i, t := range s.Thresholds {
@@ -318,10 +324,13 @@ func CheckProxyCap(s Settings, totalUnits, totalVotes int64, held ProxyHeld, add
 	return ""
 }
 
-// Counts are the in-room counts of an agenda item.
+// Counts are the in-room counts of an agenda item. NoShares says the shares
+// were not recorded: the rules that need them then evaluate to undetermined
+// (shares are never estimated).
 type Counts struct {
 	Yes, No, Abstain                int64
 	YesShare, NoShare, AbstainShare float64
+	NoShares                        bool
 }
 
 // Basis is what a threshold is measured against.
@@ -343,15 +352,31 @@ const (
 // EvalThreshold applies a rule to the counts. The majority rule is measured
 // against all eligible votes on the first call and against those present on a
 // second call without quorum; four-fifths and unanimity are always measured
-// against all eligible votes.
+// against all eligible votes (so unanimity is unreachable when a capped
+// person holds more than the cap).
+//
+// Tie and abstention rules: an abstention is present but is not a yes, so it
+// counts against every rule that measures yes against a base; a tie (exactly
+// half) rejects, because every majority is strict. simple_majority_present is
+// measured against those present, so a present owner who does not vote also
+// counts against.
+//
+// Rules that need the arsa payi are undetermined when the shares were not
+// recorded: nothing is estimated.
 func EvalThreshold(rule string, c Counts, b Basis) string {
 	voted := c.Yes + c.No + c.Abstain
 	if voted == 0 {
 		return HintUndetermined
 	}
+	if c.NoShares && rule != RuleSimpleMajorityPresent {
+		return HintUndetermined
+	}
 	switch rule {
 	case RuleSimpleMajorityPresent:
-		if c.Yes*2 > voted {
+		if b.Present.Votes == 0 {
+			return HintUndetermined
+		}
+		if c.Yes*2 > b.Present.Votes {
 			return HintAccepted
 		}
 		return HintRejected

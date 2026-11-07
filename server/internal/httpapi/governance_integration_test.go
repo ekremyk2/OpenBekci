@@ -322,8 +322,12 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 		return fmt.Sprintf(`{"site_id":%q,"meeting_id":%q,"agenda_item_id":%q,"text":%q,"outcome":%q%s}`, f.Site, mid, item, text, outcome, extra)
 	}
 	c.must(422, mgr, "POST", base("/decisions"), dec(item2, "Board elected", "accepted", "")) // the room rejected it
+	// the election is re-counted while it has no decision: the room did accept it
+	c.must(200, mgr, "PUT", base("/agenda-items/"+item2+"/vote-counts"), `{"yes_count":3,"no_count":0,"abstain_count":0,"yes_share":75}`)
 	d1 := c.must(201, mgr, "POST", base("/decisions"), dec(item1, "2026 budget approved; dues become 2,000 TRY", "accepted", `,"concerns_residents":true`))
-	d2 := c.must(201, mgr, "POST", base("/decisions"), dec(item2, "Board not elected", "rejected", fmt.Sprintf(`,"dissents":[{"person_id":%q,"text":"I object to the process"}]`, owner2.PersonID)))
+	d2 := c.must(201, mgr, "POST", base("/decisions"), dec(item2, "Board elected", "accepted", fmt.Sprintf(`,"dissents":[{"person_id":%q,"text":"I object to the process"}]`, owner2.PersonID)))
+	// counts are final once the item has a decision
+	c.must(409, mgr, "PUT", base("/agenda-items/"+item2+"/vote-counts"), `{"yes_count":0,"no_count":3,"abstain_count":0,"yes_share":0,"no_share":75}`)
 	if gnum(d1, "sequence_no") != 1 || gnum(d2, "sequence_no") != 2 || gnum(d1, "year") != at.Year() {
 		t.Fatalf("decision numbers = %v %v (year %d)", d1["sequence_no"], d2["sequence_no"], at.Year())
 	}
@@ -332,9 +336,8 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	}
 	c.must(422, mgr, "POST", base("/decisions"), fmt.Sprintf(`{"site_id":%q,"meeting_id":%q,"text":"x","outcome":"noted","dissents":[{"person_id":%q,"text":"y"}]}`, f.Site, mid, p4))
 	c.must(409, mgr, "POST", base("/decisions"), dec(item1, "again", "accepted", "")) // one decision per item
-	// the election is re-counted: the room did accept it; the decision is corrected
-	c.must(200, mgr, "PUT", base("/agenda-items/"+item2+"/vote-counts"), `{"yes_count":3,"no_count":0,"abstain_count":0,"yes_share":75}`)
-	d2 = c.must(200, mgr, "PATCH", base("/decisions/"+gstr(d2, "id")), `{"text":"Ayse Yilmaz elected board member for one year","outcome":"accepted"}`, "If-Match", `"1"`)
+	// the decision text is corrected while the session is open
+	d2 = c.must(200, mgr, "PATCH", base("/decisions/"+gstr(d2, "id")), `{"text":"Ayse Yilmaz elected board member for one year"}`, "If-Match", `"1"`)
 	if gnum(d2, "version") != 2 || gnum(d2, "sequence_no") != 2 {
 		t.Fatalf("corrected decision = %v", d2)
 	}

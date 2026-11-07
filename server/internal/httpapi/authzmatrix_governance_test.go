@@ -46,12 +46,12 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 	w.NewOccupancy(t, f, g.u2, g.p2, "owner")
 	now := time.Now().UTC()
 	scheduled, second := now.Add(40*24*time.Hour), now.Add(50*24*time.Hour)
-	if status == "in_session" || status == "closed" || status == "open" {
+	if status == "in_session" || status == "closed" || status == "open" || status == "voting" {
 		scheduled, second = now.Add(-time.Hour), now.Add(10*24*time.Hour)
 	}
 	// "open" is an in_session meeting without attendance or decisions
 	dbStatus, heldCall := status, any(nil)
-	if status == "open" {
+	if status == "open" || status == "voting" {
 		dbStatus = "in_session"
 	}
 	if dbStatus == "in_session" || dbStatus == "closed" {
@@ -91,9 +91,12 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 	g.att1 = id.New()
 	w.Exec(t, `INSERT INTO attendance (id, org_id, site_id, meeting_id, person_id, unit_ids, mode, source, votes, share) VALUES ($1, $2, $3, $4, $5, $6, 'in_person', 'desk', 1, 1)`,
 		g.att1, org.ID, f.Site, g.meeting, g.p1, []uuid.UUID{g.u1})
-	if status == "in_session" {
+	if status == "in_session" || status == "voting" {
 		w.Exec(t, `INSERT INTO attendance (id, org_id, site_id, meeting_id, person_id, unit_ids, mode, source, votes, share) VALUES ($1, $2, $3, $4, $5, $6, 'in_person', 'desk', 1, 1)`,
 			id.New(), org.ID, f.Site, g.meeting, g.p2, []uuid.UUID{g.u2})
+	}
+	if status == "voting" {
+		return g
 	}
 	g.decision = id.New()
 	w.Exec(t, `INSERT INTO decision_counter (org_id, site_id, year, last_no) VALUES ($1, $2, 2026, 1)`, org.ID, f.Site)
@@ -167,7 +170,7 @@ func init() {
 		"governance.getPollResults":   onItem("called", "GET", "/poll/results", perms(answer), 200, ""),
 		"governance.listPollAnswers":  onItem("called", "GET", "/poll/answers", perms(manage), 200, ""),
 		"governance.getVoteCounts":    onItem("in_session", "GET", "/vote-counts", perms(read), 200, ""),
-		"governance.recordVoteCounts": onItem("in_session", "PUT", "/vote-counts", perms(decide), 200, `{"yes_count":2,"no_count":0,"abstain_count":0}`),
+		"governance.recordVoteCounts": onItem("voting", "PUT", "/vote-counts", perms(decide), 200, `{"yes_count":2,"no_count":0,"abstain_count":0}`),
 		"governance.setPoll": {perms: perms(manage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			g := govSeed(t, w, org, "called")
 			return jsonReq("PUT", orgPath(org, "/agenda-items/"+g.item.String()+"/poll"), fmt.Sprintf(`{"question":"Agree?","opens_at":%q,"closes_at":%q}`, future(1), future(5)), ifm, `"1"`)
@@ -189,7 +192,7 @@ func init() {
 			return mreq{method: "GET", path: orgPath(org, "/decisions/"+govSeed(t, w, org, "closed").decision.String())}
 		}},
 		"governance.updateDecision": {perms: perms(decide), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("PATCH", orgPath(org, "/decisions/"+govSeed(t, w, org, "closed").decision.String()), `{"concerns_residents":true}`, ifm, `"1"`)
+			return jsonReq("PATCH", orgPath(org, "/decisions/"+govSeed(t, w, org, "in_session").decision.String()), `{"concerns_residents":true}`, ifm, `"1"`)
 		}},
 		"governance.applyDecision": {perms: perms(decide), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			g := govSeed(t, w, org, "closed")

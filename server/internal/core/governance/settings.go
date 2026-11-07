@@ -96,6 +96,9 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 	if in.OrdinaryAssemblyMonth == 0 {
 		in.OrdinaryAssemblyMonth = TurkishPreset().OrdinaryAssemblyMonth
 	}
+	if in.DissentWindowDays == 0 {
+		in.DissentWindowDays = TurkishPreset().DissentWindowDays
+	}
 	if in.DefaultTermMonths == 0 {
 		in.DefaultTermMonths = TurkishPreset().DefaultTermMonths
 	}

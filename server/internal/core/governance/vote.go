@@ -30,9 +30,9 @@ type VoteCount struct {
 }
 
 // VoteCountSet is the input of RecordVoteCounts. Shares are in the same unit
-// as the eligibility snapshot's shares (arsa payi). When omitted they are
-// estimated from the average share of those present, which is only exact when
-// every unit has the same share.
+// as the eligibility snapshot's shares (arsa payi). When omitted nothing is
+// estimated: the rules that need shares evaluate to undetermined and the
+// counts cannot gate an accepted decision.
 type VoteCountSet struct {
 	YesCount     int64    `json:"yes_count"`
 	NoCount      int64    `json:"no_count"`
@@ -64,9 +64,8 @@ func (s *Service) evaluate(ctx context.Context, tx pgx.Tx, m Meeting, a AgendaIt
 func loadVoteCount(ctx context.Context, tx pgx.Tx, orgID, itemID uuid.UUID) (VoteCount, Counts, bool, error) {
 	v := VoteCount{AgendaItemID: itemID, OutcomeHint: HintUndetermined}
 	var c Counts
-	var ys, ns, as float64
 	err := tx.QueryRow(ctx, `SELECT yes_count, no_count, abstain_count, yes_share::float8, no_share::float8, abstain_share::float8, recorded_by, recorded_at
-		FROM vote_count WHERE org_id = $1 AND agenda_item_id = $2`, orgID, itemID).Scan(&v.YesCount, &v.NoCount, &v.AbstainCount, &ys, &ns, &as, &v.RecordedBy, &v.RecordedAt)
+		FROM vote_count WHERE org_id = $1 AND agenda_item_id = $2`, orgID, itemID).Scan(&v.YesCount, &v.NoCount, &v.AbstainCount, &v.YesShare, &v.NoShare, &v.AbstainShare, &v.RecordedBy, &v.RecordedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return v, c, false, nil
 	}
@@ -74,8 +73,17 @@ func loadVoteCount(ctx context.Context, tx pgx.Tx, orgID, itemID uuid.UUID) (Vot
 		return v, c, false, err
 	}
 	at := v.RecordedAt.UTC()
-	v.RecordedAt, v.YesShare, v.NoShare, v.AbstainShare = &at, &ys, &ns, &as
-	c = Counts{Yes: v.YesCount, No: v.NoCount, Abstain: v.AbstainCount, YesShare: ys, NoShare: ns, AbstainShare: as}
+	v.RecordedAt = &at
+	c = Counts{Yes: v.YesCount, No: v.NoCount, Abstain: v.AbstainCount, NoShares: v.YesShare == nil}
+	if v.YesShare != nil {
+		c.YesShare = *v.YesShare
+	}
+	if v.NoShare != nil {
+		c.NoShare = *v.NoShare
+	}
+	if v.AbstainShare != nil {
+		c.AbstainShare = *v.AbstainShare
+	}
 	return v, c, true, nil
 }
 
@@ -138,11 +146,14 @@ func (s *Service) RecordVoteCounts(ctx context.Context, orgID, itemID uuid.UUID,
 		if err != nil {
 			return err
 		}
-		if m.Status != StatusInSession && m.Status != StatusClosed {
-			return problem.Conflict("votes are counted in the session")
+		if m.Status != StatusInSession {
+			return problem.Conflict("votes are counted while the session is open")
 		}
 		if !a.WillBeVoted {
 			return problem.Conflict("this agenda item is not marked for a vote")
+		}
+		if a.DecisionID != nil {
+			return problem.Conflict("this agenda item already has a decision; its vote counts can no longer change")
 		}
 		q, _, pr, _, err := s.quorumOf(ctx, tx, m)
 		if err != nil {
@@ -155,18 +166,14 @@ func (s *Service) RecordVoteCounts(ctx context.Context, orgID, itemID uuid.UUID,
 		if total > pr.Capped.Votes {
 			return problem.Validation(problem.Field{Field: "yes_count", Code: "invalid_value", Params: map[string]any{"reason": "more_votes_than_present", "present": pr.Capped.Votes}})
 		}
-		avg := 0.0
-		if pr.Capped.Votes > 0 {
-			avg = pr.Capped.Share / float64(pr.Capped.Votes)
-		}
-		share := func(given *float64, count int64) float64 {
-			if given != nil {
-				return *given
+		sum := 0.0
+		for _, g := range []*float64{in.YesShare, in.NoShare, in.AbstainShare} {
+			if g != nil {
+				sum += *g
 			}
-			return avg * float64(count)
 		}
-		ys, ns, as := share(in.YesShare, in.YesCount), share(in.NoShare, in.NoCount), share(in.AbstainShare, in.AbstainCount)
-		if ys+ns+as > pr.Capped.Share*(1+1e-9)+1e-9 {
+		ys, ns, as := in.YesShare, in.NoShare, in.AbstainShare
+		if sum > pr.Capped.Share*(1+1e-9)+1e-9 {
 			return problem.Validation(problem.Field{Field: "yes_share", Code: "invalid_value", Params: map[string]any{"reason": "more_share_than_present"}})
 		}
 		before, _, had, err := loadVoteCount(ctx, tx, orgID, itemID)

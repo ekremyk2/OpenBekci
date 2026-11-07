@@ -53,7 +53,10 @@ type Decision struct {
 	Year              int        `json:"year"`
 	Text              string     `json:"text"`
 	Outcome           string     `json:"outcome"`
-	VoteCount         *VoteCount `json:"vote_count"`
+	// OutcomeOverrideReason is set when the outcome was recorded against, or
+	// without, the threshold evaluation of the counts (an explicit override).
+	OutcomeOverrideReason *string    `json:"outcome_override_reason"`
+	VoteCount             *VoteCount `json:"vote_count"`
 	Dissents          []Dissent  `json:"dissents"`
 	ConcernsResidents bool       `json:"concerns_residents"`
 	NotifiedAt        *time.Time `json:"notified_at"`
@@ -65,13 +68,13 @@ type Decision struct {
 	inputHash string
 }
 
-const decisionColumns = `id, org_id, site_id, meeting_id, agenda_item_id, sequence_no, year, text, outcome, vote_count, dissents, concerns_residents, notified_at, effect,
+const decisionColumns = `id, org_id, site_id, meeting_id, agenda_item_id, sequence_no, year, text, outcome, outcome_override_reason, vote_count, dissents, concerns_residents, notified_at, effect,
 	COALESCE(effect->>'input_hash', ''), created_at, updated_at, version`
 
 func scanDecision(row pgx.Row) (Decision, error) {
 	var d Decision
 	var vc, ds, ef []byte
-	err := row.Scan(&d.ID, &d.OrgID, &d.SiteID, &d.MeetingID, &d.AgendaItemID, &d.SequenceNo, &d.Year, &d.Text, &d.Outcome, &vc, &ds, &d.ConcernsResidents, &d.NotifiedAt, &ef,
+	err := row.Scan(&d.ID, &d.OrgID, &d.SiteID, &d.MeetingID, &d.AgendaItemID, &d.SequenceNo, &d.Year, &d.Text, &d.Outcome, &d.OutcomeOverrideReason, &vc, &ds, &d.ConcernsResidents, &d.NotifiedAt, &ef,
 		&d.inputHash, &d.CreatedAt, &d.UpdatedAt, &d.Version)
 	if err != nil {
 		return d, err
@@ -114,7 +117,7 @@ func loadDecision(ctx context.Context, tx pgx.Tx, orgID, id uuid.UUID, forUpdate
 
 func (d Decision) auditView() map[string]any {
 	return map[string]any{"meeting_id": d.MeetingID, "agenda_item_id": d.AgendaItemID, "sequence_no": d.SequenceNo, "year": d.Year, "text": d.Text,
-		"outcome": d.Outcome, "dissents": d.Dissents, "concerns_residents": d.ConcernsResidents, "effect": d.Effect}
+		"outcome": d.Outcome, "outcome_override_reason": d.OutcomeOverrideReason, "dissents": d.Dissents, "concerns_residents": d.ConcernsResidents, "effect": d.Effect}
 }
 
 // decisionAt loads a decision and checks perm at its site.
@@ -212,6 +215,15 @@ type DecisionCreate struct {
 	Outcome           string         `json:"outcome"`
 	Dissents          []DissentInput `json:"dissents"`
 	ConcernsResidents bool           `json:"concerns_residents"`
+	// OutcomeOverride records an accepted or rejected outcome that the counts
+	// do not support (no counts, undetermined shares, or a contradicting
+	// threshold). The reason is mandatory and audited.
+	OutcomeOverride *OutcomeOverride `json:"outcome_override"`
+}
+
+// OutcomeOverride is the explicit, reasoned override of the threshold evaluation.
+type OutcomeOverride struct {
+	Reason string `json:"reason"`
 }
 
 var outcomes = []string{"accepted", "rejected", "no_vote", "noted"}
@@ -234,27 +246,46 @@ func resolveDissents(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, snap Snaps
 
 // checkOutcome ties accepted and rejected to a voted item: the counts must
 // exist and the site's threshold for the topic must agree with the outcome.
-func (s *Service) checkOutcome(ctx context.Context, tx pgx.Tx, m Meeting, item *AgendaItem, outcome string) (*VoteCount, error) {
-	if outcome != "accepted" && outcome != "rejected" {
+func (s *Service) checkOutcome(ctx context.Context, tx pgx.Tx, m Meeting, item *AgendaItem, outcome string, override *OutcomeOverride) (*VoteCount, error) {
+	counts := func() *VoteCount {
 		if item != nil && item.WillBeVoted {
 			if v, err := s.voteCountOf(ctx, tx, m, *item); err == nil && v.RecordedAt != nil {
-				return &v, nil
+				return &v
 			}
 		}
-		return nil, nil //nolint:nilnil // no counts to attach
+		return nil
+	}
+	if outcome != "accepted" && outcome != "rejected" {
+		return counts(), nil
+	}
+	if override != nil {
+		if strings.TrimSpace(override.Reason) == "" {
+			return nil, problem.Validation(problem.Field{Field: "outcome_override.reason", Code: "required"})
+		}
+		return counts(), nil
+	}
+	bad := func(reason string, extra map[string]any) error {
+		p := map[string]any{"reason": reason}
+		for k, v := range extra {
+			p[k] = v
+		}
+		return problem.Validation(problem.Field{Field: "outcome", Code: "invalid_value", Params: p})
 	}
 	if item == nil || !item.WillBeVoted {
-		return nil, problem.Validation(problem.Field{Field: "outcome", Code: "invalid_value", Params: map[string]any{"reason": "needs_a_voted_agenda_item"}})
+		return nil, bad("needs_a_voted_agenda_item", nil)
 	}
 	v, err := s.voteCountOf(ctx, tx, m, *item)
 	if err != nil {
 		return nil, err
 	}
-	if v.RecordedAt == nil {
-		return nil, problem.Validation(problem.Field{Field: "outcome", Code: "invalid_value", Params: map[string]any{"reason": "vote_counts_required"}})
+	if v.RecordedAt == nil || v.YesCount+v.NoCount+v.AbstainCount == 0 {
+		return nil, bad("vote_counts_required", nil)
 	}
-	if v.OutcomeHint != outcome && v.OutcomeHint != HintUndetermined {
-		return nil, problem.Validation(problem.Field{Field: "outcome", Code: "invalid_value", Params: map[string]any{"reason": "contradicts_the_threshold", "threshold_says": v.OutcomeHint}})
+	if v.OutcomeHint == HintUndetermined {
+		return nil, bad("threshold_undetermined", map[string]any{"hint": "record the shares, or use outcome_override with a reason"})
+	}
+	if v.OutcomeHint != outcome {
+		return nil, bad("contradicts_the_threshold", map[string]any{"threshold_says": v.OutcomeHint})
 	}
 	return &v, nil
 }
@@ -310,9 +341,13 @@ func (s *Service) CreateDecision(ctx context.Context, orgID uuid.UUID, in Decisi
 			}
 			item = &a
 		}
-		vc, err := s.checkOutcome(ctx, tx, m, item, in.Outcome)
+		vc, err := s.checkOutcome(ctx, tx, m, item, in.Outcome, in.OutcomeOverride)
 		if err != nil {
 			return err
+		}
+		var overrideReason *string
+		if in.OutcomeOverride != nil && (in.Outcome == "accepted" || in.Outcome == "rejected") {
+			overrideReason = ptr(strings.TrimSpace(in.OutcomeOverride.Reason))
 		}
 		dissents, err := resolveDissents(ctx, tx, orgID, snap, in.Dissents)
 		if err != nil {
@@ -329,9 +364,9 @@ func (s *Service) CreateDecision(ctx context.Context, orgID uuid.UUID, in Decisi
 			return err
 		}
 		did := newID()
-		if _, err := tx.Exec(ctx, `INSERT INTO decision (id, org_id, site_id, meeting_id, agenda_item_id, sequence_no, year, text, outcome, vote_count, dissents, concerns_residents, created_by)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
-			did, orgID, in.SiteID, in.MeetingID, in.AgendaItemID, seq, year, in.Text, in.Outcome, jsonOrNil(vc), mustJSON(dissents), in.ConcernsResidents, principalID(ctx)); err != nil {
+		if _, err := tx.Exec(ctx, `INSERT INTO decision (id, org_id, site_id, meeting_id, agenda_item_id, sequence_no, year, text, outcome, vote_count, dissents, concerns_residents, created_by, outcome_override_reason)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+			did, orgID, in.SiteID, in.MeetingID, in.AgendaItemID, seq, year, in.Text, in.Outcome, jsonOrNil(vc), mustJSON(dissents), in.ConcernsResidents, principalID(ctx), overrideReason); err != nil {
 			return err
 		}
 		if item != nil {
@@ -408,6 +443,10 @@ func (s *Service) UpdateDecision(ctx context.Context, orgID, id uuid.UUID, expec
 		if err != nil {
 			return err
 		}
+		final := m.Status == StatusClosed
+		if final && (next.Text != cur.Text || next.Outcome != cur.Outcome || next.ConcernsResidents != cur.ConcernsResidents) {
+			return problem.Conflict("the meeting is closed: its decisions are final, only dissents can still be added within the window")
+		}
 		if d.Has("dissents") {
 			var in []DissentInput
 			if err := d.Get("dissents", &in); err != nil {
@@ -415,6 +454,11 @@ func (s *Service) UpdateDecision(ctx context.Context, orgID, id uuid.UUID, expec
 			}
 			if next.Dissents, err = resolveDissents(ctx, tx, orgID, snap, in); err != nil {
 				return err
+			}
+			if final {
+				if err := s.checkDissentAddition(ctx, tx, m, cur.Dissents, next.Dissents); err != nil {
+					return err
+				}
 			}
 		}
 		var item *AgendaItem
@@ -427,7 +471,7 @@ func (s *Service) UpdateDecision(ctx context.Context, orgID, id uuid.UUID, expec
 		}
 		vc := cur.VoteCount
 		if next.Outcome != cur.Outcome {
-			if vc, err = s.checkOutcome(ctx, tx, m, item, next.Outcome); err != nil {
+			if vc, err = s.checkOutcome(ctx, tx, m, item, next.Outcome, nil); err != nil {
 				return err
 			}
 		}
@@ -445,6 +489,29 @@ func (s *Service) UpdateDecision(ctx context.Context, orgID, id uuid.UUID, expec
 		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: "decision.update", TargetType: "decision", TargetID: id, Diff: diff})
 	})
 	return out, dbErr(err, "decision")
+}
+
+// checkDissentAddition allows a closed meeting's decision to gain dissents (a
+// muhalefet serhi can be filed after the meeting) within the site's window
+// after closing, and never to lose or change one.
+func (s *Service) checkDissentAddition(ctx context.Context, tx pgx.Tx, m Meeting, before, after []Dissent) error {
+	if len(after) < len(before) {
+		return problem.Conflict("a dissent that was recorded cannot be removed")
+	}
+	for i, b := range before {
+		if after[i].PersonID != b.PersonID || after[i].Text != b.Text {
+			return problem.Conflict("a dissent that was recorded cannot be changed; add a new one")
+		}
+	}
+	var closedAt *time.Time
+	if err := tx.QueryRow(ctx, `SELECT closed_at FROM meeting WHERE org_id = $1 AND id = $2`, m.OrgID, m.ID).Scan(&closedAt); err != nil {
+		return err
+	}
+	days := m.rules().DissentWindowDays
+	if closedAt != nil && s.now().After(closedAt.Add(time.Duration(days)*24*time.Hour)) {
+		return problem.Conflict("the window for adding dissents after the meeting closed has passed")
+	}
+	return nil
 }
 
 // ApplyResult is what ApplyDecision returns.

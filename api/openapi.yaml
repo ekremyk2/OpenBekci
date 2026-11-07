@@ -8979,7 +8979,13 @@ components:
           type: integer
           format: int64
           minimum: 1
-          description: Additive to the draft. Default length of an elected term in months (default 12).
+          description: Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
+        dissent_window_days:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 365
+          description: How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
     GovernanceSettings:
       type: object
       required:
@@ -9957,7 +9963,7 @@ components:
           description: 'Always false: the binding vote is counted in the room.'
     VoteCountSet:
       type: object
-      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi.'
+      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open.'
       required:
         - yes_count
         - no_count
@@ -10313,6 +10319,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Dissent'
+        outcome_override_reason:
+          type: string
+          nullable: true
+          description: Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited.
         concerns_residents:
           type: boolean
           description: Tenants see only decisions marked this way.
@@ -10391,6 +10401,15 @@ components:
             $ref: '#/components/schemas/DissentInput'
         concerns_residents:
           type: boolean
+        outcome_override:
+          type: object
+          description: 'Required to record `accepted` or `rejected` when the item''s counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited.'
+          required:
+            - reason
+          properties:
+            reason:
+              type: string
+              maxLength: 2000
     DecisionUpdate:
       type: object
       description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'

@@ -4086,9 +4086,14 @@ export interface components {
             ordinary_assembly_month?: number;
             /**
              * Format: int64
-             * @description Additive to the draft. Default length of an elected term in months (default 12).
+             * @description Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
              */
             default_term_months?: number;
+            /**
+             * Format: int64
+             * @description How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
+             */
+            dissent_window_days?: number;
         };
         GovernanceSettings: {
             /** Format: uuid */
@@ -4682,7 +4687,7 @@ export interface components {
             /** @description Always false: the binding vote is counted in the room. */
             binding: boolean;
         };
-        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. */
+        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open. */
         VoteCountSet: {
             /** Format: int64 */
             yes_count: number;
@@ -4903,6 +4908,8 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_vote" | "noted";
             vote_count: components["schemas"]["VoteCount"] | null;
             dissents: components["schemas"]["Dissent"][];
+            /** @description Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited. */
+            outcome_override_reason?: string | null;
             /** @description Tenants see only decisions marked this way. */
             concerns_residents: boolean;
             /** Format: date-time */
@@ -4933,6 +4940,10 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_vote" | "noted";
             dissents?: components["schemas"]["DissentInput"][];
             concerns_residents?: boolean;
+            /** @description Required to record `accepted` or `rejected` when the item's counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited. */
+            outcome_override?: {
+                reason: string;
+            };
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         DecisionUpdate: {

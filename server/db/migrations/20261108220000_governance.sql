@@ -218,9 +218,10 @@ CREATE TABLE vote_count (
     yes_count      int            NOT NULL CHECK (yes_count >= 0),
     no_count       int            NOT NULL CHECK (no_count >= 0),
     abstain_count  int            NOT NULL CHECK (abstain_count >= 0),
-    yes_share      numeric(24,12) NOT NULL CHECK (yes_share >= 0),
-    no_share       numeric(24,12) NOT NULL CHECK (no_share >= 0),
-    abstain_share  numeric(24,12) NOT NULL CHECK (abstain_share >= 0),
+    -- shares are optional: omitted shares are never estimated (rules that need them are undetermined)
+    yes_share      numeric(24,12) CHECK (yes_share >= 0),
+    no_share       numeric(24,12) CHECK (no_share >= 0),
+    abstain_share  numeric(24,12) CHECK (abstain_share >= 0),
     recorded_by    uuid,
     recorded_at    timestamptz    NOT NULL DEFAULT now(),
     PRIMARY KEY (org_id, agenda_item_id),
@@ -251,6 +252,9 @@ CREATE TABLE decision (
     year                int         NOT NULL,
     text                text        NOT NULL,
     outcome             text        NOT NULL CHECK (outcome IN ('accepted', 'rejected', 'no_vote', 'noted')),
+    -- set when the outcome was recorded against (or without) the threshold
+    -- evaluation of the counts: the reason, audited with the decision
+    outcome_override_reason text,
     -- the counts and the threshold evaluation as of recording
     vote_count          jsonb,
     dissents            jsonb       NOT NULL DEFAULT '[]',

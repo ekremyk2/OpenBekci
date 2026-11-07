@@ -161,8 +161,11 @@ func TestEvalThreshold(t *testing.T) {
 		{"four fifths stays on all owners at second call", RuleFourFifths, Counts{Yes: 30, YesShare: 300}, second, HintRejected},
 		{"unanimity", RuleUnanimity, Counts{Yes: 100, YesShare: 1000}, first, HintAccepted},
 		{"unanimity, one missing", RuleUnanimity, Counts{Yes: 99, YesShare: 990}, first, HintRejected},
-		{"simple majority of those voting", RuleSimpleMajorityPresent, Counts{Yes: 4, No: 2, Abstain: 1}, first, HintAccepted},
-		{"simple majority, abstentions count against", RuleSimpleMajorityPresent, Counts{Yes: 3, No: 2, Abstain: 1}, first, HintRejected},
+		{"simple majority of those present", RuleSimpleMajorityPresent, Counts{Yes: 4, No: 2, Abstain: 1}, Basis{Present: Weight{7, 7}, Call: callFirst}, HintAccepted},
+		{"simple majority, a present owner who does not vote counts against", RuleSimpleMajorityPresent, Counts{Yes: 4, No: 1}, Basis{Present: Weight{8, 8}, Call: callFirst}, HintRejected},
+		{"a tie rejects", RuleSimpleMajorityPresent, Counts{Yes: 3, No: 3}, Basis{Present: Weight{6, 6}, Call: callFirst}, HintRejected},
+		{"shares not recorded: never estimated", RuleMajorityCountAndShare, Counts{Yes: 51, No: 19, NoShares: true}, first, HintUndetermined},
+		{"simple majority, abstentions count against", RuleSimpleMajorityPresent, Counts{Yes: 3, No: 2, Abstain: 1}, Basis{Present: Weight{6, 6}, Call: callFirst}, HintRejected},
 		{"nothing recorded", RuleMajorityCountAndShare, Counts{}, first, HintUndetermined},
 		{"unknown rule", "coin_toss", Counts{Yes: 1}, first, HintUndetermined},
 	}

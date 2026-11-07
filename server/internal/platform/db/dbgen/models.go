@@ -108,24 +108,25 @@ type Block struct {
 }
 
 type Decision struct {
-	ID                pgtype.UUID
-	OrgID             pgtype.UUID
-	SiteID            pgtype.UUID
-	MeetingID         pgtype.UUID
-	AgendaItemID      pgtype.UUID
-	SequenceNo        int32
-	Year              int32
-	Text              string
-	Outcome           string
-	VoteCount         []byte
-	Dissents          []byte
-	ConcernsResidents bool
-	NotifiedAt        pgtype.Timestamptz
-	Effect            []byte
-	CreatedBy         pgtype.UUID
-	CreatedAt         pgtype.Timestamptz
-	UpdatedAt         pgtype.Timestamptz
-	Version           int32
+	ID                    pgtype.UUID
+	OrgID                 pgtype.UUID
+	SiteID                pgtype.UUID
+	MeetingID             pgtype.UUID
+	AgendaItemID          pgtype.UUID
+	SequenceNo            int32
+	Year                  int32
+	Text                  string
+	Outcome               string
+	OutcomeOverrideReason pgtype.Text
+	VoteCount             []byte
+	Dissents              []byte
+	ConcernsResidents     bool
+	NotifiedAt            pgtype.Timestamptz
+	Effect                []byte
+	CreatedBy             pgtype.UUID
+	CreatedAt             pgtype.Timestamptz
+	UpdatedAt             pgtype.Timestamptz
+	Version               int32
 }
 
 type DecisionCounter struct {
