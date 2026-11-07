@@ -205,6 +205,53 @@ have an account there. `POST /sites/{site}/offboard` (re-auth, export first) clo
 `admin offboard-site`. A CI test (`TestIntegrationExportManifestCoversEveryTenantTable`) fails when a tenant table is in
 neither `exportTables` nor `excludedTables` (`internal/core/tenancy/export.go`).
 
+## Access control and the on-site agent (0.3)
+
+Design: [07-access-control.md](../docs/plans/07-access-control.md); the agent is `openbekci-agent`. Module
+`internal/core/access` (`protocol/` wire types and decoder, `session/` one agent connection independent of the transport,
+`evaltest/` the reference evaluator, `accesstest/` a fake agent). Permissions `access.read|manage|open|view_events`.
+
+**Operations served** (spec tags `access`, `agent`): access points (CRUD), agents (create, rename, re-enrol, revoke,
+force rotation), credentials (list, get, revoke a manual one), `access-events` (newest first; `after=<sync_seq>` switches
+to feed order for the guard console's poller), `access-points/{id}:open` and `access/commands/{id}`. Draft only:
+`access.createCredential` (tag and PIN are never issued in 0.3), `access.rebuildAllowlist` (needs the jobs resource; the
+service has `Reconcile` and the River job `access.reconcile`), `access.listGuardEvents` (`gate.operate` belongs to the
+community module). The transport operations `agent.enrol|connect|poll|rotateToken` are in the spec but excluded from the
+generated strict server (`exclude-tags: [agent]` in `oapi-codegen.yaml`): `Service.Mount` serves them outside the user
+pipeline. An agent token never satisfies user authorization and a session never authenticates an agent.
+
+**Tokens.** `obk_enr_<random>` (15 minutes, once) is exchanged at `POST /v1/agent/enrol` for `obk_agt_<agent id>.<secret>`
+(only SHA-256 hashes are stored; an unknown, expired or used token answers one identical 404). The token carries the agent
+id; two `SECURITY DEFINER` functions (`access_agent_org`, `access_enrol_agent`, owned by the migrator) map an id or an
+enrolment hash to the organization so every later query is an ordinary RLS tenant transaction. Rotation
+(`POST /v1/agent/token:rotate`) keeps the retired token valid for 10 minutes and returns the same new token if repeated
+(it is kept sealed with `ENCRYPTION_KEY` for that window). Revocation sends `command revoked` and closes with 4401; a bare
+401 means only an unknown token. `ws_url` and `poll_url` are derived from `OPENBEKCI_BASE_URL` and are https/wss only
+unless `INSECURE_DEV`.
+
+**Allow-list.** `credential` rows are derived (never edited): vehicles of a unit with a current occupancy, and whatever the
+`CredentialSource` returns for visitor entries (the community module implements `VisitorCredentials(ctx, site, since)`;
+the default `VehiclesOnly` returns nothing). The projection compares the entry it would publish with the one it last
+published and only a change takes the next `access_site_state.version` (row lock, so versions are gap-free) and appends to
+`allowlist_change` (kept 7 days / 50 000). Triggers on `vehicle` and `occupancy` queue sources in `access_dirty` (the
+outbox); `access.project` drains it every 10 s, `access.reconcile` repairs drift nightly and at start-up, `access.prune`
+applies retention. The community module calls `access.MarkDirty(ctx, tx, ...)` in the approval transaction and
+`Service.Kick(site)` after the commit to reach a connected agent within seconds.
+
+**Transport.** `/v1/agent/ws` (subprotocol `openbekci.agent.v1`, one JSON envelope per frame, 1 MiB, ping every 30 s) and
+`/v1/agent/poll` share `session.Manager`. A poll session is the agent's current session: a request whose first message is
+`hello` starts a new one, any other request without a live session is `410 agent_session_expired`, and `seq` numbers only
+the responses that carry messages (the built agent ignores empty ones). Snapshots go out in parts of at most 2000 entries,
+deltas in chunks of at most 500 changes, gap-free; a lower-version snapshot is sent only right after hello, after a `gap`
+ack or a `request_snapshot`. Events are idempotent by the agent's UUIDv7; `occurred_at` is corrected by the batch's
+clock offset (never later than the receive time). A manual open lives 15 seconds, is refused with `409 agent_offline` when
+the agent is not connected (a live session or a frame within 90 s) or its clock is suspect, is audited with the actor and
+is never retried. Limits: enrol 10/min per IP, WebSocket upgrade 20/min and poll 4/s per agent (`429` with `Retry-After`).
+
+`server/testdata/access-protocol/` holds the shared conformance fixtures (valid and invalid messages, the evaluation
+cases with the inclusive overnight boundary, plate normalization); every one is run against the decoder and the served
+schemas in `api/agent-protocol/v1`.
+
 ## Tests
 
 ```powershell

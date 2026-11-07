@@ -242,6 +242,7 @@ func DialWS(t testing.TB, url, token string) (*Agent, *websocket.Conn, *http.Res
 		cancel()
 		return nil, nil, resp, err
 	}
+	c.SetReadLimit(protocol.MaxFrameBytes)
 	w := &wsConn{t: t, c: c, ctx: ctx, stop: cancel, in: make(chan protocol.Envelope, 256), err: make(chan error, 1)}
 	go w.read()
 	t.Cleanup(func() { w.Close() })

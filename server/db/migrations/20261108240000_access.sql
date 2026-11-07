@@ -151,8 +151,9 @@ CREATE TABLE credential (
     UNIQUE (org_id, site_id, id),
     UNIQUE (org_id, site_id, kind, source_type, source_id),
     FOREIGN KEY (org_id, site_id) REFERENCES site (org_id, id),
-    FOREIGN KEY (org_id, site_id, unit_id) REFERENCES unit (org_id, site_id, id),
-    FOREIGN KEY (org_id, person_id) REFERENCES person (org_id, id)
+    -- display only: a credential outlives the unit or person it names (the link is cleared, not blocked)
+    FOREIGN KEY (org_id, site_id, unit_id) REFERENCES unit (org_id, site_id, id) ON DELETE SET NULL (unit_id),
+    FOREIGN KEY (org_id, person_id) REFERENCES person (org_id, id) ON DELETE SET NULL (person_id)
 );
 CREATE INDEX credential_site_value ON credential (org_id, site_id, kind, value);
 CREATE INDEX credential_source ON credential (org_id, source_type, source_id);

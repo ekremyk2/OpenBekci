@@ -135,6 +135,27 @@ func (e *env) managerCtx(org uuid.UUID) context.Context {
 	return authz.WithGrants(authz.WithPrincipal(context.Background(), pr), authz.Grants{OrgID: org, Items: items})
 }
 
+func ctxWith(org uuid.UUID, reauth bool, perms ...authz.Permission) context.Context {
+	uid := id.New()
+	var items []authz.Grant
+	for _, p := range perms {
+		items = append(items, authz.Grant{Permission: p, ScopeType: authz.ScopeOrg})
+	}
+	pr := &authz.Principal{ID: uid, UserID: uid}
+	if reauth {
+		pr.ReauthUntil = time.Now().Add(time.Hour)
+	}
+	return authz.WithGrants(authz.WithPrincipal(context.Background(), pr), authz.Grants{OrgID: org, Items: items})
+}
+
+// readOnlyCtx holds access.read and nothing else.
+func readOnlyCtx(e *env) context.Context { return ctxWith(e.org, true, access.PermRead) }
+
+// noReauthCtx holds every access permission but has not re-authenticated.
+func noReauthCtx(e *env) context.Context {
+	return ctxWith(e.org, false, access.PermRead, access.PermManage, access.PermOpen, access.PermViewEvents)
+}
+
 // occupy gives the unit an open-ended owner occupancy.
 func (e *env) occupy(unit uuid.UUID, site access.Site) uuid.UUID {
 	person, occ := id.New(), id.New()
