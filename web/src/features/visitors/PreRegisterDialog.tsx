@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -57,6 +57,10 @@ export function PreRegisterDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () 
     },
   })
   const [pass, setPass] = useState<{ token: string; name: string; from: string; to: string } | null>(null)
+  const firstUnit = units[0]?.id
+  useEffect(() => {
+    if (firstUnit && !form.getValues('unit_id')) form.setValue('unit_id', firstUnit)
+  }, [firstUnit, form])
   const create = useOrgMutation(async (v: z.infer<typeof schema>) =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/visitor-entries', {

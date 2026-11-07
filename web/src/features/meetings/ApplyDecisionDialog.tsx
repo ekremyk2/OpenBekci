@@ -127,7 +127,6 @@ export function ApplyDecisionDialog({
       }),
     ).then((r) => r.items),
   )
-  void useDecisions // (decision list is refreshed by the shared invalidation)
 
   const today = todayIn(ctx.timeZone)
   const [kind, setKind] = useState<Kind>(suggestedKind ?? 'dues_rate')

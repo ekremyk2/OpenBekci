@@ -7,10 +7,234 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: pseudo\n"
 
+#. placeholder {0}: v.name
+msgid "{0} admitted."
+msgstr ""
+
+#. placeholder {0}: a.person_display_name
+msgid "{0} checked in."
+msgstr ""
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "{0} days"
+msgstr ""
+
+#. placeholder {0}: v.name
+msgid "{0} marked as left."
+msgstr ""
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "{0} min"
+msgstr ""
+
+#. placeholder {0}: progress.recorded
+#. placeholder {1}: progress.total
+msgid "{0} of {1} delivered"
+msgstr ""
+
+#. placeholder {0}: v.presentCount
+#. placeholder {1}: v.eligibleCount
+#. placeholder {2}: fmt(v.countPct)
+msgid "{0} of {1} owners ({2}%)"
+msgstr ""
+
+#. placeholder {0}: results.units_answered
+#. placeholder {1}: results.units_total
+msgid "{0} of {1} units answered"
+msgstr ""
+
+#. placeholder {0}: preview.recipient_count
+#. placeholder {1}: preview.sms_count
+msgid "{0} owners will be notified ({1} by SMS)."
+msgstr ""
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per month"
+msgstr ""
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per week"
+msgstr ""
+
+#. placeholder {0}: cq.data.pending_approvals.length
+msgid "{0} walk-in visitors are waiting for a resident's answer."
+msgstr ""
+
+#. placeholder {0}: fmt(v.presentSharePct)
+msgid "{0}% present"
+msgstr ""
+
+msgid "{n} requests waiting"
+msgstr ""
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "A booking can last at most {0} minutes."
+msgstr ""
+
+msgid "A booking inside these rules is confirmed at once; there is no approval queue."
+msgstr ""
+
+msgid "A decision without an agenda item."
+msgstr ""
+
+msgid "A gate or door an agent can open. Driver details are configured on the agent computer."
+msgstr ""
+
+msgid "A PIN is 4 to 8 digits."
+msgstr ""
+
+msgid "A reason is required."
+msgstr ""
+
+msgid "Absent"
+msgstr ""
+
+msgid "Abstain"
+msgstr ""
+
 msgid "Accept your invitation"
 msgstr ""
 
+msgid "Accepted"
+msgstr ""
+
+msgid "Access"
+msgstr ""
+
+msgid "Access point"
+msgstr ""
+
+msgid "Access points"
+msgstr ""
+
 msgid "Accountant"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Add an item"
+msgstr ""
+
+msgid "Add dissent"
+msgstr ""
+
+msgid "Add hours"
+msgstr ""
+
+msgid "Add item"
+msgstr ""
+
+msgid "Add someone who visits on fixed days, such as a cleaner or a carer."
+msgstr ""
+
+msgid "Add the first facility residents can book."
+msgstr ""
+
+msgid "Add the gates and doors of the site."
+msgstr ""
+
+msgid "Add the items to discuss and vote on."
+msgstr ""
+
+msgid "Add the opening hours."
+msgstr ""
+
+msgid "Admit"
+msgstr ""
+
+msgid "Agenda"
+msgstr ""
+
+msgid "Agent"
+msgstr ""
+
+msgid "Agents"
+msgstr ""
+
+msgid "Agents on the gate computers, the gates and doors they open, who may pass, and what happened."
+msgstr ""
+
+msgid "Ahead"
+msgstr ""
+
+msgid "All facilities"
+msgstr ""
+
+msgid "All gates and doors"
+msgstr ""
+
+msgid "All kinds"
+msgstr ""
+
+msgid "All points"
+msgstr ""
+
+msgid "All statuses"
+msgstr ""
+
+msgid "Allowed"
+msgstr ""
+
+msgid "Also notify owners"
+msgstr ""
+
+msgid "Amount per unit"
+msgstr ""
+
+msgid "Answered"
+msgstr ""
+
+msgid "Answered recently"
+msgstr ""
+
+msgid "Any decision"
+msgstr ""
+
+msgid "Any outcome"
+msgstr ""
+
+msgid "Any reason"
+msgstr ""
+
+msgid "Any status"
+msgstr ""
+
+msgid "Any year"
+msgstr ""
+
+msgid "App and email"
+msgstr ""
+
+msgid "App and SMS"
+msgstr ""
+
+#. placeholder {0}: labels.effect(decision.effect.kind)
+msgid "Applied: {0}"
+msgstr ""
+
+msgid "Apply effect"
+msgstr ""
+
+msgid "Apply the decision"
+msgstr ""
+
+msgid "Approvals"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Approved"
+msgstr ""
+
+msgid "Approved by the resident."
+msgstr ""
+
+msgid "Ask the resident"
 msgstr ""
 
 msgid "Ask your building manager to invite you."
@@ -19,31 +243,597 @@ msgstr ""
 msgid "Ask your manager if you think you should."
 msgstr ""
 
+msgid "Assemblies"
+msgstr ""
+
+msgid "Assembly"
+msgstr ""
+
+msgid "Assembly settings"
+msgstr ""
+
+#. placeholder {0}: r.unit_door_number
+msgid "At the gate for {0}"
+msgstr ""
+
+msgid "Attendance can be recorded only while the assembly is called or in session."
+msgstr ""
+
+msgid "Attendance desk"
+msgstr ""
+
+msgid "Attendance list (PDF)"
+msgstr ""
+
 msgid "Auditor"
+msgstr ""
+
+msgid "Back"
 msgstr ""
 
 msgid "Back to sign in"
 msgstr ""
 
+msgid "Back to the assembly"
+msgstr ""
+
 msgid "Balances, open requests and announcements will appear here."
+msgstr ""
+
+msgid "Becomes a charge when the booking is confirmed. Empty: free."
+msgstr ""
+
+msgid "Binding"
+msgstr ""
+
+msgid "Block"
+msgstr ""
+
+msgid "Block dates"
+msgstr ""
+
+msgid "Blocked"
+msgstr ""
+
+msgid "Blocked periods"
 msgstr ""
 
 msgid "Board member"
 msgstr ""
 
+msgid "Book"
+msgstr ""
+
+msgid "Book a facility"
+msgstr ""
+
+msgid "Book now"
+msgstr ""
+
+msgid "Booked by"
+msgstr ""
+
+msgid "Booked. Your booking is confirmed."
+msgstr ""
+
+msgid "Bookings"
+msgstr ""
+
+#. placeholder {0}: rules.min_notice_minutes ?? 0
+msgid "Bookings need at least {0} minutes of notice."
+msgstr ""
+
+msgid "Bookings per unit"
+msgstr ""
+
+msgid "Budget"
+msgstr ""
+
+msgid "Budget marked final"
+msgstr ""
+
+msgid "By"
+msgstr ""
+
+msgid "By land share (arsa payı)"
+msgstr ""
+
+msgid "By number of owners"
+msgstr ""
+
+msgid "By proxy: {holder}"
+msgstr ""
+
+msgid "Calendar"
+msgstr ""
+
+msgid "Call"
+msgstr ""
+
+msgid "Call letter (PDF)"
+msgstr ""
+
+msgid "Call the assembly"
+msgstr ""
+
+msgid "Call the resident"
+msgstr ""
+
+msgid "Called"
+msgstr ""
+
+msgid "Calling the assembly freezes who may vote, generates the call letter and creates a delivery checklist with one line per owner."
+msgstr ""
+
+msgid "Calls, attendance, decisions and minutes of the owners' assembly."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel pass"
+msgstr ""
+
+msgid "Cancel the assembly"
+msgstr ""
+
+msgid "Cancel the booking"
+msgstr ""
+
+msgid "Cancel this assembly?"
+msgstr ""
+
+msgid "Cancel this booking?"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Change of use"
+msgstr ""
+
+msgid "Change to common areas"
+msgstr ""
+
+msgid "Changes apply from the next assembly; an assembly that was already called keeps the rules it was called under."
+msgstr ""
+
+msgid "Channel"
+msgstr ""
+
+msgid "Charge to"
+msgstr ""
+
+msgid "Check"
+msgstr ""
+
+msgid "Check recipients"
+msgstr ""
+
+msgid "Check-in QR code"
+msgstr ""
+
+msgid "Checked in"
+msgstr ""
+
+msgid "Choose a budget"
+msgstr ""
+
+msgid "Choose a date and time."
+msgstr ""
+
+msgid "Choose a key"
+msgstr ""
+
+msgid "Choose a person"
+msgstr ""
+
+msgid "Choose a person."
+msgstr ""
+
+msgid "Choose a plan"
+msgstr ""
+
+msgid "Choose a preset"
+msgstr ""
+
+msgid "Choose a start date."
+msgstr ""
+
+msgid "Choose a unit."
+msgstr ""
+
 msgid "Choose an organization"
+msgstr ""
+
+msgid "Choose at least one day."
+msgstr ""
+
+msgid "Choose the unit"
+msgstr ""
+
+msgid "Choose the unit the visitor is for."
+msgstr ""
+
+msgid "Choose when the visit ends."
+msgstr ""
+
+msgid "Choose when the visit starts."
+msgstr ""
+
+msgid "Choose who may book."
+msgstr ""
+
+msgid "Clock suspect"
 msgstr ""
 
 msgid "Close"
 msgstr ""
 
+msgid "Close now"
+msgstr ""
+
+msgid "Close the assembly"
+msgstr ""
+
+msgid "Closed"
+msgstr ""
+
+msgid "Closes"
+msgstr ""
+
+msgid "Closing must be after opening."
+msgstr ""
+
 msgid "Code from the SMS"
+msgstr ""
+
+msgid "Collected"
+msgstr ""
+
+msgid "Collected by"
+msgstr ""
+
+#. placeholder {0}: d.unit_door_number
+msgid "Collected by {0}"
+msgstr ""
+
+msgid "Concerns residents"
+msgstr ""
+
+msgid "Concerns residents (tenants can see it)"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Confirm and apply"
+msgstr ""
+
+msgid "Confirm it is you"
+msgstr ""
+
+msgid "Copied"
+msgstr ""
+
+msgid "Copy the message"
+msgstr ""
+
+msgid "Copy the token"
+msgstr ""
+
+msgid "Could not apply the decision. You can try again; nothing is created twice."
+msgstr ""
+
+msgid "Could not block these dates. Existing bookings may overlap."
+msgstr ""
+
+msgid "Could not book. Please try again."
+msgstr ""
+
+msgid "Could not cancel the booking."
+msgstr ""
+
+msgid "Could not check the code. Try again."
+msgstr ""
+
+msgid "Could not check the recipients."
+msgstr ""
+
+msgid "Could not check this change. Review the values."
+msgstr ""
+
+msgid "Could not close the assembly."
+msgstr ""
+
+msgid "Could not create the agent."
+msgstr ""
+
+msgid "Could not create the assembly."
+msgstr ""
+
+msgid "Could not create the credential."
+msgstr ""
+
+msgid "Could not generate the minutes."
+msgstr ""
+
+msgid "Could not load the decisions."
+msgstr ""
+
+msgid "Could not log the parcel."
+msgstr ""
+
+msgid "Could not mark the parcel as collected."
+msgstr ""
+
+msgid "Could not open."
+msgstr ""
+
+msgid "Could not re-enrol the agent."
+msgstr ""
+
+msgid "Could not record the attendance."
+msgstr ""
+
+msgid "Could not record the decision."
+msgstr ""
+
+msgid "Could not record the deliveries."
+msgstr ""
+
+msgid "Could not record the delivery."
+msgstr ""
+
+msgid "Could not record the proxy."
+msgstr ""
+
+msgid "Could not register the visitor."
+msgstr ""
+
+msgid "Could not revoke the agent."
+msgstr ""
+
+msgid "Could not rotate the token."
+msgstr ""
+
+msgid "Could not save the access point."
+msgstr ""
+
+msgid "Could not save the agenda."
+msgstr ""
+
+msgid "Could not save the counts."
+msgstr ""
+
+msgid "Could not save the facility."
+msgstr ""
+
+msgid "Could not save the poll."
+msgstr ""
+
+msgid "Could not save the recurring visitor."
+msgstr ""
+
+msgid "Could not save the settings."
+msgstr ""
+
+msgid "Could not save your answer."
+msgstr ""
+
+msgid "Could not send the call."
+msgstr ""
+
+msgid "Could not send the decisions."
+msgstr ""
+
+msgid "Could not send the request."
+msgstr ""
+
+msgid "Could not send your answer. It may already have been answered or expired."
 msgstr ""
 
 msgid "Could not sign out. Please try again."
 msgstr ""
 
+msgid "Could not start the assembly."
+msgstr ""
+
+msgid "Could not start the rebuild."
+msgstr ""
+
+msgid "Counts and decisions"
+msgstr ""
+
+msgid "Counts and decisions are recorded once the assembly is in session."
+msgstr ""
+
+msgid "Counts saved."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create an agent to connect a gate or door."
+msgstr ""
+
+msgid "Create assembly"
+msgstr ""
+
+msgid "Create the first assembly to start the call."
+msgstr ""
+
+msgid "Create the pass"
+msgstr ""
+
+msgid "Credential created."
+msgstr ""
+
+msgid "Credentials"
+msgstr ""
+
 msgid "Dark"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Date and place"
+msgstr ""
+
+msgid "days"
+msgstr ""
+
+msgid "Days"
+msgstr ""
+
+#. placeholder {0}: a.dead_letters
+msgid "Dead letters: {0}"
+msgstr ""
+
+msgid "Decision"
+msgstr ""
+
+#. placeholder {0}: decisionNo(d)
+msgid "Decision {0} recorded."
+msgstr ""
+
+#. placeholder {0}: decision.year
+#. placeholder {1}: decision.sequence_no
+msgid "Decision {0}/{1} can create the change it describes. You confirm each one; the link to the decision is kept for the audit trail."
+msgstr ""
+
+msgid "Decision history"
+msgstr ""
+
+msgid "Decision text"
+msgstr ""
+
+msgid "Decision thresholds by topic"
+msgstr ""
+
+msgid "Decisions"
+msgstr ""
+
+msgid "Decisions appear here when they are recorded at an assembly."
+msgstr ""
+
+msgid "Decisions are sent to absent owners after the assembly."
+msgstr ""
+
+msgid "Default: no quorum on the second call; decisions by majority of those present."
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Delete a digit"
+msgstr ""
+
+msgid "Delete this access point?"
+msgstr ""
+
+msgid "Delete this facility?"
+msgstr ""
+
+msgid "Deliveries recorded."
+msgstr ""
+
+msgid "Delivery of the call"
+msgstr ""
+
+msgid "Delivery of the decisions"
+msgstr ""
+
+msgid "Delivery progress"
+msgstr ""
+
+msgid "Delivery recorded."
+msgstr ""
+
+#. placeholder {0}: notice.person_display_name
+msgid "Delivery to {0}"
+msgstr ""
+
+msgid "Denied"
+msgstr ""
+
+msgid "Deny"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Description (optional)"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Direction"
+msgstr ""
+
+msgid "Disabled"
+msgstr ""
+
+msgid "Dissent text"
+msgstr ""
+
+msgid "Dissenting opinions (muhalefet şerhi)"
+msgstr ""
+
+msgid "Dissenting owner"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Draft"
+msgstr ""
+
+msgid "Driver instance"
+msgstr ""
+
+msgid "Due from"
+msgstr ""
+
+msgid "Dues plan"
+msgstr ""
+
+msgid "Dues rate"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit access point"
+msgstr ""
+
+msgid "Edit facility"
+msgstr ""
+
+msgid "Edit item"
+msgstr ""
+
+msgid "Edit rules"
+msgstr ""
+
+msgid "Effective from"
+msgstr ""
+
+msgid "Elected person"
+msgstr ""
+
+msgid "Elected role with a term"
+msgstr ""
+
+msgid "Election of the auditor"
+msgstr ""
+
+msgid "Election of the board"
+msgstr ""
+
+msgid "Election of the manager"
 msgstr ""
 
 msgid "Email"
@@ -58,7 +848,62 @@ msgstr ""
 msgid "Email or phone"
 msgstr ""
 
+msgid "Empty: no limit"
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "End the previous holder's term"
+msgstr ""
+
+#. placeholder {0}: enrolment.agent.name
+msgid "Enrolment token for {0}"
+msgstr ""
+
+msgid "Enter a name."
+msgstr ""
+
+msgid "Enter a number."
+msgstr ""
+
+msgid "Enter a plate like 34 ABC 123."
+msgstr ""
+
+msgid "Enter a time."
+msgstr ""
+
+msgid "Enter a value from {min} to {max}."
+msgstr ""
+
+msgid "Enter a whole number from {min} to {max}."
+msgstr ""
+
+msgid "Enter a whole number."
+msgstr ""
+
 msgid "Enter the code from the SMS"
+msgstr ""
+
+msgid "Enter the date it was sent."
+msgstr ""
+
+msgid "enter the land share to finish the check"
+msgstr ""
+
+msgid "Enter the person's name."
+msgstr ""
+
+msgid "Enter the place of the assembly."
+msgstr ""
+
+msgid "Enter the value."
+msgstr ""
+
+msgid "Enter the visitor's name."
+msgstr ""
+
+msgid "Enter this token once when you install the agent on the gate computer. It expires <0/>."
 msgstr ""
 
 msgid "Enter your email"
@@ -70,22 +915,170 @@ msgstr ""
 msgid "Enter your password"
 msgstr ""
 
+msgid "Enter your password."
+msgstr ""
+
 msgid "Enter your phone number"
+msgstr ""
+
+msgid "Existing bookings stay in the history."
+msgstr ""
+
+msgid "Exit"
+msgstr ""
+
+msgid "Expected"
+msgstr ""
+
+msgid "Expected today"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+msgid "Extraordinary assembly"
+msgstr ""
+
+msgid "Facilities"
+msgstr ""
+
+msgid "Facilities and rules"
+msgstr ""
+
+msgid "Facility"
+msgstr ""
+
+msgid "Facility saved."
+msgstr ""
+
+msgid "Fee"
+msgstr ""
+
+msgid "Fee per booking"
+msgstr ""
+
+msgid "Fee refunded if cancelled this many hours before"
+msgstr ""
+
+#. placeholder {0}: facility.rules.cancel_refund_cutoff_hours !== null ? ` Refunded if you cancel at least ${facility.rules.cancel_refund_cutoff_hours} hours ahead.` : ''
+msgid "Fee: <0/>, charged to the unit's account when the booking is confirmed.{0}"
+msgstr ""
+
+msgid "Fill the form with this preset"
+msgstr ""
+
+msgid "First call"
+msgstr ""
+
+msgid "First call: more than this share of owners"
+msgstr ""
+
+msgid "First call: more than this share of the land"
+msgstr ""
+
+msgid "First meeting"
+msgstr ""
+
+msgid "For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR code."
+msgstr ""
+
+msgid "For discussion"
+msgstr ""
+
+msgid "For information"
+msgstr ""
+
+msgid "Four fifths"
+msgstr ""
+
+msgid "free"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "From a vehicle"
+msgstr ""
+
+msgid "From a visitor"
+msgstr ""
+
+msgid "Gate"
+msgstr ""
+
+msgid "Gate control"
+msgstr ""
+
+msgid "Gates"
+msgstr ""
+
+msgid "General decision"
+msgstr ""
+
+msgid "Generate again"
+msgstr ""
+
+msgid "Generate the minutes"
 msgstr ""
 
 msgid "Go home"
 msgstr ""
 
+msgid "Governance sections"
+msgstr ""
+
 msgid "Guard"
+msgstr ""
+
+msgid "Halls, courts and barbecue areas, each with its own booking rules."
 msgstr ""
 
 msgid "Home"
 msgstr ""
 
+msgid "Hours"
+msgstr ""
+
 msgid "Household member"
 msgstr ""
 
+msgid "Household members"
+msgstr ""
+
+msgid "How far ahead (days)"
+msgstr ""
+
+msgid "I have saved it"
+msgstr ""
+
 msgid "If that address is registered, a sign-in link is on its way. It works once."
+msgstr ""
+
+msgid "In"
+msgstr ""
+
+msgid "In and out"
+msgstr ""
+
+msgid "In session"
+msgstr ""
+
+msgid "In the app"
+msgstr ""
+
+msgid "In the app only"
+msgstr ""
+
+msgid "Inside the rules, your booking is confirmed immediately."
+msgstr ""
+
+msgid "It is too late for a refund: the fee of <0/> is kept."
+msgstr ""
+
+msgid "It stops opening gates at once."
+msgstr ""
+
+msgid "Its gates stop opening from the app and it can no longer connect."
 msgstr ""
 
 msgid "Join your building"
@@ -94,31 +1087,413 @@ msgstr ""
 msgid "Keep editing"
 msgstr ""
 
+msgid "Keep the booking"
+msgstr ""
+
+msgid "Keep the proof: this record is what counts if a decision is challenged."
+msgstr ""
+
+msgid "Kind"
+msgstr ""
+
 msgid "Language"
+msgstr ""
+
+msgid "Last seen"
+msgstr ""
+
+msgid "Law 634 default: one third."
+msgstr ""
+
+msgid "Leave the guard console"
+msgstr ""
+
+msgid "Left"
 msgstr ""
 
 msgid "Light"
 msgstr ""
 
+#. placeholder {0}: proxyLimit(settings, totalUnits)
+msgid "Limit: {0} proxies per person (site settings)."
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Load a preset"
+msgstr ""
+
+msgid "Log parcel"
+msgstr ""
+
+msgid "Longest"
+msgstr ""
+
+msgid "Longest booking (minutes)"
+msgstr ""
+
+msgid "Looking up the number…"
+msgstr ""
+
+#. placeholder {0}: a.lost_events
+msgid "Lost events: {0}"
+msgstr ""
+
 msgid "Main"
+msgstr ""
+
+msgid "Majority by number and by share"
+msgstr ""
+
+msgid "Majority of those present"
+msgstr ""
+
+msgid "Manual"
+msgstr ""
+
+#. placeholder {0}: o.name
+msgid "Mark {0} present"
+msgstr ""
+
+msgid "Meetings"
+msgstr ""
+
+msgid "met"
+msgstr ""
+
+msgid "Method"
+msgstr ""
+
+msgid "Method for the selected owners"
+msgstr ""
+
+msgid "Minutes"
+msgstr ""
+
+msgid "Minutes (PDF)"
+msgstr ""
+
+msgid "Minutes (tutanak)"
+msgstr ""
+
+msgid "mock"
 msgstr ""
 
 msgid "Money"
 msgstr ""
 
+msgid "month"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+#. placeholder {0}: v.requiredCountPct
+#. placeholder {1}: v.moreOwnersNeeded
+msgid "More than {0}% needed; {1} more owners."
+msgstr ""
+
+#. placeholder {0}: v.requiredCountPct
+msgid "More than {0}% needed: met."
+msgstr ""
+
+#. placeholder {0}: v.requiredSharePct
+msgid "More than {0}% needed."
+msgstr ""
+
+msgid "More yes than no among those present"
+msgstr ""
+
+msgid "Most uses (optional)"
+msgstr ""
+
+msgid "Most votes one person may hold"
+msgstr ""
+
+msgid "Most votes one person may represent by proxy"
+msgstr ""
+
+msgid "Move down"
+msgstr ""
+
+msgid "Move up"
+msgstr ""
+
 msgid "My account"
+msgstr ""
+
+msgid "My call letter"
+msgstr ""
+
+msgid "My check-in code"
+msgstr ""
+
+msgid "My unit"
 msgstr ""
 
 msgid "My units"
 msgstr ""
 
+msgid "My vehicles"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Name of the plan"
+msgstr ""
+
+msgid "Name or plate"
+msgstr ""
+
 msgid "Navigation"
+msgstr ""
+
+#. placeholder {0}: evaln.neededYes
+#. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
+msgid "Needed: at least {0} yes votes{1}"
+msgstr ""
+
+msgid "Needs"
+msgstr ""
+
+msgid "New access point"
+msgstr ""
+
+msgid "New agent"
+msgstr ""
+
+msgid "New amount per unit"
+msgstr ""
+
+msgid "New assembly"
+msgstr ""
+
+msgid "New dues rate"
+msgstr ""
+
+msgid "New facility"
+msgstr ""
+
+msgid "New gate agent"
+msgstr ""
+
+msgid "New manual credential"
+msgstr ""
+
+msgid "New recurring visitor"
+msgstr ""
+
+msgid "New tag or PIN"
+msgstr ""
+
+msgid "New visitor"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "No access points yet"
+msgstr ""
+
+msgid "No agenda item is marked \"will be voted\"."
+msgstr ""
+
+msgid "No agenda items yet"
+msgstr ""
+
+msgid "No agenda items yet."
+msgstr ""
+
+msgid "No agent"
+msgstr ""
+
+msgid "No answer in time. Call the resident."
+msgstr ""
+
+msgid "No assemblies yet"
+msgstr ""
+
+msgid "No bookings in this period."
+msgstr ""
+
+msgid "No credentials found"
+msgstr ""
+
+msgid "No decisions found"
+msgstr ""
+
+msgid "No decisions recorded yet."
+msgstr ""
+
+msgid "No decisions yet"
+msgstr ""
+
+msgid "No deliveries to record"
+msgstr ""
+
+msgid "No facilities yet"
+msgstr ""
+
+msgid "No gate agents yet"
+msgstr ""
+
+msgid "No gate is connected to this console."
+msgstr ""
+
+msgid "No guard has a PIN yet. A manager sets guard PINs in the people settings."
+msgstr ""
+
+msgid "No match. Use \"Walk-in visitor\" to ask the resident."
+msgstr ""
+
+msgid "No minimum number on this call."
+msgstr ""
+
+msgid "No minimum share on this call."
+msgstr ""
+
+msgid "No openings match"
+msgstr ""
+
+msgid "No owners found"
+msgstr ""
+
+msgid "No parcels are waiting."
+msgstr ""
+
+msgid "No poll"
+msgstr ""
+
+msgid "No recurring visitors"
+msgstr ""
+
+msgid "No site yet"
+msgstr ""
+
+msgid "No threshold is set for this topic."
+msgstr ""
+
+msgid "No topic"
+msgstr ""
+
+msgid "No visitor is waiting"
+msgstr ""
+
+msgid "No visitors yet"
+msgstr ""
+
+msgid "No vote"
+msgstr ""
+
+msgid "Nobody is expected right now."
+msgstr ""
+
+msgid "Nobody yet."
+msgstr ""
+
+msgid "Non-binding"
+msgstr ""
+
+msgid "none"
+msgstr ""
+
+msgid "Not available"
+msgstr ""
+
+msgid "Not determined"
+msgstr ""
+
+msgid "not met"
+msgstr ""
+
+msgid "Not voted"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Noted"
+msgstr ""
+
+msgid "Nothing has been scheduled."
+msgstr ""
+
+msgid "Nothing here yet"
+msgstr ""
+
+msgid "Nothing yet."
 msgstr ""
 
 msgid "Notifications"
 msgstr ""
 
+msgid "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
+msgstr ""
+
+msgid "Offline"
+msgstr ""
+
+msgid "On site"
+msgstr ""
+
+msgid "on the chosen days until you revoke it"
+msgstr ""
+
+msgid "Online"
+msgstr ""
+
+msgid "Only owners attend and answer polls. You can read the decisions below."
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+#. placeholder {0}: point.name
+msgid "Open {0}"
+msgstr ""
+
+msgid "Open command sent."
+msgstr ""
+
+msgid "Open for booking"
+msgstr ""
+
 msgid "Open menu"
+msgstr ""
+
+msgid "Open now"
+msgstr ""
+
+msgid "Open the assembly"
+msgstr ""
+
+msgid "Opened"
+msgstr ""
+
+msgid "Opened by hand"
+msgstr ""
+
+msgid "Opening hours"
+msgstr ""
+
+msgid "Opening log"
+msgstr ""
+
+msgid "Opening…"
+msgstr ""
+
+msgid "Opens"
+msgstr ""
+
+msgid "or type the code"
+msgstr ""
+
+msgid "Ordinary assembly"
 msgstr ""
 
 msgid "Organization admin"
@@ -127,19 +1502,76 @@ msgstr ""
 msgid "Organizations, health and backup status will appear here."
 msgstr ""
 
+msgid "Other"
+msgstr ""
+
+msgid "Out"
+msgstr ""
+
+msgid "Outcome"
+msgstr ""
+
 msgid "Owner"
+msgstr ""
+
+msgid "Owners"
+msgstr ""
+
+msgid "Owners come from the occupancies of the site."
+msgstr ""
+
+msgid "Owners who were called are not notified automatically; record the cancellation with a reason."
 msgstr ""
 
 msgid "Page not found"
 msgstr ""
 
+msgid "Parcel"
+msgstr ""
+
+msgid "Parcel logged. The resident is notified."
+msgstr ""
+
+msgid "Parcels"
+msgstr ""
+
 msgid "Password"
+msgstr ""
+
+msgid "Pedestrian door"
+msgstr ""
+
+msgid "Pedestrian doors"
+msgstr ""
+
+msgid "Pending"
 msgstr ""
 
 msgid "People"
 msgstr ""
 
+msgid "per"
+msgstr ""
+
 msgid "Phone number"
+msgstr ""
+
+msgid "PIN"
+msgstr ""
+
+msgid "Place"
+msgstr ""
+
+msgid "Plan an assembly"
+msgstr ""
+
+msgid "Plate"
+msgstr ""
+
+msgid "Plate (optional)"
+msgstr ""
+
+msgid "Plates and visitor codes are created from vehicles and visitors. Add a tag or a PIN here."
 msgstr ""
 
 msgid "Platform administration"
@@ -148,17 +1580,328 @@ msgstr ""
 msgid "Please confirm it is you before continuing."
 msgstr ""
 
+msgid "Point"
+msgstr ""
+
+msgid "Poll saved."
+msgstr ""
+
+msgid "Polls"
+msgstr ""
+
+msgid "Polls are not votes. Owners answer once per unit before the assembly so you can see the mood; the binding count is recorded in the room."
+msgstr ""
+
+msgid "Pre-register a guest to get a QR code for the gate."
+msgstr ""
+
+msgid "Pre-register a visitor"
+msgstr ""
+
+msgid "Pre-register guests, share their QR code, and answer the guard's requests."
+msgstr ""
+
+msgid "Present"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Proof"
+msgstr ""
+
+msgid "Proof (photo or PDF)"
+msgstr ""
+
+msgid "Proof attached"
+msgstr ""
+
+msgid "Proxy"
+msgstr ""
+
+msgid "QR"
+msgstr ""
+
+msgid "QR check-in"
+msgstr ""
+
+msgid "QR code"
+msgstr ""
+
+msgid "Question (optional)"
+msgstr ""
+
+#. placeholder {0}: a.queue_depth
+msgid "Queue: {0}"
+msgstr ""
+
+msgid "Quorum"
+msgstr ""
+
+msgid "Quorum not reached"
+msgstr ""
+
+msgid "Quorum reached"
+msgstr ""
+
+msgid "Quorum, thresholds, proxy limits and timing. Law 634 values are the defaults; change them only where your yönetim planı allows it."
+msgstr ""
+
+msgid "Quota"
+msgstr ""
+
+msgid "Re-enrol"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgid "Reason (optional)"
+msgstr ""
+
+msgid "Rebuild the allow-list"
+msgstr ""
+
+msgid "Recent openings"
+msgstr ""
+
+msgid "Record"
+msgstr ""
+
+msgid "Record a note"
+msgstr ""
+
+#. placeholder {0}: o.name
+msgid "Record a proxy for {0}"
+msgstr ""
+
+msgid "Record anyway"
+msgstr ""
+
+msgid "Record decision"
+msgstr ""
+
+msgid "Record for selected today"
+msgstr ""
+
+msgid "Record proxy"
+msgstr ""
+
+msgid "Recurring"
+msgstr ""
+
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
+msgstr ""
+
+msgid "Refused"
+msgstr ""
+
+msgid "Registered mail"
+msgstr ""
+
+msgid "Registered mail needs the tracking number."
+msgstr ""
+
+msgid "Rejected"
 msgstr ""
 
 msgid "Reload"
 msgstr ""
 
+msgid "Remind before a term ends"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Remove dissent"
+msgstr ""
+
+msgid "Remove hours"
+msgstr ""
+
+msgid "Remove item"
+msgstr ""
+
+msgid "Represented by"
+msgstr ""
+
+msgid "Requests waiting"
+msgstr ""
+
+msgid "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
+msgstr ""
+
 msgid "Reset your password"
 msgstr ""
 
+#. placeholder {0}: p.unit_door_number
+msgid "resident vehicle, unit {0}"
+msgstr ""
+
+msgid "Resident vehicles"
+msgstr ""
+
+msgid "Residents cannot book a blocked period (maintenance, private events)."
+msgstr ""
+
+msgid "Review"
+msgstr ""
+
+msgid "Revoke"
+msgstr ""
+
+msgid "Revoke this agent?"
+msgstr ""
+
+msgid "Revoke this credential?"
+msgstr ""
+
+msgid "Revoke this permission?"
+msgstr ""
+
+msgid "Revoked"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Rotate token"
+msgstr ""
+
+msgid "Rule"
+msgstr ""
+
+#. placeholder {0}: labels.topic(th.topic)
+msgid "Rule for {0}"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save and show the code"
+msgstr ""
+
+msgid "Save counts"
+msgstr ""
+
+msgid "Save dates"
+msgstr ""
+
+msgid "Save settings"
+msgstr ""
+
+msgid "Scan a pass"
+msgstr ""
+
+msgid "Scan the code from the owner's phone or from the printed call letter."
+msgstr ""
+
+msgid "Scan with camera"
+msgstr ""
+
+msgid "Scheduled"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Search by name or plate"
+msgstr ""
+
+msgid "Search credentials"
+msgstr ""
+
+msgid "Search decisions"
+msgstr ""
+
+msgid "Search name or plate"
+msgstr ""
+
+msgid "Search owner or unit"
+msgstr ""
+
+msgid "Search owners or units"
+msgstr ""
+
+msgid "Search the text"
+msgstr ""
+
+msgid "Search visitors"
+msgstr ""
+
+msgid "Searching…"
+msgstr ""
+
+msgid "Second call"
+msgstr ""
+
+msgid "Second meeting"
+msgstr ""
+
+msgid "Second meeting:"
+msgstr ""
+
+msgid "Second meeting: earliest, days after the first"
+msgstr ""
+
+msgid "Second meeting: latest, days after the first"
+msgstr ""
+
+msgid "Select"
+msgstr ""
+
+#. placeholder {0}: n.person_display_name
+msgid "Select {0}"
+msgstr ""
+
 msgid "Send me a code"
+msgstr ""
+
+msgid "Send the call"
+msgstr ""
+
+msgid "Send the call at least this many days before"
+msgstr ""
+
+msgid "Send the decisions"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Sent on"
+msgstr ""
+
+msgid "Server evaluation:"
+msgstr ""
+
+msgid "Set the date, build the agenda, then send the call from the assembly page."
+msgstr ""
+
+msgid "Set up a site first; assemblies are held per site."
+msgstr ""
+
+msgid "Set up a site first; this area works per site."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings saved."
+msgstr ""
+
+msgid "Share of land present"
+msgstr ""
+
+msgid "Share of owners present"
+msgstr ""
+
+msgid "Shortest notice (minutes)"
+msgstr ""
+
+msgid "Show this code at the door. It works once per assembly."
 msgstr ""
 
 msgid "Sign in"
@@ -170,7 +1913,13 @@ msgstr ""
 msgid "Sign out"
 msgstr ""
 
+msgid "Signed by hand"
+msgstr ""
+
 msgid "Signing you in"
+msgstr ""
+
+msgid "Site"
 msgstr ""
 
 msgid "Site manager"
@@ -180,6 +1929,18 @@ msgid "Sites"
 msgstr ""
 
 msgid "Skip to content"
+msgstr ""
+
+msgid "Slots booked by others are shown only as \"taken\"."
+msgstr ""
+
+msgid "Small building: most proxies per person"
+msgstr ""
+
+msgid "Small building: up to this many units"
+msgstr ""
+
+msgid "SMS"
 msgstr ""
 
 msgid "SMS code"
@@ -197,7 +1958,43 @@ msgstr ""
 msgid "Something went wrong. Please try again."
 msgstr ""
 
+msgid "Source"
+msgstr ""
+
+msgid "Special assessment"
+msgstr ""
+
+msgid "Special assessment plan"
+msgstr ""
+
+msgid "Split by"
+msgstr ""
+
 msgid "Staff"
+msgstr ""
+
+msgid "Start the assembly"
+msgstr ""
+
+msgid "Start the shift"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Stop camera"
+msgstr ""
+
+msgid "Store error"
+msgstr ""
+
+msgid "Suspended"
+msgstr ""
+
+msgid "Switch guard"
 msgstr ""
 
 msgid "Switch organization"
@@ -206,16 +2003,194 @@ msgstr ""
 msgid "System"
 msgstr ""
 
+msgid "Tag"
+msgstr ""
+
+msgid "Tag number"
+msgstr ""
+
+msgid "Tag or card"
+msgstr ""
+
+msgid "Taken"
+msgstr ""
+
+msgid "Tell the absent owners"
+msgstr ""
+
 msgid "Tenant"
+msgstr ""
+
+msgid "Tenants"
+msgstr ""
+
+msgid "Term ends"
+msgstr ""
+
+msgid "Term starts"
+msgstr ""
+
+msgid "That did not work. Check the visitor's status."
 msgstr ""
 
 msgid "That did not work. Check your details and try again."
 msgstr ""
 
+msgid "That owner is already checked in."
+msgstr ""
+
+msgid "That password is not correct."
+msgstr ""
+
+msgid "That time is already taken or blocked. Choose another slot."
+msgstr ""
+
+msgid "The agent is offline."
+msgstr ""
+
+msgid "The agent runs on a computer at the gate and opens it. You get a one-time token to enrol it."
+msgstr ""
+
+msgid "The agent's clock is wrong."
+msgstr ""
+
+msgid "The allow-list is being rebuilt."
+msgstr ""
+
+msgid "The binding vote happens in the room; this is only a temperature check."
+msgstr ""
+
+msgid "The booking breaks a rule of this facility."
+msgstr ""
+
+msgid "The booking was cancelled."
+msgstr ""
+
+msgid "The call has been sent."
+msgstr ""
+
+msgid "The call has gone out, so the agenda is fixed."
+msgstr ""
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The call must go out at least {0} days before the meeting. Move the date or send the call later only if the rules allow it."
+msgstr ""
+
+msgid "The camera is not available ({error}). Type the code instead."
+msgstr ""
+
+msgid "The change has been created."
+msgstr ""
+
+msgid "The checklist appears when the assembly has been called."
+msgstr ""
+
+msgid "The code also works for 30 minutes before and after this window, once."
+msgstr ""
+
+msgid "The decisions go to the owners who were not present. Each delivery is recorded like the call."
+msgstr ""
+
+msgid "The decisions were sent."
+msgstr ""
+
+msgid "The download failed. Please try again."
+msgstr ""
+
+msgid "The end must be after the start."
+msgstr ""
+
+msgid "The facility is closed at that time."
+msgstr ""
+
+msgid "The fee of <0/> is refunded automatically."
+msgstr ""
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The first meeting is less than {0} days away. The server will refuse a call that is too late; move the date first."
+msgstr ""
+
+msgid "The gate agent is offline."
+msgstr ""
+
+msgid "The gate agent's clock is wrong; it will not act."
+msgstr ""
+
+msgid "The gate did not confirm. Try again or check the gate."
+msgstr ""
+
+msgid "The last day must not be before the first."
+msgstr ""
+
+msgid "The latest day must not be before the earliest day."
+msgstr ""
+
+msgid "The legal timing is not met."
+msgstr ""
+
+msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
+msgstr ""
+
+msgid "The list of units is not available to this account."
+msgstr ""
+
+msgid "The minutes can be generated once the assembly is closed."
+msgstr ""
+
+msgid "The minutes were generated and filed in the documents."
+msgstr ""
+
+msgid "The opening log is not available."
+msgstr ""
+
 msgid "The page you are looking for does not exist or has moved."
 msgstr ""
 
+msgid "The pass was cancelled."
+msgstr ""
+
+msgid "The permission was revoked."
+msgstr ""
+
+msgid "The poll is closed."
+msgstr ""
+
+msgid "The poll is open."
+msgstr ""
+
+msgid "The QR code stops working at once."
+msgstr ""
+
+msgid "The request could not be sent by SMS. Call the resident instead."
+msgstr ""
+
 msgid "The request failed. Please try again."
+msgstr ""
+
+msgid "The resident denied this visitor. Do not admit."
+msgstr ""
+
+msgid "The search failed."
+msgstr ""
+
+msgid "The second call also needs a quorum"
+msgstr ""
+
+msgid "The second meeting must come after the first."
+msgstr ""
+
+#. placeholder {0}: settings.data.settings.second_call_min_days
+#. placeholder {1}: settings.data.settings.second_call_max_days
+msgid "The second meeting should be {0} to {1} days after the first."
+msgstr ""
+
+#. placeholder {0}: r.person_display_name
+#. placeholder {1}: labels.role(r.role)
+#. placeholder {2}: r.days_left
+msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
+msgstr ""
+
+msgid "The visit must end after it starts."
 msgstr ""
 
 msgid "Theme"
@@ -224,10 +2199,58 @@ msgstr ""
 msgid "This accounting period is closed and can no longer be changed."
 msgstr ""
 
+msgid "This action needs a recent sign-in. Enter your password to continue."
+msgstr ""
+
+msgid "This assembly was cancelled."
+msgstr ""
+
+msgid "This code is not known."
+msgstr ""
+
+msgid "This code is not valid for this assembly."
+msgstr ""
+
+msgid "This code is shown only now. Send it to your guest before you close this window."
+msgstr ""
+
+msgid "This decision already has an applied change."
+msgstr ""
+
+msgid "This facility is not open to your kind of occupant."
+msgstr ""
+
+msgid "This gate is switched off."
+msgstr ""
+
+msgid "This pass is for another site."
+msgstr ""
+
+msgid "This pass is not valid at this time."
+msgstr ""
+
+msgid "This pass was already used."
+msgstr ""
+
+msgid "This pass was cancelled or revoked."
+msgstr ""
+
+msgid "This person would hold more proxies than the limit of {limit} for this site."
+msgstr ""
+
+msgid "This person would hold more than the maximum share of all votes."
+msgstr ""
+
+msgid "This point is switched off."
+msgstr ""
+
 msgid "This record changed"
 msgstr ""
 
 msgid "This request was already sent with different details. Reload the form and try again."
+msgstr ""
+
+msgid "This resident did not share a number for the gate."
 msgstr ""
 
 msgid "This server offers no sign-in method this app can use."
@@ -236,10 +2259,42 @@ msgstr ""
 msgid "This step is not available in this build yet."
 msgstr ""
 
+msgid "This token is shown only now. If you lose it, re-enrol the agent to get a new one."
+msgstr ""
+
 msgid "This value is not valid"
 msgstr ""
 
+#. placeholder {0}: labels.effect(kind)
+msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
+msgstr ""
+
 msgid "Tickets"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+#. placeholder {0}: ctx.timeZone
+msgid "Times are in the site's time zone ({0})."
+msgstr ""
+
+msgid "Timing"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Title (optional)"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Token rotation started."
 msgstr ""
 
 msgid "Too many attempts. Please wait and try again."
@@ -252,16 +2307,196 @@ msgstr ""
 msgid "Too many requests. Try again in {0} seconds."
 msgstr ""
 
+msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
+msgstr ""
+
+msgid "Topic"
+msgstr ""
+
+msgid "Tracking no."
+msgstr ""
+
+msgid "Tracking number"
+msgstr ""
+
+msgid "Tracking number (optional)"
+msgstr ""
+
 msgid "Try again"
 msgstr ""
 
+msgid "Unanimity"
+msgstr ""
+
+msgid "Undo"
+msgstr ""
+
+#. placeholder {0}: o.name
+msgid "Undo attendance of {0}"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Until"
+msgstr ""
+
+msgid "Upcoming and recent"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Valid from"
+msgstr ""
+
+msgid "Valid pass"
+msgstr ""
+
+msgid "Valid until"
+msgstr ""
+
+msgid "Valid until (optional)"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Vehicle gate"
+msgstr ""
+
+msgid "Vehicle gates"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "Visiting unit"
+msgstr ""
+
+msgid "Visitor"
+msgstr ""
+
+msgid "Visitor approved."
+msgstr ""
+
+msgid "Visitor code"
+msgstr ""
+
+msgid "Visitor denied."
+msgstr ""
+
+msgid "Visitor pass for {name}"
+msgstr ""
+
+msgid "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
+msgstr ""
+
+msgid "Visitor QR code"
+msgstr ""
+
+msgid "Visitor's name"
+msgstr ""
+
+msgid "Visitors"
+msgstr ""
+
+msgid "Voted"
+msgstr ""
+
+msgid "Votes and proxies"
+msgstr ""
+
+#. placeholder {0}: entry.data?.unit_door_number ?? ''
+msgid "Waiting for {0} to answer. This checks every few seconds."
+msgstr ""
+
+msgid "Waiting for approval"
+msgstr ""
+
+msgid "Waiting for enrolment"
+msgstr ""
+
+msgid "Waiting for the resident"
+msgstr ""
+
+msgid "Walk-in visitor"
+msgstr ""
+
 msgid "We could not find that."
+msgstr ""
+
+msgid "week"
+msgstr ""
+
+msgid "Week"
+msgstr ""
+
+msgid "What is it? (optional)"
+msgstr ""
+
+msgid "What should be created"
+msgstr ""
+
+msgid "What will be created"
+msgstr ""
+
+msgid "WhatsApp"
+msgstr ""
+
+msgid "When"
+msgstr ""
+
+msgid "When the guard asks about an unexpected visitor, the request shows up here and by SMS. This page checks every few seconds."
+msgstr ""
+
+msgid "Where the defaults come from"
+msgstr ""
+
+msgid "Who is on the gate?"
+msgstr ""
+
+msgid "Who may book"
+msgstr ""
+
+msgid "Will be voted"
+msgstr ""
+
+msgid "Will be voted on"
+msgstr ""
+
+msgid "Window"
+msgstr ""
+
+msgid "Write the decision."
+msgstr ""
+
+msgid "Write the dissent."
+msgstr ""
+
+msgid "Wrong PIN. Try again."
+msgstr ""
+
+msgid "Year"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "Yes share of land (%)"
+msgstr ""
+
+msgid "You are checked in"
 msgstr ""
 
 msgid "You are not linked to a unit in this organization."
 msgstr ""
 
 msgid "You are not part of any organization yet"
+msgstr ""
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "You can book at most {0} days ahead."
 msgstr ""
 
 msgid "You do not have access to this"
@@ -273,6 +2508,12 @@ msgstr ""
 msgid "You do not have permission to do this."
 msgstr ""
 
+msgid "You get a QR code to send to your guest. The guard scans it at the gate."
+msgstr ""
+
+msgid "You may not open gates."
+msgstr ""
+
 msgid "You will be able to choose a new password here."
 msgstr ""
 
@@ -282,8 +2523,17 @@ msgstr ""
 msgid "You will be able to create or link your account here."
 msgstr ""
 
+msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
+msgstr ""
+
+msgid "Your answer was saved."
+msgstr ""
+
 msgid "Your dashboard is on its way"
 msgstr ""
 
 msgid "Your sign-in link will be completed here."
+msgstr ""
+
+msgid "Your unit has used its bookings for this period."
 msgstr ""

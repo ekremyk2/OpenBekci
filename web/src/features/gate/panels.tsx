@@ -44,16 +44,20 @@ export function useConsole(ctx: SiteCtx) {
   })
 }
 
-const reasonText = (t: ReturnType<typeof useLingui>['t']) => ({
+function useReasonText() {
+  const { t } = useLingui()
+  return {
   match: t`Valid`,
   unknown: t`This code is not known.`,
   outside_window: t`This pass is not valid at this time.`,
   used_up: t`This pass was already used.`,
   revoked: t`This pass was cancelled or revoked.`,
   wrong_site: t`This pass is for another site.`,
-})
+  }
+}
 
-function approvalBadge(t: ReturnType<typeof useLingui>['t'], s: S['GuardVisitor']['approval_status']) {
+function ApprovalStatus({ s }: { s: S['GuardVisitor']['approval_status'] }) {
+  const { t } = useLingui()
   switch (s) {
     case 'pre_approved':
       return <Badge variant="info">{t`Expected`}</Badge>
@@ -135,7 +139,7 @@ function VisitorRow({ ctx, v }: { ctx: SiteCtx; v: S['GuardVisitor'] }) {
           {v.recurring ? ` · ${t`Recurring`}` : ''}
         </span>
       </div>
-      {v.arrived_at && !v.left_at ? <Badge variant="success">{t`On site`}</Badge> : approvalBadge(t, v.approval_status)}
+      {v.arrived_at && !v.left_at ? <Badge variant="success">{t`On site`}</Badge> : <ApprovalStatus s={v.approval_status} />}
       <VisitorActions ctx={ctx} v={v} />
     </li>
   )
@@ -250,7 +254,7 @@ export function ScanPanel({ ctx }: { ctx: SiteCtx }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const refresh = useRefresh(ctx)
-  const reasons = reasonText(t)
+  const reasons = useReasonText()
   async function scan(token: string) {
     setBusy(true)
     setError(null)
@@ -581,13 +585,16 @@ export function ParcelsPanel({ ctx, waiting }: { ctx: SiteCtx; waiting: S['GateD
   )
 }
 
-const blockText = (t: ReturnType<typeof useLingui>['t'], r: OpenBlock) =>
+function useBlockText() {
+  const { t } = useLingui()
+  return (r: OpenBlock) =>
   ({
     no_permission: t`You may not open gates.`,
     point_disabled: t`This gate is switched off.`,
     agent_offline: t`The gate agent is offline.`,
     clock_suspect: t`The gate agent's clock is wrong; it will not act.`,
   })[r]
+}
 
 /** One manual open button: disabled with the reason when it cannot work. */
 export function OpenButton({
@@ -610,6 +617,7 @@ export function OpenButton({
   const [learned, setLearned] = useState<OpenBlock | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => void (timer.current && clearTimeout(timer.current)), [])
+  const blockText = useBlockText()
   const state = manualOpenState({ canOpen, point, agent: c.agent, serverTime: c.server_time, clockSuspect })
   const reason = state.reason ?? learned
   async function open() {
@@ -656,7 +664,7 @@ export function OpenButton({
       </Button>
       {reason ? (
         <p id={`why-${point.id}`} className="text-sm text-muted-foreground">
-          {blockText(t, reason)}
+          {blockText(reason)}
         </p>
       ) : null}
       {phase === 'failed' && !reason ? (

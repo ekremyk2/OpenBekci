@@ -7,11 +7,235 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: tr\n"
 
+#. placeholder {0}: v.name
+msgid "{0} admitted."
+msgstr "{0} içeri alındı."
+
+#. placeholder {0}: a.person_display_name
+msgid "{0} checked in."
+msgstr "{0} giriş yaptı."
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "{0} days"
+msgstr "{0} gün"
+
+#. placeholder {0}: v.name
+msgid "{0} marked as left."
+msgstr "{0} çıkış yaptı olarak işaretlendi."
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "{0} min"
+msgstr "{0} dk"
+
+#. placeholder {0}: progress.recorded
+#. placeholder {1}: progress.total
+msgid "{0} of {1} delivered"
+msgstr "{0} / {1} tebliğ edildi"
+
+#. placeholder {0}: v.presentCount
+#. placeholder {1}: v.eligibleCount
+#. placeholder {2}: fmt(v.countPct)
+msgid "{0} of {1} owners ({2}%)"
+msgstr "{0} / {1} malik ({2}%)"
+
+#. placeholder {0}: results.units_answered
+#. placeholder {1}: results.units_total
+msgid "{0} of {1} units answered"
+msgstr "{0} / {1} bağımsız bölüm yanıtladı"
+
+#. placeholder {0}: preview.recipient_count
+#. placeholder {1}: preview.sms_count
+msgid "{0} owners will be notified ({1} by SMS)."
+msgstr "{0} malike bildirim gidecek ({1} SMS ile)."
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per month"
+msgstr "ayda {0}"
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per week"
+msgstr "haftada {0}"
+
+#. placeholder {0}: cq.data.pending_approvals.length
+msgid "{0} walk-in visitors are waiting for a resident's answer."
+msgstr "{0} yaya ziyaretçi sakinin yanıtını bekliyor."
+
+#. placeholder {0}: fmt(v.presentSharePct)
+msgid "{0}% present"
+msgstr "%{0} hazır"
+
+msgid "{n} requests waiting"
+msgstr "{n} istek bekliyor"
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "A booking can last at most {0} minutes."
+msgstr "Bir rezervasyon en fazla {0} dakika sürebilir."
+
+msgid "A booking inside these rules is confirmed at once; there is no approval queue."
+msgstr "Bu kurallara uyan rezervasyon hemen onaylanır; onay kuyruğu yoktur."
+
+msgid "A decision without an agenda item."
+msgstr "Gündem maddesi olmayan bir karar."
+
+msgid "A gate or door an agent can open. Driver details are configured on the agent computer."
+msgstr "Bir ajanın açabildiği kapı veya geçit. Sürücü ayrıntıları ajan bilgisayarında ayarlanır."
+
+msgid "A PIN is 4 to 8 digits."
+msgstr "PIN 4 ila 8 haneli olmalıdır."
+
+msgid "A reason is required."
+msgstr "Gerekçe zorunludur."
+
+msgid "Absent"
+msgstr "Yok"
+
+msgid "Abstain"
+msgstr "Çekimser"
+
 msgid "Accept your invitation"
 msgstr "Davetinizi kabul edin"
 
+msgid "Accepted"
+msgstr "Kabul edildi"
+
+msgid "Access"
+msgstr "Erişim"
+
+msgid "Access point"
+msgstr "Erişim noktası"
+
+msgid "Access points"
+msgstr "Erişim noktaları"
+
 msgid "Accountant"
 msgstr "Muhasebeci"
+
+msgid "Actions"
+msgstr "İşlemler"
+
+msgid "Active"
+msgstr "Etkin"
+
+msgid "Add an item"
+msgstr "Madde ekle"
+
+msgid "Add dissent"
+msgstr "Muhalefet şerhi ekle"
+
+msgid "Add hours"
+msgstr "Saat ekle"
+
+msgid "Add item"
+msgstr "Madde ekle"
+
+msgid "Add someone who visits on fixed days, such as a cleaner or a carer."
+msgstr "Belirli günlerde gelen biri ekleyin; örneğin temizlikçi veya bakıcı."
+
+msgid "Add the first facility residents can book."
+msgstr "Sakinlerin rezerve edebileceği ilk tesisi ekleyin."
+
+msgid "Add the gates and doors of the site."
+msgstr "Sitenin kapı ve geçitlerini ekleyin."
+
+msgid "Add the items to discuss and vote on."
+msgstr "Görüşülecek ve oylanacak maddeleri ekleyin."
+
+msgid "Add the opening hours."
+msgstr "Açılış saatlerini ekleyin."
+
+msgid "Admit"
+msgstr "İçeri al"
+
+msgid "Agenda"
+msgstr "Gündem"
+
+msgid "Agent"
+msgstr "Ajan"
+
+msgid "Agents"
+msgstr "Ajanlar"
+
+msgid "Agents on the gate computers, the gates and doors they open, who may pass, and what happened."
+msgstr "Kapı bilgisayarlarındaki ajanlar, açtıkları kapılar, kimlerin geçebileceği ve neler olduğu."
+
+msgid "Ahead"
+msgstr "İleri tarih"
+
+msgid "All facilities"
+msgstr "Tüm tesisler"
+
+msgid "All gates and doors"
+msgstr "Tüm kapı ve geçitler"
+
+msgid "All kinds"
+msgstr "Tüm türler"
+
+msgid "All points"
+msgstr "Tüm noktalar"
+
+msgid "All statuses"
+msgstr "Tüm durumlar"
+
+msgid "Allowed"
+msgstr "İzin verildi"
+
+msgid "Also notify owners"
+msgstr "Maliklere ayrıca bildir"
+
+msgid "Amount per unit"
+msgstr "Bağımsız bölüm başına tutar"
+
+msgid "Answered"
+msgstr "Yanıtlandı"
+
+msgid "Answered recently"
+msgstr "Son yanıtlananlar"
+
+msgid "Any decision"
+msgstr "Herhangi bir karar"
+
+msgid "Any outcome"
+msgstr "Herhangi bir sonuç"
+
+msgid "Any reason"
+msgstr "Herhangi bir neden"
+
+msgid "Any status"
+msgstr "Herhangi bir durum"
+
+msgid "Any year"
+msgstr "Herhangi bir yıl"
+
+msgid "App and email"
+msgstr "Uygulama ve e-posta"
+
+msgid "App and SMS"
+msgstr "Uygulama ve SMS"
+
+#. placeholder {0}: labels.effect(decision.effect.kind)
+msgid "Applied: {0}"
+msgstr "Uygulandı: {0}"
+
+msgid "Apply effect"
+msgstr "Etkiyi uygula"
+
+msgid "Apply the decision"
+msgstr "Kararı uygula"
+
+msgid "Approvals"
+msgstr "Onaylar"
+
+msgid "Approve"
+msgstr "Onayla"
+
+msgid "Approved"
+msgstr "Onaylandı"
+
+msgid "Approved by the resident."
+msgstr "Sakin tarafından onaylandı."
+
+msgid "Ask the resident"
+msgstr "Sakine sor"
 
 msgid "Ask your building manager to invite you."
 msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
@@ -19,32 +243,598 @@ msgstr "Bina yöneticinizden sizi davet etmesini isteyin."
 msgid "Ask your manager if you think you should."
 msgstr "Erişmeniz gerektiğini düşünüyorsanız yöneticinize danışın."
 
+msgid "Assemblies"
+msgstr "Toplantılar"
+
+msgid "Assembly"
+msgstr "Toplantı"
+
+msgid "Assembly settings"
+msgstr "Toplantı ayarları"
+
+#. placeholder {0}: r.unit_door_number
+msgid "At the gate for {0}"
+msgstr "{0} için kapıda"
+
+msgid "Attendance can be recorded only while the assembly is called or in session."
+msgstr "Katılım yalnızca toplantı çağrıldığında veya oturumdayken kaydedilebilir."
+
+msgid "Attendance desk"
+msgstr "Katılım masası"
+
+msgid "Attendance list (PDF)"
+msgstr "Katılım listesi (PDF)"
+
 msgid "Auditor"
 msgstr "Denetçi"
+
+msgid "Back"
+msgstr "Geri"
 
 msgid "Back to sign in"
 msgstr "Girişe dön"
 
+msgid "Back to the assembly"
+msgstr "Toplantıya dön"
+
 msgid "Balances, open requests and announcements will appear here."
 msgstr "Bakiyeler, açık talepler ve duyurular burada görünecek."
+
+msgid "Becomes a charge when the booking is confirmed. Empty: free."
+msgstr "Rezervasyon onaylandığında tahakkuk olur. Boş: ücretsiz."
+
+msgid "Binding"
+msgstr "Bağlayıcı"
+
+msgid "Block"
+msgstr "Engelle"
+
+msgid "Block dates"
+msgstr "Tarihleri engelle"
+
+msgid "Blocked"
+msgstr "Engellendi"
+
+msgid "Blocked periods"
+msgstr "Engellenen dönemler"
 
 msgid "Board member"
 msgstr "Yönetim kurulu üyesi"
 
+msgid "Book"
+msgstr "Rezerve et"
+
+msgid "Book a facility"
+msgstr "Tesis rezerve et"
+
+msgid "Book now"
+msgstr "Şimdi rezerve et"
+
+msgid "Booked by"
+msgstr "Rezerve eden"
+
+msgid "Booked. Your booking is confirmed."
+msgstr "Rezervasyon yapıldı. Rezervasyonunuz onaylandı."
+
+msgid "Bookings"
+msgstr "Rezervasyonlar"
+
+#. placeholder {0}: rules.min_notice_minutes ?? 0
+msgid "Bookings need at least {0} minutes of notice."
+msgstr "Rezervasyon için en az {0} dakika önceden haber vermek gerekir."
+
+msgid "Bookings per unit"
+msgstr "Bağımsız bölüm başına rezervasyon"
+
+msgid "Budget"
+msgstr "Bütçe"
+
+msgid "Budget marked final"
+msgstr "Bütçe kesinleşti"
+
+msgid "By"
+msgstr "Yapan"
+
+msgid "By land share (arsa payı)"
+msgstr "Arsa payına göre (arsa payı)"
+
+msgid "By number of owners"
+msgstr "Malik sayısına göre"
+
+msgid "By proxy: {holder}"
+msgstr "Vekâletle: {holder}"
+
+msgid "Calendar"
+msgstr "Takvim"
+
+msgid "Call"
+msgstr "Çağrı"
+
+msgid "Call letter (PDF)"
+msgstr "Çağrı mektubu (PDF)"
+
+msgid "Call the assembly"
+msgstr "Toplantıyı çağır"
+
+msgid "Call the resident"
+msgstr "Sakini ara"
+
+msgid "Called"
+msgstr "Çağrıldı"
+
+msgid "Calling the assembly freezes who may vote, generates the call letter and creates a delivery checklist with one line per owner."
+msgstr "Toplantıyı çağırmak, kimlerin oy kullanabileceğini sabitler, çağrı mektubunu üretir ve her malik için bir satırlık tebliğ listesi oluşturur."
+
+msgid "Calls, attendance, decisions and minutes of the owners' assembly."
+msgstr "Kat malikleri kurulunun çağrıları, katılımı, kararları ve tutanakları."
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Cancel pass"
+msgstr "Geçişi iptal et"
+
+msgid "Cancel the assembly"
+msgstr "Toplantıyı iptal et"
+
+msgid "Cancel the booking"
+msgstr "Rezervasyonu iptal et"
+
+msgid "Cancel this assembly?"
+msgstr "Bu toplantı iptal edilsin mi?"
+
+msgid "Cancel this booking?"
+msgstr "Bu rezervasyon iptal edilsin mi?"
+
+msgid "Cancelled"
+msgstr "İptal edildi"
+
+msgid "Change of use"
+msgstr "Kullanım amacı değişikliği"
+
+msgid "Change to common areas"
+msgstr "Ortak alanlarda değişiklik"
+
+msgid "Changes apply from the next assembly; an assembly that was already called keeps the rules it was called under."
+msgstr "Değişiklikler bir sonraki toplantıdan itibaren geçerli olur; çağrılmış bir toplantı, çağrıldığı kurallarla devam eder."
+
+msgid "Channel"
+msgstr "Kanal"
+
+msgid "Charge to"
+msgstr "Tahakkuk edecek taraf"
+
+msgid "Check"
+msgstr "Denetle"
+
+msgid "Check recipients"
+msgstr "Alıcıları denetle"
+
+msgid "Check-in QR code"
+msgstr "Giriş QR kodu"
+
+msgid "Checked in"
+msgstr "Giriş yapanlar"
+
+msgid "Choose a budget"
+msgstr "Bir bütçe seçin"
+
+msgid "Choose a date and time."
+msgstr "Tarih ve saat seçin."
+
+msgid "Choose a key"
+msgstr "Bir anahtar seçin"
+
+msgid "Choose a person"
+msgstr "Bir kişi seçin"
+
+msgid "Choose a person."
+msgstr "Bir kişi seçin."
+
+msgid "Choose a plan"
+msgstr "Bir plan seçin"
+
+msgid "Choose a preset"
+msgstr "Bir hazır ayar seçin"
+
+msgid "Choose a start date."
+msgstr "Bir başlangıç tarihi seçin."
+
+msgid "Choose a unit."
+msgstr "Bir bağımsız bölüm seçin."
+
 msgid "Choose an organization"
 msgstr "Bir kuruluş seçin"
+
+msgid "Choose at least one day."
+msgstr "En az bir gün seçin."
+
+msgid "Choose the unit"
+msgstr "Bağımsız bölümü seçin"
+
+msgid "Choose the unit the visitor is for."
+msgstr "Ziyaretçinin geleceği bağımsız bölümü seçin."
+
+msgid "Choose when the visit ends."
+msgstr "Ziyaretin ne zaman biteceğini seçin."
+
+msgid "Choose when the visit starts."
+msgstr "Ziyaretin ne zaman başlayacağını seçin."
+
+msgid "Choose who may book."
+msgstr "Kimlerin rezerve edebileceğini seçin."
+
+msgid "Clock suspect"
+msgstr "Saat uyumsuz"
 
 msgid "Close"
 msgstr "Kapat"
 
+msgid "Close now"
+msgstr "Şimdi kapat"
+
+msgid "Close the assembly"
+msgstr "Toplantıyı kapat"
+
+msgid "Closed"
+msgstr "Kapalı"
+
+msgid "Closes"
+msgstr "Kapanış"
+
+msgid "Closing must be after opening."
+msgstr "Kapanış saati açılıştan sonra olmalıdır."
+
 msgid "Code from the SMS"
 msgstr "SMS ile gelen kod"
+
+msgid "Collected"
+msgstr "Teslim alındı"
+
+msgid "Collected by"
+msgstr "Teslim alan"
+
+#. placeholder {0}: d.unit_door_number
+msgid "Collected by {0}"
+msgstr "{0} teslim aldı"
+
+msgid "Concerns residents"
+msgstr "Sakinleri ilgilendirir"
+
+msgid "Concerns residents (tenants can see it)"
+msgstr "Sakinleri ilgilendirir (kiracılar görebilir)"
+
+msgid "Confirm"
+msgstr "Onayla"
+
+msgid "Confirm and apply"
+msgstr "Onayla ve uygula"
+
+msgid "Confirm it is you"
+msgstr "Kendinizi doğrulayın"
+
+msgid "Copied"
+msgstr "Kopyalandı"
+
+msgid "Copy the message"
+msgstr "Mesajı kopyala"
+
+msgid "Copy the token"
+msgstr "Anahtarı kopyala"
+
+msgid "Could not apply the decision. You can try again; nothing is created twice."
+msgstr "Karar uygulanamadı. Yeniden deneyebilirsiniz; hiçbir şey iki kez oluşturulmaz."
+
+msgid "Could not block these dates. Existing bookings may overlap."
+msgstr "Bu tarihler engellenemedi. Mevcut rezervasyonlarla çakışıyor olabilir."
+
+msgid "Could not book. Please try again."
+msgstr "Rezervasyon yapılamadı. Lütfen yeniden deneyin."
+
+msgid "Could not cancel the booking."
+msgstr "Rezervasyon iptal edilemedi."
+
+msgid "Could not check the code. Try again."
+msgstr "Kod denetlenemedi. Yeniden deneyin."
+
+msgid "Could not check the recipients."
+msgstr "Alıcılar denetlenemedi."
+
+msgid "Could not check this change. Review the values."
+msgstr "Bu değişiklik denetlenemedi. Değerleri gözden geçirin."
+
+msgid "Could not close the assembly."
+msgstr "Toplantı kapatılamadı."
+
+msgid "Could not create the agent."
+msgstr "Ajan oluşturulamadı."
+
+msgid "Could not create the assembly."
+msgstr "Toplantı oluşturulamadı."
+
+msgid "Could not create the credential."
+msgstr "Kimlik bilgisi oluşturulamadı."
+
+msgid "Could not generate the minutes."
+msgstr "Tutanak oluşturulamadı."
+
+msgid "Could not load the decisions."
+msgstr "Kararlar yüklenemedi."
+
+msgid "Could not log the parcel."
+msgstr "Paket kaydedilemedi."
+
+msgid "Could not mark the parcel as collected."
+msgstr "Paket teslim edildi olarak işaretlenemedi."
+
+msgid "Could not open."
+msgstr "Açılamadı."
+
+msgid "Could not re-enrol the agent."
+msgstr "Ajan yeniden kaydedilemedi."
+
+msgid "Could not record the attendance."
+msgstr "Katılım kaydedilemedi."
+
+msgid "Could not record the decision."
+msgstr "Karar kaydedilemedi."
+
+msgid "Could not record the deliveries."
+msgstr "Tebligatlar kaydedilemedi."
+
+msgid "Could not record the delivery."
+msgstr "Tebligat kaydedilemedi."
+
+msgid "Could not record the proxy."
+msgstr "Vekâlet kaydedilemedi."
+
+msgid "Could not register the visitor."
+msgstr "Ziyaretçi kaydedilemedi."
+
+msgid "Could not revoke the agent."
+msgstr "Ajan iptal edilemedi."
+
+msgid "Could not rotate the token."
+msgstr "Anahtar yenilenemedi."
+
+msgid "Could not save the access point."
+msgstr "Erişim noktası kaydedilemedi."
+
+msgid "Could not save the agenda."
+msgstr "Gündem kaydedilemedi."
+
+msgid "Could not save the counts."
+msgstr "Sayımlar kaydedilemedi."
+
+msgid "Could not save the facility."
+msgstr "Tesis kaydedilemedi."
+
+msgid "Could not save the poll."
+msgstr "Anket kaydedilemedi."
+
+msgid "Could not save the recurring visitor."
+msgstr "Düzenli ziyaretçi kaydedilemedi."
+
+msgid "Could not save the settings."
+msgstr "Ayarlar kaydedilemedi."
+
+msgid "Could not save your answer."
+msgstr "Yanıtınız kaydedilemedi."
+
+msgid "Could not send the call."
+msgstr "Çağrı gönderilemedi."
+
+msgid "Could not send the decisions."
+msgstr "Kararlar gönderilemedi."
+
+msgid "Could not send the request."
+msgstr "İstek gönderilemedi."
+
+msgid "Could not send your answer. It may already have been answered or expired."
+msgstr "Yanıtınız gönderilemedi. Zaten yanıtlanmış veya süresi dolmuş olabilir."
 
 msgid "Could not sign out. Please try again."
 msgstr "Çıkış yapılamadı. Lütfen tekrar deneyin."
 
+msgid "Could not start the assembly."
+msgstr "Toplantı başlatılamadı."
+
+msgid "Could not start the rebuild."
+msgstr "Yeniden oluşturma başlatılamadı."
+
+msgid "Counts and decisions"
+msgstr "Sayımlar ve kararlar"
+
+msgid "Counts and decisions are recorded once the assembly is in session."
+msgstr "Sayımlar ve kararlar toplantı oturuma girdikten sonra kaydedilir."
+
+msgid "Counts saved."
+msgstr "Sayımlar kaydedildi."
+
+msgid "Create"
+msgstr "Oluştur"
+
+msgid "Create an agent to connect a gate or door."
+msgstr "Bir kapıyı veya geçidi bağlamak için ajan oluşturun."
+
+msgid "Create assembly"
+msgstr "Toplantı oluştur"
+
+msgid "Create the first assembly to start the call."
+msgstr "Çağrıya başlamak için ilk toplantıyı oluşturun."
+
+msgid "Create the pass"
+msgstr "Geçişi oluştur"
+
+msgid "Credential created."
+msgstr "Kimlik bilgisi oluşturuldu."
+
+msgid "Credentials"
+msgstr "Kimlik bilgileri"
+
 msgid "Dark"
 msgstr "Koyu"
+
+msgid "Date"
+msgstr "Tarih"
+
+msgid "Date and place"
+msgstr "Tarih ve yer"
+
+msgid "days"
+msgstr "gün"
+
+msgid "Days"
+msgstr "Günler"
+
+#. placeholder {0}: a.dead_letters
+msgid "Dead letters: {0}"
+msgstr "Teslim edilemeyen ileti: {0}"
+
+msgid "Decision"
+msgstr "Karar"
+
+#. placeholder {0}: decisionNo(d)
+msgid "Decision {0} recorded."
+msgstr "{0} numaralı karar kaydedildi."
+
+#. placeholder {0}: decision.year
+#. placeholder {1}: decision.sequence_no
+msgid "Decision {0}/{1} can create the change it describes. You confirm each one; the link to the decision is kept for the audit trail."
+msgstr "{0}/{1} numaralı karar, tarif ettiği değişikliği oluşturabilir. Her birini siz onaylarsınız; karara bağlantı denetim izi için saklanır."
+
+msgid "Decision history"
+msgstr "Karar geçmişi"
+
+msgid "Decision text"
+msgstr "Karar metni"
+
+msgid "Decision thresholds by topic"
+msgstr "Konuya göre karar eşikleri"
+
+msgid "Decisions"
+msgstr "Kararlar"
+
+msgid "Decisions appear here when they are recorded at an assembly."
+msgstr "Kararlar bir toplantıda kaydedildiğinde burada görünür."
+
+msgid "Decisions are sent to absent owners after the assembly."
+msgstr "Kararlar, toplantıdan sonra katılmayan maliklere gönderilir."
+
+msgid "Default: no quorum on the second call; decisions by majority of those present."
+msgstr "Varsayılan: ikinci çağrıda toplantı yeter sayısı yok; kararlar hazır bulunanların çoğunluğuyla alınır."
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Delete a digit"
+msgstr "Bir hane sil"
+
+msgid "Delete this access point?"
+msgstr "Bu erişim noktası silinsin mi?"
+
+msgid "Delete this facility?"
+msgstr "Bu tesis silinsin mi?"
+
+msgid "Deliveries recorded."
+msgstr "Tebligatlar kaydedildi."
+
+msgid "Delivery of the call"
+msgstr "Çağrının tebliği"
+
+msgid "Delivery of the decisions"
+msgstr "Kararların tebliği"
+
+msgid "Delivery progress"
+msgstr "Tebliğ ilerlemesi"
+
+msgid "Delivery recorded."
+msgstr "Tebligat kaydedildi."
+
+#. placeholder {0}: notice.person_display_name
+msgid "Delivery to {0}"
+msgstr "{0} için tebligat"
+
+msgid "Denied"
+msgstr "Reddedildi"
+
+msgid "Deny"
+msgstr "Reddet"
+
+msgid "Description"
+msgstr "Açıklama"
+
+msgid "Description (optional)"
+msgstr "Açıklama (isteğe bağlı)"
+
+msgid "Details"
+msgstr "Ayrıntılar"
+
+msgid "Direction"
+msgstr "Yön"
+
+msgid "Disabled"
+msgstr "Devre dışı"
+
+msgid "Dissent text"
+msgstr "Muhalefet metni"
+
+msgid "Dissenting opinions (muhalefet şerhi)"
+msgstr "Muhalefet şerhi (muhalefet şerhi)"
+
+msgid "Dissenting owner"
+msgstr "Muhalif malik"
+
+msgid "Done"
+msgstr "Tamam"
+
+msgid "Draft"
+msgstr "Taslak"
+
+msgid "Driver instance"
+msgstr "Sürücü örneği"
+
+msgid "Due from"
+msgstr "Başlangıç tarihi"
+
+msgid "Dues plan"
+msgstr "Aidat planı"
+
+msgid "Dues rate"
+msgstr "Aidat oranı"
+
+msgid "Edit"
+msgstr "Düzenle"
+
+msgid "Edit access point"
+msgstr "Erişim noktasını düzenle"
+
+msgid "Edit facility"
+msgstr "Tesisi düzenle"
+
+msgid "Edit item"
+msgstr "Maddeyi düzenle"
+
+msgid "Edit rules"
+msgstr "Kuralları düzenle"
+
+msgid "Effective from"
+msgstr "Yürürlük tarihi"
+
+msgid "Elected person"
+msgstr "Seçilen kişi"
+
+msgid "Elected role with a term"
+msgstr "Süreli görev"
+
+msgid "Election of the auditor"
+msgstr "Denetçi seçimi"
+
+msgid "Election of the board"
+msgstr "Yönetim kurulu seçimi"
+
+msgid "Election of the manager"
+msgstr "Yönetici seçimi"
 
 msgid "Email"
 msgstr "E-posta"
@@ -58,8 +848,63 @@ msgstr "Bana bağlantı gönder"
 msgid "Email or phone"
 msgstr "E-posta veya telefon"
 
+msgid "Empty: no limit"
+msgstr "Boş: sınır yok"
+
+msgid "Enabled"
+msgstr "Etkin"
+
+msgid "End the previous holder's term"
+msgstr "Önceki yöneticinin görev süresini bitir"
+
+#. placeholder {0}: enrolment.agent.name
+msgid "Enrolment token for {0}"
+msgstr "{0} için kayıt anahtarı"
+
+msgid "Enter a name."
+msgstr "Bir ad girin."
+
+msgid "Enter a number."
+msgstr "Bir sayı girin."
+
+msgid "Enter a plate like 34 ABC 123."
+msgstr "34 ABC 123 gibi bir plaka girin."
+
+msgid "Enter a time."
+msgstr "Bir saat girin."
+
+msgid "Enter a value from {min} to {max}."
+msgstr "{min} ile {max} arasında bir değer girin."
+
+msgid "Enter a whole number from {min} to {max}."
+msgstr "{min} ile {max} arasında tam sayı girin."
+
+msgid "Enter a whole number."
+msgstr "Tam sayı girin."
+
 msgid "Enter the code from the SMS"
 msgstr "SMS ile gelen kodu girin"
+
+msgid "Enter the date it was sent."
+msgstr "Gönderildiği tarihi girin."
+
+msgid "enter the land share to finish the check"
+msgstr "kontrolü bitirmek için arsa payını girin"
+
+msgid "Enter the person's name."
+msgstr "Kişinin adını girin."
+
+msgid "Enter the place of the assembly."
+msgstr "Toplantı yerini girin."
+
+msgid "Enter the value."
+msgstr "Değeri girin."
+
+msgid "Enter the visitor's name."
+msgstr "Ziyaretçinin adını girin."
+
+msgid "Enter this token once when you install the agent on the gate computer. It expires <0/>."
+msgstr "Ajanı kapı bilgisayarına kurarken bu anahtarı bir kez girin. <0/> tarihinde sona erer."
 
 msgid "Enter your email"
 msgstr "E-posta adresinizi girin"
@@ -70,23 +915,171 @@ msgstr "E-posta adresinizi veya telefon numaranızı girin"
 msgid "Enter your password"
 msgstr "Parolanızı girin"
 
+msgid "Enter your password."
+msgstr "Parolanızı girin."
+
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
+
+msgid "Existing bookings stay in the history."
+msgstr "Mevcut rezervasyonlar geçmişte kalır."
+
+msgid "Exit"
+msgstr "Çıkış"
+
+msgid "Expected"
+msgstr "Bekleniyor"
+
+msgid "Expected today"
+msgstr "Bugün beklenenler"
+
+msgid "Expired"
+msgstr "Süresi doldu"
+
+msgid "Extraordinary assembly"
+msgstr "Olağanüstü toplantı"
+
+msgid "Facilities"
+msgstr "Tesisler"
+
+msgid "Facilities and rules"
+msgstr "Tesisler ve kurallar"
+
+msgid "Facility"
+msgstr "Tesis"
+
+msgid "Facility saved."
+msgstr "Tesis kaydedildi."
+
+msgid "Fee"
+msgstr "Ücret"
+
+msgid "Fee per booking"
+msgstr "Rezervasyon başına ücret"
+
+msgid "Fee refunded if cancelled this many hours before"
+msgstr "Şu kadar saat öncesine kadar iptalde ücret iade edilir"
+
+#. placeholder {0}: facility.rules.cancel_refund_cutoff_hours !== null ? ` Refunded if you cancel at least ${facility.rules.cancel_refund_cutoff_hours} hours ahead.` : ''
+msgid "Fee: <0/>, charged to the unit's account when the booking is confirmed.{0}"
+msgstr "Ücret: <0/>, rezervasyon onaylandığında bağımsız bölümün hesabına yazılır.{0}"
+
+msgid "Fill the form with this preset"
+msgstr "Formu bu hazır ayarla doldur"
+
+msgid "First call"
+msgstr "İlk çağrı"
+
+msgid "First call: more than this share of owners"
+msgstr "İlk çağrı: maliklerin şu oranından fazlası"
+
+msgid "First call: more than this share of the land"
+msgstr "İlk çağrı: arsa payının şu oranından fazlası"
+
+msgid "First meeting"
+msgstr "İlk toplantı"
+
+msgid "For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR code."
+msgstr "Temizlikçi, bakıcı veya hasta bakıcı için: uzun ömürlü kendi QR koduyla sürekli izin."
+
+msgid "For discussion"
+msgstr "Görüşme için"
+
+msgid "For information"
+msgstr "Bilgi için"
+
+msgid "Four fifths"
+msgstr "Beşte dört"
+
+msgid "free"
+msgstr "ücretsiz"
+
+msgid "From"
+msgstr "Başlangıç"
+
+msgid "From a vehicle"
+msgstr "Araçtan"
+
+msgid "From a visitor"
+msgstr "Ziyaretçiden"
+
+msgid "Gate"
+msgstr "Kapı"
+
+msgid "Gate control"
+msgstr "Kapı kontrolü"
+
+msgid "Gates"
+msgstr "Kapılar"
+
+msgid "General decision"
+msgstr "Genel karar"
+
+msgid "Generate again"
+msgstr "Yeniden oluştur"
+
+msgid "Generate the minutes"
+msgstr "Tutanağı oluştur"
 
 msgid "Go home"
 msgstr "Ana sayfaya git"
 
+msgid "Governance sections"
+msgstr "Yönetişim bölümleri"
+
 msgid "Guard"
 msgstr "Güvenlik görevlisi"
+
+msgid "Halls, courts and barbecue areas, each with its own booking rules."
+msgstr "Her biri kendi rezervasyon kurallarına sahip salonlar, kortlar ve mangal alanları."
 
 msgid "Home"
 msgstr "Ana sayfa"
 
+msgid "Hours"
+msgstr "Saatler"
+
 msgid "Household member"
 msgstr "Hane halkı üyesi"
 
+msgid "Household members"
+msgstr "Hane halkı üyeleri"
+
+msgid "How far ahead (days)"
+msgstr "Kaç gün öncesine kadar"
+
+msgid "I have saved it"
+msgstr "Kaydettim"
+
 msgid "If that address is registered, a sign-in link is on its way. It works once."
 msgstr "Bu adres kayıtlıysa giriş bağlantısı yolda. Bağlantı yalnızca bir kez çalışır."
+
+msgid "In"
+msgstr "Giriş"
+
+msgid "In and out"
+msgstr "Giriş ve çıkış"
+
+msgid "In session"
+msgstr "Oturumda"
+
+msgid "In the app"
+msgstr "Uygulamada"
+
+msgid "In the app only"
+msgstr "Yalnızca uygulamada"
+
+msgid "Inside the rules, your booking is confirmed immediately."
+msgstr "Kurallar içinde rezervasyonunuz hemen onaylanır."
+
+msgid "It is too late for a refund: the fee of <0/> is kept."
+msgstr "Geri ödeme için çok geç: <0/> tutarındaki ücret alıkonulur."
+
+msgid "It stops opening gates at once."
+msgstr "Kapıların hemen açılmasını durdurur."
+
+msgid "Its gates stop opening from the app and it can no longer connect."
+msgstr "Kapıları artık uygulamadan açılmaz ve bağlanamaz."
 
 msgid "Join your building"
 msgstr "Binanıza katılın"
@@ -94,32 +1087,414 @@ msgstr "Binanıza katılın"
 msgid "Keep editing"
 msgstr "Düzenlemeye devam et"
 
+msgid "Keep the booking"
+msgstr "Rezervasyonu koru"
+
+msgid "Keep the proof: this record is what counts if a decision is challenged."
+msgstr "Kanıtı saklayın: bir karara itiraz edilirse sayılan kayıt budur."
+
+msgid "Kind"
+msgstr "Tür"
+
 msgid "Language"
 msgstr "Dil"
+
+msgid "Last seen"
+msgstr "Son görülme"
+
+msgid "Law 634 default: one third."
+msgstr "Kanun 634 varsayılanı: üçte bir."
+
+msgid "Leave the guard console"
+msgstr "Güvenlik konsolundan çık"
+
+msgid "Left"
+msgstr "Çıktı"
 
 msgid "Light"
 msgstr "Açık"
 
+#. placeholder {0}: proxyLimit(settings, totalUnits)
+msgid "Limit: {0} proxies per person (site settings)."
+msgstr "Sınır: kişi başına {0} vekâlet (site ayarları)."
+
+msgid "List"
+msgstr "Liste"
+
+msgid "Load a preset"
+msgstr "Bir hazır ayar yükle"
+
+msgid "Log parcel"
+msgstr "Paket kaydet"
+
+msgid "Longest"
+msgstr "En uzun"
+
+msgid "Longest booking (minutes)"
+msgstr "En uzun rezervasyon (dakika)"
+
+msgid "Looking up the number…"
+msgstr "Numara aranıyor…"
+
+#. placeholder {0}: a.lost_events
+msgid "Lost events: {0}"
+msgstr "Kayıp olay: {0}"
+
 msgid "Main"
 msgstr "Ana"
+
+msgid "Majority by number and by share"
+msgstr "Malik sayısı ve arsa payına göre çoğunluk"
+
+msgid "Majority of those present"
+msgstr "Hazır bulunanların çoğunluğu"
+
+msgid "Manual"
+msgstr "Elle"
+
+#. placeholder {0}: o.name
+msgid "Mark {0} present"
+msgstr "{0} adlı kişiyi hazır olarak işaretle"
+
+msgid "Meetings"
+msgstr "Toplantılar"
+
+msgid "met"
+msgstr "sağlandı"
+
+msgid "Method"
+msgstr "Yöntem"
+
+msgid "Method for the selected owners"
+msgstr "Seçilen malikler için yöntem"
+
+msgid "Minutes"
+msgstr "Tutanak"
+
+msgid "Minutes (PDF)"
+msgstr "Tutanak (PDF)"
+
+msgid "Minutes (tutanak)"
+msgstr "Tutanak (tutanak)"
+
+msgid "mock"
+msgstr "sahte"
 
 msgid "Money"
 msgstr "Para"
 
+msgid "month"
+msgstr "ay"
+
+msgid "Month"
+msgstr "Ay"
+
+#. placeholder {0}: v.requiredCountPct
+#. placeholder {1}: v.moreOwnersNeeded
+msgid "More than {0}% needed; {1} more owners."
+msgstr "Gerekli oran %{0}'dan fazla; {1} malik daha gerekli."
+
+#. placeholder {0}: v.requiredCountPct
+msgid "More than {0}% needed: met."
+msgstr "Gerekli oran %{0}'dan fazla: sağlandı."
+
+#. placeholder {0}: v.requiredSharePct
+msgid "More than {0}% needed."
+msgstr "%{0}'dan fazlası gerekli."
+
+msgid "More yes than no among those present"
+msgstr "Hazır bulunanlar arasında evet sayısı hayırdan fazla"
+
+msgid "Most uses (optional)"
+msgstr "En çok kullanım (isteğe bağlı)"
+
+msgid "Most votes one person may hold"
+msgstr "En çok oy (kişi başına)"
+
+msgid "Most votes one person may represent by proxy"
+msgstr "Bir kişinin vekâletle temsil edebileceği en çok oy"
+
+msgid "Move down"
+msgstr "Aşağı taşı"
+
+msgid "Move up"
+msgstr "Yukarı taşı"
+
 msgid "My account"
 msgstr "Hesabım"
+
+msgid "My call letter"
+msgstr "Çağrı mektubum"
+
+msgid "My check-in code"
+msgstr "Giriş kodum"
+
+msgid "My unit"
+msgstr "Bağımsız bölümüm"
 
 msgid "My units"
 msgstr "Bağımsız bölümlerim"
 
+msgid "My vehicles"
+msgstr "Araçlarım"
+
+msgid "Name"
+msgstr "Ad"
+
+msgid "Name of the plan"
+msgstr "Planın adı"
+
+msgid "Name or plate"
+msgstr "Ad veya plaka"
+
 msgid "Navigation"
 msgstr "Gezinme"
+
+#. placeholder {0}: evaln.neededYes
+#. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
+msgid "Needed: at least {0} yes votes{1}"
+msgstr "Gerekli: en az {0} evet oyu{1}"
+
+msgid "Needs"
+msgstr "Gerekli"
+
+msgid "New access point"
+msgstr "Yeni erişim noktası"
+
+msgid "New agent"
+msgstr "Yeni ajan"
+
+msgid "New amount per unit"
+msgstr "Birim başına yeni tutar"
+
+msgid "New assembly"
+msgstr "Yeni toplantı"
+
+msgid "New dues rate"
+msgstr "Yeni aidat oranı"
+
+msgid "New facility"
+msgstr "Yeni tesis"
+
+msgid "New gate agent"
+msgstr "Yeni kapı ajanı"
+
+msgid "New manual credential"
+msgstr "Yeni elle kimlik bilgisi"
+
+msgid "New recurring visitor"
+msgstr "Yeni düzenli ziyaretçi"
+
+msgid "New tag or PIN"
+msgstr "Yeni etiket veya PIN"
+
+msgid "New visitor"
+msgstr "Yeni ziyaretçi"
+
+msgid "Next"
+msgstr "Sonraki"
+
+msgid "No"
+msgstr "Hayır"
+
+msgid "No access points yet"
+msgstr "Henüz erişim noktası yok"
+
+msgid "No agenda item is marked \"will be voted\"."
+msgstr "Hiçbir gündem maddesi \"oylanacak\" olarak işaretli değil."
+
+msgid "No agenda items yet"
+msgstr "Henüz gündem maddesi yok"
+
+msgid "No agenda items yet."
+msgstr "Henüz gündem maddesi yok."
+
+msgid "No agent"
+msgstr "Ajan yok"
+
+msgid "No answer in time. Call the resident."
+msgstr "Zamanında yanıt gelmedi. Sakini arayın."
+
+msgid "No assemblies yet"
+msgstr "Henüz toplantı yok"
+
+msgid "No bookings in this period."
+msgstr "Bu dönemde rezervasyon yok."
+
+msgid "No credentials found"
+msgstr "Kimlik bilgisi bulunamadı"
+
+msgid "No decisions found"
+msgstr "Karar bulunamadı"
+
+msgid "No decisions recorded yet."
+msgstr "Henüz karar kaydedilmedi."
+
+msgid "No decisions yet"
+msgstr "Henüz karar yok"
+
+msgid "No deliveries to record"
+msgstr "Kaydedilecek tebliğ yok"
+
+msgid "No facilities yet"
+msgstr "Henüz tesis yok"
+
+msgid "No gate agents yet"
+msgstr "Henüz kapı ajanı yok"
+
+msgid "No gate is connected to this console."
+msgstr "Bu konsola bağlı kapı yok."
+
+msgid "No guard has a PIN yet. A manager sets guard PINs in the people settings."
+msgstr "Henüz hiçbir güvenlikçinin PIN'i yok. Yönetici, güvenlik PIN'lerini kişi ayarlarından belirler."
+
+msgid "No match. Use \"Walk-in visitor\" to ask the resident."
+msgstr "Eşleşme yok. Sakine sormak için \"Yaya ziyaretçi\"yi kullanın."
+
+msgid "No minimum number on this call."
+msgstr "Bu çağrıda asgari sayı yok."
+
+msgid "No minimum share on this call."
+msgstr "Bu çağrıda asgari pay yok."
+
+msgid "No openings match"
+msgstr "Eşleşen açılış yok"
+
+msgid "No owners found"
+msgstr "Malik bulunamadı"
+
+msgid "No parcels are waiting."
+msgstr "Bekleyen paket yok."
+
+msgid "No poll"
+msgstr "Anket yok"
+
+msgid "No recurring visitors"
+msgstr "Düzenli ziyaretçi yok"
+
+msgid "No site yet"
+msgstr "Henüz site yok"
+
+msgid "No threshold is set for this topic."
+msgstr "Bu konu için eşik belirlenmemiş."
+
+msgid "No topic"
+msgstr "Konu yok"
+
+msgid "No visitor is waiting"
+msgstr "Bekleyen ziyaretçi yok"
+
+msgid "No visitors yet"
+msgstr "Henüz ziyaretçi yok"
+
+msgid "No vote"
+msgstr "Oy yok"
+
+msgid "Nobody is expected right now."
+msgstr "Şu anda beklenen kimse yok."
+
+msgid "Nobody yet."
+msgstr "Henüz kimse yok."
+
+msgid "Non-binding"
+msgstr "Bağlayıcı değil"
+
+msgid "none"
+msgstr "yok"
+
+msgid "Not available"
+msgstr "Mevcut değil"
+
+msgid "Not determined"
+msgstr "Belirlenmedi"
+
+msgid "not met"
+msgstr "sağlanmadı"
+
+msgid "Not voted"
+msgstr "Oylanmayacak"
+
+msgid "Note"
+msgstr "Not"
+
+msgid "Noted"
+msgstr "Bilgi için"
+
+msgid "Nothing has been scheduled."
+msgstr "Henüz bir toplantı planlanmadı."
+
+msgid "Nothing here yet"
+msgstr "Henüz bir şey yok"
+
+msgid "Nothing yet."
+msgstr "Henüz bir şey yok."
 
 msgid "Notifications"
 msgstr "Bildirimler"
 
+msgid "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
+msgstr "Noter onaylı karar defterine geçirilecek numaralı taslaklar (karar defteri); bu liste defterin kendisi değildir."
+
+msgid "Offline"
+msgstr "Çevrim dışı"
+
+msgid "On site"
+msgstr "Sitede"
+
+msgid "on the chosen days until you revoke it"
+msgstr "seçilen günlerde, iptal edene kadar"
+
+msgid "Online"
+msgstr "Çevrim içi"
+
+msgid "Only owners attend and answer polls. You can read the decisions below."
+msgstr "Yalnızca malikler toplantıya katılır ve anketleri yanıtlar. Kararları aşağıda okuyabilirsiniz."
+
+msgid "Open"
+msgstr "Aç"
+
+#. placeholder {0}: point.name
+msgid "Open {0}"
+msgstr "{0} kapısını aç"
+
+msgid "Open command sent."
+msgstr "Açma komutu gönderildi."
+
+msgid "Open for booking"
+msgstr "Rezervasyona açık"
+
 msgid "Open menu"
 msgstr "Menüyü aç"
+
+msgid "Open now"
+msgstr "Şimdi aç"
+
+msgid "Open the assembly"
+msgstr "Toplantıyı aç"
+
+msgid "Opened"
+msgstr "Açıldı"
+
+msgid "Opened by hand"
+msgstr "Elle açıldı"
+
+msgid "Opening hours"
+msgstr "Açılış saatleri"
+
+msgid "Opening log"
+msgstr "Açılış kaydı"
+
+msgid "Opening…"
+msgstr "Açılıyor…"
+
+msgid "Opens"
+msgstr "Açılış"
+
+msgid "or type the code"
+msgstr "ya da kodu yazın"
+
+msgid "Ordinary assembly"
+msgstr "Olağan toplantı"
 
 msgid "Organization admin"
 msgstr "Kurum yöneticisi"
@@ -127,20 +1502,77 @@ msgstr "Kurum yöneticisi"
 msgid "Organizations, health and backup status will appear here."
 msgstr "Kuruluşlar, sistem durumu ve yedekleme durumu burada görünecek."
 
+msgid "Other"
+msgstr "Diğer"
+
+msgid "Out"
+msgstr "Çıkış"
+
+msgid "Outcome"
+msgstr "Sonuç"
+
 msgid "Owner"
 msgstr "Mal sahibi"
+
+msgid "Owners"
+msgstr "Malikler"
+
+msgid "Owners come from the occupancies of the site."
+msgstr "Malikler sitenin ikamet kayıtlarından gelir."
+
+msgid "Owners who were called are not notified automatically; record the cancellation with a reason."
+msgstr "Çağrılan malikler otomatik olarak haberdar edilmez; iptali bir gerekçeyle kaydedin."
 
 msgid "Page not found"
 msgstr "Sayfa bulunamadı"
 
+msgid "Parcel"
+msgstr "Paket"
+
+msgid "Parcel logged. The resident is notified."
+msgstr "Paket kaydedildi. Sakine haber verildi."
+
+msgid "Parcels"
+msgstr "Paketler"
+
 msgid "Password"
 msgstr "Parola"
+
+msgid "Pedestrian door"
+msgstr "Yaya kapısı"
+
+msgid "Pedestrian doors"
+msgstr "Yaya kapıları"
+
+msgid "Pending"
+msgstr "Beklemede"
 
 msgid "People"
 msgstr "Kişiler"
 
+msgid "per"
+msgstr "her"
+
 msgid "Phone number"
 msgstr "Telefon numarası"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "Place"
+msgstr "Yer"
+
+msgid "Plan an assembly"
+msgstr "Toplantı planla"
+
+msgid "Plate"
+msgstr "Plaka"
+
+msgid "Plate (optional)"
+msgstr "Plaka (isteğe bağlı)"
+
+msgid "Plates and visitor codes are created from vehicles and visitors. Add a tag or a PIN here."
+msgstr "Plakalar ve ziyaretçi kodları araçlardan ve ziyaretçilerden oluşturulur. Buradan etiket veya PIN ekleyin."
 
 msgid "Platform administration"
 msgstr "Platform yönetimi"
@@ -148,18 +1580,329 @@ msgstr "Platform yönetimi"
 msgid "Please confirm it is you before continuing."
 msgstr "Devam etmeden önce lütfen kimliğinizi doğrulayın."
 
+msgid "Point"
+msgstr "Nokta"
+
+msgid "Poll saved."
+msgstr "Anket kaydedildi."
+
+msgid "Polls"
+msgstr "Anketler"
+
+msgid "Polls are not votes. Owners answer once per unit before the assembly so you can see the mood; the binding count is recorded in the room."
+msgstr "Anketler oy değildir. Malikler, havayı görebilmeniz için toplantıdan önce bağımsız bölüm başına bir kez yanıtlar; bağlayıcı sayım toplantıda kaydedilir."
+
+msgid "Pre-register a guest to get a QR code for the gate."
+msgstr "Kapı için QR kodu almak üzere bir misafiri önceden kaydedin."
+
+msgid "Pre-register a visitor"
+msgstr "Ziyaretçiyi önceden kaydet"
+
+msgid "Pre-register guests, share their QR code, and answer the guard's requests."
+msgstr "Misafirleri önceden kaydedin, QR kodlarını paylaşın ve güvenliğin isteklerini yanıtlayın."
+
+msgid "Present"
+msgstr "Hazır"
+
+msgid "Previous"
+msgstr "Önceki"
+
+msgid "Proof"
+msgstr "Kanıt"
+
+msgid "Proof (photo or PDF)"
+msgstr "Kanıt (fotoğraf veya PDF)"
+
+msgid "Proof attached"
+msgstr "Kanıt eklendi"
+
+msgid "Proxy"
+msgstr "Vekâlet"
+
+msgid "QR"
+msgstr "QR"
+
+msgid "QR check-in"
+msgstr "QR ile giriş"
+
+msgid "QR code"
+msgstr "QR kodu"
+
+msgid "Question (optional)"
+msgstr "Soru (isteğe bağlı)"
+
+#. placeholder {0}: a.queue_depth
+msgid "Queue: {0}"
+msgstr "Kuyruk: {0}"
+
+msgid "Quorum"
+msgstr "Toplantı yeter sayısı"
+
+msgid "Quorum not reached"
+msgstr "Toplantı yeter sayısı sağlanmadı"
+
+msgid "Quorum reached"
+msgstr "Toplantı yeter sayısı sağlandı"
+
+msgid "Quorum, thresholds, proxy limits and timing. Law 634 values are the defaults; change them only where your yönetim planı allows it."
+msgstr "Toplantı yeter sayısı, eşikler, vekâlet sınırları ve süreler. Varsayılanlar 634 sayılı Kanun'dur; yönetim planınız izin verdiği ölçüde değiştirin."
+
+msgid "Quota"
+msgstr "Kota"
+
+msgid "Re-enrol"
+msgstr "Yeniden kaydet"
+
+msgid "Reason"
+msgstr "Gerekçe"
+
+msgid "Reason (optional)"
+msgstr "Gerekçe (isteğe bağlı)"
+
+msgid "Rebuild the allow-list"
+msgstr "İzin listesini yeniden oluştur"
+
+msgid "Recent openings"
+msgstr "Son açılışlar"
+
+msgid "Record"
+msgstr "Kaydet"
+
+msgid "Record a note"
+msgstr "Not kaydet"
+
+#. placeholder {0}: o.name
+msgid "Record a proxy for {0}"
+msgstr "{0} için vekâlet kaydet"
+
+msgid "Record anyway"
+msgstr "Yine de kaydet"
+
+msgid "Record decision"
+msgstr "Kararı kaydet"
+
+msgid "Record for selected today"
+msgstr "Seçilenler için bugün kaydet"
+
+msgid "Record proxy"
+msgstr "Vekâleti kaydet"
+
+msgid "Recurring"
+msgstr "Düzenli"
+
 #. placeholder {0}: app.requestId
 msgid "Reference: {0}"
 msgstr "Referans: {0}"
 
+msgid "Refused"
+msgstr "Reddedildi"
+
+msgid "Registered mail"
+msgstr "Taahhütlü posta"
+
+msgid "Registered mail needs the tracking number."
+msgstr "Taahhütlü posta için takip numarası gerekir."
+
+msgid "Rejected"
+msgstr "Reddedildi"
+
 msgid "Reload"
 msgstr "Yeniden yükle"
+
+msgid "Remind before a term ends"
+msgstr "Görev süresi bitmeden önce hatırlat"
+
+msgid "Remove"
+msgstr "Kaldır"
+
+msgid "Remove dissent"
+msgstr "Muhalefeti kaldır"
+
+msgid "Remove hours"
+msgstr "Saatleri kaldır"
+
+msgid "Remove item"
+msgstr "Maddeyi kaldır"
+
+msgid "Represented by"
+msgstr "Temsilcisi"
+
+msgid "Requests waiting"
+msgstr "Bekleyen istekler"
+
+msgid "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
+msgstr "Salonları, kortları ve mangal alanlarını ayırtın. Kurallar içindeki rezervasyonlar hemen onaylanır."
 
 msgid "Reset your password"
 msgstr "Parolanızı sıfırlayın"
 
+#. placeholder {0}: p.unit_door_number
+msgid "resident vehicle, unit {0}"
+msgstr "sakinin aracı, bağımsız bölüm {0}"
+
+msgid "Resident vehicles"
+msgstr "Sakin araçları"
+
+msgid "Residents cannot book a blocked period (maintenance, private events)."
+msgstr "Sakinler engellenen bir dönemi rezerve edemez (bakım, özel etkinlikler)."
+
+msgid "Review"
+msgstr "Gözden geçir"
+
+msgid "Revoke"
+msgstr "İptal et"
+
+msgid "Revoke this agent?"
+msgstr "Bu ajan iptal edilsin mi?"
+
+msgid "Revoke this credential?"
+msgstr "Bu kimlik bilgisi iptal edilsin mi?"
+
+msgid "Revoke this permission?"
+msgstr "Bu izin iptal edilsin mi?"
+
+msgid "Revoked"
+msgstr "İptal edildi"
+
+msgid "Role"
+msgstr "Rol"
+
+msgid "Rotate token"
+msgstr "Anahtarı yenile"
+
+msgid "Rule"
+msgstr "Kural"
+
+#. placeholder {0}: labels.topic(th.topic)
+msgid "Rule for {0}"
+msgstr "{0} için kural"
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Save and show the code"
+msgstr "Kaydet ve kodu göster"
+
+msgid "Save counts"
+msgstr "Sayımları kaydet"
+
+msgid "Save dates"
+msgstr "Tarihleri kaydet"
+
+msgid "Save settings"
+msgstr "Ayarları kaydet"
+
+msgid "Scan a pass"
+msgstr "Bir geçiş tara"
+
+msgid "Scan the code from the owner's phone or from the printed call letter."
+msgstr "Kodu malikin telefonundan veya basılı çağrı mektubundan tarayın."
+
+msgid "Scan with camera"
+msgstr "Kamerayla tara"
+
+msgid "Scheduled"
+msgstr "Planlandı"
+
+msgid "Search"
+msgstr "Ara"
+
+msgid "Search by name or plate"
+msgstr "Ada veya plakaya göre ara"
+
+msgid "Search credentials"
+msgstr "Kimlik bilgilerini ara"
+
+msgid "Search decisions"
+msgstr "Kararları ara"
+
+msgid "Search name or plate"
+msgstr "Ad veya plaka ara"
+
+msgid "Search owner or unit"
+msgstr "Malik veya bağımsız bölüm ara"
+
+msgid "Search owners or units"
+msgstr "Malik veya bağımsız bölüm ara"
+
+msgid "Search the text"
+msgstr "Metinde ara"
+
+msgid "Search visitors"
+msgstr "Ziyaretçi ara"
+
+msgid "Searching…"
+msgstr "Aranıyor…"
+
+msgid "Second call"
+msgstr "İkinci çağrı"
+
+msgid "Second meeting"
+msgstr "İkinci toplantı"
+
+msgid "Second meeting:"
+msgstr "İkinci toplantı:"
+
+msgid "Second meeting: earliest, days after the first"
+msgstr "İkinci toplantı: en erken, ilkinden sonra kaç gün"
+
+msgid "Second meeting: latest, days after the first"
+msgstr "İkinci toplantı: en geç, ilkinden sonra kaç gün"
+
+msgid "Select"
+msgstr "Seç"
+
+#. placeholder {0}: n.person_display_name
+msgid "Select {0}"
+msgstr "{0} seç"
+
 msgid "Send me a code"
 msgstr "Bana kod gönder"
+
+msgid "Send the call"
+msgstr "Çağrıyı gönder"
+
+msgid "Send the call at least this many days before"
+msgstr "Çağrıyı toplantıdan en az şu kadar gün önce gönder"
+
+msgid "Send the decisions"
+msgstr "Kararları gönder"
+
+msgid "Sent"
+msgstr "Gönderildi"
+
+msgid "Sent on"
+msgstr "Gönderilme tarihi"
+
+msgid "Server evaluation:"
+msgstr "Sunucu değerlendirmesi:"
+
+msgid "Set the date, build the agenda, then send the call from the assembly page."
+msgstr "Tarihi belirleyin, gündemi hazırlayın, sonra çağrıyı toplantı sayfasından gönderin."
+
+msgid "Set up a site first; assemblies are held per site."
+msgstr "Önce bir site kurun; toplantılar site bazında yapılır."
+
+msgid "Set up a site first; this area works per site."
+msgstr "Önce bir site kurun; bu alan site bazında çalışır."
+
+msgid "Settings"
+msgstr "Ayarlar"
+
+msgid "Settings saved."
+msgstr "Ayarlar kaydedildi."
+
+msgid "Share of land present"
+msgstr "Hazır bulunan arsa payı"
+
+msgid "Share of owners present"
+msgstr "Hazır bulunan malik payı"
+
+msgid "Shortest notice (minutes)"
+msgstr "En kısa süre (dakika)"
+
+msgid "Show this code at the door. It works once per assembly."
+msgstr "Bu kodu kapıda gösterin. Her toplantı için bir kez geçerlidir."
 
 msgid "Sign in"
 msgstr "Giriş yap"
@@ -170,8 +1913,14 @@ msgstr "Binanızı yönetmek için giriş yapın."
 msgid "Sign out"
 msgstr "Çıkış yap"
 
+msgid "Signed by hand"
+msgstr "Elle imzalı"
+
 msgid "Signing you in"
 msgstr "Giriş yapılıyor"
+
+msgid "Site"
+msgstr "Site"
 
 msgid "Site manager"
 msgstr "Site yöneticisi"
@@ -181,6 +1930,18 @@ msgstr "Siteler"
 
 msgid "Skip to content"
 msgstr "İçeriğe geç"
+
+msgid "Slots booked by others are shown only as \"taken\"."
+msgstr "Başkalarının rezerve ettiği saatler yalnızca \"dolu\" olarak görünür."
+
+msgid "Small building: most proxies per person"
+msgstr "Küçük bina: kişi başına en çok vekâlet"
+
+msgid "Small building: up to this many units"
+msgstr "Küçük bina: şu kadar bağımsız bölüme kadar"
+
+msgid "SMS"
+msgstr "SMS"
 
 msgid "SMS code"
 msgstr "SMS kodu"
@@ -197,8 +1958,44 @@ msgstr "Bir şeyler ters gitti"
 msgid "Something went wrong. Please try again."
 msgstr "Bir şeyler ters gitti. Lütfen tekrar deneyin."
 
+msgid "Source"
+msgstr "Kaynak"
+
+msgid "Special assessment"
+msgstr "Özel tahsilat"
+
+msgid "Special assessment plan"
+msgstr "Özel tahsilat planı"
+
+msgid "Split by"
+msgstr "Bölüştürme ölçütü"
+
 msgid "Staff"
 msgstr "Personel"
+
+msgid "Start the assembly"
+msgstr "Toplantıyı başlat"
+
+msgid "Start the shift"
+msgstr "Vardiyayı başlat"
+
+msgid "State"
+msgstr "Durum"
+
+msgid "Status"
+msgstr "Durum"
+
+msgid "Stop camera"
+msgstr "Kamerayı durdur"
+
+msgid "Store error"
+msgstr "Depolama hatası"
+
+msgid "Suspended"
+msgstr "Askıya alındı"
+
+msgid "Switch guard"
+msgstr "Güvenliği değiştir"
 
 msgid "Switch organization"
 msgstr "Kuruluş değiştir"
@@ -206,17 +2003,195 @@ msgstr "Kuruluş değiştir"
 msgid "System"
 msgstr "Sistem"
 
+msgid "Tag"
+msgstr "Etiket"
+
+msgid "Tag number"
+msgstr "Etiket numarası"
+
+msgid "Tag or card"
+msgstr "Etiket veya kart"
+
+msgid "Taken"
+msgstr "Dolu"
+
+msgid "Tell the absent owners"
+msgstr "Devamsız maliklere bildirin"
+
 msgid "Tenant"
 msgstr "Kiracı"
+
+msgid "Tenants"
+msgstr "Kiracılar"
+
+msgid "Term ends"
+msgstr "Görev bitişi"
+
+msgid "Term starts"
+msgstr "Görev başlangıcı"
+
+msgid "That did not work. Check the visitor's status."
+msgstr "Bu işe yaramadı. Ziyaretçinin durumunu kontrol edin."
 
 msgid "That did not work. Check your details and try again."
 msgstr "Olmadı. Bilgilerinizi kontrol edip tekrar deneyin."
 
+msgid "That owner is already checked in."
+msgstr "Bu malik zaten giriş yaptı."
+
+msgid "That password is not correct."
+msgstr "Bu parola doğru değil."
+
+msgid "That time is already taken or blocked. Choose another slot."
+msgstr "Bu saat zaten dolu veya engelli. Başka bir saat seçin."
+
+msgid "The agent is offline."
+msgstr "Ajan çevrim dışı."
+
+msgid "The agent runs on a computer at the gate and opens it. You get a one-time token to enrol it."
+msgstr "Ajan, kapıdaki bir bilgisayarda çalışır ve kapıyı açar. Kaydetmek için tek kullanımlık bir anahtar alırsınız."
+
+msgid "The agent's clock is wrong."
+msgstr "Ajanın saati yanlış."
+
+msgid "The allow-list is being rebuilt."
+msgstr "İzin listesi yeniden oluşturuluyor."
+
+msgid "The binding vote happens in the room; this is only a temperature check."
+msgstr "Bağlayıcı oy toplantıda kullanılır; bu yalnızca bir hava ölçümüdür."
+
+msgid "The booking breaks a rule of this facility."
+msgstr "Rezervasyon bu tesisin bir kuralını ihlal ediyor."
+
+msgid "The booking was cancelled."
+msgstr "Rezervasyon iptal edildi."
+
+msgid "The call has been sent."
+msgstr "Çağrı gönderildi."
+
+msgid "The call has gone out, so the agenda is fixed."
+msgstr "Çağrı gönderildiği için gündem sabittir."
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The call must go out at least {0} days before the meeting. Move the date or send the call later only if the rules allow it."
+msgstr "Çağrı, toplantıdan en az {0} gün önce gönderilmelidir. Kurallar izin vermedikçe tarihi ileri alın."
+
+msgid "The camera is not available ({error}). Type the code instead."
+msgstr "Kamera kullanılamıyor ({error}). Bunun yerine kodu yazın."
+
+msgid "The change has been created."
+msgstr "Değişiklik oluşturuldu."
+
+msgid "The checklist appears when the assembly has been called."
+msgstr "Kontrol listesi, toplantı çağrıldığında görünür."
+
+msgid "The code also works for 30 minutes before and after this window, once."
+msgstr "Kod, bu aralıktan 30 dakika önce ve sonra da bir kez geçerlidir."
+
+msgid "The decisions go to the owners who were not present. Each delivery is recorded like the call."
+msgstr "Kararlar hazır bulunmayan maliklere gider. Her tebliğ, çağrı gibi kaydedilir."
+
+msgid "The decisions were sent."
+msgstr "Kararlar gönderildi."
+
+msgid "The download failed. Please try again."
+msgstr "İndirme başarısız oldu. Lütfen yeniden deneyin."
+
+msgid "The end must be after the start."
+msgstr "Bitiş, başlangıçtan sonra olmalıdır."
+
+msgid "The facility is closed at that time."
+msgstr "Tesis o saatte kapalıdır."
+
+msgid "The fee of <0/> is refunded automatically."
+msgstr "<0/> tutarındaki ücret otomatik olarak iade edilir."
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The first meeting is less than {0} days away. The server will refuse a call that is too late; move the date first."
+msgstr "İlk toplantıya {0} günden az kaldı. Sunucu çok geç yapılan çağrıyı reddeder; önce tarihi değiştirin."
+
+msgid "The gate agent is offline."
+msgstr "Kapı ajanı çevrim dışı."
+
+msgid "The gate agent's clock is wrong; it will not act."
+msgstr "Kapı ajanının saati yanlış; işlem yapmaz."
+
+msgid "The gate did not confirm. Try again or check the gate."
+msgstr "Kapı onay vermedi. Yeniden deneyin veya kapıyı kontrol edin."
+
+msgid "The last day must not be before the first."
+msgstr "Son gün ilk günden önce olamaz."
+
+msgid "The latest day must not be before the earliest day."
+msgstr "Son gün, ilk günden önce olamaz."
+
+msgid "The legal timing is not met."
+msgstr "Yasal süreler sağlanmıyor."
+
+msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
+msgstr "Liste araç ve ziyaretçilerden türetilir. Burada yalnızca etiket ve PIN oluşturulur ve iptal edilir."
+
+msgid "The list of units is not available to this account."
+msgstr "Bağımsız bölüm listesi bu hesaba açık değil."
+
+msgid "The minutes can be generated once the assembly is closed."
+msgstr "Tutanak, toplantı kapatıldıktan sonra oluşturulabilir."
+
+msgid "The minutes were generated and filed in the documents."
+msgstr "Tutanak oluşturuldu ve belgelere eklendi."
+
+msgid "The opening log is not available."
+msgstr "Açılış kaydı kullanılamıyor."
+
 msgid "The page you are looking for does not exist or has moved."
 msgstr "Aradığınız sayfa mevcut değil veya taşınmış."
 
+msgid "The pass was cancelled."
+msgstr "Geçiş iptal edildi."
+
+msgid "The permission was revoked."
+msgstr "İzin iptal edildi."
+
+msgid "The poll is closed."
+msgstr "Anket kapatıldı."
+
+msgid "The poll is open."
+msgstr "Anket açıldı."
+
+msgid "The QR code stops working at once."
+msgstr "QR kod hemen çalışmaz hale gelir."
+
+msgid "The request could not be sent by SMS. Call the resident instead."
+msgstr "İstek SMS ile gönderilemedi. Bunun yerine sakini arayın."
+
 msgid "The request failed. Please try again."
 msgstr "İstek başarısız oldu. Lütfen tekrar deneyin."
+
+msgid "The resident denied this visitor. Do not admit."
+msgstr "Sakin bu ziyaretçiyi reddetti. İçeri almayın."
+
+msgid "The search failed."
+msgstr "Arama başarısız oldu."
+
+msgid "The second call also needs a quorum"
+msgstr "İkinci çağrıda da toplantı yeter sayısı aranır"
+
+msgid "The second meeting must come after the first."
+msgstr "İkinci toplantı ilkinden sonra olmalıdır."
+
+#. placeholder {0}: settings.data.settings.second_call_min_days
+#. placeholder {1}: settings.data.settings.second_call_max_days
+msgid "The second meeting should be {0} to {1} days after the first."
+msgstr "İkinci toplantı, ilkinden {0} ila {1} gün sonra olmalıdır."
+
+#. placeholder {0}: r.person_display_name
+#. placeholder {1}: labels.role(r.role)
+#. placeholder {2}: r.days_left
+msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
+msgstr "{0} adlı kişinin {1} görevi <0/> tarihinde bitiyor ({2} gün kaldı). Toplantıyı zamanında planlayın."
+
+msgid "The visit must end after it starts."
+msgstr "Ziyaret, başladıktan sonra bitmelidir."
 
 msgid "Theme"
 msgstr "Tema"
@@ -224,11 +2199,59 @@ msgstr "Tema"
 msgid "This accounting period is closed and can no longer be changed."
 msgstr "Bu muhasebe dönemi kapatıldı ve artık değiştirilemez."
 
+msgid "This action needs a recent sign-in. Enter your password to continue."
+msgstr "Bu işlem yakın zamanda giriş yapmayı gerektirir. Devam etmek için parolanızı girin."
+
+msgid "This assembly was cancelled."
+msgstr "Bu toplantı iptal edildi."
+
+msgid "This code is not known."
+msgstr "Bu kod tanınmıyor."
+
+msgid "This code is not valid for this assembly."
+msgstr "Bu kod bu toplantı için geçerli değil."
+
+msgid "This code is shown only now. Send it to your guest before you close this window."
+msgstr "Bu kod yalnızca şimdi gösteriliyor. Bu pencereyi kapatmadan önce misafirinize gönderin."
+
+msgid "This decision already has an applied change."
+msgstr "Bu kararın zaten uygulanmış bir değişikliği var."
+
+msgid "This facility is not open to your kind of occupant."
+msgstr "Bu tesis, sizin türünüzdeki kullanıcılara açık değil."
+
+msgid "This gate is switched off."
+msgstr "Bu kapı kapalı."
+
+msgid "This pass is for another site."
+msgstr "Bu geçiş başka bir site içindir."
+
+msgid "This pass is not valid at this time."
+msgstr "Bu geçiş şu anda geçerli değil."
+
+msgid "This pass was already used."
+msgstr "Bu geçiş zaten kullanıldı."
+
+msgid "This pass was cancelled or revoked."
+msgstr "Bu geçiş iptal edildi veya geri alındı."
+
+msgid "This person would hold more proxies than the limit of {limit} for this site."
+msgstr "Bu kişi, bu site için {limit} sınırından fazla vekâlet taşıyacak."
+
+msgid "This person would hold more than the maximum share of all votes."
+msgstr "Bu kişi, tüm oyların izin verilen azami payından fazlasını taşıyacak."
+
+msgid "This point is switched off."
+msgstr "Bu nokta kapalı."
+
 msgid "This record changed"
 msgstr "Bu kayıt değişti"
 
 msgid "This request was already sent with different details. Reload the form and try again."
 msgstr "Bu istek daha önce farklı bilgilerle gönderilmişti. Formu yenileyip tekrar deneyin."
+
+msgid "This resident did not share a number for the gate."
+msgstr "Bu sakin kapı için bir numara paylaşmadı."
 
 msgid "This server offers no sign-in method this app can use."
 msgstr "Bu sunucu, uygulamanın kullanabileceği bir giriş yöntemi sunmuyor."
@@ -236,11 +2259,43 @@ msgstr "Bu sunucu, uygulamanın kullanabileceği bir giriş yöntemi sunmuyor."
 msgid "This step is not available in this build yet."
 msgstr "Bu adım henüz bu sürümde kullanılamıyor."
 
+msgid "This token is shown only now. If you lose it, re-enrol the agent to get a new one."
+msgstr "Bu anahtar yalnızca şimdi gösteriliyor. Kaybederseniz yeni almak için ajanı yeniden kaydedin."
+
 msgid "This value is not valid"
 msgstr "Bu değer geçerli değil"
 
+#. placeholder {0}: labels.effect(kind)
+msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
+msgstr "Bu işlem, bu kararla bağlantılı bir {0} oluşturur. Daha sonra düzeltilebilir ancak sessizce geri alınamaz."
+
 msgid "Tickets"
 msgstr "Talepler"
+
+msgid "Time"
+msgstr "Saat"
+
+#. placeholder {0}: ctx.timeZone
+msgid "Times are in the site's time zone ({0})."
+msgstr "Saatler sitenin saat dilimindedir ({0})."
+
+msgid "Timing"
+msgstr "Süreler"
+
+msgid "Title"
+msgstr "Başlık"
+
+msgid "Title (optional)"
+msgstr "Başlık (isteğe bağlı)"
+
+msgid "To be verified"
+msgstr "Doğrulanacak"
+
+msgid "Today"
+msgstr "Bugün"
+
+msgid "Token rotation started."
+msgstr "Anahtar yenileme başlatıldı."
 
 msgid "Too many attempts. Please wait and try again."
 msgstr "Çok fazla deneme yapıldı. Lütfen bekleyip tekrar deneyin."
@@ -252,17 +2307,197 @@ msgstr "Çok fazla istek gönderildi. Lütfen biraz bekleyip tekrar deneyin."
 msgid "Too many requests. Try again in {0} seconds."
 msgstr "Çok fazla istek gönderildi. {0} saniye sonra tekrar deneyin."
 
+msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
+msgstr "Çok fazla yanlış PIN. Bu güvenlik görevlisi yaklaşık {minutes} dakika kilitli."
+
+msgid "Topic"
+msgstr "Konu"
+
+msgid "Tracking no."
+msgstr "Takip no."
+
+msgid "Tracking number"
+msgstr "Takip numarası"
+
+msgid "Tracking number (optional)"
+msgstr "Takip numarası (isteğe bağlı)"
+
 msgid "Try again"
 msgstr "Tekrar dene"
 
+msgid "Unanimity"
+msgstr "Oybirliği"
+
+msgid "Undo"
+msgstr "Geri al"
+
+#. placeholder {0}: o.name
+msgid "Undo attendance of {0}"
+msgstr "{0} için katılımı geri al"
+
+msgid "Unit"
+msgstr "Bağımsız bölüm"
+
+msgid "Until"
+msgstr "Bitiş"
+
+msgid "Upcoming and recent"
+msgstr "Yaklaşan ve son"
+
+msgid "Valid"
+msgstr "Geçerli"
+
+msgid "Valid from"
+msgstr "Geçerlilik başlangıcı"
+
+msgid "Valid pass"
+msgstr "Geçerli geçiş"
+
+msgid "Valid until"
+msgstr "Geçerlilik sonu"
+
+msgid "Valid until (optional)"
+msgstr "Geçerlilik sonu (isteğe bağlı)"
+
+msgid "Value"
+msgstr "Değer"
+
+msgid "Vehicle gate"
+msgstr "Araç kapısı"
+
+msgid "Vehicle gates"
+msgstr "Araç kapıları"
+
+msgid "View"
+msgstr "Görünüm"
+
+msgid "Visiting unit"
+msgstr "Ziyaret edilen bağımsız bölüm"
+
+msgid "Visitor"
+msgstr "Ziyaretçi"
+
+msgid "Visitor approved."
+msgstr "Ziyaretçi onaylandı."
+
+msgid "Visitor code"
+msgstr "Ziyaretçi kodu"
+
+msgid "Visitor denied."
+msgstr "Ziyaretçi reddedildi."
+
+msgid "Visitor pass for {name}"
+msgstr "{name} için ziyaretçi geçişi"
+
+msgid "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
+msgstr "{name} için ziyaretçi geçişi, geçerlilik: {validity}. Kapıda bu QR kodu gösterin veya güvenliğe şu kodu verin: {value}"
+
+msgid "Visitor QR code"
+msgstr "Ziyaretçi QR kodu"
+
+msgid "Visitor's name"
+msgstr "Ziyaretçinin adı"
+
+msgid "Visitors"
+msgstr "Ziyaretçiler"
+
+msgid "Voted"
+msgstr "Oylanacak"
+
+msgid "Votes and proxies"
+msgstr "Oylar ve vekâletler"
+
+#. placeholder {0}: entry.data?.unit_door_number ?? ''
+msgid "Waiting for {0} to answer. This checks every few seconds."
+msgstr "{0} bağımsız bölümünün yanıtı bekleniyor. Bu birkaç saniyede bir kontrol edilir."
+
+msgid "Waiting for approval"
+msgstr "Onay bekleniyor"
+
+msgid "Waiting for enrolment"
+msgstr "Kayıt bekleniyor"
+
+msgid "Waiting for the resident"
+msgstr "Sakin bekleniyor"
+
+msgid "Walk-in visitor"
+msgstr "Yaya ziyaretçi"
+
 msgid "We could not find that."
 msgstr "Bulunamadı."
+
+msgid "week"
+msgstr "hafta"
+
+msgid "Week"
+msgstr "Hafta"
+
+msgid "What is it? (optional)"
+msgstr "Nedir? (isteğe bağlı)"
+
+msgid "What should be created"
+msgstr "Ne oluşturulsun"
+
+msgid "What will be created"
+msgstr "Ne oluşturulacak"
+
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+msgid "When"
+msgstr "Ne zaman"
+
+msgid "When the guard asks about an unexpected visitor, the request shows up here and by SMS. This page checks every few seconds."
+msgstr "Güvenlik beklenmedik bir ziyaretçiyi sorduğunda istek burada ve SMS ile görünür. Bu sayfa birkaç saniyede bir kontrol eder."
+
+msgid "Where the defaults come from"
+msgstr "Varsayılanlar nereden geliyor"
+
+msgid "Who is on the gate?"
+msgstr "Kapıda kim var?"
+
+msgid "Who may book"
+msgstr "Kimler rezerve edebilir"
+
+msgid "Will be voted"
+msgstr "Oylanacak"
+
+msgid "Will be voted on"
+msgstr "Oylanacak"
+
+msgid "Window"
+msgstr "Aralık"
+
+msgid "Write the decision."
+msgstr "Kararı yazın."
+
+msgid "Write the dissent."
+msgstr "Muhalefeti yazın."
+
+msgid "Wrong PIN. Try again."
+msgstr "Yanlış PIN. Yeniden deneyin."
+
+msgid "Year"
+msgstr "Yıl"
+
+msgid "Yes"
+msgstr "Evet"
+
+msgid "Yes share of land (%)"
+msgstr "Evet oyu veren arsa payı (%)"
+
+msgid "You are checked in"
+msgstr "Giriş yaptınız"
 
 msgid "You are not linked to a unit in this organization."
 msgstr "Bu kuruluşta bir bağımsız bölümle ilişkiniz yok."
 
 msgid "You are not part of any organization yet"
 msgstr "Henüz hiçbir kuruluşa bağlı değilsiniz"
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "You can book at most {0} days ahead."
+msgstr "En fazla {0} gün önceden rezerve edebilirsiniz."
 
 msgid "You do not have access to this"
 msgstr "Buna erişim yetkiniz yok"
@@ -273,6 +2508,12 @@ msgstr "Bu sayfaya erişim yetkiniz yok"
 msgid "You do not have permission to do this."
 msgstr "Bunu yapma yetkiniz yok."
 
+msgid "You get a QR code to send to your guest. The guard scans it at the gate."
+msgstr "Misafirinize göndereceğiniz bir QR kod alırsınız. Güvenlik kapıda tarar."
+
+msgid "You may not open gates."
+msgstr "Kapıları açma yetkiniz yok."
+
 msgid "You will be able to choose a new password here."
 msgstr "Yeni parolanızı burada seçebileceksiniz."
 
@@ -282,8 +2523,17 @@ msgstr "Bağımsız bölümünüzü burada talep edebileceksiniz. Talebi yöneti
 msgid "You will be able to create or link your account here."
 msgstr "Hesabınızı burada oluşturabilir veya bağlayabileceksiniz."
 
+msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
+msgstr "Yanıtınız bir oy değildir: yöneticiye maliklerin ne düşündüğünü söyler. Bağlayıcı oy toplantıda kullanılır. Bağımsız bölüm başına bir yanıt; anket kapanana kadar değiştirebilirsiniz."
+
+msgid "Your answer was saved."
+msgstr "Yanıtınız kaydedildi."
+
 msgid "Your dashboard is on its way"
 msgstr "Panonuz hazırlanıyor"
 
 msgid "Your sign-in link will be completed here."
 msgstr "Giriş bağlantınız burada tamamlanacak."
+
+msgid "Your unit has used its bookings for this period."
+msgstr "Bağımsız bölümünüz bu dönem için rezervasyon hakkını kullandı."

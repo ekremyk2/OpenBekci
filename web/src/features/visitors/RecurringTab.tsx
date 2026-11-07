@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -64,6 +64,10 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
     },
   })
   const [pass, setPass] = useState<{ token: string; name: string } | null>(null)
+  const firstUnit = units[0]?.id
+  useEffect(() => {
+    if (firstUnit && !form.getValues('unit_id')) form.setValue('unit_id', firstUnit)
+  }, [firstUnit, form])
   const create = useOrgMutation(async (v: Values) =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/recurring-visitors', {
