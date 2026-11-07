@@ -114,23 +114,34 @@ var authzMatrixRows = map[string]mrow{
 			return 403, true
 		}},
 
-	"files.list": {perms: []authz.Permission{files.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/files")},
-	"files.upload": {perms: []authz.Permission{files.PermUpload}, status: 201,
+	"operations.listFiles": {perms: []authz.Permission{files.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/files")},
+	"operations.uploadFile": {perms: []authz.Permission{files.PermUpload}, status: 201,
 		build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
-			body, ctype := multipartBody(map[string]string{"scope_type": testScope, "scope_id": uuid.NewString()}, "matrix.txt", []byte("uploaded by the matrix"))
+			body, ctype := multipartBody(map[string]string{"scope": testScope + ":" + uuid.NewString()}, "matrix.txt", []byte("uploaded by the matrix"))
 			return mreq{method: "POST", path: "/v1/orgs/" + org.ID.String() + "/files", body: body, headers: map[string]string{"Content-Type": ctype}}
 		}},
-	"files.get": {perms: []authz.Permission{files.PermRead}, status: 200,
+	"operations.getFileMeta": {perms: []authz.Permission{files.PermRead}, status: 200,
+		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String() + "/meta"}
+		}},
+	"operations.downloadFile": {perms: []authz.Permission{files.PermRead}, status: 200,
 		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String()}
 		}},
-	"files.download": {perms: []authz.Permission{files.PermRead}, status: 200,
-		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String() + "/content"}
-		}},
-	"files.delete": {perms: []authz.Permission{files.PermManage}, status: 204,
+	// files.upload is the gate; the file is an attached one nobody here uploaded, which only files.manage may delete
+	"operations.deleteFile": {perms: []authz.Permission{files.PermUpload}, status: 204,
 		build: func(_ *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "DELETE", path: "/v1/orgs/" + org.ID.String() + "/files/" + matrixFile(t, org).ID.String()}
+		},
+		override: func(actor, target string) (int, bool) {
+			switch actor {
+			case "org_admin", "site_manager", "no_membership", "platform_admin", "anonymous":
+				return 0, false
+			}
+			if target == "own" {
+				return 403, true // may read the file, may not delete it
+			}
+			return 0, false
 		}},
 }
 

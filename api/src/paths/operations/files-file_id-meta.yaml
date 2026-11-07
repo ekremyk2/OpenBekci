@@ -1,0 +1,33 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/files.yaml#/parameters/FileId
+get:
+  operationId: operations.getFileMeta
+  summary: Get file metadata
+  description: |
+    **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+    anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+    `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - files.read
+  x-stability: stable
+  responses:
+    '200':
+      description: The file.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/files.yaml#/schemas/File
+    '401':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '403':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '404':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

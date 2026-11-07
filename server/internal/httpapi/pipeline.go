@@ -296,6 +296,13 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		if mode == authOptional && r.URL.Query().Has("sig") && p.op(r).query["sig"] && p.op(r).query["exp"] {
+			// A signed URL (a download link) stands on its signature: a session
+			// that comes along, from a cookie, a token or another organization,
+			// must not change the outcome, so it is not even looked at.
+			next.ServeHTTP(w, r)
+			return
+		}
 		pr, err := p.auth.Authenticate(r)
 		if mode == authOptional {
 			if err == nil && pr != nil {

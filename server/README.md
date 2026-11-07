@@ -188,16 +188,33 @@ server: `POST /v1/orgs/{org_id}/files` (multipart; form fields first, then `file
 Each user may upload 30 files a minute (in-memory token bucket per instance), then 429 `rate_limited`.
 
 What an upload goes through: the extension must be allowed and the first bytes must really be that type
-(`http.DetectContentType`; a renamed executable is 415), over-limit files are 413 (no partial blob is kept), images are
-decoded and re-encoded (EXIF including GPS, XMP, ICC and comments are dropped, the EXIF rotation is applied to the pixels,
-the stored original is capped at 4096 px, `thumb` 256 px and `medium` 1600 px variants are made), everything else is
-stored as is, the SHA-256 of what is stored is recorded, the ClamAV verdict can mark it `quarantined`. A file without a
-scope is a draft that expires after 7 days. Downloads (`/files/{id}/content`, `?variant=thumb|medium`) are authorized per
-file (uploader, `files.manage`, or the scope's visibility resolver), images are `inline`, everything else
-`Content-Disposition: attachment`, always `nosniff` and `Cache-Control: private, no-store`. File metadata carries short-lived
-`links`: signed paths on this server for the local driver (usable without a session), presigned GETs for S3.
-Deleting is soft; the hourly `maintenance.prune_files` job also expires drafts and files past `retention_until`, removes
-blobs and gives the storage back to `org_storage_usage` (a deleted file another table still references keeps its row).
+(`http.DetectContentType`; a renamed executable is 415), over-limit files are 413 (no partial blob is kept), the body is
+spooled to a temporary file and scanned from there when ClamAV is configured (nothing reaches storage before the scan; a
+flagged file is `quarantined`, cannot be attached and expires after the draft lifetime), images are decoded from the
+spooled file (header first: more than `OPENBEKCI_MAX_IMAGE_PIXELS` is 422) and re-encoded (EXIF including GPS, XMP, ICC
+and comments are dropped, the EXIF rotation of JPEG, PNG and WebP is applied to the pixels, the stored original is capped at
+4096 px, `thumb` 256 px and `medium` 1600 px variants are made, one at a time), everything else is stored as is, and the
+SHA-256 of what is stored is recorded. A file without a scope is a draft that expires after 7 days and that only its
+uploader (and `files.manage`) sees; once it is attached, visibility is the scope's resolver, for the uploader too. The form
+fields (`scope` as `<type>:<id>`, `site_id`, `name`) come before `file`; a field after it is 422 `multipart_order` and the
+file is discarded again. File names lose directories, control characters and bidi overrides. `Idempotency-Key` on an upload
+compares content (the SHA-256 of the form), not length: a retry of the same file replays, another file is 422
+`idempotency_mismatch`.
+
+Contract (the draft's operations, one set of ids): `operations.uploadFile` `POST /files`, `operations.listFiles`
+`GET /files`, `operations.getFileMeta` `GET /files/{id}/meta`, `operations.downloadFile` `GET /files/{id}` (the bytes, or a
+302 to a presigned URL with S3; `?variant=thumb|medium`; `exp` and `sig` of a `links` URL stand in for a session and a
+session sent along is ignored), `operations.deleteFile` `DELETE /files/{id}` (the uploader discards a draft with
+`files.upload`; an attached file only `files.manage` removes, the uploader gets 409). Downloads are authorized per file,
+images are `inline`, everything else `Content-Disposition: attachment`, always `X-Content-Type-Options: nosniff`,
+`Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`. `uploaded_by` is shown to the uploader and to
+`files.manage` only. File metadata carries short-lived `links`: signed paths on this server for the local driver (usable
+without a session), presigned GETs for S3. A `.csv` is served as an attachment with its bytes as uploaded: guarding
+against spreadsheet formula injection (cells starting with `=`, `+`, `-`, `@`) is the job of whatever imports or
+displays it. Deleting is soft; the hourly `maintenance.prune_files` job also expires drafts and files past `retention_until`,
+removes blobs and gives the storage back to `org_storage_usage` (a deleted file another table still references keeps its
+row), in batches of 200 up to 5000 files per run, skipping rows another transaction holds (`Attach` locks the row). At
+start-up, `.tmp-*` leftovers of the local driver and spooled uploads older than an hour are removed.
 
 For other modules (Go):
 

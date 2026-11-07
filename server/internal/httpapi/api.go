@@ -92,7 +92,7 @@ type apiServer struct {
 	tenancy         *tenancy.Service
 	audit           *audit.Service
 	files           *files.Service
-	resolver       *authz.Resolver
+	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie
 }
 

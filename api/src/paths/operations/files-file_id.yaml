@@ -1,0 +1,121 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/files.yaml#/parameters/FileId
+get:
+  operationId: operations.downloadFile
+  summary: Download a file
+  description: |
+    **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+    everything else is sent with `Content-Disposition: attachment`. All responses carry
+    `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+    `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+    answer is a 302 to a short-lived presigned URL instead of the bytes.
+
+    Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+    a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+    resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+    a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+    storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+    or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+    quarantined file has no downloadable content (404).
+  tags:
+    - operations
+  security:
+    - {}
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - files.read
+  x-openbekci-stream: true
+  x-stability: stable
+  parameters:
+    - name: variant
+      in: query
+      description: Image variant, `thumb` or `medium`. Absent for the original.
+      schema:
+        type: string
+        enum:
+          - thumb
+          - medium
+    - name: exp
+      in: query
+      description: Expiry of a signed URL, Unix seconds. Sent with `sig`.
+      schema:
+        type: integer
+        format: int64
+    - name: sig
+      in: query
+      description: Signature of a signed URL. Sent with `exp`.
+      schema:
+        type: string
+        maxLength: 128
+  responses:
+    '200':
+      description: The file's bytes, with the stored type as `Content-Type`.
+      headers:
+        Content-Disposition:
+          schema:
+            type: string
+        Content-Security-Policy:
+          schema:
+            type: string
+        Cache-Control:
+          schema:
+            type: string
+        X-Content-Type-Options:
+          schema:
+            type: string
+      content:
+        '*/*':
+          schema:
+            type: string
+            format: binary
+    '302':
+      description: Short-lived signed URL (S3 driver).
+      headers:
+        Location:
+          schema:
+            type: string
+    '401':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '403':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '404':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '422':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: operations.deleteFile
+  summary: Delete an unattached file
+  description: |
+    **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+    and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+    file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+    who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+    `maintenance.prune_files` job. Recorded in the audit trail.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - files.upload
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    '204':
+      description: Deleted.
+    '401':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '403':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '404':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '409':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
