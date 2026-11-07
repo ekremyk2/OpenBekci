@@ -187,15 +187,28 @@ schemas:
         type: string
         pattern: '^[0-9]{6}$'
         description: A code sent to the account's own phone by `auth.requestOtp`.
+  ReauthEmailCode:
+    type: object
+    required: [method, code]
+    properties:
+      method:
+        type: string
+        description: Always `email_code`.
+      code:
+        type: string
+        pattern: '^[0-9]{6}$'
+        description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
   ReauthRequest:
     oneOf:
       - $ref: '#/schemas/ReauthPassword'
       - $ref: '#/schemas/ReauthSmsOtp'
+      - $ref: '#/schemas/ReauthEmailCode'
     discriminator:
       propertyName: method
       mapping:
         password: '#/schemas/ReauthPassword'
         sms_otp: '#/schemas/ReauthSmsOtp'
+        email_code: '#/schemas/ReauthEmailCode'
   ReauthResponse:
     type: object
     required: [reauth_until]

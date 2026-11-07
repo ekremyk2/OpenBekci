@@ -2,9 +2,11 @@ post:
   operationId: auth.reauth
   summary: Re-authenticate the current session for sensitive operations
   description: |
-    Proves the caller is still the user with the password or a fresh SMS code,
-    and marks the current session as re-authenticated for 10 minutes. Sensitive
-    operations answer 403 `reauth_required` outside that window.
+    Proves the caller is still the user with the password, a fresh SMS code
+    (`auth.requestOtp`) or a fresh email code (`auth.requestReauthEmailCode`),
+    and marks the current session as re-authenticated for 10 minutes. A user
+    with only an email address and no password re-authenticates by email code.
+    Sensitive operations answer 403 `reauth_required` outside that window.
   tags: [auth]
   security:
     - cookieAuth: []

@@ -17,6 +17,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/openbekci/openbekci/server/db/migrations"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
 
@@ -24,9 +25,9 @@ const defaultSuperuserURL = "postgres://postgres:postgres@localhost:5432/postgre
 
 // rlsExempt are tables in public that are intentionally not tenant tables.
 // idempotency_key is keyed by org_id and principal_id explicitly and written by the HTTP layer before authorization (see its migration).
-// user, session, otp_code and login_attempt are instance-wide identity tables (backend plan 4.2, section 5):
+// user, session, otp_code, login_attempt and delivery_log are instance-wide identity tables (backend plan 4.2, section 5):
 // a user belongs to no organization; organizations reach it through person.user_id.
-var rlsExempt = []string{"instance_setting", "goose_db_version", "idempotency_key", "user", "session", "otp_code", "login_attempt"}
+var rlsExempt = []string{"instance_setting", "goose_db_version", "idempotency_key", "user", "session", "otp_code", "login_attempt", "delivery_log"}
 
 func isRLSExempt(table string) bool {
 	return slices.Contains(rlsExempt, table) || strings.HasPrefix(table, "river_")
@@ -427,5 +428,62 @@ func TestIntegrationReadinessDoesNotLeakGoroutines(t *testing.T) {
 	}
 	if grew := runtime.NumGoroutine() - before; grew > 5 {
 		t.Errorf("goroutines grew by %d over 200 readiness checks", grew)
+	}
+}
+
+// A fresh database must apply the whole chain in version order, without goose's
+// allow-missing mode: a migration older than one that is already applied would
+// fail on every database that has the newer one. The test checks the applied
+// order and that the files are strictly ordered by their version.
+func TestIntegrationMigrationsApplyInVersionOrder(t *testing.T) {
+	d := newTestDB(t)
+	ctx := context.Background()
+
+	rows, err := d.migrator.Query(ctx, `SELECT version_id FROM goose_db_version WHERE version_id > 0 ORDER BY id`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rows.Close()
+	var applied []int64
+	for rows.Next() {
+		var v int64
+		if err := rows.Scan(&v); err != nil {
+			t.Fatal(err)
+		}
+		applied = append(applied, v)
+	}
+	if err := rows.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if len(applied) == 0 {
+		t.Fatal("no migrations were applied")
+	}
+	if !slices.IsSorted(applied) {
+		t.Errorf("migrations were applied out of version order: %v", applied)
+	}
+	files, err := migrations.FS.ReadDir(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var onDisk []int64
+	for _, f := range files {
+		var v int64
+		if _, err := fmt.Sscanf(f.Name(), "%d_", &v); err == nil {
+			onDisk = append(onDisk, v)
+		}
+	}
+	slices.Sort(onDisk)
+	if !slices.Equal(applied, onDisk) {
+		t.Errorf("applied versions %v differ from the files %v", applied, onDisk)
+	}
+	// The identity chain follows the API pipeline's idempotency migrations
+	// (A2 shipped 20261108100000 before identity existed).
+	for _, f := range files {
+		var v int64
+		_, err := fmt.Sscanf(f.Name(), "%d_", &v)
+		identity := strings.Contains(f.Name(), "_identity") || strings.Contains(f.Name(), "_people_minimal")
+		if err == nil && identity && v <= 20261108100000 {
+			t.Errorf("%s is not newer than 20261108100000_idempotency_scope", f.Name())
+		}
 	}
 }
