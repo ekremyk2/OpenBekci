@@ -336,19 +336,22 @@ func TestProcessImageRejects(t *testing.T) {
 	}
 }
 
+// bidi is an invisible direction-changing character, spelled out so the source stays readable.
+func bidi(r rune) string { return string(r) }
+
 func TestCleanName(t *testing.T) {
 	for in, want := range map[string]string{
-		"photo.jpg":            "photo.jpg",
-		"../../etc/passwd":     "passwd",
-		`C:\Users\x\evil.exe`:  "evil.exe",
-		"a\x00b\r\n.png":       "ab.png",
-		`quote".pdf`:           "quote.pdf",
-		".hidden":              "hidden",
-		"   spaced name.txt  ": "spaced name.txt",
-		"":                     "",
-		"..":                   "",
-		"evil‮fdp.txt":         "evilfdp.txt",
-		"a⁦b⁩c‏.pdf":           "abc.pdf",
+		"photo.jpg":                       "photo.jpg",
+		"../../etc/passwd":                "passwd",
+		`C:\Users\x\evil.exe`:             "evil.exe",
+		"a\x00b\r\n.png":                  "ab.png",
+		`quote".pdf`:                      "quote.pdf",
+		".hidden":                         "hidden",
+		"   spaced name.txt  ":            "spaced name.txt",
+		"":                                "",
+		"..":                              "",
+		"evil" + bidi(0x202e) + "fdp.txt": "evilfdp.txt",
+		"a" + bidi(0x2066) + "b" + bidi(0x2069) + "c" + bidi(0x200f) + ".pdf": "abc.pdf",
 	} {
 		if got := cleanName(in); got != want {
 			t.Errorf("cleanName(%q) = %q, want %q", in, got, want)

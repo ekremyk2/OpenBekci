@@ -109,7 +109,7 @@ func (l *Local) SweepTemp(olderThan time.Duration) (int, error) {
 		if ierr != nil || info.ModTime().After(cutoff) {
 			return nil
 		}
-		if rerr := os.Remove(p); rerr == nil {
+		if rerr := os.Remove(p); rerr == nil { //nolint:gosec // p comes from walking our own root; it is a regular file, never followed through a link
 			removed++
 		}
 		return nil

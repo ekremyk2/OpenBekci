@@ -162,7 +162,7 @@ func halve(img image.Image) image.Image {
 				p := [4]int{s.PixOffset(b.Min.X+x0, b.Min.Y+y0), s.PixOffset(b.Min.X+x1, b.Min.Y+y0), s.PixOffset(b.Min.X+x0, b.Min.Y+y1), s.PixOffset(b.Min.X+x1, b.Min.Y+y1)}
 				o := d.PixOffset(x, y)
 				for c := 0; c < 4; c++ {
-					d.Pix[o+c] = uint8((int(s.Pix[p[0]+c]) + int(s.Pix[p[1]+c]) + int(s.Pix[p[2]+c]) + int(s.Pix[p[3]+c]) + 2) / 4)
+					d.Pix[o+c] = uint8((int(s.Pix[p[0]+c]) + int(s.Pix[p[1]+c]) + int(s.Pix[p[2]+c]) + int(s.Pix[p[3]+c]) + 2) / 4) //nolint:gosec // an average of four bytes fits a byte
 				}
 			}
 		}
@@ -188,7 +188,7 @@ func halve(img image.Image) image.Image {
 				o := d.PixOffset(x, y)
 				if asum > 0 {
 					for c := 0; c < 3; c++ {
-						d.Pix[o+c] = uint8((sum[c] + asum/2) / asum)
+						d.Pix[o+c] = uint8((sum[c] + asum/2) / asum) //nolint:gosec // an alpha-weighted average of bytes fits a byte
 					}
 				}
 				d.Pix[o+3] = uint8((asum + 2) / 4)
