@@ -77,6 +77,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 		recoverer(deps.Log),
 		maxBody(o.MaxBodyBytes),
 		requestTimeout(o.RequestTimeout),
+		noStoreSensitive,
 	)
 
 	r.Get("/healthz", healthz)

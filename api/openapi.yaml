@@ -286,9 +286,11 @@ paths:
       operationId: auth.reauth
       summary: Re-authenticate the current session for sensitive operations
       description: |
-        Proves the caller is still the user with the password or a fresh SMS code,
-        and marks the current session as re-authenticated for 10 minutes. Sensitive
-        operations answer 403 `reauth_required` outside that window.
+        Proves the caller is still the user with the password, a fresh SMS code
+        (`auth.requestOtp`) or a fresh email code (`auth.requestReauthEmailCode`),
+        and marks the current session as re-authenticated for 10 minutes. A user
+        with only an email address and no password re-authenticates by email code.
+        Sensitive operations answer 403 `reauth_required` outside that window.
       tags:
         - auth
       security:
@@ -315,6 +317,36 @@ paths:
         '422':
           $ref: '#/components/responses/Problem'
         '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/auth/reauth/email-code:
+    post:
+      operationId: auth.requestReauthEmailCode
+      summary: Email a re-authentication code to the signed-in user
+      description: |
+        Sends a six-digit code (valid 5 minutes, 5 attempts) to the email address of
+        the signed-in account, to be passed to `auth.reauth` with `method: email_code`.
+        This is the re-authentication route of users who have neither a password nor
+        a phone number. 422 `validation_failed` when the account has no email
+        address, 503 `mail_unavailable` when the instance has no email
+        configuration. Limited per address, per client address and per day.
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-idempotent: optional
+      responses:
+        '202':
+          description: Accepted; the code was sent.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        '503':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -1190,11 +1222,13 @@ components:
       oneOf:
         - $ref: '#/components/schemas/ReauthPassword'
         - $ref: '#/components/schemas/ReauthSmsOtp'
+        - $ref: '#/components/schemas/ReauthEmailCode'
       discriminator:
         propertyName: method
         mapping:
           password: '#/components/schemas/ReauthPassword'
           sms_otp: '#/components/schemas/ReauthSmsOtp'
+          email_code: '#/components/schemas/ReauthEmailCode'
     ReauthResponse:
       type: object
       required:
@@ -1594,6 +1628,19 @@ components:
           type: string
           nullable: true
           description: Pass as `cursor` for the next page; null on the last page.
+    ReauthEmailCode:
+      type: object
+      required:
+        - method
+        - code
+      properties:
+        method:
+          type: string
+          description: Always `email_code`.
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+          description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
 x-openbekci-roles:
   org_admin:
     - audit.read

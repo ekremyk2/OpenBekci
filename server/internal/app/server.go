@@ -72,6 +72,9 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	if err := srv.Shutdown(sctx); err != nil {
 		errs = append(errs, fmt.Errorf("http shutdown: %w", err))
 	}
+	if err := deps.Identity.Drain(sctx); err != nil { // code and link sends still in flight
+		errs = append(errs, err)
+	}
 	if err := rt.stopJobsCtx(sctx); err != nil {
 		errs = append(errs, err)
 	}

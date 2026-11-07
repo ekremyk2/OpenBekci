@@ -197,11 +197,38 @@ export interface paths {
         put?: never;
         /**
          * Re-authenticate the current session for sensitive operations
-         * @description Proves the caller is still the user with the password or a fresh SMS code,
-         *     and marks the current session as re-authenticated for 10 minutes. Sensitive
-         *     operations answer 403 `reauth_required` outside that window.
+         * @description Proves the caller is still the user with the password, a fresh SMS code
+         *     (`auth.requestOtp`) or a fresh email code (`auth.requestReauthEmailCode`),
+         *     and marks the current session as re-authenticated for 10 minutes. A user
+         *     with only an email address and no password re-authenticates by email code.
+         *     Sensitive operations answer 403 `reauth_required` outside that window.
          */
         post: operations["auth.reauth"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/reauth/email-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email a re-authentication code to the signed-in user
+         * @description Sends a six-digit code (valid 5 minutes, 5 attempts) to the email address of
+         *     the signed-in account, to be passed to `auth.reauth` with `method: email_code`.
+         *     This is the re-authentication route of users who have neither a password nor
+         *     a phone number. 422 `validation_failed` when the account has no email
+         *     address, 503 `mail_unavailable` when the instance has no email
+         *     configuration. Limited per address, per client address and per day.
+         */
+        post: operations["auth.requestReauthEmailCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -617,7 +644,7 @@ export interface components {
             /** @description A code sent to the account's own phone by `auth.requestOtp`. */
             code: string;
         };
-        ReauthRequest: components["schemas"]["ReauthPassword"] | components["schemas"]["ReauthSmsOtp"];
+        ReauthRequest: components["schemas"]["ReauthPassword"] | components["schemas"]["ReauthSmsOtp"] | components["schemas"]["ReauthEmailCode"];
         ReauthResponse: {
             /**
              * Format: date-time
@@ -803,6 +830,15 @@ export interface components {
             items: components["schemas"]["AuditEvent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
+        };
+        ReauthEmailCode: {
+            /**
+             * @description Always `email_code`. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            method: "email_code";
+            /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
+            code: string;
         };
     };
     responses: {
@@ -1097,6 +1133,29 @@ export interface operations {
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "auth.requestReauthEmailCode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted; the code was sent. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

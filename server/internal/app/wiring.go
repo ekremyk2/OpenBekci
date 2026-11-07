@@ -39,6 +39,8 @@ func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, err
 		SMS:          gw,
 		Mail:         mailer,
 		Log:          log,
+
+		SendDailyBudget: cfg.SendDailyBudget, SMSHourlyBudget: cfg.SMSHourlyBudget, MailHourlyBudget: cfg.MailHourlyBudget,
 	}), nil
 }
 

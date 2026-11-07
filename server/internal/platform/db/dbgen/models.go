@@ -25,6 +25,17 @@ type AuditEvent struct {
 	At          pgtype.Timestamptz
 }
 
+type DeliveryLog struct {
+	ID      pgtype.UUID
+	At      pgtype.Timestamptz
+	Channel string
+	Purpose string
+	Target  string
+	UserID  pgtype.UUID
+	Status  string
+	Detail  pgtype.Text
+}
+
 type IdempotencyKey struct {
 	OrgID               pgtype.UUID
 	PrincipalID         pgtype.UUID
@@ -139,6 +150,7 @@ type Session struct {
 	RevokedAt   pgtype.Timestamptz
 	LastUsedAt  pgtype.Timestamptz
 	ReauthUntil pgtype.Timestamptz
+	GraceUsedAt pgtype.Timestamptz
 }
 
 type User struct {

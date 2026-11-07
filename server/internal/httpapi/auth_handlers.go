@@ -263,6 +263,12 @@ func (s *apiServer) AuthReauth(ctx context.Context, req gen.AuthReauthRequestObj
 			return nil, problem.BadRequest("malformed request")
 		}
 		rm, secret = identity.ReauthSMSOTP, b.Code
+	case "email_code":
+		b, err := req.Body.AsReauthEmailCode()
+		if err != nil {
+			return nil, problem.BadRequest("malformed request")
+		}
+		rm, secret = identity.ReauthEmailCode, b.Code
 	default:
 		return nil, problem.Validation(problem.Field{Field: "method", Code: "invalid_value"})
 	}
@@ -271,6 +277,21 @@ func (s *apiServer) AuthReauth(ctx context.Context, req gen.AuthReauthRequestObj
 		return nil, err
 	}
 	return gen.AuthReauth200JSONResponse(gen.ReauthResponse{ReauthUntil: until}), nil
+}
+
+func (s *apiServer) AuthRequestReauthEmailCode(ctx context.Context, _ gen.AuthRequestReauthEmailCodeRequestObject) (gen.AuthRequestReauthEmailCodeResponseObject, error) {
+	svc, err := s.ident()
+	if err != nil {
+		return nil, err
+	}
+	p, err := principal(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := svc.RequestReauthEmailCode(ctx, p, metaFrom(ctx, nil)); err != nil {
+		return nil, err
+	}
+	return gen.AuthRequestReauthEmailCode202Response{}, nil
 }
 
 func (s *apiServer) AuthChangePassword(ctx context.Context, req gen.AuthChangePasswordRequestObject) (gen.AuthChangePasswordResponseObject, error) {
