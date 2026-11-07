@@ -120,7 +120,8 @@ type Session struct {
 	RevokedAt   pgtype.Timestamptz
 	LastUsedAt  pgtype.Timestamptz
 	ReauthUntil pgtype.Timestamptz
-	GraceUsedAt pgtype.Timestamptz
+	GraceBlob   []byte
+	GraceUntil  pgtype.Timestamptz
 }
 
 type User struct {

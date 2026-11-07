@@ -44,9 +44,11 @@ CREATE TABLE session (
     revoked_at   timestamptz,
     last_used_at timestamptz,
     reauth_until timestamptz,
-    -- set when a rotated refresh token was replayed inside the 30 s grace window
-    -- (it is accepted once; a second replay is reuse)
-    grace_used_at timestamptz
+    -- On a rotated refresh token: the successor pair, AES-GCM sealed under a key
+    -- derived (HKDF) from this very token, valid until grace_until (30 s). A retry
+    -- of a lost rotation opens it once and erases it; prune erases stale ones.
+    grace_blob    bytea,
+    grace_until   timestamptz
 );
 CREATE INDEX session_user_family ON session (user_id, family_id);
 CREATE INDEX session_family ON session (family_id);

@@ -24,16 +24,6 @@ func NewToken() (token string, hash []byte, err error) {
 	return token, HashToken(token), nil
 }
 
-// DeriveToken returns an opaque token that is a keyed function of parts
-// (HMAC-SHA256 of key, base64url without padding, 256 bits like NewToken) and
-// the SHA-256 that is stored. The same inputs always give the same token, which
-// is what lets a lost refresh rotation be answered again; it is as unguessable
-// as key is secret, so key must be a real secret.
-func DeriveToken(key []byte, parts ...string) (token string, hash []byte) {
-	token = base64.RawURLEncoding.EncodeToString(MAC(key, parts...))
-	return token, HashToken(token)
-}
-
 // HashToken returns the SHA-256 of a presented token, the value looked up in
 // the database.
 func HashToken(token string) []byte {
