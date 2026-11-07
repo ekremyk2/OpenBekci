@@ -83,6 +83,9 @@ let localeProvider: () => string = () => 'en'
 export function setLocaleProvider(fn: () => string) {
   localeProvider = fn
 }
+export function getLocaleProvider(): () => string {
+  return localeProvider
+}
 
 export function createApiClient(baseUrl = globalThis.location?.origin ?? '') {
   const client = createClient<paths>({
