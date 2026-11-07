@@ -1169,6 +1169,13 @@ func (s *Service) DecideApprovalRequest(ctx context.Context, orgID, requestID uu
 		case "pending":
 		case "expired":
 			return problem.Conflict("the request expired; the guard will call you")
+		case "approved", "denied":
+			// a retried tap (the same answer again) gets the stored result, not an error
+			if (req.Status == "approved") == (decision == "approve") {
+				out = req
+				return nil
+			}
+			return problem.Conflict("the request was already answered")
 		default:
 			return problem.Conflict("the request was already answered")
 		}

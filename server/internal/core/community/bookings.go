@@ -430,7 +430,7 @@ func (s *Service) CancelBooking(ctx context.Context, orgID, bookingID uuid.UUID,
 			return err
 		}
 		var refund *Money
-		if b.Fee != nil && b.ChargeID != nil && (manager && b.PersonID != nil && *b.PersonID != callerP || f.Rules.RefundDue(now, b.Start)) {
+		if b.Fee != nil && b.ChargeID != nil && (manager || f.Rules.RefundDue(now, b.Start)) {
 			refund = b.Fee
 			if err := s.cfg.Charger.RefundBooking(ctx, tx, BookingRefund{OrgID: orgID, SiteID: b.SiteID, BookingID: b.ID, ChargeID: *b.ChargeID, Amount: *b.Fee, Reason: reason}); err != nil {
 				return fmt.Errorf("refund booking fee: %w", err)
