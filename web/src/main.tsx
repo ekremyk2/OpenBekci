@@ -11,12 +11,16 @@ import { installChunkLoadRecovery } from '@/lib/chunk-recovery'
 installChunkLoadRecovery()
 
 async function bootstrap() {
+  // `pnpm dev:mock`: serve the draft contract from an in-memory model (src/mocks)
+  if (import.meta.env.VITE_MOCK === 'true') await (await import('./mocks/start')).startMocks()
   const locale = initialLocale()
   await loadLocale(locale) // catalog first so the first paint is already translated
   applyDocumentLocale(locale)
 
   const queryClient = createQueryClient()
   const router = createAppRouter(queryClient)
+  if (import.meta.env.VITE_MOCK === 'true')
+    (await import('./mocks/start')).installMockControls(queryClient)
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

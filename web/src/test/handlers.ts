@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { DiscoveryDocument, Me } from '@/api/schema'
+import { operationsHandlers } from './handlers/operations'
 
 /** Hand-written MSW handlers. Generated handlers (openapi-msw) replace these when the spec lands. */
 
@@ -62,4 +63,5 @@ export const handlers = [
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
   http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),
   http.delete('*/v1/auth/session', () => new HttpResponse(null, { status: 204 })),
+  ...operationsHandlers,
 ]
