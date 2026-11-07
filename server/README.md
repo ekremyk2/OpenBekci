@@ -205,6 +205,53 @@ have an account there. `POST /sites/{site}/offboard` (re-auth, export first) clo
 `admin offboard-site`. A CI test (`TestIntegrationExportManifestCoversEveryTenantTable`) fails when a tenant table is in
 neither `exportTables` nor `excludedTables` (`internal/core/tenancy/export.go`).
 
+## Community (0.3)
+
+`internal/core/community` serves the draft contract's community module (41 operations, `x-stability: preview`, path
+files and components copied verbatim from the draft: facilities and bookings, visitor entries and recurring visitors,
+approval requests, parcels, the guard console and PIN sessions). Decisions C1 to C4 in `docs/decisions/community.md`.
+
+- **Bookings** confirm instantly when they satisfy the facility's `rules` (opening hours in the site zone, maximum duration,
+  notice, horizon, quota per unit and week or month, who may book); a taken slot is `409 conflict` (the exclusion constraint
+  `booking_no_overlap` on confirmed bookings is the last line, the facility row lock serializes the checks). Residents see
+  slots only as taken (`availability`); names go to managers and the booker. A fee goes through `community.BookingCharger`
+  (a `booking_fee` charge on the unit side, refund automatic before `cancel_refund_cutoff_hours` or when a manager cancels);
+  until the money module is wired the default stores the fee on the booking and posts no charge.
+- **Visitors**: `POST /visitor-entries` returns the QR text `obk1.<token>` the resident shares. The row keeps
+  `sha256(token)` for lookup and the token sealed with `ENCRYPTION_KEY`, so the unit's people and managers can show the QR
+  again; board, auditors and guards never get it. Valid for the window plus 30 minutes, single entry. A guard scans
+  (`POST /gate/visitors:scan`, online, no agent needed) and admits with `:arrive`. Without a QR the guard registers a
+  walk-in (`:walk-in`): the entry is `requested`, every current occupant of the unit gets a `jobs.Notify`
+  (`visitor.approval_requested`, with a link) and answers from the portal (`:decide`, first answer wins); the request
+  expires after 10 minutes (site setting `visitor_request_expiry_minutes`), then the guard calls the number a resident
+  shared (`call-contact`, only for an open request, audited). Recurring visitors are weekly rules in the site zone with
+  their own long-lived QR; the evaluation (`RecurringRule.Matches`) is the gate agent's: boundaries inclusive at the
+  minute, an overnight window belongs to its start day.
+- **Guard console**: the booth is a login with `gate.operate` (`guard` role); the guard picks their name (`gate.listGuards`)
+  and types a PIN (`POST /gate/sessions`; PIN per person, argon2id, set by `gate.manage` with `PUT /persons/{id}/gate-pin`,
+  which also clears a lock). The returned token goes in `X-Guard-Session` (12 h, bound to the console login and the site)
+  and attributes audit events (`guard_person_id` in the diff) and `arrived_by`. 5 failed attempts in 15 minutes lock that
+  guard for 15 minutes, 20 from one console in an hour lock the console for an hour (`429` with `Retry-After`, also for a
+  correct PIN); every failed attempt is audited. Every guard response carries names, plates, door numbers and windows
+  only (the tests scan response JSON keys for contacts, national ids, balances and tokens).
+- **Retention (KVKK)**: `community.visitor_retention_prune` (every 6 hours) deletes visitor entries and their requests,
+  ended recurring visitors, collected parcels, PIN attempts and guard sessions older than the site's
+  `visitor_retention_days` (default 90). `community.visitor_request_expiry` (every minute) expires unanswered requests and
+  unused entries.
+- **Interfaces** (all with no-op or absent defaults in the wiring `newCommunity`): `BookingCharger` (money),
+  `Notifier` taking `jobs.Notify` (notifications; `jobs.Notify` is defined in `platform/jobs/notify.go`, the same struct the
+  operations module defines), `QRRenderer` (the two `.../qr` image operations stay draft-only until one is registered), and
+  `Hooks.OnVisitorDecided` / `Hooks.OnVisitorChanged` for the access module. `community.VisitorCredentials(ctx, org, site,
+  since)` (and `VisitorCredentialsTx` inside the caller's transaction) lists visitor QR hashes (`visitor_qr`, scope `all`)
+  and plates (`plate`, scope `all_vehicle`) with their window plus slack or weekly rule, `max_uses`, and `Active`: a zero
+  `since` is the allow-list snapshot (active only), otherwise every credential changed since then so revocations
+  propagate.
+- **Spec notes**: the draft's `x-openbekci-roles` role map is accepted next to the permission list (holding any one of the
+  listed permissions passes the pipeline); `X-Guard-Session` is declared `x-go-name: GuardSessionHeader` in
+  `components/draft-common.yaml` because the schema `GuardSession` has the same name; required headers and query
+  parameters (`If-Match`, `Idempotency-Key`, `site_id`) are bound by the generated wrapper before the middleware, so the
+  bind error handler authenticates first (an unauthenticated caller still gets `401`).
+
 ## Tests
 
 ```powershell

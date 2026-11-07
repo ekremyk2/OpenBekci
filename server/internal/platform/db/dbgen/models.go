@@ -151,7 +151,6 @@ type FacilityBlock struct {
 
 type GatePin struct {
 	OrgID        pgtype.UUID
-	SiteID       pgtype.UUID
 	PersonID     pgtype.UUID
 	PinHash      string
 	AttemptsFrom pgtype.Timestamptz

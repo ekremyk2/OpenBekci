@@ -41,6 +41,9 @@ type idEnv struct {
 	people *people.Service
 	tenSvc *tenancy.Service
 	comm   *community.Service
+	notes  *recNotifier
+	charge *recCharger
+	hooks  *recHooks
 	cookie *http.Cookie
 }
 
@@ -69,7 +72,9 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		t.Fatal(perr)
 	}
 	e.tenSvc = tenancy.NewService(d)
-	e.comm, perr = community.NewService(d, community.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, Platform: d, Log: cfg.Log})
+	e.notes, e.charge, e.hooks = &recNotifier{}, &recCharger{}, &recHooks{}
+	e.comm, perr = community.NewService(d, community.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, Platform: d, Log: cfg.Log,
+		Notifier: e.notes, Charger: e.charge, Hooks: e.hooks.hooks()})
 	if perr != nil {
 		t.Fatal(perr)
 	}

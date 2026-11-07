@@ -121,6 +121,9 @@ func (s *Service) CreateBooking(ctx context.Context, orgID uuid.UUID, d Doc) (Bo
 	if err := d.Get("end", &end); err != nil || end.IsZero() {
 		return Booking{}, validation("end", "required")
 	}
+	if !end.After(start) {
+		return Booking{}, validation("end", "end_before_start")
+	}
 	var onBehalf uuid.UUID
 	if d.Has("person_id") && !d.IsNull("person_id") {
 		if err := d.Get("person_id", &onBehalf); err != nil {
@@ -205,6 +208,14 @@ func (s *Service) CreateBooking(ctx context.Context, orgID uuid.UUID, d Doc) (Bo
 				return err
 			}
 		}
+		var blocked int
+		if err := tx.QueryRow(ctx, `SELECT count(*) FROM facility_block WHERE org_id = $1 AND facility_id = $2 AND tstzrange(start_at, end_at, '[)') && tstzrange($3, $4, '[)')`,
+			orgID, facilityID, start, end).Scan(&blocked); err != nil {
+			return err
+		}
+		if blocked > 0 {
+			return problem.Conflict("the facility is blocked at that time")
+		}
 		if bad := f.Rules.CheckBooking(now, start, end, si.Loc, used); len(bad) > 0 {
 			if manager {
 				// managers booking on behalf of a unit may go beyond the lead time, the horizon and the quota
@@ -213,14 +224,6 @@ func (s *Service) CreateBooking(ctx context.Context, orgID uuid.UUID, d Doc) (Bo
 			if len(bad) > 0 {
 				return problem.Validation(bad...)
 			}
-		}
-		var blocked int
-		if err := tx.QueryRow(ctx, `SELECT count(*) FROM facility_block WHERE org_id = $1 AND facility_id = $2 AND tstzrange(start_at, end_at, '[)') && tstzrange($3, $4, '[)')`,
-			orgID, facilityID, start, end).Scan(&blocked); err != nil {
-			return err
-		}
-		if blocked > 0 {
-			return problem.Conflict("the facility is blocked at that time")
 		}
 		var personArg *uuid.UUID
 		if personID != uuid.Nil {

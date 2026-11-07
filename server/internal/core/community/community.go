@@ -331,21 +331,10 @@ func residentUnits(ctx context.Context, siteID uuid.UUID) []uuid.UUID {
 	return out
 }
 
-// canSeeToken reports whether the caller may read the QR token of something
-// that belongs to the unit: managers and the people of the unit.
-func canSeeToken(ctx context.Context, sc authz.Scope, unitID uuid.UUID) bool {
-	if authz.Has(ctx, PermVisitorsManage, sc) && managerLevel(ctx, sc) {
-		return true
-	}
-	return authz.CanActOnUnit(ctx, unitID) == nil
-}
-
 func isExclusion(err error) bool {
 	var pe *pgconn.PgError
 	return errors.As(err, &pe) && pe.Code == "23P01"
 }
-
-func isUnique(err error) bool { return tenancy.IsUnique(err, "") }
 
 // newQRToken returns the text the QR encodes, its token part's hash (the
 // stored value) and, when a cipher is configured, the sealed token.
@@ -392,8 +381,6 @@ func TokenHashHex(token string) string {
 	h := sha256.Sum256([]byte(token))
 	return hex.EncodeToString(h[:])
 }
-
-func ptr[T any](v T) *T { return &v }
 
 func mustJSON(v any) json.RawMessage {
 	b, err := json.Marshal(v)

@@ -217,14 +217,12 @@ func (s *Service) ListGateVisitors(ctx context.Context, orgID uuid.UUID, f GateV
 			return err
 		}
 		defer rows.Close()
-		var ids []uuid.UUID
 		for rows.Next() {
 			v, err := scanEntry(rows)
 			if err != nil {
 				return err
 			}
 			out = append(out, guardView(v, now))
-			ids = append(ids, v.ID)
 		}
 		return rows.Err()
 	})

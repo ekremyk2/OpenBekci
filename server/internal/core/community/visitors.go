@@ -645,7 +645,7 @@ func (s *Service) CreateRecurringVisitor(ctx context.Context, orgID uuid.UUID, d
 	}
 	days := make([]int16, len(rule.Days))
 	for i, x := range rule.Days {
-		days[i] = int16(x)
+		days[i] = int16(x) //nolint:gosec // weekdays are validated to 1..7
 	}
 	var out RecurringVisitor
 	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
@@ -854,7 +854,7 @@ func (s *Service) UpdateRecurringVisitor(ctx context.Context, orgID, rvID uuid.U
 		}
 		days := make([]int16, len(next.Days))
 		for i, x := range next.Days {
-			days[i] = int16(x)
+			days[i] = int16(x) //nolint:gosec // weekdays are validated to 1..7
 		}
 		if _, err := tx.Exec(ctx, `UPDATE recurring_visitor SET name = $3, plate = $4, days = $5, start_time = $6, end_time = $7, valid_to = $8::date, updated_at = now(), version = version + 1
 			WHERE org_id = $1 AND id = $2`, orgID, rvID, next.Name, next.Plate, days, next.Start, next.End, next.ValidTo); err != nil {
