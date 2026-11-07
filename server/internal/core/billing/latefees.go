@@ -436,6 +436,14 @@ func (s *Service) WaiveLateFee(ctx context.Context, orgID uuid.UUID, in WaiveInp
 	return w, err
 }
 
+// AccrueTx computes the late fee position of a unit side inside an existing
+// transaction (the caller has checked permissions); statements use it to show
+// the accrued but unbooked fee.
+func AccrueTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site tenancy.Site, d Debtor, asOf string) (Accrual, error) {
+	acc, _, _, err := accrue(ctx, tx, orgID, site, d, asOf)
+	return acc, err
+}
+
 // FreezeInput stops late fee accrual for a unit side over a period (legal collection).
 type FreezeInput struct {
 	SiteID     uuid.UUID `json:"site_id"`
