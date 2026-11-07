@@ -8,6 +8,7 @@ api/src/openapi.yaml        root: info, security schemes, paths and components a
 api/src/paths/*.yaml        one file per path item
 api/src/components/*.yaml   shared schemas, parameters, responses
 api/openapi.yaml            bundled artifact (generated, committed; this is what generators read)
+api/src/openapi-draft.yaml  draft root for releases 0.1 to 0.3 (see below); bundled to api/openapi-draft.yaml
 api/.redocly.yaml           lint ruleset;  api/plugins/openbekci.cjs  the project rules
 ```
 
@@ -100,3 +101,35 @@ idempotency, then the generated strict handler. Authentication runs first, so an
 `security` is not `[]`: required ones answer 401 on failure, optional ones (`security: [{}, ...]`) continue
 anonymously when no valid credential is present. Unknown paths under `/v1` and `/.well-known/` are 404 problems,
 a known path with the wrong method is a 405 problem with `Allow`; everything else falls through to the web app.
+
+## The draft contract (releases 0.1 to 0.3)
+
+`api/src/openapi-draft.yaml` is a second root that `$ref`s everything: the paths already served plus the contract for
+releases 0.1, 0.2 and 0.3 (`api/src/paths/<module>/*.yaml`, `api/src/components/<module>.yaml`). It is bundled to
+`api/openapi-draft.yaml` and generates `clients/ts/draft.d.ts`; web builders work against those. Nothing in it is served.
+The Go generator never reads it. Both roots are linted with the same strict rules (`api:lint`), and
+`server/internal/httpapi/draft_spec_test.go` holds every draft operation to the conventions (explicit `security`,
+`x-openbekci-roles` on org-scoped operations, `x-idempotent` on mutations, pagination, permission list).
+
+**Adopting an operation (backend builders).** In `src/openapi.yaml` add the same `paths:` entry the draft has (it points at
+`./paths/<module>/<file>.yaml`), and add the schemas the operation references to `components.schemas` (copy the entries from
+the draft root). Run `tools/task.ps1 gen`; the Go server interface grows the new methods. Leave the draft root as it is:
+it keeps listing everything, so web types do not change when an operation moves to the served spec. Update the operation's
+`x-stability` only when the release it belongs to ships. Checklist of operations: `api/DRAFT-INDEX.md`; permission names:
+`api/PERMISSIONS.md`.
+
+Draft-only conventions on top of the list above:
+
+- **Site scoping:** `site_id` is a query parameter on lists (required where the resource is site-scoped) and a body field on
+  create; resources that are plainly part of a site live under `/sites/{site_id}/...` (settings, bank details, lock date).
+- **Updates** are `PATCH` with `If-Match: "<version>"` (stale: 409 `version_conflict`); every updatable read model returns `version`.
+- **Custom actions** use the Google style suffix: `/charges/{id}:cancel`, `/charge-plans:preview`, `/units:import`.
+- **Reports and statements** take `format=json|csv|xlsx|pdf` (`json` default) and answer with the matching content type;
+  `POST /exports` is for jobs too big for that.
+- **Imports** take `dry_run=true` and return `ImportReport`; committing returns 202 with a job id (`GET /jobs/{id}`).
+- **New problem codes** the draft uses beyond the served `Problem.code` enum (add them when the first operation moves):
+  `agent_offline` (409, 0.3). Statuses used: `locked_period` 409, `version_conflict` 409, `site_offboarded` 409,
+  `reauth_required` 403, `idempotency_mismatch` 422.
+- **Agent transport** (`/v1/agent/*`, tag `agent`) authenticates with the `agentAuth` bearer scheme (an agent token, not a user
+  session); the message schemas are JSON Schema 2020-12 in `api/agent-protocol/v1/*.schema.json`, referenced by the
+  `x-agent-message-schemas` extension. `x-stability: preview` until 0.3.0 ships.
