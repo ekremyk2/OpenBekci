@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import type { DiscoveryDocument, Me } from '@/api/schema'
+import { moneyHandlers } from './handlers/money'
 
 /** Hand-written MSW handlers. Generated handlers (openapi-msw) replace these when the spec lands. */
 
@@ -39,6 +40,7 @@ export const meFixture: Me = {
       permissions: [
         { permission: 'site.read' },
         { permission: 'ledger.read', site_ids: ['site-a'] },
+        { permission: 'money.read', site_ids: ['site-a'] },
       ],
       sites: [{ id: 'site-a', name: 'Güneş Sitesi', timezone: 'Europe/Istanbul', currency: 'TRY' }],
     },
@@ -62,4 +64,5 @@ export const handlers = [
   http.get('*/v1/me', () => HttpResponse.json(meFixture)),
   http.post('*/v1/auth/session', () => new HttpResponse(null, { status: 200 })),
   http.delete('*/v1/auth/session', () => new HttpResponse(null, { status: 204 })),
+  ...moneyHandlers,
 ]

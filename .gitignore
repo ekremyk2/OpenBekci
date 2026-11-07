@@ -47,3 +47,4 @@ server/data/
 # Embedded web build output (copied in by the release build)
 server/internal/webassets/dist/*
 !server/internal/webassets/dist/.gitkeep
+web/public/mockServiceWorker.js
