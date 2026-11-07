@@ -10,6 +10,32 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type AllocationKey struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Kind      string
+	IsDefault bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type AllocationKeyValue struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	KeyID     pgtype.UUID
+	UnitID    pgtype.UUID
+	Value     pgtype.Numeric
+	Raw       string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
 type AuditEvent struct {
 	ID          pgtype.UUID
 	OrgID       pgtype.UUID
@@ -23,6 +49,41 @@ type AuditEvent struct {
 	Ip          *netip.Addr
 	RequestID   pgtype.Text
 	At          pgtype.Timestamptz
+}
+
+type Block struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Hidden    bool
+	SortOrder int32
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type DirectoryConsent struct {
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	PersonID   pgtype.UUID
+	ID         pgtype.UUID
+	ShareName  bool
+	SharePhone bool
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
+	Version    int32
+}
+
+type Facility struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Rules     []byte
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
 }
 
 type IdempotencyKey struct {
@@ -40,10 +101,75 @@ type IdempotencyKey struct {
 	ResponseHeaders     []byte
 }
 
+type ImportBatch struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Kind      string
+	Filename  string
+	Mapping   []byte
+	DryRun    bool
+	Status    string
+	Summary   []byte
+	Report    []byte
+	CreatedBy pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type ImportRow struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	BatchID   pgtype.UUID
+	RowNo     int32
+	Status    string
+	Data      []byte
+	Opening   []byte
+	UnitID    pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
 type InstanceSetting struct {
 	ID         bool
 	InstanceID pgtype.UUID
 	CreatedAt  pgtype.Timestamptz
+}
+
+type Invitation struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	Kind            string
+	UnitID          pgtype.UUID
+	PersonID        pgtype.UUID
+	OccupancyKind   pgtype.Text
+	OccupancySide   pgtype.Text
+	SharePct        pgtype.Numeric
+	IsCorrespondent bool
+	Resides         bool
+	ValidFrom       pgtype.Date
+	Channel         string
+	Email           pgtype.Text
+	Phone           pgtype.Text
+	Locale          string
+	TokenHash       []byte
+	Code            pgtype.Text
+	Status          string
+	ExpiresAt       pgtype.Timestamptz
+	MaxUses         pgtype.Int4
+	Uses            int32
+	SendCount       int32
+	LastSentAt      pgtype.Timestamptz
+	InvitedBy       pgtype.UUID
+	AcceptedBy      pgtype.UUID
+	AcceptedAt      pgtype.Timestamptz
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
 }
 
 type LoginAttempt struct {
@@ -70,6 +196,48 @@ type Membership struct {
 	CreatedAt  pgtype.Timestamptz
 	UpdatedAt  pgtype.Timestamptz
 	Version    int32
+}
+
+type MoveOut struct {
+	ID                     pgtype.UUID
+	OrgID                  pgtype.UUID
+	SiteID                 pgtype.UUID
+	OccupancyID            pgtype.UUID
+	UnitID                 pgtype.UUID
+	PersonID               pgtype.UUID
+	AsOf                   pgtype.Date
+	OpenCharges            string
+	CarriedAmountMinor     pgtype.Int8
+	CarriedCurrency        pgtype.Text
+	ClosingStatementFileID pgtype.UUID
+	CertificateFileID      pgtype.UUID
+	ClosingStatementStatus string
+	CertificateStatus      string
+	SuccessorOccupancyID   pgtype.UUID
+	DecidedBy              pgtype.UUID
+	Notes                  pgtype.Text
+	CreatedAt              pgtype.Timestamptz
+	UpdatedAt              pgtype.Timestamptz
+	Version                int32
+}
+
+type Occupancy struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	UnitID          pgtype.UUID
+	PersonID        pgtype.UUID
+	Kind            string
+	Side            string
+	SharePct        pgtype.Numeric
+	IsCorrespondent bool
+	MaySeeMoney     bool
+	Resides         bool
+	ValidFrom       pgtype.Date
+	ValidTo         pgtype.Date
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
 }
 
 type Organization struct {
@@ -101,14 +269,19 @@ type OtpCode struct {
 }
 
 type Person struct {
-	ID          pgtype.UUID
-	OrgID       pgtype.UUID
-	UserID      pgtype.UUID
-	DisplayName string
-	Contact     []byte
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
-	Version     int32
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	UserID            pgtype.UUID
+	DisplayName       string
+	Contact           []byte
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+	NationalIDEnc     []byte
+	NationalIDCountry pgtype.Text
+	GateContactPhone  pgtype.Text
+	Notes             pgtype.Text
+	SiteID            pgtype.UUID
 }
 
 type PlatformAuditEvent struct {
@@ -141,6 +314,90 @@ type Session struct {
 	ReauthUntil pgtype.Timestamptz
 }
 
+type Site struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	Name                 string
+	Address              []byte
+	Timezone             string
+	Currency             string
+	FiscalYearStartMonth int32
+	LockDate             pgtype.Date
+	Settings             []byte
+	BankDetails          []byte
+	Status               string
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type SiteExport struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	Direction   string
+	SiteID      pgtype.UUID
+	SiteName    pgtype.Text
+	SourceOrgID pgtype.UUID
+	TargetOrgID pgtype.UUID
+	Status      string
+	Summary     []byte
+	Archive     []byte
+	CreatedBy   pgtype.UUID
+	At          pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+}
+
+type Unit struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	BlockID              pgtype.UUID
+	DoorNumber           string
+	LegalRef             pgtype.Text
+	Type                 string
+	AreaM2               pgtype.Numeric
+	ParentUnitID         pgtype.UUID
+	AppurtenanceOverride pgtype.Text
+	PayerOverrides       []byte
+	Status               string
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type UnitClaim struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	UnitID       pgtype.UUID
+	PersonID     pgtype.UUID
+	UserID       pgtype.UUID
+	InvitationID pgtype.UUID
+	Kind         string
+	Status       string
+	Message      pgtype.Text
+	DecidedBy    pgtype.UUID
+	DecidedAt    pgtype.Timestamptz
+	DecisionNote pgtype.Text
+	OccupancyID  pgtype.UUID
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type UnitTag struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	UnitID    pgtype.UUID
+	Tag       string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
 type User struct {
 	ID              pgtype.UUID
 	Email           pgtype.Text
@@ -152,4 +409,29 @@ type User struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type Vehicle struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	UnitID    pgtype.UUID
+	Plate     string
+	Label     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type Vendor struct {
+	ID                       pgtype.UUID
+	OrgID                    pgtype.UUID
+	SiteID                   pgtype.UUID
+	Name                     string
+	TaxID                    pgtype.Text
+	Contact                  []byte
+	DefaultExpenseCategoryID pgtype.UUID
+	CreatedAt                pgtype.Timestamptz
+	UpdatedAt                pgtype.Timestamptz
+	Version                  int32
 }

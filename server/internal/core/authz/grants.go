@@ -2,6 +2,7 @@ package authz
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 	"sort"
@@ -57,6 +58,97 @@ type Grants struct {
 	// instance-level grants only.
 	OrgID uuid.UUID
 	Items []Grant
+	// Occupancies are the caller's occupancies in the organization (current
+	// and former) at active sites; portal rights derive from them (S3, S7).
+	// Today is the date they were classified at, in the organization's time zone.
+	Occupancies []OccupancyAccess
+	Today       time.Time
+}
+
+// OccupancyAccess is one occupancy of the caller, as the Resolver loads it.
+// ValidFrom and ValidTo are dates (UTC midnight); ValidTo is exclusive and
+// nil while open.
+type OccupancyAccess struct {
+	UnitID        uuid.UUID
+	SiteID        uuid.UUID
+	Kind          OccupancyKind
+	Side          UnitSide
+	MayMoney      bool
+	ValidFrom     time.Time
+	ValidTo       *time.Time
+	IsCorrespondt bool
+}
+
+// OccupancyKind is the kind of an occupancy.
+type OccupancyKind string
+
+// Occupancy kinds.
+const (
+	OccOwner     OccupancyKind = "owner"
+	OccTenant    OccupancyKind = "tenant"
+	OccHousehold OccupancyKind = "household"
+)
+
+func (k OccupancyKind) known() bool { return k == OccOwner || k == OccTenant || k == OccHousehold }
+
+// coversDate reports whether the occupancy is in force on day (a date).
+func (o OccupancyAccess) coversDate(day time.Time) bool {
+	return !day.Before(o.ValidFrom) && (o.ValidTo == nil || day.Before(*o.ValidTo))
+}
+
+// sideMoney reports whether the occupancy gives money access to side:
+// owners both sides, tenants the tenant side, household members their own
+// side when the owner or tenant granted it.
+func (o OccupancyAccess) sideMoney(side UnitSide) bool {
+	switch o.Kind {
+	case OccOwner:
+		return true
+	case OccTenant:
+		return side == SideTenant
+	case OccHousehold:
+		return o.MayMoney && o.Side == side
+	}
+	return false
+}
+
+// Current returns the occupancies in force today.
+func (g Grants) Current() []OccupancyAccess {
+	var out []OccupancyAccess
+	for _, o := range g.Occupancies {
+		if o.coversDate(g.Today) {
+			out = append(out, o)
+		}
+	}
+	return out
+}
+
+// ScopeIDs returns the site and block ids perm is granted for, and whether
+// it is held organization-wide.
+func (g Grants) ScopeIDs(perm Permission) (orgWide bool, siteIDs, blockIDs []uuid.UUID) {
+	for _, it := range g.Items {
+		if it.Permission != perm {
+			continue
+		}
+		switch {
+		case it.ScopeType == ScopeOrg:
+			orgWide = true
+		case it.ScopeType == ScopeSite && it.ScopeID != nil:
+			siteIDs = append(siteIDs, *it.ScopeID)
+		case it.ScopeType == ScopeBlock && it.ScopeID != nil:
+			blockIDs = append(blockIDs, *it.ScopeID)
+		}
+	}
+	return orgWide, siteIDs, blockIDs
+}
+
+// HoldsAnywhere reports whether perm is granted at any scope of the organization.
+func (g Grants) HoldsAnywhere(perm Permission) bool {
+	for _, it := range g.Items {
+		if it.Permission == perm && it.ScopeType != ScopeInstance {
+			return true
+		}
+	}
+	return false
 }
 
 // Has reports whether a grant of perm covers want.
@@ -75,6 +167,10 @@ func (g Grants) merge(o Grants) Grants {
 		g.OrgID = o.OrgID
 	}
 	g.Items = append(slices.Clone(g.Items), o.Items...)
+	g.Occupancies = append(slices.Clone(g.Occupancies), o.Occupancies...)
+	if !o.Today.IsZero() {
+		g.Today = o.Today
+	}
 	return g
 }
 
@@ -122,17 +218,96 @@ const (
 	SideTenant UnitSide = "tenant"
 )
 
-// CanAccessUnit answers whether the caller may act on a unit side through an
-// occupancy (owner, tenant, household).
+// CanAccessUnit answers whether the caller may act on the money of a unit
+// side through a current occupancy (S3): an owner reaches both sides, a tenant
+// the tenant side, a household member their own side only when the owner or
+// tenant granted may_see_money. It answers nil, 401 or 403.
 //
-// TODO(S3, phase B): occupancies do not exist yet, so nobody has portal
-// rights and this always answers 403. Phase B resolves occupancies next to
-// memberships in the Resolver and implements the owner/tenant/household rules.
-func CanAccessUnit(ctx context.Context, _ uuid.UUID, _ UnitSide) error {
+// Role holders (managers, board, accountant) are not covered here: services
+// check their permission first (authz.Has) and fall back to this for portal users.
+func CanAccessUnit(ctx context.Context, unitID uuid.UUID, side UnitSide) error {
 	if PrincipalFromContext(ctx) == nil {
 		return problem.Unauthenticated("authentication is required")
 	}
+	g := GrantsFromContext(ctx)
+	for _, o := range g.Current() {
+		if o.UnitID == unitID && o.sideMoney(side) {
+			return nil
+		}
+	}
 	return problem.Forbidden("no access to this unit")
+}
+
+// CanReadUnitAt is the read right of former occupants (S7): it answers
+// whether some occupancy of the caller on the unit, in force on day, reaches
+// the side's money. A former resident keeps read access to what is dated
+// inside their own period and nothing after it.
+func CanReadUnitAt(ctx context.Context, unitID uuid.UUID, side UnitSide, day time.Time) error {
+	if PrincipalFromContext(ctx) == nil {
+		return problem.Unauthenticated("authentication is required")
+	}
+	day = time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, time.UTC)
+	for _, o := range GrantsFromContext(ctx).Occupancies {
+		if o.UnitID == unitID && o.coversDate(day) && o.sideMoney(side) {
+			return nil
+		}
+	}
+	return problem.Forbidden("no access to this unit at that date")
+}
+
+// CanActOnUnit answers whether the caller currently lives at or owns the
+// unit in any capacity (tickets, announcements, bookings, visitors): any
+// current occupancy qualifies, household members included, money or not.
+func CanActOnUnit(ctx context.Context, unitID uuid.UUID) error {
+	if PrincipalFromContext(ctx) == nil {
+		return problem.Unauthenticated("authentication is required")
+	}
+	for _, o := range GrantsFromContext(ctx).Current() {
+		if o.UnitID == unitID {
+			return nil
+		}
+	}
+	return problem.Forbidden("no access to this unit")
+}
+
+// CurrentOccupancy returns the caller's current occupancy on the unit that
+// reaches side's money with the widest right (owner first), if any.
+func CurrentOccupancy(ctx context.Context, unitID uuid.UUID) (OccupancyAccess, bool) {
+	var best OccupancyAccess
+	found := false
+	for _, o := range GrantsFromContext(ctx).Current() {
+		if o.UnitID != unitID {
+			continue
+		}
+		if !found || rank(o.Kind) < rank(best.Kind) {
+			best, found = o, true
+		}
+	}
+	return best, found
+}
+
+func rank(k OccupancyKind) int {
+	switch k {
+	case OccOwner:
+		return 0
+	case OccTenant:
+		return 1
+	}
+	return 2
+}
+
+// RequireAnywhere is Require for operations addressed by a resource id: it
+// answers 403 unless perm is granted at some scope of the organization, before
+// any data is read. The service then looks the resource up and calls Require
+// with its real scope.
+func RequireAnywhere(ctx context.Context, perm Permission) error {
+	if PrincipalFromContext(ctx) == nil {
+		return problem.Unauthenticated("authentication is required")
+	}
+	if !GrantsFromContext(ctx).HoldsAnywhere(perm) {
+		return problem.Forbidden("you do not have the " + string(perm) + " permission here")
+	}
+	return nil
 }
 
 // Membership is an active role grant, the input of GrantsFromMemberships.
@@ -276,41 +451,114 @@ func (r *Resolver) InstanceGrants(p *Principal) Grants {
 
 // ResolveOrg loads the principal's memberships in the organization that are
 // valid now (valid_from <= now < valid_to, open-ended when valid_to is null)
-// and derives the grants. member is false when there is none, or the
-// organization does not exist or is not active: callers answer 404 so the
-// existence of the organization does not leak.
+// and the occupancies of their person at active sites, and derives the
+// grants: role grants from the memberships, portal grants (the permissions
+// that list the occupancy kind in PermissionDef.Occupants, at the site of the
+// unit) from the occupancies in force today. member is false when the person
+// has neither (former occupants are members, so they keep their read access),
+// or the organization does not exist or is not active: callers answer 404 so
+// the existence of the organization does not leak.
 func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID) (g Grants, member bool, err error) {
 	if p == nil {
 		return Grants{}, false, nil
 	}
 	now := r.now()
 	var ms []Membership
+	var occs []OccupancyAccess
+	var today time.Time
 	err = r.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		var tz string
+		if err := tx.QueryRow(ctx, `SELECT timezone FROM organization WHERE id = $1 AND status = 'active'`, orgID).Scan(&tz); err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return nil
+			}
+			return err
+		}
+		loc, lerr := time.LoadLocation(tz)
+		if lerr != nil {
+			loc = time.UTC
+		}
+		ny, nm, nd := now.In(loc).Date()
+		today = time.Date(ny, nm, nd, 0, 0, 0, 0, time.UTC)
 		rows, err := tx.Query(ctx, `
 			SELECT m.role, m.scope_type, m.scope_id
 			FROM membership m
 			JOIN person p ON p.org_id = m.org_id AND p.id = m.person_id
-			JOIN organization o ON o.id = m.org_id AND o.status = 'active'
 			WHERE m.org_id = $1 AND p.user_id = $2
 			  AND m.valid_from <= $3 AND (m.valid_to IS NULL OR m.valid_to > $3)`, orgID, p.UserID, now)
 		if err != nil {
 			return err
 		}
-		defer rows.Close()
 		for rows.Next() {
 			var m Membership
 			if err := rows.Scan(&m.Role, &m.ScopeType, &m.ScopeID); err != nil {
+				rows.Close()
 				return err
 			}
 			ms = append(ms, m)
 		}
-		return rows.Err()
+		rows.Close()
+		if err := rows.Err(); err != nil {
+			return err
+		}
+		orows, err := tx.Query(ctx, `
+			SELECT oc.unit_id, oc.site_id, oc.kind, oc.side, oc.may_see_money, oc.valid_from, oc.valid_to, oc.is_correspondent
+			FROM occupancy oc
+			JOIN person p ON p.org_id = oc.org_id AND p.id = oc.person_id
+			JOIN site s ON s.org_id = oc.org_id AND s.id = oc.site_id AND s.status = 'active'
+			WHERE oc.org_id = $1 AND p.user_id = $2`, orgID, p.UserID)
+		if err != nil {
+			return err
+		}
+		defer orows.Close()
+		for orows.Next() {
+			var o OccupancyAccess
+			var kind, side string
+			var from time.Time
+			var to *time.Time
+			if err := orows.Scan(&o.UnitID, &o.SiteID, &kind, &side, &o.MayMoney, &from, &to, &o.IsCorrespondt); err != nil {
+				return err
+			}
+			o.Kind, o.Side = OccupancyKind(kind), UnitSide(side)
+			o.ValidFrom = time.Date(from.Year(), from.Month(), from.Day(), 0, 0, 0, 0, time.UTC)
+			if to != nil {
+				t := time.Date(to.Year(), to.Month(), to.Day(), 0, 0, 0, 0, time.UTC)
+				o.ValidTo = &t
+			}
+			occs = append(occs, o)
+		}
+		return orows.Err()
 	})
 	if err != nil {
 		return Grants{}, false, problem.Internal(fmt.Errorf("resolve grants: %w", err))
 	}
-	if len(ms) == 0 {
+	if len(ms) == 0 && len(occs) == 0 {
 		return Grants{}, false, nil
 	}
-	return Grants{OrgID: orgID, Items: GrantsFromMemberships(r.reg, ms)}, true, nil
+	g = Grants{OrgID: orgID, Items: GrantsFromMemberships(r.reg, ms), Occupancies: occs, Today: today}
+	g.Items = append(g.Items, r.occupantGrants(g.Current())...)
+	return g, true, nil
+}
+
+// occupantGrants derives the portal permissions of the current occupancies:
+// each carries the permissions that list its kind, at the unit's site.
+func (r *Resolver) occupantGrants(current []OccupancyAccess) []Grant {
+	type key struct {
+		p    Permission
+		site uuid.UUID
+	}
+	seen := map[key]bool{}
+	var out []Grant
+	for _, o := range current {
+		for _, perm := range r.reg.OccupantPermissions(o.Kind) {
+			k := key{perm, o.SiteID}
+			if seen[k] {
+				continue
+			}
+			seen[k] = true
+			site := o.SiteID
+			out = append(out, Grant{Permission: perm, ScopeType: ScopeSite, ScopeID: &site})
+		}
+	}
+	return out
 }

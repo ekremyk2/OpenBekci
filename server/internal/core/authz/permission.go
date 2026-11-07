@@ -33,6 +33,15 @@ func BuiltinRoles() []Role {
 	return []Role{RoleOrgAdmin, RoleSiteManager, RoleBoardMember, RoleAuditor, RoleAccountant, RoleStaff, RoleGuard}
 }
 
+// BuiltinRoleNames is BuiltinRoles as strings (request validation).
+func BuiltinRoleNames() []string {
+	var out []string
+	for _, r := range BuiltinRoles() {
+		out = append(out, string(r))
+	}
+	return out
+}
+
 // EveryRole is the seven membership roles plus platform_admin: what a
 // permission that every authenticated caller holds lists.
 func EveryRole() []Role { return append(BuiltinRoles(), RolePlatformAdmin) }
@@ -65,6 +74,11 @@ type PermissionDef struct {
 	// is not listed does not carry the permission (an org_admin membership
 	// limited to one site does not get an org-wide permission).
 	Scopes []ScopeType
+	// Occupants are the occupancy kinds whose holders have the permission
+	// through a current occupancy (portal rights, S3), at the site of the
+	// occupancy's unit. Services narrow it to the occupant's own unit with
+	// CanActOnUnit / CanAccessUnit. Optional; roles above still apply.
+	Occupants []OccupancyKind
 }
 
 var permissionName = regexp.MustCompile(`^[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+$`)
@@ -114,11 +128,17 @@ func (r *Registry) Register(module string, defs ...PermissionDef) error {
 				return fmt.Errorf("authz: %s: permission %q lists unknown scope %q", module, d.Name, sc)
 			}
 		}
+		for _, k := range d.Occupants {
+			if !k.known() {
+				return fmt.Errorf("authz: %s: permission %q lists unknown occupancy kind %q", module, d.Name, k)
+			}
+		}
 		seen[d.Name] = true
 	}
 	for _, d := range defs {
 		d.Roles = slices.Clone(d.Roles)
 		d.Scopes = slices.Clone(d.Scopes)
+		d.Occupants = slices.Clone(d.Occupants)
 		r.defs[d.Name] = d
 		r.modules[d.Name] = module
 	}
@@ -151,6 +171,18 @@ func (r *Registry) RolePermissions(role Role) []Permission {
 	var out []Permission
 	for _, p := range r.Permissions() {
 		if slices.Contains(r.defs[p].Roles, role) {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// OccupantPermissions returns the permissions an occupancy of the given kind
+// carries, sorted by name.
+func (r *Registry) OccupantPermissions(kind OccupancyKind) []Permission {
+	var out []Permission
+	for _, p := range r.Permissions() {
+		if slices.Contains(r.defs[p].Occupants, kind) {
 			out = append(out, p)
 		}
 	}
