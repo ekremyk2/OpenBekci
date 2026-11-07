@@ -2,10 +2,65 @@ package httpapi
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
+
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
+
+// The audit tables refuse UPDATE, DELETE and TRUNCATE even from their owner
+// (the migrator), so a later GRANT cannot reopen them.
+func TestIntegrationAuditTriggersBlockTheOwner(t *testing.T) {
+	e := newAuthzEnv(t)
+	ctx := context.Background()
+	if err := e.db.InTenantTx(ctx, e.w.OrgA.ID, func(tx pgx.Tx) error {
+		return audit.Record(ctx, tx, audit.Event{OrgID: e.w.OrgA.ID, Action: "test.created", TargetType: "thing", TargetID: id.New()})
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := e.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		return audit.Record(ctx, tx, audit.Event{Action: "test.created", TargetType: "thing", TargetID: id.New()})
+	}); err != nil {
+		t.Fatal(err)
+	}
+	pool := e.db.Migrator()
+	if pool == nil {
+		t.Skip("no migrator pool")
+	}
+	for _, table := range []string{"audit_event", "platform_audit_event"} {
+		for _, stmt := range []string{
+			`UPDATE ` + table + ` SET action = 'tampered'`,
+			`DELETE FROM ` + table,
+			`TRUNCATE ` + table,
+		} {
+			_, err := pool.Exec(ctx, stmt)
+			var pg *pgconn.PgError
+			if !errors.As(err, &pg) || pg.Code != "23000" {
+				t.Errorf("migrator %q: err = %v, want the append-only trigger (SQLSTATE 23000)", stmt, err)
+			}
+		}
+		var n int
+		if err := pool.QueryRow(ctx, `SELECT count(*) FROM `+table).Scan(&n); err != nil || n == 0 {
+			t.Errorf("%s: %d rows, err %v; rows must survive", table, n, err)
+		}
+	}
+	// a grant cannot reopen the table either
+	if _, err := pool.Exec(ctx, `GRANT UPDATE, DELETE, TRUNCATE ON audit_event TO openbekci_app`); err != nil {
+		t.Fatal(err)
+	}
+	err := e.db.InTenantTx(ctx, e.w.OrgA.ID, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, `DELETE FROM audit_event`)
+		return err
+	})
+	var pg *pgconn.PgError
+	if !errors.As(err, &pg) || pg.Code != "23000" {
+		t.Errorf("app role after a GRANT: err = %v, want the trigger", err)
+	}
+}
 
 // An idempotent replay must not bypass authorization: the permissions of the
 // operation (x-openbekci-roles) are checked against the current grants before
