@@ -335,16 +335,26 @@ func NewResolver(db TxRunner, reg *Registry, now func() time.Time) *Resolver {
 // Registry returns the permission registry.
 func (r *Resolver) Registry() *Registry { return r.reg }
 
-// InstanceGrants are the grants that need no organization: platform
-// administrators hold the instance-level permissions of the platform_admin
-// role (platform.manage), and nothing inside organizations.
+// InstanceGrants are the grants that need no organization. Every
+// authenticated principal holds the account permissions (instance-scoped
+// permissions that every role holds: me.read, sessions.manage_own); platform
+// administrators also hold the instance-level permissions of the
+// platform_admin role (platform.manage), and nothing inside organizations.
 func (r *Resolver) InstanceGrants(p *Principal) Grants {
 	var g Grants
-	if p == nil || !p.IsPlatformAdmin {
+	if p == nil {
 		return g
 	}
-	for _, perm := range r.reg.RolePermissions(RolePlatformAdmin) {
-		if slices.Contains(r.reg.defs[perm].Scopes, ScopeInstance) {
+	for _, perm := range r.reg.Permissions() {
+		d := r.reg.defs[perm]
+		if !slices.Contains(d.Scopes, ScopeInstance) {
+			continue
+		}
+		account := true
+		for _, role := range EveryRole() {
+			account = account && slices.Contains(d.Roles, role)
+		}
+		if account || p.IsPlatformAdmin && slices.Contains(d.Roles, RolePlatformAdmin) {
 			g.Items = append(g.Items, Grant{Permission: perm, ScopeType: ScopeInstance})
 		}
 	}
@@ -363,25 +373,16 @@ func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID
 	now := r.now()
 	var ms []Membership
 	err = r.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `
-			SELECT m.role, m.scope_type, m.scope_id
-			FROM membership m
-			JOIN person p ON p.org_id = m.org_id AND p.id = m.person_id
-			JOIN organization o ON o.id = m.org_id AND o.status = 'active'
-			WHERE m.org_id = $1 AND p.user_id = $2
-			  AND m.valid_from <= $3 AND (m.valid_to IS NULL OR m.valid_to > $3)`, orgID, p.UserID, now)
+		rows, err := ListUserMemberships(ctx, tx, p.UserID, now, &orgID)
 		if err != nil {
 			return err
 		}
-		defer rows.Close()
-		for rows.Next() {
-			var m Membership
-			if err := rows.Scan(&m.Role, &m.ScopeType, &m.ScopeID); err != nil {
-				return err
+		for _, r := range rows {
+			if r.HasRole {
+				ms = append(ms, r.Membership)
 			}
-			ms = append(ms, m)
 		}
-		return rows.Err()
+		return nil
 	})
 	if err != nil {
 		return Grants{}, false, problem.Internal(fmt.Errorf("resolve grants: %w", err))
