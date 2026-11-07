@@ -41,4 +41,13 @@ function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) 
   return <caption className={cn('mt-4 text-sm text-muted-foreground', className)} {...props} />
 }
 
-export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption }
+function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
+  return (
+    <tfoot
+      className={cn('border-t bg-muted/50 font-medium [&>tr]:last:border-b-0', className)}
+      {...props}
+    />
+  )
+}
+
+export { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption }

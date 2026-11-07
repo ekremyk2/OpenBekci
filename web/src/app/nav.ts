@@ -1,5 +1,17 @@
 import type { LucideIcon } from 'lucide-react'
-import { Building2, HomeIcon, LifeBuoy, UserRound, Users, Wallet } from 'lucide-react'
+import {
+  Building2,
+  CalendarDays,
+  Gavel,
+  HomeIcon,
+  KeyRound,
+  LifeBuoy,
+  ScanLine,
+  UserRound,
+  Users,
+  UsersRound,
+  Wallet,
+} from 'lucide-react'
 import { msg } from '@lingui/core/macro'
 import type { MessageDescriptor } from '@lingui/core'
 import type { Me } from '@/api/schema'
@@ -64,6 +76,50 @@ export const NAV_ITEMS: NavItem[] = [
     icon: LifeBuoy,
     permission: 'ticket.read',
     planned: true,
+  },
+  {
+    id: 'meetings',
+    label: msg`Meetings`,
+    to: '/orgs/$orgId/meetings',
+    icon: Gavel,
+    visible: ({ me, orgId }) =>
+      can(me, orgId, 'meetings.read') ||
+      can(me, orgId, 'meetings.manage') ||
+      can(me, orgId, 'polls.answer'),
+  },
+  {
+    id: 'bookings',
+    label: msg`Bookings`,
+    to: '/orgs/$orgId/bookings',
+    icon: CalendarDays,
+    visible: ({ me, orgId }) =>
+      can(me, orgId, 'bookings.read') ||
+      can(me, orgId, 'bookings.create') ||
+      can(me, orgId, 'bookings.manage'),
+  },
+  {
+    id: 'visitors',
+    label: msg`Visitors`,
+    to: '/orgs/$orgId/visitors',
+    icon: UsersRound,
+    visible: ({ me, orgId }) =>
+      can(me, orgId, 'visitors.read') ||
+      can(me, orgId, 'visitors.manage') ||
+      can(me, orgId, 'visitors.decide'),
+  },
+  {
+    id: 'gate',
+    label: msg`Gate`,
+    to: '/orgs/$orgId/visitors/gate',
+    icon: ScanLine,
+    permission: 'gate.operate',
+  },
+  {
+    id: 'access',
+    label: msg`Access`,
+    to: '/orgs/$orgId/access',
+    icon: KeyRound,
+    permission: 'access.read',
   },
   { id: 'me', label: msg`My account`, to: '/orgs/$orgId/me', icon: UserRound },
 ]

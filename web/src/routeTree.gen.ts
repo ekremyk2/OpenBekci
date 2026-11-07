@@ -19,7 +19,19 @@ import { Route as LoginMagicRouteImport } from './routes/login.magic'
 import { Route as OrgsOrgIdRouteImport } from './routes/orgs.$orgId'
 import { Route as ResetTokenRouteImport } from './routes/reset.$token'
 import { Route as OrgsOrgIdIndexRouteImport } from './routes/orgs.$orgId.index'
+import { Route as OrgsOrgIdAccessRouteImport } from './routes/orgs.$orgId.access'
+import { Route as OrgsOrgIdBookingsRouteImport } from './routes/orgs.$orgId.bookings'
+import { Route as OrgsOrgIdFacilitiesRouteImport } from './routes/orgs.$orgId.facilities'
 import { Route as OrgsOrgIdMeRouteImport } from './routes/orgs.$orgId.me'
+import { Route as OrgsOrgIdMeetingsRouteImport } from './routes/orgs.$orgId.meetings'
+import { Route as OrgsOrgIdMeetingsIndexRouteImport } from './routes/orgs.$orgId.meetings.index'
+import { Route as OrgsOrgIdMeetingsDecisionsRouteImport } from './routes/orgs.$orgId.meetings.decisions'
+import { Route as OrgsOrgIdMeetingsNewRouteImport } from './routes/orgs.$orgId.meetings.new'
+import { Route as OrgsOrgIdMeetingsSettingsRouteImport } from './routes/orgs.$orgId.meetings.settings'
+import { Route as OrgsOrgIdVisitorsIndexRouteImport } from './routes/orgs.$orgId.visitors.index'
+import { Route as OrgsOrgIdVisitorsGateRouteImport } from './routes/orgs.$orgId.visitors.gate'
+import { Route as OrgsOrgIdMeetingsMeetingIdIndexRouteImport } from './routes/orgs.$orgId.meetings.$meetingId.index'
+import { Route as OrgsOrgIdMeetingsMeetingIdDeskRouteImport } from './routes/orgs.$orgId.meetings.$meetingId.desk'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,11 +83,75 @@ const OrgsOrgIdIndexRoute = OrgsOrgIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdAccessRoute = OrgsOrgIdAccessRouteImport.update({
+  id: '/access',
+  path: '/access',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdBookingsRoute = OrgsOrgIdBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdFacilitiesRoute = OrgsOrgIdFacilitiesRouteImport.update({
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
 const OrgsOrgIdMeRoute = OrgsOrgIdMeRouteImport.update({
   id: '/me',
   path: '/me',
   getParentRoute: () => OrgsOrgIdRoute,
 } as any)
+const OrgsOrgIdMeetingsRoute = OrgsOrgIdMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdMeetingsIndexRoute = OrgsOrgIdMeetingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgsOrgIdMeetingsRoute,
+} as any)
+const OrgsOrgIdMeetingsDecisionsRoute =
+  OrgsOrgIdMeetingsDecisionsRouteImport.update({
+    id: '/decisions',
+    path: '/decisions',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
+const OrgsOrgIdMeetingsNewRoute = OrgsOrgIdMeetingsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => OrgsOrgIdMeetingsRoute,
+} as any)
+const OrgsOrgIdMeetingsSettingsRoute =
+  OrgsOrgIdMeetingsSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
+const OrgsOrgIdVisitorsIndexRoute = OrgsOrgIdVisitorsIndexRouteImport.update({
+  id: '/visitors/',
+  path: '/visitors/',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdVisitorsGateRoute = OrgsOrgIdVisitorsGateRouteImport.update({
+  id: '/visitors/gate',
+  path: '/visitors/gate',
+  getParentRoute: () => OrgsOrgIdRoute,
+} as any)
+const OrgsOrgIdMeetingsMeetingIdIndexRoute =
+  OrgsOrgIdMeetingsMeetingIdIndexRouteImport.update({
+    id: '/$meetingId/',
+    path: '/$meetingId/',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
+const OrgsOrgIdMeetingsMeetingIdDeskRoute =
+  OrgsOrgIdMeetingsMeetingIdDeskRouteImport.update({
+    id: '/$meetingId/desk',
+    path: '/$meetingId/desk',
+    getParentRoute: () => OrgsOrgIdMeetingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,8 +163,20 @@ export interface FileRoutesByFullPath {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
+  '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
+  '/orgs/$orgId/facilities': typeof OrgsOrgIdFacilitiesRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/meetings': typeof OrgsOrgIdMeetingsRouteWithChildren
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/meetings/decisions': typeof OrgsOrgIdMeetingsDecisionsRoute
+  '/orgs/$orgId/meetings/new': typeof OrgsOrgIdMeetingsNewRoute
+  '/orgs/$orgId/meetings/settings': typeof OrgsOrgIdMeetingsSettingsRoute
+  '/orgs/$orgId/visitors/gate': typeof OrgsOrgIdVisitorsGateRoute
+  '/orgs/$orgId/meetings/': typeof OrgsOrgIdMeetingsIndexRoute
+  '/orgs/$orgId/visitors/': typeof OrgsOrgIdVisitorsIndexRoute
+  '/orgs/$orgId/meetings/$meetingId/desk': typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
+  '/orgs/$orgId/meetings/$meetingId/': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,8 +187,19 @@ export interface FileRoutesByTo {
   '/login/magic': typeof LoginMagicRoute
   '/reset/$token': typeof ResetTokenRoute
   '/login': typeof LoginIndexRoute
+  '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
+  '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
+  '/orgs/$orgId/facilities': typeof OrgsOrgIdFacilitiesRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
   '/orgs/$orgId': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/meetings/decisions': typeof OrgsOrgIdMeetingsDecisionsRoute
+  '/orgs/$orgId/meetings/new': typeof OrgsOrgIdMeetingsNewRoute
+  '/orgs/$orgId/meetings/settings': typeof OrgsOrgIdMeetingsSettingsRoute
+  '/orgs/$orgId/visitors/gate': typeof OrgsOrgIdVisitorsGateRoute
+  '/orgs/$orgId/meetings': typeof OrgsOrgIdMeetingsIndexRoute
+  '/orgs/$orgId/visitors': typeof OrgsOrgIdVisitorsIndexRoute
+  '/orgs/$orgId/meetings/$meetingId/desk': typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
+  '/orgs/$orgId/meetings/$meetingId': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,8 +212,20 @@ export interface FileRoutesById {
   '/orgs/$orgId': typeof OrgsOrgIdRouteWithChildren
   '/reset/$token': typeof ResetTokenRoute
   '/login/': typeof LoginIndexRoute
+  '/orgs/$orgId/access': typeof OrgsOrgIdAccessRoute
+  '/orgs/$orgId/bookings': typeof OrgsOrgIdBookingsRoute
+  '/orgs/$orgId/facilities': typeof OrgsOrgIdFacilitiesRoute
   '/orgs/$orgId/me': typeof OrgsOrgIdMeRoute
+  '/orgs/$orgId/meetings': typeof OrgsOrgIdMeetingsRouteWithChildren
   '/orgs/$orgId/': typeof OrgsOrgIdIndexRoute
+  '/orgs/$orgId/meetings/decisions': typeof OrgsOrgIdMeetingsDecisionsRoute
+  '/orgs/$orgId/meetings/new': typeof OrgsOrgIdMeetingsNewRoute
+  '/orgs/$orgId/meetings/settings': typeof OrgsOrgIdMeetingsSettingsRoute
+  '/orgs/$orgId/visitors/gate': typeof OrgsOrgIdVisitorsGateRoute
+  '/orgs/$orgId/meetings/': typeof OrgsOrgIdMeetingsIndexRoute
+  '/orgs/$orgId/visitors/': typeof OrgsOrgIdVisitorsIndexRoute
+  '/orgs/$orgId/meetings/$meetingId/desk': typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
+  '/orgs/$orgId/meetings/$meetingId/': typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,8 +239,20 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/orgs/$orgId/access'
+    | '/orgs/$orgId/bookings'
+    | '/orgs/$orgId/facilities'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/meetings'
     | '/orgs/$orgId/'
+    | '/orgs/$orgId/meetings/decisions'
+    | '/orgs/$orgId/meetings/new'
+    | '/orgs/$orgId/meetings/settings'
+    | '/orgs/$orgId/visitors/gate'
+    | '/orgs/$orgId/meetings/'
+    | '/orgs/$orgId/visitors/'
+    | '/orgs/$orgId/meetings/$meetingId/desk'
+    | '/orgs/$orgId/meetings/$meetingId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,8 +263,19 @@ export interface FileRouteTypes {
     | '/login/magic'
     | '/reset/$token'
     | '/login'
+    | '/orgs/$orgId/access'
+    | '/orgs/$orgId/bookings'
+    | '/orgs/$orgId/facilities'
     | '/orgs/$orgId/me'
     | '/orgs/$orgId'
+    | '/orgs/$orgId/meetings/decisions'
+    | '/orgs/$orgId/meetings/new'
+    | '/orgs/$orgId/meetings/settings'
+    | '/orgs/$orgId/visitors/gate'
+    | '/orgs/$orgId/meetings'
+    | '/orgs/$orgId/visitors'
+    | '/orgs/$orgId/meetings/$meetingId/desk'
+    | '/orgs/$orgId/meetings/$meetingId'
   id:
     | '__root__'
     | '/'
@@ -153,8 +287,20 @@ export interface FileRouteTypes {
     | '/orgs/$orgId'
     | '/reset/$token'
     | '/login/'
+    | '/orgs/$orgId/access'
+    | '/orgs/$orgId/bookings'
+    | '/orgs/$orgId/facilities'
     | '/orgs/$orgId/me'
+    | '/orgs/$orgId/meetings'
     | '/orgs/$orgId/'
+    | '/orgs/$orgId/meetings/decisions'
+    | '/orgs/$orgId/meetings/new'
+    | '/orgs/$orgId/meetings/settings'
+    | '/orgs/$orgId/visitors/gate'
+    | '/orgs/$orgId/meetings/'
+    | '/orgs/$orgId/visitors/'
+    | '/orgs/$orgId/meetings/$meetingId/desk'
+    | '/orgs/$orgId/meetings/$meetingId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -241,6 +387,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdIndexRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/access': {
+      id: '/orgs/$orgId/access'
+      path: '/access'
+      fullPath: '/orgs/$orgId/access'
+      preLoaderRoute: typeof OrgsOrgIdAccessRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/bookings': {
+      id: '/orgs/$orgId/bookings'
+      path: '/bookings'
+      fullPath: '/orgs/$orgId/bookings'
+      preLoaderRoute: typeof OrgsOrgIdBookingsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/facilities': {
+      id: '/orgs/$orgId/facilities'
+      path: '/facilities'
+      fullPath: '/orgs/$orgId/facilities'
+      preLoaderRoute: typeof OrgsOrgIdFacilitiesRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
     '/orgs/$orgId/me': {
       id: '/orgs/$orgId/me'
       path: '/me'
@@ -248,17 +415,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgsOrgIdMeRouteImport
       parentRoute: typeof OrgsOrgIdRoute
     }
+    '/orgs/$orgId/meetings': {
+      id: '/orgs/$orgId/meetings'
+      path: '/meetings'
+      fullPath: '/orgs/$orgId/meetings'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/meetings/': {
+      id: '/orgs/$orgId/meetings/'
+      path: '/'
+      fullPath: '/orgs/$orgId/meetings/'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/decisions': {
+      id: '/orgs/$orgId/meetings/decisions'
+      path: '/decisions'
+      fullPath: '/orgs/$orgId/meetings/decisions'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsDecisionsRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/new': {
+      id: '/orgs/$orgId/meetings/new'
+      path: '/new'
+      fullPath: '/orgs/$orgId/meetings/new'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsNewRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/settings': {
+      id: '/orgs/$orgId/meetings/settings'
+      path: '/settings'
+      fullPath: '/orgs/$orgId/meetings/settings'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsSettingsRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/visitors/': {
+      id: '/orgs/$orgId/visitors/'
+      path: '/visitors'
+      fullPath: '/orgs/$orgId/visitors/'
+      preLoaderRoute: typeof OrgsOrgIdVisitorsIndexRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/visitors/gate': {
+      id: '/orgs/$orgId/visitors/gate'
+      path: '/visitors/gate'
+      fullPath: '/orgs/$orgId/visitors/gate'
+      preLoaderRoute: typeof OrgsOrgIdVisitorsGateRouteImport
+      parentRoute: typeof OrgsOrgIdRoute
+    }
+    '/orgs/$orgId/meetings/$meetingId/': {
+      id: '/orgs/$orgId/meetings/$meetingId/'
+      path: '/$meetingId'
+      fullPath: '/orgs/$orgId/meetings/$meetingId/'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsMeetingIdIndexRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
+    '/orgs/$orgId/meetings/$meetingId/desk': {
+      id: '/orgs/$orgId/meetings/$meetingId/desk'
+      path: '/$meetingId/desk'
+      fullPath: '/orgs/$orgId/meetings/$meetingId/desk'
+      preLoaderRoute: typeof OrgsOrgIdMeetingsMeetingIdDeskRouteImport
+      parentRoute: typeof OrgsOrgIdMeetingsRoute
+    }
   }
 }
 
+interface OrgsOrgIdMeetingsRouteChildren {
+  OrgsOrgIdMeetingsDecisionsRoute: typeof OrgsOrgIdMeetingsDecisionsRoute
+  OrgsOrgIdMeetingsNewRoute: typeof OrgsOrgIdMeetingsNewRoute
+  OrgsOrgIdMeetingsSettingsRoute: typeof OrgsOrgIdMeetingsSettingsRoute
+  OrgsOrgIdMeetingsIndexRoute: typeof OrgsOrgIdMeetingsIndexRoute
+  OrgsOrgIdMeetingsMeetingIdDeskRoute: typeof OrgsOrgIdMeetingsMeetingIdDeskRoute
+  OrgsOrgIdMeetingsMeetingIdIndexRoute: typeof OrgsOrgIdMeetingsMeetingIdIndexRoute
+}
+
+const OrgsOrgIdMeetingsRouteChildren: OrgsOrgIdMeetingsRouteChildren = {
+  OrgsOrgIdMeetingsDecisionsRoute: OrgsOrgIdMeetingsDecisionsRoute,
+  OrgsOrgIdMeetingsNewRoute: OrgsOrgIdMeetingsNewRoute,
+  OrgsOrgIdMeetingsSettingsRoute: OrgsOrgIdMeetingsSettingsRoute,
+  OrgsOrgIdMeetingsIndexRoute: OrgsOrgIdMeetingsIndexRoute,
+  OrgsOrgIdMeetingsMeetingIdDeskRoute: OrgsOrgIdMeetingsMeetingIdDeskRoute,
+  OrgsOrgIdMeetingsMeetingIdIndexRoute: OrgsOrgIdMeetingsMeetingIdIndexRoute,
+}
+
+const OrgsOrgIdMeetingsRouteWithChildren =
+  OrgsOrgIdMeetingsRoute._addFileChildren(OrgsOrgIdMeetingsRouteChildren)
+
 interface OrgsOrgIdRouteChildren {
+  OrgsOrgIdAccessRoute: typeof OrgsOrgIdAccessRoute
+  OrgsOrgIdBookingsRoute: typeof OrgsOrgIdBookingsRoute
+  OrgsOrgIdFacilitiesRoute: typeof OrgsOrgIdFacilitiesRoute
   OrgsOrgIdMeRoute: typeof OrgsOrgIdMeRoute
+  OrgsOrgIdMeetingsRoute: typeof OrgsOrgIdMeetingsRouteWithChildren
   OrgsOrgIdIndexRoute: typeof OrgsOrgIdIndexRoute
+  OrgsOrgIdVisitorsGateRoute: typeof OrgsOrgIdVisitorsGateRoute
+  OrgsOrgIdVisitorsIndexRoute: typeof OrgsOrgIdVisitorsIndexRoute
 }
 
 const OrgsOrgIdRouteChildren: OrgsOrgIdRouteChildren = {
+  OrgsOrgIdAccessRoute: OrgsOrgIdAccessRoute,
+  OrgsOrgIdBookingsRoute: OrgsOrgIdBookingsRoute,
+  OrgsOrgIdFacilitiesRoute: OrgsOrgIdFacilitiesRoute,
   OrgsOrgIdMeRoute: OrgsOrgIdMeRoute,
+  OrgsOrgIdMeetingsRoute: OrgsOrgIdMeetingsRouteWithChildren,
   OrgsOrgIdIndexRoute: OrgsOrgIdIndexRoute,
+  OrgsOrgIdVisitorsGateRoute: OrgsOrgIdVisitorsGateRoute,
+  OrgsOrgIdVisitorsIndexRoute: OrgsOrgIdVisitorsIndexRoute,
 }
 
 const OrgsOrgIdRouteWithChildren = OrgsOrgIdRoute._addFileChildren(
