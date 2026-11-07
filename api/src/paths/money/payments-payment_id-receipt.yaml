@@ -1,0 +1,55 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: payment_id
+    in: path
+    required: true
+    description: Id of the payment.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getPaymentReceipt
+  summary: Download the receipt (aidat makbuzu)
+  description: |-
+    **Release 0.1.** Generated and filed into the site documents (O8).
+
+    Permission (any one of): `payments.record`, `statements.read_own`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - payments.record
+    site_manager:
+      - payments.record
+    board_member:
+      - payments.record
+    accountant:
+      - payments.record
+    owner:
+      - statements.read_own
+    tenant:
+      - statements.read_own
+    household:
+      - statements.read_own
+    former_occupant:
+      - statements.read_own
+  x-stability: stable
+  responses:
+    "200":
+      description: The file.
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
