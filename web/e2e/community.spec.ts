@@ -3,6 +3,11 @@ import { expect, test } from '@playwright/test'
 // Runs against the mock-mode dev server (in-memory MSW handlers): the whole flow chains without a
 // backend. Navigation inside a flow is always by clicking, so the in-memory state survives.
 
+// The mock user and organization are Turkish; the specs assert English names, so pin the locale.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('ob.locale', 'en'))
+})
+
 test('call a meeting, check in, record the counts and apply the elected role', async ({ page }) => {
   await page.goto('/orgs/org-1/meetings')
   await page.getByRole('link', { name: 'Elections 2027' }).click()
