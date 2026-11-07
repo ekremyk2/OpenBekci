@@ -1,0 +1,148 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: key_id
+    in: path
+    required: true
+    description: Id of the key.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.getAllocationKey
+  summary: Get allocation key
+  description: |-
+    **Release 0.1.** Get allocation key.
+
+    Permission: `units.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - units.read
+    site_manager:
+      - units.read
+    board_member:
+      - units.read
+    auditor:
+      - units.read
+    accountant:
+      - units.read
+    staff:
+      - units.read
+    owner:
+      - units.read
+    tenant:
+      - units.read
+    household:
+      - units.read
+    former_occupant:
+      - units.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/AllocationKey
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: tenancy.updateAllocationKey
+  summary: Update allocation key
+  description: |-
+    **Release 0.1.** Update allocation key.
+
+    Permission: `sites.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/AllocationKeyUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/AllocationKey
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: tenancy.deleteAllocationKey
+  summary: Delete allocation key
+  description: |-
+    **Release 0.1.** System keys and keys used by a plan cannot be deleted (409 `conflict`).
+
+    Permission: `sites.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
