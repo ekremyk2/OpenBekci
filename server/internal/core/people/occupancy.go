@@ -151,6 +151,7 @@ type occInput struct {
 	kind, side       string
 	sharePct         *float64
 	correspondent    bool
+	noDemote         bool // an unchanged correspondent flag: overlapping correspondents are a conflict, not replaced
 	resides          bool
 	from             time.Time
 	to               *time.Time
@@ -176,6 +177,54 @@ func parseDate(d Doc, key string, def *time.Time) (*time.Time, error) {
 
 var occFields = []string{"person_id", "kind", "side", "share_pct", "is_correspondent", "resides", "valid_from", "valid_to"}
 
+// enforceOccRules applies the unit rules to an occupancy about to be inserted
+// (selfID is uuid.Nil) or changed (selfID is its id): no overlapping duplicate
+// of the same person and kind, shares of co-owners overlapping in time sum to
+// at most 100, and at most one correspondent per unit side at any date. A new
+// correspondent replaces the overlapping ones only when its period has begun
+// (it takes effect now, so no gap is left); a future-dated one that overlaps a
+// correspondent is refused. The unit row must already be locked.
+func (s *Service) enforceOccRules(ctx context.Context, tx pgx.Tx, orgID, unitID uuid.UUID, in occInput, selfID uuid.UUID) error {
+	if in.to != nil && !in.to.After(in.from) {
+		return fieldProblem("valid_to", "invalid_value")
+	}
+	var dup bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND person_id = $3 AND kind = $4 AND id <> $7
+		AND (valid_to IS NULL OR valid_to > $5) AND ($6::date IS NULL OR valid_from < $6))`, orgID, unitID, in.personID, in.kind, in.from, in.to, selfID).Scan(&dup); err != nil {
+		return err
+	}
+	if dup {
+		return problem.Conflict("this person already has an overlapping " + in.kind + " occupancy on this unit")
+	}
+	if in.kind == KindOwner && in.sharePct != nil {
+		var used float64
+		if err := tx.QueryRow(ctx, `SELECT COALESCE(sum(share_pct), 0)::float8 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND kind = 'owner' AND id <> $5
+			AND (valid_to IS NULL OR valid_to > $3) AND ($4::date IS NULL OR valid_from < $4)`, orgID, unitID, in.from, in.to, selfID).Scan(&used); err != nil {
+			return err
+		}
+		if used+*in.sharePct > 100.0001 {
+			return problem.Validation(problem.Field{Field: "share_pct", Code: "too_large", Params: map[string]any{"max": 100 - used}})
+		}
+	}
+	if in.correspondent {
+		if in.noDemote || in.from.After(s.today()) {
+			var clash bool
+			if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND is_correspondent AND id <> $6
+				AND (valid_to IS NULL OR valid_to > $4) AND ($5::date IS NULL OR valid_from < $5))`, orgID, unitID, in.side, in.from, in.to, selfID).Scan(&clash); err != nil {
+				return err
+			}
+			if clash {
+				return problem.Conflict("another correspondent holds this side during that period; change the correspondent when the new one takes over")
+			}
+		} else if _, err := tx.Exec(ctx, `UPDATE occupancy SET is_correspondent = false, updated_at = now(), version = version + 1
+			WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND is_correspondent AND id <> $6
+			AND (valid_to IS NULL OR valid_to > $4) AND ($5::date IS NULL OR valid_from < $5)`, orgID, unitID, in.side, in.from, in.to, selfID); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // insertOccTx inserts an occupancy after enforcing the unit rules (shares of
 // co-owners sum to at most 100, one correspondent per side, no duplicate).
 // It locks the unit row so concurrent changes serialize. The unit must belong
@@ -184,32 +233,8 @@ func (s *Service) insertOccTx(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, u
 	if _, err := tx.Exec(ctx, `SELECT 1 FROM unit WHERE org_id = $1 AND id = $2 FOR UPDATE`, orgID, unit.ID); err != nil {
 		return Occupancy{}, err
 	}
-	if in.to != nil && !in.to.After(in.from) {
-		return Occupancy{}, fieldProblem("valid_to", "invalid_value")
-	}
-	var dup bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND person_id = $3 AND kind = $4
-		AND (valid_to IS NULL OR valid_to > $5) AND ($6::date IS NULL OR valid_from < $6))`, orgID, unit.ID, in.personID, in.kind, in.from, in.to).Scan(&dup); err != nil {
+	if err := s.enforceOccRules(ctx, tx, orgID, unit.ID, in, uuid.Nil); err != nil {
 		return Occupancy{}, err
-	}
-	if dup {
-		return Occupancy{}, problem.Conflict("this person already has an overlapping " + in.kind + " occupancy on this unit")
-	}
-	if in.kind == KindOwner && in.sharePct != nil {
-		var used float64
-		if err := tx.QueryRow(ctx, `SELECT COALESCE(sum(share_pct), 0)::float8 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND kind = 'owner'
-			AND (valid_to IS NULL OR valid_to > $3) AND ($4::date IS NULL OR valid_from < $4)`, orgID, unit.ID, in.from, in.to).Scan(&used); err != nil {
-			return Occupancy{}, err
-		}
-		if used+*in.sharePct > 100.0001 {
-			return Occupancy{}, problem.Validation(problem.Field{Field: "share_pct", Code: "too_large", Params: map[string]any{"max": 100 - used}})
-		}
-	}
-	if in.correspondent {
-		if _, err := tx.Exec(ctx, `UPDATE occupancy SET is_correspondent = false, updated_at = now(), version = version + 1
-			WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND is_correspondent AND valid_to IS NULL`, orgID, unit.ID, in.side); err != nil {
-			return Occupancy{}, err
-		}
 	}
 	oid := id.New()
 	if _, err := tx.Exec(ctx, `INSERT INTO occupancy (id, org_id, site_id, unit_id, person_id, kind, side, share_pct, is_correspondent, resides, valid_from, valid_to)
@@ -443,21 +468,25 @@ func (s *Service) UpdateOccupancy(ctx context.Context, orgID, occID uuid.UUID, e
 			out = before
 			return nil
 		}
-		if next.SharePct != nil && (before.SharePct == nil || *next.SharePct != *before.SharePct) {
-			var used float64
-			if err := tx.QueryRow(ctx, `SELECT COALESCE(sum(share_pct), 0)::float8 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND kind = 'owner' AND id <> $3
-				AND (valid_to IS NULL OR valid_to > $4::date) AND ($5::date IS NULL OR valid_from < $5::date)`, orgID, before.UnitID, occID, next.ValidFrom, next.ValidTo).Scan(&used); err != nil {
-				return err
-			}
-			if used+*next.SharePct > 100.0001 {
-				return problem.Validation(problem.Field{Field: "share_pct", Code: "too_large", Params: map[string]any{"max": 100 - used}})
-			}
+		// dates, share or correspondent may have changed: re-run the unit rules under the unit lock
+		if _, err := tx.Exec(ctx, `SELECT 1 FROM unit WHERE org_id = $1 AND id = $2 FOR UPDATE`, orgID, before.UnitID); err != nil {
+			return err
 		}
-		if next.IsCorrespondent && !before.IsCorrespondent {
-			if _, err := tx.Exec(ctx, `UPDATE occupancy SET is_correspondent = false, updated_at = now(), version = version + 1
-				WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND is_correspondent AND valid_to IS NULL AND id <> $4`, orgID, before.UnitID, before.Side, occID); err != nil {
+		fromT, err := time.Parse(dateLayout, next.ValidFrom)
+		if err != nil {
+			return err
+		}
+		in := occInput{unitID: before.UnitID, personID: before.PersonID, kind: before.Kind, side: before.Side, sharePct: next.SharePct,
+			correspondent: next.IsCorrespondent, noDemote: before.IsCorrespondent, resides: next.Resides, from: fromT}
+		if next.ValidTo != nil {
+			toT, err := time.Parse(dateLayout, *next.ValidTo)
+			if err != nil {
 				return err
 			}
+			in.to = &toT
+		}
+		if err := s.enforceOccRules(ctx, tx, orgID, before.UnitID, in, occID); err != nil {
+			return err
 		}
 		if _, err := tx.Exec(ctx, `UPDATE occupancy SET share_pct = $3, is_correspondent = $4, resides = $5, valid_from = $6::date, valid_to = $7::date,
 			updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`,
