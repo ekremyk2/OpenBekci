@@ -6,6 +6,8 @@ get:
   description: |-
     **Release 0.1.** Cursor-paginated list of bills.
 
+    Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
     Permission: `money.read`.
   tags:
     - money
@@ -71,11 +73,14 @@ get:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  x-requires-setting: bills_enabled
 post:
   operationId: money.createBill
   summary: Create bill
   description: |-
     **Release 0.1.** Creates a bill.
+
+    Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
 
     Permission: `money.post`.
 
@@ -121,3 +126,4 @@ post:
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
+  x-requires-setting: bills_enabled

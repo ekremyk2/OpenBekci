@@ -107,6 +107,20 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      type: asset
+      subtype: null
+      fund_id: null
+      is_system: false
+      archived: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   AccountCreate:
     type: object
     required:
@@ -182,6 +196,22 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          type: asset
+          subtype: null
+          fund_id: null
+          is_system: false
+          archived: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   Fund:
     type: object
     description: Operating, reserve (demirbas / yedek akce) or custom fund; every journal line carries one.
@@ -227,6 +257,16 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      kind: operating
+      is_default: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   FundCreate:
     type: object
     required:
@@ -275,6 +315,18 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          kind: operating
+          is_default: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   CashBox:
     type: object
     description: An asset account bound to a collector (M5).
@@ -325,6 +377,20 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      account_id: 0192a3f0-1000-7000-8000-000000000005
+      collector_person_id: null
+      collector_display_name: null
+      balance:
+        amount: 200000
+        currency: TRY
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   CashBoxCreate:
     type: object
     required:
@@ -364,6 +430,22 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          account_id: 0192a3f0-1000-7000-8000-000000000005
+          collector_person_id: null
+          collector_display_name: null
+          balance:
+            amount: 200000
+            currency: TRY
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   FiscalYear:
     type: object
     description: A reporting group with an approval status; the lock date, not the year, blocks postings.
@@ -416,6 +498,17 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      start: 2026-03-01
+      end: 2026-03-01
+      status: open
+      approved_by_decision_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   FiscalYearCreate:
     type: object
     required:
@@ -426,16 +519,6 @@ schemas:
       site_id:
         type: string
         format: uuid
-      start:
-        type: string
-        format: date
-      end:
-        type: string
-        format: date
-  FiscalYearUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
       start:
         type: string
         format: date
@@ -456,6 +539,19 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          start: 2026-03-01
+          end: 2026-03-01
+          status: open
+          approved_by_decision_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   FiscalYearClose:
     type: object
     properties:
@@ -629,6 +725,38 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      entry_date: 2026-03-01
+      document_date: 2026-03-01
+      fiscal_year_id: 0192a3f0-1000-7000-8000-000000000005
+      memo: null
+      source_type: source type
+      source_id: null
+      posted_by: null
+      posted_at: 2026-03-01T09:00:00Z
+      reverses_entry_id: null
+      reversed_by_entry_id: null
+      lines:
+        - id: 0192a3f0-1000-7000-8000-000000000006
+          account_id: 0192a3f0-1000-7000-8000-000000000007
+          account_code: account code
+          fund_id: 0192a3f0-1000-7000-8000-000000000008
+          debit:
+            amount: 200000
+            currency: TRY
+          credit:
+            amount: 200000
+            currency: TRY
+          unit_id: null
+          debtor_kind: owner
+          person_id: null
+          block_id: null
+          vendor_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   JournalEntryList:
     type: object
     required:
@@ -643,6 +771,40 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          entry_date: 2026-03-01
+          document_date: 2026-03-01
+          fiscal_year_id: 0192a3f0-1000-7000-8000-000000000005
+          memo: null
+          source_type: source type
+          source_id: null
+          posted_by: null
+          posted_at: 2026-03-01T09:00:00Z
+          reverses_entry_id: null
+          reversed_by_entry_id: null
+          lines:
+            - id: 0192a3f0-1000-7000-8000-000000000006
+              account_id: 0192a3f0-1000-7000-8000-000000000007
+              account_code: account code
+              fund_id: 0192a3f0-1000-7000-8000-000000000008
+              debit:
+                amount: 200000
+                currency: TRY
+              credit:
+                amount: 200000
+                currency: TRY
+              unit_id: null
+              debtor_kind: owner
+              person_id: null
+              block_id: null
+              vendor_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   JournalReverse:
     type: object
     required:
@@ -749,6 +911,30 @@ schemas:
       void_reason:
         type: string
         nullable: true
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      as_of: 2026-03-01
+      kind: unit_receivable
+      unit_id: null
+      debtor_kind: owner
+      person_id: null
+      account_id: null
+      vendor_id: null
+      principal:
+        amount: 200000
+        currency: TRY
+      late_fee:
+        amount: 200000
+        currency: TRY
+      journal_entry_id: 0192a3f0-1000-7000-8000-000000000005
+      locked: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      status: active
+      voided_at: null
+      void_reason: null
   OpeningBalanceCreate:
     type: object
     required:
@@ -760,50 +946,6 @@ schemas:
       site_id:
         type: string
         format: uuid
-      as_of:
-        type: string
-        format: date
-      kind:
-        type: string
-        description: Open enum.
-        enum:
-          - unit_receivable
-          - bank
-          - cash
-          - vendor
-        x-open-enum: true
-      unit_id:
-        type: string
-        format: uuid
-        nullable: true
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-        nullable: true
-      person_id:
-        type: string
-        format: uuid
-        nullable: true
-      account_id:
-        type: string
-        format: uuid
-        nullable: true
-      vendor_id:
-        type: string
-        format: uuid
-        nullable: true
-      principal:
-        $ref: ./common.yaml#/schemas/Money
-      late_fee:
-        $ref: ./common.yaml#/schemas/Money
-  OpeningBalanceUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
       as_of:
         type: string
         format: date
@@ -858,6 +1000,32 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          as_of: 2026-03-01
+          kind: unit_receivable
+          unit_id: null
+          debtor_kind: owner
+          person_id: null
+          account_id: null
+          vendor_id: null
+          principal:
+            amount: 200000
+            currency: TRY
+          late_fee:
+            amount: 200000
+            currency: TRY
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000005
+          locked: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          status: active
+          voided_at: null
+          void_reason: null
+      next_cursor: null
   Budget:
     type: object
     description: Light, optional category budget (M3); it does not drive dues.
@@ -908,6 +1076,19 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      fiscal_year_id: 0192a3f0-1000-7000-8000-000000000005
+      status: draft
+      decision_id: null
+      total:
+        amount: 200000
+        currency: TRY
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   BudgetCreate:
     type: object
     required:
@@ -946,6 +1127,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          fiscal_year_id: 0192a3f0-1000-7000-8000-000000000005
+          status: draft
+          decision_id: null
+          total:
+            amount: 200000
+            currency: TRY
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   BudgetLine:
     type: object
     required:
@@ -1023,28 +1219,23 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      plan_id: 0192a3f0-1000-7000-8000-000000000004
+      from: 2026-03-01
+      to: null
+      amount:
+        amount: 200000
+        currency: TRY
+      decision_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   ChargePlanRateCreate:
     type: object
     required:
       - from
       - amount
-    properties:
-      from:
-        type: string
-        format: date
-      to:
-        type: string
-        format: date
-        nullable: true
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      decision_id:
-        type: string
-        format: uuid
-        nullable: true
-  ChargePlanRateUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
     properties:
       from:
         type: string
@@ -1073,6 +1264,20 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          plan_id: 0192a3f0-1000-7000-8000-000000000004
+          from: 2026-03-01
+          to: null
+          amount:
+            amount: 200000
+            currency: TRY
+          decision_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   ChargePlan:
     type: object
     description: A dues or one-off charge plan. Charges are generated by an hourly, idempotent catch-up job on (plan, unit, period). Amounts change through rates.
@@ -1141,7 +1346,7 @@ schemas:
         x-open-enum: true
       frequency:
         type: string
-        description: Open enum.
+        description: Open enum. Generated charges carry the accrual month in `Charge.period` (`YYYY-MM`) whatever the frequency.
         enum:
           - monthly
           - quarterly
@@ -1205,6 +1410,42 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      kind: recurring
+      charge_type: dues
+      default_debtor: owner
+      frequency: monthly
+      due_day: null
+      start: 2026-03-01
+      end: null
+      amount_mode: per_unit
+      allocation_key_id: 0192a3f0-1000-7000-8000-000000000005
+      scope:
+        type: site
+        id: null
+      fund_id: 0192a3f0-1000-7000-8000-000000000006
+      income_account_id: 0192a3f0-1000-7000-8000-000000000007
+      status: active
+      decision_id: null
+      current_rate:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        plan_id: 0192a3f0-1000-7000-8000-000000000004
+        from: 2026-03-01
+        to: null
+        amount:
+          amount: 200000
+          currency: TRY
+        decision_id: null
+        created_at: 2026-03-01T09:00:00Z
+        updated_at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   ChargePlanCreate:
     type: object
     required:
@@ -1354,6 +1595,44 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          kind: recurring
+          charge_type: dues
+          default_debtor: owner
+          frequency: monthly
+          due_day: null
+          start: 2026-03-01
+          end: null
+          amount_mode: per_unit
+          allocation_key_id: 0192a3f0-1000-7000-8000-000000000005
+          scope:
+            type: site
+            id: null
+          fund_id: 0192a3f0-1000-7000-8000-000000000006
+          income_account_id: 0192a3f0-1000-7000-8000-000000000007
+          status: active
+          decision_id: null
+          current_rate:
+            id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            plan_id: 0192a3f0-1000-7000-8000-000000000004
+            from: 2026-03-01
+            to: null
+            amount:
+              amount: 200000
+              currency: TRY
+            decision_id: null
+            created_at: 2026-03-01T09:00:00Z
+            updated_at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   ChargePlanPreviewRequest:
     type: object
     description: Send either `plan_id` or `plan`.
@@ -1372,7 +1651,8 @@ schemas:
         description: Override of the amount for an existing plan.
       period:
         type: string
-        description: "`YYYY-MM`; default: the next period."
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. Default: the next period."
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
   ChargePreviewLine:
     type: object
     required:
@@ -1421,6 +1701,8 @@ schemas:
     properties:
       period:
         type: string
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
       total:
         $ref: ./common.yaml#/schemas/Money
       unit_count:
@@ -1449,6 +1731,11 @@ schemas:
           amount:
             amount: 200000
             currency: TRY
+          effective_debtor:
+            debtor_kind: owner
+            person_id: null
+            display_name: null
+            source: plan_default
       remainder_distributed: false
   ChargeGenerationPending:
     type: object
@@ -1462,6 +1749,8 @@ schemas:
         format: uuid
       period:
         type: string
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
       units:
         type: integer
         format: int64
@@ -1648,7 +1937,8 @@ schemas:
       period:
         type: string
         nullable: true
-        description: "`YYYY-MM` for plan charges."
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
       amount:
         $ref: ./common.yaml#/schemas/Money
       paid:
@@ -1776,51 +2066,6 @@ schemas:
       decision_id:
         type: string
         format: uuid
-  ChargeUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-      charge_type:
-        type: string
-        description: Open enum.
-        enum:
-          - dues
-          - special_assessment
-          - reserve_contribution
-          - utility
-          - booking_fee
-          - legal_cost
-          - deposit
-          - adjustment
-          - settlement
-        x-open-enum: true
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      due_date:
-        type: string
-        format: date
-      description:
-        type: string
-        nullable: true
-      fund_id:
-        type: string
-        format: uuid
-      income_account_id:
-        type: string
-        format: uuid
-      decision_id:
-        type: string
-        format: uuid
   ChargeList:
     type: object
     required:
@@ -1835,6 +2080,42 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          plan_id: null
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          debtor_kind: tenant
+          debtor_person_id: null
+          debtor_display_name: null
+          charge_type: dues
+          period: 2026-03
+          amount:
+            amount: 200000
+            currency: TRY
+          paid:
+            amount: 0
+            currency: TRY
+          balance:
+            amount: 200000
+            currency: TRY
+          due_date: 2026-03-05
+          description: null
+          allocation_basis: null
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000002
+          status: open
+          cancelled_reason: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          effective_debtor:
+            debtor_kind: tenant
+            person_id: null
+            display_name: null
+            source: plan_default
+      next_cursor: null
   ChargeCancel:
     type: object
     required:
@@ -1947,6 +2228,24 @@ schemas:
         type: boolean
       waived:
         $ref: ./common.yaml#/schemas/Money
+    example:
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_door_number: unit door number
+      debtor_kind: owner
+      as_of: 2026-03-01
+      open_principal:
+        amount: 200000
+        currency: TRY
+      accrued:
+        amount: 200000
+        currency: TRY
+      booked:
+        amount: 200000
+        currency: TRY
+      frozen: false
+      waived:
+        amount: 200000
+        currency: TRY
   LateFeeAccrualList:
     type: object
     required:
@@ -1960,6 +2259,26 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          debtor_kind: owner
+          as_of: 2026-03-01
+          open_principal:
+            amount: 200000
+            currency: TRY
+          accrued:
+            amount: 200000
+            currency: TRY
+          booked:
+            amount: 200000
+            currency: TRY
+          frozen: false
+          waived:
+            amount: 200000
+            currency: TRY
+      next_cursor: null
   LateFeeBooking:
     type: object
     description: Monthly crystallization of accrued fees.
@@ -1999,6 +2318,8 @@ schemas:
         x-open-enum: true
       period:
         type: string
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
       amount:
         $ref: ./common.yaml#/schemas/Money
       charge_id:
@@ -2019,6 +2340,28 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      debtor_kind: owner
+      period: 2026-03
+      amount:
+        amount: 200000
+        currency: TRY
+      charge_id: null
+      expected_to_date:
+        amount: 200000
+        currency: TRY
+      booked_to_date:
+        amount: 200000
+        currency: TRY
+      delta:
+        amount: 200000
+        currency: TRY
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   LateFeeBookingList:
     type: object
     required:
@@ -2033,6 +2376,30 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
+          period: 2026-03
+          amount:
+            amount: 200000
+            currency: TRY
+          charge_id: null
+          expected_to_date:
+            amount: 200000
+            currency: TRY
+          booked_to_date:
+            amount: 200000
+            currency: TRY
+          delta:
+            amount: 200000
+            currency: TRY
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   LateFeeWaiver:
     type: object
     description: A waiver reverses accrued or booked fee with a reason.
@@ -2084,6 +2451,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      debtor_kind: owner
+      amount:
+        amount: 200000
+        currency: TRY
+      reason: reason
+      by: 0192a3f0-1000-7000-8000-000000000006
+      journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   LateFeeWaiverCreate:
     type: object
     required:
@@ -2103,24 +2484,6 @@ schemas:
         allOf:
           - $ref: "#/schemas/DebtorRef"
         description: "Who owes: a unit side or a person (see DebtorRef)."
-  LateFeeWaiverUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      reason:
-        type: string
   LateFeeWaiverList:
     type: object
     required:
@@ -2135,6 +2498,22 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
+          amount:
+            amount: 200000
+            currency: TRY
+          reason: reason
+          by: 0192a3f0-1000-7000-8000-000000000006
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   LateFeeFreeze:
     type: object
     description: Stops fee accrual (unit in legal collection).
@@ -2194,6 +2573,19 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      debtor_kind: owner
+      from: 2026-03-01
+      to: null
+      reason: reason
+      case_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   LateFeeFreezeCreate:
     type: object
     required:
@@ -2242,6 +2634,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
+          from: 2026-03-01
+          to: null
+          reason: reason
+          case_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   PaymentAllocation:
     type: object
     required:
@@ -2442,6 +2849,50 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          payer_person_id: null
+          payer_display_name: null
+          unit_id: null
+          debtor_kind: null
+          method: cash
+          gross:
+            amount: 200000
+            currency: TRY
+          fee:
+            amount: 0
+            currency: TRY
+          net:
+            amount: 200000
+            currency: TRY
+          received_at: 2026-03-01T09:00:00Z
+          recorded_by: null
+          asset_account_id: 0192a3f0-1000-7000-8000-000000000002
+          reference: null
+          note: null
+          status: confirmed
+          receipt_no: 2026/0042
+          provider_txn_id: null
+          journal_entry_id: null
+          allocated:
+            amount: 200000
+            currency: TRY
+          unallocated:
+            amount: 200000
+            currency: TRY
+          allocations:
+            - charge_id: 0192a3f0-1000-7000-8000-000000000001
+              charge_description: null
+              amount:
+                amount: 200000
+                currency: TRY
+          bank_transaction_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   ReceiptDelivery:
     type: object
     required:
@@ -2659,6 +3110,19 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: null
+      debtor_kind: owner
+      person_id: null
+      balance:
+        amount: 200000
+        currency: TRY
+      source_payment_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   CreditList:
     type: object
     required:
@@ -2673,6 +3137,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: null
+          debtor_kind: owner
+          person_id: null
+          balance:
+            amount: 200000
+            currency: TRY
+          source_payment_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   CreditApply:
     type: object
     required:
@@ -2743,6 +3222,22 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      from_account_id: 0192a3f0-1000-7000-8000-000000000005
+      to_account_id: 0192a3f0-1000-7000-8000-000000000006
+      amount:
+        amount: 200000
+        currency: TRY
+      transferred_at: 2026-03-01T09:00:00Z
+      memo: null
+      kind: cash_handover
+      journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+      created_by: 0192a3f0-1000-7000-8000-000000000008
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   TransferCreate:
     type: object
     required:
@@ -2755,32 +3250,6 @@ schemas:
       site_id:
         type: string
         format: uuid
-      from_account_id:
-        type: string
-        format: uuid
-      to_account_id:
-        type: string
-        format: uuid
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      transferred_at:
-        type: string
-        format: date-time
-      memo:
-        type: string
-        nullable: true
-      kind:
-        type: string
-        description: Open enum.
-        enum:
-          - cash_handover
-          - bank_deposit
-          - other
-        x-open-enum: true
-  TransferUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
       from_account_id:
         type: string
         format: uuid
@@ -2817,6 +3286,24 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          from_account_id: 0192a3f0-1000-7000-8000-000000000005
+          to_account_id: 0192a3f0-1000-7000-8000-000000000006
+          amount:
+            amount: 200000
+            currency: TRY
+          transferred_at: 2026-03-01T09:00:00Z
+          memo: null
+          kind: cash_handover
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
+          created_by: 0192a3f0-1000-7000-8000-000000000008
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   Refund:
     type: object
     description: Outgoing money to a person or unit.
@@ -2898,6 +3385,25 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: null
+      unit_id: null
+      debtor_kind: owner
+      amount:
+        amount: 200000
+        currency: TRY
+      reason: reason
+      kind: overpayment
+      paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
+      refunded_at: 2026-03-01T09:00:00Z
+      credit_id: null
+      payment_id: null
+      journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   RefundCreate:
     type: object
     required:
@@ -2911,52 +3417,6 @@ schemas:
       site_id:
         type: string
         format: uuid
-      person_id:
-        type: string
-        format: uuid
-        nullable: true
-      unit_id:
-        type: string
-        format: uuid
-        nullable: true
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-        nullable: true
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      reason:
-        type: string
-      kind:
-        type: string
-        description: Open enum.
-        enum:
-          - overpayment
-          - deposit_return
-          - other
-        x-open-enum: true
-      paid_from_account_id:
-        type: string
-        format: uuid
-      refunded_at:
-        type: string
-        format: date-time
-      credit_id:
-        type: string
-        format: uuid
-        nullable: true
-      payment_id:
-        type: string
-        format: uuid
-        nullable: true
-  RefundUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
       person_id:
         type: string
         format: uuid
@@ -3013,6 +3473,27 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: null
+          unit_id: null
+          debtor_kind: owner
+          amount:
+            amount: 200000
+            currency: TRY
+          reason: reason
+          kind: overpayment
+          paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
+          refunded_at: 2026-03-01T09:00:00Z
+          credit_id: null
+          payment_id: null
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   BankImporter:
     type: object
     required:
@@ -3034,6 +3515,17 @@ schemas:
         allOf:
           - $ref: ./draft-common.yaml#/schemas/ColumnMapping
         nullable: true
+    example:
+      id: id
+      name: Ali Veli
+      formats:
+        - formats
+      default_mapping:
+        columns: {}
+        date_format: null
+        delimiter: null
+        sheet: null
+        remember: null
   BankImporterList:
     type: object
     required:
@@ -3047,6 +3539,19 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - id: id
+          name: Ali Veli
+          formats:
+            - formats
+          default_mapping:
+            columns: {}
+            date_format: null
+            delimiter: null
+            sheet: null
+            remember: null
+      next_cursor: null
   BankStatementImport:
     type: object
     description: An uploaded bank statement (M5).
@@ -3127,6 +3632,27 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      importer: importer
+      file_id: 0192a3f0-1000-7000-8000-000000000005
+      asset_account_id: 0192a3f0-1000-7000-8000-000000000006
+      status: parsing
+      opening_balance:
+        amount: 200000
+        currency: TRY
+      closing_balance:
+        amount: 200000
+        currency: TRY
+      period_from: null
+      period_to: null
+      transaction_count: 3
+      unmatched_count: 3
+      error: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   BankStatementImportList:
     type: object
     required:
@@ -3141,6 +3667,29 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          importer: importer
+          file_id: 0192a3f0-1000-7000-8000-000000000005
+          asset_account_id: 0192a3f0-1000-7000-8000-000000000006
+          status: parsing
+          opening_balance:
+            amount: 200000
+            currency: TRY
+          closing_balance:
+            amount: 200000
+            currency: TRY
+          period_from: null
+          period_to: null
+          transaction_count: 3
+          unmatched_count: 3
+          error: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   ImportReconciliation:
     type: object
     required:
@@ -3211,7 +3760,7 @@ schemas:
       - org_id
       - site_id
       - import_id
-      - booked_at
+      - booked_on
       - amount
       - counterparty
       - description
@@ -3234,7 +3783,7 @@ schemas:
       import_id:
         type: string
         format: uuid
-      booked_at:
+      booked_on:
         type: string
         format: date
       amount:
@@ -3274,6 +3823,29 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      import_id: 0192a3f0-1000-7000-8000-000000000005
+      booked_on: 2026-03-01
+      amount:
+        amount: 200000
+        currency: TRY
+      counterparty: null
+      description: null
+      match_status: unmatched
+      payment_id: null
+      expense_id: null
+      suggestions:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000006
+          unit_door_number: unit door number
+          debtor_kind: owner
+          person_id: null
+          score: 1.5
+          reason: reason
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   BankTransactionList:
     type: object
     required:
@@ -3288,6 +3860,31 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          import_id: 0192a3f0-1000-7000-8000-000000000005
+          booked_on: 2026-03-01
+          amount:
+            amount: 200000
+            currency: TRY
+          counterparty: null
+          description: null
+          match_status: unmatched
+          payment_id: null
+          expense_id: null
+          suggestions:
+            - unit_id: 0192a3f0-1000-7000-8000-000000000006
+              unit_door_number: unit door number
+              debtor_kind: owner
+              person_id: null
+              score: 1.5
+              reason: reason
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   BankTransactionMatch:
     type: object
     properties:
@@ -3325,7 +3922,7 @@ schemas:
       - category_account_id
       - fund_id
       - amount
-      - paid_at
+      - paid_on
       - paid_from_account_id
       - vendor_id
       - vendor_name
@@ -3356,7 +3953,7 @@ schemas:
         format: uuid
       amount:
         $ref: ./common.yaml#/schemas/Money
-      paid_at:
+      paid_on:
         type: string
         format: date
       paid_from_account_id:
@@ -3401,6 +3998,28 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      category_account_id: 0192a3f0-1000-7000-8000-000000000005
+      fund_id: 0192a3f0-1000-7000-8000-000000000006
+      amount:
+        amount: 200000
+        currency: TRY
+      paid_on: 2026-03-01
+      paid_from_account_id: 0192a3f0-1000-7000-8000-000000000007
+      vendor_id: null
+      vendor_name: null
+      description: description
+      document_no: null
+      file_id: null
+      recurring_expense_id: null
+      status: posted
+      journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+      voided_reason: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   ExpenseCreate:
     type: object
     required:
@@ -3408,7 +4027,7 @@ schemas:
       - category_account_id
       - fund_id
       - amount
-      - paid_at
+      - paid_on
       - paid_from_account_id
       - description
     properties:
@@ -3423,38 +4042,7 @@ schemas:
         format: uuid
       amount:
         $ref: ./common.yaml#/schemas/Money
-      paid_at:
-        type: string
-        format: date
-      paid_from_account_id:
-        type: string
-        format: uuid
-      vendor_id:
-        type: string
-        format: uuid
-        nullable: true
-      description:
-        type: string
-      document_no:
-        type: string
-        nullable: true
-      file_id:
-        type: string
-        format: uuid
-        nullable: true
-  ExpenseUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
-      category_account_id:
-        type: string
-        format: uuid
-      fund_id:
-        type: string
-        format: uuid
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      paid_at:
+      paid_on:
         type: string
         format: date
       paid_from_account_id:
@@ -3487,6 +4075,30 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          category_account_id: 0192a3f0-1000-7000-8000-000000000005
+          fund_id: 0192a3f0-1000-7000-8000-000000000006
+          amount:
+            amount: 200000
+            currency: TRY
+          paid_on: 2026-03-01
+          paid_from_account_id: 0192a3f0-1000-7000-8000-000000000007
+          vendor_id: null
+          vendor_name: null
+          description: description
+          document_no: null
+          file_id: null
+          recurring_expense_id: null
+          status: posted
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+          voided_reason: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   ExpenseVoid:
     type: object
     required:
@@ -3573,6 +4185,26 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      category_account_id: 0192a3f0-1000-7000-8000-000000000005
+      fund_id: 0192a3f0-1000-7000-8000-000000000006
+      amount:
+        amount: 200000
+        currency: TRY
+      paid_from_account_id: 0192a3f0-1000-7000-8000-000000000007
+      vendor_id: null
+      description: description
+      day_of_month: 1
+      start: 2026-03-01
+      end: null
+      status: active
+      next_run_on: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   RecurringExpenseCreate:
     type: object
     required:
@@ -3651,6 +4283,28 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          category_account_id: 0192a3f0-1000-7000-8000-000000000005
+          fund_id: 0192a3f0-1000-7000-8000-000000000006
+          amount:
+            amount: 200000
+            currency: TRY
+          paid_from_account_id: 0192a3f0-1000-7000-8000-000000000007
+          vendor_id: null
+          description: description
+          day_of_month: 1
+          start: 2026-03-01
+          end: null
+          status: active
+          next_run_on: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   Bill:
     type: object
     description: Optional vendor invoice with a due date and partial payments (enabled per site).
@@ -3674,6 +4328,7 @@ schemas:
       - created_at
       - updated_at
       - version
+      - payments
     properties:
       id:
         type: string
@@ -3737,6 +4392,50 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+      payments:
+        type: array
+        items:
+          $ref: "#/schemas/BillPayment"
+        description: The payments made against the bill, oldest first.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      vendor_id: 0192a3f0-1000-7000-8000-000000000005
+      document_no: null
+      issue_date: 2026-03-01
+      due_date: 2026-03-01
+      amount:
+        amount: 200000
+        currency: TRY
+      paid:
+        amount: 200000
+        currency: TRY
+      balance:
+        amount: 200000
+        currency: TRY
+      category_account_id: 0192a3f0-1000-7000-8000-000000000006
+      fund_id: 0192a3f0-1000-7000-8000-000000000007
+      file_id: null
+      description: null
+      status: open
+      journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+      payments:
+        - id: 0192a3f0-1000-7000-8000-000000000009
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          bill_id: 0192a3f0-1000-7000-8000-000000000002
+          amount:
+            amount: 200000
+            currency: TRY
+          paid_on: 2026-03-01
+          paid_from_account_id: 0192a3f0-1000-7000-8000-000000000003
+          reference: null
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000004
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
   BillCreate:
     type: object
     required:
@@ -3778,23 +4477,6 @@ schemas:
       description:
         type: string
         nullable: true
-  BillUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
-      document_no:
-        type: string
-        nullable: true
-      due_date:
-        type: string
-        format: date
-      file_id:
-        type: string
-        format: uuid
-        nullable: true
-      description:
-        type: string
-        nullable: true
   BillList:
     type: object
     required:
@@ -3809,6 +4491,47 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          vendor_id: 0192a3f0-1000-7000-8000-000000000005
+          document_no: null
+          issue_date: 2026-03-01
+          due_date: 2026-03-01
+          amount:
+            amount: 200000
+            currency: TRY
+          paid:
+            amount: 200000
+            currency: TRY
+          balance:
+            amount: 200000
+            currency: TRY
+          category_account_id: 0192a3f0-1000-7000-8000-000000000006
+          fund_id: 0192a3f0-1000-7000-8000-000000000007
+          file_id: null
+          description: null
+          status: open
+          journal_entry_id: 0192a3f0-1000-7000-8000-000000000008
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+          payments:
+            - id: 0192a3f0-1000-7000-8000-000000000009
+              org_id: 0192a3f0-1000-7000-8000-000000000001
+              bill_id: 0192a3f0-1000-7000-8000-000000000002
+              amount:
+                amount: 200000
+                currency: TRY
+              paid_on: 2026-03-01
+              paid_from_account_id: 0192a3f0-1000-7000-8000-000000000003
+              reference: null
+              journal_entry_id: 0192a3f0-1000-7000-8000-000000000004
+              created_at: 2026-03-01T09:00:00Z
+              updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   BillPayment:
     type: object
     description: A (partial) payment of a bill.
@@ -3817,7 +4540,7 @@ schemas:
       - org_id
       - bill_id
       - amount
-      - paid_at
+      - paid_on
       - paid_from_account_id
       - reference
       - journal_entry_id
@@ -3835,7 +4558,7 @@ schemas:
         format: uuid
       amount:
         $ref: ./common.yaml#/schemas/Money
-      paid_at:
+      paid_on:
         type: string
         format: date
       paid_from_account_id:
@@ -3857,12 +4580,12 @@ schemas:
     type: object
     required:
       - amount
-      - paid_at
+      - paid_on
       - paid_from_account_id
     properties:
       amount:
         $ref: ./common.yaml#/schemas/Money
-      paid_at:
+      paid_on:
         type: string
         format: date
       paid_from_account_id:
@@ -3871,35 +4594,6 @@ schemas:
       reference:
         type: string
         nullable: true
-  BillPaymentUpdate:
-    type: object
-    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
-    properties:
-      amount:
-        $ref: ./common.yaml#/schemas/Money
-      paid_at:
-        type: string
-        format: date
-      paid_from_account_id:
-        type: string
-        format: uuid
-      reference:
-        type: string
-        nullable: true
-  BillPaymentList:
-    type: object
-    required:
-      - items
-      - next_cursor
-    properties:
-      items:
-        type: array
-        items:
-          $ref: "#/schemas/BillPayment"
-      next_cursor:
-        type: string
-        nullable: true
-        description: Pass as `cursor` for the next page; null on the last page.
   DunningStage:
     type: object
     description: "Site-defined collection stage: reminder 1 at N days, reminder 2, ihtarname."
@@ -3967,6 +4661,21 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      kind: reminder
+      days_after_due: 1
+      channels:
+        - in_app
+      template_key: null
+      position: 1
+      enabled: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   DunningStageCreate:
     type: object
     required:
@@ -4056,6 +4765,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          kind: reminder
+          days_after_due: 1
+          channels:
+            - in_app
+          template_key: null
+          position: 1
+          enabled: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   DunningRunRequest:
     type: object
     required:
@@ -4200,6 +4926,20 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      run_id: null
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      debtor_kind: owner
+      person_id: null
+      stage_id: 0192a3f0-1000-7000-8000-000000000006
+      sent_at: 2026-03-01T09:00:00Z
+      channel: in_app
+      document_file_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   DunningEventList:
     type: object
     required:
@@ -4214,6 +4954,22 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          run_id: null
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
+          person_id: null
+          stage_id: 0192a3f0-1000-7000-8000-000000000006
+          sent_at: 2026-03-01T09:00:00Z
+          channel: in_app
+          document_file_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   CollectionCase:
     type: object
     description: Legal collection; while open, late fees and reminders are frozen.
@@ -4224,11 +4980,11 @@ schemas:
       - unit_id
       - debtor_kind
       - debtor_person_id
-      - opened_at
+      - opened_on
       - lawyer
       - file_no
       - status
-      - closed_at
+      - closed_on
       - costs_charged
       - notes
       - created_at
@@ -4257,7 +5013,7 @@ schemas:
       debtor_person_id:
         type: string
         format: uuid
-      opened_at:
+      opened_on:
         type: string
         format: date
       lawyer:
@@ -4273,7 +5029,7 @@ schemas:
           - open
           - closed
         x-open-enum: true
-      closed_at:
+      closed_on:
         type: string
         format: date
         nullable: true
@@ -4292,6 +5048,25 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      debtor_kind: owner
+      debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+      opened_on: 2026-03-01
+      lawyer: null
+      file_no: null
+      status: open
+      closed_on: null
+      costs_charged:
+        amount: 200000
+        currency: TRY
+      notes: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   CollectionCaseCreate:
     type: object
     required:
@@ -4299,7 +5074,7 @@ schemas:
       - unit_id
       - debtor_kind
       - debtor_person_id
-      - opened_at
+      - opened_on
     properties:
       site_id:
         type: string
@@ -4317,7 +5092,7 @@ schemas:
       debtor_person_id:
         type: string
         format: uuid
-      opened_at:
+      opened_on:
         type: string
         format: date
       lawyer:
@@ -4356,6 +5131,27 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
+          debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+          opened_on: 2026-03-01
+          lawyer: null
+          file_no: null
+          status: open
+          closed_on: null
+          costs_charged:
+            amount: 200000
+            currency: TRY
+          notes: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   CollectionCaseClose:
     type: object
     properties:
@@ -4377,6 +5173,8 @@ schemas:
       period:
         type: string
         nullable: true
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
       charge_id:
         type: string
         format: uuid
@@ -4850,8 +5648,8 @@ schemas:
       buckets:
         type: array
         items:
-          $ref: ./common.yaml#/schemas/Money
-        description: Parallel to the report `buckets` labels.
+          $ref: "#/schemas/AgingBucketAmount"
+        description: One object per report bucket, in the order of the report `buckets`.
       total:
         $ref: ./common.yaml#/schemas/Money
   ReceivablesAgingReport:
@@ -4869,7 +5667,7 @@ schemas:
         type: array
         items:
           type: string
-        description: For example `0-30`, `31-60`, `61-90`, `90+`.
+        description: The ordered bucket keys, for example `0-30`, `31-60`, `61-90`, `90+`; rows and totals refer to them by key.
       rows:
         type: array
         items:
@@ -4877,7 +5675,8 @@ schemas:
       totals:
         type: array
         items:
-          $ref: ./common.yaml#/schemas/Money
+          $ref: "#/schemas/AgingBucketAmount"
+        description: Totals per bucket, in the order of `buckets`.
   CollectorRow:
     type: object
     required:
@@ -5097,3 +5896,20 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/BudgetLine"
+  AgingBucketAmount:
+    type: object
+    description: One aging bucket of a row or of the totals.
+    required:
+      - bucket
+      - amount
+    properties:
+      bucket:
+        type: string
+        description: The bucket key, one of the report's `buckets`, for example `0-30`.
+      amount:
+        $ref: ./common.yaml#/schemas/Money
+    example:
+      bucket: 0-30
+      amount:
+        amount: 200000
+        currency: TRY
