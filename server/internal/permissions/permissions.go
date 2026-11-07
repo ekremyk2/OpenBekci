@@ -3,13 +3,19 @@
 package permissions
 
 import (
+	"github.com/openbekci/openbekci/server/internal/core/announcements"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/codes"
+	"github.com/openbekci/openbekci/server/internal/core/dashboards"
+	"github.com/openbekci/openbekci/server/internal/core/documents"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
+	"github.com/openbekci/openbekci/server/internal/core/notifications"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/core/tickets"
 )
 
 // NewRegistry builds the registry from every module's
@@ -28,6 +34,12 @@ func NewRegistry() (*authz.Registry, error) {
 		{"audit", audit.Permissions()},
 		{"people", people.Permissions()},
 		{"files", files.Permissions()},
+		{"notifications", notifications.Permissions()},
+		{"tickets", tickets.Permissions()},
+		{"announcements", announcements.Permissions()},
+		{"documents", documents.Permissions()},
+		{"dashboards", dashboards.Permissions()},
+		{"codes", codes.Permissions()},
 	} {
 		if err := reg.Register(m.name, m.defs...); err != nil {
 			return nil, err
