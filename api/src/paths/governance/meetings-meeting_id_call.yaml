@@ -1,0 +1,59 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: governance.callMeeting
+  summary: Issue the call (cagri)
+  description: |-
+    **Release 0.2.** Validates the legal timing (call at least 15 days ahead, second meeting 7 to 15 days after the first, per the site settings), snapshots the eligibility, generates the call letter and creates one pending notice per owner (G3).
+
+    Permission: `meetings.manage`.
+
+    Problems: `conflict` (409), `validation_failed` (422).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - meetings.manage
+    site_manager:
+      - meetings.manage
+    board_member:
+      - meetings.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/MeetingCall
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/Meeting
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

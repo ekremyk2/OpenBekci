@@ -1,0 +1,78 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.getIncomeExpenseReport
+  summary: Cash-basis income and expense (gelir-gider)
+  description: |-
+    **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+
+    Permission (any one of): `reports.read`, `reports.aggregate`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - reports.read
+    site_manager:
+      - reports.read
+    board_member:
+      - reports.read
+    auditor:
+      - reports.read
+    accountant:
+      - reports.read
+    owner:
+      - reports.aggregate
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Start of the range (inclusive).
+      required: true
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: End of the range (inclusive).
+      required: true
+    - name: fund_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `fund_id`.
+    - $ref: ../../components/draft-common.yaml#/parameters/Format
+  responses:
+    "200":
+      description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/IncomeExpenseReport
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

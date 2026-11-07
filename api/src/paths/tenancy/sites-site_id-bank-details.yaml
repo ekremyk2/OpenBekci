@@ -1,0 +1,119 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: site_id
+    in: path
+    required: true
+    description: Id of the site.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.getBankDetails
+  summary: Get bank details
+  description: |-
+    **Release 0.1.** IBAN and holder shown to payers; with `unit_id` and `debtor_kind` also the suggested transfer reference.
+
+    Permission: `sites.bank_details`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.bank_details
+    site_manager:
+      - sites.bank_details
+    board_member:
+      - sites.bank_details
+    auditor:
+      - sites.bank_details
+    accountant:
+      - sites.bank_details
+    owner:
+      - sites.bank_details
+    tenant:
+      - sites.bank_details
+  x-stability: stable
+  parameters:
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        enum:
+          - owner
+          - tenant
+      description: "Debtor side of the unit: owner or tenant."
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/BankDetails
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: tenancy.setBankDetails
+  summary: Set bank details
+  description: |-
+    **Release 0.1.** Set bank details.
+
+    Permission: `sites.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/BankDetailsUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/BankDetails
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

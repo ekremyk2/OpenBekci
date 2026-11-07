@@ -1,0 +1,136 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: announcement_id
+    in: path
+    required: true
+    description: Id of the announcement.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.getAnnouncement
+  summary: Get an announcement
+  description: |-
+    **Release 0.1.** Get an announcement.
+
+    Permission (any one of): `announcements.read`, `announcements.publish`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
+    member:
+      - announcements.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Announcement
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: operations.updateAnnouncement
+  summary: Edit an announcement
+  description: |-
+    **Release 0.1.** Content of a published announcement can no longer change; pin, expiry and archive can.
+
+    Permission: `announcements.publish`.
+
+    Problems: `conflict` (409), `version_conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/AnnouncementUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Announcement
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: operations.deleteAnnouncement
+  summary: Delete a draft announcement
+  description: |-
+    **Release 0.1.** Delete a draft announcement.
+
+    Permission: `announcements.publish`.
+
+    Problems: `conflict` (409), `version_conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - announcements.publish
+    site_manager:
+      - announcements.publish
+    board_member:
+      - announcements.publish
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

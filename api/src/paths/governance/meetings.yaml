@@ -1,0 +1,126 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: governance.listMeetings
+  summary: List meetings
+  description: |-
+    **Release 0.2.** Cursor-paginated list of meetings.
+
+    Permission: `meetings.read`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - meetings.read
+    site_manager:
+      - meetings.read
+    board_member:
+      - meetings.read
+    auditor:
+      - meetings.read
+    owner:
+      - meetings.read
+    tenant:
+      - meetings.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - draft
+          - called
+          - in_session
+          - closed
+          - cancelled
+      description: Filter by `status`.
+    - name: kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - general_assembly
+          - extraordinary
+      description: Filter by `kind`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: End of the range (inclusive).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/MeetingList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: governance.createMeeting
+  summary: Create meeting
+  description: |-
+    **Release 0.2.** Creates a meeting.
+
+    Permission: `meetings.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - meetings.manage
+    site_manager:
+      - meetings.manage
+    board_member:
+      - meetings.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/MeetingCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/Meeting
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

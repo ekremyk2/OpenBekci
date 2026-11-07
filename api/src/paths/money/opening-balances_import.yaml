@@ -1,0 +1,78 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: money.importOpeningBalances
+  summary: Import opening balances from CSV or XLSX
+  description: |-
+    **Release 0.1.** Per-unit principal and known late fee by owner or tenant side, plus bank and cash balances (M7). Always run with `dry_run=true` first.
+
+    Permission: `money.post`.
+
+    Problems: `locked_period` (409), `payload_too_large` (413), `idempotency_mismatch` (422), `conflict` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/DryRun
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            site_id:
+              type: string
+              format: uuid
+            as_of:
+              type: string
+              format: date
+            file:
+              type: string
+              format: binary
+            mapping:
+              type: object
+              additionalProperties: true
+          required:
+            - site_id
+            - as_of
+            - file
+  responses:
+    "200":
+      description: The dry-run report; nothing was posted.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/ImportReport
+    "202":
+      description: Committed; follow `job_id`.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/ImportReport
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "413":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

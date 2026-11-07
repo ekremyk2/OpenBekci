@@ -1,0 +1,41 @@
+package app
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
+
+	"github.com/openbekci/openbekci/server/internal/core/identity"
+	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/platform/db"
+)
+
+// Admin bundles what the admin commands need: the identity and platform
+// administration services on their own database connections.
+type Admin struct {
+	Identity *identity.Service
+	Platform *platformadmin.Service
+	db       *db.DB
+}
+
+// OpenAdmin connects as the app and platform roles and builds the services.
+// Close releases the connections.
+func OpenAdmin(ctx context.Context, cfg Config, log *slog.Logger) (*Admin, error) {
+	if cfg.DatabaseURL == "" {
+		return nil, errors.New("OPENBEKCI_DATABASE_URL is required")
+	}
+	d, err := db.Open(ctx, db.Options{AppURL: cfg.DatabaseURL, PlatformURL: cfg.PlatformDatabaseURL})
+	if err != nil {
+		return nil, fmt.Errorf("connect: %w", err)
+	}
+	ident, err := newIdentity(cfg, log, d)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), db: d}, nil
+}
+
+// Close releases the database connections.
+func (a *Admin) Close() { a.db.Close() }

@@ -1,0 +1,13 @@
+# oapi-codegen v2.8.2 (pinned as a go.mod tool). Run from server/ via `task gen`:
+#   go tool oapi-codegen -config oapi-codegen.yaml ../api/openapi.yaml
+package: gen
+output: internal/httpapi/gen/api.gen.go
+generate:
+  chi-server: true
+  strict-server: true
+  models: true
+  embedded-spec: true
+output-options:
+  nullable-type: true
+compatibility:
+  always-prefix-enum-values: true

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/heartbeat.schema.json",
+  "title": "heartbeat payload, agent to server every heartbeat_seconds; doubles as keep-alive",
+  "type": "object",
+  "required": [
+    "snapshot_version",
+    "queue_depth",
+    "drivers"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "snapshot_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "queue_depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "drivers": {
+      "type": "array",
+      "items": {
+        "$ref": "defs.schema.json#/$defs/driver_state"
+      }
+    },
+    "dropped_events": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "uptime_s": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "clock_suspect": {
+      "type": "boolean"
+    },
+    "clock_offset_ms": {
+      "type": "integer"
+    }
+  }
+}

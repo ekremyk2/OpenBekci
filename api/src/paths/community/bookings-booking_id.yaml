@@ -1,0 +1,50 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: booking_id
+    in: path
+    required: true
+    description: Id of the booking.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: community.getBooking
+  summary: Get a booking
+  description: |-
+    **Release 0.3.** Get a booking.
+
+    Permission: `bookings.read`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - bookings.read
+    site_manager:
+      - bookings.read
+    board_member:
+      - bookings.read
+    owner:
+      - bookings.read
+    tenant:
+      - bookings.read
+    household:
+      - bookings.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/Booking
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

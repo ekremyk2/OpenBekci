@@ -1,0 +1,31 @@
+post:
+  operationId: auth.consumeMagicLink
+  summary: Sign in with a magic-link token
+  description: |
+    Exchanges the token from a magic link (single use) for a session: a cookie
+    for `client=web`, tokens for `client=mobile`. An unknown, used or expired
+    token answers 401 `invalid_grant`.
+  tags: [auth]
+  security: []
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/auth.yaml#/schemas/MagicLinkConsumeRequest'
+  responses:
+    '200':
+      description: Signed in.
+      content:
+        application/json:
+          schema:
+            $ref: '../components/auth.yaml#/schemas/AuthResult'
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

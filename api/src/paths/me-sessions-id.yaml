@@ -1,0 +1,31 @@
+delete:
+  operationId: me.revokeSession
+  summary: Sign out one session
+  description: |
+    Revokes the session with this id (from `me.listSessions`), or the current
+    one for `current` (log out). For a mobile session the refresh token and
+    every access token of the session are revoked.
+  tags: [me]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: optional
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: A session id, or `current`.
+      schema:
+        type: string
+        pattern: '^(current|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$'
+  responses:
+    '204':
+      description: The session was revoked.
+    '401':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../components/problem.yaml#/responses/Problem'

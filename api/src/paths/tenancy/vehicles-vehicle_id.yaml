@@ -1,0 +1,154 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: vehicle_id
+    in: path
+    required: true
+    description: Id of the vehicle.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.getVehicle
+  summary: Get vehicle
+  description: |-
+    **Release 0.1.** Get vehicle.
+
+    Permission: `vehicles.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vehicles.read
+    site_manager:
+      - vehicles.read
+    board_member:
+      - vehicles.read
+    auditor:
+      - vehicles.read
+    owner:
+      - vehicles.read
+    tenant:
+      - vehicles.read
+    household:
+      - vehicles.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/Vehicle
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: tenancy.updateVehicle
+  summary: Update vehicle
+  description: |-
+    **Release 0.1.** Update vehicle.
+
+    Permission: `vehicles.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vehicles.manage
+    site_manager:
+      - vehicles.manage
+    board_member:
+      - vehicles.manage
+    owner:
+      - vehicles.manage
+    tenant:
+      - vehicles.manage
+    household:
+      - vehicles.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/VehicleUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/Vehicle
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: tenancy.deleteVehicle
+  summary: Delete vehicle
+  description: |-
+    **Release 0.1.** Delete vehicle.
+
+    Permission: `vehicles.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vehicles.manage
+    site_manager:
+      - vehicles.manage
+    board_member:
+      - vehicles.manage
+    owner:
+      - vehicles.manage
+    tenant:
+      - vehicles.manage
+    household:
+      - vehicles.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
