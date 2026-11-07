@@ -3,6 +3,7 @@ package session_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log/slog"
 	"sync"
@@ -314,7 +315,7 @@ func TestFirstMessageMustBeHello(t *testing.T) {
 	r := newRig(t)
 	s := r.m.Open(r.ref, session.KindPoll)
 	hb, _ := protocol.New(protocol.TypeHeartbeat, protocol.Heartbeat{Drivers: []protocol.DriverState{}}, r.now)
-	if err := s.Handle(context.Background(), hb); err != session.ErrNotHello {
+	if err := s.Handle(context.Background(), hb); !errors.Is(err, session.ErrNotHello) {
 		t.Fatalf("err = %v", err)
 	}
 	if cl, ok := s.Closing(); !ok || cl.Code != 1008 {

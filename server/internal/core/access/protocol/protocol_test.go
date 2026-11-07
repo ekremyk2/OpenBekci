@@ -2,6 +2,7 @@ package protocol_test
 
 import (
 	"encoding/json"
+	"errors"
 	"testing"
 	"time"
 
@@ -31,7 +32,7 @@ func TestEnvelopeRoundTripKeepsMilliseconds(t *testing.T) {
 
 func TestUnknownTypeIsReportedNotRejected(t *testing.T) {
 	env := protocol.Envelope{V: 1, Type: "teleport", ID: protocol.NewID(), TS: protocol.At(timeNow()), Payload: json.RawMessage(`{}`)}
-	if _, err := env.Decode(); err != protocol.ErrUnknownType {
+	if _, err := env.Decode(); !errors.Is(err, protocol.ErrUnknownType) {
 		t.Fatalf("err = %v, want ErrUnknownType", err)
 	}
 }

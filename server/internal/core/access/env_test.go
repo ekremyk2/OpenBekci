@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -203,7 +204,7 @@ func (e *env) siteVersion() int64 {
 	var v int64
 	err := e.d.InTenantTx(context.Background(), e.org, func(tx pgx.Tx) error {
 		err := tx.QueryRow(context.Background(), `SELECT version FROM access_site_state WHERE org_id = $1 AND site_id = $2`, e.org, e.site.SiteID).Scan(&v)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil
 		}
 		return err

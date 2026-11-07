@@ -61,7 +61,7 @@ var exportTables = []exportTable{
 }
 
 // excludedTables are tenant tables a site archive does not carry, with the reason.
-var excludedTables = map[string]string{
+var excludedTables = map[string]string{ //nolint:gosec // table names and reasons, not credentials
 	"organization": "the tenant root; the target organization already exists",
 	"audit_event":  "the audit trail stays with the organization that made the changes",
 	"site_export":  "the record of the hand-over itself",

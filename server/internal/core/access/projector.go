@@ -3,6 +3,7 @@ package access
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash/fnv"
 	"time"
@@ -230,7 +231,7 @@ func projectVehicle(ctx context.Context, tx pgx.Tx, site Site, vehicleID uuid.UU
 	var unitID uuid.UUID
 	var plate string
 	err := tx.QueryRow(ctx, `SELECT unit_id, plate FROM vehicle WHERE org_id = $1 AND site_id = $2 AND id = $3`, site.OrgID, site.SiteID, vehicleID).Scan(&unitID, &plate)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return revokeSource(ctx, tx, site, SourceVehicle, vehicleID, "vehicle_removed", points)
 	}
 	if err != nil {
@@ -290,8 +291,8 @@ func projectVisitor(ctx context.Context, tx pgx.Tx, site Site, v VisitorCredenti
 
 func siteLock(ctx context.Context, tx pgx.Tx, site Site) error {
 	h := fnv.New64a()
-	h.Write(site.SiteID[:])
-	_, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock($1)`, int64(h.Sum64()))
+	_, _ = h.Write(site.SiteID[:])
+	_, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock($1)`, int64(h.Sum64()>>1))
 	return err
 }
 

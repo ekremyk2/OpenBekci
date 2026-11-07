@@ -328,7 +328,7 @@ func (s *Session) onHello(ctx context.Context, env protocol.Envelope) error {
 	if err != nil || !ok {
 		s.ack(env.ID, protocol.AckError, map[string]any{"reason": "invalid_hello"})
 		s.CloseWith(1002, "invalid hello")
-		return fmt.Errorf("session: invalid hello: %v", err)
+		return fmt.Errorf("session: invalid hello: %w", err)
 	}
 	if h.AgentID != s.Ref.AgentID.String() {
 		s.CloseWith(1008, "agent id does not match the token")

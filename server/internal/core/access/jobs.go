@@ -47,7 +47,7 @@ type projectWorker struct {
 
 func (w *projectWorker) Work(ctx context.Context, job *river.Job[ProjectArgs]) error {
 	if a := job.Args; a.SiteID != uuid.Nil {
-		_, err := w.s.ProjectDirty(ctx, Site{OrgID: a.OrgID, SiteID: a.SiteID})
+		_, err := w.s.ProjectDirty(ctx, Site(a))
 		return err
 	}
 	sites, err := w.s.DirtySites(ctx)

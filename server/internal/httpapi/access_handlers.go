@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
+
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -18,18 +20,26 @@ func (s *apiServer) ac() (*access.Service, error) {
 	return s.access, nil
 }
 
+// siteParam reads the site_id query parameter (declared optional in the spec so authentication answers first).
+func siteParam(s *uuid.UUID) (uuid.UUID, error) {
+	if s == nil {
+		return uuid.Nil, problem.Validation(problem.Field{Field: "site_id", Code: "required"})
+	}
+	return *s, nil
+}
+
 func cursorOf(c *gen.Cursor) string {
 	if c == nil {
 		return ""
 	}
-	return string(*c)
+	return *c
 }
 
 func limitOf(l *gen.Limit) int {
 	if l == nil {
 		return 0
 	}
-	return int(*l)
+	return *l
 }
 
 func strOf(s *string) string {
@@ -46,7 +56,11 @@ func (s *apiServer) AccessListAccessPoints(ctx context.Context, req gen.AccessLi
 	if err != nil {
 		return nil, err
 	}
-	items, next, err := a.ListPoints(ctx, req.OrgId, req.Params.SiteId, req.Params.AgentId, req.Params.Enabled, limitOf(req.Params.Limit), cursorOf(req.Params.Cursor))
+	siteID, err := siteParam(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := a.ListPoints(ctx, req.OrgId, siteID, req.Params.AgentId, req.Params.Enabled, limitOf(req.Params.Limit), cursorOf(req.Params.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +106,7 @@ func (s *apiServer) AccessUpdateAccessPoint(ctx context.Context, req gen.AccessU
 	if err != nil {
 		return nil, err
 	}
-	v, err := ifMatchVersion(&req.Params.IfMatch)
+	v, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +130,7 @@ func (s *apiServer) AccessDeleteAccessPoint(ctx context.Context, req gen.AccessD
 	if err != nil {
 		return nil, err
 	}
-	v, err := ifMatchVersion(&req.Params.IfMatch)
+	v, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +152,7 @@ func (s *apiServer) AccessOpenAccessPoint(ctx context.Context, req gen.AccessOpe
 	}
 	guard := ""
 	if req.Params.XGuardSession != nil {
-		guard = string(*req.Params.XGuardSession)
+		guard = *req.Params.XGuardSession
 	}
 	c, err := a.OpenPoint(ctx, req.OrgId, req.PointId, body, guard)
 	if err != nil {
@@ -168,7 +182,11 @@ func (s *apiServer) AccessListAgents(ctx context.Context, req gen.AccessListAgen
 	if err != nil {
 		return nil, err
 	}
-	items, next, err := a.ListAgents(ctx, req.OrgId, req.Params.SiteId, strOf(req.Params.Status), limitOf(req.Params.Limit), cursorOf(req.Params.Cursor))
+	siteID, err := siteParam(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := a.ListAgents(ctx, req.OrgId, siteID, strOf(req.Params.Status), limitOf(req.Params.Limit), cursorOf(req.Params.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +228,7 @@ func (s *apiServer) AccessUpdateAgent(ctx context.Context, req gen.AccessUpdateA
 	if err != nil {
 		return nil, err
 	}
-	v, err := ifMatchVersion(&req.Params.IfMatch)
+	v, err := ifMatchVersion(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -273,7 +291,11 @@ func (s *apiServer) AccessListCredentials(ctx context.Context, req gen.AccessLis
 	}
 	p := req.Params
 	f := access.CredentialFilter{Kind: strOf(p.Kind), Status: strOf(p.Status), SourceType: strOf(p.SourceType), Query: strOf(p.Q), UnitID: p.UnitId, PointID: p.PointId}
-	items, next, err := a.ListCredentials(ctx, req.OrgId, p.SiteId, f, limitOf(p.Limit), cursorOf(p.Cursor))
+	siteID, err := siteParam(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := a.ListCredentials(ctx, req.OrgId, siteID, f, limitOf(p.Limit), cursorOf(p.Cursor))
 	if err != nil {
 		return nil, err
 	}
@@ -312,7 +334,11 @@ func (s *apiServer) AccessListAccessEvents(ctx context.Context, req gen.AccessLi
 	}
 	p := req.Params
 	f := access.EventFilter{PointID: p.PointId, Decision: strOf(p.Decision), Reason: strOf(p.Reason), From: p.From, To: p.To, Plate: strOf(p.Plate), After: p.After}
-	items, next, err := a.ListEvents(ctx, req.OrgId, p.SiteId, f, limitOf(p.Limit), cursorOf(p.Cursor))
+	siteID, err := siteParam(req.Params.SiteId)
+	if err != nil {
+		return nil, err
+	}
+	items, next, err := a.ListEvents(ctx, req.OrgId, siteID, f, limitOf(p.Limit), cursorOf(p.Cursor))
 	if err != nil {
 		return nil, err
 	}

@@ -4162,11 +4162,11 @@ export interface components {
         IdempotencyKey: string;
         /** @description The organization id. */
         OrgId: string;
-        /** @description The site this resource belongs to. */
+        /** @description The site this resource belongs to. Required (422 without it); declared optional only so an unauthenticated caller gets 401 first. */
         SiteIdRequired: string;
-        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed` (declared optional only so an unauthenticated caller gets 401 first). */
         IfMatch: string;
-        /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+        /** @description Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
         /** @description Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor. */
         GuardSession: string;
@@ -6986,9 +6986,9 @@ export interface operations {
     };
     "access.listAccessPoints": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `agent_id`. */
                 agent_id?: string;
                 /** @description Filter by `enabled`. */
@@ -7089,9 +7089,9 @@ export interface operations {
     "access.deleteAccessPoint": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed` (declared optional only so an unauthenticated caller gets 401 first). */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description The organization id. */
@@ -7121,9 +7121,9 @@ export interface operations {
     "access.updateAccessPoint": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed` (declared optional only so an unauthenticated caller gets 401 first). */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description The organization id. */
@@ -7159,11 +7159,11 @@ export interface operations {
     "access.openAccessPoint": {
         parameters: {
             query?: never;
-            header: {
+            header?: {
                 /** @description Optional guard session from the gate console. With a valid token the action is attributed to that guard instead of the console's login principal. Until the community module issues guard sessions the header is accepted and the login principal is the actor. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKeyRequired"];
             };
             path: {
                 /** @description The organization id. */
@@ -7199,9 +7199,9 @@ export interface operations {
     };
     "access.listAgents": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `status`. */
                 status?: string;
                 /** @description Page size. */
@@ -7300,9 +7300,9 @@ export interface operations {
     "access.updateAgent": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed` (declared optional only so an unauthenticated caller gets 401 first). */
+                "If-Match"?: components["parameters"]["IfMatch"];
             };
             path: {
                 /** @description The organization id. */
@@ -7436,9 +7436,9 @@ export interface operations {
     };
     "access.listCredentials": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `kind`. */
                 kind?: string;
                 /** @description Filter by `status`. */
@@ -7542,9 +7542,9 @@ export interface operations {
     };
     "access.listAccessEvents": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description The site this resource belongs to. Required (422 without it); declared optional only so an unauthenticated caller gets 401 first. */
+                site_id?: components["parameters"]["SiteIdRequired"];
                 /** @description Filter by `point_id`. */
                 point_id?: string;
                 /** @description Filter by `decision`. */

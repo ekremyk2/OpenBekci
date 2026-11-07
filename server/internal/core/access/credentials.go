@@ -40,10 +40,10 @@ type Credential struct {
 	UpdatedAt      time.Time           `json:"updated_at"`
 }
 
-const credentialColumns = `c.id, c.org_id, c.site_id, c.kind, c.value, c.source_type, c.source_id, c.unit_id, u.door_number, c.person_id,
+const viewColumns = `c.id, c.org_id, c.site_id, c.kind, c.value, c.source_type, c.source_id, c.unit_id, u.door_number, c.person_id,
 	c.point_scope, c.point_ids, c.valid_from, c.valid_to, c.recurring, c.max_uses, c.uses, c.status, c.status_reason, c.created_at, c.updated_at`
 
-const credentialFrom = ` FROM credential c LEFT JOIN unit u ON u.org_id = c.org_id AND u.id = c.unit_id`
+const viewFrom = ` FROM credential c LEFT JOIN unit u ON u.org_id = c.org_id AND u.id = c.unit_id`
 
 func scanCredential(row pgx.Row) (Credential, error) {
 	var c Credential
@@ -93,7 +93,7 @@ func (s *Service) ListCredentials(ctx context.Context, orgID, siteID uuid.UUID, 
 		if err := siteScope(ctx, tx, PermRead, siteID); err != nil {
 			return err
 		}
-		rows, err := tx.Query(ctx, `SELECT `+credentialColumns+credentialFrom+` WHERE c.org_id = $1 AND c.site_id = $2 AND c.id > $3
+		rows, err := tx.Query(ctx, `SELECT `+viewColumns+viewFrom+` WHERE c.org_id = $1 AND c.site_id = $2 AND c.id > $3
 			AND ($4 = '' OR c.kind = $4) AND ($5 = '' OR c.status = $5) AND ($6 = '' OR c.source_type = $6)
 			AND ($7::uuid IS NULL OR c.unit_id = $7)
 			AND ($8::uuid IS NULL OR c.point_scope = 'all' OR (c.point_scope = 'ids' AND $8 = ANY(c.point_ids))
@@ -129,7 +129,7 @@ func (s *Service) GetCredential(ctx context.Context, orgID, credentialID uuid.UU
 	}
 	var c Credential
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) (err error) {
-		if c, err = scanCredential(tx.QueryRow(ctx, `SELECT `+credentialColumns+credentialFrom+` WHERE c.org_id = $1 AND c.id = $2`, orgID, credentialID)); err != nil {
+		if c, err = scanCredential(tx.QueryRow(ctx, `SELECT `+viewColumns+viewFrom+` WHERE c.org_id = $1 AND c.id = $2`, orgID, credentialID)); err != nil {
 			return err
 		}
 		return siteScope(ctx, tx, PermRead, c.SiteID)
@@ -148,7 +148,7 @@ func (s *Service) RevokeCredential(ctx context.Context, orgID, credentialID uuid
 	var siteID uuid.UUID
 	var agents []uuid.UUID
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		c, err := scanCredential(tx.QueryRow(ctx, `SELECT `+credentialColumns+credentialFrom+` WHERE c.org_id = $1 AND c.id = $2 FOR UPDATE OF c`, orgID, credentialID))
+		c, err := scanCredential(tx.QueryRow(ctx, `SELECT `+viewColumns+viewFrom+` WHERE c.org_id = $1 AND c.id = $2 FOR UPDATE OF c`, orgID, credentialID))
 		if err != nil {
 			return err
 		}

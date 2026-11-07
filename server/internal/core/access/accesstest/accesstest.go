@@ -54,7 +54,7 @@ func loadSchemas() {
 	c.DefaultDraft(jsonschema.Draft2020)
 	paths, _ := filepath.Glob(filepath.Join(dir, "*.schema.json"))
 	for _, p := range paths {
-		data, err := os.ReadFile(p)
+		data, err := os.ReadFile(p) //nolint:gosec // test schemas found by walking up from the working directory
 		if err != nil {
 			schemaErr = err
 			return
@@ -311,7 +311,6 @@ type Poll struct {
 	HC      *http.Client
 	Session string
 	queue   []protocol.Envelope
-	lastSeq int64
 	// Responses records every poll response (status, seq, message count) in order.
 	Responses []PollResult
 }

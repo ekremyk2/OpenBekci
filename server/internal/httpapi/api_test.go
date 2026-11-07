@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -160,7 +161,7 @@ func TestNoopAuthenticatorRejectsEverySecuredOperation(t *testing.T) {
 	n := 0
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
-			if authModeOf(spec, op) != authRequired {
+			if authModeOf(spec, op) != authRequired || slices.Contains(op.Tags, "agent") { // the agent transport is mounted by access.Service, not by the pipeline
 				continue
 			}
 			n++
@@ -262,6 +263,7 @@ func TestProblemCodesMatchSpec(t *testing.T) {
 		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant,
 		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError, problem.CodePayloadTooLarge, problem.CodeMethodNotAllowed, problem.CodeUnsupportedMediaType, problem.CodeTimeout,
 		problem.CodeCSRFFailed, problem.CodeSMSUnavailable, problem.CodeMailUnavailable,
+		problem.CodeAgentOffline, problem.CodeAgentSessionExpired,
 	} {
 		if !inSpec[string(c)] {
 			t.Errorf("code %q is not in the spec enum", c)

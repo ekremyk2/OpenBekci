@@ -297,7 +297,8 @@ func (s *Service) handleWS(w http.ResponseWriter, r *http.Request) {
 				_ = c.CloseNow()
 				return
 			}
-		case <-readErr:
+		case err := <-readErr:
+			s.cfg.Log.DebugContext(ctx, "agent socket reader ended", "agent", p.AgentID, "error", err)
 			// the reader ended: flush a final close if the session asked for one
 			if cl, closing := sess.Closing(); closing {
 				msgs, _ := sess.Drain(0)

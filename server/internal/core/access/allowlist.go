@@ -121,7 +121,7 @@ type credRow struct {
 	Published []byte
 }
 
-const credSelect = `SELECT id, kind, value, status, point_scope, point_ids, valid_from, valid_to, recurring, max_uses, published FROM credential`
+const rowSelect = `SELECT id, kind, value, status, point_scope, point_ids, valid_from, valid_to, recurring, max_uses, published FROM credential`
 
 func scanCred(row pgx.Row) (credRow, error) {
 	var c credRow
@@ -220,7 +220,7 @@ func canon(e protocol.Entry) protocol.Entry {
 
 // syncCredentialByID loads a credential (locked) and syncs it.
 func syncCredentialByID(ctx context.Context, tx pgx.Tx, orgID, siteID, credID uuid.UUID, points []pointRow) (bool, error) {
-	c, err := scanCred(tx.QueryRow(ctx, credSelect+` WHERE org_id = $1 AND site_id = $2 AND id = $3 FOR UPDATE`, orgID, siteID, credID))
+	c, err := scanCred(tx.QueryRow(ctx, rowSelect+` WHERE org_id = $1 AND site_id = $2 AND id = $3 FOR UPDATE`, orgID, siteID, credID))
 	if err != nil {
 		return false, err
 	}
@@ -236,7 +236,7 @@ func resyncSite(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (int, e
 	if err != nil {
 		return 0, err
 	}
-	rows, err := tx.Query(ctx, credSelect+` WHERE org_id = $1 AND site_id = $2 AND (status = 'active' OR published IS NOT NULL) ORDER BY id FOR UPDATE`, orgID, siteID)
+	rows, err := tx.Query(ctx, rowSelect+` WHERE org_id = $1 AND site_id = $2 AND (status = 'active' OR published IS NOT NULL) ORDER BY id FOR UPDATE`, orgID, siteID)
 	if err != nil {
 		return 0, err
 	}

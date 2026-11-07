@@ -3,6 +3,7 @@ package access
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -491,7 +492,7 @@ func (b *backend) CommandAck(ctx context.Context, ref session.Ref, id uuid.UUID,
 		err := tx.QueryRow(ctx, `UPDATE agent_command SET status = $4, result = $5, completed_at = $6, updated_at = now()
 			WHERE org_id = $1 AND site_id = $2 AND agent_id = $3 AND id = $7 AND status IN ('pending', 'delivered')
 			RETURNING command, point_id`, ref.OrgID, ref.SiteID, ref.AgentID, status, result, now, id).Scan(&cmd, &pointID)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil // not ours, unknown, or already answered
 		}
 		if err != nil {

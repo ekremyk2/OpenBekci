@@ -2,24 +2,24 @@ parameters:
   SiteIdRequired:
     name: site_id
     in: query
-    required: true
-    description: The site this resource belongs to.
+    required: false
+    description: The site this resource belongs to. Required (422 without it); declared optional only so an unauthenticated caller gets 401 first.
     schema:
       type: string
       format: uuid
   IfMatch:
     name: If-Match
     in: header
-    required: true
-    description: The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+    required: false
+    description: The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed` (declared optional only so an unauthenticated caller gets 401 first).
     schema:
       type: string
       example: '"3"'
   IdempotencyKeyRequired:
     name: Idempotency-Key
     in: header
-    required: true
-    description: Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+    required: false
+    description: Client-generated unique key (8..128 chars); mandatory on this operation (422 without it; declared optional only so an unauthenticated caller gets 401 first). A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
     schema:
       type: string
       minLength: 8

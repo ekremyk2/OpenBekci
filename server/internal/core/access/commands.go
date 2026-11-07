@@ -3,6 +3,7 @@ package access
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -151,7 +152,7 @@ func (s *Service) resolveActor(ctx context.Context, tx pgx.Tx, orgID, siteID uui
 	}
 	var display *string
 	err := tx.QueryRow(ctx, `SELECT display_name FROM person WHERE org_id = $1 AND user_id = $2 LIMIT 1`, orgID, p.UserID).Scan(&display)
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return uuid.Nil, "", err
 	}
 	name := ""
