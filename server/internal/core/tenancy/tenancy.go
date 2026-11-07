@@ -1,6 +1,5 @@
-// Package tenancy is the organization module (backend plan 4.1): reading and
-// updating an organization's settings. Sites, blocks and units arrive with
-// phase B.
+// Package tenancy is the tenancy module (backend plan 4.1): organization settings, sites, blocks,
+// units, allocation keys, unit tags, vehicles, spreadsheet import and site export/import.
 package tenancy
 
 import (
@@ -25,8 +24,8 @@ const (
 	PermOrgManage authz.Permission = "org.manage"
 )
 
-// Permissions declares the module's permissions; the wiring registers them.
-func Permissions() []authz.PermissionDef {
+// orgPermissions declares the organization settings permissions.
+func orgPermissions() []authz.PermissionDef {
 	org := []authz.ScopeType{authz.ScopeOrg}
 	return []authz.PermissionDef{
 		{Name: PermOrgRead, Description: "Read the organization's settings",
