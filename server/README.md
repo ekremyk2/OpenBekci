@@ -182,28 +182,37 @@ unit, side)` (current occupancy: owner both sides, tenant the tenant side, house
 bounded by their dates), `authz.CurrentOccupancy`. A permission that lists `Occupants` in its `PermissionDef` is also held,
 at the site, by those occupancy kinds; the service narrows it to the caller's own unit.
 
-**Import** (`POST /v1/orgs/{org}/sites/{site}/import`, multipart `file`, optional `dry_run=true`, optional `mapping`
-JSON `{"door_number": "Daire No"}`). CSV (comma, semicolon or tab, UTF-8) or XLSX (first sheet). Columns: `block`,
-`door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi` (`12/1000` or decimal), `owner_name`,
-`owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`,
-`plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`; Turkish header aliases (`Daire No`, `Blok`,
-`Malik`, `Plaka`, ...) are recognized. Re-importing the same file changes nothing (units are matched by door number,
-people by phone or email); several rows with one door number add co-owners. The response is a row-level report; a real
-import with an error row writes nothing (`status: failed`). Opening-balance columns are validated and stored in
-`import_row.opening` of the applied batch for the money module (phase C).
+**Contract.** Phase B serves the draft contract's tenancy and people operations (`api/src/openapi-draft.yaml`) with the
+draft's own path files and schemas; `TestServedContractOperationsAreTheDraftsDefinition` holds every served operation to the
+draft's definition byte for byte. Resources are flat (`/v1/orgs/{org}/units?site_id=`), custom actions use the `:verb` suffix
+(`/sites/{id}:export`), permissions have the draft's plural names (`sites.manage`, `people.national_id`, ...), household
+self-service is `me.*`, labels are `GET /v1/orgs/{org}/codes`. The handlers (`tenancy_handlers.go`, `people_handlers.go`)
+translate the draft shapes to the services' own types (`contract_view.go`); the services keep their Go API. Operations of the
+draft that are not served yet are marked in `api/DRAFT-INDEX.md` (Status column).
 
-**Invitations**: `manager` (to a person the manager added), `household` (an owner or tenant invites to their own unit, no
-money access), `site_code` (the site's QR, `{BASE_URL}/join/{code}`; a signed-in resident files a unit claim that a manager
-approves). Links are `{BASE_URL}/invite/{token}`; delivery goes through the SMS and mail gateways (`log` drivers write the
-link to the log). Accepting is public (the link proves the contact): the account is found or created, linked to the invited
-person, the occupancy is created, and the caller then signs in by any method.
+**Import** (`POST /v1/orgs/{org}/units:import`, multipart `site_id`, `file`, optional `mapping` JSON, `dry_run=true`). CSV
+(comma, semicolon or tab, UTF-8) or XLSX (first sheet). Columns: `block`, `door_number` (required), `legal_ref`, `type`,
+`area_m2`, `arsa_payi` (`12/1000` or decimal), `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`,
+`tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+Turkish header aliases (`Daire No`, `Blok`, `Malik`, `Plaka`, ...) are recognized. Re-importing the same file changes nothing
+(units are matched by door number, people by phone or email); several rows with one door number add co-owners. The answer is
+the draft's `ImportReport` (200 for a dry run or a refused file, 202 when committed; the work is synchronous, `job_id` is null).
+A real import with an error row writes nothing. Opening-balance columns are validated and stored in `import_row.opening` of the
+applied batch for the money module (phase C).
 
-**Site hand-over**: `POST /sites/{site}/export` stores a JSON archive (`GET /site-exports/{id}/archive`), `POST
-/site-imports` (multipart `file`) creates the site in another organization with the same ids, linking people who already
-have an account there. `POST /sites/{site}/offboard` (re-auth, export first) closes the source. CLI:
-`openbekci admin export-site --org <slug> --site <id> --out f.json`, `admin import-site --org <slug> --file f.json`,
-`admin offboard-site`. A CI test (`TestIntegrationExportManifestCoversEveryTenantTable`) fails when a tenant table is in
-neither `exportTables` nor `excludedTables` (`internal/core/tenancy/export.go`).
+**Invitations**: a manager invites an existing person (`POST /invitations`: it links the account; the occupancy exists
+already), an owner or tenant invites a household member to their own unit (`/units/{id}/household-invitations`), and the
+site's join code (`{BASE_URL}/join/{code}`) lets a signed-in resident file a unit claim that a manager approves. Links are
+`{BASE_URL}/invite/{token}`; delivery goes through the SMS and mail gateways (`log` drivers write the link to the log).
+Accepting (`POST /v1/invitations/{token}:accept`) finds or creates the account, links it to the invited person and signs the
+caller in (the link proves the contact, as a magic link does): the answer is an `AuthResult`.
+
+**Site hand-over**: `POST /sites/{site}:export` (re-authentication) stores a JSON archive (`GET /site-transfers/{id}/archive`),
+`POST /sites:import` (multipart `archive`) creates the site in another organization with the same ids, linking people who
+already have an account there. `POST /sites/{site}:offboard` (re-authentication, `confirm_site_name`, export first) closes the
+source. The work is synchronous: transfers are `succeeded` when the call returns. CLI: `openbekci admin export-site|import-site|offboard-site`.
+A CI test (`TestIntegrationExportManifestCoversEveryTenantTable`) fails when a tenant table is in neither `exportTables` nor
+`excludedTables` (`internal/core/tenancy/export.go`).
 
 ## Tests
 

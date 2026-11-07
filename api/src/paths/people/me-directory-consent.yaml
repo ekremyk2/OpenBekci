@@ -1,0 +1,44 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+put:
+  operationId: people.setMyDirectoryConsent
+  summary: Opt in or out of the directory of a site
+  description: |-
+    **Release 0.1.** Opt in or out of the directory of a site.
+
+    Permission: `me.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - me.manage
+  x-idempotent: optional
+  x-stability: stable
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/DirectoryConsent
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/DirectoryConsent
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

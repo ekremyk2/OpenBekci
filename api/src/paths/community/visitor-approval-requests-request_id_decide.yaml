@@ -1,0 +1,59 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: request_id
+    in: path
+    required: true
+    description: Id of the request.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: community.decideVisitorApprovalRequest
+  summary: Approve or deny a visitor
+  description: |-
+    **Release 0.3.** Approval creates a single-use credential for the access agent within seconds (0.3 gate control). A decision after expiry is 409 `conflict`.
+
+    Permission: `visitors.decide`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    owner:
+      - visitors.decide
+    tenant:
+      - visitors.decide
+    household:
+      - visitors.decide
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/VisitorDecision
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/VisitorApprovalRequest
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

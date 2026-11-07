@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/hello-server.schema.json",
+  "title": "hello payload, server to agent",
+  "type": "object",
+  "required": [
+    "from",
+    "protocol_version",
+    "server_time",
+    "heartbeat_seconds",
+    "config_version",
+    "site",
+    "snapshot_version"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "from": {
+      "const": "server"
+    },
+    "protocol_version": {
+      "type": "integer"
+    },
+    "server_time": {
+      "$ref": "defs.schema.json#/$defs/ts"
+    },
+    "heartbeat_seconds": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 120
+    },
+    "config_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "site": {
+      "type": "object",
+      "required": [
+        "id",
+        "timezone"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "defs.schema.json#/$defs/uuid"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "IANA zone"
+        }
+      }
+    },
+    "snapshot_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rotate_by": {
+      "$ref": "defs.schema.json#/$defs/ts"
+    },
+    "rotate_now": {
+      "type": "boolean"
+    },
+    "session": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "description": "Poll mode only: the session handle the agent sends as `session` on every later `POST /v1/agent/poll`. Absent on WebSocket sessions."
+    }
+  }
+}

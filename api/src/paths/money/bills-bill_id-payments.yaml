@@ -1,0 +1,64 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: bill_id
+    in: path
+    required: true
+    description: Id of the bill.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: money.createBillPayment
+  summary: Pay a bill (fully or partly)
+  description: |-
+    **Release 0.1.** Pay a bill (fully or partly).
+
+    Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
+    Permission: `money.post`.
+
+    Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/BillPaymentCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BillPayment
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+  x-requires-setting: bills_enabled

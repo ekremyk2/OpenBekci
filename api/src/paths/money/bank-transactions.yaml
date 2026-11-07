@@ -1,0 +1,78 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listBankTransactions
+  summary: List bank transactions
+  description: |-
+    **Release 0.1.** List bank transactions.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: import_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `import_id`.
+    - name: match_status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - unmatched
+          - suggested
+          - matched
+          - ignored
+      description: Filter by `match_status`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: End of the range (inclusive).
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BankTransactionList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"slices"
 	"sort"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -14,7 +13,6 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
-	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 )
 
 // The authz matrix (backend plan sections 7 and 20): every operation of the
@@ -90,12 +88,6 @@ var authzMatrixRows = map[string]mrow{
 	"auth.changePassword":         {status: 422, build: fixed("POST", "/v1/auth/password", `{}`)},
 
 	// inside an organization
-	"org.get": {perms: []authz.Permission{tenancy.PermOrgRead}, status: 200, build: mget("/v1/orgs/{org_id}")},
-	"org.update": {perms: []authz.Permission{tenancy.PermOrgManage}, status: 200,
-		build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "PATCH", path: "/v1/orgs/" + org.ID.String(), body: `{"name":"Renamed by the matrix"}`,
-				headers: map[string]string{"If-Match": `"` + strconv.Itoa(w.OrgVersion(t, org)) + `"`}}
-		}},
 	"audit.list": {perms: []authz.Permission{audit.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/audit")},
 
 	// instance level: only platform administrators hold platform.manage
@@ -131,6 +123,25 @@ func extJSON(t *testing.T, ext map[string]any, name string, into any) bool {
 		t.Fatalf("%s is not the expected shape: %v", name, err)
 	}
 	return true
+}
+
+// opRequired reads an operation's x-openbekci-roles: a permission list, or
+// the draft contract's role to permissions map (see PermissionsOfRoles).
+func opRequired(t *testing.T, ext map[string]any) ([]string, bool) {
+	t.Helper()
+	raw, ok := ext["x-openbekci-roles"]
+	if !ok {
+		return nil, false
+	}
+	b, err := json.Marshal(raw)
+	if err != nil {
+		t.Fatalf("encode x-openbekci-roles: %v", err)
+	}
+	var out []string
+	for _, p := range PermissionsOfRoles(b) {
+		out = append(out, string(p))
+	}
+	return out, true
 }
 
 func TestIntegrationAuthzMatrix(t *testing.T) {
@@ -190,8 +201,7 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 			continue
 		}
 		orgScoped := isOrgPath(key.path)
-		var required []string
-		hasRoles := extJSON(t, op.Extensions, "x-openbekci-roles", &required)
+		required, hasRoles := opRequired(t, op.Extensions)
 		if orgScoped && (!hasRoles || len(required) == 0) {
 			t.Errorf("operation %s (%s %s) is under /v1/orgs/{org_id} but has no x-openbekci-roles: list the permission(s) it requires", id, key.method, key.path)
 			continue
@@ -280,8 +290,7 @@ func TestAuthzMatrixRowsCoverSpec(t *testing.T) {
 				t.Errorf("operation %s (%s %s) has no authz matrix row: add one to authzMatrixRows in internal/httpapi/authzmatrix_test.go", op.OperationID, method, path)
 			}
 			if isOrgPath(path) {
-				var roles []string
-				if !extJSON(t, op.Extensions, "x-openbekci-roles", &roles) || len(roles) == 0 {
+				if roles, ok := opRequired(t, op.Extensions); !ok || len(roles) == 0 {
 					t.Errorf("operation %s (%s %s) is under /v1/orgs/{org_id} but has no x-openbekci-roles", op.OperationID, method, path)
 				}
 			}

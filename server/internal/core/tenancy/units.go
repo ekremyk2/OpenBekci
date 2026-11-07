@@ -71,11 +71,15 @@ type Unit struct {
 	// per-unit override, else the site default (S2).
 	Independent bool `json:"independent"`
 	// Vacant is derived: no current occupancy lives in the unit.
-	Vacant    bool      `json:"vacant"`
-	Tags      []string  `json:"tags"`
-	Version   int       `json:"version"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Vacant bool `json:"vacant"`
+	// OccOwners, OccTenants and OccHousehold count the current occupancies by kind.
+	OccOwners    int       `json:"occ_owners"`
+	OccTenants   int       `json:"occ_tenants"`
+	OccHousehold int       `json:"occ_household"`
+	Tags         []string  `json:"tags"`
+	Version      int       `json:"version"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type unitAudit struct {
@@ -100,7 +104,13 @@ const unitSelect = `
 	                   AND o.valid_from <= (now() AT TIME ZONE s.timezone)::date
 	                   AND (o.valid_to IS NULL OR o.valid_to > (now() AT TIME ZONE s.timezone)::date)),
 	       COALESCE((SELECT array_agg(t.tag ORDER BY t.tag) FROM unit_tag t WHERE t.org_id = u.org_id AND t.unit_id = u.id), '{}'),
-	       u.version, u.created_at, u.updated_at, s.settings->>'appurtenance_default', u.payer_overrides
+	       u.version, u.created_at, u.updated_at, s.settings->>'appurtenance_default', u.payer_overrides,
+	       (SELECT count(*) FROM occupancy o WHERE o.org_id = u.org_id AND o.unit_id = u.id AND o.kind = 'owner'
+	                   AND o.valid_from <= (now() AT TIME ZONE s.timezone)::date AND (o.valid_to IS NULL OR o.valid_to > (now() AT TIME ZONE s.timezone)::date))::int,
+	       (SELECT count(*) FROM occupancy o WHERE o.org_id = u.org_id AND o.unit_id = u.id AND o.kind = 'tenant'
+	                   AND o.valid_from <= (now() AT TIME ZONE s.timezone)::date AND (o.valid_to IS NULL OR o.valid_to > (now() AT TIME ZONE s.timezone)::date))::int,
+	       (SELECT count(*) FROM occupancy o WHERE o.org_id = u.org_id AND o.unit_id = u.id AND o.kind = 'household'
+	                   AND o.valid_from <= (now() AT TIME ZONE s.timezone)::date AND (o.valid_to IS NULL OR o.valid_to > (now() AT TIME ZONE s.timezone)::date))::int
 	FROM unit u
 	JOIN block b ON b.org_id = u.org_id AND b.id = u.block_id
 	JOIN site s ON s.org_id = u.org_id AND s.id = u.site_id`
@@ -110,7 +120,8 @@ func scanUnit(row pgx.Row) (Unit, error) {
 	var siteDefault *string
 	var payers []byte
 	err := row.Scan(&u.ID, &u.SiteID, &u.BlockID, &u.BlockName, &u.DoorNumber, &u.LegalRef, &u.Type, &u.AreaM2, &u.ParentUnitID,
-		&u.AppurtenanceOverride, &u.Status, &u.Vacant, &u.Tags, &u.Version, &u.CreatedAt, &u.UpdatedAt, &siteDefault, &payers)
+		&u.AppurtenanceOverride, &u.Status, &u.Vacant, &u.Tags, &u.Version, &u.CreatedAt, &u.UpdatedAt, &siteDefault, &payers,
+		&u.OccOwners, &u.OccTenants, &u.OccHousehold)
 	if err != nil {
 		return Unit{}, err
 	}
@@ -148,6 +159,8 @@ type UnitFilter struct {
 	Query   string
 	Vacant  *bool
 	Parent  *uuid.UUID
+	// Status filters by unit status (active, merged, split); empty: all.
+	Status string
 }
 
 // ListUnits lists a site's units (all of them, or the permitted blocks'). It
@@ -177,9 +190,9 @@ func (s *Service) ListUnits(ctx context.Context, orgID, siteID uuid.UUID, f Unit
 			return err
 		}
 		q := unitSelect + ` WHERE u.org_id = $1 AND u.site_id = $2 AND u.id > $3 AND ($4 OR u.block_id = ANY($5))
-			AND ($6::uuid IS NULL OR u.block_id = $6) AND ($7 = '' OR u.type = $7) AND ($8 = '' OR u.door_number ILIKE '%' || $8 || '%')
-			AND ($9::uuid IS NULL OR u.parent_unit_id = $9)`
-		rows, err := tx.Query(ctx, q+` ORDER BY u.id LIMIT $10`, orgID, siteID, after, all, blocks, f.BlockID, f.Type, escapeLike(f.Query), f.Parent, limit*4+1)
+			AND ($6::uuid IS NULL OR u.block_id = $6) AND ($7 = '' OR u.type = $7) AND ($8 = '' OR u.door_number ILIKE '%' || $8 || '%' OR u.legal_ref ILIKE '%' || $8 || '%')
+			AND ($9::uuid IS NULL OR u.parent_unit_id = $9) AND ($11 = '' OR u.status = $11)`
+		rows, err := tx.Query(ctx, q+` ORDER BY u.id LIMIT $10`, orgID, siteID, after, all, blocks, f.BlockID, f.Type, escapeLike(f.Query), f.Parent, limit*4+1, f.Status)
 		if err != nil {
 			return err
 		}

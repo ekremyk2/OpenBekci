@@ -4,14 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strconv"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/oapi-codegen/nullable"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
-	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -20,51 +17,6 @@ var (
 	errNoTenancy = errors.New("tenancy service not configured")
 	errNoAudit   = errors.New("audit service not configured")
 )
-
-func orgDTO(o tenancy.Org) gen.Organization {
-	return gen.Organization{
-		Id: o.ID, Slug: o.Slug, Name: o.Name, Status: gen.OrganizationStatus(o.Status),
-		CountryCode: o.CountryCode, DefaultLocale: o.DefaultLocale, Timezone: o.Timezone,
-		Version: o.Version, CreatedAt: o.CreatedAt, UpdatedAt: o.UpdatedAt,
-	}
-}
-
-func etag(version int) string { return `"` + strconv.Itoa(version) + `"` }
-
-func (s *apiServer) OrgGet(ctx context.Context, req gen.OrgGetRequestObject) (gen.OrgGetResponseObject, error) {
-	if s.tenancy == nil {
-		return nil, problem.Internal(errNoTenancy)
-	}
-	o, err := s.tenancy.Get(ctx, req.OrgId)
-	if err != nil {
-		return nil, err
-	}
-	return gen.OrgGet200JSONResponse{Body: orgDTO(o), Headers: gen.OrgGet200ResponseHeaders{ETag: ptr(etag(o.Version))}}, nil
-}
-
-func (s *apiServer) OrgUpdate(ctx context.Context, req gen.OrgUpdateRequestObject) (gen.OrgUpdateResponseObject, error) {
-	if s.tenancy == nil {
-		return nil, problem.Internal(errNoTenancy)
-	}
-	if req.Params.IfMatch == nil {
-		return nil, problem.Validation(problem.Field{Field: "If-Match", Code: "required"})
-	}
-	version, err := strconv.Atoi(strings.Trim(*req.Params.IfMatch, `"`))
-	if err != nil {
-		return nil, problem.Validation(problem.Field{Field: "If-Match", Code: "invalid_format"})
-	}
-	if req.Body == nil {
-		return nil, problem.BadRequest("the request body is missing")
-	}
-	b := req.Body
-	o, err := s.tenancy.Update(ctx, req.OrgId, version, tenancy.Patch{
-		Name: b.Name, CountryCode: b.CountryCode, DefaultLocale: b.DefaultLocale, Timezone: b.Timezone,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return gen.OrgUpdate200JSONResponse{Body: orgDTO(o), Headers: gen.OrgUpdate200ResponseHeaders{ETag: ptr(etag(o.Version))}}, nil
-}
 
 func ptr[T any](v T) *T { return &v }
 

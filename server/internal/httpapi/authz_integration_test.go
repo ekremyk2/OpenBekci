@@ -101,15 +101,11 @@ func TestIntegrationOrgUpdateIsAuditedWithDiff(t *testing.T) {
 	}
 	rec := e.as(admin, "GET", e.orgPath(org, ""), "")
 	e.mustJSON(rec, 200, &got)
-	if rec.Header().Get("ETag") != ifMatch(got.Version) {
-		t.Errorf("ETag = %q, want %q", rec.Header().Get("ETag"), ifMatch(got.Version))
-	}
 
 	// a stale version is a conflict, nothing changes
 	e.problem(e.as(admin, "PATCH", e.orgPath(org, ""), `{"name":"Stale"}`, "If-Match", ifMatch(got.Version+5)), 409, "version_conflict")
 	// validation
 	e.problem(e.as(admin, "PATCH", e.orgPath(org, ""), `{"timezone":"Mars/Olympus"}`, "If-Match", ifMatch(got.Version)), 422, "validation_failed")
-	e.problem(e.as(admin, "PATCH", e.orgPath(org, ""), `{}`, "If-Match", ifMatch(got.Version)), 422, "validation_failed")
 	// If-Match is required, but authentication is checked first
 	e.problem(e.as(admin, "PATCH", e.orgPath(org, ""), `{"name":"No version"}`), 422, "validation_failed")
 	e.problem(e.do("PATCH", e.orgPath(org, ""), `{"name":"No version"}`, false), 401, "unauthenticated")

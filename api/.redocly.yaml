@@ -8,6 +8,8 @@ extends:
 apis:
   main:
     root: src/openapi.yaml
+  draft:
+    root: src/openapi-draft.yaml
 
 rules:
   operation-operationId: error

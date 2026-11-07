@@ -1,90 +1,96 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: person_id
     in: path
     required: true
-    description: The person id.
+    description: Id of the person.
     schema:
       type: string
       format: uuid
 get:
   operationId: people.getPerson
-  summary: Read a person
-  tags: [people]
+  summary: Get person
+  description: |-
+    **Release 0.1.** Get person.
+
+    Permission: `people.read`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [person.read]
+  x-openbekci-roles:
+    org_admin:
+      - people.read
+    site_manager:
+      - people.read
+    board_member:
+      - people.read
+    auditor:
+      - people.read
+  x-stability: stable
   responses:
-    '200':
-      description: 'Success.'
-      headers:
-        ETag:
-          description: The version, quoted; send it as `If-Match` when updating.
-          schema:
-            type: string
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Person'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Person
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
 patch:
   operationId: people.updatePerson
-  summary: Change a person
-  tags: [people]
+  summary: Update person
+  description: |-
+    **Release 0.1.** Update person.
+
+    Permission: `people.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [person.manage]
+  x-openbekci-roles:
+    org_admin:
+      - people.manage
+    site_manager:
+      - people.manage
+    board_member:
+      - people.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - name: If-Match
-      in: header
-      required: false
-      description: |
-        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-      schema:
-        type: string
-        pattern: '^"?[0-9]{1,9}"?$'
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/people.yaml#/schemas/PersonUpdate'
+          $ref: ../../components/people.yaml#/schemas/PersonUpdate
   responses:
-    '200':
-      description: 'Success.'
-      headers:
-        ETag:
-          description: The version, quoted; send it as `If-Match` when updating.
-          schema:
-            type: string
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Person'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Person
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

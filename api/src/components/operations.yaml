@@ -1,0 +1,2119 @@
+schemas:
+  NotificationType:
+    type: string
+    description: "Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values."
+    x-known-values:
+      - announcement.published
+      - charge.due_soon
+      - charge.overdue
+      - payment.receipt
+      - payment.declared
+      - payment.confirmed
+      - payment.rejected
+      - ticket.updated
+      - ticket.commented
+      - claim.requested
+      - claim.decided
+      - meeting.called
+      - meeting.decisions
+      - term.expiring
+      - visitor.approval_requested
+      - visitor.arrived
+      - booking.confirmed
+      - booking.cancelled
+      - delivery.received
+      - access.agent_silent
+      - access.agent_clock_skew
+      - access.agent_stopped
+  TicketStatus:
+    type: object
+    required:
+      - id
+      - name
+      - semantic
+      - position
+      - key
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      semantic:
+        type: string
+        description: Open enum.
+        enum:
+          - open_like
+          - closed_like
+        x-open-enum: true
+      position:
+        type: integer
+        format: int64
+      key:
+        type: string
+        nullable: true
+        description: "Stable key of the built-in statuses: open, in_progress, done."
+  TicketWorkflow:
+    type: object
+    description: Ordered statuses per site (O1). A site inherits the default until it edits it.
+    required:
+      - site_id
+      - statuses
+      - is_default
+      - version
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      statuses:
+        type: array
+        items:
+          $ref: "#/schemas/TicketStatus"
+      is_default:
+        type: boolean
+        description: The site still uses the default open, in progress, done flow.
+      version:
+        type: integer
+        format: int64
+  TicketStatusInput:
+    type: object
+    required:
+      - name
+      - semantic
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: "Existing status; omitted: a new one."
+      name:
+        type: string
+      semantic:
+        type: string
+        enum:
+          - open_like
+          - closed_like
+  TicketWorkflowUpdate:
+    type: object
+    required:
+      - statuses
+    properties:
+      statuses:
+        type: array
+        items:
+          $ref: "#/schemas/TicketStatusInput"
+        description: The complete ordered list.
+      replacements:
+        type: object
+        additionalProperties:
+          type: string
+          format: uuid
+        description: "For a removed status: the status its tickets move to. Required when a removed status is in use."
+  TicketCategory:
+    type: object
+    description: "Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other."
+    required:
+      - id
+      - org_id
+      - site_id
+      - name
+      - default_visibility
+      - default_assignee_role
+      - position
+      - archived
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      default_visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - private
+          - common
+        x-open-enum: true
+      default_assignee_role:
+        type: string
+        description: Open enum.
+        enum:
+          - site_manager
+          - staff
+          - board_member
+        x-open-enum: true
+        nullable: true
+      position:
+        type: integer
+        format: int64
+      archived:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      default_visibility: private
+      default_assignee_role: site_manager
+      position: 1
+      archived: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  TicketCategoryCreate:
+    type: object
+    required:
+      - site_id
+      - name
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      default_visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - private
+          - common
+        x-open-enum: true
+      default_assignee_role:
+        type: string
+        description: Open enum.
+        enum:
+          - site_manager
+          - staff
+          - board_member
+        x-open-enum: true
+        nullable: true
+      position:
+        type: integer
+        format: int64
+      archived:
+        type: boolean
+  TicketCategoryUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      default_visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - private
+          - common
+        x-open-enum: true
+      default_assignee_role:
+        type: string
+        description: Open enum.
+        enum:
+          - site_manager
+          - staff
+          - board_member
+        x-open-enum: true
+        nullable: true
+      position:
+        type: integer
+        format: int64
+      archived:
+        type: boolean
+  TicketCategoryList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/TicketCategory"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          default_visibility: private
+          default_assignee_role: site_manager
+          position: 1
+          archived: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  TicketAssignee:
+    type: object
+    required:
+      - kind
+      - person_id
+      - vendor_id
+      - display_name
+    properties:
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - person
+          - vendor
+        x-open-enum: true
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+      vendor_id:
+        type: string
+        format: uuid
+        nullable: true
+      display_name:
+        type: string
+  TicketAttachment:
+    type: object
+    description: A photo or file on a ticket (up to 10 per ticket or comment).
+    required:
+      - id
+      - org_id
+      - ticket_id
+      - comment_id
+      - file_id
+      - mime
+      - size
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      ticket_id:
+        type: string
+        format: uuid
+      comment_id:
+        type: string
+        format: uuid
+        nullable: true
+      file_id:
+        type: string
+        format: uuid
+      mime:
+        type: string
+      size:
+        type: integer
+        format: int64
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+  TicketAttachmentCreate:
+    type: object
+    required:
+      - file_id
+    properties:
+      file_id:
+        type: string
+        format: uuid
+      comment_id:
+        type: string
+        format: uuid
+  Ticket:
+    type: object
+    description: A ticket. Every request is a ticket; there is no chat (O6).
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - unit_door_number
+      - reporter_person_id
+      - reporter_display_name
+      - category_id
+      - title
+      - description
+      - status_id
+      - status_name
+      - status_semantic
+      - visibility
+      - assignee
+      - vote_count
+      - voted_by_me
+      - merged_into_id
+      - comment_count
+      - attachments
+      - closed_at
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      unit_door_number:
+        type: string
+        nullable: true
+      reporter_person_id:
+        type: string
+        format: uuid
+      reporter_display_name:
+        type: string
+      category_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      description:
+        type: string
+      status_id:
+        type: string
+        format: uuid
+      status_name:
+        type: string
+      status_semantic:
+        type: string
+        description: Open enum.
+        enum:
+          - open_like
+          - closed_like
+        x-open-enum: true
+      visibility:
+        type: string
+        description: "Private: that unit and management. Common: the whole site or block. Open enum."
+        enum:
+          - private
+          - common
+        x-open-enum: true
+      assignee:
+        type: object
+        allOf:
+          - $ref: "#/schemas/TicketAssignee"
+        nullable: true
+      vote_count:
+        type: integer
+        format: int64
+        description: '"+1" count; visible to residents.'
+      voted_by_me:
+        type: boolean
+      merged_into_id:
+        type: string
+        format: uuid
+        nullable: true
+      comment_count:
+        type: integer
+        format: int64
+      attachments:
+        type: array
+        items:
+          $ref: "#/schemas/TicketAttachment"
+      closed_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_id: null
+      unit_door_number: null
+      reporter_person_id: 0192a3f0-1000-7000-8000-000000000001
+      reporter_display_name: reporter display name
+      category_id: 0192a3f0-1000-7000-8000-000000000003
+      title: Elevator stuck on floor 3
+      description: description
+      status_id: 0192a3f0-1000-7000-8000-000000000001
+      status_name: Open
+      status_semantic: open_like
+      visibility: common
+      assignee: null
+      vote_count: 4
+      voted_by_me: false
+      merged_into_id: null
+      comment_count: 1
+      attachments:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          ticket_id: 0192a3f0-1000-7000-8000-000000000001
+          comment_id: null
+          file_id: 0192a3f0-1000-7000-8000-000000000002
+          mime: mime
+          size: 1
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      closed_at: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  TicketCreate:
+    type: object
+    required:
+      - site_id
+      - category_id
+      - title
+      - description
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      category_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      description:
+        type: string
+      visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - private
+          - common
+        x-open-enum: true
+      reporter_person_id:
+        type: string
+        format: uuid
+      attachment_file_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  TicketUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      category_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      description:
+        type: string
+      visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - private
+          - common
+        x-open-enum: true
+      assignee_person_id:
+        type: string
+        format: uuid
+        nullable: true
+      assignee_vendor_id:
+        type: string
+        format: uuid
+        nullable: true
+  TicketList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Ticket"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_id: null
+          unit_door_number: null
+          reporter_person_id: 0192a3f0-1000-7000-8000-000000000001
+          reporter_display_name: reporter display name
+          category_id: 0192a3f0-1000-7000-8000-000000000003
+          title: Elevator stuck on floor 3
+          description: description
+          status_id: 0192a3f0-1000-7000-8000-000000000001
+          status_name: Open
+          status_semantic: open_like
+          visibility: common
+          assignee: null
+          vote_count: 4
+          voted_by_me: false
+          merged_into_id: null
+          comment_count: 1
+          attachments:
+            - id: 0192a3f0-1000-7000-8000-000000000003
+              org_id: 0192a3f0-1000-7000-8000-000000000001
+              ticket_id: 0192a3f0-1000-7000-8000-000000000001
+              comment_id: null
+              file_id: 0192a3f0-1000-7000-8000-000000000002
+              mime: mime
+              size: 1
+              created_at: 2026-03-01T09:00:00Z
+              updated_at: 2026-03-01T09:00:00Z
+          closed_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  TicketTransition:
+    type: object
+    required:
+      - status_id
+    properties:
+      status_id:
+        type: string
+        format: uuid
+      comment:
+        type: string
+      comment_visibility:
+        type: string
+        enum:
+          - public
+          - internal
+  TicketMerge:
+    type: object
+    required:
+      - into_ticket_id
+    properties:
+      into_ticket_id:
+        type: string
+        format: uuid
+  TicketVote:
+    type: object
+    required:
+      - ticket_id
+      - vote_count
+      - voted
+    properties:
+      ticket_id:
+        type: string
+        format: uuid
+      vote_count:
+        type: integer
+        format: int64
+      voted:
+        type: boolean
+  TicketComment:
+    type: object
+    description: A comment. Internal notes are hidden from residents.
+    required:
+      - id
+      - org_id
+      - ticket_id
+      - author_person_id
+      - author_display_name
+      - body
+      - visibility
+      - attachments
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      ticket_id:
+        type: string
+        format: uuid
+      author_person_id:
+        type: string
+        format: uuid
+      author_display_name:
+        type: string
+      body:
+        type: string
+      visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - public
+          - internal
+        x-open-enum: true
+      attachments:
+        type: array
+        items:
+          $ref: "#/schemas/TicketAttachment"
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      ticket_id: 0192a3f0-1000-7000-8000-000000000004
+      author_person_id: 0192a3f0-1000-7000-8000-000000000005
+      author_display_name: Ali Veli
+      body: body
+      visibility: public
+      attachments:
+        - id: 0192a3f0-1000-7000-8000-000000000006
+          org_id: 0192a3f0-1000-7000-8000-000000000007
+          ticket_id: 0192a3f0-1000-7000-8000-000000000008
+          comment_id: null
+          file_id: 0192a3f0-1000-7000-8000-000000000009
+          mime: mime
+          size: 1
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  TicketCommentCreate:
+    type: object
+    required:
+      - body
+    properties:
+      body:
+        type: string
+      visibility:
+        type: string
+        description: Open enum.
+        enum:
+          - public
+          - internal
+        x-open-enum: true
+      attachment_file_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  TicketCommentList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/TicketComment"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          ticket_id: 0192a3f0-1000-7000-8000-000000000004
+          author_person_id: 0192a3f0-1000-7000-8000-000000000005
+          author_display_name: Ali Veli
+          body: body
+          visibility: public
+          attachments:
+            - id: 0192a3f0-1000-7000-8000-000000000006
+              org_id: 0192a3f0-1000-7000-8000-000000000007
+              ticket_id: 0192a3f0-1000-7000-8000-000000000008
+              comment_id: null
+              file_id: 0192a3f0-1000-7000-8000-000000000009
+              mime: mime
+              size: 1
+              created_at: 2026-03-01T09:00:00Z
+              updated_at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  TicketStatusChange:
+    type: object
+    description: Append-only status history.
+    required:
+      - id
+      - org_id
+      - ticket_id
+      - from_status_id
+      - to_status_id
+      - changed_by
+      - comment
+      - at
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      ticket_id:
+        type: string
+        format: uuid
+      from_status_id:
+        type: string
+        format: uuid
+        nullable: true
+      to_status_id:
+        type: string
+        format: uuid
+      changed_by:
+        type: string
+        format: uuid
+        nullable: true
+      comment:
+        type: string
+        nullable: true
+      at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      ticket_id: 0192a3f0-1000-7000-8000-000000000004
+      from_status_id: null
+      to_status_id: 0192a3f0-1000-7000-8000-000000000005
+      changed_by: null
+      comment: null
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  TicketStatusChangeList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/TicketStatusChange"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          ticket_id: 0192a3f0-1000-7000-8000-000000000004
+          from_status_id: null
+          to_status_id: 0192a3f0-1000-7000-8000-000000000005
+          changed_by: null
+          comment: null
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  AnnouncementAudience:
+    type: object
+    required:
+      - kind
+    properties:
+      kind:
+        type: string
+        enum:
+          - site
+          - block
+          - owners
+          - tenants
+          - units
+      block_id:
+        type: string
+        format: uuid
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  Announcement:
+    type: object
+    description: "A one-way announcement (O4): no comments, reactions or polls."
+    required:
+      - id
+      - org_id
+      - site_id
+      - title
+      - body_md
+      - status
+      - audience
+      - publish_at
+      - expires_at
+      - pinned
+      - channels
+      - recipient_count
+      - sms_count
+      - read_count
+      - read_at
+      - file_ids
+      - published_at
+      - created_by
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      body_md:
+        type: string
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - draft
+          - scheduled
+          - published
+          - archived
+        x-open-enum: true
+      audience:
+        $ref: "#/schemas/AnnouncementAudience"
+      publish_at:
+        type: string
+        format: date-time
+        nullable: true
+      expires_at:
+        type: string
+        format: date-time
+        nullable: true
+      pinned:
+        type: boolean
+      channels:
+        type: array
+        items:
+          type: string
+          description: Open enum.
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+          x-open-enum: true
+        description: Chosen by the sender (O5).
+      recipient_count:
+        type: integer
+        format: int64
+        nullable: true
+        description: Set at publish.
+      sms_count:
+        type: integer
+        format: int64
+        nullable: true
+      read_count:
+        type: integer
+        format: int64
+        description: Opened in web or app; a delivered SMS or email is not a read.
+      read_at:
+        type: string
+        format: date-time
+        nullable: true
+        description: When the caller read it.
+      file_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+      published_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      title: Water cut on Saturday
+      body_md: body md
+      status: published
+      audience:
+        kind: site
+      publish_at: null
+      expires_at: null
+      pinned: false
+      channels:
+        - in_app
+        - sms
+      recipient_count: 120
+      sms_count: 80
+      read_count: 1
+      read_at: null
+      file_ids:
+        - 0192a3f0-1000-7000-8000-000000000003
+      published_at: null
+      created_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  AnnouncementCreate:
+    type: object
+    required:
+      - site_id
+      - title
+      - body_md
+      - audience
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      body_md:
+        type: string
+      audience:
+        $ref: "#/schemas/AnnouncementAudience"
+      publish_at:
+        type: string
+        format: date-time
+        nullable: true
+      expires_at:
+        type: string
+        format: date-time
+        nullable: true
+      pinned:
+        type: boolean
+      channels:
+        type: array
+        items:
+          type: string
+          description: Open enum.
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+          x-open-enum: true
+      file_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  AnnouncementUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      title:
+        type: string
+      body_md:
+        type: string
+      audience:
+        $ref: "#/schemas/AnnouncementAudience"
+      publish_at:
+        type: string
+        format: date-time
+        nullable: true
+      expires_at:
+        type: string
+        format: date-time
+        nullable: true
+      pinned:
+        type: boolean
+      channels:
+        type: array
+        items:
+          type: string
+          description: Open enum.
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+          x-open-enum: true
+      file_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+  AnnouncementList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Announcement"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          title: Water cut on Saturday
+          body_md: body md
+          status: published
+          audience:
+            kind: site
+          publish_at: null
+          expires_at: null
+          pinned: false
+          channels:
+            - in_app
+            - sms
+          recipient_count: 120
+          sms_count: 80
+          read_count: 1
+          read_at: null
+          file_ids:
+            - 0192a3f0-1000-7000-8000-000000000003
+          published_at: null
+          created_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  AnnouncementPreviewRequest:
+    type: object
+    required:
+      - site_id
+      - audience
+      - channels
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      audience:
+        $ref: "#/schemas/AnnouncementAudience"
+      channels:
+        type: array
+        items:
+          type: string
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+  AnnouncementPreview:
+    type: object
+    description: What publishing would cost, before the sender presses publish (O5).
+    required:
+      - recipient_count
+      - sms_count
+      - email_count
+      - in_app_count
+    properties:
+      recipient_count:
+        type: integer
+        format: int64
+      sms_count:
+        type: integer
+        format: int64
+      email_count:
+        type: integer
+        format: int64
+      in_app_count:
+        type: integer
+        format: int64
+  AnnouncementPublish:
+    type: object
+    properties:
+      channels:
+        type: array
+        items:
+          type: string
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+        description: Overrides the stored channels.
+  AnnouncementRead:
+    type: object
+    required:
+      - person_id
+      - display_name
+      - unit_door_numbers
+      - read_at
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+      unit_door_numbers:
+        type: array
+        items:
+          type: string
+      read_at:
+        type: string
+        format: date-time
+        nullable: true
+    example:
+      person_id: 0192a3f0-1000-7000-8000-000000000002
+      display_name: Ali Veli
+      unit_door_numbers:
+        - unit door numbers
+      read_at: null
+  AnnouncementReadList:
+    type: object
+    required:
+      - items
+      - next_cursor
+      - audience_count
+      - read_count
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AnnouncementRead"
+      next_cursor:
+        type: string
+        nullable: true
+      audience_count:
+        type: integer
+      read_count:
+        type: integer
+    example:
+      items:
+        - person_id: 0192a3f0-1000-7000-8000-000000000002
+          display_name: Ali Veli
+          unit_door_numbers:
+            - unit door numbers
+          read_at: null
+      next_cursor: null
+      audience_count: 3
+      read_count: 3
+  DocumentVisibility:
+    type: object
+    required:
+      - level
+    properties:
+      level:
+        type: string
+        enum:
+          - board
+          - owners
+          - everyone
+          - units
+      unit_ids:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: "With `level: units`."
+  FolderCrumb:
+    type: object
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+  Folder:
+    type: object
+    description: A site folder or the private folder of a unit (O8).
+    required:
+      - id
+      - org_id
+      - site_id
+      - parent_id
+      - name
+      - kind
+      - unit_id
+      - visibility
+      - breadcrumb
+      - is_system
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      parent_id:
+        type: string
+        format: uuid
+        nullable: true
+      name:
+        type: string
+      kind:
+        type: string
+        description: Unit folders are private and created with the unit. Open enum.
+        enum:
+          - site
+          - unit
+        x-open-enum: true
+      unit_id:
+        type: string
+        format: uuid
+        nullable: true
+      visibility:
+        $ref: "#/schemas/DocumentVisibility"
+      breadcrumb:
+        type: array
+        items:
+          $ref: "#/schemas/FolderCrumb"
+      is_system:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      parent_id: null
+      name: Ali Veli
+      kind: site
+      unit_id: null
+      visibility:
+        level: board
+        unit_ids:
+          - 0192a3f0-1000-7000-8000-000000000005
+      breadcrumb:
+        - id: 0192a3f0-1000-7000-8000-000000000006
+          name: Ali Veli
+      is_system: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  FolderCreate:
+    type: object
+    required:
+      - site_id
+      - name
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      parent_id:
+        type: string
+        format: uuid
+        nullable: true
+      name:
+        type: string
+      visibility:
+        $ref: "#/schemas/DocumentVisibility"
+  FolderUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      parent_id:
+        type: string
+        format: uuid
+        nullable: true
+      name:
+        type: string
+      visibility:
+        $ref: "#/schemas/DocumentVisibility"
+  FolderList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Folder"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          parent_id: null
+          name: Ali Veli
+          kind: site
+          unit_id: null
+          visibility:
+            level: board
+            unit_ids:
+              - 0192a3f0-1000-7000-8000-000000000005
+          breadcrumb:
+            - id: 0192a3f0-1000-7000-8000-000000000006
+              name: Ali Veli
+          is_system: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  GeneratedFrom:
+    type: object
+    required:
+      - type
+      - id
+    properties:
+      type:
+        type: string
+        description: For example statement, receipt, certificate, closing_statement, minutes.
+      id:
+        type: string
+        format: uuid
+  Document:
+    type: object
+    description: "A document. No versions: replacing the file (`file_id`) overwrites it."
+    required:
+      - id
+      - org_id
+      - site_id
+      - folder_id
+      - title
+      - file_id
+      - mime
+      - size
+      - visibility
+      - source
+      - generated_from
+      - uploaded_by
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      folder_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      file_id:
+        type: string
+        format: uuid
+      mime:
+        type: string
+      size:
+        type: integer
+        format: int64
+      visibility:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DocumentVisibility"
+        nullable: true
+        description: "Null: inherits the folder."
+      source:
+        type: string
+        description: Open enum.
+        enum:
+          - uploaded
+          - generated
+        x-open-enum: true
+      generated_from:
+        type: object
+        allOf:
+          - $ref: "#/schemas/GeneratedFrom"
+        nullable: true
+      uploaded_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      folder_id: 0192a3f0-1000-7000-8000-000000000005
+      title: Ali Veli
+      file_id: 0192a3f0-1000-7000-8000-000000000006
+      mime: mime
+      size: 1
+      visibility:
+        level: board
+        unit_ids:
+          - 0192a3f0-1000-7000-8000-000000000007
+      source: uploaded
+      generated_from:
+        type: type
+        id: 0192a3f0-1000-7000-8000-000000000008
+      uploaded_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  DocumentCreate:
+    type: object
+    required:
+      - site_id
+      - folder_id
+      - title
+      - file_id
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      folder_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      file_id:
+        type: string
+        format: uuid
+      visibility:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DocumentVisibility"
+        nullable: true
+  DocumentUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      folder_id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      file_id:
+        type: string
+        format: uuid
+      visibility:
+        type: object
+        allOf:
+          - $ref: "#/schemas/DocumentVisibility"
+        nullable: true
+  DocumentList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Document"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          folder_id: 0192a3f0-1000-7000-8000-000000000005
+          title: Ali Veli
+          file_id: 0192a3f0-1000-7000-8000-000000000006
+          mime: mime
+          size: 1
+          visibility:
+            level: board
+            unit_ids:
+              - 0192a3f0-1000-7000-8000-000000000007
+          source: uploaded
+          generated_from:
+            type: type
+            id: 0192a3f0-1000-7000-8000-000000000008
+          uploaded_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  Notification:
+    type: object
+    description: An in-app notification of the caller.
+    required:
+      - id
+      - site_id
+      - type
+      - payload
+      - read_at
+      - link
+      - created_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      type:
+        $ref: "#/schemas/NotificationType"
+      payload:
+        type: object
+        additionalProperties: true
+      read_at:
+        type: string
+        format: date-time
+        nullable: true
+      link:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      site_id: null
+      type: type
+      payload: {}
+      read_at: null
+      link: null
+      created_at: 2026-03-01T09:00:00Z
+  NotificationList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Notification"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          site_id: null
+          type: type
+          payload: {}
+          read_at: null
+          link: null
+          created_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  UnreadCount:
+    type: object
+    required:
+      - unread
+      - visitor_approvals_pending
+    properties:
+      unread:
+        type: integer
+        format: int64
+      visitor_approvals_pending:
+        type: integer
+        format: int64
+        description: Pending visitor approval requests (0.3); polled together.
+  NotificationsReadAll:
+    type: object
+    properties:
+      site_id:
+        type: string
+        format: uuid
+  NotificationDefault:
+    type: object
+    required:
+      - type
+      - channels
+      - locked
+    properties:
+      type:
+        $ref: "#/schemas/NotificationType"
+      channels:
+        type: array
+        items:
+          type: string
+          description: Open enum.
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+          x-open-enum: true
+      locked:
+        type: boolean
+        description: Sign-in codes and invitations always go by SMS or email and cannot be changed.
+  NotificationDefaults:
+    type: object
+    description: "Site defaults for automatic messages (O5): reminders and receipts in-app plus SMS, ticket updates in-app plus email, the rest in-app."
+    required:
+      - site_id
+      - defaults
+      - version
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      defaults:
+        type: array
+        items:
+          $ref: "#/schemas/NotificationDefault"
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on the next write.
+  NotificationDefaultsSet:
+    type: object
+    required:
+      - defaults
+    properties:
+      defaults:
+        type: array
+        items:
+          $ref: "#/schemas/NotificationDefaultInput"
+  NotificationDefaultInput:
+    type: object
+    required:
+      - type
+      - channels
+    properties:
+      type:
+        type: string
+      channels:
+        type: array
+        items:
+          type: string
+          enum:
+            - in_app
+            - email
+            - sms
+            - push
+  NotificationMutes:
+    type: object
+    required:
+      - muted_types
+      - unmutable_types
+    properties:
+      muted_types:
+        type: array
+        items:
+          type: string
+      unmutable_types:
+        type: array
+        items:
+          type: string
+        description: Sign-in codes and invitations.
+  NotificationMutesSet:
+    type: object
+    required:
+      - muted_types
+    properties:
+      muted_types:
+        type: array
+        items:
+          type: string
+  SmsUsage:
+    type: object
+    required:
+      - site_id
+      - month
+      - sent
+      - delivered
+      - failed
+      - monthly_limit
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      month:
+        type: string
+        description: The month, `YYYY-MM`.
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      sent:
+        type: integer
+        format: int64
+      delivered:
+        type: integer
+        format: int64
+      failed:
+        type: integer
+        format: int64
+      monthly_limit:
+        type: integer
+        format: int64
+        nullable: true
+  File:
+    type: object
+    description: An uploaded or generated file.
+    required:
+      - id
+      - org_id
+      - site_id
+      - size
+      - mime
+      - sha256
+      - uploaded_by
+      - scope
+      - status
+      - has_variants
+      - retention_until
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      size:
+        type: integer
+        format: int64
+      mime:
+        type: string
+      sha256:
+        type: string
+      uploaded_by:
+        type: string
+        format: uuid
+        nullable: true
+      scope:
+        type: string
+        nullable: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - ready
+          - quarantined
+        x-open-enum: true
+      has_variants:
+        type: boolean
+        description: "Images: `thumb` and `medium` exist."
+      retention_until:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+  ExportRequest:
+    type: object
+    required:
+      - kind
+      - format
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        x-known-values:
+          - income_expense
+          - debtors
+          - budget_vs_actual
+          - trial_balance
+          - receivables_aging
+          - collector_reconciliation
+          - bank_reconciliation
+          - fund_balances
+          - statements
+          - charges
+          - payments
+          - journal
+          - vehicles
+          - debt_breakdown
+      format:
+        type: string
+        enum:
+          - csv
+          - xlsx
+          - pdf
+      params:
+        type: object
+        additionalProperties: true
+        description: Kind-specific parameters, the same as the matching GET.
+  AuditEvent:
+    type: object
+    description: Append-only audit record.
+    required:
+      - id
+      - org_id
+      - site_id
+      - actor_user_id
+      - actor_display_name
+      - action
+      - target_type
+      - target_id
+      - diff
+      - ip
+      - request_id
+      - at
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_user_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_display_name:
+        type: string
+        nullable: true
+      action:
+        type: string
+      target_type:
+        type: string
+      target_id:
+        type: string
+        format: uuid
+        nullable: true
+      diff:
+        type: object
+        additionalProperties: true
+        description: "PII fields appear as `{field: {hash_before, hash_after}}`; never national ids."
+      ip:
+        type: string
+        nullable: true
+      request_id:
+        type: string
+      at:
+        type: string
+        format: date-time
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: null
+      actor_user_id: null
+      actor_display_name: null
+      action: action
+      target_type: target type
+      target_id: null
+      diff: {}
+      ip: null
+      request_id: 0192a3f0-1000-7000-8000-000000000004
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AuditEventList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AuditEvent"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: null
+          actor_user_id: null
+          actor_display_name: null
+          action: action
+          target_type: target type
+          target_id: null
+          diff: {}
+          ip: null
+          request_id: 0192a3f0-1000-7000-8000-000000000004
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  AuditNote:
+    type: object
+    description: An auditor's note.
+    required:
+      - id
+      - org_id
+      - site_id
+      - target_type
+      - target_id
+      - body
+      - author_person_id
+      - author_display_name
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      target_type:
+        type: string
+        nullable: true
+      target_id:
+        type: string
+        format: uuid
+        nullable: true
+      body:
+        type: string
+      author_person_id:
+        type: string
+        format: uuid
+        nullable: true
+      author_display_name:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      target_type: null
+      target_id: null
+      body: body
+      author_person_id: null
+      author_display_name: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  AuditNoteCreate:
+    type: object
+    required:
+      - site_id
+      - body
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      target_type:
+        type: string
+        nullable: true
+      target_id:
+        type: string
+        format: uuid
+        nullable: true
+      body:
+        type: string
+  AuditNoteList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/AuditNote"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          target_type: null
+          target_id: null
+          body: body
+          author_person_id: null
+          author_display_name: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null

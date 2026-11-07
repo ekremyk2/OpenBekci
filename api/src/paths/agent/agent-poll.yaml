@@ -1,0 +1,52 @@
+post:
+  operationId: agent.poll
+  summary: Long-poll transport (WebSocket fallback)
+  description: |-
+    **Release 0.3.** Same envelopes, semantics and authentication as the WebSocket. A session begins with a `hello` call (no `session`); the server hello carries the `session` handle that every later call sends. Each response has a per-session `seq` (ordered delivery, see `AgentPollResponse`). An empty poll is 200 with an empty `messages` array, never 204.
+
+    A session ends after 60 seconds without a request: the next call fails with 410 `agent_session_expired` and the agent starts a new session with `hello`. A bare 401 means an unknown token only (the agent quarantines itself and does not wipe); a revoked agent receives the `revoked` command (the WebSocket closes with 4401) and wipes. Idempotency is built into the protocol (events by id, commands by id, deltas by version); `Idempotency-Key` is ignored.
+
+    Problems: `agent_session_expired` (410), `rate_limited` (429), `conflict` (409).
+  tags:
+    - agent
+  security:
+    - agentAuth: []
+  x-idempotent: optional
+  x-stability: preview
+  x-agent-message-schemas:
+    envelope: api/agent-protocol/v1/envelope.schema.json
+    hello_agent: api/agent-protocol/v1/hello-agent.schema.json
+    hello_server: api/agent-protocol/v1/hello-server.schema.json
+    snapshot: api/agent-protocol/v1/snapshot.schema.json
+    delta: api/agent-protocol/v1/delta.schema.json
+    event: api/agent-protocol/v1/event.schema.json
+    ack: api/agent-protocol/v1/ack.schema.json
+    command: api/agent-protocol/v1/command.schema.json
+    heartbeat: api/agent-protocol/v1/heartbeat.schema.json
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/access.yaml#/schemas/AgentPollRequest
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentPollResponse
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "410":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

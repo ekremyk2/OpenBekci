@@ -1,0 +1,53 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: agenda_item_id
+    in: path
+    required: true
+    description: Id of the agenda item.
+    schema:
+      type: string
+      format: uuid
+put:
+  operationId: governance.answerPoll
+  summary: Answer the poll for my unit
+  description: |-
+    **Release 0.2.** One answer per unit; a co-owner may change the unit's answer while the poll is open. Non-binding.
+
+    Permission: `polls.answer`.
+
+    Problems: `conflict` (409).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    owner:
+      - polls.answer
+  x-idempotent: optional
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/PollAnswerSet
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/PollAnswer
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

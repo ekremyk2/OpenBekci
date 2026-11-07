@@ -1,0 +1,43 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.getSmsUsage
+  summary: Monthly SMS counter of a site
+  description: |-
+    **Release 0.1.** Monthly SMS counter of a site.
+
+    Permission: `notifications.manage`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - notifications.manage
+    site_manager:
+      - notifications.manage
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: month
+      in: query
+      schema:
+        type: string
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      description: Filter by month, `YYYY-MM`.
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/SmsUsage
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

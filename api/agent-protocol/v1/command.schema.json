@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openbekci.org/agent-protocol/v1/command.schema.json",
+  "title": "command payload, server to agent; oneOf keyed on command. The command id is the envelope id; open_point expires at expires_at (TTL at most 60 seconds from issued_at)",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "command",
+        "point_id",
+        "issued_at",
+        "expires_at"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "command": {
+          "const": "open_point"
+        },
+        "point_id": {
+          "$ref": "defs.schema.json#/$defs/uuid"
+        },
+        "credential_id": {
+          "$ref": "defs.schema.json#/$defs/uuid"
+        },
+        "visitor_entry_id": {
+          "$ref": "defs.schema.json#/$defs/uuid"
+        },
+        "actor": {
+          "type": "object",
+          "required": [
+            "user_id",
+            "display"
+          ],
+          "properties": {
+            "user_id": {
+              "$ref": "defs.schema.json#/$defs/uuid"
+            },
+            "display": {
+              "type": "string"
+            }
+          }
+        },
+        "issued_at": {
+          "$ref": "defs.schema.json#/$defs/ts"
+        },
+        "expires_at": {
+          "$ref": "defs.schema.json#/$defs/ts",
+          "description": "Must satisfy 0 < expires_at - issued_at <= 60 s. A longer lifetime is refused by the agent (`ack: refused`, reason `ttl`), not capped."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "command",
+        "credential_id"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "command": {
+          "const": "revoke_credential"
+        },
+        "credential_id": {
+          "$ref": "defs.schema.json#/$defs/uuid"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "command"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "command": {
+          "const": "request_snapshot"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "command",
+        "config_version",
+        "site",
+        "points",
+        "settings"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "command": {
+          "const": "update_config"
+        },
+        "config_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "site": {
+          "type": "object",
+          "required": [
+            "timezone"
+          ],
+          "properties": {
+            "timezone": {
+              "type": "string"
+            }
+          }
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "kind",
+              "direction",
+              "driver_ref",
+              "enabled"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "defs.schema.json#/$defs/uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "direction": {
+                "enum": [
+                  "in",
+                  "out",
+                  "both"
+                ]
+              },
+              "driver_ref": {
+                "$ref": "defs.schema.json#/$defs/driver_ref"
+              },
+              "enabled": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "settings": {
+          "type": "object",
+          "required": [
+            "offline_grace_hours",
+            "plate_match",
+            "heartbeat_seconds",
+            "maintenance_hour"
+          ],
+          "properties": {
+            "offline_grace_hours": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 336
+            },
+            "plate_match": {
+              "enum": [
+                "exact",
+                "tolerant"
+              ]
+            },
+            "heartbeat_seconds": {
+              "type": "integer",
+              "minimum": 10,
+              "maximum": 120
+            },
+            "maintenance_hour": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "command"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "command": {
+          "const": "revoked"
+        }
+      }
+    }
+  ]
+}

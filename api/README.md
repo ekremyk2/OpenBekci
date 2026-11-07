@@ -8,6 +8,7 @@ api/src/openapi.yaml        root: info, security schemes, paths and components a
 api/src/paths/*.yaml        one file per path item
 api/src/components/*.yaml   shared schemas, parameters, responses
 api/openapi.yaml            bundled artifact (generated, committed; this is what generators read)
+api/src/openapi-draft.yaml  draft root for releases 0.1 to 0.3 (see below); bundled to api/openapi-draft.yaml
 api/.redocly.yaml           lint ruleset;  api/plugins/openbekci.cjs  the project rules
 ```
 
@@ -83,13 +84,14 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | Extension | On | Values | Effect |
 |---|---|---|---|
 | `x-openbekci-roles` | root | map role (the seven built-in roles and `platform_admin`) to its permission names | the role to permission matrix; **generated** from the Go permission registry into `components/permissions.yaml` by `task gen:permissions`, never edited by hand |
-| `x-openbekci-roles` | operation | list of permission names | the permission(s) the operation requires, all of them. Mandatory under `/v1/orgs/{org_id}`; optional documentation elsewhere. The authz matrix test fails when it is missing or does not match what the handler requires |
+| `x-openbekci-roles` | operation | list of permission names, or the draft's map role to permission names | the permission(s) the operation requires, all of them (in the map form, the distinct permission names of all roles; each draft operation names exactly one). Mandatory under `/v1/orgs/{org_id}`; optional documentation elsewhere. The authz matrix test fails when it is missing or does not match what the handler requires |
 | `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal). A replay sets `Idempotent-Replayed: true` and restores only `Content-Type`, `Location` and `X-OpenBekci-Stability`. Keys need a signed-in caller: a `required` operation must require authentication (conformance test), and an anonymous call to an `optional` one ignores the header |
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |
 | `x-open-enum` | schema | `true` | marks an open enum (see above) |
 | `x-known-values` | schema | list | documents the known values of an open string without an `enum` |
+| `x-requires-setting` | operation | a site setting name | the operation exists only while that site setting is on (for example `bills_enabled`); otherwise 404 `not_found` |
 
 ## Request pipeline
 
@@ -101,3 +103,39 @@ idempotency, then the generated strict handler. Authentication runs first, so an
 `security` is not `[]`: required ones answer 401 on failure, optional ones (`security: [{}, ...]`) continue
 anonymously when no valid credential is present. Unknown paths under `/v1` and `/.well-known/` are 404 problems,
 a known path with the wrong method is a 405 problem with `Allow`; everything else falls through to the web app.
+
+## The draft contract (releases 0.1 to 0.3)
+
+`api/src/openapi-draft.yaml` is a second root that `$ref`s everything: the paths already served plus the contract for
+releases 0.1, 0.2 and 0.3 (`api/src/paths/<module>/*.yaml`, `api/src/components/<module>.yaml`). It is bundled to
+`api/openapi-draft.yaml` and generates `clients/ts/draft.d.ts`; web builders work against those. Nothing in it is served.
+The Go generator never reads it. Both roots are linted with the same strict rules (`api:lint`), and
+`server/internal/httpapi/draft_spec_test.go` holds every draft operation to the conventions (explicit `security`,
+`x-openbekci-roles` on org-scoped operations, `x-idempotent` on mutations, pagination, permission list).
+
+**Adopting an operation (backend builders).** In `src/openapi.yaml` add the same `paths:` entry the draft has (it points at
+`./paths/<module>/<file>.yaml`), and add the schemas the operation references to `components.schemas` (copy the entries from
+the draft root). Run `tools/task.ps1 gen`; the Go server interface grows the new methods. Leave the draft root as it is:
+it keeps listing everything, so web types do not change when an operation moves to the served spec. Update the operation's
+`x-stability` only when the release it belongs to ships. Checklist of operations: `api/DRAFT-INDEX.md`; permission names:
+`api/PERMISSIONS.md`.
+
+Draft-only conventions on top of the list above:
+
+- **Site scoping:** `site_id` is a query parameter on lists (required where the resource is site-scoped) and a body field on
+  create; resources that are plainly part of a site live under `/sites/{site_id}/...` (settings, bank details, lock date).
+- **Updates** are `PATCH` with `If-Match: "<version>"` (stale: 409 `version_conflict`); every updatable read model returns `version`. Singleton settings written with `PUT` (governance settings, budget lines, late-fee policy, lock date, notification defaults, polls, unit tag members) take the same required `If-Match`.
+- **Re-authentication.** Operations that answer 403 `reauth_required` without a re-authentication in the last 10 minutes (backend plan section 16): contact and password change, moving the lock date back, opening-balance create, void and import, waivers above the site threshold, ending a site-owned membership, site export, import and offboard, erasing a person.
+- **Idempotency.** Every operation that moves money, sends messages or creates a rule that generates charges is `x-idempotent: required` (dunning runs, decision effects, fiscal-year close and approval, plan rates, statements, announcements and decision notices included).
+- **Dates and periods.** A `format: date` field is named `*_on` (`paid_on`, `booked_on`, `opened_on`, `closed_on`); older names such as `due_date`, `as_of` and `valid_from` stay; `*_at` is always a timestamp. A `period` is the accrual month `^\d{4}-(0[1-9]|1[0-2])$` for every plan frequency; there are no quarter or year period strings.
+- **Debtors.** `DebtorRef` addresses who owes: `(unit_id, debtor_kind)` or `person_id` (carried debt of a former occupant), exactly one mode.
+- **Custom actions** use the Google style suffix: `/charges/{id}:cancel`, `/charge-plans:preview`, `/units:import`.
+- **Reports and statements** take `format=json|csv|xlsx|pdf` (`json` default) and answer with the matching content type;
+  `POST /exports` is for jobs too big for that.
+- **Imports** take `dry_run=true` and return `ImportReport`; committing returns 202 with a job id (`GET /jobs/{id}`).
+- **Problem codes added for the draft:** `agent_offline` (409) and `agent_session_expired` (410) are in `Problem.code`
+  (the draft needs no other code beyond the served enum). Statuses used: `locked_period` 409, `version_conflict` 409, `site_offboarded` 409,
+  `reauth_required` 403, `idempotency_mismatch` 422.
+- **Agent transport** (`/v1/agent/*`, tag `agent`) authenticates with the `agentAuth` bearer scheme (an agent token, not a user
+  session); the message schemas are JSON Schema 2020-12 in `api/agent-protocol/v1/*.schema.json`, referenced by the
+  `x-agent-message-schemas` extension. `x-stability: preview` until 0.3.0 ships.
