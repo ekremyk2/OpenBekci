@@ -231,6 +231,7 @@ type importRow struct {
 	area                                *float64
 	arsa                                string
 	ownerName, ownerPhone, ownerEmail   string
+	coOwnerRow                          bool // the door already appeared earlier in this file: a second owner is a co-owner
 	ownerShare                          *float64
 	ownerResides                        bool
 	tenantName, tenantPhone, tenantMail string
@@ -383,6 +384,8 @@ type importState struct {
 	doors     map[string]uuid.UUID // doors seen in this file
 	arsaKey   *uuid.UUID
 	sum       map[string]int
+	// replaceOwner (mapping key replace_owner = true) lets a different named owner in the file get a new owner occupancy
+	replaceOwner bool
 }
 
 func (st *importState) count(k string) { st.sum[k]++ }
@@ -425,6 +428,7 @@ func (st *importState) applyRow(ctx context.Context, tx pgx.Tx, r *importRow) (s
 		return "", uuid.Nil, err
 	default:
 		_, dup := st.doors[r.door]
+		r.coOwnerRow = dup
 		cur, err := tenancy.GetUnitRow(ctx, tx, orgID, uid)
 		if err != nil {
 			return "", uuid.Nil, err
@@ -505,63 +509,6 @@ func nullStr(s string) *string {
 	return &s
 }
 
-// person finds or creates the person (by phone, then email, then name within
-// the unit) and gives them the occupancy if they have no current one of that kind.
-func (st *importState) person(ctx context.Context, tx pgx.Tx, unit tenancy.Unit, kind, name, phone, email string, r *importRow) (bool, error) {
-	s, orgID := st.s, st.orgID
-	var pid uuid.UUID
-	err := tx.QueryRow(ctx, `SELECT id FROM person WHERE org_id = $1 AND (($2 <> '' AND contact->>'phone' = $2) OR ($3 <> '' AND lower(contact->>'email') = $3)) ORDER BY created_at LIMIT 1`,
-		orgID, phone, email).Scan(&pid)
-	if errors.Is(err, pgx.ErrNoRows) && phone == "" && email == "" {
-		err = tx.QueryRow(ctx, `SELECT p.id FROM person p JOIN occupancy o ON o.org_id = p.org_id AND o.person_id = p.id
-			WHERE p.org_id = $1 AND o.unit_id = $2 AND o.kind = $3 AND p.display_name = $4 ORDER BY p.created_at LIMIT 1`, orgID, unit.ID, kind, name).Scan(&pid)
-	}
-	newPerson := false
-	if errors.Is(err, pgx.ErrNoRows) {
-		in := personInput{displayName: name}
-		if phone != "" {
-			in.phone = &phone
-		}
-		if email != "" {
-			in.email = &email
-		}
-		sid := st.site.ID
-		p, err := s.createPersonTx(ctx, tx, orgID, &sid, nil, in)
-		if err != nil {
-			return false, err
-		}
-		pid, newPerson = p.ID, true
-		st.count("persons_created")
-	} else if err != nil {
-		return false, err
-	}
-	var has bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND person_id = $3 AND kind = $4 AND valid_to IS NULL)`, orgID, unit.ID, pid, kind).Scan(&has); err != nil {
-		return false, err
-	}
-	if has {
-		return newPerson, nil
-	}
-	var corr bool
-	if err := tx.QueryRow(ctx, `SELECT NOT EXISTS (SELECT 1 FROM occupancy WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND is_correspondent AND valid_to IS NULL)`, orgID, unit.ID, kind).Scan(&corr); err != nil {
-		return false, err
-	}
-	side := SideOwner
-	resides := r.ownerResides
-	if kind == KindTenant {
-		side, resides = SideTenant, true
-	}
-	in := occInput{unitID: unit.ID, personID: pid, kind: kind, side: side, correspondent: corr, resides: resides, from: s.today()}
-	if kind == KindOwner {
-		in.sharePct = r.ownerShare
-	}
-	if _, err := s.insertOccTx(ctx, tx, orgID, unit, in); err != nil {
-		return false, err
-	}
-	st.count("occupancies_created")
-	return true, nil
-}
-
 // ImportUnits imports units and people from a spreadsheet into a site (idempotent
 // by door number; re-running the same file changes nothing). With DryRun it
 // computes the same report and writes only the report. Opening-balance
@@ -581,7 +528,16 @@ func (s *Service) ImportUnits(ctx context.Context, orgID, siteID uuid.UUID, req 
 	if len(rows)-1 > MaxImportRows {
 		return ImportReport{}, problem.Validation(problem.Field{Field: "file", Code: "too_large", Params: map[string]any{"max_rows": MaxImportRows}})
 	}
-	idx, used, err := MapColumns(rows[0], req.Mapping)
+	mapping := map[string]string{}
+	replaceOwner := false
+	for k, v := range req.Mapping {
+		if k == "replace_owner" {
+			replaceOwner = strings.EqualFold(strings.TrimSpace(v), "true")
+			continue
+		}
+		mapping[k] = v
+	}
+	idx, used, err := MapColumns(rows[0], mapping)
 	if err != nil {
 		return ImportReport{}, err
 	}
@@ -594,7 +550,7 @@ func (s *Service) ImportUnits(ctx context.Context, orgID, siteID uuid.UUID, req 
 		if err != nil {
 			return err
 		}
-		st := &importState{s: s, orgID: orgID, site: site, blocks: map[string]uuid.UUID{}, doors: map[string]uuid.UUID{}, sum: map[string]int{}}
+		st := &importState{s: s, orgID: orgID, site: site, blocks: map[string]uuid.UUID{}, doors: map[string]uuid.UUID{}, sum: map[string]int{}, replaceOwner: replaceOwner}
 		brows, err := tx.Query(ctx, `SELECT id, name FROM block WHERE org_id = $1 AND site_id = $2 ORDER BY sort_order, name`, orgID, siteID)
 		if err != nil {
 			return err
