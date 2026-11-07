@@ -1,0 +1,51 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: bill_id
+    in: path
+    required: true
+    description: Id of the bill.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getBill
+  summary: Get bill
+  description: |-
+    **Release 0.1.** Get bill.
+
+    Optional per site (M6): available only while `SiteSettings.bills_enabled` is on; otherwise 404 `not_found`. Bills are never edited: a mistake is reversed with a correcting expense, and the bill's payments are listed in `Bill.payments`.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/Bill
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+  x-requires-setting: bills_enabled

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/google/uuid"
 
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
@@ -20,26 +19,11 @@ func (s *apiServer) ac() (*access.Service, error) {
 	return s.access, nil
 }
 
-// siteParam reads the site_id query parameter (declared optional in the spec so authentication answers first).
-func siteParam(s *uuid.UUID) (uuid.UUID, error) {
-	if s == nil {
-		return uuid.Nil, problem.Validation(problem.Field{Field: "site_id", Code: "required"})
-	}
-	return *s, nil
-}
-
 func cursorOf(c *gen.Cursor) string {
 	if c == nil {
 		return ""
 	}
 	return *c
-}
-
-func limitOf(l *gen.Limit) int {
-	if l == nil {
-		return 0
-	}
-	return *l
 }
 
 func strOf(s *string) string {
@@ -56,10 +40,7 @@ func (s *apiServer) AccessListAccessPoints(ctx context.Context, req gen.AccessLi
 	if err != nil {
 		return nil, err
 	}
-	siteID, err := siteParam(req.Params.SiteId)
-	if err != nil {
-		return nil, err
-	}
+	siteID := req.Params.SiteId
 	items, next, err := a.ListPoints(ctx, req.OrgId, siteID, req.Params.AgentId, req.Params.Enabled, limitOf(req.Params.Limit), cursorOf(req.Params.Cursor))
 	if err != nil {
 		return nil, err
@@ -106,7 +87,7 @@ func (s *apiServer) AccessUpdateAccessPoint(ctx context.Context, req gen.AccessU
 	if err != nil {
 		return nil, err
 	}
-	v, err := ifMatchVersion(req.Params.IfMatch)
+	v, err := ifMatchOf(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +111,7 @@ func (s *apiServer) AccessDeleteAccessPoint(ctx context.Context, req gen.AccessD
 	if err != nil {
 		return nil, err
 	}
-	v, err := ifMatchVersion(req.Params.IfMatch)
+	v, err := ifMatchOf(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -182,10 +163,7 @@ func (s *apiServer) AccessListAgents(ctx context.Context, req gen.AccessListAgen
 	if err != nil {
 		return nil, err
 	}
-	siteID, err := siteParam(req.Params.SiteId)
-	if err != nil {
-		return nil, err
-	}
+	siteID := req.Params.SiteId
 	items, next, err := a.ListAgents(ctx, req.OrgId, siteID, strOf(req.Params.Status), limitOf(req.Params.Limit), cursorOf(req.Params.Cursor))
 	if err != nil {
 		return nil, err
@@ -228,7 +206,7 @@ func (s *apiServer) AccessUpdateAgent(ctx context.Context, req gen.AccessUpdateA
 	if err != nil {
 		return nil, err
 	}
-	v, err := ifMatchVersion(req.Params.IfMatch)
+	v, err := ifMatchOf(req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -291,10 +269,7 @@ func (s *apiServer) AccessListCredentials(ctx context.Context, req gen.AccessLis
 	}
 	p := req.Params
 	f := access.CredentialFilter{Kind: strOf(p.Kind), Status: strOf(p.Status), SourceType: strOf(p.SourceType), Query: strOf(p.Q), UnitID: p.UnitId, PointID: p.PointId}
-	siteID, err := siteParam(req.Params.SiteId)
-	if err != nil {
-		return nil, err
-	}
+	siteID := req.Params.SiteId
 	items, next, err := a.ListCredentials(ctx, req.OrgId, siteID, f, limitOf(p.Limit), cursorOf(p.Cursor))
 	if err != nil {
 		return nil, err
@@ -334,14 +309,27 @@ func (s *apiServer) AccessListAccessEvents(ctx context.Context, req gen.AccessLi
 	}
 	p := req.Params
 	f := access.EventFilter{PointID: p.PointId, Decision: strOf(p.Decision), Reason: strOf(p.Reason), From: p.From, To: p.To, Plate: strOf(p.Plate), After: p.After}
-	siteID, err := siteParam(req.Params.SiteId)
-	if err != nil {
-		return nil, err
-	}
+	siteID := req.Params.SiteId
 	items, next, err := a.ListEvents(ctx, req.OrgId, siteID, f, limitOf(p.Limit), cursorOf(p.Cursor))
 	if err != nil {
 		return nil, err
 	}
 	out, err := listOf[gen.AccessEventList](items, next)
 	return gen.AccessListAccessEvents200JSONResponse(out), err
+}
+
+// ---- gate control (release 0.3, not served yet) ------------------------------
+
+var errGateControl = problem.NotFound("this operation ships with gate control (release 0.3)")
+
+func (s *apiServer) AccessCreateCredential(context.Context, gen.AccessCreateCredentialRequestObject) (gen.AccessCreateCredentialResponseObject, error) {
+	return nil, errGateControl
+}
+
+func (s *apiServer) AccessRebuildAllowlist(context.Context, gen.AccessRebuildAllowlistRequestObject) (gen.AccessRebuildAllowlistResponseObject, error) {
+	return nil, errGateControl
+}
+
+func (s *apiServer) AccessListGuardEvents(context.Context, gen.AccessListGuardEventsRequestObject) (gen.AccessListGuardEventsResponseObject, error) {
+	return nil, errGateControl
 }

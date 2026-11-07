@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: point_id
     in: path
     required: true
@@ -20,7 +20,14 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - access.read
+    org_admin:
+      - access.read
+    site_manager:
+      - access.read
+    board_member:
+      - access.read
+    auditor:
+      - access.read
   x-stability: preview
   responses:
     "200":
@@ -52,11 +59,14 @@ patch:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - access.manage
+    org_admin:
+      - access.manage
+    site_manager:
+      - access.manage
   x-idempotent: optional
   x-stability: preview
   parameters:
-    - $ref: ../../components/access.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
@@ -97,11 +107,14 @@ delete:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - access.manage
+    org_admin:
+      - access.manage
+    site_manager:
+      - access.manage
   x-idempotent: optional
   x-stability: preview
   parameters:
-    - $ref: ../../components/access.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   responses:
     "204":
       description: No content

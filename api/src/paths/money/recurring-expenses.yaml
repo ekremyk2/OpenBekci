@@ -1,0 +1,103 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.listRecurringExpenses
+  summary: List recurring expenses
+  description: |-
+    **Release 0.1.** Cursor-paginated list of recurring expenses.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - active
+          - ended
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/RecurringExpenseList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: money.createRecurringExpense
+  summary: Create recurring expense
+  description: |-
+    **Release 0.1.** Creates a recurring expense.
+
+    Permission: `money.post`.
+
+    Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - money.post
+    site_manager:
+      - money.post
+    board_member:
+      - money.post
+    accountant:
+      - money.post
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/RecurringExpenseCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/RecurringExpense
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

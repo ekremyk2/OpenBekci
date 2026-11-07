@@ -1,0 +1,90 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: file_id
+    in: path
+    required: true
+    description: Id of the file.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.downloadFile
+  summary: Download a file
+  description: |-
+    **Release 0.1.** Visibility is decided by the resource the file is attached to. `variant` applies to images.
+
+    Permission: `files.read`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - files.read
+  x-stability: stable
+  parameters:
+    - name: variant
+      in: query
+      schema:
+        type: string
+        enum:
+          - thumb
+          - medium
+      description: Filter by `variant`.
+  responses:
+    "200":
+      description: The file.
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    "302":
+      description: Short-lived signed URL (S3 driver).
+      headers:
+        Location:
+          schema:
+            type: string
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: operations.deleteFile
+  summary: Delete an unattached file
+  description: |-
+    **Release 0.1.** Delete an unattached file.
+
+    Permission: `files.upload`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    member:
+      - files.upload
+  x-idempotent: optional
+  x-stability: stable
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

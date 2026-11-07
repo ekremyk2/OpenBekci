@@ -118,7 +118,7 @@ func readUpload(mr *multipart.Reader) (upload, error) {
 		}
 		name := part.FormName()
 		var limit int64 = 4096
-		if name == "file" {
+		if name == "file" || name == "archive" {
 			limit = MaxUploadBytes
 		}
 		var buf bytes.Buffer
@@ -129,7 +129,7 @@ func readUpload(mr *multipart.Reader) (upload, error) {
 		if n > limit {
 			return u, tooLarge(limit, nil)
 		}
-		if name == "file" {
+		if name == "file" || name == "archive" {
 			u.filename, u.data = part.FileName(), buf.Bytes()
 		} else {
 			u.fields[name] = buf.String()

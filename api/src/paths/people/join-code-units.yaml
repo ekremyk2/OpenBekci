@@ -1,0 +1,47 @@
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: Id of the code.
+    schema:
+      type: string
+get:
+  operationId: people.listJoinUnits
+  summary: List unit labels for the claim picker
+  description: |-
+    **Release 0.1.** Public and data-minimized: door numbers only, never names.
+
+    Problems: `rate_limited` (429), `not_found` (404).
+  tags:
+    - people
+  security: []
+  x-stability: stable
+  parameters:
+    - name: block_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `block_id`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/JoinUnitList
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,73 @@
+get:
+  operationId: platform.getSettings
+  summary: Get the instance settings
+  description: |-
+    **Release 1.0.** Get the instance settings.
+
+    Permission: `platform.read`.
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/PlatformSettings
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: platform.updateSettings
+  summary: Update the instance settings
+  description: |-
+    **Release 1.0.** Update the instance settings.
+
+    Permission: `platform.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - platform
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    platform_admin:
+      - platform.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/platform.yaml#/schemas/PlatformSettingsUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/platform.yaml#/schemas/PlatformSettings
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

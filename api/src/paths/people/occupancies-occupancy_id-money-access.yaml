@@ -1,54 +1,59 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: occupancy_id
     in: path
     required: true
-    description: The occupancy id.
+    description: Id of the occupancy.
     schema:
       type: string
       format: uuid
 put:
   operationId: people.setMoneyAccess
-  summary: Let a household member see (or stop seeing) the unit's money
-  description: 'For managers, the unit''s owner, and the tenant for the tenant side.'
-  tags: [people]
+  summary: Grant or withdraw money visibility for a household member
+  description: |-
+    **Release 0.1.** Callable by the owner or tenant of the same unit side (S3) and by managers.
+
+    Permission: `occupancies.grant_money`.
+
+    Problems: `conflict` (409).
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [occupancy.grant_money]
+  x-openbekci-roles:
+    org_admin:
+      - occupancies.grant_money
+    site_manager:
+      - occupancies.grant_money
+    owner:
+      - occupancies.grant_money
+    tenant:
+      - occupancies.grant_money
   x-idempotent: optional
-  parameters:
-    - name: If-Match
-      in: header
-      required: false
-      description: |
-        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-      schema:
-        type: string
-        pattern: '^"?[0-9]{1,9}"?$'
+  x-stability: stable
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/people.yaml#/schemas/MoneyAccess'
+          $ref: ../../components/people.yaml#/schemas/MoneyAccessSet
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Occupancy'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Occupancy
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

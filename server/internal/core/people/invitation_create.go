@@ -49,6 +49,8 @@ func (s *Service) writeInvitation(ctx context.Context, tx pgx.Tx, orgID uuid.UUI
 	}
 	side := in.side
 	switch in.kind {
+	case "":
+		side = ""
 	case KindOwner:
 		side = SideOwner
 	case KindTenant:
@@ -72,7 +74,7 @@ func (s *Service) writeInvitation(ctx context.Context, tx pgx.Tx, orgID uuid.UUI
 	if _, err := tx.Exec(ctx, `INSERT INTO invitation (id, org_id, site_id, kind, unit_id, person_id, occupancy_kind, occupancy_side, share_pct, is_correspondent, resides, valid_from,
 			channel, email, phone, locale, token_hash, expires_at, invited_by)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`,
-		iid, orgID, site.ID, invKind, unit.ID, person.ID, in.kind, side, in.sharePct, in.correspondent, in.resides, in.from,
+		iid, orgID, site.ID, invKind, nilUnit(unit.ID), person.ID, nilEmpty(in.kind), nilEmpty(side), in.sharePct, in.correspondent, in.resides, in.from,
 		channel, person.Email, person.Phone, in.locale, hash, expires, uid); err != nil {
 		return Invitation{}, "", err
 	}
@@ -88,6 +90,20 @@ func (s *Service) writeInvitation(ctx context.Context, tx pgx.Tx, orgID uuid.UUI
 		return Invitation{}, "", err
 	}
 	return inv, token, nil
+}
+
+func nilUnit(id uuid.UUID) *uuid.UUID {
+	if id == uuid.Nil {
+		return nil
+	}
+	return &id
+}
+
+func nilEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }
 
 func (s *Service) linkFor(client, token string) string {
@@ -139,12 +155,14 @@ func (s *Service) CreateInvitation(ctx context.Context, orgID uuid.UUID, d Doc) 
 		if site, err = tenancy.LoadSite(ctx, tx, orgID, *in.siteID, false, false); err != nil {
 			return err
 		}
-		unit, err := tenancy.GetUnitRow(ctx, tx, orgID, *in.unitID)
-		if err != nil {
-			return err
-		}
-		if unit.SiteID != site.ID {
-			return fieldProblem("unit_id", "invalid_value")
+		var unit tenancy.Unit
+		if in.unitID != nil {
+			if unit, err = tenancy.GetUnitRow(ctx, tx, orgID, *in.unitID); err != nil {
+				return err
+			}
+			if unit.SiteID != site.ID {
+				return fieldProblem("unit_id", "invalid_value")
+			}
 		}
 		inv, token, err = s.writeInvitation(ctx, tx, orgID, InviteManager, in, unit, site)
 		return err

@@ -1,0 +1,154 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: document_id
+    in: path
+    required: true
+    description: Id of the document.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: operations.getDocument
+  summary: Get document
+  description: |-
+    **Release 0.1.** Get document.
+
+    A former occupant (`documents.read_addressed`) sees only documents addressed to them (the closing statement and the debt / no-debt certificate of their move-out, O8), never folders or other unit documents.
+
+    Permission (any one of): `documents.read`, `documents.read_addressed`.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - documents.read
+    site_manager:
+      - documents.read
+    board_member:
+      - documents.read
+    auditor:
+      - documents.read
+    owner:
+      - documents.read
+    tenant:
+      - documents.read
+    household:
+      - documents.read
+    former_occupant:
+      - documents.read_addressed
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Document
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: operations.updateDocument
+  summary: Update document
+  description: |-
+    **Release 0.1.** Update document.
+
+    Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
+    owner:
+      - documents.upload_own
+    tenant:
+      - documents.upload_own
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/DocumentUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Document
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: operations.deleteDocument
+  summary: Delete document
+  description: |-
+    **Release 0.1.** Deletes the document; generated documents can be regenerated.
+
+    Permission (any one of): `documents.manage`, `documents.upload_own`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - documents.manage
+    site_manager:
+      - documents.manage
+    board_member:
+      - documents.manage
+    owner:
+      - documents.upload_own
+    tenant:
+      - documents.upload_own
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  responses:
+    "204":
+      description: No content
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

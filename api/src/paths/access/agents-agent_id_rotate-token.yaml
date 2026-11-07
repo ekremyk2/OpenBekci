@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: agent_id
     in: path
     required: true
@@ -22,7 +22,10 @@ post:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - access.manage
+    org_admin:
+      - access.manage
+    site_manager:
+      - access.manage
   x-idempotent: optional
   x-stability: preview
   parameters:

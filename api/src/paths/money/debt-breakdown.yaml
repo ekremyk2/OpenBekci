@@ -1,0 +1,80 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.getDebtBreakdown
+  summary: Debt breakdown for a unit side (ihtarname attachment)
+  description: |-
+    **Release 0.1.** Principal and fee per period as of a date; JSON, or a CSV/XLSX/PDF export.
+
+    Targeting: `unit_id` and `debtor_kind` together, or `person_id` (carried debt of a person); exactly one mode.
+
+    Permission: `collections.manage`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - collections.manage
+    site_manager:
+      - collections.manage
+    board_member:
+      - collections.manage
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "Filter by unit. Unit mode: send with the other."
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        enum:
+          - owner
+          - tenant
+      description: "Debtor side of the unit: owner or tenant. Unit mode: send with the other."
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "Person mode: the person whose debt to break down (instead of `unit_id` + `debtor_kind`)."
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - $ref: ../../components/draft-common.yaml#/parameters/Format
+  responses:
+    "200":
+      description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/DebtBreakdown
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

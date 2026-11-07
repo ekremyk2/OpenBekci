@@ -1,0 +1,119 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: tenancy.listVehicles
+  summary: List vehicles
+  description: |-
+    **Release 0.1.** Cursor-paginated list of vehicles.
+
+    Permission: `vehicles.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vehicles.read
+    site_manager:
+      - vehicles.read
+    board_member:
+      - vehicles.read
+    auditor:
+      - vehicles.read
+    owner:
+      - vehicles.read
+    tenant:
+      - vehicles.read
+    household:
+      - vehicles.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - name: archived
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `archived`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/VehicleList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: tenancy.createVehicle
+  summary: Create vehicle
+  description: |-
+    **Release 0.1.** Creates a vehicle.
+
+    Permission: `vehicles.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vehicles.manage
+    site_manager:
+      - vehicles.manage
+    board_member:
+      - vehicles.manage
+    owner:
+      - vehicles.manage
+    tenant:
+      - vehicles.manage
+    household:
+      - vehicles.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/tenancy.yaml#/schemas/VehicleCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/Vehicle
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

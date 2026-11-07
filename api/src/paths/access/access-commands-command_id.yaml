@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: command_id
     in: path
     required: true
@@ -13,17 +13,24 @@ get:
   description: |-
     **Release 0.3.** The console polls every 500 ms for up to 10 seconds.
 
-    Permission: `access.open` (every holder of `access.manage` holds it too).
+    Permission (any one of): `access.open`, `access.manage`.
   tags:
     - access
   security:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - access.open
+    org_admin:
+      - access.open
+      - access.manage
+    site_manager:
+      - access.open
+      - access.manage
+    guard:
+      - access.open
   x-stability: preview
   parameters:
-    - $ref: ../../components/access.yaml#/parameters/GuardSession
+    - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
   responses:
     "200":
       description: OK

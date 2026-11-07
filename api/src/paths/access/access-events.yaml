@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: access.listAccessEvents
   summary: List access events
@@ -13,10 +13,17 @@ get:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    - access.view_events
+    org_admin:
+      - access.view_events
+    site_manager:
+      - access.view_events
+    board_member:
+      - access.view_events
+    auditor:
+      - access.view_events
   x-stability: preview
   parameters:
-    - $ref: ../../components/access.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: point_id
       in: query
       schema:
