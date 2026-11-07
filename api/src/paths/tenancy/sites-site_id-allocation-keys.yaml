@@ -1,0 +1,70 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: site_id
+    in: path
+    required: true
+    description: The site id.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.listAllocationKeys
+  summary: List a site's allocation keys
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [allocation.read]
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/AllocationKeyList'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'
+post:
+  operationId: tenancy.createAllocationKey
+  summary: Add a custom allocation key
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [allocation.manage]
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/tenancy.yaml#/schemas/AllocationKeyCreate'
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/AllocationKey'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

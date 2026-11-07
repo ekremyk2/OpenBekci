@@ -14,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
@@ -43,6 +44,7 @@ type Deps struct {
 	// (unit tests only).
 	Authz   *authz.Resolver
 	Tenancy *tenancy.Service
+	People  *people.Service
 	Audit   *audit.Service
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
@@ -75,7 +77,7 @@ func NewRouter(deps Deps, o Options) http.Handler {
 		realIP(o.TrustedProxies),
 		requestLogger(deps.Log),
 		recoverer(deps.Log),
-		maxBody(o.MaxBodyBytes),
+		maxBody(o.MaxBodyBytes, MaxUploadBytes+1<<20),
 		requestTimeout(o.RequestTimeout),
 	)
 

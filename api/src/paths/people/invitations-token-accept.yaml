@@ -1,0 +1,43 @@
+parameters:
+  - name: token
+    in: path
+    required: true
+    description: The secret token or code from the link.
+    schema:
+      type: string
+      maxLength: 200
+post:
+  operationId: people.acceptInvitation
+  summary: Accept an invitation
+  description: 'Signed in, the account is linked; anonymous, the account for the invited contact is found or created (the link proves the contact). The invited person and the occupancy are created and linked. Then sign in with any method.'
+  tags: [people]
+  security:
+    - {}
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/people.yaml#/schemas/AcceptInvitation'
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/AcceptResult'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

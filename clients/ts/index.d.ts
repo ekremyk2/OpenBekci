@@ -343,6 +343,1166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Labels of the API's codes
+         * @description Human labels for enums and error codes (roles, unit types, occupancy kinds, allocation key kinds, invitation kinds, problem codes, ...) in the requested locale.
+         */
+        get: operations["instance.getCodes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Preview an invitation
+         * @description What the holder of an invitation link sees before accepting. The token is the secret.
+         */
+        get: operations["people.previewInvitation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/invitations/{token}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Accept an invitation
+         * @description Signed in, the account is linked; anonymous, the account for the invited contact is found or created (the link proves the contact). The invited person and the occupancy are created and linked. Then sign in with any method.
+         */
+        post: operations["people.acceptInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/join/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Preview the site behind a join code
+         * @description The site and organization names; signed in, also the units that can be claimed.
+         */
+        get: operations["people.previewJoin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/join/{code}/claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Claim a unit through a join code
+         * @description Needs a signed-in account. The claim waits for a manager's approval.
+         */
+        post: operations["people.createClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/allocation-keys/{key_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The key id. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        /** Read an allocation key with its values */
+        get: operations["tenancy.getAllocationKey"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename an allocation key */
+        patch: operations["tenancy.updateAllocationKey"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/allocation-keys/{key_id}/values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The key id. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace a share or table key's values
+         * @description Values are rationals (`12/1000`) or decimals. The response carries sanity warnings, for example a share key that does not add up to one.
+         */
+        put: operations["tenancy.setAllocationKeyValues"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/blocks/{block_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The block id. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename, hide or reorder a block */
+        patch: operations["tenancy.updateBlock"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List invitations */
+        get: operations["people.listInvitations"];
+        put?: never;
+        /**
+         * Invite a person to a unit
+         * @description Adds the person when needed and sends a one-time link by SMS or email. The response carries the token and link once.
+         */
+        post: operations["people.createInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/invitations/{invitation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The invitation id. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke a pending invitation */
+        delete: operations["people.revokeInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/invitations/{invitation_id}/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The invitation id. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send an invitation again with a new link */
+        post: operations["people.resendInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/memberships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List role memberships */
+        get: operations["people.listMemberships"];
+        put?: never;
+        /**
+         * Grant a role
+         * @description `board_member` and `auditor` are site-owned and must be scoped to a site or block.
+         */
+        post: operations["people.createMembership"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/memberships/{membership_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The membership id. */
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * End a membership
+         * @description End-dates the membership. A site-owned one (board member, auditor) needs a recent re-authentication and is recorded as an override; the last organization administrator cannot be ended.
+         */
+        delete: operations["people.endMembership"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/move-outs/{move_out_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The move out id. */
+                move_out_id: string;
+            };
+            cookie?: never;
+        };
+        /** Read a move-out */
+        get: operations["people.getMoveOut"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List occupancies */
+        get: operations["people.listOccupancies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies/{occupancy_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change an occupancy */
+        patch: operations["people.updateOccupancy"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Let a household member see (or stop seeing) the unit's money
+         * @description For managers, the unit's owner, and the tenant for the tenant side.
+         */
+        put: operations["people.setMoneyAccess"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record a move-out or transfer
+         * @description Ends the occupancy as of a date, with placeholder closing statement and debt certificate records; a successor takes over for a sale.
+         */
+        post: operations["people.moveOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List people */
+        get: operations["people.listPersons"];
+        put?: never;
+        /** Add a person */
+        post: operations["people.createPerson"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The person id. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        /** Read a person */
+        get: operations["people.getPerson"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change a person */
+        patch: operations["people.updatePerson"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/site-exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List site exports and imports */
+        get: operations["tenancy.listSiteExports"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/site-exports/{export_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The export id. */
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Download an export's archive
+         * @description The archive holds national ids sealed with this instance's encryption key.
+         */
+        get: operations["tenancy.downloadSiteExport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/site-imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import a site archive into the organization
+         * @description Creates the site with the identifiers of the archive. People who already have an account in this organization are linked, not duplicated.
+         */
+        post: operations["tenancy.importSiteArchive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List sites
+         * @description The sites the caller can read: all of them with an organization-wide grant, otherwise the granted sites.
+         */
+        get: operations["tenancy.listSites"];
+        put?: never;
+        /**
+         * Create a site
+         * @description Creates the site with its hidden block (or the named blocks) and the two Law 634 allocation keys `arsa_payi` (share) and `equal`.
+         */
+        post: operations["tenancy.createSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /** Read a site */
+        get: operations["tenancy.getSite"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change a site's settings
+         * @description Settings, bank details, lock date, address, time zone. `If-Match` carries the site `version`.
+         */
+        patch: operations["tenancy.updateSite"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/allocation-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /** List a site's allocation keys */
+        get: operations["tenancy.listAllocationKeys"];
+        put?: never;
+        /** Add a custom allocation key */
+        post: operations["tenancy.createAllocationKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /** List a site's blocks */
+        get: operations["tenancy.listBlocks"];
+        put?: never;
+        /** Add a block */
+        post: operations["tenancy.createBlock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/directory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * The site directory
+         * @description Managers, board and auditor see everyone with their phone; a resident sees their own unit's people and, when the site enabled the directory, those who consented.
+         */
+        get: operations["people.listDirectory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/directory-consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /** Choose what the directory shows about me */
+        put: operations["people.setDirectoryConsent"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export a whole site to an archive
+         * @description Site hand-over (decision D2): people, occupancies, units, keys, vehicles, memberships of the site and more, identifiers preserved. Download it with `tenancy.downloadSiteExport`.
+         */
+        post: operations["tenancy.exportSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import units and people from a spreadsheet
+         * @description CSV or XLSX; idempotent by door number. With `dry_run=true` only the row-level report is produced. A real import with an error row writes nothing and answers `status: failed`. Opening-balance columns are validated and stored for the money module.
+         */
+        post: operations["tenancy.importUnits"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/join-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Read the site's join code
+         * @description The code behind the site's QR: `{BASE_URL}/join/{code}`.
+         */
+        get: operations["people.getJoinCode"];
+        put?: never;
+        /**
+         * Create or replace the site's join code
+         * @description The previous code stops working at once.
+         */
+        post: operations["people.rotateJoinCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/offboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Offboard a site after its hand-over
+         * @description Needs a prior export and a recent re-authentication. Ends the site's and its blocks' memberships, revokes open invitations and closes the site: every operation on it answers 403 `site_offboarded`.
+         */
+        post: operations["tenancy.offboardSite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List a site's units
+         * @description A block-scoped caller sees only the permitted blocks' units.
+         */
+        get: operations["tenancy.listUnits"];
+        put?: never;
+        /** Add a unit */
+        post: operations["tenancy.createUnit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /** List a site's vehicles */
+        get: operations["tenancy.listVehicles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/vehicles/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Export the site's plates as CSV
+         * @description Columns `plate,door_number,block,label` for the camera operator.
+         */
+        get: operations["tenancy.exportVehicles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List unit claims */
+        get: operations["people.listClaims"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims/{claim_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The claim id. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve a unit claim
+         * @description Creates the occupancy the resident asked for.
+         */
+        post: operations["people.approveClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/unit-claims/{claim_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The claim id. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject a unit claim */
+        post: operations["people.rejectClaim"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        /** Read a unit */
+        get: operations["tenancy.getUnit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change a unit */
+        patch: operations["tenancy.updateUnit"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/household-invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List a unit's household invitations
+         * @description For the unit's owner or tenant (and managers).
+         */
+        get: operations["people.listHouseholdInvitations"];
+        put?: never;
+        /**
+         * Invite a household member to a unit
+         * @description For the unit's owner or tenant (and managers). Creates a household occupancy on this unit only, without money access.
+         */
+        post: operations["people.createHouseholdInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+                /** @description The invitation id. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke a household invitation */
+        delete: operations["people.revokeHouseholdInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * End a household member's occupancy
+         * @description The unit's owner or tenant (or a manager) ends a household member's stay as of today.
+         */
+        delete: operations["people.endHouseholdOccupancy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/occupancies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add an occupancy to a unit
+         * @description Owner, tenant or household member. Co-owner shares of the unit sum to at most 100; a new correspondent replaces the side's previous one.
+         */
+        post: operations["people.createOccupancy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace a unit's tags
+         * @description Tags are cost-group memberships such as `lift` or `pool`.
+         */
+        put: operations["tenancy.setUnitTags"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register a plate for a unit
+         * @description The plate is normalized (`34 abc 123` becomes `34ABC123`) and unique per site.
+         */
+        post: operations["tenancy.createVehicle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vehicles/{vehicle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The vehicle id. */
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a vehicle */
+        delete: operations["tenancy.deleteVehicle"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /** List vendors */
+        get: operations["people.listVendors"];
+        put?: never;
+        /** Add a vendor */
+        post: operations["people.createVendor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/vendors/{vendor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The vendor id. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        /** Read a vendor */
+        get: operations["people.getVendor"];
+        put?: never;
+        post?: never;
+        /** Remove a vendor */
+        delete: operations["people.deleteVendor"];
+        options?: never;
+        head?: never;
+        /** Change a vendor */
+        patch: operations["people.updateVendor"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -630,16 +1790,14 @@ export interface components {
             roles: components["schemas"]["RoleGrant"][];
             /** @description Effective permissions in this organization, from the caller's active memberships and the role to permission matrix. */
             permissions: components["schemas"]["PermissionGrant"][];
-            /** @description Sites of the organization the caller can see (empty until the tenancy module lands). */
+            /** @description Sites of the organization the caller can see through a membership or an occupancy. */
             sites: components["schemas"]["MeSite"][];
         };
         Me: {
             user: components["schemas"]["MeUser"];
             organizations: components["schemas"]["OrgAccess"][];
-            /** @description The caller's unit occupancies (owner, tenant, household); empty until the people module lands. */
-            occupancies: {
-                [key: string]: unknown;
-            }[];
+            /** @description The caller's unit occupancies (owner, tenant, household), current and former (former ones bound read access by their dates). */
+            occupancies: components["schemas"]["MeOccupancy"][];
             policies: {
                 [key: string]: unknown;
             };
@@ -702,7 +1860,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "audit.read" | "audit.report" | "me.read" | "org.manage" | "org.read" | "platform.manage" | "sessions.manage_own";
+        Permission: "allocation.manage" | "allocation.read" | "audit.read" | "audit.report" | "claim.manage" | "directory.consent" | "directory.read" | "import.run" | "invitation.household" | "invitation.manage" | "me.read" | "membership.manage" | "membership.read" | "moveout.manage" | "moveout.read" | "occupancy.grant_money" | "occupancy.manage" | "occupancy.read" | "org.manage" | "org.read" | "person.manage" | "person.read" | "platform.manage" | "sessions.manage_own" | "site.create" | "site.export" | "site.import" | "site.manage" | "site.offboard" | "site.read" | "unit.manage" | "unit.read" | "vehicle.manage" | "vehicle.read" | "vendor.manage" | "vendor.read";
         Organization: {
             /** Format: uuid */
             id: string;
@@ -775,6 +1933,1003 @@ export interface components {
             items: components["schemas"]["AuditEvent"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
+        };
+        Site: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @description Postal address, free-form keys (personal data in audit diffs). */
+            address: {
+                [key: string]: unknown;
+            };
+            /** @description IANA time zone name. */
+            timezone: string;
+            /** @description ISO 4217. */
+            currency: string;
+            fiscal_year_start_month: number;
+            /**
+             * Format: date
+             * @description Postings dated on or before this day are refused (money module).
+             */
+            lock_date: string | null;
+            settings: components["schemas"]["SiteSettings"];
+            /** @description IBAN and account holder, shown to payers (`iban`, `holder`). */
+            bank_details: {
+                [key: string]: unknown;
+            };
+            /**
+             * @description Open enum: active, offboarded (handed over; every operation on it answers 403 `site_offboarded`).
+             * @enum {string}
+             */
+            status: "active" | "offboarded";
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /** @description Typed site settings; unknown keys are kept. */
+        SiteSettings: {
+            /** @description Owners see the aggregate income and expense and the budget (default false). */
+            transparency_to_owners?: boolean;
+            /** @description Tenants get portal access to the tenant side of their unit (default true). */
+            tenants_are_portal_users?: boolean;
+            /** @description Residents can see the opt-in directory (default false). */
+            directory_enabled?: boolean;
+            /**
+             * @description Whether parking and storage units are listed under a flat (default) or are independent units.
+             * @enum {string}
+             */
+            appurtenance_default?: "appurtenance" | "independent";
+        } & {
+            [key: string]: unknown;
+        };
+        SiteCreate: {
+            name: string;
+            address?: {
+                [key: string]: unknown;
+            };
+            timezone?: string;
+            currency?: string;
+            fiscal_year_start_month?: number;
+            /** Format: date */
+            lock_date?: string | null;
+            settings?: components["schemas"]["SiteSettings"];
+            bank_details?: {
+                [key: string]: unknown;
+            };
+            /** @description Names of the blocks of a multi-block site; omit for a single building (one hidden block is created). */
+            blocks?: string[];
+        };
+        /** @description Partial update; `settings` keys merge (a null value removes a key). */
+        SiteUpdate: {
+            name?: string;
+            address?: {
+                [key: string]: unknown;
+            };
+            timezone?: string;
+            currency?: string;
+            fiscal_year_start_month?: number;
+            /** Format: date */
+            lock_date?: string | null;
+            settings?: {
+                [key: string]: unknown;
+            };
+            bank_details?: {
+                [key: string]: unknown;
+            };
+        };
+        SiteList: {
+            items: components["schemas"]["Site"][];
+            next_cursor: string | null;
+        };
+        Block: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /** @description The automatic block of a single building; clients do not show it. */
+            hidden: boolean;
+            sort_order: number;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        BlockCreate: {
+            name: string;
+            hidden?: boolean;
+            sort_order?: number;
+        };
+        BlockUpdate: {
+            name?: string;
+            hidden?: boolean;
+            sort_order?: number;
+        };
+        BlockList: {
+            items: components["schemas"]["Block"][];
+            /** @description Always null; a site has few blocks. */
+            next_cursor: string | null;
+        };
+        Unit: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            block_id: string;
+            block_name: string;
+            /** @description What people say, for example "A-12". */
+            door_number: string;
+            /** @description Legal reference (tapu bagimsiz bolum no). */
+            legal_ref: string | null;
+            /**
+             * @description Open enum: flat, shop, office, parking, storage, common, other.
+             * @enum {string}
+             */
+            type: "flat" | "shop" | "office" | "parking" | "storage" | "common" | "other";
+            area_m2: number | null;
+            /**
+             * Format: uuid
+             * @description The flat a parking spot or storage room belongs to (appurtenance).
+             */
+            parent_unit_id: string | null;
+            /**
+             * @description Per-unit override of the site's `appurtenance_default`; null follows the site.
+             * @enum {string|null}
+             */
+            appurtenance_override: "appurtenance" | "independent" | null;
+            /** @description Per-unit payer override: charge type to the side that pays it, replacing the site default (`settings.payer_defaults`). Empty follows the site. */
+            payer_overrides: {
+                [key: string]: "owner" | "tenant";
+            };
+            /**
+             * @description Open enum: active, merged, split (the last two are reserved).
+             * @enum {string}
+             */
+            status: "active" | "merged" | "split";
+            /** @description Derived. True when the unit has dues and a statement of its own (flats, shops, offices; parking and storage per the override or site default). */
+            independent: boolean;
+            /** @description Derived from occupancies. True when nobody currently lives in the unit. */
+            vacant: boolean;
+            tags: string[];
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        UnitCreate: {
+            /**
+             * Format: uuid
+             * @description Required when the site has several blocks.
+             */
+            block_id?: string;
+            door_number: string;
+            legal_ref?: string | null;
+            /** @description One of flat (default), shop, office, parking, storage, common, other. */
+            type?: string;
+            area_m2?: number | null;
+            /** Format: uuid */
+            parent_unit_id?: string | null;
+            /** @enum {string|null} */
+            appurtenance_override?: "appurtenance" | "independent" | null;
+            payer_overrides?: {
+                [key: string]: "owner" | "tenant";
+            };
+        };
+        UnitUpdate: {
+            /** Format: uuid */
+            block_id?: string;
+            door_number?: string;
+            legal_ref?: string | null;
+            type?: string;
+            area_m2?: number | null;
+            /** Format: uuid */
+            parent_unit_id?: string | null;
+            /** @enum {string|null} */
+            appurtenance_override?: "appurtenance" | "independent" | null;
+            payer_overrides?: {
+                [key: string]: "owner" | "tenant";
+            };
+        };
+        UnitList: {
+            items: components["schemas"]["Unit"][];
+            next_cursor: string | null;
+        };
+        UnitTags: {
+            tags: string[];
+        };
+        AllocationKey: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** @description For example `arsa_payi`, `equal`, `area` or a custom code. */
+            code: string;
+            name: string;
+            /**
+             * @description Open enum: share (stored weights), equal (one per unit), area (m2), table (stored amounts).
+             * @enum {string}
+             */
+            kind: "share" | "equal" | "area" | "table";
+            /** @description One of the Law 634 keys created with the site. */
+            is_default: boolean;
+            value_count: number;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        AllocationKeyList: {
+            items: components["schemas"]["AllocationKey"][];
+            /** @description Always null. */
+            next_cursor: string | null;
+        };
+        AllocationKeyCreate: {
+            code: string;
+            name: string;
+            /** @enum {string} */
+            kind: "share" | "equal" | "area" | "table";
+        };
+        AllocationKeyUpdate: {
+            name: string;
+        };
+        KeyValue: {
+            /** Format: uuid */
+            unit_id: string;
+            /** @description A rational ("12/1000") or a decimal ("0.012", "350"). */
+            value: string;
+        };
+        KeyWarning: {
+            /** @description For example `share_sum_mismatch`. */
+            code: string;
+            params?: {
+                [key: string]: unknown;
+            };
+        };
+        AllocationKeyDetail: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            code: string;
+            name: string;
+            /**
+             * @description Open enum: share, equal, area, table.
+             * @enum {string}
+             */
+            kind: "share" | "equal" | "area" | "table";
+            is_default: boolean;
+            value_count: number;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            values: components["schemas"]["KeyValue"][];
+            /** @description Non-blocking findings, such as a share key that does not add up to one. */
+            warnings: components["schemas"]["KeyWarning"][];
+        };
+        AllocationKeyValues: {
+            values: components["schemas"]["KeyValue"][];
+        };
+        Vehicle: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            door_number: string;
+            /** @description Normalized, for example `34ABC123`. */
+            plate: string;
+            label: string | null;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        VehicleCreate: {
+            /** @description As written, for example "34 abc 123"; stored normalized. */
+            plate: string;
+            label?: string | null;
+        };
+        VehicleList: {
+            items: components["schemas"]["Vehicle"][];
+            next_cursor: string | null;
+        };
+        ImportMessage: {
+            /** @enum {string} */
+            level: "error" | "warning";
+            column: string;
+            code: string;
+            params?: {
+                [key: string]: unknown;
+            };
+        };
+        ImportRow: {
+            /** @description Line in the file (the header is line 1). */
+            row: number;
+            door_number: string;
+            /** @enum {string} */
+            status: "ok" | "warning" | "error";
+            /** @enum {string} */
+            action: "create" | "update" | "unchanged" | "skipped";
+            messages: components["schemas"]["ImportMessage"][];
+        };
+        ImportReport: {
+            /** Format: uuid */
+            batch_id: string;
+            dry_run: boolean;
+            /** @description False for a dry run and for a file with errors (nothing is written then). */
+            applied: boolean;
+            /** @enum {string} */
+            status: "dry_run" | "applied" | "failed";
+            summary: {
+                [key: string]: number;
+            };
+            /** @description Canonical column to the header it was read from. */
+            columns: {
+                [key: string]: string;
+            };
+            rows: components["schemas"]["ImportRow"][];
+        };
+        ImportUpload: {
+            /**
+             * Format: binary
+             * @description A CSV (comma, semicolon or tab separated, UTF-8) or XLSX file; the first row is the header.
+             */
+            file: string;
+            /**
+             * @description Validate and report only; nothing is written.
+             * @default false
+             */
+            dry_run: boolean;
+            /** @description JSON object mapping a canonical column (`door_number`, `block`, `area_m2`, `arsa_payi`, `owner_name`, ...) to the header text in the file. */
+            mapping?: string;
+        };
+        ArchiveUpload: {
+            /**
+             * Format: binary
+             * @description A site archive produced by a site export.
+             */
+            file: string;
+        };
+        SiteExport: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * @description Open enum: export, import.
+             * @enum {string}
+             */
+            direction: "export" | "import";
+            /** Format: uuid */
+            site_id: string | null;
+            site_name: string | null;
+            /** Format: uuid */
+            source_org_id: string | null;
+            /** Format: uuid */
+            target_org_id: string | null;
+            /**
+             * @description Open enum: running, done, failed.
+             * @enum {string}
+             */
+            status: "running" | "done" | "failed";
+            /** @description Rows per table. */
+            summary: {
+                [key: string]: unknown;
+            };
+            has_archive: boolean;
+            /** Format: date-time */
+            at: string;
+        };
+        SiteExportList: {
+            items: components["schemas"]["SiteExport"][];
+            next_cursor: string | null;
+        };
+        Codes: {
+            /** @description The locale the labels are in (en or tr). */
+            locale: string;
+            /** @description Section name (`roles`, `unit_types`, `occupancy_kinds`, `allocation_key_kinds`, `invitation_kinds`, `claim_statuses`, `debt_dispositions`, `problem_codes`, `field_error_codes`, ...) to code to label. */
+            sections: {
+                [key: string]: {
+                    [key: string]: string;
+                };
+            };
+        };
+        Person: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * Format: uuid
+             * @description The sign-in account linked to the person, if any.
+             */
+            user_id: string | null;
+            display_name: string;
+            email: string | null;
+            /** @description E.164. */
+            phone: string | null;
+            /** @description The number the gate calls for visitors (E.164). */
+            gate_contact_phone: string | null;
+            /** @description Always masked in reads (`*******1234`); stored encrypted, never in audit diffs. */
+            national_id: string | null;
+            /** @description ISO 3166-1 alpha-2; `TR` numbers are checksum-validated. */
+            national_id_country: string | null;
+            notes: string | null;
+            /**
+             * Format: uuid
+             * @description The site that registered the person.
+             */
+            site_id: string | null;
+            has_account: boolean;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        PersonCreate: {
+            display_name: string;
+            email?: string | null;
+            /** @description International format; Turkish 05xx numbers are normalized. */
+            phone?: string | null;
+            gate_contact_phone?: string | null;
+            national_id?: string | null;
+            national_id_country?: string;
+            notes?: string | null;
+            /**
+             * Format: uuid
+             * @description Register the person at this site (needed for a site-scoped manager).
+             */
+            site_id?: string | null;
+        };
+        PersonUpdate: {
+            display_name?: string;
+            email?: string | null;
+            phone?: string | null;
+            gate_contact_phone?: string | null;
+            /** @description A new number replaces the stored one; null removes it. */
+            national_id?: string | null;
+            national_id_country?: string;
+            notes?: string | null;
+        };
+        PersonList: {
+            items: components["schemas"]["Person"][];
+            next_cursor: string | null;
+        };
+        Occupancy: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            door_number: string;
+            /** Format: uuid */
+            person_id: string;
+            person_name: string;
+            /**
+             * @description Open enum: owner, tenant, household.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household";
+            /**
+             * @description Open enum: owner, tenant. The unit side the occupancy belongs to.
+             * @enum {string}
+             */
+            side: "owner" | "tenant";
+            /** @description A co-owner's share; the shares of one unit sum to at most 100. */
+            share_pct: number | null;
+            /** @description The one person per unit side who receives notices. */
+            is_correspondent: boolean;
+            /** @description Household members only; granted by the unit's owner or tenant. */
+            may_see_money: boolean;
+            /** @description Lives in the unit. Vacancy is derived from this. */
+            resides: boolean;
+            /** Format: date */
+            valid_from: string;
+            /**
+             * Format: date
+             * @description Exclusive; the first day the person is no longer there.
+             */
+            valid_to: string | null;
+            current: boolean;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        OccupancyList: {
+            items: components["schemas"]["Occupancy"][];
+            next_cursor: string | null;
+        };
+        OccupancyCreate: {
+            /** Format: uuid */
+            person_id: string;
+            /** @enum {string} */
+            kind: "owner" | "tenant" | "household";
+            /**
+             * @description Household members only: the side they live with (default: the tenant side when the unit has a tenant).
+             * @enum {string}
+             */
+            side?: "owner" | "tenant";
+            share_pct?: number | null;
+            is_correspondent?: boolean;
+            resides?: boolean;
+            /**
+             * Format: date
+             * @description Default today.
+             */
+            valid_from?: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        OccupancyUpdate: {
+            share_pct?: number | null;
+            is_correspondent?: boolean;
+            resides?: boolean;
+            /** Format: date */
+            valid_from?: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        MoneyAccess: {
+            may_see_money: boolean;
+        };
+        MoveOutRequest: {
+            /**
+             * Format: date
+             * @description The first day the person is no longer there; no month is pro-rated.
+             */
+            as_of: string;
+            /**
+             * @description What happens to the leaving person's open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.
+             * @enum {string}
+             */
+            open_charges?: "carry_to_person" | "keep_on_unit" | "write_off";
+            notes?: string | null;
+            /**
+             * Format: uuid
+             * @description A transfer (sale): this person takes over the same kind, side and share from the date.
+             */
+            successor_person_id?: string | null;
+            /** @description Also end the household members of the same side (default true). */
+            end_household?: boolean;
+        };
+        MoveOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            occupancy_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /** Format: uuid */
+            person_id: string;
+            /** Format: date */
+            as_of: string;
+            /**
+             * @description Open enum: carry_to_person, keep_on_unit, write_off.
+             * @enum {string}
+             */
+            open_charges: "carry_to_person" | "keep_on_unit" | "write_off";
+            /**
+             * Format: int64
+             * @description Filled by the money module: the amount carried to the person's receivable (minor units).
+             */
+            carried_amount_minor: number | null;
+            carried_currency: string | null;
+            /**
+             * @description Open enum: pending, ready. The money module fills the statement.
+             * @enum {string}
+             */
+            closing_statement_status: "pending" | "ready";
+            /** Format: uuid */
+            closing_statement_file_id: string | null;
+            /**
+             * @description Open enum: pending, ready. The debt certificate (borc durum belgesi).
+             * @enum {string}
+             */
+            certificate_status: "pending" | "ready";
+            /** Format: uuid */
+            certificate_file_id: string | null;
+            /** Format: uuid */
+            successor_occupancy_id: string | null;
+            /** Format: uuid */
+            decided_by: string | null;
+            notes: string | null;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        Membership: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            person_id: string;
+            person_name: string;
+            /**
+             * @description Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.
+             * @enum {string}
+             */
+            role: "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard";
+            /**
+             * @description Open enum: org, site, block.
+             * @enum {string}
+             */
+            scope_type: "org" | "site" | "block";
+            /** Format: uuid */
+            scope_id: string | null;
+            /** Format: date-time */
+            valid_from: string;
+            /** Format: date-time */
+            valid_to: string | null;
+            /** @description Board and auditor memberships belong to the site; ending one needs re-authentication and is audited. */
+            site_owned: boolean;
+            /**
+             * Format: uuid
+             * @description The assembly decision that granted it (governance, 0.2).
+             */
+            decision_id: string | null;
+            current: boolean;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        MembershipList: {
+            items: components["schemas"]["Membership"][];
+            next_cursor: string | null;
+        };
+        MembershipCreate: {
+            /** Format: uuid */
+            person_id: string;
+            /** @enum {string} */
+            role: "org_admin" | "site_manager" | "board_member" | "auditor" | "accountant" | "staff" | "guard";
+            /**
+             * @description Default org.
+             * @enum {string}
+             */
+            scope_type?: "org" | "site" | "block";
+            /** Format: uuid */
+            scope_id?: string | null;
+            /** Format: date-time */
+            valid_from?: string;
+            /** Format: date-time */
+            valid_to?: string | null;
+            /** Format: uuid */
+            decision_id?: string | null;
+        };
+        Invitation: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /**
+             * @description Open enum: manager, household, site_code.
+             * @enum {string}
+             */
+            kind: "manager" | "household" | "site_code";
+            /** Format: uuid */
+            unit_id: string | null;
+            door_number: string | null;
+            /** Format: uuid */
+            person_id: string | null;
+            occupancy_kind: string | null;
+            /**
+             * @description Open enum: sms, email, link.
+             * @enum {string}
+             */
+            channel: "sms" | "email" | "link";
+            email: string | null;
+            phone: string | null;
+            /**
+             * @description Open enum: pending, accepted, revoked, expired.
+             * @enum {string}
+             */
+            status: "pending" | "accepted" | "revoked" | "expired";
+            /** Format: date-time */
+            expires_at: string | null;
+            send_count: number;
+            /** Format: date-time */
+            last_sent_at: string | null;
+            uses: number;
+            /** Format: date-time */
+            accepted_at: string | null;
+            /**
+             * @description Open enum: sent, failed, none. The outcome of the send made by this request.
+             * @enum {string}
+             */
+            delivery: "sent" | "failed" | "none";
+            /** @description The one-time secret; only in the response that created or re-sent the invitation. */
+            token?: string;
+            /** @description The invitation URL; only in the response that created or re-sent it. */
+            link?: string;
+            /** Format: date-time */
+            created_at: string;
+            version: number;
+        };
+        InvitationList: {
+            items: components["schemas"]["Invitation"][];
+            next_cursor: string | null;
+        };
+        /** @description Either `person_id` of an existing person without an account, or `display_name` with `phone` and/or `email`. */
+        InvitationCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /** Format: uuid */
+            person_id?: string;
+            display_name?: string;
+            email?: string;
+            phone?: string;
+            /** @enum {string} */
+            occupancy_kind: "owner" | "tenant" | "household";
+            /** @enum {string} */
+            side?: "owner" | "tenant";
+            share_pct?: number;
+            is_correspondent?: boolean;
+            resides?: boolean;
+            /** Format: date */
+            valid_from?: string;
+            /**
+             * @description Default sms when there is a phone, else email; `link` creates the link without sending it.
+             * @enum {string}
+             */
+            channel?: "sms" | "email" | "link";
+            expires_in_days?: number;
+            /**
+             * @description `mobile` makes the link use the `openbekci://` scheme.
+             * @enum {string}
+             */
+            client?: "web" | "mobile";
+            locale?: string;
+        };
+        /** @description Invite a household member to this unit. They get no money access. */
+        HouseholdInvitationCreate: {
+            display_name?: string;
+            email?: string;
+            phone?: string;
+            /** @enum {string} */
+            side?: "owner" | "tenant";
+            resides?: boolean;
+            /** Format: date */
+            valid_from?: string;
+            /** @enum {string} */
+            channel?: "sms" | "email" | "link";
+            expires_in_days?: number;
+            /** @enum {string} */
+            client?: "web" | "mobile";
+            locale?: string;
+            /** Format: uuid */
+            person_id?: string;
+        };
+        InvitationPreview: {
+            kind: string;
+            org_name: string;
+            site_name: string;
+            door_number: string | null;
+            occupancy_kind: string | null;
+            invited_name: string;
+            channel: string;
+            /** @description The invited phone or email, masked. */
+            contact_hint: string;
+            /** Format: date-time */
+            expires_at: string | null;
+        };
+        AcceptInvitation: {
+            /** @description Optional password for a newly created account (minimum 10 characters). */
+            password?: string;
+            locale?: string;
+        };
+        AcceptResult: {
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            person_id: string;
+            /** Format: uuid */
+            user_id: string;
+            /** Format: uuid */
+            occupancy_id: string | null;
+            user_created: boolean;
+            /** @description True unless the caller was already signed in; sign in with any method (SMS code, magic link, password). */
+            sign_in_required: boolean;
+        };
+        JoinCode: {
+            /** Format: uuid */
+            site_id: string;
+            code: string;
+            /** @description `{BASE_URL}/join/{code}`; the QR code encodes it. */
+            url: string;
+            uses: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        JoinUnit: {
+            /** Format: uuid */
+            id: string;
+            door_number: string;
+            block_name: string;
+            type: string;
+        };
+        JoinPreview: {
+            org_name: string;
+            site_name: string;
+            /** @description The units that can be claimed; empty unless the visitor is signed in. */
+            units: components["schemas"]["JoinUnit"][];
+        };
+        ClaimCreate: {
+            /** Format: uuid */
+            unit_id: string;
+            /** @enum {string} */
+            kind: "owner" | "tenant" | "household";
+            display_name?: string;
+            message?: string;
+        };
+        UnitClaim: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            door_number: string;
+            /** Format: uuid */
+            person_id: string;
+            person_name: string;
+            /**
+             * @description Open enum: owner, tenant, household.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household";
+            /**
+             * @description Open enum: pending, approved, rejected.
+             * @enum {string}
+             */
+            status: "pending" | "approved" | "rejected";
+            message: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            decision_note: string | null;
+            /** Format: uuid */
+            occupancy_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
+        UnitClaimList: {
+            items: components["schemas"]["UnitClaim"][];
+            next_cursor: string | null;
+        };
+        ClaimApprove: {
+            share_pct?: number | null;
+            is_correspondent?: boolean;
+            /** Format: date */
+            valid_from?: string;
+            /** @enum {string} */
+            side?: "owner" | "tenant";
+            note?: string | null;
+        };
+        ClaimReject: {
+            note?: string | null;
+        };
+        DirectoryEntry: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            phone: string | null;
+            /** Format: uuid */
+            unit_id: string;
+            door_number: string;
+            kind: string;
+            /** @description A person of the caller's own unit; always visible to them. */
+            own_unit: boolean;
+        };
+        DirectoryList: {
+            items: components["schemas"]["DirectoryEntry"][];
+            /** @description Always null. */
+            next_cursor: string | null;
+        };
+        DirectoryConsent: {
+            /** Format: uuid */
+            site_id: string;
+            share_name: boolean;
+            share_phone: boolean;
+        };
+        DirectoryConsentUpdate: {
+            share_name?: boolean;
+            /** @description Needs `share_name`. */
+            share_phone?: boolean;
+        };
+        Vendor: {
+            /** Format: uuid */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Null for a vendor shared by the organization's sites.
+             */
+            site_id: string | null;
+            name: string;
+            tax_id: string | null;
+            contact: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            default_expense_category_id: string | null;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        VendorList: {
+            items: components["schemas"]["Vendor"][];
+            next_cursor: string | null;
+        };
+        VendorCreate: {
+            name: string;
+            /** Format: uuid */
+            site_id?: string | null;
+            tax_id?: string | null;
+            contact?: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            default_expense_category_id?: string | null;
+        };
+        VendorUpdate: {
+            name?: string;
+            tax_id?: string | null;
+            contact?: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            default_expense_category_id?: string | null;
+        };
+        /** @description One occupancy of the caller, as `GET /v1/me` lists it. */
+        MeOccupancy: {
+            /**
+             * Format: uuid
+             * @description The occupancy id.
+             */
+            id: string;
+            /** @description The unit as people name it (the door number). */
+            unit_label: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            site_name: string;
+            /** Format: uuid */
+            unit_id: string;
+            door_number: string;
+            block_name: string;
+            /**
+             * @description Open enum: owner, tenant, household.
+             * @enum {string}
+             */
+            kind: "owner" | "tenant" | "household";
+            /**
+             * @description Open enum: owner, tenant.
+             * @enum {string}
+             */
+            side: "owner" | "tenant";
+            is_correspondent: boolean;
+            /** @description For household members; owners and tenants always see their side's money. */
+            may_see_money: boolean;
+            resides: boolean;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to: string | null;
+            /** @description False for a former occupancy (read access bounded by its dates). */
+            current: boolean;
         };
     };
     responses: {
@@ -1298,6 +3453,2262 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "instance.getCodes": {
+        parameters: {
+            query?: {
+                /** @description en or tr (default en). */
+                locale?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Codes"];
+                };
+            };
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.previewInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationPreview"];
+                };
+            };
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.acceptInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptInvitation"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AcceptResult"];
+                };
+            };
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.previewJoin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinPreview"];
+                };
+            };
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createClaim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The secret token or code from the link. */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClaimCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getAllocationKey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The key id. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKeyDetail"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateAllocationKey": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The key id. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationKeyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKey"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.setAllocationKeyValues": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The key id. */
+                key_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationKeyValues"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKeyDetail"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateBlock": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The block id. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listInvitations": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only this site. */
+                site_id?: string;
+                /** @description pending, accepted, revoked or expired. */
+                status?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitationCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.revokeInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The invitation id. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.resendInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The invitation id. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listMemberships": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only this person. */
+                person_id?: string;
+                /** @description Only memberships scoped to this site or its blocks. */
+                site_id?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createMembership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Membership"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.endMembership": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The membership id. */
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getMoveOut": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The move out id. */
+                move_out_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveOut"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listOccupancies": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only this site. */
+                site_id?: string;
+                /** @description Only this unit. */
+                unit_id?: string;
+                /** @description Only this person. */
+                person_id?: string;
+                /** @description Only occupancies in force today. */
+                current?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OccupancyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updateOccupancy": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OccupancyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.setMoneyAccess": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoneyAccess"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.moveOut": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MoveOutRequest"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoveOut"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listPersons": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Name, phone or email fragment. */
+                q?: string;
+                /** @description Only people tied to this site. */
+                site_id?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PersonList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createPerson": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getPerson": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The person id. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updatePerson": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The person id. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PersonUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Person"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listSiteExports": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteExportList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.downloadSiteExport": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The export id. */
+                export_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.importSiteArchive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["ArchiveUpload"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteExport"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listSites": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createSite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Site"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getSite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Site"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateSite": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SiteUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Site"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listAllocationKeys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKeyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createAllocationKey": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationKeyCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationKey"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listBlocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BlockList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createBlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BlockCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Block"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listDirectory": {
+        parameters: {
+            query?: {
+                /** @description Name or door number fragment. */
+                q?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectoryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.setDirectoryConsent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DirectoryConsentUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectoryConsent"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.exportSite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteExport"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.importUnits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["ImportUpload"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportReport"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getJoinCode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinCode"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.rotateJoinCode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinCode"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.offboardSite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Site"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listUnits": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only units of this block. */
+                block_id?: string;
+                /** @description Only units of this type. */
+                type?: string;
+                /** @description Door number fragment. */
+                q?: string;
+                /** @description Only vacant or only occupied units (derived). */
+                vacant?: boolean;
+                /** @description Only appurtenances of this unit. */
+                parent_unit_id?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createUnit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.listVehicles": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only this unit's vehicles. */
+                unit_id?: string;
+                /** @description Plate fragment. */
+                q?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.exportVehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The site id. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listClaims": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only this site. */
+                site_id?: string;
+                /** @description pending (default), approved, rejected or all. */
+                status?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaimList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.approveClaim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The claim id. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClaimApprove"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.rejectClaim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The claim id. */
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClaimReject"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitClaim"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.getUnit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.updateUnit": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listHouseholdInvitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createHouseholdInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HouseholdInvitationCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Invitation"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.revokeHouseholdInvitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+                /** @description The invitation id. */
+                invitation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.endHouseholdOccupancy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+                /** @description The occupancy id. */
+                occupancy_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createOccupancy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OccupancyCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Occupancy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.setUnitTags": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitTags"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.createVehicle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The unit id. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vehicle"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.deleteVehicle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The vehicle id. */
+                vehicle_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.listVendors": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.createVendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VendorCreate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vendor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.getVendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The vendor id. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vendor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.deleteVendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The vendor id. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Done. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.updateVendor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+                 *     `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+                 */
+                "If-Match"?: string;
+            };
+            path: {
+                /** @description The organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The vendor id. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VendorUpdate"];
+            };
+        };
+        responses: {
+            /** @description Success. */
+            200: {
+                headers: {
+                    /** @description The version, quoted; send it as `If-Match` when updating. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Vendor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

@@ -1,0 +1,455 @@
+schemas:
+  Person:
+    type: object
+    required: [id, user_id, display_name, email, phone, gate_contact_phone, national_id, national_id_country, notes, site_id, has_account, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      user_id: {type: string, format: uuid, nullable: true, description: 'The sign-in account linked to the person, if any.'}
+      display_name: {type: string}
+      email: {type: string, nullable: true}
+      phone: {type: string, nullable: true, description: 'E.164.'}
+      gate_contact_phone: {type: string, nullable: true, description: 'The number the gate calls for visitors (E.164).'}
+      national_id:
+        type: string
+        nullable: true
+        description: Always masked in reads (`*******1234`); stored encrypted, never in audit diffs.
+      national_id_country: {type: string, nullable: true, description: 'ISO 3166-1 alpha-2; `TR` numbers are checksum-validated.'}
+      notes: {type: string, nullable: true}
+      site_id: {type: string, format: uuid, nullable: true, description: 'The site that registered the person.'}
+      has_account: {type: boolean}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  PersonCreate:
+    type: object
+    additionalProperties: false
+    required: [display_name]
+    properties:
+      display_name: {type: string, minLength: 1, maxLength: 200}
+      email: {type: string, nullable: true, maxLength: 254}
+      phone: {type: string, nullable: true, maxLength: 32, description: 'International format; Turkish 05xx numbers are normalized.'}
+      gate_contact_phone: {type: string, nullable: true, maxLength: 32}
+      national_id: {type: string, nullable: true, maxLength: 40}
+      national_id_country: {type: string, minLength: 2, maxLength: 2}
+      notes: {type: string, nullable: true, maxLength: 4000}
+      site_id: {type: string, format: uuid, nullable: true, description: 'Register the person at this site (needed for a site-scoped manager).'}
+  PersonUpdate:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      display_name: {type: string, minLength: 1, maxLength: 200}
+      email: {type: string, nullable: true, maxLength: 254}
+      phone: {type: string, nullable: true, maxLength: 32}
+      gate_contact_phone: {type: string, nullable: true, maxLength: 32}
+      national_id: {type: string, nullable: true, maxLength: 40, description: 'A new number replaces the stored one; null removes it.'}
+      national_id_country: {type: string, minLength: 2, maxLength: 2}
+      notes: {type: string, nullable: true, maxLength: 4000}
+  PersonList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Person'}
+      next_cursor: {type: string, nullable: true}
+  Occupancy:
+    type: object
+    required: [id, site_id, unit_id, door_number, person_id, person_name, kind, side, share_pct, is_correspondent, may_see_money, resides, valid_from, valid_to, current, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      unit_id: {type: string, format: uuid}
+      door_number: {type: string}
+      person_id: {type: string, format: uuid}
+      person_name: {type: string}
+      kind: {type: string, x-open-enum: true, description: 'Open enum: owner, tenant, household.', enum: [owner, tenant, household]}
+      side: {type: string, x-open-enum: true, description: 'Open enum: owner, tenant. The unit side the occupancy belongs to.', enum: [owner, tenant]}
+      share_pct: {type: number, nullable: true, description: 'A co-owner''s share; the shares of one unit sum to at most 100.'}
+      is_correspondent: {type: boolean, description: 'The one person per unit side who receives notices.'}
+      may_see_money: {type: boolean, description: 'Household members only; granted by the unit''s owner or tenant.'}
+      resides: {type: boolean, description: 'Lives in the unit. Vacancy is derived from this.'}
+      valid_from: {type: string, format: date}
+      valid_to: {type: string, format: date, nullable: true, description: 'Exclusive; the first day the person is no longer there.'}
+      current: {type: boolean}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  OccupancyList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Occupancy'}
+      next_cursor: {type: string, nullable: true}
+  OccupancyCreate:
+    type: object
+    additionalProperties: false
+    required: [person_id, kind]
+    properties:
+      person_id: {type: string, format: uuid}
+      kind: {type: string, enum: [owner, tenant, household]}
+      side: {type: string, enum: [owner, tenant], description: 'Household members only: the side they live with (default: the tenant side when the unit has a tenant).'}
+      share_pct: {type: number, nullable: true}
+      is_correspondent: {type: boolean}
+      resides: {type: boolean}
+      valid_from: {type: string, format: date, description: 'Default today.'}
+      valid_to: {type: string, format: date, nullable: true}
+  OccupancyUpdate:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      share_pct: {type: number, nullable: true}
+      is_correspondent: {type: boolean}
+      resides: {type: boolean}
+      valid_from: {type: string, format: date}
+      valid_to: {type: string, format: date, nullable: true}
+  MoneyAccess:
+    type: object
+    additionalProperties: false
+    required: [may_see_money]
+    properties:
+      may_see_money: {type: boolean}
+  MoveOutRequest:
+    type: object
+    additionalProperties: false
+    required: [as_of]
+    properties:
+      as_of: {type: string, format: date, description: 'The first day the person is no longer there; no month is pro-rated.'}
+      open_charges:
+        type: string
+        enum: [carry_to_person, keep_on_unit, write_off]
+        description: 'What happens to the leaving person''s open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.'
+      notes: {type: string, nullable: true, maxLength: 4000}
+      successor_person_id: {type: string, format: uuid, nullable: true, description: 'A transfer (sale): this person takes over the same kind, side and share from the date.'}
+      end_household: {type: boolean, description: 'Also end the household members of the same side (default true).'}
+  MoveOut:
+    type: object
+    required: [id, site_id, occupancy_id, unit_id, person_id, as_of, open_charges, carried_amount_minor, carried_currency, closing_statement_status, closing_statement_file_id, certificate_status, certificate_file_id, successor_occupancy_id, decided_by, notes, version, created_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      occupancy_id: {type: string, format: uuid}
+      unit_id: {type: string, format: uuid}
+      person_id: {type: string, format: uuid}
+      as_of: {type: string, format: date}
+      open_charges: {type: string, x-open-enum: true, description: 'Open enum: carry_to_person, keep_on_unit, write_off.', enum: [carry_to_person, keep_on_unit, write_off]}
+      carried_amount_minor: {type: integer, format: int64, nullable: true, description: 'Filled by the money module: the amount carried to the person''s receivable (minor units).'}
+      carried_currency: {type: string, nullable: true}
+      closing_statement_status: {type: string, x-open-enum: true, description: 'Open enum: pending, ready. The money module fills the statement.', enum: [pending, ready]}
+      closing_statement_file_id: {type: string, format: uuid, nullable: true}
+      certificate_status: {type: string, x-open-enum: true, description: 'Open enum: pending, ready. The debt certificate (borc durum belgesi).', enum: [pending, ready]}
+      certificate_file_id: {type: string, format: uuid, nullable: true}
+      successor_occupancy_id: {type: string, format: uuid, nullable: true}
+      decided_by: {type: string, format: uuid, nullable: true}
+      notes: {type: string, nullable: true}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+  Membership:
+    type: object
+    required: [id, person_id, person_name, role, scope_type, scope_id, valid_from, valid_to, site_owned, decision_id, current, version, created_at]
+    properties:
+      id: {type: string, format: uuid}
+      person_id: {type: string, format: uuid}
+      person_name: {type: string}
+      role: {type: string, x-open-enum: true, description: 'Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.', enum: [org_admin, site_manager, board_member, auditor, accountant, staff, guard]}
+      scope_type: {type: string, x-open-enum: true, description: 'Open enum: org, site, block.', enum: [org, site, block]}
+      scope_id: {type: string, format: uuid, nullable: true}
+      valid_from: {type: string, format: date-time}
+      valid_to: {type: string, format: date-time, nullable: true}
+      site_owned: {type: boolean, description: 'Board and auditor memberships belong to the site; ending one needs re-authentication and is audited.'}
+      decision_id: {type: string, format: uuid, nullable: true, description: 'The assembly decision that granted it (governance, 0.2).'}
+      current: {type: boolean}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+  MembershipList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Membership'}
+      next_cursor: {type: string, nullable: true}
+  MembershipCreate:
+    type: object
+    additionalProperties: false
+    required: [person_id, role]
+    properties:
+      person_id: {type: string, format: uuid}
+      role: {type: string, enum: [org_admin, site_manager, board_member, auditor, accountant, staff, guard]}
+      scope_type: {type: string, enum: [org, site, block], description: 'Default org.'}
+      scope_id: {type: string, format: uuid, nullable: true}
+      valid_from: {type: string, format: date-time}
+      valid_to: {type: string, format: date-time, nullable: true}
+      decision_id: {type: string, format: uuid, nullable: true}
+  Invitation:
+    type: object
+    required: [id, site_id, kind, unit_id, door_number, person_id, occupancy_kind, channel, email, phone, status, expires_at, send_count, last_sent_at, uses, accepted_at, delivery, created_at, version]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      kind: {type: string, x-open-enum: true, description: 'Open enum: manager, household, site_code.', enum: [manager, household, site_code]}
+      unit_id: {type: string, format: uuid, nullable: true}
+      door_number: {type: string, nullable: true}
+      person_id: {type: string, format: uuid, nullable: true}
+      occupancy_kind: {type: string, nullable: true}
+      channel: {type: string, x-open-enum: true, description: 'Open enum: sms, email, link.', enum: [sms, email, link]}
+      email: {type: string, nullable: true}
+      phone: {type: string, nullable: true}
+      status: {type: string, x-open-enum: true, description: 'Open enum: pending, accepted, revoked, expired.', enum: [pending, accepted, revoked, expired]}
+      expires_at: {type: string, format: date-time, nullable: true}
+      send_count: {type: integer}
+      last_sent_at: {type: string, format: date-time, nullable: true}
+      uses: {type: integer}
+      accepted_at: {type: string, format: date-time, nullable: true}
+      delivery: {type: string, x-open-enum: true, description: 'Open enum: sent, failed, none. The outcome of the send made by this request.', enum: [sent, failed, none]}
+      token: {type: string, description: 'The one-time secret; only in the response that created or re-sent the invitation.'}
+      link: {type: string, description: 'The invitation URL; only in the response that created or re-sent it.'}
+      created_at: {type: string, format: date-time}
+      version: {type: integer}
+  InvitationList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Invitation'}
+      next_cursor: {type: string, nullable: true}
+  InvitationCreate:
+    type: object
+    additionalProperties: false
+    required: [site_id, unit_id, occupancy_kind]
+    description: Either `person_id` of an existing person without an account, or `display_name` with `phone` and/or `email`.
+    properties:
+      site_id: {type: string, format: uuid}
+      unit_id: {type: string, format: uuid}
+      person_id: {type: string, format: uuid}
+      display_name: {type: string, maxLength: 200}
+      email: {type: string, maxLength: 254}
+      phone: {type: string, maxLength: 32}
+      occupancy_kind: {type: string, enum: [owner, tenant, household]}
+      side: {type: string, enum: [owner, tenant]}
+      share_pct: {type: number}
+      is_correspondent: {type: boolean}
+      resides: {type: boolean}
+      valid_from: {type: string, format: date}
+      channel: {type: string, enum: [sms, email, link], description: 'Default sms when there is a phone, else email; `link` creates the link without sending it.'}
+      expires_in_days: {type: integer, minimum: 1, maximum: 90}
+      client: {type: string, enum: [web, mobile], description: '`mobile` makes the link use the `openbekci://` scheme.'}
+      locale: {type: string, maxLength: 35}
+  HouseholdInvitationCreate:
+    type: object
+    additionalProperties: false
+    description: Invite a household member to this unit. They get no money access.
+    properties:
+      display_name: {type: string, maxLength: 200}
+      email: {type: string, maxLength: 254}
+      phone: {type: string, maxLength: 32}
+      side: {type: string, enum: [owner, tenant]}
+      resides: {type: boolean}
+      valid_from: {type: string, format: date}
+      channel: {type: string, enum: [sms, email, link]}
+      expires_in_days: {type: integer, minimum: 1, maximum: 90}
+      client: {type: string, enum: [web, mobile]}
+      locale: {type: string, maxLength: 35}
+      person_id: {type: string, format: uuid}
+  InvitationPreview:
+    type: object
+    required: [kind, org_name, site_name, door_number, occupancy_kind, invited_name, channel, contact_hint, expires_at]
+    properties:
+      kind: {type: string}
+      org_name: {type: string}
+      site_name: {type: string}
+      door_number: {type: string, nullable: true}
+      occupancy_kind: {type: string, nullable: true}
+      invited_name: {type: string}
+      channel: {type: string}
+      contact_hint: {type: string, description: 'The invited phone or email, masked.'}
+      expires_at: {type: string, format: date-time, nullable: true}
+  AcceptInvitation:
+    type: object
+    additionalProperties: false
+    properties:
+      password: {type: string, maxLength: 256, description: 'Optional password for a newly created account (minimum 10 characters).'}
+      locale: {type: string, maxLength: 35}
+  AcceptResult:
+    type: object
+    required: [org_id, site_id, person_id, user_id, occupancy_id, user_created, sign_in_required]
+    properties:
+      org_id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      person_id: {type: string, format: uuid}
+      user_id: {type: string, format: uuid}
+      occupancy_id: {type: string, format: uuid, nullable: true}
+      user_created: {type: boolean}
+      sign_in_required: {type: boolean, description: 'True unless the caller was already signed in; sign in with any method (SMS code, magic link, password).'}
+  JoinCode:
+    type: object
+    required: [site_id, code, url, uses, created_at]
+    properties:
+      site_id: {type: string, format: uuid}
+      code: {type: string}
+      url: {type: string, description: '`{BASE_URL}/join/{code}`; the QR code encodes it.'}
+      uses: {type: integer}
+      created_at: {type: string, format: date-time}
+  JoinUnit:
+    type: object
+    required: [id, door_number, block_name, type]
+    properties:
+      id: {type: string, format: uuid}
+      door_number: {type: string}
+      block_name: {type: string}
+      type: {type: string}
+  JoinPreview:
+    type: object
+    required: [org_name, site_name, units]
+    properties:
+      org_name: {type: string}
+      site_name: {type: string}
+      units:
+        type: array
+        description: The units that can be claimed; empty unless the visitor is signed in.
+        items: {$ref: '#/schemas/JoinUnit'}
+  ClaimCreate:
+    type: object
+    additionalProperties: false
+    required: [unit_id, kind]
+    properties:
+      unit_id: {type: string, format: uuid}
+      kind: {type: string, enum: [owner, tenant, household]}
+      display_name: {type: string, maxLength: 200}
+      message: {type: string, maxLength: 1000}
+  UnitClaim:
+    type: object
+    required: [id, site_id, unit_id, door_number, person_id, person_name, kind, status, message, decided_at, decision_note, occupancy_id, created_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      unit_id: {type: string, format: uuid}
+      door_number: {type: string}
+      person_id: {type: string, format: uuid}
+      person_name: {type: string}
+      kind: {type: string, x-open-enum: true, description: 'Open enum: owner, tenant, household.', enum: [owner, tenant, household]}
+      status: {type: string, x-open-enum: true, description: 'Open enum: pending, approved, rejected.', enum: [pending, approved, rejected]}
+      message: {type: string, nullable: true}
+      decided_at: {type: string, format: date-time, nullable: true}
+      decision_note: {type: string, nullable: true}
+      occupancy_id: {type: string, format: uuid, nullable: true}
+      created_at: {type: string, format: date-time}
+  UnitClaimList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/UnitClaim'}
+      next_cursor: {type: string, nullable: true}
+  ClaimApprove:
+    type: object
+    additionalProperties: false
+    properties:
+      share_pct: {type: number, nullable: true}
+      is_correspondent: {type: boolean}
+      valid_from: {type: string, format: date}
+      side: {type: string, enum: [owner, tenant]}
+      note: {type: string, nullable: true, maxLength: 1000}
+  ClaimReject:
+    type: object
+    additionalProperties: false
+    properties:
+      note: {type: string, nullable: true, maxLength: 1000}
+  DirectoryEntry:
+    type: object
+    required: [person_id, display_name, phone, unit_id, door_number, kind, own_unit]
+    properties:
+      person_id: {type: string, format: uuid}
+      display_name: {type: string}
+      phone: {type: string, nullable: true}
+      unit_id: {type: string, format: uuid}
+      door_number: {type: string}
+      kind: {type: string}
+      own_unit: {type: boolean, description: 'A person of the caller''s own unit; always visible to them.'}
+  DirectoryList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/DirectoryEntry'}
+      next_cursor: {type: string, nullable: true, description: 'Always null.'}
+  DirectoryConsent:
+    type: object
+    required: [site_id, share_name, share_phone]
+    properties:
+      site_id: {type: string, format: uuid}
+      share_name: {type: boolean}
+      share_phone: {type: boolean}
+  DirectoryConsentUpdate:
+    type: object
+    additionalProperties: false
+    properties:
+      share_name: {type: boolean}
+      share_phone: {type: boolean, description: 'Needs `share_name`.'}
+  Vendor:
+    type: object
+    required: [id, site_id, name, tax_id, contact, default_expense_category_id, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid, nullable: true, description: 'Null for a vendor shared by the organization''s sites.'}
+      name: {type: string}
+      tax_id: {type: string, nullable: true}
+      contact: {type: object, additionalProperties: true}
+      default_expense_category_id: {type: string, format: uuid, nullable: true}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  VendorList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Vendor'}
+      next_cursor: {type: string, nullable: true}
+  VendorCreate:
+    type: object
+    additionalProperties: false
+    required: [name]
+    properties:
+      name: {type: string, minLength: 1, maxLength: 200}
+      site_id: {type: string, format: uuid, nullable: true}
+      tax_id: {type: string, nullable: true, maxLength: 40}
+      contact: {type: object, additionalProperties: true}
+      default_expense_category_id: {type: string, format: uuid, nullable: true}
+  VendorUpdate:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      name: {type: string, minLength: 1, maxLength: 200}
+      tax_id: {type: string, nullable: true, maxLength: 40}
+      contact: {type: object, additionalProperties: true}
+      default_expense_category_id: {type: string, format: uuid, nullable: true}
+  MeOccupancy:
+    type: object
+    description: One occupancy of the caller, as `GET /v1/me` lists it.
+    required: [id, unit_label, org_id, site_id, site_name, unit_id, door_number, block_name, kind, side, is_correspondent, may_see_money, resides, valid_from, valid_to, current]
+    properties:
+      id: {type: string, format: uuid, description: The occupancy id.}
+      unit_label: {type: string, description: The unit as people name it (the door number).}
+      org_id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      site_name: {type: string}
+      unit_id: {type: string, format: uuid}
+      door_number: {type: string}
+      block_name: {type: string}
+      kind: {type: string, x-open-enum: true, description: 'Open enum: owner, tenant, household.', enum: [owner, tenant, household]}
+      side: {type: string, x-open-enum: true, description: 'Open enum: owner, tenant.', enum: [owner, tenant]}
+      is_correspondent: {type: boolean}
+      may_see_money: {type: boolean, description: 'For household members; owners and tenants always see their side''s money.'}
+      resides: {type: boolean}
+      valid_from: {type: string, format: date}
+      valid_to: {type: string, format: date, nullable: true}
+      current: {type: boolean, description: 'False for a former occupancy (read access bounded by its dates).'}

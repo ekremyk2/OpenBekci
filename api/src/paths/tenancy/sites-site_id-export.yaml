@@ -1,0 +1,38 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: site_id
+    in: path
+    required: true
+    description: The site id.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: tenancy.exportSite
+  summary: Export a whole site to an archive
+  description: 'Site hand-over (decision D2): people, occupancies, units, keys, vehicles, memberships of the site and more, identifiers preserved. Download it with `tenancy.downloadSiteExport`.'
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [site.export]
+  x-idempotent: optional
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/SiteExport'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

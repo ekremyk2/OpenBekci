@@ -1,0 +1,26 @@
+get:
+  operationId: instance.getCodes
+  summary: Labels of the API's codes
+  description: 'Human labels for enums and error codes (roles, unit types, occupancy kinds, allocation key kinds, invitation kinds, problem codes, ...) in the requested locale.'
+  tags: [tenancy]
+  security: []
+  parameters:
+    - name: locale
+      in: query
+      description: 'en or tr (default en).'
+      schema: {type: string}
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/Codes'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

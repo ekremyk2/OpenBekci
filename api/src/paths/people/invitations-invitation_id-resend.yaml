@@ -1,0 +1,37 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: invitation_id
+    in: path
+    required: true
+    description: The invitation id.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: people.resendInvitation
+  summary: Send an invitation again with a new link
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [invitation.manage]
+  x-idempotent: optional
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/Invitation'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

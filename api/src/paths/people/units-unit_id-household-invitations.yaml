@@ -1,0 +1,72 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: unit_id
+    in: path
+    required: true
+    description: The unit id.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.listHouseholdInvitations
+  summary: List a unit's household invitations
+  description: 'For the unit''s owner or tenant (and managers).'
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [invitation.household]
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/InvitationList'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'
+post:
+  operationId: people.createHouseholdInvitation
+  summary: Invite a household member to a unit
+  description: 'For the unit''s owner or tenant (and managers). Creates a household occupancy on this unit only, without money access.'
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [invitation.household]
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/people.yaml#/schemas/HouseholdInvitationCreate'
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/Invitation'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

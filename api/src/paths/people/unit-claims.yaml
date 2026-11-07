@@ -1,0 +1,40 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+get:
+  operationId: people.listClaims
+  summary: List unit claims
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [claim.manage]
+  parameters:
+    - $ref: '../../components/common.yaml#/parameters/Limit'
+    - $ref: '../../components/common.yaml#/parameters/Cursor'
+    - name: site_id
+      in: query
+      description: 'Only this site.'
+      schema: {type: string, format: uuid}
+    - name: status
+      in: query
+      description: 'pending (default), approved, rejected or all.'
+      schema: {type: string}
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/UnitClaimList'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

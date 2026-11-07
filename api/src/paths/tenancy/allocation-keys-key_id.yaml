@@ -1,0 +1,90 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: key_id
+    in: path
+    required: true
+    description: The key id.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.getAllocationKey
+  summary: Read an allocation key with its values
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [allocation.read]
+  responses:
+    '200':
+      description: 'Success.'
+      headers:
+        ETag:
+          description: The version, quoted; send it as `If-Match` when updating.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/AllocationKeyDetail'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'
+patch:
+  operationId: tenancy.updateAllocationKey
+  summary: Rename an allocation key
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [allocation.manage]
+  x-idempotent: optional
+  parameters:
+    - name: If-Match
+      in: header
+      required: false
+      description: |
+        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+      schema:
+        type: string
+        pattern: '^"?[0-9]{1,9}"?$'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/tenancy.yaml#/schemas/AllocationKeyUpdate'
+  responses:
+    '200':
+      description: 'Success.'
+      headers:
+        ETag:
+          description: The version, quoted; send it as `If-Match` when updating.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/AllocationKey'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

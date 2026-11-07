@@ -1,0 +1,36 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: move_out_id
+    in: path
+    required: true
+    description: The move out id.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: people.getMoveOut
+  summary: Read a move-out
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [moveout.read]
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/MoveOut'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

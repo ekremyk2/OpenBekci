@@ -1,0 +1,41 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: unit_id
+    in: path
+    required: true
+    description: The unit id.
+    schema:
+      type: string
+      format: uuid
+  - name: occupancy_id
+    in: path
+    required: true
+    description: The occupancy id.
+    schema:
+      type: string
+      format: uuid
+delete:
+  operationId: people.endHouseholdOccupancy
+  summary: End a household member's occupancy
+  description: 'The unit''s owner or tenant (or a manager) ends a household member''s stay as of today.'
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [invitation.household]
+  x-idempotent: optional
+  responses:
+    '204':
+      description: Done.
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

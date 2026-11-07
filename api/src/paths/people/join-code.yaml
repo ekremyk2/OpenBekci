@@ -1,0 +1,36 @@
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: The secret token or code from the link.
+    schema:
+      type: string
+      maxLength: 200
+get:
+  operationId: people.previewJoin
+  summary: Preview the site behind a join code
+  description: 'The site and organization names; signed in, also the units that can be claimed.'
+  tags: [people]
+  security:
+    - {}
+    - cookieAuth: []
+    - bearerAuth: []
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/JoinPreview'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

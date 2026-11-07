@@ -21,6 +21,10 @@ tags:
     description: Organizations.
   - name: audit
     description: The append-only audit trail.
+  - name: tenancy
+    description: Sites, blocks, units, allocation keys, vehicles, spreadsheet import and site hand-over.
+  - name: people
+    description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
 paths:
   /.well-known/openbekci.json:
     get:
@@ -596,6 +600,2828 @@ paths:
         '403':
           $ref: '#/components/responses/Problem'
         '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/codes:
+    get:
+      operationId: instance.getCodes
+      summary: Labels of the API's codes
+      description: Human labels for enums and error codes (roles, unit types, occupancy kinds, allocation key kinds, invitation kinds, problem codes, ...) in the requested locale.
+      tags:
+        - tenancy
+      security: []
+      parameters:
+        - name: locale
+          in: query
+          description: en or tr (default en).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Codes'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/invitations/{token}:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        description: The secret token or code from the link.
+        schema:
+          type: string
+          maxLength: 200
+    get:
+      operationId: people.previewInvitation
+      summary: Preview an invitation
+      description: What the holder of an invitation link sees before accepting. The token is the secret.
+      tags:
+        - people
+      security: []
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationPreview'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/invitations/{token}/accept:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        description: The secret token or code from the link.
+        schema:
+          type: string
+          maxLength: 200
+    post:
+      operationId: people.acceptInvitation
+      summary: Accept an invitation
+      description: Signed in, the account is linked; anonymous, the account for the invited contact is found or created (the link proves the contact). The invited person and the occupancy are created and linked. Then sign in with any method.
+      tags:
+        - people
+      security:
+        - {}
+        - cookieAuth: []
+        - bearerAuth: []
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInvitation'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptResult'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/join/{code}:
+    parameters:
+      - name: code
+        in: path
+        required: true
+        description: The secret token or code from the link.
+        schema:
+          type: string
+          maxLength: 200
+    get:
+      operationId: people.previewJoin
+      summary: Preview the site behind a join code
+      description: The site and organization names; signed in, also the units that can be claimed.
+      tags:
+        - people
+      security:
+        - {}
+        - cookieAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinPreview'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/join/{code}/claims:
+    parameters:
+      - name: code
+        in: path
+        required: true
+        description: The secret token or code from the link.
+        schema:
+          type: string
+          maxLength: 200
+    post:
+      operationId: people.createClaim
+      summary: Claim a unit through a join code
+      description: Needs a signed-in account. The claim waits for a manager's approval.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitClaim'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/allocation-keys/{key_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: key_id
+        in: path
+        required: true
+        description: The key id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.getAllocationKey
+      summary: Read an allocation key with its values
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - allocation.read
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationKeyDetail'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: tenancy.updateAllocationKey
+      summary: Rename an allocation key
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - allocation.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationKeyUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationKey'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/allocation-keys/{key_id}/values:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: key_id
+        in: path
+        required: true
+        description: The key id.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: tenancy.setAllocationKeyValues
+      summary: Replace a share or table key's values
+      description: Values are rationals (`12/1000`) or decimals. The response carries sanity warnings, for example a share key that does not add up to one.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - allocation.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationKeyValues'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationKeyDetail'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/blocks/{block_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: block_id
+        in: path
+        required: true
+        description: The block id.
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: tenancy.updateBlock
+      summary: Rename, hide or reorder a block
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/invitations:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: people.listInvitations
+      summary: List invitations
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.manage
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: site_id
+          in: query
+          description: Only this site.
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: pending, accepted, revoked or expired.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: people.createInvitation
+      summary: Invite a person to a unit
+      description: Adds the person when needed and sends a one-time link by SMS or email. The response carries the token and link once.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/invitations/{invitation_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: invitation_id
+        in: path
+        required: true
+        description: The invitation id.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: people.revokeInvitation
+      summary: Revoke a pending invitation
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.manage
+      x-idempotent: optional
+      responses:
+        '204':
+          description: Done.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/invitations/{invitation_id}/resend:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: invitation_id
+        in: path
+        required: true
+        description: The invitation id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.resendInvitation
+      summary: Send an invitation again with a new link
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.manage
+      x-idempotent: optional
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/memberships:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: people.listMemberships
+      summary: List role memberships
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - membership.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: person_id
+          in: query
+          description: Only this person.
+          schema:
+            type: string
+            format: uuid
+        - name: site_id
+          in: query
+          description: Only memberships scoped to this site or its blocks.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MembershipList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: people.createMembership
+      summary: Grant a role
+      description: '`board_member` and `auditor` are site-owned and must be scoped to a site or block.'
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - membership.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/memberships/{membership_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: membership_id
+        in: path
+        required: true
+        description: The membership id.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: people.endMembership
+      summary: End a membership
+      description: End-dates the membership. A site-owned one (board member, auditor) needs a recent re-authentication and is recorded as an override; the last organization administrator cannot be ended.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - membership.manage
+      x-idempotent: optional
+      responses:
+        '204':
+          description: Done.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/move-outs/{move_out_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: move_out_id
+        in: path
+        required: true
+        description: The move out id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: people.getMoveOut
+      summary: Read a move-out
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - moveout.read
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoveOut'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/occupancies:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: people.listOccupancies
+      summary: List occupancies
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - occupancy.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: site_id
+          in: query
+          description: Only this site.
+          schema:
+            type: string
+            format: uuid
+        - name: unit_id
+          in: query
+          description: Only this unit.
+          schema:
+            type: string
+            format: uuid
+        - name: person_id
+          in: query
+          description: Only this person.
+          schema:
+            type: string
+            format: uuid
+        - name: current
+          in: query
+          description: Only occupancies in force today.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: occupancy_id
+        in: path
+        required: true
+        description: The occupancy id.
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: people.updateOccupancy
+      summary: Change an occupancy
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - occupancy.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OccupancyUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Occupancy'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: occupancy_id
+        in: path
+        required: true
+        description: The occupancy id.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: people.setMoneyAccess
+      summary: Let a household member see (or stop seeing) the unit's money
+      description: For managers, the unit's owner, and the tenant for the tenant side.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - occupancy.grant_money
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoneyAccess'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Occupancy'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: occupancy_id
+        in: path
+        required: true
+        description: The occupancy id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.moveOut
+      summary: Record a move-out or transfer
+      description: Ends the occupancy as of a date, with placeholder closing statement and debt certificate records; a successor takes over for a sale.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - moveout.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoveOutRequest'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoveOut'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/persons:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: people.listPersons
+      summary: List people
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - person.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: q
+          in: query
+          description: Name, phone or email fragment.
+          schema:
+            type: string
+        - name: site_id
+          in: query
+          description: Only people tied to this site.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: people.createPerson
+      summary: Add a person
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - person.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/persons/{person_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: person_id
+        in: path
+        required: true
+        description: The person id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: people.getPerson
+      summary: Read a person
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - person.read
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: people.updatePerson
+      summary: Change a person
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - person.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/site-exports:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: tenancy.listSiteExports
+      summary: List site exports and imports
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.export
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteExportList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/site-exports/{export_id}/archive:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: export_id
+        in: path
+        required: true
+        description: The export id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.downloadSiteExport
+      summary: Download an export's archive
+      description: The archive holds national ids sealed with this instance's encryption key.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.export
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/site-imports:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: tenancy.importSiteArchive
+      summary: Import a site archive into the organization
+      description: Creates the site with the identifiers of the archive. People who already have an account in this organization are linked, not duplicated.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.import
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArchiveUpload'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteExport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: tenancy.listSites
+      summary: List sites
+      description: 'The sites the caller can read: all of them with an organization-wide grant, otherwise the granted sites.'
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: tenancy.createSite
+      summary: Create a site
+      description: Creates the site with its hidden block (or the named blocks) and the two Law 634 allocation keys `arsa_payi` (share) and `equal`.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.create
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.getSite
+      summary: Read a site
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.read
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: tenancy.updateSite
+      summary: Change a site's settings
+      description: Settings, bank details, lock date, address, time zone. `If-Match` carries the site `version`.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/allocation-keys:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.listAllocationKeys
+      summary: List a site's allocation keys
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - allocation.read
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationKeyList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: tenancy.createAllocationKey
+      summary: Add a custom allocation key
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - allocation.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationKeyCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationKey'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/blocks:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.listBlocks
+      summary: List a site's blocks
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.read
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: tenancy.createBlock
+      summary: Add a block
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/directory:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: people.listDirectory
+      summary: The site directory
+      description: Managers, board and auditor see everyone with their phone; a resident sees their own unit's people and, when the site enabled the directory, those who consented.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - directory.read
+      parameters:
+        - name: q
+          in: query
+          description: Name or door number fragment.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectoryList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/directory-consent:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: people.setDirectoryConsent
+      summary: Choose what the directory shows about me
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - directory.consent
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DirectoryConsentUpdate'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DirectoryConsent'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/export:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: tenancy.exportSite
+      summary: Export a whole site to an archive
+      description: 'Site hand-over (decision D2): people, occupancies, units, keys, vehicles, memberships of the site and more, identifiers preserved. Download it with `tenancy.downloadSiteExport`.'
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.export
+      x-idempotent: optional
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteExport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/import:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: tenancy.importUnits
+      summary: Import units and people from a spreadsheet
+      description: 'CSV or XLSX; idempotent by door number. With `dry_run=true` only the row-level report is produced. A real import with an error row writes nothing and answers `status: failed`. Opening-balance columns are validated and stored for the money module.'
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - import.run
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportUpload'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportReport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/join-code:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: people.getJoinCode
+      summary: Read the site's join code
+      description: 'The code behind the site''s QR: `{BASE_URL}/join/{code}`.'
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.manage
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinCode'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: people.rotateJoinCode
+      summary: Create or replace the site's join code
+      description: The previous code stops working at once.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.manage
+      x-idempotent: optional
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinCode'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/offboard:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: tenancy.offboardSite
+      summary: Offboard a site after its hand-over
+      description: 'Needs a prior export and a recent re-authentication. Ends the site''s and its blocks'' memberships, revokes open invitations and closes the site: every operation on it answers 403 `site_offboarded`.'
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - site.offboard
+      x-idempotent: optional
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/units:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.listUnits
+      summary: List a site's units
+      description: A block-scoped caller sees only the permitted blocks' units.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - unit.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: block_id
+          in: query
+          description: Only units of this block.
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Only units of this type.
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Door number fragment.
+          schema:
+            type: string
+        - name: vacant
+          in: query
+          description: Only vacant or only occupied units (derived).
+          schema:
+            type: boolean
+        - name: parent_unit_id
+          in: query
+          description: Only appurtenances of this unit.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: tenancy.createUnit
+      summary: Add a unit
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - unit.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/vehicles:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.listVehicles
+      summary: List a site's vehicles
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vehicle.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: unit_id
+          in: query
+          description: Only this unit's vehicles.
+          schema:
+            type: string
+            format: uuid
+        - name: q
+          in: query
+          description: Plate fragment.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/sites/{site_id}/vehicles/export:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: site_id
+        in: path
+        required: true
+        description: The site id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.exportVehicles
+      summary: Export the site's plates as CSV
+      description: Columns `plate,door_number,block,label` for the camera operator.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vehicle.read
+      responses:
+        '200':
+          description: Success.
+          content:
+            text/csv:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/unit-claims:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: people.listClaims
+      summary: List unit claims
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - claim.manage
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: site_id
+          in: query
+          description: Only this site.
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: pending (default), approved, rejected or all.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitClaimList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/unit-claims/{claim_id}/approve:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: claim_id
+        in: path
+        required: true
+        description: The claim id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.approveClaim
+      summary: Approve a unit claim
+      description: Creates the occupancy the resident asked for.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - claim.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimApprove'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitClaim'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/unit-claims/{claim_id}/reject:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: claim_id
+        in: path
+        required: true
+        description: The claim id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.rejectClaim
+      summary: Reject a unit claim
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - claim.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimReject'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitClaim'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.getUnit
+      summary: Read a unit
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - unit.read
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: tenancy.updateUnit
+      summary: Change a unit
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - unit.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/household-invitations:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: people.listHouseholdInvitations
+      summary: List a unit's household invitations
+      description: For the unit's owner or tenant (and managers).
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.household
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: people.createHouseholdInvitation
+      summary: Invite a household member to a unit
+      description: For the unit's owner or tenant (and managers). Creates a household occupancy on this unit only, without money access.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.household
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseholdInvitationCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+      - name: invitation_id
+        in: path
+        required: true
+        description: The invitation id.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: people.revokeHouseholdInvitation
+      summary: Revoke a household invitation
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.household
+      x-idempotent: optional
+      responses:
+        '204':
+          description: Done.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+      - name: occupancy_id
+        in: path
+        required: true
+        description: The occupancy id.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: people.endHouseholdOccupancy
+      summary: End a household member's occupancy
+      description: The unit's owner or tenant (or a manager) ends a household member's stay as of today.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - invitation.household
+      x-idempotent: optional
+      responses:
+        '204':
+          description: Done.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/occupancies:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: people.createOccupancy
+      summary: Add an occupancy to a unit
+      description: Owner, tenant or household member. Co-owner shares of the unit sum to at most 100; a new correspondent replaces the side's previous one.
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - occupancy.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OccupancyCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Occupancy'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/tags:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: tenancy.setUnitTags
+      summary: Replace a unit's tags
+      description: Tags are cost-group memberships such as `lift` or `pool`.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - unit.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitTags'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/vehicles:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: The unit id.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: tenancy.createVehicle
+      summary: Register a plate for a unit
+      description: The plate is normalized (`34 abc 123` becomes `34ABC123`) and unique per site.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vehicle.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/vehicles/{vehicle_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: vehicle_id
+        in: path
+        required: true
+        description: The vehicle id.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: tenancy.deleteVehicle
+      summary: Remove a vehicle
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vehicle.manage
+      x-idempotent: optional
+      responses:
+        '204':
+          description: Done.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/vendors:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: people.listVendors
+      summary: List vendors
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vendor.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: people.createVendor
+      summary: Add a vendor
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vendor.manage
+      x-idempotent: optional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorCreate'
+      responses:
+        '201':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/vendors/{vendor_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: vendor_id
+        in: path
+        required: true
+        description: The vendor id.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: people.deleteVendor
+      summary: Remove a vendor
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vendor.manage
+      x-idempotent: optional
+      responses:
+        '204':
+          description: Done.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      operationId: people.getVendor
+      summary: Read a vendor
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vendor.read
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: people.updateVendor
+      summary: Change a vendor
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - vendor.manage
+      x-idempotent: optional
+      parameters:
+        - name: If-Match
+          in: header
+          required: false
+          description: |
+            The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+            `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+          schema:
+            type: string
+            pattern: ^"?[0-9]{1,9}"?$
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorUpdate'
+      responses:
+        '200':
+          description: Success.
+          headers:
+            ETag:
+              description: The version, quoted; send it as `If-Match` when updating.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
@@ -1218,7 +4044,7 @@ components:
             $ref: '#/components/schemas/PermissionGrant'
         sites:
           type: array
-          description: Sites of the organization the caller can see (empty until the tenancy module lands).
+          description: Sites of the organization the caller can see through a membership or an occupancy.
           items:
             $ref: '#/components/schemas/MeSite'
     Me:
@@ -1237,10 +4063,9 @@ components:
             $ref: '#/components/schemas/OrgAccess'
         occupancies:
           type: array
-          description: The caller's unit occupancies (owner, tenant, household); empty until the people module lands.
+          description: The caller's unit occupancies (owner, tenant, household), current and former (former ones bound read access by their dates).
           items:
-            type: object
-            additionalProperties: true
+            $ref: '#/components/schemas/MeOccupancy'
         policies:
           type: object
           additionalProperties: true
@@ -1374,13 +4199,42 @@ components:
       x-open-enum: true
       description: 'Open enum: every permission a role can hold (backend plan section 7).'
       enum:
+        - allocation.manage
+        - allocation.read
         - audit.read
         - audit.report
+        - claim.manage
+        - directory.consent
+        - directory.read
+        - import.run
+        - invitation.household
+        - invitation.manage
         - me.read
+        - membership.manage
+        - membership.read
+        - moveout.manage
+        - moveout.read
+        - occupancy.grant_money
+        - occupancy.manage
+        - occupancy.read
         - org.manage
         - org.read
+        - person.manage
+        - person.read
         - platform.manage
         - sessions.manage_own
+        - site.create
+        - site.export
+        - site.import
+        - site.manage
+        - site.offboard
+        - site.read
+        - unit.manage
+        - unit.read
+        - vehicle.manage
+        - vehicle.read
+        - vendor.manage
+        - vendor.read
     Organization:
       type: object
       required:
@@ -1530,38 +4384,2323 @@ components:
           type: string
           nullable: true
           description: Pass as `cursor` for the next page; null on the last page.
+    Site:
+      type: object
+      required:
+        - id
+        - name
+        - address
+        - timezone
+        - currency
+        - fiscal_year_start_month
+        - lock_date
+        - settings
+        - bank_details
+        - status
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: object
+          additionalProperties: true
+          description: Postal address, free-form keys (personal data in audit diffs).
+        timezone:
+          type: string
+          description: IANA time zone name.
+        currency:
+          type: string
+          description: ISO 4217.
+        fiscal_year_start_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        lock_date:
+          type: string
+          format: date
+          nullable: true
+          description: Postings dated on or before this day are refused (money module).
+        settings:
+          $ref: '#/components/schemas/SiteSettings'
+        bank_details:
+          type: object
+          additionalProperties: true
+          description: IBAN and account holder, shown to payers (`iban`, `holder`).
+        status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: active, offboarded (handed over; every operation on it answers 403 `site_offboarded`).'
+          enum:
+            - active
+            - offboarded
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SiteSettings:
+      type: object
+      additionalProperties: true
+      description: Typed site settings; unknown keys are kept.
+      properties:
+        transparency_to_owners:
+          type: boolean
+          description: Owners see the aggregate income and expense and the budget (default false).
+        tenants_are_portal_users:
+          type: boolean
+          description: Tenants get portal access to the tenant side of their unit (default true).
+        directory_enabled:
+          type: boolean
+          description: Residents can see the opt-in directory (default false).
+        appurtenance_default:
+          type: string
+          enum:
+            - appurtenance
+            - independent
+          description: Whether parking and storage units are listed under a flat (default) or are independent units.
+    SiteCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        address:
+          type: object
+          additionalProperties: true
+        timezone:
+          type: string
+          maxLength: 64
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        fiscal_year_start_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        lock_date:
+          type: string
+          format: date
+          nullable: true
+        settings:
+          $ref: '#/components/schemas/SiteSettings'
+        bank_details:
+          type: object
+          additionalProperties: true
+        blocks:
+          type: array
+          maxItems: 100
+          description: Names of the blocks of a multi-block site; omit for a single building (one hidden block is created).
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+    SiteUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      description: Partial update; `settings` keys merge (a null value removes a key).
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        address:
+          type: object
+          additionalProperties: true
+        timezone:
+          type: string
+          maxLength: 64
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        fiscal_year_start_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        lock_date:
+          type: string
+          format: date
+          nullable: true
+        settings:
+          type: object
+          additionalProperties: true
+        bank_details:
+          type: object
+          additionalProperties: true
+    SiteList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Site'
+        next_cursor:
+          type: string
+          nullable: true
+    Block:
+      type: object
+      required:
+        - id
+        - site_id
+        - name
+        - hidden
+        - sort_order
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        hidden:
+          type: boolean
+          description: The automatic block of a single building; clients do not show it.
+        sort_order:
+          type: integer
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    BlockCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hidden:
+          type: boolean
+        sort_order:
+          type: integer
+    BlockUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hidden:
+          type: boolean
+        sort_order:
+          type: integer
+    BlockList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Always null; a site has few blocks.
+    Unit:
+      type: object
+      required:
+        - id
+        - site_id
+        - block_id
+        - block_name
+        - door_number
+        - legal_ref
+        - type
+        - area_m2
+        - parent_unit_id
+        - appurtenance_override
+        - payer_overrides
+        - status
+        - independent
+        - vacant
+        - tags
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        block_id:
+          type: string
+          format: uuid
+        block_name:
+          type: string
+        door_number:
+          type: string
+          description: What people say, for example "A-12".
+        legal_ref:
+          type: string
+          nullable: true
+          description: Legal reference (tapu bagimsiz bolum no).
+        type:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: flat, shop, office, parking, storage, common, other.'
+          enum:
+            - flat
+            - shop
+            - office
+            - parking
+            - storage
+            - common
+            - other
+        area_m2:
+          type: number
+          nullable: true
+        parent_unit_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The flat a parking spot or storage room belongs to (appurtenance).
+        appurtenance_override:
+          type: string
+          nullable: true
+          enum:
+            - appurtenance
+            - independent
+          description: Per-unit override of the site's `appurtenance_default`; null follows the site.
+        payer_overrides:
+          type: object
+          additionalProperties:
+            type: string
+            enum:
+              - owner
+              - tenant
+          description: 'Per-unit payer override: charge type to the side that pays it, replacing the site default (`settings.payer_defaults`). Empty follows the site.'
+        status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: active, merged, split (the last two are reserved).'
+          enum:
+            - active
+            - merged
+            - split
+        independent:
+          type: boolean
+          description: Derived. True when the unit has dues and a statement of its own (flats, shops, offices; parking and storage per the override or site default).
+        vacant:
+          type: boolean
+          description: Derived from occupancies. True when nobody currently lives in the unit.
+        tags:
+          type: array
+          items:
+            type: string
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    UnitCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - door_number
+      properties:
+        block_id:
+          type: string
+          format: uuid
+          description: Required when the site has several blocks.
+        door_number:
+          type: string
+          minLength: 1
+          maxLength: 40
+        legal_ref:
+          type: string
+          nullable: true
+          maxLength: 100
+        type:
+          type: string
+          description: One of flat (default), shop, office, parking, storage, common, other.
+        area_m2:
+          type: number
+          nullable: true
+        parent_unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        appurtenance_override:
+          type: string
+          nullable: true
+          enum:
+            - appurtenance
+            - independent
+        payer_overrides:
+          type: object
+          additionalProperties:
+            type: string
+            enum:
+              - owner
+              - tenant
+    UnitUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        block_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+          minLength: 1
+          maxLength: 40
+        legal_ref:
+          type: string
+          nullable: true
+          maxLength: 100
+        type:
+          type: string
+        area_m2:
+          type: number
+          nullable: true
+        parent_unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        appurtenance_override:
+          type: string
+          nullable: true
+          enum:
+            - appurtenance
+            - independent
+        payer_overrides:
+          type: object
+          additionalProperties:
+            type: string
+            enum:
+              - owner
+              - tenant
+    UnitList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Unit'
+        next_cursor:
+          type: string
+          nullable: true
+    UnitTags:
+      type: object
+      additionalProperties: false
+      required:
+        - tags
+      properties:
+        tags:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+    AllocationKey:
+      type: object
+      required:
+        - id
+        - site_id
+        - code
+        - name
+        - kind
+        - is_default
+        - value_count
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          description: For example `arsa_payi`, `equal`, `area` or a custom code.
+        name:
+          type: string
+        kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: share (stored weights), equal (one per unit), area (m2), table (stored amounts).'
+          enum:
+            - share
+            - equal
+            - area
+            - table
+        is_default:
+          type: boolean
+          description: One of the Law 634 keys created with the site.
+        value_count:
+          type: integer
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    AllocationKeyList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationKey'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Always null.
+    AllocationKeyCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - name
+        - kind
+      properties:
+        code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{0,39}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        kind:
+          type: string
+          enum:
+            - share
+            - equal
+            - area
+            - table
+    AllocationKeyUpdate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+    KeyValue:
+      type: object
+      additionalProperties: false
+      required:
+        - unit_id
+        - value
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        value:
+          type: string
+          description: A rational ("12/1000") or a decimal ("0.012", "350").
+    KeyWarning:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: For example `share_sum_mismatch`.
+        params:
+          type: object
+          additionalProperties: true
+    AllocationKeyDetail:
+      type: object
+      required:
+        - id
+        - site_id
+        - code
+        - name
+        - kind
+        - is_default
+        - value_count
+        - version
+        - created_at
+        - updated_at
+        - values
+        - warnings
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: share, equal, area, table.'
+          enum:
+            - share
+            - equal
+            - area
+            - table
+        is_default:
+          type: boolean
+        value_count:
+          type: integer
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        warnings:
+          type: array
+          description: Non-blocking findings, such as a share key that does not add up to one.
+          items:
+            $ref: '#/components/schemas/KeyWarning'
+    AllocationKeyValues:
+      type: object
+      additionalProperties: false
+      required:
+        - values
+      properties:
+        values:
+          type: array
+          maxItems: 5000
+          items:
+            $ref: '#/components/schemas/KeyValue'
+    Vehicle:
+      type: object
+      required:
+        - id
+        - site_id
+        - unit_id
+        - door_number
+        - plate
+        - label
+        - version
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        plate:
+          type: string
+          description: Normalized, for example `34ABC123`.
+        label:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    VehicleCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - plate
+      properties:
+        plate:
+          type: string
+          maxLength: 20
+          description: As written, for example "34 abc 123"; stored normalized.
+        label:
+          type: string
+          nullable: true
+          maxLength: 100
+    VehicleList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
+        next_cursor:
+          type: string
+          nullable: true
+    ImportMessage:
+      type: object
+      required:
+        - level
+        - column
+        - code
+      properties:
+        level:
+          type: string
+          enum:
+            - error
+            - warning
+        column:
+          type: string
+        code:
+          type: string
+        params:
+          type: object
+          additionalProperties: true
+    ImportRow:
+      type: object
+      required:
+        - row
+        - door_number
+        - status
+        - action
+        - messages
+      properties:
+        row:
+          type: integer
+          description: Line in the file (the header is line 1).
+        door_number:
+          type: string
+        status:
+          type: string
+          enum:
+            - ok
+            - warning
+            - error
+        action:
+          type: string
+          enum:
+            - create
+            - update
+            - unchanged
+            - skipped
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportMessage'
+    ImportReport:
+      type: object
+      required:
+        - batch_id
+        - dry_run
+        - applied
+        - status
+        - summary
+        - columns
+        - rows
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+        dry_run:
+          type: boolean
+        applied:
+          type: boolean
+          description: False for a dry run and for a file with errors (nothing is written then).
+        status:
+          type: string
+          enum:
+            - dry_run
+            - applied
+            - failed
+        summary:
+          type: object
+          additionalProperties:
+            type: integer
+        columns:
+          type: object
+          additionalProperties:
+            type: string
+          description: Canonical column to the header it was read from.
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportRow'
+    ImportUpload:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: A CSV (comma, semicolon or tab separated, UTF-8) or XLSX file; the first row is the header.
+        dry_run:
+          type: boolean
+          default: false
+          description: Validate and report only; nothing is written.
+        mapping:
+          type: string
+          description: JSON object mapping a canonical column (`door_number`, `block`, `area_m2`, `arsa_payi`, `owner_name`, ...) to the header text in the file.
+    ArchiveUpload:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+          description: A site archive produced by a site export.
+    SiteExport:
+      type: object
+      required:
+        - id
+        - direction
+        - site_id
+        - site_name
+        - source_org_id
+        - target_org_id
+        - status
+        - summary
+        - has_archive
+        - at
+      properties:
+        id:
+          type: string
+          format: uuid
+        direction:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: export, import.'
+          enum:
+            - export
+            - import
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        site_name:
+          type: string
+          nullable: true
+        source_org_id:
+          type: string
+          format: uuid
+          nullable: true
+        target_org_id:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: running, done, failed.'
+          enum:
+            - running
+            - done
+            - failed
+        summary:
+          type: object
+          additionalProperties: true
+          description: Rows per table.
+        has_archive:
+          type: boolean
+        at:
+          type: string
+          format: date-time
+    SiteExportList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteExport'
+        next_cursor:
+          type: string
+          nullable: true
+    Codes:
+      type: object
+      required:
+        - locale
+        - sections
+      properties:
+        locale:
+          type: string
+          description: The locale the labels are in (en or tr).
+        sections:
+          type: object
+          description: Section name (`roles`, `unit_types`, `occupancy_kinds`, `allocation_key_kinds`, `invitation_kinds`, `claim_statuses`, `debt_dispositions`, `problem_codes`, `field_error_codes`, ...) to code to label.
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+    Person:
+      type: object
+      required:
+        - id
+        - user_id
+        - display_name
+        - email
+        - phone
+        - gate_contact_phone
+        - national_id
+        - national_id_country
+        - notes
+        - site_id
+        - has_account
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The sign-in account linked to the person, if any.
+        display_name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+          description: E.164.
+        gate_contact_phone:
+          type: string
+          nullable: true
+          description: The number the gate calls for visitors (E.164).
+        national_id:
+          type: string
+          nullable: true
+          description: Always masked in reads (`*******1234`); stored encrypted, never in audit diffs.
+        national_id_country:
+          type: string
+          nullable: true
+          description: ISO 3166-1 alpha-2; `TR` numbers are checksum-validated.
+        notes:
+          type: string
+          nullable: true
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The site that registered the person.
+        has_account:
+          type: boolean
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PersonCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - display_name
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        email:
+          type: string
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 32
+          description: International format; Turkish 05xx numbers are normalized.
+        gate_contact_phone:
+          type: string
+          nullable: true
+          maxLength: 32
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 40
+        national_id_country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        notes:
+          type: string
+          nullable: true
+          maxLength: 4000
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Register the person at this site (needed for a site-scoped manager).
+    PersonUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        email:
+          type: string
+          nullable: true
+          maxLength: 254
+        phone:
+          type: string
+          nullable: true
+          maxLength: 32
+        gate_contact_phone:
+          type: string
+          nullable: true
+          maxLength: 32
+        national_id:
+          type: string
+          nullable: true
+          maxLength: 40
+          description: A new number replaces the stored one; null removes it.
+        national_id_country:
+          type: string
+          minLength: 2
+          maxLength: 2
+        notes:
+          type: string
+          nullable: true
+          maxLength: 4000
+    PersonList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+        next_cursor:
+          type: string
+          nullable: true
+    Occupancy:
+      type: object
+      required:
+        - id
+        - site_id
+        - unit_id
+        - door_number
+        - person_id
+        - person_name
+        - kind
+        - side
+        - share_pct
+        - is_correspondent
+        - may_see_money
+        - resides
+        - valid_from
+        - valid_to
+        - current
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        person_id:
+          type: string
+          format: uuid
+        person_name:
+          type: string
+        kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: owner, tenant, household.'
+          enum:
+            - owner
+            - tenant
+            - household
+        side:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: owner, tenant. The unit side the occupancy belongs to.'
+          enum:
+            - owner
+            - tenant
+        share_pct:
+          type: number
+          nullable: true
+          description: A co-owner's share; the shares of one unit sum to at most 100.
+        is_correspondent:
+          type: boolean
+          description: The one person per unit side who receives notices.
+        may_see_money:
+          type: boolean
+          description: Household members only; granted by the unit's owner or tenant.
+        resides:
+          type: boolean
+          description: Lives in the unit. Vacancy is derived from this.
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+          description: Exclusive; the first day the person is no longer there.
+        current:
+          type: boolean
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    OccupancyList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Occupancy'
+        next_cursor:
+          type: string
+          nullable: true
+    OccupancyCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - person_id
+        - kind
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+            - household
+        side:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: 'Household members only: the side they live with (default: the tenant side when the unit has a tenant).'
+        share_pct:
+          type: number
+          nullable: true
+        is_correspondent:
+          type: boolean
+        resides:
+          type: boolean
+        valid_from:
+          type: string
+          format: date
+          description: Default today.
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+    OccupancyUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        share_pct:
+          type: number
+          nullable: true
+        is_correspondent:
+          type: boolean
+        resides:
+          type: boolean
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+    MoneyAccess:
+      type: object
+      additionalProperties: false
+      required:
+        - may_see_money
+      properties:
+        may_see_money:
+          type: boolean
+    MoveOutRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - as_of
+      properties:
+        as_of:
+          type: string
+          format: date
+          description: The first day the person is no longer there; no month is pro-rated.
+        open_charges:
+          type: string
+          enum:
+            - carry_to_person
+            - keep_on_unit
+            - write_off
+          description: 'What happens to the leaving person''s open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.'
+        notes:
+          type: string
+          nullable: true
+          maxLength: 4000
+        successor_person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 'A transfer (sale): this person takes over the same kind, side and share from the date.'
+        end_household:
+          type: boolean
+          description: Also end the household members of the same side (default true).
+    MoveOut:
+      type: object
+      required:
+        - id
+        - site_id
+        - occupancy_id
+        - unit_id
+        - person_id
+        - as_of
+        - open_charges
+        - carried_amount_minor
+        - carried_currency
+        - closing_statement_status
+        - closing_statement_file_id
+        - certificate_status
+        - certificate_file_id
+        - successor_occupancy_id
+        - decided_by
+        - notes
+        - version
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        occupancy_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        as_of:
+          type: string
+          format: date
+        open_charges:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: carry_to_person, keep_on_unit, write_off.'
+          enum:
+            - carry_to_person
+            - keep_on_unit
+            - write_off
+        carried_amount_minor:
+          type: integer
+          format: int64
+          nullable: true
+          description: 'Filled by the money module: the amount carried to the person''s receivable (minor units).'
+        carried_currency:
+          type: string
+          nullable: true
+        closing_statement_status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: pending, ready. The money module fills the statement.'
+          enum:
+            - pending
+            - ready
+        closing_statement_file_id:
+          type: string
+          format: uuid
+          nullable: true
+        certificate_status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: pending, ready. The debt certificate (borc durum belgesi).'
+          enum:
+            - pending
+            - ready
+        certificate_file_id:
+          type: string
+          format: uuid
+          nullable: true
+        successor_occupancy_id:
+          type: string
+          format: uuid
+          nullable: true
+        decided_by:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    Membership:
+      type: object
+      required:
+        - id
+        - person_id
+        - person_name
+        - role
+        - scope_type
+        - scope_id
+        - valid_from
+        - valid_to
+        - site_owned
+        - decision_id
+        - current
+        - version
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        person_name:
+          type: string
+        role:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.'
+          enum:
+            - org_admin
+            - site_manager
+            - board_member
+            - auditor
+            - accountant
+            - staff
+            - guard
+        scope_type:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: org, site, block.'
+          enum:
+            - org
+            - site
+            - block
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        valid_from:
+          type: string
+          format: date-time
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        site_owned:
+          type: boolean
+          description: Board and auditor memberships belong to the site; ending one needs re-authentication and is audited.
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The assembly decision that granted it (governance, 0.2).
+        current:
+          type: boolean
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    MembershipList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Membership'
+        next_cursor:
+          type: string
+          nullable: true
+    MembershipCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - person_id
+        - role
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+            - org_admin
+            - site_manager
+            - board_member
+            - auditor
+            - accountant
+            - staff
+            - guard
+        scope_type:
+          type: string
+          enum:
+            - org
+            - site
+            - block
+          description: Default org.
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        valid_from:
+          type: string
+          format: date-time
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        decision_id:
+          type: string
+          format: uuid
+          nullable: true
+    Invitation:
+      type: object
+      required:
+        - id
+        - site_id
+        - kind
+        - unit_id
+        - door_number
+        - person_id
+        - occupancy_kind
+        - channel
+        - email
+        - phone
+        - status
+        - expires_at
+        - send_count
+        - last_sent_at
+        - uses
+        - accepted_at
+        - delivery
+        - created_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: manager, household, site_code.'
+          enum:
+            - manager
+            - household
+            - site_code
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+        door_number:
+          type: string
+          nullable: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        occupancy_kind:
+          type: string
+          nullable: true
+        channel:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: sms, email, link.'
+          enum:
+            - sms
+            - email
+            - link
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: pending, accepted, revoked, expired.'
+          enum:
+            - pending
+            - accepted
+            - revoked
+            - expired
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        send_count:
+          type: integer
+        last_sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        uses:
+          type: integer
+        accepted_at:
+          type: string
+          format: date-time
+          nullable: true
+        delivery:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: sent, failed, none. The outcome of the send made by this request.'
+          enum:
+            - sent
+            - failed
+            - none
+        token:
+          type: string
+          description: The one-time secret; only in the response that created or re-sent the invitation.
+        link:
+          type: string
+          description: The invitation URL; only in the response that created or re-sent it.
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+    InvitationList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+        next_cursor:
+          type: string
+          nullable: true
+    InvitationCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - site_id
+        - unit_id
+        - occupancy_kind
+      description: Either `person_id` of an existing person without an account, or `display_name` with `phone` and/or `email`.
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 32
+        occupancy_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+            - household
+        side:
+          type: string
+          enum:
+            - owner
+            - tenant
+        share_pct:
+          type: number
+        is_correspondent:
+          type: boolean
+        resides:
+          type: boolean
+        valid_from:
+          type: string
+          format: date
+        channel:
+          type: string
+          enum:
+            - sms
+            - email
+            - link
+          description: Default sms when there is a phone, else email; `link` creates the link without sending it.
+        expires_in_days:
+          type: integer
+          minimum: 1
+          maximum: 90
+        client:
+          type: string
+          enum:
+            - web
+            - mobile
+          description: '`mobile` makes the link use the `openbekci://` scheme.'
+        locale:
+          type: string
+          maxLength: 35
+    HouseholdInvitationCreate:
+      type: object
+      additionalProperties: false
+      description: Invite a household member to this unit. They get no money access.
+      properties:
+        display_name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 32
+        side:
+          type: string
+          enum:
+            - owner
+            - tenant
+        resides:
+          type: boolean
+        valid_from:
+          type: string
+          format: date
+        channel:
+          type: string
+          enum:
+            - sms
+            - email
+            - link
+        expires_in_days:
+          type: integer
+          minimum: 1
+          maximum: 90
+        client:
+          type: string
+          enum:
+            - web
+            - mobile
+        locale:
+          type: string
+          maxLength: 35
+        person_id:
+          type: string
+          format: uuid
+    InvitationPreview:
+      type: object
+      required:
+        - kind
+        - org_name
+        - site_name
+        - door_number
+        - occupancy_kind
+        - invited_name
+        - channel
+        - contact_hint
+        - expires_at
+      properties:
+        kind:
+          type: string
+        org_name:
+          type: string
+        site_name:
+          type: string
+        door_number:
+          type: string
+          nullable: true
+        occupancy_kind:
+          type: string
+          nullable: true
+        invited_name:
+          type: string
+        channel:
+          type: string
+        contact_hint:
+          type: string
+          description: The invited phone or email, masked.
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+    AcceptInvitation:
+      type: object
+      additionalProperties: false
+      properties:
+        password:
+          type: string
+          maxLength: 256
+          description: Optional password for a newly created account (minimum 10 characters).
+        locale:
+          type: string
+          maxLength: 35
+    AcceptResult:
+      type: object
+      required:
+        - org_id
+        - site_id
+        - person_id
+        - user_id
+        - occupancy_id
+        - user_created
+        - sign_in_required
+      properties:
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        occupancy_id:
+          type: string
+          format: uuid
+          nullable: true
+        user_created:
+          type: boolean
+        sign_in_required:
+          type: boolean
+          description: True unless the caller was already signed in; sign in with any method (SMS code, magic link, password).
+    JoinCode:
+      type: object
+      required:
+        - site_id
+        - code
+        - url
+        - uses
+        - created_at
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        url:
+          type: string
+          description: '`{BASE_URL}/join/{code}`; the QR code encodes it.'
+        uses:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+    JoinUnit:
+      type: object
+      required:
+        - id
+        - door_number
+        - block_name
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        block_name:
+          type: string
+        type:
+          type: string
+    JoinPreview:
+      type: object
+      required:
+        - org_name
+        - site_name
+        - units
+      properties:
+        org_name:
+          type: string
+        site_name:
+          type: string
+        units:
+          type: array
+          description: The units that can be claimed; empty unless the visitor is signed in.
+          items:
+            $ref: '#/components/schemas/JoinUnit'
+    ClaimCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - unit_id
+        - kind
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+            - household
+        display_name:
+          type: string
+          maxLength: 200
+        message:
+          type: string
+          maxLength: 1000
+    UnitClaim:
+      type: object
+      required:
+        - id
+        - site_id
+        - unit_id
+        - door_number
+        - person_id
+        - person_name
+        - kind
+        - status
+        - message
+        - decided_at
+        - decision_note
+        - occupancy_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        person_id:
+          type: string
+          format: uuid
+        person_name:
+          type: string
+        kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: owner, tenant, household.'
+          enum:
+            - owner
+            - tenant
+            - household
+        status:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: pending, approved, rejected.'
+          enum:
+            - pending
+            - approved
+            - rejected
+        message:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_note:
+          type: string
+          nullable: true
+        occupancy_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+    UnitClaimList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitClaim'
+        next_cursor:
+          type: string
+          nullable: true
+    ClaimApprove:
+      type: object
+      additionalProperties: false
+      properties:
+        share_pct:
+          type: number
+          nullable: true
+        is_correspondent:
+          type: boolean
+        valid_from:
+          type: string
+          format: date
+        side:
+          type: string
+          enum:
+            - owner
+            - tenant
+        note:
+          type: string
+          nullable: true
+          maxLength: 1000
+    ClaimReject:
+      type: object
+      additionalProperties: false
+      properties:
+        note:
+          type: string
+          nullable: true
+          maxLength: 1000
+    DirectoryEntry:
+      type: object
+      required:
+        - person_id
+        - display_name
+        - phone
+        - unit_id
+        - door_number
+        - kind
+        - own_unit
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        kind:
+          type: string
+        own_unit:
+          type: boolean
+          description: A person of the caller's own unit; always visible to them.
+    DirectoryList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DirectoryEntry'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Always null.
+    DirectoryConsent:
+      type: object
+      required:
+        - site_id
+        - share_name
+        - share_phone
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        share_name:
+          type: boolean
+        share_phone:
+          type: boolean
+    DirectoryConsentUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        share_name:
+          type: boolean
+        share_phone:
+          type: boolean
+          description: Needs `share_name`.
+    Vendor:
+      type: object
+      required:
+        - id
+        - site_id
+        - name
+        - tax_id
+        - contact
+        - default_expense_category_id
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null for a vendor shared by the organization's sites.
+        name:
+          type: string
+        tax_id:
+          type: string
+          nullable: true
+        contact:
+          type: object
+          additionalProperties: true
+        default_expense_category_id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    VendorList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vendor'
+        next_cursor:
+          type: string
+          nullable: true
+    VendorCreate:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        tax_id:
+          type: string
+          nullable: true
+          maxLength: 40
+        contact:
+          type: object
+          additionalProperties: true
+        default_expense_category_id:
+          type: string
+          format: uuid
+          nullable: true
+    VendorUpdate:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        tax_id:
+          type: string
+          nullable: true
+          maxLength: 40
+        contact:
+          type: object
+          additionalProperties: true
+        default_expense_category_id:
+          type: string
+          format: uuid
+          nullable: true
+    MeOccupancy:
+      type: object
+      description: One occupancy of the caller, as `GET /v1/me` lists it.
+      required:
+        - id
+        - unit_label
+        - org_id
+        - site_id
+        - site_name
+        - unit_id
+        - door_number
+        - block_name
+        - kind
+        - side
+        - is_correspondent
+        - may_see_money
+        - resides
+        - valid_from
+        - valid_to
+        - current
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The occupancy id.
+        unit_label:
+          type: string
+          description: The unit as people name it (the door number).
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        site_name:
+          type: string
+        unit_id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        block_name:
+          type: string
+        kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: owner, tenant, household.'
+          enum:
+            - owner
+            - tenant
+            - household
+        side:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: owner, tenant.'
+          enum:
+            - owner
+            - tenant
+        is_correspondent:
+          type: boolean
+        may_see_money:
+          type: boolean
+          description: For household members; owners and tenants always see their side's money.
+        resides:
+          type: boolean
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+        current:
+          type: boolean
+          description: False for a former occupancy (read access bounded by its dates).
 x-openbekci-roles:
   org_admin:
+    - allocation.manage
+    - allocation.read
     - audit.read
+    - claim.manage
+    - directory.consent
+    - directory.read
+    - import.run
+    - invitation.household
+    - invitation.manage
     - me.read
+    - membership.manage
+    - membership.read
+    - moveout.manage
+    - moveout.read
+    - occupancy.grant_money
+    - occupancy.manage
+    - occupancy.read
     - org.manage
     - org.read
+    - person.manage
+    - person.read
     - sessions.manage_own
+    - site.create
+    - site.export
+    - site.import
+    - site.manage
+    - site.offboard
+    - site.read
+    - unit.manage
+    - unit.read
+    - vehicle.manage
+    - vehicle.read
+    - vendor.manage
+    - vendor.read
   site_manager:
+    - allocation.manage
+    - allocation.read
+    - claim.manage
+    - directory.consent
+    - directory.read
+    - import.run
+    - invitation.household
+    - invitation.manage
     - me.read
+    - membership.manage
+    - membership.read
+    - moveout.manage
+    - moveout.read
+    - occupancy.grant_money
+    - occupancy.manage
+    - occupancy.read
     - org.read
+    - person.manage
+    - person.read
     - sessions.manage_own
+    - site.manage
+    - site.read
+    - unit.manage
+    - unit.read
+    - vehicle.manage
+    - vehicle.read
+    - vendor.manage
+    - vendor.read
   board_member:
+    - allocation.read
+    - directory.consent
+    - directory.read
     - me.read
+    - membership.read
+    - moveout.read
+    - occupancy.read
     - org.read
+    - person.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vehicle.read
+    - vendor.read
   auditor:
+    - allocation.read
     - audit.read
     - audit.report
+    - directory.consent
+    - directory.read
     - me.read
+    - membership.read
+    - moveout.read
+    - occupancy.read
     - org.read
+    - person.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vehicle.read
+    - vendor.read
   accountant:
+    - allocation.manage
+    - allocation.read
+    - directory.consent
     - me.read
+    - moveout.read
+    - occupancy.read
     - org.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vendor.manage
+    - vendor.read
   staff:
+    - directory.consent
     - me.read
     - org.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vehicle.read
+    - vendor.read
   guard:
+    - directory.consent
     - me.read
     - sessions.manage_own
+    - vehicle.read
   platform_admin:
     - me.read
     - platform.manage

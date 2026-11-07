@@ -1,0 +1,37 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+post:
+  operationId: tenancy.importSiteArchive
+  summary: Import a site archive into the organization
+  description: 'Creates the site with the identifiers of the archive. People who already have an account in this organization are linked, not duplicated.'
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [site.import]
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          $ref: '../../components/tenancy.yaml#/schemas/ArchiveUpload'
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/SiteExport'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

@@ -1,0 +1,75 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+get:
+  operationId: people.listInvitations
+  summary: List invitations
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [invitation.manage]
+  parameters:
+    - $ref: '../../components/common.yaml#/parameters/Limit'
+    - $ref: '../../components/common.yaml#/parameters/Cursor'
+    - name: site_id
+      in: query
+      description: 'Only this site.'
+      schema: {type: string, format: uuid}
+    - name: status
+      in: query
+      description: 'pending, accepted, revoked or expired.'
+      schema: {type: string}
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/InvitationList'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'
+post:
+  operationId: people.createInvitation
+  summary: Invite a person to a unit
+  description: 'Adds the person when needed and sends a one-time link by SMS or email. The response carries the token and link once.'
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [invitation.manage]
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/people.yaml#/schemas/InvitationCreate'
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/Invitation'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

@@ -1,0 +1,74 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+get:
+  operationId: people.listPersons
+  summary: List people
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [person.read]
+  parameters:
+    - $ref: '../../components/common.yaml#/parameters/Limit'
+    - $ref: '../../components/common.yaml#/parameters/Cursor'
+    - name: q
+      in: query
+      description: 'Name, phone or email fragment.'
+      schema: {type: string}
+    - name: site_id
+      in: query
+      description: 'Only people tied to this site.'
+      schema: {type: string, format: uuid}
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/PersonList'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'
+post:
+  operationId: people.createPerson
+  summary: Add a person
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [person.manage]
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/people.yaml#/schemas/PersonCreate'
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/Person'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

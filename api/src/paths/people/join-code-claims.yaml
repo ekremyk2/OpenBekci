@@ -1,0 +1,42 @@
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: The secret token or code from the link.
+    schema:
+      type: string
+      maxLength: 200
+post:
+  operationId: people.createClaim
+  summary: Claim a unit through a join code
+  description: 'Needs a signed-in account. The claim waits for a manager''s approval.'
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-idempotent: optional
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/people.yaml#/schemas/ClaimCreate'
+  responses:
+    '201':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/UnitClaim'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

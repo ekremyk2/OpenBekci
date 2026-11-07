@@ -1,0 +1,38 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: export_id
+    in: path
+    required: true
+    description: The export id.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.downloadSiteExport
+  summary: Download an export's archive
+  description: 'The archive holds national ids sealed with this instance''s encryption key.'
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [site.export]
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

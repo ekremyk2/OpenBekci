@@ -124,9 +124,13 @@ const DefaultMaxBodyBytes = 1 << 20
 // (chunked) is buffered up to the limit so the refusal is deterministic and
 // still happens ahead of validation, authentication and idempotency. Readers
 // further down are also behind http.MaxBytesReader.
-func maxBody(limit int64) func(http.Handler) http.Handler {
+func maxBody(jsonLimit, uploadLimit int64) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			limit := jsonLimit
+			if strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
+				limit = uploadLimit // spreadsheet and archive uploads
+			}
 			if r.Body == nil || r.Body == http.NoBody {
 				next.ServeHTTP(w, r)
 				return

@@ -21,6 +21,10 @@ tags:
     description: Organizations.
   - name: audit
     description: The append-only audit trail.
+  - name: tenancy
+    description: Sites, blocks, units, allocation keys, vehicles, spreadsheet import and site hand-over.
+  - name: people
+    description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -55,6 +59,104 @@ paths:
     $ref: './paths/orgs-org-id.yaml'
   /v1/orgs/{org_id}/audit:
     $ref: './paths/orgs-org-id-audit.yaml'
+  /v1/codes:
+    $ref: './paths/tenancy/codes.yaml'
+  /v1/invitations/{token}:
+    $ref: './paths/people/invitations-token.yaml'
+  /v1/invitations/{token}/accept:
+    $ref: './paths/people/invitations-token-accept.yaml'
+  /v1/join/{code}:
+    $ref: './paths/people/join-code.yaml'
+  /v1/join/{code}/claims:
+    $ref: './paths/people/join-code-claims.yaml'
+  /v1/orgs/{org_id}/allocation-keys/{key_id}:
+    $ref: './paths/tenancy/allocation-keys-key_id.yaml'
+  /v1/orgs/{org_id}/allocation-keys/{key_id}/values:
+    $ref: './paths/tenancy/allocation-keys-key_id-values.yaml'
+  /v1/orgs/{org_id}/blocks/{block_id}:
+    $ref: './paths/tenancy/blocks-block_id.yaml'
+  /v1/orgs/{org_id}/invitations:
+    $ref: './paths/people/invitations.yaml'
+  /v1/orgs/{org_id}/invitations/{invitation_id}:
+    $ref: './paths/people/invitations-invitation_id.yaml'
+  /v1/orgs/{org_id}/invitations/{invitation_id}/resend:
+    $ref: './paths/people/invitations-invitation_id-resend.yaml'
+  /v1/orgs/{org_id}/memberships:
+    $ref: './paths/people/memberships.yaml'
+  /v1/orgs/{org_id}/memberships/{membership_id}:
+    $ref: './paths/people/memberships-membership_id.yaml'
+  /v1/orgs/{org_id}/move-outs/{move_out_id}:
+    $ref: './paths/people/move-outs-move_out_id.yaml'
+  /v1/orgs/{org_id}/occupancies:
+    $ref: './paths/people/occupancies.yaml'
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}:
+    $ref: './paths/people/occupancies-occupancy_id.yaml'
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access:
+    $ref: './paths/people/occupancies-occupancy_id-money-access.yaml'
+  /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out:
+    $ref: './paths/people/occupancies-occupancy_id-move-out.yaml'
+  /v1/orgs/{org_id}/persons:
+    $ref: './paths/people/persons.yaml'
+  /v1/orgs/{org_id}/persons/{person_id}:
+    $ref: './paths/people/persons-person_id.yaml'
+  /v1/orgs/{org_id}/site-exports:
+    $ref: './paths/tenancy/site-exports.yaml'
+  /v1/orgs/{org_id}/site-exports/{export_id}/archive:
+    $ref: './paths/tenancy/site-exports-export_id-archive.yaml'
+  /v1/orgs/{org_id}/site-imports:
+    $ref: './paths/tenancy/site-imports.yaml'
+  /v1/orgs/{org_id}/sites:
+    $ref: './paths/tenancy/sites.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}:
+    $ref: './paths/tenancy/sites-site_id.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/allocation-keys:
+    $ref: './paths/tenancy/sites-site_id-allocation-keys.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/blocks:
+    $ref: './paths/tenancy/sites-site_id-blocks.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/directory:
+    $ref: './paths/people/sites-site_id-directory.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/directory-consent:
+    $ref: './paths/people/sites-site_id-directory-consent.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/export:
+    $ref: './paths/tenancy/sites-site_id-export.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/import:
+    $ref: './paths/tenancy/sites-site_id-import.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/join-code:
+    $ref: './paths/people/sites-site_id-join-code.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/offboard:
+    $ref: './paths/tenancy/sites-site_id-offboard.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/units:
+    $ref: './paths/tenancy/sites-site_id-units.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/vehicles:
+    $ref: './paths/tenancy/sites-site_id-vehicles.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/vehicles/export:
+    $ref: './paths/tenancy/sites-site_id-vehicles-export.yaml'
+  /v1/orgs/{org_id}/unit-claims:
+    $ref: './paths/people/unit-claims.yaml'
+  /v1/orgs/{org_id}/unit-claims/{claim_id}/approve:
+    $ref: './paths/people/unit-claims-claim_id-approve.yaml'
+  /v1/orgs/{org_id}/unit-claims/{claim_id}/reject:
+    $ref: './paths/people/unit-claims-claim_id-reject.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}:
+    $ref: './paths/tenancy/units-unit_id.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/household-invitations:
+    $ref: './paths/people/units-unit_id-household-invitations.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id}:
+    $ref: './paths/people/units-unit_id-household-invitations-invitation_id.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id}:
+    $ref: './paths/people/units-unit_id-household-occupancy_id.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/occupancies:
+    $ref: './paths/people/units-unit_id-occupancies.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/tags:
+    $ref: './paths/tenancy/units-unit_id-tags.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/vehicles:
+    $ref: './paths/tenancy/units-unit_id-vehicles.yaml'
+  /v1/orgs/{org_id}/vehicles/{vehicle_id}:
+    $ref: './paths/tenancy/vehicles-vehicle_id.yaml'
+  /v1/orgs/{org_id}/vendors:
+    $ref: './paths/people/vendors.yaml'
+  /v1/orgs/{org_id}/vendors/{vendor_id}:
+    $ref: './paths/people/vendors-vendor_id.yaml'
 components:
   securitySchemes:
     cookieAuth:
@@ -159,3 +261,145 @@ components:
       $ref: './components/org.yaml#/schemas/AuditEvent'
     AuditEventList:
       $ref: './components/org.yaml#/schemas/AuditEventList'
+    Site:
+      $ref: './components/tenancy.yaml#/schemas/Site'
+    SiteSettings:
+      $ref: './components/tenancy.yaml#/schemas/SiteSettings'
+    SiteCreate:
+      $ref: './components/tenancy.yaml#/schemas/SiteCreate'
+    SiteUpdate:
+      $ref: './components/tenancy.yaml#/schemas/SiteUpdate'
+    SiteList:
+      $ref: './components/tenancy.yaml#/schemas/SiteList'
+    Block:
+      $ref: './components/tenancy.yaml#/schemas/Block'
+    BlockCreate:
+      $ref: './components/tenancy.yaml#/schemas/BlockCreate'
+    BlockUpdate:
+      $ref: './components/tenancy.yaml#/schemas/BlockUpdate'
+    BlockList:
+      $ref: './components/tenancy.yaml#/schemas/BlockList'
+    Unit:
+      $ref: './components/tenancy.yaml#/schemas/Unit'
+    UnitCreate:
+      $ref: './components/tenancy.yaml#/schemas/UnitCreate'
+    UnitUpdate:
+      $ref: './components/tenancy.yaml#/schemas/UnitUpdate'
+    UnitList:
+      $ref: './components/tenancy.yaml#/schemas/UnitList'
+    UnitTags:
+      $ref: './components/tenancy.yaml#/schemas/UnitTags'
+    AllocationKey:
+      $ref: './components/tenancy.yaml#/schemas/AllocationKey'
+    AllocationKeyList:
+      $ref: './components/tenancy.yaml#/schemas/AllocationKeyList'
+    AllocationKeyCreate:
+      $ref: './components/tenancy.yaml#/schemas/AllocationKeyCreate'
+    AllocationKeyUpdate:
+      $ref: './components/tenancy.yaml#/schemas/AllocationKeyUpdate'
+    KeyValue:
+      $ref: './components/tenancy.yaml#/schemas/KeyValue'
+    KeyWarning:
+      $ref: './components/tenancy.yaml#/schemas/KeyWarning'
+    AllocationKeyDetail:
+      $ref: './components/tenancy.yaml#/schemas/AllocationKeyDetail'
+    AllocationKeyValues:
+      $ref: './components/tenancy.yaml#/schemas/AllocationKeyValues'
+    Vehicle:
+      $ref: './components/tenancy.yaml#/schemas/Vehicle'
+    VehicleCreate:
+      $ref: './components/tenancy.yaml#/schemas/VehicleCreate'
+    VehicleList:
+      $ref: './components/tenancy.yaml#/schemas/VehicleList'
+    ImportMessage:
+      $ref: './components/tenancy.yaml#/schemas/ImportMessage'
+    ImportRow:
+      $ref: './components/tenancy.yaml#/schemas/ImportRow'
+    ImportReport:
+      $ref: './components/tenancy.yaml#/schemas/ImportReport'
+    ImportUpload:
+      $ref: './components/tenancy.yaml#/schemas/ImportUpload'
+    ArchiveUpload:
+      $ref: './components/tenancy.yaml#/schemas/ArchiveUpload'
+    SiteExport:
+      $ref: './components/tenancy.yaml#/schemas/SiteExport'
+    SiteExportList:
+      $ref: './components/tenancy.yaml#/schemas/SiteExportList'
+    Codes:
+      $ref: './components/tenancy.yaml#/schemas/Codes'
+    Person:
+      $ref: './components/people.yaml#/schemas/Person'
+    PersonCreate:
+      $ref: './components/people.yaml#/schemas/PersonCreate'
+    PersonUpdate:
+      $ref: './components/people.yaml#/schemas/PersonUpdate'
+    PersonList:
+      $ref: './components/people.yaml#/schemas/PersonList'
+    Occupancy:
+      $ref: './components/people.yaml#/schemas/Occupancy'
+    OccupancyList:
+      $ref: './components/people.yaml#/schemas/OccupancyList'
+    OccupancyCreate:
+      $ref: './components/people.yaml#/schemas/OccupancyCreate'
+    OccupancyUpdate:
+      $ref: './components/people.yaml#/schemas/OccupancyUpdate'
+    MoneyAccess:
+      $ref: './components/people.yaml#/schemas/MoneyAccess'
+    MoveOutRequest:
+      $ref: './components/people.yaml#/schemas/MoveOutRequest'
+    MoveOut:
+      $ref: './components/people.yaml#/schemas/MoveOut'
+    Membership:
+      $ref: './components/people.yaml#/schemas/Membership'
+    MembershipList:
+      $ref: './components/people.yaml#/schemas/MembershipList'
+    MembershipCreate:
+      $ref: './components/people.yaml#/schemas/MembershipCreate'
+    Invitation:
+      $ref: './components/people.yaml#/schemas/Invitation'
+    InvitationList:
+      $ref: './components/people.yaml#/schemas/InvitationList'
+    InvitationCreate:
+      $ref: './components/people.yaml#/schemas/InvitationCreate'
+    HouseholdInvitationCreate:
+      $ref: './components/people.yaml#/schemas/HouseholdInvitationCreate'
+    InvitationPreview:
+      $ref: './components/people.yaml#/schemas/InvitationPreview'
+    AcceptInvitation:
+      $ref: './components/people.yaml#/schemas/AcceptInvitation'
+    AcceptResult:
+      $ref: './components/people.yaml#/schemas/AcceptResult'
+    JoinCode:
+      $ref: './components/people.yaml#/schemas/JoinCode'
+    JoinUnit:
+      $ref: './components/people.yaml#/schemas/JoinUnit'
+    JoinPreview:
+      $ref: './components/people.yaml#/schemas/JoinPreview'
+    ClaimCreate:
+      $ref: './components/people.yaml#/schemas/ClaimCreate'
+    UnitClaim:
+      $ref: './components/people.yaml#/schemas/UnitClaim'
+    UnitClaimList:
+      $ref: './components/people.yaml#/schemas/UnitClaimList'
+    ClaimApprove:
+      $ref: './components/people.yaml#/schemas/ClaimApprove'
+    ClaimReject:
+      $ref: './components/people.yaml#/schemas/ClaimReject'
+    DirectoryEntry:
+      $ref: './components/people.yaml#/schemas/DirectoryEntry'
+    DirectoryList:
+      $ref: './components/people.yaml#/schemas/DirectoryList'
+    DirectoryConsent:
+      $ref: './components/people.yaml#/schemas/DirectoryConsent'
+    DirectoryConsentUpdate:
+      $ref: './components/people.yaml#/schemas/DirectoryConsentUpdate'
+    Vendor:
+      $ref: './components/people.yaml#/schemas/Vendor'
+    VendorList:
+      $ref: './components/people.yaml#/schemas/VendorList'
+    VendorCreate:
+      $ref: './components/people.yaml#/schemas/VendorCreate'
+    VendorUpdate:
+      $ref: './components/people.yaml#/schemas/VendorUpdate'
+    MeOccupancy:
+      $ref: './components/people.yaml#/schemas/MeOccupancy'

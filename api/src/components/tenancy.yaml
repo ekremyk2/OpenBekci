@@ -1,0 +1,424 @@
+schemas:
+  Site:
+    type: object
+    required: [id, name, address, timezone, currency, fiscal_year_start_month, lock_date, settings, bank_details, status, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      name: {type: string}
+      address:
+        type: object
+        additionalProperties: true
+        description: Postal address, free-form keys (personal data in audit diffs).
+      timezone: {type: string, description: 'IANA time zone name.'}
+      currency: {type: string, description: 'ISO 4217.'}
+      fiscal_year_start_month: {type: integer, minimum: 1, maximum: 12}
+      lock_date:
+        type: string
+        format: date
+        nullable: true
+        description: Postings dated on or before this day are refused (money module).
+      settings:
+        $ref: '#/schemas/SiteSettings'
+      bank_details:
+        type: object
+        additionalProperties: true
+        description: 'IBAN and account holder, shown to payers (`iban`, `holder`).'
+      status:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: active, offboarded (handed over; every operation on it answers 403 `site_offboarded`).'
+        enum: [active, offboarded]
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  SiteSettings:
+    type: object
+    additionalProperties: true
+    description: Typed site settings; unknown keys are kept.
+    properties:
+      transparency_to_owners:
+        type: boolean
+        description: Owners see the aggregate income and expense and the budget (default false).
+      tenants_are_portal_users:
+        type: boolean
+        description: Tenants get portal access to the tenant side of their unit (default true).
+      directory_enabled:
+        type: boolean
+        description: Residents can see the opt-in directory (default false).
+      appurtenance_default:
+        type: string
+        enum: [appurtenance, independent]
+        description: Whether parking and storage units are listed under a flat (default) or are independent units.
+  SiteCreate:
+    type: object
+    additionalProperties: false
+    required: [name]
+    properties:
+      name: {type: string, minLength: 1, maxLength: 200}
+      address: {type: object, additionalProperties: true}
+      timezone: {type: string, maxLength: 64}
+      currency: {type: string, minLength: 3, maxLength: 3}
+      fiscal_year_start_month: {type: integer, minimum: 1, maximum: 12}
+      lock_date: {type: string, format: date, nullable: true}
+      settings:
+        $ref: '#/schemas/SiteSettings'
+      bank_details: {type: object, additionalProperties: true}
+      blocks:
+        type: array
+        maxItems: 100
+        description: Names of the blocks of a multi-block site; omit for a single building (one hidden block is created).
+        items: {type: string, minLength: 1, maxLength: 100}
+  SiteUpdate:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    description: Partial update; `settings` keys merge (a null value removes a key).
+    properties:
+      name: {type: string, minLength: 1, maxLength: 200}
+      address: {type: object, additionalProperties: true}
+      timezone: {type: string, maxLength: 64}
+      currency: {type: string, minLength: 3, maxLength: 3}
+      fiscal_year_start_month: {type: integer, minimum: 1, maximum: 12}
+      lock_date: {type: string, format: date, nullable: true}
+      settings:
+        type: object
+        additionalProperties: true
+      bank_details: {type: object, additionalProperties: true}
+  SiteList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Site'}
+      next_cursor: {type: string, nullable: true}
+  Block:
+    type: object
+    required: [id, site_id, name, hidden, sort_order, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      name: {type: string}
+      hidden: {type: boolean, description: 'The automatic block of a single building; clients do not show it.'}
+      sort_order: {type: integer}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  BlockCreate:
+    type: object
+    additionalProperties: false
+    required: [name]
+    properties:
+      name: {type: string, minLength: 1, maxLength: 100}
+      hidden: {type: boolean}
+      sort_order: {type: integer}
+  BlockUpdate:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      name: {type: string, minLength: 1, maxLength: 100}
+      hidden: {type: boolean}
+      sort_order: {type: integer}
+  BlockList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Block'}
+      next_cursor: {type: string, nullable: true, description: 'Always null; a site has few blocks.'}
+  Unit:
+    type: object
+    required: [id, site_id, block_id, block_name, door_number, legal_ref, type, area_m2, parent_unit_id, appurtenance_override, payer_overrides, status, independent, vacant, tags, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      block_id: {type: string, format: uuid}
+      block_name: {type: string}
+      door_number: {type: string, description: 'What people say, for example "A-12".'}
+      legal_ref: {type: string, nullable: true, description: 'Legal reference (tapu bagimsiz bolum no).'}
+      type:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: flat, shop, office, parking, storage, common, other.'
+        enum: [flat, shop, office, parking, storage, common, other]
+      area_m2: {type: number, nullable: true}
+      parent_unit_id: {type: string, format: uuid, nullable: true, description: 'The flat a parking spot or storage room belongs to (appurtenance).'}
+      appurtenance_override:
+        type: string
+        nullable: true
+        enum: [appurtenance, independent]
+        description: Per-unit override of the site's `appurtenance_default`; null follows the site.
+      payer_overrides:
+        type: object
+        additionalProperties: {type: string, enum: [owner, tenant]}
+        description: 'Per-unit payer override: charge type to the side that pays it, replacing the site default (`settings.payer_defaults`). Empty follows the site.'
+      status:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: active, merged, split (the last two are reserved).'
+        enum: [active, merged, split]
+      independent:
+        type: boolean
+        description: Derived. True when the unit has dues and a statement of its own (flats, shops, offices; parking and storage per the override or site default).
+      vacant:
+        type: boolean
+        description: Derived from occupancies. True when nobody currently lives in the unit.
+      tags:
+        type: array
+        items: {type: string}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  UnitCreate:
+    type: object
+    additionalProperties: false
+    required: [door_number]
+    properties:
+      block_id: {type: string, format: uuid, description: 'Required when the site has several blocks.'}
+      door_number: {type: string, minLength: 1, maxLength: 40}
+      legal_ref: {type: string, nullable: true, maxLength: 100}
+      type: {type: string, description: 'One of flat (default), shop, office, parking, storage, common, other.'}
+      area_m2: {type: number, nullable: true}
+      parent_unit_id: {type: string, format: uuid, nullable: true}
+      appurtenance_override: {type: string, nullable: true, enum: [appurtenance, independent]}
+      payer_overrides: {type: object, additionalProperties: {type: string, enum: [owner, tenant]}}
+  UnitUpdate:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      block_id: {type: string, format: uuid}
+      door_number: {type: string, minLength: 1, maxLength: 40}
+      legal_ref: {type: string, nullable: true, maxLength: 100}
+      type: {type: string}
+      area_m2: {type: number, nullable: true}
+      parent_unit_id: {type: string, format: uuid, nullable: true}
+      appurtenance_override: {type: string, nullable: true, enum: [appurtenance, independent]}
+      payer_overrides: {type: object, additionalProperties: {type: string, enum: [owner, tenant]}}
+  UnitList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Unit'}
+      next_cursor: {type: string, nullable: true}
+  UnitTags:
+    type: object
+    additionalProperties: false
+    required: [tags]
+    properties:
+      tags:
+        type: array
+        maxItems: 20
+        items: {type: string, minLength: 1, maxLength: 40}
+  AllocationKey:
+    type: object
+    required: [id, site_id, code, name, kind, is_default, value_count, version, created_at, updated_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      code: {type: string, description: 'For example `arsa_payi`, `equal`, `area` or a custom code.'}
+      name: {type: string}
+      kind:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: share (stored weights), equal (one per unit), area (m2), table (stored amounts).'
+        enum: [share, equal, area, table]
+      is_default: {type: boolean, description: 'One of the Law 634 keys created with the site.'}
+      value_count: {type: integer}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+  AllocationKeyList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/AllocationKey'}
+      next_cursor: {type: string, nullable: true, description: 'Always null.'}
+  AllocationKeyCreate:
+    type: object
+    additionalProperties: false
+    required: [code, name, kind]
+    properties:
+      code: {type: string, pattern: '^[a-z][a-z0-9_]{0,39}$'}
+      name: {type: string, minLength: 1, maxLength: 100}
+      kind: {type: string, enum: [share, equal, area, table]}
+  AllocationKeyUpdate:
+    type: object
+    additionalProperties: false
+    required: [name]
+    properties:
+      name: {type: string, minLength: 1, maxLength: 100}
+  KeyValue:
+    type: object
+    additionalProperties: false
+    required: [unit_id, value]
+    properties:
+      unit_id: {type: string, format: uuid}
+      value:
+        type: string
+        description: 'A rational ("12/1000") or a decimal ("0.012", "350").'
+  KeyWarning:
+    type: object
+    required: [code]
+    properties:
+      code: {type: string, description: 'For example `share_sum_mismatch`.'}
+      params: {type: object, additionalProperties: true}
+  AllocationKeyDetail:
+    type: object
+    required: [id, site_id, code, name, kind, is_default, value_count, version, created_at, updated_at, values, warnings]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      code: {type: string}
+      name: {type: string}
+      kind: {type: string, x-open-enum: true, description: 'Open enum: share, equal, area, table.', enum: [share, equal, area, table]}
+      is_default: {type: boolean}
+      value_count: {type: integer}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+      updated_at: {type: string, format: date-time}
+      values:
+        type: array
+        items: {$ref: '#/schemas/KeyValue'}
+      warnings:
+        type: array
+        description: Non-blocking findings, such as a share key that does not add up to one.
+        items: {$ref: '#/schemas/KeyWarning'}
+  AllocationKeyValues:
+    type: object
+    additionalProperties: false
+    required: [values]
+    properties:
+      values:
+        type: array
+        maxItems: 5000
+        items: {$ref: '#/schemas/KeyValue'}
+  Vehicle:
+    type: object
+    required: [id, site_id, unit_id, door_number, plate, label, version, created_at]
+    properties:
+      id: {type: string, format: uuid}
+      site_id: {type: string, format: uuid}
+      unit_id: {type: string, format: uuid}
+      door_number: {type: string}
+      plate: {type: string, description: 'Normalized, for example `34ABC123`.'}
+      label: {type: string, nullable: true}
+      version: {type: integer}
+      created_at: {type: string, format: date-time}
+  VehicleCreate:
+    type: object
+    additionalProperties: false
+    required: [plate]
+    properties:
+      plate: {type: string, maxLength: 20, description: 'As written, for example "34 abc 123"; stored normalized.'}
+      label: {type: string, nullable: true, maxLength: 100}
+  VehicleList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/Vehicle'}
+      next_cursor: {type: string, nullable: true}
+  ImportMessage:
+    type: object
+    required: [level, column, code]
+    properties:
+      level: {type: string, enum: [error, warning]}
+      column: {type: string}
+      code: {type: string}
+      params: {type: object, additionalProperties: true}
+  ImportRow:
+    type: object
+    required: [row, door_number, status, action, messages]
+    properties:
+      row: {type: integer, description: 'Line in the file (the header is line 1).'}
+      door_number: {type: string}
+      status: {type: string, enum: [ok, warning, error]}
+      action: {type: string, enum: [create, update, unchanged, skipped]}
+      messages:
+        type: array
+        items: {$ref: '#/schemas/ImportMessage'}
+  ImportReport:
+    type: object
+    required: [batch_id, dry_run, applied, status, summary, columns, rows]
+    properties:
+      batch_id: {type: string, format: uuid}
+      dry_run: {type: boolean}
+      applied: {type: boolean, description: 'False for a dry run and for a file with errors (nothing is written then).'}
+      status: {type: string, enum: [dry_run, applied, failed]}
+      summary:
+        type: object
+        additionalProperties: {type: integer}
+      columns:
+        type: object
+        additionalProperties: {type: string}
+        description: Canonical column to the header it was read from.
+      rows:
+        type: array
+        items: {$ref: '#/schemas/ImportRow'}
+  ImportUpload:
+    type: object
+    required: [file]
+    properties:
+      file:
+        type: string
+        format: binary
+        description: A CSV (comma, semicolon or tab separated, UTF-8) or XLSX file; the first row is the header.
+      dry_run:
+        type: boolean
+        default: false
+        description: Validate and report only; nothing is written.
+      mapping:
+        type: string
+        description: 'JSON object mapping a canonical column (`door_number`, `block`, `area_m2`, `arsa_payi`, `owner_name`, ...) to the header text in the file.'
+  ArchiveUpload:
+    type: object
+    required: [file]
+    properties:
+      file:
+        type: string
+        format: binary
+        description: A site archive produced by a site export.
+  SiteExport:
+    type: object
+    required: [id, direction, site_id, site_name, source_org_id, target_org_id, status, summary, has_archive, at]
+    properties:
+      id: {type: string, format: uuid}
+      direction: {type: string, x-open-enum: true, description: 'Open enum: export, import.', enum: [export, import]}
+      site_id: {type: string, format: uuid, nullable: true}
+      site_name: {type: string, nullable: true}
+      source_org_id: {type: string, format: uuid, nullable: true}
+      target_org_id: {type: string, format: uuid, nullable: true}
+      status: {type: string, x-open-enum: true, description: 'Open enum: running, done, failed.', enum: [running, done, failed]}
+      summary:
+        type: object
+        additionalProperties: true
+        description: Rows per table.
+      has_archive: {type: boolean}
+      at: {type: string, format: date-time}
+  SiteExportList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items: {$ref: '#/schemas/SiteExport'}
+      next_cursor: {type: string, nullable: true}
+  Codes:
+    type: object
+    required: [locale, sections]
+    properties:
+      locale: {type: string, description: 'The locale the labels are in (en or tr).'}
+      sections:
+        type: object
+        description: Section name (`roles`, `unit_types`, `occupancy_kinds`, `allocation_key_kinds`, `invitation_kinds`, `claim_statuses`, `debt_dispositions`, `problem_codes`, `field_error_codes`, ...) to code to label.
+        additionalProperties:
+          type: object
+          additionalProperties: {type: string}

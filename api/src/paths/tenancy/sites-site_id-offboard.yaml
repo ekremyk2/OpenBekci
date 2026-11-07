@@ -1,0 +1,38 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: site_id
+    in: path
+    required: true
+    description: The site id.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: tenancy.offboardSite
+  summary: Offboard a site after its hand-over
+  description: 'Needs a prior export and a recent re-authentication. Ends the site''s and its blocks'' memberships, revokes open invitations and closes the site: every operation on it answers 403 `site_offboarded`.'
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [site.offboard]
+  x-idempotent: optional
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/Site'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

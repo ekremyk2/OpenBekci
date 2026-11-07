@@ -311,7 +311,7 @@ schemas:
           $ref: '#/schemas/PermissionGrant'
       sites:
         type: array
-        description: Sites of the organization the caller can see (empty until the tenancy module lands).
+        description: Sites of the organization the caller can see through a membership or an occupancy.
         items:
           $ref: '#/schemas/MeSite'
   Me:
@@ -326,10 +326,9 @@ schemas:
           $ref: '#/schemas/OrgAccess'
       occupancies:
         type: array
-        description: The caller's unit occupancies (owner, tenant, household); empty until the people module lands.
+        description: The caller's unit occupancies (owner, tenant, household), current and former (former ones bound read access by their dates).
         items:
-          type: object
-          additionalProperties: true
+          $ref: './people.yaml#/schemas/MeOccupancy'
       policies:
         type: object
         additionalProperties: true

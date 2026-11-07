@@ -6,45 +6,166 @@ schemas:
     x-open-enum: true
     description: 'Open enum: every permission a role can hold (backend plan section 7).'
     enum:
+      - allocation.manage
+      - allocation.read
       - audit.read
       - audit.report
+      - claim.manage
+      - directory.consent
+      - directory.read
+      - import.run
+      - invitation.household
+      - invitation.manage
       - me.read
+      - membership.manage
+      - membership.read
+      - moveout.manage
+      - moveout.read
+      - occupancy.grant_money
+      - occupancy.manage
+      - occupancy.read
       - org.manage
       - org.read
+      - person.manage
+      - person.read
       - platform.manage
       - sessions.manage_own
+      - site.create
+      - site.export
+      - site.import
+      - site.manage
+      - site.offboard
+      - site.read
+      - unit.manage
+      - unit.read
+      - vehicle.manage
+      - vehicle.read
+      - vendor.manage
+      - vendor.read
 x-openbekci-roles:
   org_admin:
+    - allocation.manage
+    - allocation.read
     - audit.read
+    - claim.manage
+    - directory.consent
+    - directory.read
+    - import.run
+    - invitation.household
+    - invitation.manage
     - me.read
+    - membership.manage
+    - membership.read
+    - moveout.manage
+    - moveout.read
+    - occupancy.grant_money
+    - occupancy.manage
+    - occupancy.read
     - org.manage
     - org.read
+    - person.manage
+    - person.read
     - sessions.manage_own
+    - site.create
+    - site.export
+    - site.import
+    - site.manage
+    - site.offboard
+    - site.read
+    - unit.manage
+    - unit.read
+    - vehicle.manage
+    - vehicle.read
+    - vendor.manage
+    - vendor.read
   site_manager:
+    - allocation.manage
+    - allocation.read
+    - claim.manage
+    - directory.consent
+    - directory.read
+    - import.run
+    - invitation.household
+    - invitation.manage
     - me.read
+    - membership.manage
+    - membership.read
+    - moveout.manage
+    - moveout.read
+    - occupancy.grant_money
+    - occupancy.manage
+    - occupancy.read
     - org.read
+    - person.manage
+    - person.read
     - sessions.manage_own
+    - site.manage
+    - site.read
+    - unit.manage
+    - unit.read
+    - vehicle.manage
+    - vehicle.read
+    - vendor.manage
+    - vendor.read
   board_member:
+    - allocation.read
+    - directory.consent
+    - directory.read
     - me.read
+    - membership.read
+    - moveout.read
+    - occupancy.read
     - org.read
+    - person.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vehicle.read
+    - vendor.read
   auditor:
+    - allocation.read
     - audit.read
     - audit.report
+    - directory.consent
+    - directory.read
     - me.read
+    - membership.read
+    - moveout.read
+    - occupancy.read
     - org.read
+    - person.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vehicle.read
+    - vendor.read
   accountant:
+    - allocation.manage
+    - allocation.read
+    - directory.consent
     - me.read
+    - moveout.read
+    - occupancy.read
     - org.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vendor.manage
+    - vendor.read
   staff:
+    - directory.consent
     - me.read
     - org.read
     - sessions.manage_own
+    - site.read
+    - unit.read
+    - vehicle.read
+    - vendor.read
   guard:
+    - directory.consent
     - me.read
     - sessions.manage_own
+    - vehicle.read
   platform_admin:
     - me.read
     - platform.manage

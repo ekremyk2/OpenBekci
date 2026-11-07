@@ -1,0 +1,29 @@
+parameters:
+  - name: token
+    in: path
+    required: true
+    description: The secret token or code from the link.
+    schema:
+      type: string
+      maxLength: 200
+get:
+  operationId: people.previewInvitation
+  summary: Preview an invitation
+  description: 'What the holder of an invitation link sees before accepting. The token is the secret.'
+  tags: [people]
+  security: []
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/InvitationPreview'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '429':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

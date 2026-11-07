@@ -1,0 +1,54 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: occupancy_id
+    in: path
+    required: true
+    description: The occupancy id.
+    schema:
+      type: string
+      format: uuid
+put:
+  operationId: people.setMoneyAccess
+  summary: Let a household member see (or stop seeing) the unit's money
+  description: 'For managers, the unit''s owner, and the tenant for the tenant side.'
+  tags: [people]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [occupancy.grant_money]
+  x-idempotent: optional
+  parameters:
+    - name: If-Match
+      in: header
+      required: false
+      description: |
+        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+      schema:
+        type: string
+        pattern: '^"?[0-9]{1,9}"?$'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/people.yaml#/schemas/MoneyAccess'
+  responses:
+    '200':
+      description: 'Success.'
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/people.yaml#/schemas/Occupancy'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

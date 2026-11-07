@@ -1,0 +1,58 @@
+parameters:
+  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - name: block_id
+    in: path
+    required: true
+    description: The block id.
+    schema:
+      type: string
+      format: uuid
+patch:
+  operationId: tenancy.updateBlock
+  summary: Rename, hide or reorder a block
+  tags: [tenancy]
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [site.manage]
+  x-idempotent: optional
+  parameters:
+    - name: If-Match
+      in: header
+      required: false
+      description: |
+        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+      schema:
+        type: string
+        pattern: '^"?[0-9]{1,9}"?$'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/tenancy.yaml#/schemas/BlockUpdate'
+  responses:
+    '200':
+      description: 'Success.'
+      headers:
+        ETag:
+          description: The version, quoted; send it as `If-Match` when updating.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/tenancy.yaml#/schemas/Block'
+    '401':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '403':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '404':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '409':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    '422':
+      $ref: '../../components/problem.yaml#/responses/Problem'
+    default:
+      $ref: '../../components/problem.yaml#/responses/Problem'

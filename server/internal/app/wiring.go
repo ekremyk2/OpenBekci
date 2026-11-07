@@ -9,6 +9,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/permissions"
@@ -36,10 +37,35 @@ func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, err
 	}), nil
 }
 
+// newPeople builds the people service: national ids are sealed with
+// ENCRYPTION_KEY and invitations go out through the SMS and mail gateways.
+func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) (*people.Service, error) {
+	gw, err := newSMSGateway(cfg, log)
+	if err != nil {
+		return nil, err
+	}
+	mailer, err := newMailer(cfg, log)
+	if err != nil {
+		return nil, err
+	}
+	return people.NewService(d, ident, people.Config{
+		EncryptionKey: cfg.EncryptionKey,
+		BaseURL:       cfg.BaseURL,
+		InstanceName:  cfg.InstanceName,
+		SMS:           gw,
+		Mail:          mailer,
+		Log:           log,
+	})
+}
+
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
 func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (httpapi.Deps, error) {
 	ident, err := newIdentity(cfg, log, d)
+	if err != nil {
+		return httpapi.Deps{}, err
+	}
+	peopleSvc, err := newPeople(cfg, log, d, ident)
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
@@ -56,6 +82,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 		Identity:    ident,
 		Authz:       authz.NewResolver(d, reg, nil),
 		Tenancy:     tenancy.NewService(d),
+		People:      peopleSvc,
 		Audit:       audit.NewService(d),
 		Authenticator: httpapi.SessionAuthenticator{
 			Identity: ident,

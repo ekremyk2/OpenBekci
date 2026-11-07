@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"path"
@@ -23,6 +25,78 @@ import (
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// Defines values for AllocationKeyKind.
+const (
+	AllocationKeyKindArea  AllocationKeyKind = "area"
+	AllocationKeyKindEqual AllocationKeyKind = "equal"
+	AllocationKeyKindShare AllocationKeyKind = "share"
+	AllocationKeyKindTable AllocationKeyKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the AllocationKeyKind enum.
+func (e AllocationKeyKind) Valid() bool {
+	switch e {
+	case AllocationKeyKindArea:
+		return true
+	case AllocationKeyKindEqual:
+		return true
+	case AllocationKeyKindShare:
+		return true
+	case AllocationKeyKindTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AllocationKeyCreateKind.
+const (
+	AllocationKeyCreateKindArea  AllocationKeyCreateKind = "area"
+	AllocationKeyCreateKindEqual AllocationKeyCreateKind = "equal"
+	AllocationKeyCreateKindShare AllocationKeyCreateKind = "share"
+	AllocationKeyCreateKindTable AllocationKeyCreateKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the AllocationKeyCreateKind enum.
+func (e AllocationKeyCreateKind) Valid() bool {
+	switch e {
+	case AllocationKeyCreateKindArea:
+		return true
+	case AllocationKeyCreateKindEqual:
+		return true
+	case AllocationKeyCreateKindShare:
+		return true
+	case AllocationKeyCreateKindTable:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for AllocationKeyDetailKind.
+const (
+	AllocationKeyDetailKindArea  AllocationKeyDetailKind = "area"
+	AllocationKeyDetailKindEqual AllocationKeyDetailKind = "equal"
+	AllocationKeyDetailKindShare AllocationKeyDetailKind = "share"
+	AllocationKeyDetailKindTable AllocationKeyDetailKind = "table"
+)
+
+// Valid indicates whether the value is a known member of the AllocationKeyDetailKind enum.
+func (e AllocationKeyDetailKind) Valid() bool {
+	switch e {
+	case AllocationKeyDetailKindArea:
+		return true
+	case AllocationKeyDetailKindEqual:
+		return true
+	case AllocationKeyDetailKindShare:
+		return true
+	case AllocationKeyDetailKindTable:
+		return true
+	default:
+		return false
+	}
+}
 
 // Defines values for AuditEventActorKind.
 const (
@@ -63,6 +137,45 @@ func (e AuthResultClient) Valid() bool {
 	}
 }
 
+// Defines values for ClaimApproveSide.
+const (
+	ClaimApproveSideOwner  ClaimApproveSide = "owner"
+	ClaimApproveSideTenant ClaimApproveSide = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the ClaimApproveSide enum.
+func (e ClaimApproveSide) Valid() bool {
+	switch e {
+	case ClaimApproveSideOwner:
+		return true
+	case ClaimApproveSideTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ClaimCreateKind.
+const (
+	ClaimCreateKindHousehold ClaimCreateKind = "household"
+	ClaimCreateKindOwner     ClaimCreateKind = "owner"
+	ClaimCreateKindTenant    ClaimCreateKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the ClaimCreateKind enum.
+func (e ClaimCreateKind) Valid() bool {
+	switch e {
+	case ClaimCreateKindHousehold:
+		return true
+	case ClaimCreateKindOwner:
+		return true
+	case ClaimCreateKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CredentialsClient.
 const (
 	CredentialsClientMobile CredentialsClient = "mobile"
@@ -75,6 +188,312 @@ func (e CredentialsClient) Valid() bool {
 	case CredentialsClientMobile:
 		return true
 	case CredentialsClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HouseholdInvitationCreateChannel.
+const (
+	HouseholdInvitationCreateChannelEmail HouseholdInvitationCreateChannel = "email"
+	HouseholdInvitationCreateChannelLink  HouseholdInvitationCreateChannel = "link"
+	HouseholdInvitationCreateChannelSms   HouseholdInvitationCreateChannel = "sms"
+)
+
+// Valid indicates whether the value is a known member of the HouseholdInvitationCreateChannel enum.
+func (e HouseholdInvitationCreateChannel) Valid() bool {
+	switch e {
+	case HouseholdInvitationCreateChannelEmail:
+		return true
+	case HouseholdInvitationCreateChannelLink:
+		return true
+	case HouseholdInvitationCreateChannelSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HouseholdInvitationCreateClient.
+const (
+	HouseholdInvitationCreateClientMobile HouseholdInvitationCreateClient = "mobile"
+	HouseholdInvitationCreateClientWeb    HouseholdInvitationCreateClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the HouseholdInvitationCreateClient enum.
+func (e HouseholdInvitationCreateClient) Valid() bool {
+	switch e {
+	case HouseholdInvitationCreateClientMobile:
+		return true
+	case HouseholdInvitationCreateClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for HouseholdInvitationCreateSide.
+const (
+	HouseholdInvitationCreateSideOwner  HouseholdInvitationCreateSide = "owner"
+	HouseholdInvitationCreateSideTenant HouseholdInvitationCreateSide = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the HouseholdInvitationCreateSide enum.
+func (e HouseholdInvitationCreateSide) Valid() bool {
+	switch e {
+	case HouseholdInvitationCreateSideOwner:
+		return true
+	case HouseholdInvitationCreateSideTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ImportMessageLevel.
+const (
+	ImportMessageLevelError   ImportMessageLevel = "error"
+	ImportMessageLevelWarning ImportMessageLevel = "warning"
+)
+
+// Valid indicates whether the value is a known member of the ImportMessageLevel enum.
+func (e ImportMessageLevel) Valid() bool {
+	switch e {
+	case ImportMessageLevelError:
+		return true
+	case ImportMessageLevelWarning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ImportReportStatus.
+const (
+	ImportReportStatusApplied ImportReportStatus = "applied"
+	ImportReportStatusDryRun  ImportReportStatus = "dry_run"
+	ImportReportStatusFailed  ImportReportStatus = "failed"
+)
+
+// Valid indicates whether the value is a known member of the ImportReportStatus enum.
+func (e ImportReportStatus) Valid() bool {
+	switch e {
+	case ImportReportStatusApplied:
+		return true
+	case ImportReportStatusDryRun:
+		return true
+	case ImportReportStatusFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ImportRowAction.
+const (
+	ImportRowActionCreate    ImportRowAction = "create"
+	ImportRowActionSkipped   ImportRowAction = "skipped"
+	ImportRowActionUnchanged ImportRowAction = "unchanged"
+	ImportRowActionUpdate    ImportRowAction = "update"
+)
+
+// Valid indicates whether the value is a known member of the ImportRowAction enum.
+func (e ImportRowAction) Valid() bool {
+	switch e {
+	case ImportRowActionCreate:
+		return true
+	case ImportRowActionSkipped:
+		return true
+	case ImportRowActionUnchanged:
+		return true
+	case ImportRowActionUpdate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ImportRowStatus.
+const (
+	ImportRowStatusError   ImportRowStatus = "error"
+	ImportRowStatusOk      ImportRowStatus = "ok"
+	ImportRowStatusWarning ImportRowStatus = "warning"
+)
+
+// Valid indicates whether the value is a known member of the ImportRowStatus enum.
+func (e ImportRowStatus) Valid() bool {
+	switch e {
+	case ImportRowStatusError:
+		return true
+	case ImportRowStatusOk:
+		return true
+	case ImportRowStatusWarning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationChannel.
+const (
+	InvitationChannelEmail InvitationChannel = "email"
+	InvitationChannelLink  InvitationChannel = "link"
+	InvitationChannelSms   InvitationChannel = "sms"
+)
+
+// Valid indicates whether the value is a known member of the InvitationChannel enum.
+func (e InvitationChannel) Valid() bool {
+	switch e {
+	case InvitationChannelEmail:
+		return true
+	case InvitationChannelLink:
+		return true
+	case InvitationChannelSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationDelivery.
+const (
+	InvitationDeliveryFailed InvitationDelivery = "failed"
+	InvitationDeliveryNone   InvitationDelivery = "none"
+	InvitationDeliverySent   InvitationDelivery = "sent"
+)
+
+// Valid indicates whether the value is a known member of the InvitationDelivery enum.
+func (e InvitationDelivery) Valid() bool {
+	switch e {
+	case InvitationDeliveryFailed:
+		return true
+	case InvitationDeliveryNone:
+		return true
+	case InvitationDeliverySent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationKind.
+const (
+	InvitationKindHousehold InvitationKind = "household"
+	InvitationKindManager   InvitationKind = "manager"
+	InvitationKindSiteCode  InvitationKind = "site_code"
+)
+
+// Valid indicates whether the value is a known member of the InvitationKind enum.
+func (e InvitationKind) Valid() bool {
+	switch e {
+	case InvitationKindHousehold:
+		return true
+	case InvitationKindManager:
+		return true
+	case InvitationKindSiteCode:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationStatus.
+const (
+	InvitationStatusAccepted InvitationStatus = "accepted"
+	InvitationStatusExpired  InvitationStatus = "expired"
+	InvitationStatusPending  InvitationStatus = "pending"
+	InvitationStatusRevoked  InvitationStatus = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the InvitationStatus enum.
+func (e InvitationStatus) Valid() bool {
+	switch e {
+	case InvitationStatusAccepted:
+		return true
+	case InvitationStatusExpired:
+		return true
+	case InvitationStatusPending:
+		return true
+	case InvitationStatusRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationCreateChannel.
+const (
+	InvitationCreateChannelEmail InvitationCreateChannel = "email"
+	InvitationCreateChannelLink  InvitationCreateChannel = "link"
+	InvitationCreateChannelSms   InvitationCreateChannel = "sms"
+)
+
+// Valid indicates whether the value is a known member of the InvitationCreateChannel enum.
+func (e InvitationCreateChannel) Valid() bool {
+	switch e {
+	case InvitationCreateChannelEmail:
+		return true
+	case InvitationCreateChannelLink:
+		return true
+	case InvitationCreateChannelSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationCreateClient.
+const (
+	InvitationCreateClientMobile InvitationCreateClient = "mobile"
+	InvitationCreateClientWeb    InvitationCreateClient = "web"
+)
+
+// Valid indicates whether the value is a known member of the InvitationCreateClient enum.
+func (e InvitationCreateClient) Valid() bool {
+	switch e {
+	case InvitationCreateClientMobile:
+		return true
+	case InvitationCreateClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationCreateOccupancyKind.
+const (
+	InvitationCreateOccupancyKindHousehold InvitationCreateOccupancyKind = "household"
+	InvitationCreateOccupancyKindOwner     InvitationCreateOccupancyKind = "owner"
+	InvitationCreateOccupancyKindTenant    InvitationCreateOccupancyKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the InvitationCreateOccupancyKind enum.
+func (e InvitationCreateOccupancyKind) Valid() bool {
+	switch e {
+	case InvitationCreateOccupancyKindHousehold:
+		return true
+	case InvitationCreateOccupancyKindOwner:
+		return true
+	case InvitationCreateOccupancyKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for InvitationCreateSide.
+const (
+	InvitationCreateSideOwner  InvitationCreateSide = "owner"
+	InvitationCreateSideTenant InvitationCreateSide = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the InvitationCreateSide enum.
+func (e InvitationCreateSide) Valid() bool {
+	switch e {
+	case InvitationCreateSideOwner:
+		return true
+	case InvitationCreateSideTenant:
 		return true
 	default:
 		return false
@@ -117,6 +536,309 @@ func (e MagicLinkRequestClient) Valid() bool {
 	}
 }
 
+// Defines values for MeOccupancyKind.
+const (
+	MeOccupancyKindHousehold MeOccupancyKind = "household"
+	MeOccupancyKindOwner     MeOccupancyKind = "owner"
+	MeOccupancyKindTenant    MeOccupancyKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the MeOccupancyKind enum.
+func (e MeOccupancyKind) Valid() bool {
+	switch e {
+	case MeOccupancyKindHousehold:
+		return true
+	case MeOccupancyKindOwner:
+		return true
+	case MeOccupancyKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MeOccupancySide.
+const (
+	MeOccupancySideOwner  MeOccupancySide = "owner"
+	MeOccupancySideTenant MeOccupancySide = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the MeOccupancySide enum.
+func (e MeOccupancySide) Valid() bool {
+	switch e {
+	case MeOccupancySideOwner:
+		return true
+	case MeOccupancySideTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MembershipRole.
+const (
+	MembershipRoleAccountant  MembershipRole = "accountant"
+	MembershipRoleAuditor     MembershipRole = "auditor"
+	MembershipRoleBoardMember MembershipRole = "board_member"
+	MembershipRoleGuard       MembershipRole = "guard"
+	MembershipRoleOrgAdmin    MembershipRole = "org_admin"
+	MembershipRoleSiteManager MembershipRole = "site_manager"
+	MembershipRoleStaff       MembershipRole = "staff"
+)
+
+// Valid indicates whether the value is a known member of the MembershipRole enum.
+func (e MembershipRole) Valid() bool {
+	switch e {
+	case MembershipRoleAccountant:
+		return true
+	case MembershipRoleAuditor:
+		return true
+	case MembershipRoleBoardMember:
+		return true
+	case MembershipRoleGuard:
+		return true
+	case MembershipRoleOrgAdmin:
+		return true
+	case MembershipRoleSiteManager:
+		return true
+	case MembershipRoleStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MembershipScopeType.
+const (
+	MembershipScopeTypeBlock MembershipScopeType = "block"
+	MembershipScopeTypeOrg   MembershipScopeType = "org"
+	MembershipScopeTypeSite  MembershipScopeType = "site"
+)
+
+// Valid indicates whether the value is a known member of the MembershipScopeType enum.
+func (e MembershipScopeType) Valid() bool {
+	switch e {
+	case MembershipScopeTypeBlock:
+		return true
+	case MembershipScopeTypeOrg:
+		return true
+	case MembershipScopeTypeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MembershipCreateRole.
+const (
+	MembershipCreateRoleAccountant  MembershipCreateRole = "accountant"
+	MembershipCreateRoleAuditor     MembershipCreateRole = "auditor"
+	MembershipCreateRoleBoardMember MembershipCreateRole = "board_member"
+	MembershipCreateRoleGuard       MembershipCreateRole = "guard"
+	MembershipCreateRoleOrgAdmin    MembershipCreateRole = "org_admin"
+	MembershipCreateRoleSiteManager MembershipCreateRole = "site_manager"
+	MembershipCreateRoleStaff       MembershipCreateRole = "staff"
+)
+
+// Valid indicates whether the value is a known member of the MembershipCreateRole enum.
+func (e MembershipCreateRole) Valid() bool {
+	switch e {
+	case MembershipCreateRoleAccountant:
+		return true
+	case MembershipCreateRoleAuditor:
+		return true
+	case MembershipCreateRoleBoardMember:
+		return true
+	case MembershipCreateRoleGuard:
+		return true
+	case MembershipCreateRoleOrgAdmin:
+		return true
+	case MembershipCreateRoleSiteManager:
+		return true
+	case MembershipCreateRoleStaff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MembershipCreateScopeType.
+const (
+	MembershipCreateScopeTypeBlock MembershipCreateScopeType = "block"
+	MembershipCreateScopeTypeOrg   MembershipCreateScopeType = "org"
+	MembershipCreateScopeTypeSite  MembershipCreateScopeType = "site"
+)
+
+// Valid indicates whether the value is a known member of the MembershipCreateScopeType enum.
+func (e MembershipCreateScopeType) Valid() bool {
+	switch e {
+	case MembershipCreateScopeTypeBlock:
+		return true
+	case MembershipCreateScopeTypeOrg:
+		return true
+	case MembershipCreateScopeTypeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoveOutCertificateStatus.
+const (
+	MoveOutCertificateStatusPending MoveOutCertificateStatus = "pending"
+	MoveOutCertificateStatusReady   MoveOutCertificateStatus = "ready"
+)
+
+// Valid indicates whether the value is a known member of the MoveOutCertificateStatus enum.
+func (e MoveOutCertificateStatus) Valid() bool {
+	switch e {
+	case MoveOutCertificateStatusPending:
+		return true
+	case MoveOutCertificateStatusReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoveOutClosingStatementStatus.
+const (
+	MoveOutClosingStatementStatusPending MoveOutClosingStatementStatus = "pending"
+	MoveOutClosingStatementStatusReady   MoveOutClosingStatementStatus = "ready"
+)
+
+// Valid indicates whether the value is a known member of the MoveOutClosingStatementStatus enum.
+func (e MoveOutClosingStatementStatus) Valid() bool {
+	switch e {
+	case MoveOutClosingStatementStatusPending:
+		return true
+	case MoveOutClosingStatementStatusReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoveOutOpenCharges.
+const (
+	MoveOutOpenChargesCarryToPerson MoveOutOpenCharges = "carry_to_person"
+	MoveOutOpenChargesKeepOnUnit    MoveOutOpenCharges = "keep_on_unit"
+	MoveOutOpenChargesWriteOff      MoveOutOpenCharges = "write_off"
+)
+
+// Valid indicates whether the value is a known member of the MoveOutOpenCharges enum.
+func (e MoveOutOpenCharges) Valid() bool {
+	switch e {
+	case MoveOutOpenChargesCarryToPerson:
+		return true
+	case MoveOutOpenChargesKeepOnUnit:
+		return true
+	case MoveOutOpenChargesWriteOff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoveOutRequestOpenCharges.
+const (
+	MoveOutRequestOpenChargesCarryToPerson MoveOutRequestOpenCharges = "carry_to_person"
+	MoveOutRequestOpenChargesKeepOnUnit    MoveOutRequestOpenCharges = "keep_on_unit"
+	MoveOutRequestOpenChargesWriteOff      MoveOutRequestOpenCharges = "write_off"
+)
+
+// Valid indicates whether the value is a known member of the MoveOutRequestOpenCharges enum.
+func (e MoveOutRequestOpenCharges) Valid() bool {
+	switch e {
+	case MoveOutRequestOpenChargesCarryToPerson:
+		return true
+	case MoveOutRequestOpenChargesKeepOnUnit:
+		return true
+	case MoveOutRequestOpenChargesWriteOff:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for OccupancyKind.
+const (
+	OccupancyKindHousehold OccupancyKind = "household"
+	OccupancyKindOwner     OccupancyKind = "owner"
+	OccupancyKindTenant    OccupancyKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the OccupancyKind enum.
+func (e OccupancyKind) Valid() bool {
+	switch e {
+	case OccupancyKindHousehold:
+		return true
+	case OccupancyKindOwner:
+		return true
+	case OccupancyKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for OccupancySide.
+const (
+	OccupancySideOwner  OccupancySide = "owner"
+	OccupancySideTenant OccupancySide = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the OccupancySide enum.
+func (e OccupancySide) Valid() bool {
+	switch e {
+	case OccupancySideOwner:
+		return true
+	case OccupancySideTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for OccupancyCreateKind.
+const (
+	OccupancyCreateKindHousehold OccupancyCreateKind = "household"
+	OccupancyCreateKindOwner     OccupancyCreateKind = "owner"
+	OccupancyCreateKindTenant    OccupancyCreateKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the OccupancyCreateKind enum.
+func (e OccupancyCreateKind) Valid() bool {
+	switch e {
+	case OccupancyCreateKindHousehold:
+		return true
+	case OccupancyCreateKindOwner:
+		return true
+	case OccupancyCreateKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for OccupancyCreateSide.
+const (
+	OccupancyCreateSideOwner  OccupancyCreateSide = "owner"
+	OccupancyCreateSideTenant OccupancyCreateSide = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the OccupancyCreateSide enum.
+func (e OccupancyCreateSide) Valid() bool {
+	switch e {
+	case OccupancyCreateSideOwner:
+		return true
+	case OccupancyCreateSideTenant:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for OrganizationStatus.
 const (
 	OrganizationStatusActive OrganizationStatus = "active"
@@ -134,31 +856,118 @@ func (e OrganizationStatus) Valid() bool {
 
 // Defines values for Permission.
 const (
-	PermissionAuditRead         Permission = "audit.read"
-	PermissionAuditReport       Permission = "audit.report"
-	PermissionMeRead            Permission = "me.read"
-	PermissionOrgManage         Permission = "org.manage"
-	PermissionOrgRead           Permission = "org.read"
-	PermissionPlatformManage    Permission = "platform.manage"
-	PermissionSessionsManageOwn Permission = "sessions.manage_own"
+	PermissionAllocationManage    Permission = "allocation.manage"
+	PermissionAllocationRead      Permission = "allocation.read"
+	PermissionAuditRead           Permission = "audit.read"
+	PermissionAuditReport         Permission = "audit.report"
+	PermissionClaimManage         Permission = "claim.manage"
+	PermissionDirectoryConsent    Permission = "directory.consent"
+	PermissionDirectoryRead       Permission = "directory.read"
+	PermissionImportRun           Permission = "import.run"
+	PermissionInvitationHousehold Permission = "invitation.household"
+	PermissionInvitationManage    Permission = "invitation.manage"
+	PermissionMeRead              Permission = "me.read"
+	PermissionMembershipManage    Permission = "membership.manage"
+	PermissionMembershipRead      Permission = "membership.read"
+	PermissionMoveoutManage       Permission = "moveout.manage"
+	PermissionMoveoutRead         Permission = "moveout.read"
+	PermissionOccupancyGrantMoney Permission = "occupancy.grant_money"
+	PermissionOccupancyManage     Permission = "occupancy.manage"
+	PermissionOccupancyRead       Permission = "occupancy.read"
+	PermissionOrgManage           Permission = "org.manage"
+	PermissionOrgRead             Permission = "org.read"
+	PermissionPersonManage        Permission = "person.manage"
+	PermissionPersonRead          Permission = "person.read"
+	PermissionPlatformManage      Permission = "platform.manage"
+	PermissionSessionsManageOwn   Permission = "sessions.manage_own"
+	PermissionSiteCreate          Permission = "site.create"
+	PermissionSiteExport          Permission = "site.export"
+	PermissionSiteImport          Permission = "site.import"
+	PermissionSiteManage          Permission = "site.manage"
+	PermissionSiteOffboard        Permission = "site.offboard"
+	PermissionSiteRead            Permission = "site.read"
+	PermissionUnitManage          Permission = "unit.manage"
+	PermissionUnitRead            Permission = "unit.read"
+	PermissionVehicleManage       Permission = "vehicle.manage"
+	PermissionVehicleRead         Permission = "vehicle.read"
+	PermissionVendorManage        Permission = "vendor.manage"
+	PermissionVendorRead          Permission = "vendor.read"
 )
 
 // Valid indicates whether the value is a known member of the Permission enum.
 func (e Permission) Valid() bool {
 	switch e {
+	case PermissionAllocationManage:
+		return true
+	case PermissionAllocationRead:
+		return true
 	case PermissionAuditRead:
 		return true
 	case PermissionAuditReport:
 		return true
+	case PermissionClaimManage:
+		return true
+	case PermissionDirectoryConsent:
+		return true
+	case PermissionDirectoryRead:
+		return true
+	case PermissionImportRun:
+		return true
+	case PermissionInvitationHousehold:
+		return true
+	case PermissionInvitationManage:
+		return true
 	case PermissionMeRead:
+		return true
+	case PermissionMembershipManage:
+		return true
+	case PermissionMembershipRead:
+		return true
+	case PermissionMoveoutManage:
+		return true
+	case PermissionMoveoutRead:
+		return true
+	case PermissionOccupancyGrantMoney:
+		return true
+	case PermissionOccupancyManage:
+		return true
+	case PermissionOccupancyRead:
 		return true
 	case PermissionOrgManage:
 		return true
 	case PermissionOrgRead:
 		return true
+	case PermissionPersonManage:
+		return true
+	case PermissionPersonRead:
+		return true
 	case PermissionPlatformManage:
 		return true
 	case PermissionSessionsManageOwn:
+		return true
+	case PermissionSiteCreate:
+		return true
+	case PermissionSiteExport:
+		return true
+	case PermissionSiteImport:
+		return true
+	case PermissionSiteManage:
+		return true
+	case PermissionSiteOffboard:
+		return true
+	case PermissionSiteRead:
+		return true
+	case PermissionUnitManage:
+		return true
+	case PermissionUnitRead:
+		return true
+	case PermissionVehicleManage:
+		return true
+	case PermissionVehicleRead:
+		return true
+	case PermissionVendorManage:
+		return true
+	case PermissionVendorRead:
 		return true
 	default:
 		return false
@@ -318,6 +1127,385 @@ func (e SessionClient) Valid() bool {
 	}
 }
 
+// Defines values for SiteStatus.
+const (
+	SiteStatusActive     SiteStatus = "active"
+	SiteStatusOffboarded SiteStatus = "offboarded"
+)
+
+// Valid indicates whether the value is a known member of the SiteStatus enum.
+func (e SiteStatus) Valid() bool {
+	switch e {
+	case SiteStatusActive:
+		return true
+	case SiteStatusOffboarded:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SiteExportDirection.
+const (
+	SiteExportDirectionExport SiteExportDirection = "export"
+	SiteExportDirectionImport SiteExportDirection = "import"
+)
+
+// Valid indicates whether the value is a known member of the SiteExportDirection enum.
+func (e SiteExportDirection) Valid() bool {
+	switch e {
+	case SiteExportDirectionExport:
+		return true
+	case SiteExportDirectionImport:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SiteExportStatus.
+const (
+	SiteExportStatusDone    SiteExportStatus = "done"
+	SiteExportStatusFailed  SiteExportStatus = "failed"
+	SiteExportStatusRunning SiteExportStatus = "running"
+)
+
+// Valid indicates whether the value is a known member of the SiteExportStatus enum.
+func (e SiteExportStatus) Valid() bool {
+	switch e {
+	case SiteExportStatusDone:
+		return true
+	case SiteExportStatusFailed:
+		return true
+	case SiteExportStatusRunning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SiteSettingsAppurtenanceDefault.
+const (
+	SiteSettingsAppurtenanceDefaultAppurtenance SiteSettingsAppurtenanceDefault = "appurtenance"
+	SiteSettingsAppurtenanceDefaultIndependent  SiteSettingsAppurtenanceDefault = "independent"
+)
+
+// Valid indicates whether the value is a known member of the SiteSettingsAppurtenanceDefault enum.
+func (e SiteSettingsAppurtenanceDefault) Valid() bool {
+	switch e {
+	case SiteSettingsAppurtenanceDefaultAppurtenance:
+		return true
+	case SiteSettingsAppurtenanceDefaultIndependent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitAppurtenanceOverride.
+const (
+	UnitAppurtenanceOverrideAppurtenance UnitAppurtenanceOverride = "appurtenance"
+	UnitAppurtenanceOverrideIndependent  UnitAppurtenanceOverride = "independent"
+)
+
+// Valid indicates whether the value is a known member of the UnitAppurtenanceOverride enum.
+func (e UnitAppurtenanceOverride) Valid() bool {
+	switch e {
+	case UnitAppurtenanceOverrideAppurtenance:
+		return true
+	case UnitAppurtenanceOverrideIndependent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitPayerOverrides.
+const (
+	UnitPayerOverridesOwner  UnitPayerOverrides = "owner"
+	UnitPayerOverridesTenant UnitPayerOverrides = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the UnitPayerOverrides enum.
+func (e UnitPayerOverrides) Valid() bool {
+	switch e {
+	case UnitPayerOverridesOwner:
+		return true
+	case UnitPayerOverridesTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitStatus.
+const (
+	UnitStatusActive UnitStatus = "active"
+	UnitStatusMerged UnitStatus = "merged"
+	UnitStatusSplit  UnitStatus = "split"
+)
+
+// Valid indicates whether the value is a known member of the UnitStatus enum.
+func (e UnitStatus) Valid() bool {
+	switch e {
+	case UnitStatusActive:
+		return true
+	case UnitStatusMerged:
+		return true
+	case UnitStatusSplit:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitType.
+const (
+	UnitTypeCommon  UnitType = "common"
+	UnitTypeFlat    UnitType = "flat"
+	UnitTypeOffice  UnitType = "office"
+	UnitTypeOther   UnitType = "other"
+	UnitTypeParking UnitType = "parking"
+	UnitTypeShop    UnitType = "shop"
+	UnitTypeStorage UnitType = "storage"
+)
+
+// Valid indicates whether the value is a known member of the UnitType enum.
+func (e UnitType) Valid() bool {
+	switch e {
+	case UnitTypeCommon:
+		return true
+	case UnitTypeFlat:
+		return true
+	case UnitTypeOffice:
+		return true
+	case UnitTypeOther:
+		return true
+	case UnitTypeParking:
+		return true
+	case UnitTypeShop:
+		return true
+	case UnitTypeStorage:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitClaimKind.
+const (
+	UnitClaimKindHousehold UnitClaimKind = "household"
+	UnitClaimKindOwner     UnitClaimKind = "owner"
+	UnitClaimKindTenant    UnitClaimKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the UnitClaimKind enum.
+func (e UnitClaimKind) Valid() bool {
+	switch e {
+	case UnitClaimKindHousehold:
+		return true
+	case UnitClaimKindOwner:
+		return true
+	case UnitClaimKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitClaimStatus.
+const (
+	UnitClaimStatusApproved UnitClaimStatus = "approved"
+	UnitClaimStatusPending  UnitClaimStatus = "pending"
+	UnitClaimStatusRejected UnitClaimStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the UnitClaimStatus enum.
+func (e UnitClaimStatus) Valid() bool {
+	switch e {
+	case UnitClaimStatusApproved:
+		return true
+	case UnitClaimStatusPending:
+		return true
+	case UnitClaimStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitCreateAppurtenanceOverride.
+const (
+	UnitCreateAppurtenanceOverrideAppurtenance UnitCreateAppurtenanceOverride = "appurtenance"
+	UnitCreateAppurtenanceOverrideIndependent  UnitCreateAppurtenanceOverride = "independent"
+)
+
+// Valid indicates whether the value is a known member of the UnitCreateAppurtenanceOverride enum.
+func (e UnitCreateAppurtenanceOverride) Valid() bool {
+	switch e {
+	case UnitCreateAppurtenanceOverrideAppurtenance:
+		return true
+	case UnitCreateAppurtenanceOverrideIndependent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitCreatePayerOverrides.
+const (
+	UnitCreatePayerOverridesOwner  UnitCreatePayerOverrides = "owner"
+	UnitCreatePayerOverridesTenant UnitCreatePayerOverrides = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the UnitCreatePayerOverrides enum.
+func (e UnitCreatePayerOverrides) Valid() bool {
+	switch e {
+	case UnitCreatePayerOverridesOwner:
+		return true
+	case UnitCreatePayerOverridesTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitUpdateAppurtenanceOverride.
+const (
+	UnitUpdateAppurtenanceOverrideAppurtenance UnitUpdateAppurtenanceOverride = "appurtenance"
+	UnitUpdateAppurtenanceOverrideIndependent  UnitUpdateAppurtenanceOverride = "independent"
+)
+
+// Valid indicates whether the value is a known member of the UnitUpdateAppurtenanceOverride enum.
+func (e UnitUpdateAppurtenanceOverride) Valid() bool {
+	switch e {
+	case UnitUpdateAppurtenanceOverrideAppurtenance:
+		return true
+	case UnitUpdateAppurtenanceOverrideIndependent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for UnitUpdatePayerOverrides.
+const (
+	UnitUpdatePayerOverridesOwner  UnitUpdatePayerOverrides = "owner"
+	UnitUpdatePayerOverridesTenant UnitUpdatePayerOverrides = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the UnitUpdatePayerOverrides enum.
+func (e UnitUpdatePayerOverrides) Valid() bool {
+	switch e {
+	case UnitUpdatePayerOverridesOwner:
+		return true
+	case UnitUpdatePayerOverridesTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// AcceptInvitation defines model for AcceptInvitation.
+type AcceptInvitation struct {
+	Locale *string `json:"locale,omitempty"`
+
+	// Password Optional password for a newly created account (minimum 10 characters).
+	Password *string `json:"password,omitempty"`
+}
+
+// AcceptResult defines model for AcceptResult.
+type AcceptResult struct {
+	OccupancyId nullable.Nullable[openapi_types.UUID] `json:"occupancy_id"`
+	OrgId       openapi_types.UUID                    `json:"org_id"`
+	PersonId    openapi_types.UUID                    `json:"person_id"`
+
+	// SignInRequired True unless the caller was already signed in; sign in with any method (SMS code, magic link, password).
+	SignInRequired bool               `json:"sign_in_required"`
+	SiteId         openapi_types.UUID `json:"site_id"`
+	UserCreated    bool               `json:"user_created"`
+	UserId         openapi_types.UUID `json:"user_id"`
+}
+
+// AllocationKey defines model for AllocationKey.
+type AllocationKey struct {
+	// Code For example `arsa_payi`, `equal`, `area` or a custom code.
+	Code      string             `json:"code"`
+	CreatedAt time.Time          `json:"created_at"`
+	Id        openapi_types.UUID `json:"id"`
+
+	// IsDefault One of the Law 634 keys created with the site.
+	IsDefault bool `json:"is_default"`
+
+	// Kind Open enum: share (stored weights), equal (one per unit), area (m2), table (stored amounts).
+	Kind       AllocationKeyKind  `json:"kind"`
+	Name       string             `json:"name"`
+	SiteId     openapi_types.UUID `json:"site_id"`
+	UpdatedAt  time.Time          `json:"updated_at"`
+	ValueCount int                `json:"value_count"`
+	Version    int                `json:"version"`
+}
+
+// AllocationKeyKind Open enum: share (stored weights), equal (one per unit), area (m2), table (stored amounts).
+type AllocationKeyKind string
+
+// AllocationKeyCreate defines model for AllocationKeyCreate.
+type AllocationKeyCreate struct {
+	Code string                  `json:"code"`
+	Kind AllocationKeyCreateKind `json:"kind"`
+	Name string                  `json:"name"`
+}
+
+// AllocationKeyCreateKind defines model for AllocationKeyCreate.Kind.
+type AllocationKeyCreateKind string
+
+// AllocationKeyDetail defines model for AllocationKeyDetail.
+type AllocationKeyDetail struct {
+	Code      string             `json:"code"`
+	CreatedAt time.Time          `json:"created_at"`
+	Id        openapi_types.UUID `json:"id"`
+	IsDefault bool               `json:"is_default"`
+
+	// Kind Open enum: share, equal, area, table.
+	Kind       AllocationKeyDetailKind `json:"kind"`
+	Name       string                  `json:"name"`
+	SiteId     openapi_types.UUID      `json:"site_id"`
+	UpdatedAt  time.Time               `json:"updated_at"`
+	ValueCount int                     `json:"value_count"`
+	Values     []KeyValue              `json:"values"`
+	Version    int                     `json:"version"`
+
+	// Warnings Non-blocking findings, such as a share key that does not add up to one.
+	Warnings []KeyWarning `json:"warnings"`
+}
+
+// AllocationKeyDetailKind Open enum: share, equal, area, table.
+type AllocationKeyDetailKind string
+
+// AllocationKeyList defines model for AllocationKeyList.
+type AllocationKeyList struct {
+	Items []AllocationKey `json:"items"`
+
+	// NextCursor Always null.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// AllocationKeyUpdate defines model for AllocationKeyUpdate.
+type AllocationKeyUpdate struct {
+	Name string `json:"name"`
+}
+
+// AllocationKeyValues defines model for AllocationKeyValues.
+type AllocationKeyValues struct {
+	Values []KeyValue `json:"values"`
+}
+
+// ArchiveUpload defines model for ArchiveUpload.
+type ArchiveUpload struct {
+	// File A site archive produced by a site export.
+	File openapi_types.File `json:"file"`
+}
+
 // AuditChange One changed field. Personal data carries only `hash_before` and
 // `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
 // fields carry `before` and `after` (absent when the field did not exist on that side).
@@ -410,6 +1598,42 @@ type AuthUser struct {
 	Phone nullable.Nullable[string] `json:"phone"`
 }
 
+// Block defines model for Block.
+type Block struct {
+	CreatedAt time.Time `json:"created_at"`
+
+	// Hidden The automatic block of a single building; clients do not show it.
+	Hidden    bool               `json:"hidden"`
+	Id        openapi_types.UUID `json:"id"`
+	Name      string             `json:"name"`
+	SiteId    openapi_types.UUID `json:"site_id"`
+	SortOrder int                `json:"sort_order"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	Version   int                `json:"version"`
+}
+
+// BlockCreate defines model for BlockCreate.
+type BlockCreate struct {
+	Hidden    *bool  `json:"hidden,omitempty"`
+	Name      string `json:"name"`
+	SortOrder *int   `json:"sort_order,omitempty"`
+}
+
+// BlockList defines model for BlockList.
+type BlockList struct {
+	Items []Block `json:"items"`
+
+	// NextCursor Always null; a site has few blocks.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// BlockUpdate defines model for BlockUpdate.
+type BlockUpdate struct {
+	Hidden    *bool   `json:"hidden,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	SortOrder *int    `json:"sort_order,omitempty"`
+}
+
 // Branding defines model for Branding.
 type Branding struct {
 	LogoUrl *string `json:"logo_url,omitempty"`
@@ -421,6 +1645,43 @@ type Branding struct {
 // ChangePasswordRequest defines model for ChangePasswordRequest.
 type ChangePasswordRequest struct {
 	NewPassword string `json:"new_password"`
+}
+
+// ClaimApprove defines model for ClaimApprove.
+type ClaimApprove struct {
+	IsCorrespondent *bool                      `json:"is_correspondent,omitempty"`
+	Note            nullable.Nullable[string]  `json:"note,omitempty"`
+	SharePct        nullable.Nullable[float32] `json:"share_pct,omitempty"`
+	Side            *ClaimApproveSide          `json:"side,omitempty"`
+	ValidFrom       *openapi_types.Date        `json:"valid_from,omitempty"`
+}
+
+// ClaimApproveSide defines model for ClaimApprove.Side.
+type ClaimApproveSide string
+
+// ClaimCreate defines model for ClaimCreate.
+type ClaimCreate struct {
+	DisplayName *string            `json:"display_name,omitempty"`
+	Kind        ClaimCreateKind    `json:"kind"`
+	Message     *string            `json:"message,omitempty"`
+	UnitId      openapi_types.UUID `json:"unit_id"`
+}
+
+// ClaimCreateKind defines model for ClaimCreate.Kind.
+type ClaimCreateKind string
+
+// ClaimReject defines model for ClaimReject.
+type ClaimReject struct {
+	Note nullable.Nullable[string] `json:"note,omitempty"`
+}
+
+// Codes defines model for Codes.
+type Codes struct {
+	// Locale The locale the labels are in (en or tr).
+	Locale string `json:"locale"`
+
+	// Sections Section name (`roles`, `unit_types`, `occupancy_kinds`, `allocation_key_kinds`, `invitation_kinds`, `claim_statuses`, `debt_dispositions`, `problem_codes`, `field_error_codes`, ...) to code to label.
+	Sections map[string]map[string]string `json:"sections"`
 }
 
 // Credentials What the caller proves. `method` is `password`, `sms_otp` or
@@ -446,6 +1707,42 @@ type Credentials struct {
 // CredentialsClient `mobile` makes an emailed link use the `openbekci://` scheme.
 type CredentialsClient string
 
+// DirectoryConsent defines model for DirectoryConsent.
+type DirectoryConsent struct {
+	ShareName  bool               `json:"share_name"`
+	SharePhone bool               `json:"share_phone"`
+	SiteId     openapi_types.UUID `json:"site_id"`
+}
+
+// DirectoryConsentUpdate defines model for DirectoryConsentUpdate.
+type DirectoryConsentUpdate struct {
+	ShareName *bool `json:"share_name,omitempty"`
+
+	// SharePhone Needs `share_name`.
+	SharePhone *bool `json:"share_phone,omitempty"`
+}
+
+// DirectoryEntry defines model for DirectoryEntry.
+type DirectoryEntry struct {
+	DisplayName string `json:"display_name"`
+	DoorNumber  string `json:"door_number"`
+	Kind        string `json:"kind"`
+
+	// OwnUnit A person of the caller's own unit; always visible to them.
+	OwnUnit  bool                      `json:"own_unit"`
+	PersonId openapi_types.UUID        `json:"person_id"`
+	Phone    nullable.Nullable[string] `json:"phone"`
+	UnitId   openapi_types.UUID        `json:"unit_id"`
+}
+
+// DirectoryList defines model for DirectoryList.
+type DirectoryList struct {
+	Items []DirectoryEntry `json:"items"`
+
+	// NextCursor Always null.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
 // DiscoveryDocument Unauthenticated instance discovery document (overview section 6.8).
 type DiscoveryDocument struct {
 	// ApiBaseUrl Example: https://example.org/v1
@@ -469,6 +1766,87 @@ type DiscoveryDocument struct {
 
 	// ServerVersion Example: 0.1.0
 	ServerVersion string `json:"server_version"`
+}
+
+// HouseholdInvitationCreate Invite a household member to this unit. They get no money access.
+type HouseholdInvitationCreate struct {
+	Channel       *HouseholdInvitationCreateChannel `json:"channel,omitempty"`
+	Client        *HouseholdInvitationCreateClient  `json:"client,omitempty"`
+	DisplayName   *string                           `json:"display_name,omitempty"`
+	Email         *string                           `json:"email,omitempty"`
+	ExpiresInDays *int                              `json:"expires_in_days,omitempty"`
+	Locale        *string                           `json:"locale,omitempty"`
+	PersonId      *openapi_types.UUID               `json:"person_id,omitempty"`
+	Phone         *string                           `json:"phone,omitempty"`
+	Resides       *bool                             `json:"resides,omitempty"`
+	Side          *HouseholdInvitationCreateSide    `json:"side,omitempty"`
+	ValidFrom     *openapi_types.Date               `json:"valid_from,omitempty"`
+}
+
+// HouseholdInvitationCreateChannel defines model for HouseholdInvitationCreate.Channel.
+type HouseholdInvitationCreateChannel string
+
+// HouseholdInvitationCreateClient defines model for HouseholdInvitationCreate.Client.
+type HouseholdInvitationCreateClient string
+
+// HouseholdInvitationCreateSide defines model for HouseholdInvitationCreate.Side.
+type HouseholdInvitationCreateSide string
+
+// ImportMessage defines model for ImportMessage.
+type ImportMessage struct {
+	Code   string                  `json:"code"`
+	Column string                  `json:"column"`
+	Level  ImportMessageLevel      `json:"level"`
+	Params *map[string]interface{} `json:"params,omitempty"`
+}
+
+// ImportMessageLevel defines model for ImportMessage.Level.
+type ImportMessageLevel string
+
+// ImportReport defines model for ImportReport.
+type ImportReport struct {
+	// Applied False for a dry run and for a file with errors (nothing is written then).
+	Applied bool               `json:"applied"`
+	BatchId openapi_types.UUID `json:"batch_id"`
+
+	// Columns Canonical column to the header it was read from.
+	Columns map[string]string  `json:"columns"`
+	DryRun  bool               `json:"dry_run"`
+	Rows    []ImportRow        `json:"rows"`
+	Status  ImportReportStatus `json:"status"`
+	Summary map[string]int     `json:"summary"`
+}
+
+// ImportReportStatus defines model for ImportReport.Status.
+type ImportReportStatus string
+
+// ImportRow defines model for ImportRow.
+type ImportRow struct {
+	Action     ImportRowAction `json:"action"`
+	DoorNumber string          `json:"door_number"`
+	Messages   []ImportMessage `json:"messages"`
+
+	// Row Line in the file (the header is line 1).
+	Row    int             `json:"row"`
+	Status ImportRowStatus `json:"status"`
+}
+
+// ImportRowAction defines model for ImportRow.Action.
+type ImportRowAction string
+
+// ImportRowStatus defines model for ImportRow.Status.
+type ImportRowStatus string
+
+// ImportUpload defines model for ImportUpload.
+type ImportUpload struct {
+	// DryRun Validate and report only; nothing is written.
+	DryRun *bool `json:"dry_run,omitempty"`
+
+	// File A CSV (comma, semicolon or tab separated, UTF-8) or XLSX file; the first row is the header.
+	File openapi_types.File `json:"file"`
+
+	// Mapping JSON object mapping a canonical column (`door_number`, `block`, `area_m2`, `arsa_payi`, `owner_name`, ...) to the header text in the file.
+	Mapping *string `json:"mapping,omitempty"`
 }
 
 // Instance Authenticated twin of the discovery document, with policies.
@@ -502,6 +1880,154 @@ type Instance struct {
 // InstancePolicies Instance policies. Empty until later phases add some.
 type InstancePolicies map[string]interface{}
 
+// Invitation defines model for Invitation.
+type Invitation struct {
+	AcceptedAt nullable.Nullable[time.Time] `json:"accepted_at"`
+
+	// Channel Open enum: sms, email, link.
+	Channel   InvitationChannel `json:"channel"`
+	CreatedAt time.Time         `json:"created_at"`
+
+	// Delivery Open enum: sent, failed, none. The outcome of the send made by this request.
+	Delivery   InvitationDelivery           `json:"delivery"`
+	DoorNumber nullable.Nullable[string]    `json:"door_number"`
+	Email      nullable.Nullable[string]    `json:"email"`
+	ExpiresAt  nullable.Nullable[time.Time] `json:"expires_at"`
+	Id         openapi_types.UUID           `json:"id"`
+
+	// Kind Open enum: manager, household, site_code.
+	Kind       InvitationKind               `json:"kind"`
+	LastSentAt nullable.Nullable[time.Time] `json:"last_sent_at"`
+
+	// Link The invitation URL; only in the response that created or re-sent it.
+	Link          *string                               `json:"link,omitempty"`
+	OccupancyKind nullable.Nullable[string]             `json:"occupancy_kind"`
+	PersonId      nullable.Nullable[openapi_types.UUID] `json:"person_id"`
+	Phone         nullable.Nullable[string]             `json:"phone"`
+	SendCount     int                                   `json:"send_count"`
+	SiteId        openapi_types.UUID                    `json:"site_id"`
+
+	// Status Open enum: pending, accepted, revoked, expired.
+	Status InvitationStatus `json:"status"`
+
+	// Token The one-time secret; only in the response that created or re-sent the invitation.
+	Token   *string                               `json:"token,omitempty"`
+	UnitId  nullable.Nullable[openapi_types.UUID] `json:"unit_id"`
+	Uses    int                                   `json:"uses"`
+	Version int                                   `json:"version"`
+}
+
+// InvitationChannel Open enum: sms, email, link.
+type InvitationChannel string
+
+// InvitationDelivery Open enum: sent, failed, none. The outcome of the send made by this request.
+type InvitationDelivery string
+
+// InvitationKind Open enum: manager, household, site_code.
+type InvitationKind string
+
+// InvitationStatus Open enum: pending, accepted, revoked, expired.
+type InvitationStatus string
+
+// InvitationCreate Either `person_id` of an existing person without an account, or `display_name` with `phone` and/or `email`.
+type InvitationCreate struct {
+	// Channel Default sms when there is a phone, else email; `link` creates the link without sending it.
+	Channel *InvitationCreateChannel `json:"channel,omitempty"`
+
+	// Client `mobile` makes the link use the `openbekci://` scheme.
+	Client          *InvitationCreateClient       `json:"client,omitempty"`
+	DisplayName     *string                       `json:"display_name,omitempty"`
+	Email           *string                       `json:"email,omitempty"`
+	ExpiresInDays   *int                          `json:"expires_in_days,omitempty"`
+	IsCorrespondent *bool                         `json:"is_correspondent,omitempty"`
+	Locale          *string                       `json:"locale,omitempty"`
+	OccupancyKind   InvitationCreateOccupancyKind `json:"occupancy_kind"`
+	PersonId        *openapi_types.UUID           `json:"person_id,omitempty"`
+	Phone           *string                       `json:"phone,omitempty"`
+	Resides         *bool                         `json:"resides,omitempty"`
+	SharePct        *float32                      `json:"share_pct,omitempty"`
+	Side            *InvitationCreateSide         `json:"side,omitempty"`
+	SiteId          openapi_types.UUID            `json:"site_id"`
+	UnitId          openapi_types.UUID            `json:"unit_id"`
+	ValidFrom       *openapi_types.Date           `json:"valid_from,omitempty"`
+}
+
+// InvitationCreateChannel Default sms when there is a phone, else email; `link` creates the link without sending it.
+type InvitationCreateChannel string
+
+// InvitationCreateClient `mobile` makes the link use the `openbekci://` scheme.
+type InvitationCreateClient string
+
+// InvitationCreateOccupancyKind defines model for InvitationCreate.OccupancyKind.
+type InvitationCreateOccupancyKind string
+
+// InvitationCreateSide defines model for InvitationCreate.Side.
+type InvitationCreateSide string
+
+// InvitationList defines model for InvitationList.
+type InvitationList struct {
+	Items      []Invitation              `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// InvitationPreview defines model for InvitationPreview.
+type InvitationPreview struct {
+	Channel string `json:"channel"`
+
+	// ContactHint The invited phone or email, masked.
+	ContactHint   string                       `json:"contact_hint"`
+	DoorNumber    nullable.Nullable[string]    `json:"door_number"`
+	ExpiresAt     nullable.Nullable[time.Time] `json:"expires_at"`
+	InvitedName   string                       `json:"invited_name"`
+	Kind          string                       `json:"kind"`
+	OccupancyKind nullable.Nullable[string]    `json:"occupancy_kind"`
+	OrgName       string                       `json:"org_name"`
+	SiteName      string                       `json:"site_name"`
+}
+
+// JoinCode defines model for JoinCode.
+type JoinCode struct {
+	Code      string             `json:"code"`
+	CreatedAt time.Time          `json:"created_at"`
+	SiteId    openapi_types.UUID `json:"site_id"`
+
+	// Url `{BASE_URL}/join/{code}`; the QR code encodes it.
+	Url  string `json:"url"`
+	Uses int    `json:"uses"`
+}
+
+// JoinPreview defines model for JoinPreview.
+type JoinPreview struct {
+	OrgName  string `json:"org_name"`
+	SiteName string `json:"site_name"`
+
+	// Units The units that can be claimed; empty unless the visitor is signed in.
+	Units []JoinUnit `json:"units"`
+}
+
+// JoinUnit defines model for JoinUnit.
+type JoinUnit struct {
+	BlockName  string             `json:"block_name"`
+	DoorNumber string             `json:"door_number"`
+	Id         openapi_types.UUID `json:"id"`
+	Type       string             `json:"type"`
+}
+
+// KeyValue defines model for KeyValue.
+type KeyValue struct {
+	UnitId openapi_types.UUID `json:"unit_id"`
+
+	// Value A rational ("12/1000") or a decimal ("0.012", "350").
+	Value string `json:"value"`
+}
+
+// KeyWarning defines model for KeyWarning.
+type KeyWarning struct {
+	// Code For example `share_sum_mismatch`.
+	Code   string                  `json:"code"`
+	Params *map[string]interface{} `json:"params,omitempty"`
+}
+
 // MagicLinkConsumeRequest defines model for MagicLinkConsumeRequest.
 type MagicLinkConsumeRequest struct {
 	// Client `web` sets the session cookie, `mobile` returns tokens.
@@ -525,14 +2051,52 @@ type MagicLinkRequestClient string
 
 // Me defines model for Me.
 type Me struct {
-	// Occupancies The caller's unit occupancies (owner, tenant, household); empty until the people module lands.
-	Occupancies   []map[string]interface{} `json:"occupancies"`
-	Organizations []OrgAccess              `json:"organizations"`
-	Policies      map[string]interface{}   `json:"policies"`
+	// Occupancies The caller's unit occupancies (owner, tenant, household), current and former (former ones bound read access by their dates).
+	Occupancies   []MeOccupancy          `json:"occupancies"`
+	Organizations []OrgAccess            `json:"organizations"`
+	Policies      map[string]interface{} `json:"policies"`
 
 	// User The signed-in account as `GET /v1/me` shows it.
 	User MeUser `json:"user"`
 }
+
+// MeOccupancy One occupancy of the caller, as `GET /v1/me` lists it.
+type MeOccupancy struct {
+	BlockName string `json:"block_name"`
+
+	// Current False for a former occupancy (read access bounded by its dates).
+	Current    bool   `json:"current"`
+	DoorNumber string `json:"door_number"`
+
+	// Id The occupancy id.
+	Id              openapi_types.UUID `json:"id"`
+	IsCorrespondent bool               `json:"is_correspondent"`
+
+	// Kind Open enum: owner, tenant, household.
+	Kind MeOccupancyKind `json:"kind"`
+
+	// MaySeeMoney For household members; owners and tenants always see their side's money.
+	MaySeeMoney bool               `json:"may_see_money"`
+	OrgId       openapi_types.UUID `json:"org_id"`
+	Resides     bool               `json:"resides"`
+
+	// Side Open enum: owner, tenant.
+	Side     MeOccupancySide    `json:"side"`
+	SiteId   openapi_types.UUID `json:"site_id"`
+	SiteName string             `json:"site_name"`
+	UnitId   openapi_types.UUID `json:"unit_id"`
+
+	// UnitLabel The unit as people name it (the door number).
+	UnitLabel string                                `json:"unit_label"`
+	ValidFrom openapi_types.Date                    `json:"valid_from"`
+	ValidTo   nullable.Nullable[openapi_types.Date] `json:"valid_to"`
+}
+
+// MeOccupancyKind Open enum: owner, tenant, household.
+type MeOccupancyKind string
+
+// MeOccupancySide Open enum: owner, tenant.
+type MeOccupancySide string
 
 // MeSite defines model for MeSite.
 type MeSite struct {
@@ -553,6 +2117,62 @@ type MeUser struct {
 	Phone           nullable.Nullable[string] `json:"phone"`
 }
 
+// Membership defines model for Membership.
+type Membership struct {
+	CreatedAt time.Time `json:"created_at"`
+	Current   bool      `json:"current"`
+
+	// DecisionId The assembly decision that granted it (governance, 0.2).
+	DecisionId nullable.Nullable[openapi_types.UUID] `json:"decision_id"`
+	Id         openapi_types.UUID                    `json:"id"`
+	PersonId   openapi_types.UUID                    `json:"person_id"`
+	PersonName string                                `json:"person_name"`
+
+	// Role Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.
+	Role    MembershipRole                        `json:"role"`
+	ScopeId nullable.Nullable[openapi_types.UUID] `json:"scope_id"`
+
+	// ScopeType Open enum: org, site, block.
+	ScopeType MembershipScopeType `json:"scope_type"`
+
+	// SiteOwned Board and auditor memberships belong to the site; ending one needs re-authentication and is audited.
+	SiteOwned bool                         `json:"site_owned"`
+	ValidFrom time.Time                    `json:"valid_from"`
+	ValidTo   nullable.Nullable[time.Time] `json:"valid_to"`
+	Version   int                          `json:"version"`
+}
+
+// MembershipRole Open enum: org_admin, site_manager, board_member, auditor, accountant, staff, guard.
+type MembershipRole string
+
+// MembershipScopeType Open enum: org, site, block.
+type MembershipScopeType string
+
+// MembershipCreate defines model for MembershipCreate.
+type MembershipCreate struct {
+	DecisionId nullable.Nullable[openapi_types.UUID] `json:"decision_id,omitempty"`
+	PersonId   openapi_types.UUID                    `json:"person_id"`
+	Role       MembershipCreateRole                  `json:"role"`
+	ScopeId    nullable.Nullable[openapi_types.UUID] `json:"scope_id,omitempty"`
+
+	// ScopeType Default org.
+	ScopeType *MembershipCreateScopeType   `json:"scope_type,omitempty"`
+	ValidFrom *time.Time                   `json:"valid_from,omitempty"`
+	ValidTo   nullable.Nullable[time.Time] `json:"valid_to,omitempty"`
+}
+
+// MembershipCreateRole defines model for MembershipCreate.Role.
+type MembershipCreateRole string
+
+// MembershipCreateScopeType Default org.
+type MembershipCreateScopeType string
+
+// MembershipList defines model for MembershipList.
+type MembershipList struct {
+	Items      []Membership              `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
 // MinAppVersion defines model for MinAppVersion.
 type MinAppVersion struct {
 	// Android Example: 1.0.0
@@ -560,6 +2180,148 @@ type MinAppVersion struct {
 
 	// Ios Example: 1.0.0
 	Ios string `json:"ios"`
+}
+
+// MoneyAccess defines model for MoneyAccess.
+type MoneyAccess struct {
+	MaySeeMoney bool `json:"may_see_money"`
+}
+
+// MoveOut defines model for MoveOut.
+type MoveOut struct {
+	AsOf openapi_types.Date `json:"as_of"`
+
+	// CarriedAmountMinor Filled by the money module: the amount carried to the person's receivable (minor units).
+	CarriedAmountMinor nullable.Nullable[int64]              `json:"carried_amount_minor"`
+	CarriedCurrency    nullable.Nullable[string]             `json:"carried_currency"`
+	CertificateFileId  nullable.Nullable[openapi_types.UUID] `json:"certificate_file_id"`
+
+	// CertificateStatus Open enum: pending, ready. The debt certificate (borc durum belgesi).
+	CertificateStatus      MoveOutCertificateStatus              `json:"certificate_status"`
+	ClosingStatementFileId nullable.Nullable[openapi_types.UUID] `json:"closing_statement_file_id"`
+
+	// ClosingStatementStatus Open enum: pending, ready. The money module fills the statement.
+	ClosingStatementStatus MoveOutClosingStatementStatus         `json:"closing_statement_status"`
+	CreatedAt              time.Time                             `json:"created_at"`
+	DecidedBy              nullable.Nullable[openapi_types.UUID] `json:"decided_by"`
+	Id                     openapi_types.UUID                    `json:"id"`
+	Notes                  nullable.Nullable[string]             `json:"notes"`
+	OccupancyId            openapi_types.UUID                    `json:"occupancy_id"`
+
+	// OpenCharges Open enum: carry_to_person, keep_on_unit, write_off.
+	OpenCharges          MoveOutOpenCharges                    `json:"open_charges"`
+	PersonId             openapi_types.UUID                    `json:"person_id"`
+	SiteId               openapi_types.UUID                    `json:"site_id"`
+	SuccessorOccupancyId nullable.Nullable[openapi_types.UUID] `json:"successor_occupancy_id"`
+	UnitId               openapi_types.UUID                    `json:"unit_id"`
+	Version              int                                   `json:"version"`
+}
+
+// MoveOutCertificateStatus Open enum: pending, ready. The debt certificate (borc durum belgesi).
+type MoveOutCertificateStatus string
+
+// MoveOutClosingStatementStatus Open enum: pending, ready. The money module fills the statement.
+type MoveOutClosingStatementStatus string
+
+// MoveOutOpenCharges Open enum: carry_to_person, keep_on_unit, write_off.
+type MoveOutOpenCharges string
+
+// MoveOutRequest defines model for MoveOutRequest.
+type MoveOutRequest struct {
+	// AsOf The first day the person is no longer there; no month is pro-rated.
+	AsOf openapi_types.Date `json:"as_of"`
+
+	// EndHousehold Also end the household members of the same side (default true).
+	EndHousehold *bool                     `json:"end_household,omitempty"`
+	Notes        nullable.Nullable[string] `json:"notes,omitempty"`
+
+	// OpenCharges What happens to the leaving person's open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.
+	OpenCharges *MoveOutRequestOpenCharges `json:"open_charges,omitempty"`
+
+	// SuccessorPersonId A transfer (sale): this person takes over the same kind, side and share from the date.
+	SuccessorPersonId nullable.Nullable[openapi_types.UUID] `json:"successor_person_id,omitempty"`
+}
+
+// MoveOutRequestOpenCharges What happens to the leaving person's open charges: carried to their own receivable (default), kept on the unit for the next occupant, or written off.
+type MoveOutRequestOpenCharges string
+
+// Occupancy defines model for Occupancy.
+type Occupancy struct {
+	CreatedAt  time.Time          `json:"created_at"`
+	Current    bool               `json:"current"`
+	DoorNumber string             `json:"door_number"`
+	Id         openapi_types.UUID `json:"id"`
+
+	// IsCorrespondent The one person per unit side who receives notices.
+	IsCorrespondent bool `json:"is_correspondent"`
+
+	// Kind Open enum: owner, tenant, household.
+	Kind OccupancyKind `json:"kind"`
+
+	// MaySeeMoney Household members only; granted by the unit's owner or tenant.
+	MaySeeMoney bool               `json:"may_see_money"`
+	PersonId    openapi_types.UUID `json:"person_id"`
+	PersonName  string             `json:"person_name"`
+
+	// Resides Lives in the unit. Vacancy is derived from this.
+	Resides bool `json:"resides"`
+
+	// SharePct A co-owner's share; the shares of one unit sum to at most 100.
+	SharePct nullable.Nullable[float32] `json:"share_pct"`
+
+	// Side Open enum: owner, tenant. The unit side the occupancy belongs to.
+	Side      OccupancySide      `json:"side"`
+	SiteId    openapi_types.UUID `json:"site_id"`
+	UnitId    openapi_types.UUID `json:"unit_id"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	ValidFrom openapi_types.Date `json:"valid_from"`
+
+	// ValidTo Exclusive; the first day the person is no longer there.
+	ValidTo nullable.Nullable[openapi_types.Date] `json:"valid_to"`
+	Version int                                   `json:"version"`
+}
+
+// OccupancyKind Open enum: owner, tenant, household.
+type OccupancyKind string
+
+// OccupancySide Open enum: owner, tenant. The unit side the occupancy belongs to.
+type OccupancySide string
+
+// OccupancyCreate defines model for OccupancyCreate.
+type OccupancyCreate struct {
+	IsCorrespondent *bool                      `json:"is_correspondent,omitempty"`
+	Kind            OccupancyCreateKind        `json:"kind"`
+	PersonId        openapi_types.UUID         `json:"person_id"`
+	Resides         *bool                      `json:"resides,omitempty"`
+	SharePct        nullable.Nullable[float32] `json:"share_pct,omitempty"`
+
+	// Side Household members only: the side they live with (default: the tenant side when the unit has a tenant).
+	Side *OccupancyCreateSide `json:"side,omitempty"`
+
+	// ValidFrom Default today.
+	ValidFrom *openapi_types.Date                   `json:"valid_from,omitempty"`
+	ValidTo   nullable.Nullable[openapi_types.Date] `json:"valid_to,omitempty"`
+}
+
+// OccupancyCreateKind defines model for OccupancyCreate.Kind.
+type OccupancyCreateKind string
+
+// OccupancyCreateSide Household members only: the side they live with (default: the tenant side when the unit has a tenant).
+type OccupancyCreateSide string
+
+// OccupancyList defines model for OccupancyList.
+type OccupancyList struct {
+	Items      []Occupancy               `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// OccupancyUpdate defines model for OccupancyUpdate.
+type OccupancyUpdate struct {
+	IsCorrespondent *bool                                 `json:"is_correspondent,omitempty"`
+	Resides         *bool                                 `json:"resides,omitempty"`
+	SharePct        nullable.Nullable[float32]            `json:"share_pct,omitempty"`
+	ValidFrom       *openapi_types.Date                   `json:"valid_from,omitempty"`
+	ValidTo         nullable.Nullable[openapi_types.Date] `json:"valid_to,omitempty"`
 }
 
 // OrgAccess defines model for OrgAccess.
@@ -572,7 +2334,7 @@ type OrgAccess struct {
 	Permissions []PermissionGrant `json:"permissions"`
 	Roles       []RoleGrant       `json:"roles"`
 
-	// Sites Sites of the organization the caller can see (empty until the tenancy module lands).
+	// Sites Sites of the organization the caller can see through a membership or an occupancy.
 	Sites []MeSite `json:"sites"`
 	Slug  string   `json:"slug"`
 }
@@ -626,6 +2388,71 @@ type PermissionGrant struct {
 	// Permission Open enum: every permission a role can hold (backend plan section 7).
 	Permission Permission            `json:"permission"`
 	SiteIds    *[]openapi_types.UUID `json:"site_ids,omitempty"`
+}
+
+// Person defines model for Person.
+type Person struct {
+	CreatedAt   time.Time                 `json:"created_at"`
+	DisplayName string                    `json:"display_name"`
+	Email       nullable.Nullable[string] `json:"email"`
+
+	// GateContactPhone The number the gate calls for visitors (E.164).
+	GateContactPhone nullable.Nullable[string] `json:"gate_contact_phone"`
+	HasAccount       bool                      `json:"has_account"`
+	Id               openapi_types.UUID        `json:"id"`
+
+	// NationalId Always masked in reads (`*******1234`); stored encrypted, never in audit diffs.
+	NationalId nullable.Nullable[string] `json:"national_id"`
+
+	// NationalIdCountry ISO 3166-1 alpha-2; `TR` numbers are checksum-validated.
+	NationalIdCountry nullable.Nullable[string] `json:"national_id_country"`
+	Notes             nullable.Nullable[string] `json:"notes"`
+
+	// Phone E.164.
+	Phone nullable.Nullable[string] `json:"phone"`
+
+	// SiteId The site that registered the person.
+	SiteId    nullable.Nullable[openapi_types.UUID] `json:"site_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+
+	// UserId The sign-in account linked to the person, if any.
+	UserId  nullable.Nullable[openapi_types.UUID] `json:"user_id"`
+	Version int                                   `json:"version"`
+}
+
+// PersonCreate defines model for PersonCreate.
+type PersonCreate struct {
+	DisplayName       string                    `json:"display_name"`
+	Email             nullable.Nullable[string] `json:"email,omitempty"`
+	GateContactPhone  nullable.Nullable[string] `json:"gate_contact_phone,omitempty"`
+	NationalId        nullable.Nullable[string] `json:"national_id,omitempty"`
+	NationalIdCountry *string                   `json:"national_id_country,omitempty"`
+	Notes             nullable.Nullable[string] `json:"notes,omitempty"`
+
+	// Phone International format; Turkish 05xx numbers are normalized.
+	Phone nullable.Nullable[string] `json:"phone,omitempty"`
+
+	// SiteId Register the person at this site (needed for a site-scoped manager).
+	SiteId nullable.Nullable[openapi_types.UUID] `json:"site_id,omitempty"`
+}
+
+// PersonList defines model for PersonList.
+type PersonList struct {
+	Items      []Person                  `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// PersonUpdate defines model for PersonUpdate.
+type PersonUpdate struct {
+	DisplayName      *string                   `json:"display_name,omitempty"`
+	Email            nullable.Nullable[string] `json:"email,omitempty"`
+	GateContactPhone nullable.Nullable[string] `json:"gate_contact_phone,omitempty"`
+
+	// NationalId A new number replaces the stored one; null removes it.
+	NationalId        nullable.Nullable[string] `json:"national_id,omitempty"`
+	NationalIdCountry *string                   `json:"national_id_country,omitempty"`
+	Notes             nullable.Nullable[string] `json:"notes,omitempty"`
+	Phone             nullable.Nullable[string] `json:"phone,omitempty"`
 }
 
 // Problem RFC 9457 problem details, served as application/problem+json. Clients
@@ -774,6 +2601,125 @@ type SessionResponse struct {
 	User AuthUser `json:"user"`
 }
 
+// Site defines model for Site.
+type Site struct {
+	// Address Postal address, free-form keys (personal data in audit diffs).
+	Address map[string]interface{} `json:"address"`
+
+	// BankDetails IBAN and account holder, shown to payers (`iban`, `holder`).
+	BankDetails map[string]interface{} `json:"bank_details"`
+	CreatedAt   time.Time              `json:"created_at"`
+
+	// Currency ISO 4217.
+	Currency             string             `json:"currency"`
+	FiscalYearStartMonth int                `json:"fiscal_year_start_month"`
+	Id                   openapi_types.UUID `json:"id"`
+
+	// LockDate Postings dated on or before this day are refused (money module).
+	LockDate nullable.Nullable[openapi_types.Date] `json:"lock_date"`
+	Name     string                                `json:"name"`
+
+	// Settings Typed site settings; unknown keys are kept.
+	Settings SiteSettings `json:"settings"`
+
+	// Status Open enum: active, offboarded (handed over; every operation on it answers 403 `site_offboarded`).
+	Status SiteStatus `json:"status"`
+
+	// Timezone IANA time zone name.
+	Timezone  string    `json:"timezone"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Version   int       `json:"version"`
+}
+
+// SiteStatus Open enum: active, offboarded (handed over; every operation on it answers 403 `site_offboarded`).
+type SiteStatus string
+
+// SiteCreate defines model for SiteCreate.
+type SiteCreate struct {
+	Address     *map[string]interface{} `json:"address,omitempty"`
+	BankDetails *map[string]interface{} `json:"bank_details,omitempty"`
+
+	// Blocks Names of the blocks of a multi-block site; omit for a single building (one hidden block is created).
+	Blocks               *[]string                             `json:"blocks,omitempty"`
+	Currency             *string                               `json:"currency,omitempty"`
+	FiscalYearStartMonth *int                                  `json:"fiscal_year_start_month,omitempty"`
+	LockDate             nullable.Nullable[openapi_types.Date] `json:"lock_date,omitempty"`
+	Name                 string                                `json:"name"`
+
+	// Settings Typed site settings; unknown keys are kept.
+	Settings *SiteSettings `json:"settings,omitempty"`
+	Timezone *string       `json:"timezone,omitempty"`
+}
+
+// SiteExport defines model for SiteExport.
+type SiteExport struct {
+	At time.Time `json:"at"`
+
+	// Direction Open enum: export, import.
+	Direction   SiteExportDirection                   `json:"direction"`
+	HasArchive  bool                                  `json:"has_archive"`
+	Id          openapi_types.UUID                    `json:"id"`
+	SiteId      nullable.Nullable[openapi_types.UUID] `json:"site_id"`
+	SiteName    nullable.Nullable[string]             `json:"site_name"`
+	SourceOrgId nullable.Nullable[openapi_types.UUID] `json:"source_org_id"`
+
+	// Status Open enum: running, done, failed.
+	Status SiteExportStatus `json:"status"`
+
+	// Summary Rows per table.
+	Summary     map[string]interface{}                `json:"summary"`
+	TargetOrgId nullable.Nullable[openapi_types.UUID] `json:"target_org_id"`
+}
+
+// SiteExportDirection Open enum: export, import.
+type SiteExportDirection string
+
+// SiteExportStatus Open enum: running, done, failed.
+type SiteExportStatus string
+
+// SiteExportList defines model for SiteExportList.
+type SiteExportList struct {
+	Items      []SiteExport              `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// SiteList defines model for SiteList.
+type SiteList struct {
+	Items      []Site                    `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// SiteSettings Typed site settings; unknown keys are kept.
+type SiteSettings struct {
+	// AppurtenanceDefault Whether parking and storage units are listed under a flat (default) or are independent units.
+	AppurtenanceDefault *SiteSettingsAppurtenanceDefault `json:"appurtenance_default,omitempty"`
+
+	// DirectoryEnabled Residents can see the opt-in directory (default false).
+	DirectoryEnabled *bool `json:"directory_enabled,omitempty"`
+
+	// TenantsArePortalUsers Tenants get portal access to the tenant side of their unit (default true).
+	TenantsArePortalUsers *bool `json:"tenants_are_portal_users,omitempty"`
+
+	// TransparencyToOwners Owners see the aggregate income and expense and the budget (default false).
+	TransparencyToOwners *bool                  `json:"transparency_to_owners,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// SiteSettingsAppurtenanceDefault Whether parking and storage units are listed under a flat (default) or are independent units.
+type SiteSettingsAppurtenanceDefault string
+
+// SiteUpdate Partial update; `settings` keys merge (a null value removes a key).
+type SiteUpdate struct {
+	Address              *map[string]interface{}               `json:"address,omitempty"`
+	BankDetails          *map[string]interface{}               `json:"bank_details,omitempty"`
+	Currency             *string                               `json:"currency,omitempty"`
+	FiscalYearStartMonth *int                                  `json:"fiscal_year_start_month,omitempty"`
+	LockDate             nullable.Nullable[openapi_types.Date] `json:"lock_date,omitempty"`
+	Name                 *string                               `json:"name,omitempty"`
+	Settings             *map[string]interface{}               `json:"settings,omitempty"`
+	Timezone             *string                               `json:"timezone,omitempty"`
+}
+
 // TokenResponse A mobile or integration session. The access token is short-lived and
 // checked on every request; the refresh token rotates on every use, and
 // presenting a rotated one revokes the whole session.
@@ -791,6 +2737,207 @@ type TokenResponse struct {
 	User AuthUser `json:"user"`
 }
 
+// Unit defines model for Unit.
+type Unit struct {
+	// AppurtenanceOverride Per-unit override of the site's `appurtenance_default`; null follows the site.
+	AppurtenanceOverride nullable.Nullable[UnitAppurtenanceOverride] `json:"appurtenance_override"`
+	AreaM2               nullable.Nullable[float32]                  `json:"area_m2"`
+	BlockId              openapi_types.UUID                          `json:"block_id"`
+	BlockName            string                                      `json:"block_name"`
+	CreatedAt            time.Time                                   `json:"created_at"`
+
+	// DoorNumber What people say, for example "A-12".
+	DoorNumber string             `json:"door_number"`
+	Id         openapi_types.UUID `json:"id"`
+
+	// Independent Derived. True when the unit has dues and a statement of its own (flats, shops, offices; parking and storage per the override or site default).
+	Independent bool `json:"independent"`
+
+	// LegalRef Legal reference (tapu bagimsiz bolum no).
+	LegalRef nullable.Nullable[string] `json:"legal_ref"`
+
+	// ParentUnitId The flat a parking spot or storage room belongs to (appurtenance).
+	ParentUnitId nullable.Nullable[openapi_types.UUID] `json:"parent_unit_id"`
+
+	// PayerOverrides Per-unit payer override: charge type to the side that pays it, replacing the site default (`settings.payer_defaults`). Empty follows the site.
+	PayerOverrides map[string]UnitPayerOverrides `json:"payer_overrides"`
+	SiteId         openapi_types.UUID            `json:"site_id"`
+
+	// Status Open enum: active, merged, split (the last two are reserved).
+	Status UnitStatus `json:"status"`
+	Tags   []string   `json:"tags"`
+
+	// Type Open enum: flat, shop, office, parking, storage, common, other.
+	Type      UnitType  `json:"type"`
+	UpdatedAt time.Time `json:"updated_at"`
+
+	// Vacant Derived from occupancies. True when nobody currently lives in the unit.
+	Vacant  bool `json:"vacant"`
+	Version int  `json:"version"`
+}
+
+// UnitAppurtenanceOverride Per-unit override of the site's `appurtenance_default`; null follows the site.
+type UnitAppurtenanceOverride string
+
+// UnitPayerOverrides defines model for Unit.PayerOverrides.
+type UnitPayerOverrides string
+
+// UnitStatus Open enum: active, merged, split (the last two are reserved).
+type UnitStatus string
+
+// UnitType Open enum: flat, shop, office, parking, storage, common, other.
+type UnitType string
+
+// UnitClaim defines model for UnitClaim.
+type UnitClaim struct {
+	CreatedAt    time.Time                    `json:"created_at"`
+	DecidedAt    nullable.Nullable[time.Time] `json:"decided_at"`
+	DecisionNote nullable.Nullable[string]    `json:"decision_note"`
+	DoorNumber   string                       `json:"door_number"`
+	Id           openapi_types.UUID           `json:"id"`
+
+	// Kind Open enum: owner, tenant, household.
+	Kind        UnitClaimKind                         `json:"kind"`
+	Message     nullable.Nullable[string]             `json:"message"`
+	OccupancyId nullable.Nullable[openapi_types.UUID] `json:"occupancy_id"`
+	PersonId    openapi_types.UUID                    `json:"person_id"`
+	PersonName  string                                `json:"person_name"`
+	SiteId      openapi_types.UUID                    `json:"site_id"`
+
+	// Status Open enum: pending, approved, rejected.
+	Status UnitClaimStatus    `json:"status"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+}
+
+// UnitClaimKind Open enum: owner, tenant, household.
+type UnitClaimKind string
+
+// UnitClaimStatus Open enum: pending, approved, rejected.
+type UnitClaimStatus string
+
+// UnitClaimList defines model for UnitClaimList.
+type UnitClaimList struct {
+	Items      []UnitClaim               `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// UnitCreate defines model for UnitCreate.
+type UnitCreate struct {
+	AppurtenanceOverride nullable.Nullable[UnitCreateAppurtenanceOverride] `json:"appurtenance_override,omitempty"`
+	AreaM2               nullable.Nullable[float32]                        `json:"area_m2,omitempty"`
+
+	// BlockId Required when the site has several blocks.
+	BlockId        *openapi_types.UUID                   `json:"block_id,omitempty"`
+	DoorNumber     string                                `json:"door_number"`
+	LegalRef       nullable.Nullable[string]             `json:"legal_ref,omitempty"`
+	ParentUnitId   nullable.Nullable[openapi_types.UUID] `json:"parent_unit_id,omitempty"`
+	PayerOverrides *map[string]UnitCreatePayerOverrides  `json:"payer_overrides,omitempty"`
+
+	// Type One of flat (default), shop, office, parking, storage, common, other.
+	Type *string `json:"type,omitempty"`
+}
+
+// UnitCreateAppurtenanceOverride defines model for UnitCreate.AppurtenanceOverride.
+type UnitCreateAppurtenanceOverride string
+
+// UnitCreatePayerOverrides defines model for UnitCreate.PayerOverrides.
+type UnitCreatePayerOverrides string
+
+// UnitList defines model for UnitList.
+type UnitList struct {
+	Items      []Unit                    `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// UnitTags defines model for UnitTags.
+type UnitTags struct {
+	Tags []string `json:"tags"`
+}
+
+// UnitUpdate defines model for UnitUpdate.
+type UnitUpdate struct {
+	AppurtenanceOverride nullable.Nullable[UnitUpdateAppurtenanceOverride] `json:"appurtenance_override,omitempty"`
+	AreaM2               nullable.Nullable[float32]                        `json:"area_m2,omitempty"`
+	BlockId              *openapi_types.UUID                               `json:"block_id,omitempty"`
+	DoorNumber           *string                                           `json:"door_number,omitempty"`
+	LegalRef             nullable.Nullable[string]                         `json:"legal_ref,omitempty"`
+	ParentUnitId         nullable.Nullable[openapi_types.UUID]             `json:"parent_unit_id,omitempty"`
+	PayerOverrides       *map[string]UnitUpdatePayerOverrides              `json:"payer_overrides,omitempty"`
+	Type                 *string                                           `json:"type,omitempty"`
+}
+
+// UnitUpdateAppurtenanceOverride defines model for UnitUpdate.AppurtenanceOverride.
+type UnitUpdateAppurtenanceOverride string
+
+// UnitUpdatePayerOverrides defines model for UnitUpdate.PayerOverrides.
+type UnitUpdatePayerOverrides string
+
+// Vehicle defines model for Vehicle.
+type Vehicle struct {
+	CreatedAt  time.Time                 `json:"created_at"`
+	DoorNumber string                    `json:"door_number"`
+	Id         openapi_types.UUID        `json:"id"`
+	Label      nullable.Nullable[string] `json:"label"`
+
+	// Plate Normalized, for example `34ABC123`.
+	Plate   string             `json:"plate"`
+	SiteId  openapi_types.UUID `json:"site_id"`
+	UnitId  openapi_types.UUID `json:"unit_id"`
+	Version int                `json:"version"`
+}
+
+// VehicleCreate defines model for VehicleCreate.
+type VehicleCreate struct {
+	Label nullable.Nullable[string] `json:"label,omitempty"`
+
+	// Plate As written, for example "34 abc 123"; stored normalized.
+	Plate string `json:"plate"`
+}
+
+// VehicleList defines model for VehicleList.
+type VehicleList struct {
+	Items      []Vehicle                 `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// Vendor defines model for Vendor.
+type Vendor struct {
+	Contact                  map[string]interface{}                `json:"contact"`
+	CreatedAt                time.Time                             `json:"created_at"`
+	DefaultExpenseCategoryId nullable.Nullable[openapi_types.UUID] `json:"default_expense_category_id"`
+	Id                       openapi_types.UUID                    `json:"id"`
+	Name                     string                                `json:"name"`
+
+	// SiteId Null for a vendor shared by the organization's sites.
+	SiteId    nullable.Nullable[openapi_types.UUID] `json:"site_id"`
+	TaxId     nullable.Nullable[string]             `json:"tax_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+	Version   int                                   `json:"version"`
+}
+
+// VendorCreate defines model for VendorCreate.
+type VendorCreate struct {
+	Contact                  *map[string]interface{}               `json:"contact,omitempty"`
+	DefaultExpenseCategoryId nullable.Nullable[openapi_types.UUID] `json:"default_expense_category_id,omitempty"`
+	Name                     string                                `json:"name"`
+	SiteId                   nullable.Nullable[openapi_types.UUID] `json:"site_id,omitempty"`
+	TaxId                    nullable.Nullable[string]             `json:"tax_id,omitempty"`
+}
+
+// VendorList defines model for VendorList.
+type VendorList struct {
+	Items      []Vendor                  `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// VendorUpdate defines model for VendorUpdate.
+type VendorUpdate struct {
+	Contact                  *map[string]interface{}               `json:"contact,omitempty"`
+	DefaultExpenseCategoryId nullable.Nullable[openapi_types.UUID] `json:"default_expense_category_id,omitempty"`
+	Name                     *string                               `json:"name,omitempty"`
+	TaxId                    nullable.Nullable[string]             `json:"tax_id,omitempty"`
+}
+
 // Cursor defines model for Cursor.
 type Cursor = string
 
@@ -800,11 +2947,31 @@ type Limit = int
 // OrgId defines model for OrgId.
 type OrgId = openapi_types.UUID
 
+// InstanceGetCodesParams defines parameters for InstanceGetCodes.
+type InstanceGetCodesParams struct {
+	// Locale en or tr (default en).
+	Locale *string `form:"locale,omitempty" json:"locale,omitempty"`
+}
+
 // OrgUpdateParams defines parameters for OrgUpdate.
 type OrgUpdateParams struct {
 	// IfMatch The organization's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
 	// `validation_failed`. It is declared optional here only so that an unauthenticated caller gets 401 before
 	// any validation detail (generated code binds required headers before authentication runs).
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// TenancyUpdateAllocationKeyParams defines parameters for TenancyUpdateAllocationKey.
+type TenancyUpdateAllocationKeyParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// TenancySetAllocationKeyValuesParams defines parameters for TenancySetAllocationKeyValues.
+type TenancySetAllocationKeyValuesParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
 	IfMatch *string `json:"If-Match,omitempty"`
 }
 
@@ -832,6 +2999,215 @@ type AuditListParams struct {
 	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
 }
 
+// TenancyUpdateBlockParams defines parameters for TenancyUpdateBlock.
+type TenancyUpdateBlockParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// PeopleListInvitationsParams defines parameters for PeopleListInvitations.
+type PeopleListInvitationsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// SiteId Only this site.
+	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+
+	// Status pending, accepted, revoked or expired.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// PeopleListMembershipsParams defines parameters for PeopleListMemberships.
+type PeopleListMembershipsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// PersonId Only this person.
+	PersonId *openapi_types.UUID `form:"person_id,omitempty" json:"person_id,omitempty"`
+
+	// SiteId Only memberships scoped to this site or its blocks.
+	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+}
+
+// PeopleListOccupanciesParams defines parameters for PeopleListOccupancies.
+type PeopleListOccupanciesParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// SiteId Only this site.
+	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+
+	// UnitId Only this unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// PersonId Only this person.
+	PersonId *openapi_types.UUID `form:"person_id,omitempty" json:"person_id,omitempty"`
+
+	// Current Only occupancies in force today.
+	Current *bool `form:"current,omitempty" json:"current,omitempty"`
+}
+
+// PeopleUpdateOccupancyParams defines parameters for PeopleUpdateOccupancy.
+type PeopleUpdateOccupancyParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// PeopleSetMoneyAccessParams defines parameters for PeopleSetMoneyAccess.
+type PeopleSetMoneyAccessParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// PeopleListPersonsParams defines parameters for PeopleListPersons.
+type PeopleListPersonsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Q Name, phone or email fragment.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// SiteId Only people tied to this site.
+	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+}
+
+// PeopleUpdatePersonParams defines parameters for PeopleUpdatePerson.
+type PeopleUpdatePersonParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// TenancyListSiteExportsParams defines parameters for TenancyListSiteExports.
+type TenancyListSiteExportsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// TenancyListSitesParams defines parameters for TenancyListSites.
+type TenancyListSitesParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// TenancyUpdateSiteParams defines parameters for TenancyUpdateSite.
+type TenancyUpdateSiteParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// PeopleListDirectoryParams defines parameters for PeopleListDirectory.
+type PeopleListDirectoryParams struct {
+	// Q Name or door number fragment.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+}
+
+// TenancyListUnitsParams defines parameters for TenancyListUnits.
+type TenancyListUnitsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// BlockId Only units of this block.
+	BlockId *openapi_types.UUID `form:"block_id,omitempty" json:"block_id,omitempty"`
+
+	// Type Only units of this type.
+	Type *string `form:"type,omitempty" json:"type,omitempty"`
+
+	// Q Door number fragment.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Vacant Only vacant or only occupied units (derived).
+	Vacant *bool `form:"vacant,omitempty" json:"vacant,omitempty"`
+
+	// ParentUnitId Only appurtenances of this unit.
+	ParentUnitId *openapi_types.UUID `form:"parent_unit_id,omitempty" json:"parent_unit_id,omitempty"`
+}
+
+// TenancyListVehiclesParams defines parameters for TenancyListVehicles.
+type TenancyListVehiclesParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// UnitId Only this unit's vehicles.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Q Plate fragment.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+}
+
+// PeopleListClaimsParams defines parameters for PeopleListClaims.
+type PeopleListClaimsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// SiteId Only this site.
+	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+
+	// Status pending (default), approved, rejected or all.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+}
+
+// TenancyUpdateUnitParams defines parameters for TenancyUpdateUnit.
+type TenancyUpdateUnitParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// TenancySetUnitTagsParams defines parameters for TenancySetUnitTags.
+type TenancySetUnitTagsParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// PeopleListVendorsParams defines parameters for PeopleListVendors.
+type PeopleListVendorsParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// PeopleUpdateVendorParams defines parameters for PeopleUpdateVendor.
+type PeopleUpdateVendorParams struct {
+	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
+	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+	IfMatch *string `json:"If-Match,omitempty"`
+}
+
 // AuthRequestMagicLinkJSONRequestBody defines body for AuthRequestMagicLink for application/json ContentType.
 type AuthRequestMagicLinkJSONRequestBody = MagicLinkRequest
 
@@ -856,8 +3232,208 @@ type AuthCreateTokenJSONRequestBody = Credentials
 // AuthRefreshTokenJSONRequestBody defines body for AuthRefreshToken for application/json ContentType.
 type AuthRefreshTokenJSONRequestBody = RefreshRequest
 
+// PeopleAcceptInvitationJSONRequestBody defines body for PeopleAcceptInvitation for application/json ContentType.
+type PeopleAcceptInvitationJSONRequestBody = AcceptInvitation
+
+// PeopleCreateClaimJSONRequestBody defines body for PeopleCreateClaim for application/json ContentType.
+type PeopleCreateClaimJSONRequestBody = ClaimCreate
+
 // OrgUpdateJSONRequestBody defines body for OrgUpdate for application/json ContentType.
 type OrgUpdateJSONRequestBody = OrganizationUpdate
+
+// TenancyUpdateAllocationKeyJSONRequestBody defines body for TenancyUpdateAllocationKey for application/json ContentType.
+type TenancyUpdateAllocationKeyJSONRequestBody = AllocationKeyUpdate
+
+// TenancySetAllocationKeyValuesJSONRequestBody defines body for TenancySetAllocationKeyValues for application/json ContentType.
+type TenancySetAllocationKeyValuesJSONRequestBody = AllocationKeyValues
+
+// TenancyUpdateBlockJSONRequestBody defines body for TenancyUpdateBlock for application/json ContentType.
+type TenancyUpdateBlockJSONRequestBody = BlockUpdate
+
+// PeopleCreateInvitationJSONRequestBody defines body for PeopleCreateInvitation for application/json ContentType.
+type PeopleCreateInvitationJSONRequestBody = InvitationCreate
+
+// PeopleCreateMembershipJSONRequestBody defines body for PeopleCreateMembership for application/json ContentType.
+type PeopleCreateMembershipJSONRequestBody = MembershipCreate
+
+// PeopleUpdateOccupancyJSONRequestBody defines body for PeopleUpdateOccupancy for application/json ContentType.
+type PeopleUpdateOccupancyJSONRequestBody = OccupancyUpdate
+
+// PeopleSetMoneyAccessJSONRequestBody defines body for PeopleSetMoneyAccess for application/json ContentType.
+type PeopleSetMoneyAccessJSONRequestBody = MoneyAccess
+
+// PeopleMoveOutJSONRequestBody defines body for PeopleMoveOut for application/json ContentType.
+type PeopleMoveOutJSONRequestBody = MoveOutRequest
+
+// PeopleCreatePersonJSONRequestBody defines body for PeopleCreatePerson for application/json ContentType.
+type PeopleCreatePersonJSONRequestBody = PersonCreate
+
+// PeopleUpdatePersonJSONRequestBody defines body for PeopleUpdatePerson for application/json ContentType.
+type PeopleUpdatePersonJSONRequestBody = PersonUpdate
+
+// TenancyImportSiteArchiveMultipartRequestBody defines body for TenancyImportSiteArchive for multipart/form-data ContentType.
+type TenancyImportSiteArchiveMultipartRequestBody = ArchiveUpload
+
+// TenancyCreateSiteJSONRequestBody defines body for TenancyCreateSite for application/json ContentType.
+type TenancyCreateSiteJSONRequestBody = SiteCreate
+
+// TenancyUpdateSiteJSONRequestBody defines body for TenancyUpdateSite for application/json ContentType.
+type TenancyUpdateSiteJSONRequestBody = SiteUpdate
+
+// TenancyCreateAllocationKeyJSONRequestBody defines body for TenancyCreateAllocationKey for application/json ContentType.
+type TenancyCreateAllocationKeyJSONRequestBody = AllocationKeyCreate
+
+// TenancyCreateBlockJSONRequestBody defines body for TenancyCreateBlock for application/json ContentType.
+type TenancyCreateBlockJSONRequestBody = BlockCreate
+
+// PeopleSetDirectoryConsentJSONRequestBody defines body for PeopleSetDirectoryConsent for application/json ContentType.
+type PeopleSetDirectoryConsentJSONRequestBody = DirectoryConsentUpdate
+
+// TenancyImportUnitsMultipartRequestBody defines body for TenancyImportUnits for multipart/form-data ContentType.
+type TenancyImportUnitsMultipartRequestBody = ImportUpload
+
+// TenancyCreateUnitJSONRequestBody defines body for TenancyCreateUnit for application/json ContentType.
+type TenancyCreateUnitJSONRequestBody = UnitCreate
+
+// PeopleApproveClaimJSONRequestBody defines body for PeopleApproveClaim for application/json ContentType.
+type PeopleApproveClaimJSONRequestBody = ClaimApprove
+
+// PeopleRejectClaimJSONRequestBody defines body for PeopleRejectClaim for application/json ContentType.
+type PeopleRejectClaimJSONRequestBody = ClaimReject
+
+// TenancyUpdateUnitJSONRequestBody defines body for TenancyUpdateUnit for application/json ContentType.
+type TenancyUpdateUnitJSONRequestBody = UnitUpdate
+
+// PeopleCreateHouseholdInvitationJSONRequestBody defines body for PeopleCreateHouseholdInvitation for application/json ContentType.
+type PeopleCreateHouseholdInvitationJSONRequestBody = HouseholdInvitationCreate
+
+// PeopleCreateOccupancyJSONRequestBody defines body for PeopleCreateOccupancy for application/json ContentType.
+type PeopleCreateOccupancyJSONRequestBody = OccupancyCreate
+
+// TenancySetUnitTagsJSONRequestBody defines body for TenancySetUnitTags for application/json ContentType.
+type TenancySetUnitTagsJSONRequestBody = UnitTags
+
+// TenancyCreateVehicleJSONRequestBody defines body for TenancyCreateVehicle for application/json ContentType.
+type TenancyCreateVehicleJSONRequestBody = VehicleCreate
+
+// PeopleCreateVendorJSONRequestBody defines body for PeopleCreateVendor for application/json ContentType.
+type PeopleCreateVendorJSONRequestBody = VendorCreate
+
+// PeopleUpdateVendorJSONRequestBody defines body for PeopleUpdateVendor for application/json ContentType.
+type PeopleUpdateVendorJSONRequestBody = VendorUpdate
+
+// Getter for additional properties for SiteSettings. Returns the specified
+// element and whether it was found
+func (a SiteSettings) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for SiteSettings
+func (a *SiteSettings) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for SiteSettings to handle AdditionalProperties
+func (a *SiteSettings) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["appurtenance_default"]; found {
+		err = json.Unmarshal(raw, &a.AppurtenanceDefault)
+		if err != nil {
+			return fmt.Errorf("error reading 'appurtenance_default': %w", err)
+		}
+		delete(object, "appurtenance_default")
+	}
+
+	if raw, found := object["directory_enabled"]; found {
+		err = json.Unmarshal(raw, &a.DirectoryEnabled)
+		if err != nil {
+			return fmt.Errorf("error reading 'directory_enabled': %w", err)
+		}
+		delete(object, "directory_enabled")
+	}
+
+	if raw, found := object["tenants_are_portal_users"]; found {
+		err = json.Unmarshal(raw, &a.TenantsArePortalUsers)
+		if err != nil {
+			return fmt.Errorf("error reading 'tenants_are_portal_users': %w", err)
+		}
+		delete(object, "tenants_are_portal_users")
+	}
+
+	if raw, found := object["transparency_to_owners"]; found {
+		err = json.Unmarshal(raw, &a.TransparencyToOwners)
+		if err != nil {
+			return fmt.Errorf("error reading 'transparency_to_owners': %w", err)
+		}
+		delete(object, "transparency_to_owners")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for SiteSettings to handle AdditionalProperties
+func (a SiteSettings) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.AppurtenanceDefault != nil {
+		object["appurtenance_default"], err = json.Marshal(a.AppurtenanceDefault)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'appurtenance_default': %w", err)
+		}
+	}
+
+	if a.DirectoryEnabled != nil {
+		object["directory_enabled"], err = json.Marshal(a.DirectoryEnabled)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'directory_enabled': %w", err)
+		}
+	}
+
+	if a.TenantsArePortalUsers != nil {
+		object["tenants_are_portal_users"], err = json.Marshal(a.TenantsArePortalUsers)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'tenants_are_portal_users': %w", err)
+		}
+	}
+
+	if a.TransparencyToOwners != nil {
+		object["transparency_to_owners"], err = json.Marshal(a.TransparencyToOwners)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'transparency_to_owners': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
 
 // AsReauthPassword returns the union data inside the ReauthRequest as a ReauthPassword
 func (t ReauthRequest) AsReauthPassword() (ReauthPassword, error) {
@@ -992,9 +3568,24 @@ type ServerInterface interface {
 	// AuthRefreshToken Exchange a refresh token for a new token pair
 	// (POST /v1/auth/token/refresh)
 	AuthRefreshToken(w http.ResponseWriter, r *http.Request)
+	// InstanceGetCodes Labels of the API's codes
+	// (GET /v1/codes)
+	InstanceGetCodes(w http.ResponseWriter, r *http.Request, params InstanceGetCodesParams)
 	// InstanceGetInstance Instance information (authenticated)
 	// (GET /v1/instance)
 	InstanceGetInstance(w http.ResponseWriter, r *http.Request)
+	// PeoplePreviewInvitation Preview an invitation
+	// (GET /v1/invitations/{token})
+	PeoplePreviewInvitation(w http.ResponseWriter, r *http.Request, token string)
+	// PeopleAcceptInvitation Accept an invitation
+	// (POST /v1/invitations/{token}/accept)
+	PeopleAcceptInvitation(w http.ResponseWriter, r *http.Request, token string)
+	// PeoplePreviewJoin Preview the site behind a join code
+	// (GET /v1/join/{code})
+	PeoplePreviewJoin(w http.ResponseWriter, r *http.Request, code string)
+	// PeopleCreateClaim Claim a unit through a join code
+	// (POST /v1/join/{code}/claims)
+	PeopleCreateClaim(w http.ResponseWriter, r *http.Request, code string)
 	// MeGet The signed-in user, organizations, roles and permissions
 	// (GET /v1/me)
 	MeGet(w http.ResponseWriter, r *http.Request)
@@ -1013,9 +3604,189 @@ type ServerInterface interface {
 	// OrgUpdate Change an organization's settings
 	// (PATCH /v1/orgs/{org_id})
 	OrgUpdate(w http.ResponseWriter, r *http.Request, orgId OrgId, params OrgUpdateParams)
+	// TenancyGetAllocationKey Read an allocation key with its values
+	// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
+	TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID)
+	// TenancyUpdateAllocationKey Rename an allocation key
+	// (PATCH /v1/orgs/{org_id}/allocation-keys/{key_id})
+	TenancyUpdateAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancyUpdateAllocationKeyParams)
+	// TenancySetAllocationKeyValues Replace a share or table key's values
+	// (PUT /v1/orgs/{org_id}/allocation-keys/{key_id}/values)
+	TenancySetAllocationKeyValues(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancySetAllocationKeyValuesParams)
 	// AuditList List the organization's audit events
 	// (GET /v1/orgs/{org_id}/audit)
 	AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams)
+	// TenancyUpdateBlock Rename, hide or reorder a block
+	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
+	TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams)
+	// PeopleListInvitations List invitations
+	// (GET /v1/orgs/{org_id}/invitations)
+	PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams)
+	// PeopleCreateInvitation Invite a person to a unit
+	// (POST /v1/orgs/{org_id}/invitations)
+	PeopleCreateInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// PeopleRevokeInvitation Revoke a pending invitation
+	// (DELETE /v1/orgs/{org_id}/invitations/{invitation_id})
+	PeopleRevokeInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID)
+	// PeopleResendInvitation Send an invitation again with a new link
+	// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
+	PeopleResendInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID)
+	// PeopleListMemberships List role memberships
+	// (GET /v1/orgs/{org_id}/memberships)
+	PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams)
+	// PeopleCreateMembership Grant a role
+	// (POST /v1/orgs/{org_id}/memberships)
+	PeopleCreateMembership(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// PeopleEndMembership End a membership
+	// (DELETE /v1/orgs/{org_id}/memberships/{membership_id})
+	PeopleEndMembership(w http.ResponseWriter, r *http.Request, orgId OrgId, membershipId openapi_types.UUID)
+	// PeopleGetMoveOut Read a move-out
+	// (GET /v1/orgs/{org_id}/move-outs/{move_out_id})
+	PeopleGetMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, moveOutId openapi_types.UUID)
+	// PeopleListOccupancies List occupancies
+	// (GET /v1/orgs/{org_id}/occupancies)
+	PeopleListOccupancies(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListOccupanciesParams)
+	// PeopleUpdateOccupancy Change an occupancy
+	// (PATCH /v1/orgs/{org_id}/occupancies/{occupancy_id})
+	PeopleUpdateOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID, params PeopleUpdateOccupancyParams)
+	// PeopleSetMoneyAccess Let a household member see (or stop seeing) the unit's money
+	// (PUT /v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access)
+	PeopleSetMoneyAccess(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID, params PeopleSetMoneyAccessParams)
+	// PeopleMoveOut Record a move-out or transfer
+	// (POST /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out)
+	PeopleMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID)
+	// PeopleListPersons List people
+	// (GET /v1/orgs/{org_id}/persons)
+	PeopleListPersons(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListPersonsParams)
+	// PeopleCreatePerson Add a person
+	// (POST /v1/orgs/{org_id}/persons)
+	PeopleCreatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// PeopleGetPerson Read a person
+	// (GET /v1/orgs/{org_id}/persons/{person_id})
+	PeopleGetPerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID)
+	// PeopleUpdatePerson Change a person
+	// (PATCH /v1/orgs/{org_id}/persons/{person_id})
+	PeopleUpdatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID, params PeopleUpdatePersonParams)
+	// TenancyListSiteExports List site exports and imports
+	// (GET /v1/orgs/{org_id}/site-exports)
+	TenancyListSiteExports(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSiteExportsParams)
+	// TenancyDownloadSiteExport Download an export's archive
+	// (GET /v1/orgs/{org_id}/site-exports/{export_id}/archive)
+	TenancyDownloadSiteExport(w http.ResponseWriter, r *http.Request, orgId OrgId, exportId openapi_types.UUID)
+	// TenancyImportSiteArchive Import a site archive into the organization
+	// (POST /v1/orgs/{org_id}/site-imports)
+	TenancyImportSiteArchive(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// TenancyListSites List sites
+	// (GET /v1/orgs/{org_id}/sites)
+	TenancyListSites(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSitesParams)
+	// TenancyCreateSite Create a site
+	// (POST /v1/orgs/{org_id}/sites)
+	TenancyCreateSite(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// TenancyGetSite Read a site
+	// (GET /v1/orgs/{org_id}/sites/{site_id})
+	TenancyGetSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyUpdateSite Change a site's settings
+	// (PATCH /v1/orgs/{org_id}/sites/{site_id})
+	TenancyUpdateSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyUpdateSiteParams)
+	// TenancyListAllocationKeys List a site's allocation keys
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/allocation-keys)
+	TenancyListAllocationKeys(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyCreateAllocationKey Add a custom allocation key
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/allocation-keys)
+	TenancyCreateAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyListBlocks List a site's blocks
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/blocks)
+	TenancyListBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyCreateBlock Add a block
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/blocks)
+	TenancyCreateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// PeopleListDirectory The site directory
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/directory)
+	PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params PeopleListDirectoryParams)
+	// PeopleSetDirectoryConsent Choose what the directory shows about me
+	// (PUT /v1/orgs/{org_id}/sites/{site_id}/directory-consent)
+	PeopleSetDirectoryConsent(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyExportSite Export a whole site to an archive
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/export)
+	TenancyExportSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyImportUnits Import units and people from a spreadsheet
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/import)
+	TenancyImportUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// PeopleGetJoinCode Read the site's join code
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/join-code)
+	PeopleGetJoinCode(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// PeopleRotateJoinCode Create or replace the site's join code
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/join-code)
+	PeopleRotateJoinCode(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyOffboardSite Offboard a site after its hand-over
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/offboard)
+	TenancyOffboardSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyListUnits List a site's units
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/units)
+	TenancyListUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListUnitsParams)
+	// TenancyCreateUnit Add a unit
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/units)
+	TenancyCreateUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// TenancyListVehicles List a site's vehicles
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles)
+	TenancyListVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListVehiclesParams)
+	// TenancyExportVehicles Export the site's plates as CSV
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
+	TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID)
+	// PeopleListClaims List unit claims
+	// (GET /v1/orgs/{org_id}/unit-claims)
+	PeopleListClaims(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListClaimsParams)
+	// PeopleApproveClaim Approve a unit claim
+	// (POST /v1/orgs/{org_id}/unit-claims/{claim_id}/approve)
+	PeopleApproveClaim(w http.ResponseWriter, r *http.Request, orgId OrgId, claimId openapi_types.UUID)
+	// PeopleRejectClaim Reject a unit claim
+	// (POST /v1/orgs/{org_id}/unit-claims/{claim_id}/reject)
+	PeopleRejectClaim(w http.ResponseWriter, r *http.Request, orgId OrgId, claimId openapi_types.UUID)
+	// TenancyGetUnit Read a unit
+	// (GET /v1/orgs/{org_id}/units/{unit_id})
+	TenancyGetUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID)
+	// TenancyUpdateUnit Change a unit
+	// (PATCH /v1/orgs/{org_id}/units/{unit_id})
+	TenancyUpdateUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, params TenancyUpdateUnitParams)
+	// PeopleListHouseholdInvitations List a unit's household invitations
+	// (GET /v1/orgs/{org_id}/units/{unit_id}/household-invitations)
+	PeopleListHouseholdInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID)
+	// PeopleCreateHouseholdInvitation Invite a household member to a unit
+	// (POST /v1/orgs/{org_id}/units/{unit_id}/household-invitations)
+	PeopleCreateHouseholdInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID)
+	// PeopleRevokeHouseholdInvitation Revoke a household invitation
+	// (DELETE /v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id})
+	PeopleRevokeHouseholdInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, invitationId openapi_types.UUID)
+	// PeopleEndHouseholdOccupancy End a household member's occupancy
+	// (DELETE /v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id})
+	PeopleEndHouseholdOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, occupancyId openapi_types.UUID)
+	// PeopleCreateOccupancy Add an occupancy to a unit
+	// (POST /v1/orgs/{org_id}/units/{unit_id}/occupancies)
+	PeopleCreateOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID)
+	// TenancySetUnitTags Replace a unit's tags
+	// (PUT /v1/orgs/{org_id}/units/{unit_id}/tags)
+	TenancySetUnitTags(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, params TenancySetUnitTagsParams)
+	// TenancyCreateVehicle Register a plate for a unit
+	// (POST /v1/orgs/{org_id}/units/{unit_id}/vehicles)
+	TenancyCreateVehicle(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID)
+	// TenancyDeleteVehicle Remove a vehicle
+	// (DELETE /v1/orgs/{org_id}/vehicles/{vehicle_id})
+	TenancyDeleteVehicle(w http.ResponseWriter, r *http.Request, orgId OrgId, vehicleId openapi_types.UUID)
+	// PeopleListVendors List vendors
+	// (GET /v1/orgs/{org_id}/vendors)
+	PeopleListVendors(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListVendorsParams)
+	// PeopleCreateVendor Add a vendor
+	// (POST /v1/orgs/{org_id}/vendors)
+	PeopleCreateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId)
+	// PeopleDeleteVendor Remove a vendor
+	// (DELETE /v1/orgs/{org_id}/vendors/{vendor_id})
+	PeopleDeleteVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID)
+	// PeopleGetVendor Read a vendor
+	// (GET /v1/orgs/{org_id}/vendors/{vendor_id})
+	PeopleGetVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID)
+	// PeopleUpdateVendor Change a vendor
+	// (PATCH /v1/orgs/{org_id}/vendors/{vendor_id})
+	PeopleUpdateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID, params PeopleUpdateVendorParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -1082,9 +3853,39 @@ func (_ Unimplemented) AuthRefreshToken(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// InstanceGetCodes Labels of the API's codes
+// (GET /v1/codes)
+func (_ Unimplemented) InstanceGetCodes(w http.ResponseWriter, r *http.Request, params InstanceGetCodesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // InstanceGetInstance Instance information (authenticated)
 // (GET /v1/instance)
 func (_ Unimplemented) InstanceGetInstance(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeoplePreviewInvitation Preview an invitation
+// (GET /v1/invitations/{token})
+func (_ Unimplemented) PeoplePreviewInvitation(w http.ResponseWriter, r *http.Request, token string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleAcceptInvitation Accept an invitation
+// (POST /v1/invitations/{token}/accept)
+func (_ Unimplemented) PeopleAcceptInvitation(w http.ResponseWriter, r *http.Request, token string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeoplePreviewJoin Preview the site behind a join code
+// (GET /v1/join/{code})
+func (_ Unimplemented) PeoplePreviewJoin(w http.ResponseWriter, r *http.Request, code string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreateClaim Claim a unit through a join code
+// (POST /v1/join/{code}/claims)
+func (_ Unimplemented) PeopleCreateClaim(w http.ResponseWriter, r *http.Request, code string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1124,9 +3925,369 @@ func (_ Unimplemented) OrgUpdate(w http.ResponseWriter, r *http.Request, orgId O
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// TenancyGetAllocationKey Read an allocation key with its values
+// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
+func (_ Unimplemented) TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyUpdateAllocationKey Rename an allocation key
+// (PATCH /v1/orgs/{org_id}/allocation-keys/{key_id})
+func (_ Unimplemented) TenancyUpdateAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancyUpdateAllocationKeyParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancySetAllocationKeyValues Replace a share or table key's values
+// (PUT /v1/orgs/{org_id}/allocation-keys/{key_id}/values)
+func (_ Unimplemented) TenancySetAllocationKeyValues(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancySetAllocationKeyValuesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // AuditList List the organization's audit events
 // (GET /v1/orgs/{org_id}/audit)
 func (_ Unimplemented) AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyUpdateBlock Rename, hide or reorder a block
+// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
+func (_ Unimplemented) TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListInvitations List invitations
+// (GET /v1/orgs/{org_id}/invitations)
+func (_ Unimplemented) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreateInvitation Invite a person to a unit
+// (POST /v1/orgs/{org_id}/invitations)
+func (_ Unimplemented) PeopleCreateInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleRevokeInvitation Revoke a pending invitation
+// (DELETE /v1/orgs/{org_id}/invitations/{invitation_id})
+func (_ Unimplemented) PeopleRevokeInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleResendInvitation Send an invitation again with a new link
+// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
+func (_ Unimplemented) PeopleResendInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListMemberships List role memberships
+// (GET /v1/orgs/{org_id}/memberships)
+func (_ Unimplemented) PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreateMembership Grant a role
+// (POST /v1/orgs/{org_id}/memberships)
+func (_ Unimplemented) PeopleCreateMembership(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleEndMembership End a membership
+// (DELETE /v1/orgs/{org_id}/memberships/{membership_id})
+func (_ Unimplemented) PeopleEndMembership(w http.ResponseWriter, r *http.Request, orgId OrgId, membershipId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleGetMoveOut Read a move-out
+// (GET /v1/orgs/{org_id}/move-outs/{move_out_id})
+func (_ Unimplemented) PeopleGetMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, moveOutId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListOccupancies List occupancies
+// (GET /v1/orgs/{org_id}/occupancies)
+func (_ Unimplemented) PeopleListOccupancies(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListOccupanciesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleUpdateOccupancy Change an occupancy
+// (PATCH /v1/orgs/{org_id}/occupancies/{occupancy_id})
+func (_ Unimplemented) PeopleUpdateOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID, params PeopleUpdateOccupancyParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleSetMoneyAccess Let a household member see (or stop seeing) the unit's money
+// (PUT /v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access)
+func (_ Unimplemented) PeopleSetMoneyAccess(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID, params PeopleSetMoneyAccessParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleMoveOut Record a move-out or transfer
+// (POST /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out)
+func (_ Unimplemented) PeopleMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListPersons List people
+// (GET /v1/orgs/{org_id}/persons)
+func (_ Unimplemented) PeopleListPersons(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListPersonsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreatePerson Add a person
+// (POST /v1/orgs/{org_id}/persons)
+func (_ Unimplemented) PeopleCreatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleGetPerson Read a person
+// (GET /v1/orgs/{org_id}/persons/{person_id})
+func (_ Unimplemented) PeopleGetPerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleUpdatePerson Change a person
+// (PATCH /v1/orgs/{org_id}/persons/{person_id})
+func (_ Unimplemented) PeopleUpdatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID, params PeopleUpdatePersonParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyListSiteExports List site exports and imports
+// (GET /v1/orgs/{org_id}/site-exports)
+func (_ Unimplemented) TenancyListSiteExports(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSiteExportsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyDownloadSiteExport Download an export's archive
+// (GET /v1/orgs/{org_id}/site-exports/{export_id}/archive)
+func (_ Unimplemented) TenancyDownloadSiteExport(w http.ResponseWriter, r *http.Request, orgId OrgId, exportId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyImportSiteArchive Import a site archive into the organization
+// (POST /v1/orgs/{org_id}/site-imports)
+func (_ Unimplemented) TenancyImportSiteArchive(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyListSites List sites
+// (GET /v1/orgs/{org_id}/sites)
+func (_ Unimplemented) TenancyListSites(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSitesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyCreateSite Create a site
+// (POST /v1/orgs/{org_id}/sites)
+func (_ Unimplemented) TenancyCreateSite(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyGetSite Read a site
+// (GET /v1/orgs/{org_id}/sites/{site_id})
+func (_ Unimplemented) TenancyGetSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyUpdateSite Change a site's settings
+// (PATCH /v1/orgs/{org_id}/sites/{site_id})
+func (_ Unimplemented) TenancyUpdateSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyUpdateSiteParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyListAllocationKeys List a site's allocation keys
+// (GET /v1/orgs/{org_id}/sites/{site_id}/allocation-keys)
+func (_ Unimplemented) TenancyListAllocationKeys(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyCreateAllocationKey Add a custom allocation key
+// (POST /v1/orgs/{org_id}/sites/{site_id}/allocation-keys)
+func (_ Unimplemented) TenancyCreateAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyListBlocks List a site's blocks
+// (GET /v1/orgs/{org_id}/sites/{site_id}/blocks)
+func (_ Unimplemented) TenancyListBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyCreateBlock Add a block
+// (POST /v1/orgs/{org_id}/sites/{site_id}/blocks)
+func (_ Unimplemented) TenancyCreateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListDirectory The site directory
+// (GET /v1/orgs/{org_id}/sites/{site_id}/directory)
+func (_ Unimplemented) PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params PeopleListDirectoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleSetDirectoryConsent Choose what the directory shows about me
+// (PUT /v1/orgs/{org_id}/sites/{site_id}/directory-consent)
+func (_ Unimplemented) PeopleSetDirectoryConsent(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyExportSite Export a whole site to an archive
+// (POST /v1/orgs/{org_id}/sites/{site_id}/export)
+func (_ Unimplemented) TenancyExportSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyImportUnits Import units and people from a spreadsheet
+// (POST /v1/orgs/{org_id}/sites/{site_id}/import)
+func (_ Unimplemented) TenancyImportUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleGetJoinCode Read the site's join code
+// (GET /v1/orgs/{org_id}/sites/{site_id}/join-code)
+func (_ Unimplemented) PeopleGetJoinCode(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleRotateJoinCode Create or replace the site's join code
+// (POST /v1/orgs/{org_id}/sites/{site_id}/join-code)
+func (_ Unimplemented) PeopleRotateJoinCode(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyOffboardSite Offboard a site after its hand-over
+// (POST /v1/orgs/{org_id}/sites/{site_id}/offboard)
+func (_ Unimplemented) TenancyOffboardSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyListUnits List a site's units
+// (GET /v1/orgs/{org_id}/sites/{site_id}/units)
+func (_ Unimplemented) TenancyListUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListUnitsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyCreateUnit Add a unit
+// (POST /v1/orgs/{org_id}/sites/{site_id}/units)
+func (_ Unimplemented) TenancyCreateUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyListVehicles List a site's vehicles
+// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles)
+func (_ Unimplemented) TenancyListVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListVehiclesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyExportVehicles Export the site's plates as CSV
+// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
+func (_ Unimplemented) TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListClaims List unit claims
+// (GET /v1/orgs/{org_id}/unit-claims)
+func (_ Unimplemented) PeopleListClaims(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListClaimsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleApproveClaim Approve a unit claim
+// (POST /v1/orgs/{org_id}/unit-claims/{claim_id}/approve)
+func (_ Unimplemented) PeopleApproveClaim(w http.ResponseWriter, r *http.Request, orgId OrgId, claimId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleRejectClaim Reject a unit claim
+// (POST /v1/orgs/{org_id}/unit-claims/{claim_id}/reject)
+func (_ Unimplemented) PeopleRejectClaim(w http.ResponseWriter, r *http.Request, orgId OrgId, claimId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyGetUnit Read a unit
+// (GET /v1/orgs/{org_id}/units/{unit_id})
+func (_ Unimplemented) TenancyGetUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyUpdateUnit Change a unit
+// (PATCH /v1/orgs/{org_id}/units/{unit_id})
+func (_ Unimplemented) TenancyUpdateUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, params TenancyUpdateUnitParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListHouseholdInvitations List a unit's household invitations
+// (GET /v1/orgs/{org_id}/units/{unit_id}/household-invitations)
+func (_ Unimplemented) PeopleListHouseholdInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreateHouseholdInvitation Invite a household member to a unit
+// (POST /v1/orgs/{org_id}/units/{unit_id}/household-invitations)
+func (_ Unimplemented) PeopleCreateHouseholdInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleRevokeHouseholdInvitation Revoke a household invitation
+// (DELETE /v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id})
+func (_ Unimplemented) PeopleRevokeHouseholdInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, invitationId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleEndHouseholdOccupancy End a household member's occupancy
+// (DELETE /v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id})
+func (_ Unimplemented) PeopleEndHouseholdOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, occupancyId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreateOccupancy Add an occupancy to a unit
+// (POST /v1/orgs/{org_id}/units/{unit_id}/occupancies)
+func (_ Unimplemented) PeopleCreateOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancySetUnitTags Replace a unit's tags
+// (PUT /v1/orgs/{org_id}/units/{unit_id}/tags)
+func (_ Unimplemented) TenancySetUnitTags(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, params TenancySetUnitTagsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyCreateVehicle Register a plate for a unit
+// (POST /v1/orgs/{org_id}/units/{unit_id}/vehicles)
+func (_ Unimplemented) TenancyCreateVehicle(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// TenancyDeleteVehicle Remove a vehicle
+// (DELETE /v1/orgs/{org_id}/vehicles/{vehicle_id})
+func (_ Unimplemented) TenancyDeleteVehicle(w http.ResponseWriter, r *http.Request, orgId OrgId, vehicleId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleListVendors List vendors
+// (GET /v1/orgs/{org_id}/vendors)
+func (_ Unimplemented) PeopleListVendors(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListVendorsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleCreateVendor Add a vendor
+// (POST /v1/orgs/{org_id}/vendors)
+func (_ Unimplemented) PeopleCreateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleDeleteVendor Remove a vendor
+// (DELETE /v1/orgs/{org_id}/vendors/{vendor_id})
+func (_ Unimplemented) PeopleDeleteVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleGetVendor Read a vendor
+// (GET /v1/orgs/{org_id}/vendors/{vendor_id})
+func (_ Unimplemented) PeopleGetVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PeopleUpdateVendor Change a vendor
+// (PATCH /v1/orgs/{org_id}/vendors/{vendor_id})
+func (_ Unimplemented) PeopleUpdateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID, params PeopleUpdateVendorParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1279,11 +4440,148 @@ func (siw *ServerInterfaceWrapper) AuthRefreshToken(w http.ResponseWriter, r *ht
 	handler.ServeHTTP(w, r)
 }
 
+// InstanceGetCodes operation middleware
+func (siw *ServerInterfaceWrapper) InstanceGetCodes(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params InstanceGetCodesParams
+
+	// ------------- Optional query parameter "locale" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "locale", r.URL.Query(), &params.Locale, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "locale"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "locale", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.InstanceGetCodes(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // InstanceGetInstance operation middleware
 func (siw *ServerInterfaceWrapper) InstanceGetInstance(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.InstanceGetInstance(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeoplePreviewInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeoplePreviewInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "token" -------------
+	var token string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "token", chi.URLParam(r, "token"), &token, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "token", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeoplePreviewInvitation(w, r, token)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleAcceptInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeopleAcceptInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "token" -------------
+	var token string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "token", chi.URLParam(r, "token"), &token, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "token", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleAcceptInvitation(w, r, token)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeoplePreviewJoin operation middleware
+func (siw *ServerInterfaceWrapper) PeoplePreviewJoin(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "code" -------------
+	var code string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "code", chi.URLParam(r, "code"), &code, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeoplePreviewJoin(w, r, code)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreateClaim operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreateClaim(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "code" -------------
+	var code string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "code", chi.URLParam(r, "code"), &code, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreateClaim(w, r, code)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1437,6 +4735,159 @@ func (siw *ServerInterfaceWrapper) OrgUpdate(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
+// TenancyGetAllocationKey operation middleware
+func (siw *ServerInterfaceWrapper) TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "key_id" -------------
+	var keyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "key_id", chi.URLParam(r, "key_id"), &keyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "key_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyGetAllocationKey(w, r, orgId, keyId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyUpdateAllocationKey operation middleware
+func (siw *ServerInterfaceWrapper) TenancyUpdateAllocationKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "key_id" -------------
+	var keyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "key_id", chi.URLParam(r, "key_id"), &keyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "key_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyUpdateAllocationKeyParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyUpdateAllocationKey(w, r, orgId, keyId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancySetAllocationKeyValues operation middleware
+func (siw *ServerInterfaceWrapper) TenancySetAllocationKeyValues(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "key_id" -------------
+	var keyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "key_id", chi.URLParam(r, "key_id"), &keyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "key_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancySetAllocationKeyValuesParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancySetAllocationKeyValues(w, r, orgId, keyId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // AuditList operation middleware
 func (siw *ServerInterfaceWrapper) AuditList(w http.ResponseWriter, r *http.Request) {
 
@@ -1548,6 +4999,2638 @@ func (siw *ServerInterfaceWrapper) AuditList(w http.ResponseWriter, r *http.Requ
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AuditList(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyUpdateBlock operation middleware
+func (siw *ServerInterfaceWrapper) TenancyUpdateBlock(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "block_id" -------------
+	var blockId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "block_id", chi.URLParam(r, "block_id"), &blockId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "block_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyUpdateBlockParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyUpdateBlock(w, r, orgId, blockId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListInvitations operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListInvitations(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListInvitationsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListInvitations(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreateInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreateInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreateInvitation(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleRevokeInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeopleRevokeInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "invitation_id" -------------
+	var invitationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "invitation_id", chi.URLParam(r, "invitation_id"), &invitationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "invitation_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleRevokeInvitation(w, r, orgId, invitationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleResendInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeopleResendInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "invitation_id" -------------
+	var invitationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "invitation_id", chi.URLParam(r, "invitation_id"), &invitationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "invitation_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleResendInvitation(w, r, orgId, invitationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListMemberships operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListMemberships(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListMembershipsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "person_id", r.URL.Query(), &params.PersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListMemberships(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreateMembership operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreateMembership(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreateMembership(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleEndMembership operation middleware
+func (siw *ServerInterfaceWrapper) PeopleEndMembership(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "membership_id" -------------
+	var membershipId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "membership_id", chi.URLParam(r, "membership_id"), &membershipId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "membership_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleEndMembership(w, r, orgId, membershipId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleGetMoveOut operation middleware
+func (siw *ServerInterfaceWrapper) PeopleGetMoveOut(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "move_out_id" -------------
+	var moveOutId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "move_out_id", chi.URLParam(r, "move_out_id"), &moveOutId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "move_out_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleGetMoveOut(w, r, orgId, moveOutId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListOccupancies operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListOccupancies(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListOccupanciesParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "person_id", r.URL.Query(), &params.PersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "current" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "current", r.URL.Query(), &params.Current, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "current"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "current", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListOccupancies(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleUpdateOccupancy operation middleware
+func (siw *ServerInterfaceWrapper) PeopleUpdateOccupancy(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "occupancy_id" -------------
+	var occupancyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "occupancy_id", chi.URLParam(r, "occupancy_id"), &occupancyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "occupancy_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleUpdateOccupancyParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleUpdateOccupancy(w, r, orgId, occupancyId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleSetMoneyAccess operation middleware
+func (siw *ServerInterfaceWrapper) PeopleSetMoneyAccess(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "occupancy_id" -------------
+	var occupancyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "occupancy_id", chi.URLParam(r, "occupancy_id"), &occupancyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "occupancy_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleSetMoneyAccessParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleSetMoneyAccess(w, r, orgId, occupancyId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleMoveOut operation middleware
+func (siw *ServerInterfaceWrapper) PeopleMoveOut(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "occupancy_id" -------------
+	var occupancyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "occupancy_id", chi.URLParam(r, "occupancy_id"), &occupancyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "occupancy_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleMoveOut(w, r, orgId, occupancyId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListPersons operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListPersons(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListPersonsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListPersons(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreatePerson operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreatePerson(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreatePerson(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleGetPerson operation middleware
+func (siw *ServerInterfaceWrapper) PeopleGetPerson(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "person_id" -------------
+	var personId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "person_id", chi.URLParam(r, "person_id"), &personId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleGetPerson(w, r, orgId, personId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleUpdatePerson operation middleware
+func (siw *ServerInterfaceWrapper) PeopleUpdatePerson(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "person_id" -------------
+	var personId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "person_id", chi.URLParam(r, "person_id"), &personId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleUpdatePersonParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleUpdatePerson(w, r, orgId, personId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyListSiteExports operation middleware
+func (siw *ServerInterfaceWrapper) TenancyListSiteExports(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyListSiteExportsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyListSiteExports(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyDownloadSiteExport operation middleware
+func (siw *ServerInterfaceWrapper) TenancyDownloadSiteExport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "export_id" -------------
+	var exportId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "export_id", chi.URLParam(r, "export_id"), &exportId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "export_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyDownloadSiteExport(w, r, orgId, exportId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyImportSiteArchive operation middleware
+func (siw *ServerInterfaceWrapper) TenancyImportSiteArchive(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyImportSiteArchive(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyListSites operation middleware
+func (siw *ServerInterfaceWrapper) TenancyListSites(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyListSitesParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyListSites(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyCreateSite operation middleware
+func (siw *ServerInterfaceWrapper) TenancyCreateSite(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyCreateSite(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyGetSite operation middleware
+func (siw *ServerInterfaceWrapper) TenancyGetSite(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyGetSite(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyUpdateSite operation middleware
+func (siw *ServerInterfaceWrapper) TenancyUpdateSite(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyUpdateSiteParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyUpdateSite(w, r, orgId, siteId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyListAllocationKeys operation middleware
+func (siw *ServerInterfaceWrapper) TenancyListAllocationKeys(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyListAllocationKeys(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyCreateAllocationKey operation middleware
+func (siw *ServerInterfaceWrapper) TenancyCreateAllocationKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyCreateAllocationKey(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyListBlocks operation middleware
+func (siw *ServerInterfaceWrapper) TenancyListBlocks(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyListBlocks(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyCreateBlock operation middleware
+func (siw *ServerInterfaceWrapper) TenancyCreateBlock(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyCreateBlock(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListDirectory operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListDirectory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListDirectoryParams
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListDirectory(w, r, orgId, siteId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleSetDirectoryConsent operation middleware
+func (siw *ServerInterfaceWrapper) PeopleSetDirectoryConsent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleSetDirectoryConsent(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyExportSite operation middleware
+func (siw *ServerInterfaceWrapper) TenancyExportSite(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyExportSite(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyImportUnits operation middleware
+func (siw *ServerInterfaceWrapper) TenancyImportUnits(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyImportUnits(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleGetJoinCode operation middleware
+func (siw *ServerInterfaceWrapper) PeopleGetJoinCode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleGetJoinCode(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleRotateJoinCode operation middleware
+func (siw *ServerInterfaceWrapper) PeopleRotateJoinCode(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleRotateJoinCode(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyOffboardSite operation middleware
+func (siw *ServerInterfaceWrapper) TenancyOffboardSite(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyOffboardSite(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyListUnits operation middleware
+func (siw *ServerInterfaceWrapper) TenancyListUnits(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyListUnitsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "block_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "block_id", r.URL.Query(), &params.BlockId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "block_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "block_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "type" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "type", r.URL.Query(), &params.Type, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "type"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "type", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "vacant" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "vacant", r.URL.Query(), &params.Vacant, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "vacant"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vacant", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "parent_unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "parent_unit_id", r.URL.Query(), &params.ParentUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "parent_unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "parent_unit_id", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyListUnits(w, r, orgId, siteId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyCreateUnit operation middleware
+func (siw *ServerInterfaceWrapper) TenancyCreateUnit(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyCreateUnit(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyListVehicles operation middleware
+func (siw *ServerInterfaceWrapper) TenancyListVehicles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyListVehiclesParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyListVehicles(w, r, orgId, siteId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyExportVehicles operation middleware
+func (siw *ServerInterfaceWrapper) TenancyExportVehicles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "site_id" -------------
+	var siteId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "site_id", chi.URLParam(r, "site_id"), &siteId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyExportVehicles(w, r, orgId, siteId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListClaims operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListClaims(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListClaimsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListClaims(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleApproveClaim operation middleware
+func (siw *ServerInterfaceWrapper) PeopleApproveClaim(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "claim_id" -------------
+	var claimId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "claim_id", chi.URLParam(r, "claim_id"), &claimId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "claim_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleApproveClaim(w, r, orgId, claimId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleRejectClaim operation middleware
+func (siw *ServerInterfaceWrapper) PeopleRejectClaim(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "claim_id" -------------
+	var claimId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "claim_id", chi.URLParam(r, "claim_id"), &claimId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "claim_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleRejectClaim(w, r, orgId, claimId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyGetUnit operation middleware
+func (siw *ServerInterfaceWrapper) TenancyGetUnit(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyGetUnit(w, r, orgId, unitId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyUpdateUnit operation middleware
+func (siw *ServerInterfaceWrapper) TenancyUpdateUnit(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancyUpdateUnitParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyUpdateUnit(w, r, orgId, unitId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListHouseholdInvitations operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListHouseholdInvitations(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListHouseholdInvitations(w, r, orgId, unitId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreateHouseholdInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreateHouseholdInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreateHouseholdInvitation(w, r, orgId, unitId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleRevokeHouseholdInvitation operation middleware
+func (siw *ServerInterfaceWrapper) PeopleRevokeHouseholdInvitation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "invitation_id" -------------
+	var invitationId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "invitation_id", chi.URLParam(r, "invitation_id"), &invitationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "invitation_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleRevokeHouseholdInvitation(w, r, orgId, unitId, invitationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleEndHouseholdOccupancy operation middleware
+func (siw *ServerInterfaceWrapper) PeopleEndHouseholdOccupancy(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "occupancy_id" -------------
+	var occupancyId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "occupancy_id", chi.URLParam(r, "occupancy_id"), &occupancyId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "occupancy_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleEndHouseholdOccupancy(w, r, orgId, unitId, occupancyId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreateOccupancy operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreateOccupancy(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreateOccupancy(w, r, orgId, unitId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancySetUnitTags operation middleware
+func (siw *ServerInterfaceWrapper) TenancySetUnitTags(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TenancySetUnitTagsParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancySetUnitTags(w, r, orgId, unitId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyCreateVehicle operation middleware
+func (siw *ServerInterfaceWrapper) TenancyCreateVehicle(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "unit_id" -------------
+	var unitId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "unit_id", chi.URLParam(r, "unit_id"), &unitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyCreateVehicle(w, r, orgId, unitId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TenancyDeleteVehicle operation middleware
+func (siw *ServerInterfaceWrapper) TenancyDeleteVehicle(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "vehicle_id" -------------
+	var vehicleId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "vehicle_id", chi.URLParam(r, "vehicle_id"), &vehicleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vehicle_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TenancyDeleteVehicle(w, r, orgId, vehicleId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleListVendors operation middleware
+func (siw *ServerInterfaceWrapper) PeopleListVendors(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleListVendorsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleListVendors(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleCreateVendor operation middleware
+func (siw *ServerInterfaceWrapper) PeopleCreateVendor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleCreateVendor(w, r, orgId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleDeleteVendor operation middleware
+func (siw *ServerInterfaceWrapper) PeopleDeleteVendor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "vendor_id" -------------
+	var vendorId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "vendor_id", chi.URLParam(r, "vendor_id"), &vendorId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vendor_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleDeleteVendor(w, r, orgId, vendorId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleGetVendor operation middleware
+func (siw *ServerInterfaceWrapper) PeopleGetVendor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "vendor_id" -------------
+	var vendorId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "vendor_id", chi.URLParam(r, "vendor_id"), &vendorId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vendor_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleGetVendor(w, r, orgId, vendorId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PeopleUpdateVendor operation middleware
+func (siw *ServerInterfaceWrapper) PeopleUpdateVendor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "vendor_id" -------------
+	var vendorId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "vendor_id", chi.URLParam(r, "vendor_id"), &vendorId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vendor_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PeopleUpdateVendorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch string
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = &IfMatch
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PeopleUpdateVendor(w, r, orgId, vendorId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1723,6 +7806,201 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/orgs/{org_id}/audit", wrapper.AuditList)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/codes", wrapper.InstanceGetCodes)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/invitations/{token}", wrapper.PeoplePreviewInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/invitations/{token}/accept", wrapper.PeopleAcceptInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/join/{code}", wrapper.PeoplePreviewJoin)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/join/{code}/claims", wrapper.PeopleCreateClaim)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/allocation-keys/{key_id}", wrapper.TenancyGetAllocationKey)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/allocation-keys/{key_id}", wrapper.TenancyUpdateAllocationKey)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/allocation-keys/{key_id}/values", wrapper.TenancySetAllocationKeyValues)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/blocks/{block_id}", wrapper.TenancyUpdateBlock)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/invitations", wrapper.PeopleListInvitations)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/invitations", wrapper.PeopleCreateInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/invitations/{invitation_id}", wrapper.PeopleRevokeInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/invitations/{invitation_id}/resend", wrapper.PeopleResendInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/memberships", wrapper.PeopleListMemberships)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/memberships", wrapper.PeopleCreateMembership)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/memberships/{membership_id}", wrapper.PeopleEndMembership)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/move-outs/{move_out_id}", wrapper.PeopleGetMoveOut)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/occupancies", wrapper.PeopleListOccupancies)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/occupancies/{occupancy_id}", wrapper.PeopleUpdateOccupancy)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access", wrapper.PeopleSetMoneyAccess)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out", wrapper.PeopleMoveOut)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/persons", wrapper.PeopleListPersons)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/persons", wrapper.PeopleCreatePerson)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/persons/{person_id}", wrapper.PeopleGetPerson)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/persons/{person_id}", wrapper.PeopleUpdatePerson)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/site-exports", wrapper.TenancyListSiteExports)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/site-exports/{export_id}/archive", wrapper.TenancyDownloadSiteExport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/site-imports", wrapper.TenancyImportSiteArchive)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites", wrapper.TenancyListSites)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites", wrapper.TenancyCreateSite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}", wrapper.TenancyGetSite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}", wrapper.TenancyUpdateSite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/allocation-keys", wrapper.TenancyListAllocationKeys)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/allocation-keys", wrapper.TenancyCreateAllocationKey)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/blocks", wrapper.TenancyListBlocks)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/blocks", wrapper.TenancyCreateBlock)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/directory", wrapper.PeopleListDirectory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/directory-consent", wrapper.PeopleSetDirectoryConsent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/export", wrapper.TenancyExportSite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/import", wrapper.TenancyImportUnits)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/join-code", wrapper.PeopleGetJoinCode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/join-code", wrapper.PeopleRotateJoinCode)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/offboard", wrapper.TenancyOffboardSite)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/units", wrapper.TenancyListUnits)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/units", wrapper.TenancyCreateUnit)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/vehicles", wrapper.TenancyListVehicles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/sites/{site_id}/vehicles/export", wrapper.TenancyExportVehicles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/unit-claims", wrapper.PeopleListClaims)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/unit-claims/{claim_id}/approve", wrapper.PeopleApproveClaim)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/unit-claims/{claim_id}/reject", wrapper.PeopleRejectClaim)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}", wrapper.TenancyGetUnit)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}", wrapper.TenancyUpdateUnit)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/household-invitations", wrapper.PeopleListHouseholdInvitations)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/household-invitations", wrapper.PeopleCreateHouseholdInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id}", wrapper.PeopleRevokeHouseholdInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id}", wrapper.PeopleEndHouseholdOccupancy)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/occupancies", wrapper.PeopleCreateOccupancy)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/tags", wrapper.TenancySetUnitTags)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/vehicles", wrapper.TenancyCreateVehicle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/vehicles/{vehicle_id}", wrapper.TenancyDeleteVehicle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/vendors", wrapper.PeopleListVendors)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/vendors", wrapper.PeopleCreateVendor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/vendors/{vendor_id}", wrapper.PeopleDeleteVendor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/vendors/{vendor_id}", wrapper.PeopleGetVendor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/vendors/{vendor_id}", wrapper.PeopleUpdateVendor)
 	})
 
 	return r
@@ -3034,6 +9312,150 @@ func (response AuthRefreshTokendefaultApplicationProblemPlusJSONResponse) VisitA
 	return err
 }
 
+type InstanceGetCodesRequestObject struct {
+	Params InstanceGetCodesParams
+}
+
+type InstanceGetCodesResponseObject interface {
+	VisitInstanceGetCodesResponse(w http.ResponseWriter) error
+}
+
+type InstanceGetCodes200JSONResponse Codes
+
+func (response InstanceGetCodes200JSONResponse) VisitInstanceGetCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InstanceGetCodes404ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response InstanceGetCodes404ApplicationProblemPlusJSONResponse) VisitInstanceGetCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InstanceGetCodes422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type InstanceGetCodes422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers InstanceGetCodes422ResponseHeaders
+}
+
+func (response InstanceGetCodes422ApplicationProblemPlusJSONResponse) VisitInstanceGetCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InstanceGetCodes429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type InstanceGetCodes429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers InstanceGetCodes429ResponseHeaders
+}
+
+func (response InstanceGetCodes429ApplicationProblemPlusJSONResponse) VisitInstanceGetCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InstanceGetCodesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type InstanceGetCodesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    InstanceGetCodesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response InstanceGetCodesdefaultApplicationProblemPlusJSONResponse) VisitInstanceGetCodesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type InstanceGetInstanceRequestObject struct {
 }
 
@@ -3093,6 +9515,776 @@ type InstanceGetInstancedefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response InstanceGetInstancedefaultApplicationProblemPlusJSONResponse) VisitInstanceGetInstanceResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewInvitationRequestObject struct {
+	Token string `json:"token"`
+}
+
+type PeoplePreviewInvitationResponseObject interface {
+	VisitPeoplePreviewInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeoplePreviewInvitation200JSONResponse InvitationPreview
+
+func (response PeoplePreviewInvitation200JSONResponse) VisitPeoplePreviewInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewInvitation404ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeoplePreviewInvitation404ApplicationProblemPlusJSONResponse) VisitPeoplePreviewInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeoplePreviewInvitation422ResponseHeaders
+}
+
+func (response PeoplePreviewInvitation422ApplicationProblemPlusJSONResponse) VisitPeoplePreviewInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewInvitation429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewInvitation429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeoplePreviewInvitation429ResponseHeaders
+}
+
+func (response PeoplePreviewInvitation429ApplicationProblemPlusJSONResponse) VisitPeoplePreviewInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeoplePreviewInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeoplePreviewInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeoplePreviewInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitationRequestObject struct {
+	Token string `json:"token"`
+	Body  *PeopleAcceptInvitationJSONRequestBody
+}
+
+type PeopleAcceptInvitationResponseObject interface {
+	VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeopleAcceptInvitation200JSONResponse AcceptResult
+
+func (response PeopleAcceptInvitation200JSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitation403ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleAcceptInvitation403ApplicationProblemPlusJSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleAcceptInvitation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleAcceptInvitation404ResponseHeaders
+}
+
+func (response PeopleAcceptInvitation404ApplicationProblemPlusJSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitation409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleAcceptInvitation409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleAcceptInvitation409ResponseHeaders
+}
+
+func (response PeopleAcceptInvitation409ApplicationProblemPlusJSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleAcceptInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleAcceptInvitation422ResponseHeaders
+}
+
+func (response PeopleAcceptInvitation422ApplicationProblemPlusJSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitation429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleAcceptInvitation429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleAcceptInvitation429ResponseHeaders
+}
+
+func (response PeopleAcceptInvitation429ApplicationProblemPlusJSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleAcceptInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleAcceptInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleAcceptInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleAcceptInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleAcceptInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoinRequestObject struct {
+	Code string `json:"code"`
+}
+
+type PeoplePreviewJoinResponseObject interface {
+	VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error
+}
+
+type PeoplePreviewJoin200JSONResponse JoinPreview
+
+func (response PeoplePreviewJoin200JSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoin403ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeoplePreviewJoin403ApplicationProblemPlusJSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoin404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewJoin404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeoplePreviewJoin404ResponseHeaders
+}
+
+func (response PeoplePreviewJoin404ApplicationProblemPlusJSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoin409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewJoin409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeoplePreviewJoin409ResponseHeaders
+}
+
+func (response PeoplePreviewJoin409ApplicationProblemPlusJSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoin422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewJoin422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeoplePreviewJoin422ResponseHeaders
+}
+
+func (response PeoplePreviewJoin422ApplicationProblemPlusJSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoin429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewJoin429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeoplePreviewJoin429ResponseHeaders
+}
+
+func (response PeoplePreviewJoin429ApplicationProblemPlusJSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeoplePreviewJoindefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeoplePreviewJoindefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeoplePreviewJoindefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeoplePreviewJoindefaultApplicationProblemPlusJSONResponse) VisitPeoplePreviewJoinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaimRequestObject struct {
+	Code string `json:"code"`
+	Body *PeopleCreateClaimJSONRequestBody
+}
+
+type PeopleCreateClaimResponseObject interface {
+	VisitPeopleCreateClaimResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreateClaim201JSONResponse UnitClaim
+
+func (response PeopleCreateClaim201JSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaim401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreateClaim401ApplicationProblemPlusJSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaim404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateClaim404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateClaim404ResponseHeaders
+}
+
+func (response PeopleCreateClaim404ApplicationProblemPlusJSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaim409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateClaim409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateClaim409ResponseHeaders
+}
+
+func (response PeopleCreateClaim409ApplicationProblemPlusJSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaim422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateClaim422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateClaim422ResponseHeaders
+}
+
+func (response PeopleCreateClaim422ApplicationProblemPlusJSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaim429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateClaim429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateClaim429ResponseHeaders
+}
+
+func (response PeopleCreateClaim429ApplicationProblemPlusJSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateClaimdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateClaimdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreateClaimdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreateClaimdefaultApplicationProblemPlusJSONResponse) VisitPeopleCreateClaimResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -3888,6 +11080,657 @@ func (response OrgUpdatedefaultApplicationProblemPlusJSONResponse) VisitOrgUpdat
 	return err
 }
 
+type TenancyGetAllocationKeyRequestObject struct {
+	OrgId OrgId              `json:"org_id"`
+	KeyId openapi_types.UUID `json:"key_id"`
+}
+
+type TenancyGetAllocationKeyResponseObject interface {
+	VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error
+}
+
+type TenancyGetAllocationKey200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyGetAllocationKey200JSONResponse struct {
+	Body    AllocationKeyDetail
+	Headers TenancyGetAllocationKey200ResponseHeaders
+}
+
+func (response TenancyGetAllocationKey200JSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetAllocationKey401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyGetAllocationKey401ApplicationProblemPlusJSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetAllocationKey403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetAllocationKey403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetAllocationKey403ResponseHeaders
+}
+
+func (response TenancyGetAllocationKey403ApplicationProblemPlusJSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetAllocationKey404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetAllocationKey404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetAllocationKey404ResponseHeaders
+}
+
+func (response TenancyGetAllocationKey404ApplicationProblemPlusJSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetAllocationKey409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetAllocationKey409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetAllocationKey409ResponseHeaders
+}
+
+func (response TenancyGetAllocationKey409ApplicationProblemPlusJSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetAllocationKey422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetAllocationKey422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetAllocationKey422ResponseHeaders
+}
+
+func (response TenancyGetAllocationKey422ApplicationProblemPlusJSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetAllocationKeydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetAllocationKeydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyGetAllocationKeydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyGetAllocationKeydefaultApplicationProblemPlusJSONResponse) VisitTenancyGetAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKeyRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	KeyId  openapi_types.UUID `json:"key_id"`
+	Params TenancyUpdateAllocationKeyParams
+	Body   *TenancyUpdateAllocationKeyJSONRequestBody
+}
+
+type TenancyUpdateAllocationKeyResponseObject interface {
+	VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error
+}
+
+type TenancyUpdateAllocationKey200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyUpdateAllocationKey200JSONResponse struct {
+	Body    AllocationKey
+	Headers TenancyUpdateAllocationKey200ResponseHeaders
+}
+
+func (response TenancyUpdateAllocationKey200JSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKey401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyUpdateAllocationKey401ApplicationProblemPlusJSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKey403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateAllocationKey403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateAllocationKey403ResponseHeaders
+}
+
+func (response TenancyUpdateAllocationKey403ApplicationProblemPlusJSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKey404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateAllocationKey404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateAllocationKey404ResponseHeaders
+}
+
+func (response TenancyUpdateAllocationKey404ApplicationProblemPlusJSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKey409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateAllocationKey409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateAllocationKey409ResponseHeaders
+}
+
+func (response TenancyUpdateAllocationKey409ApplicationProblemPlusJSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKey422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateAllocationKey422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateAllocationKey422ResponseHeaders
+}
+
+func (response TenancyUpdateAllocationKey422ApplicationProblemPlusJSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateAllocationKeydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateAllocationKeydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyUpdateAllocationKeydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyUpdateAllocationKeydefaultApplicationProblemPlusJSONResponse) VisitTenancyUpdateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValuesRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	KeyId  openapi_types.UUID `json:"key_id"`
+	Params TenancySetAllocationKeyValuesParams
+	Body   *TenancySetAllocationKeyValuesJSONRequestBody
+}
+
+type TenancySetAllocationKeyValuesResponseObject interface {
+	VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error
+}
+
+type TenancySetAllocationKeyValues200JSONResponse AllocationKeyDetail
+
+func (response TenancySetAllocationKeyValues200JSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValues401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancySetAllocationKeyValues401ApplicationProblemPlusJSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValues403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetAllocationKeyValues403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetAllocationKeyValues403ResponseHeaders
+}
+
+func (response TenancySetAllocationKeyValues403ApplicationProblemPlusJSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValues404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetAllocationKeyValues404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetAllocationKeyValues404ResponseHeaders
+}
+
+func (response TenancySetAllocationKeyValues404ApplicationProblemPlusJSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValues409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetAllocationKeyValues409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetAllocationKeyValues409ResponseHeaders
+}
+
+func (response TenancySetAllocationKeyValues409ApplicationProblemPlusJSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValues422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetAllocationKeyValues422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetAllocationKeyValues422ResponseHeaders
+}
+
+func (response TenancySetAllocationKeyValues422ApplicationProblemPlusJSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetAllocationKeyValuesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetAllocationKeyValuesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancySetAllocationKeyValuesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancySetAllocationKeyValuesdefaultApplicationProblemPlusJSONResponse) VisitTenancySetAllocationKeyValuesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type AuditListRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params AuditListParams
@@ -4065,6 +11908,12027 @@ func (response AuditListdefaultApplicationProblemPlusJSONResponse) VisitAuditLis
 	return err
 }
 
+type TenancyUpdateBlockRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	BlockId openapi_types.UUID `json:"block_id"`
+	Params  TenancyUpdateBlockParams
+	Body    *TenancyUpdateBlockJSONRequestBody
+}
+
+type TenancyUpdateBlockResponseObject interface {
+	VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error
+}
+
+type TenancyUpdateBlock200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyUpdateBlock200JSONResponse struct {
+	Body    Block
+	Headers TenancyUpdateBlock200ResponseHeaders
+}
+
+func (response TenancyUpdateBlock200JSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateBlock401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyUpdateBlock401ApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateBlock403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateBlock403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateBlock403ResponseHeaders
+}
+
+func (response TenancyUpdateBlock403ApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateBlock404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateBlock404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateBlock404ResponseHeaders
+}
+
+func (response TenancyUpdateBlock404ApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateBlock409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateBlock409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateBlock409ResponseHeaders
+}
+
+func (response TenancyUpdateBlock409ApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateBlock422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateBlock422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateBlock422ResponseHeaders
+}
+
+func (response TenancyUpdateBlock422ApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateBlockdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateBlockdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyUpdateBlockdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyUpdateBlockdefaultApplicationProblemPlusJSONResponse) VisitTenancyUpdateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitationsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params PeopleListInvitationsParams
+}
+
+type PeopleListInvitationsResponseObject interface {
+	VisitPeopleListInvitationsResponse(w http.ResponseWriter) error
+}
+
+type PeopleListInvitations200JSONResponse InvitationList
+
+func (response PeopleListInvitations200JSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitations401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListInvitations401ApplicationProblemPlusJSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitations403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListInvitations403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListInvitations403ResponseHeaders
+}
+
+func (response PeopleListInvitations403ApplicationProblemPlusJSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitations404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListInvitations404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListInvitations404ResponseHeaders
+}
+
+func (response PeopleListInvitations404ApplicationProblemPlusJSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitations409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListInvitations409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListInvitations409ResponseHeaders
+}
+
+func (response PeopleListInvitations409ApplicationProblemPlusJSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitations422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListInvitations422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListInvitations422ResponseHeaders
+}
+
+func (response PeopleListInvitations422ApplicationProblemPlusJSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListInvitationsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListInvitationsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListInvitationsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListInvitationsdefaultApplicationProblemPlusJSONResponse) VisitPeopleListInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitationRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *PeopleCreateInvitationJSONRequestBody
+}
+
+type PeopleCreateInvitationResponseObject interface {
+	VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreateInvitation201JSONResponse Invitation
+
+func (response PeopleCreateInvitation201JSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitation401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreateInvitation401ApplicationProblemPlusJSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitation403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateInvitation403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateInvitation403ResponseHeaders
+}
+
+func (response PeopleCreateInvitation403ApplicationProblemPlusJSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateInvitation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateInvitation404ResponseHeaders
+}
+
+func (response PeopleCreateInvitation404ApplicationProblemPlusJSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitation409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateInvitation409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateInvitation409ResponseHeaders
+}
+
+func (response PeopleCreateInvitation409ApplicationProblemPlusJSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateInvitation422ResponseHeaders
+}
+
+func (response PeopleCreateInvitation422ApplicationProblemPlusJSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreateInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreateInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleCreateInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeInvitationRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	InvitationId openapi_types.UUID `json:"invitation_id"`
+}
+
+type PeopleRevokeInvitationResponseObject interface {
+	VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeopleRevokeInvitation204Response struct {
+}
+
+func (response PeopleRevokeInvitation204Response) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PeopleRevokeInvitation401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleRevokeInvitation401ApplicationProblemPlusJSONResponse) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeInvitation403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeInvitation403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeInvitation403ResponseHeaders
+}
+
+func (response PeopleRevokeInvitation403ApplicationProblemPlusJSONResponse) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeInvitation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeInvitation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeInvitation404ResponseHeaders
+}
+
+func (response PeopleRevokeInvitation404ApplicationProblemPlusJSONResponse) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeInvitation409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeInvitation409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeInvitation409ResponseHeaders
+}
+
+func (response PeopleRevokeInvitation409ApplicationProblemPlusJSONResponse) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeInvitation422ResponseHeaders
+}
+
+func (response PeopleRevokeInvitation422ApplicationProblemPlusJSONResponse) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleRevokeInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleRevokeInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleRevokeInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitationRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	InvitationId openapi_types.UUID `json:"invitation_id"`
+}
+
+type PeopleResendInvitationResponseObject interface {
+	VisitPeopleResendInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeopleResendInvitation200JSONResponse Invitation
+
+func (response PeopleResendInvitation200JSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitation401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleResendInvitation401ApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitation403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleResendInvitation403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleResendInvitation403ResponseHeaders
+}
+
+func (response PeopleResendInvitation403ApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleResendInvitation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleResendInvitation404ResponseHeaders
+}
+
+func (response PeopleResendInvitation404ApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitation409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleResendInvitation409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleResendInvitation409ResponseHeaders
+}
+
+func (response PeopleResendInvitation409ApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleResendInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleResendInvitation422ResponseHeaders
+}
+
+func (response PeopleResendInvitation422ApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleResendInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleResendInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleResendInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleResendInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleResendInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMembershipsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params PeopleListMembershipsParams
+}
+
+type PeopleListMembershipsResponseObject interface {
+	VisitPeopleListMembershipsResponse(w http.ResponseWriter) error
+}
+
+type PeopleListMemberships200JSONResponse MembershipList
+
+func (response PeopleListMemberships200JSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMemberships401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListMemberships401ApplicationProblemPlusJSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMemberships403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListMemberships403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListMemberships403ResponseHeaders
+}
+
+func (response PeopleListMemberships403ApplicationProblemPlusJSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMemberships404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListMemberships404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListMemberships404ResponseHeaders
+}
+
+func (response PeopleListMemberships404ApplicationProblemPlusJSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMemberships409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListMemberships409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListMemberships409ResponseHeaders
+}
+
+func (response PeopleListMemberships409ApplicationProblemPlusJSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMemberships422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListMemberships422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListMemberships422ResponseHeaders
+}
+
+func (response PeopleListMemberships422ApplicationProblemPlusJSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListMembershipsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListMembershipsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListMembershipsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListMembershipsdefaultApplicationProblemPlusJSONResponse) VisitPeopleListMembershipsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembershipRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *PeopleCreateMembershipJSONRequestBody
+}
+
+type PeopleCreateMembershipResponseObject interface {
+	VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreateMembership201JSONResponse Membership
+
+func (response PeopleCreateMembership201JSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembership401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreateMembership401ApplicationProblemPlusJSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembership403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateMembership403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateMembership403ResponseHeaders
+}
+
+func (response PeopleCreateMembership403ApplicationProblemPlusJSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembership404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateMembership404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateMembership404ResponseHeaders
+}
+
+func (response PeopleCreateMembership404ApplicationProblemPlusJSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembership409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateMembership409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateMembership409ResponseHeaders
+}
+
+func (response PeopleCreateMembership409ApplicationProblemPlusJSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembership422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateMembership422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateMembership422ResponseHeaders
+}
+
+func (response PeopleCreateMembership422ApplicationProblemPlusJSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateMembershipdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateMembershipdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreateMembershipdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreateMembershipdefaultApplicationProblemPlusJSONResponse) VisitPeopleCreateMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndMembershipRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	MembershipId openapi_types.UUID `json:"membership_id"`
+}
+
+type PeopleEndMembershipResponseObject interface {
+	VisitPeopleEndMembershipResponse(w http.ResponseWriter) error
+}
+
+type PeopleEndMembership204Response struct {
+}
+
+func (response PeopleEndMembership204Response) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PeopleEndMembership401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleEndMembership401ApplicationProblemPlusJSONResponse) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndMembership403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndMembership403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndMembership403ResponseHeaders
+}
+
+func (response PeopleEndMembership403ApplicationProblemPlusJSONResponse) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndMembership404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndMembership404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndMembership404ResponseHeaders
+}
+
+func (response PeopleEndMembership404ApplicationProblemPlusJSONResponse) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndMembership409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndMembership409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndMembership409ResponseHeaders
+}
+
+func (response PeopleEndMembership409ApplicationProblemPlusJSONResponse) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndMembership422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndMembership422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndMembership422ResponseHeaders
+}
+
+func (response PeopleEndMembership422ApplicationProblemPlusJSONResponse) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndMembershipdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndMembershipdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleEndMembershipdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleEndMembershipdefaultApplicationProblemPlusJSONResponse) VisitPeopleEndMembershipResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOutRequestObject struct {
+	OrgId     OrgId              `json:"org_id"`
+	MoveOutId openapi_types.UUID `json:"move_out_id"`
+}
+
+type PeopleGetMoveOutResponseObject interface {
+	VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error
+}
+
+type PeopleGetMoveOut200JSONResponse MoveOut
+
+func (response PeopleGetMoveOut200JSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOut401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleGetMoveOut401ApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOut403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetMoveOut403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetMoveOut403ResponseHeaders
+}
+
+func (response PeopleGetMoveOut403ApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOut404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetMoveOut404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetMoveOut404ResponseHeaders
+}
+
+func (response PeopleGetMoveOut404ApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOut409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetMoveOut409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetMoveOut409ResponseHeaders
+}
+
+func (response PeopleGetMoveOut409ApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOut422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetMoveOut422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetMoveOut422ResponseHeaders
+}
+
+func (response PeopleGetMoveOut422ApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetMoveOutdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetMoveOutdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleGetMoveOutdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleGetMoveOutdefaultApplicationProblemPlusJSONResponse) VisitPeopleGetMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupanciesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params PeopleListOccupanciesParams
+}
+
+type PeopleListOccupanciesResponseObject interface {
+	VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error
+}
+
+type PeopleListOccupancies200JSONResponse OccupancyList
+
+func (response PeopleListOccupancies200JSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupancies401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListOccupancies401ApplicationProblemPlusJSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupancies403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListOccupancies403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListOccupancies403ResponseHeaders
+}
+
+func (response PeopleListOccupancies403ApplicationProblemPlusJSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupancies404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListOccupancies404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListOccupancies404ResponseHeaders
+}
+
+func (response PeopleListOccupancies404ApplicationProblemPlusJSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupancies409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListOccupancies409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListOccupancies409ResponseHeaders
+}
+
+func (response PeopleListOccupancies409ApplicationProblemPlusJSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupancies422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListOccupancies422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListOccupancies422ResponseHeaders
+}
+
+func (response PeopleListOccupancies422ApplicationProblemPlusJSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListOccupanciesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListOccupanciesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListOccupanciesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListOccupanciesdefaultApplicationProblemPlusJSONResponse) VisitPeopleListOccupanciesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancyRequestObject struct {
+	OrgId       OrgId              `json:"org_id"`
+	OccupancyId openapi_types.UUID `json:"occupancy_id"`
+	Params      PeopleUpdateOccupancyParams
+	Body        *PeopleUpdateOccupancyJSONRequestBody
+}
+
+type PeopleUpdateOccupancyResponseObject interface {
+	VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error
+}
+
+type PeopleUpdateOccupancy200ResponseHeaders struct {
+	ETag *string
+}
+
+type PeopleUpdateOccupancy200JSONResponse struct {
+	Body    Occupancy
+	Headers PeopleUpdateOccupancy200ResponseHeaders
+}
+
+func (response PeopleUpdateOccupancy200JSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancy401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleUpdateOccupancy401ApplicationProblemPlusJSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancy403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateOccupancy403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateOccupancy403ResponseHeaders
+}
+
+func (response PeopleUpdateOccupancy403ApplicationProblemPlusJSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancy404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateOccupancy404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateOccupancy404ResponseHeaders
+}
+
+func (response PeopleUpdateOccupancy404ApplicationProblemPlusJSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancy409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateOccupancy409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateOccupancy409ResponseHeaders
+}
+
+func (response PeopleUpdateOccupancy409ApplicationProblemPlusJSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancy422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateOccupancy422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateOccupancy422ResponseHeaders
+}
+
+func (response PeopleUpdateOccupancy422ApplicationProblemPlusJSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateOccupancydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateOccupancydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleUpdateOccupancydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleUpdateOccupancydefaultApplicationProblemPlusJSONResponse) VisitPeopleUpdateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccessRequestObject struct {
+	OrgId       OrgId              `json:"org_id"`
+	OccupancyId openapi_types.UUID `json:"occupancy_id"`
+	Params      PeopleSetMoneyAccessParams
+	Body        *PeopleSetMoneyAccessJSONRequestBody
+}
+
+type PeopleSetMoneyAccessResponseObject interface {
+	VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error
+}
+
+type PeopleSetMoneyAccess200JSONResponse Occupancy
+
+func (response PeopleSetMoneyAccess200JSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccess401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleSetMoneyAccess401ApplicationProblemPlusJSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccess403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetMoneyAccess403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetMoneyAccess403ResponseHeaders
+}
+
+func (response PeopleSetMoneyAccess403ApplicationProblemPlusJSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccess404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetMoneyAccess404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetMoneyAccess404ResponseHeaders
+}
+
+func (response PeopleSetMoneyAccess404ApplicationProblemPlusJSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccess409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetMoneyAccess409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetMoneyAccess409ResponseHeaders
+}
+
+func (response PeopleSetMoneyAccess409ApplicationProblemPlusJSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccess422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetMoneyAccess422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetMoneyAccess422ResponseHeaders
+}
+
+func (response PeopleSetMoneyAccess422ApplicationProblemPlusJSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetMoneyAccessdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetMoneyAccessdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleSetMoneyAccessdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleSetMoneyAccessdefaultApplicationProblemPlusJSONResponse) VisitPeopleSetMoneyAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOutRequestObject struct {
+	OrgId       OrgId              `json:"org_id"`
+	OccupancyId openapi_types.UUID `json:"occupancy_id"`
+	Body        *PeopleMoveOutJSONRequestBody
+}
+
+type PeopleMoveOutResponseObject interface {
+	VisitPeopleMoveOutResponse(w http.ResponseWriter) error
+}
+
+type PeopleMoveOut201JSONResponse MoveOut
+
+func (response PeopleMoveOut201JSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOut401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleMoveOut401ApplicationProblemPlusJSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOut403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleMoveOut403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleMoveOut403ResponseHeaders
+}
+
+func (response PeopleMoveOut403ApplicationProblemPlusJSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOut404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleMoveOut404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleMoveOut404ResponseHeaders
+}
+
+func (response PeopleMoveOut404ApplicationProblemPlusJSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOut409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleMoveOut409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleMoveOut409ResponseHeaders
+}
+
+func (response PeopleMoveOut409ApplicationProblemPlusJSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOut422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleMoveOut422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleMoveOut422ResponseHeaders
+}
+
+func (response PeopleMoveOut422ApplicationProblemPlusJSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleMoveOutdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleMoveOutdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleMoveOutdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleMoveOutdefaultApplicationProblemPlusJSONResponse) VisitPeopleMoveOutResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersonsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params PeopleListPersonsParams
+}
+
+type PeopleListPersonsResponseObject interface {
+	VisitPeopleListPersonsResponse(w http.ResponseWriter) error
+}
+
+type PeopleListPersons200JSONResponse PersonList
+
+func (response PeopleListPersons200JSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersons401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListPersons401ApplicationProblemPlusJSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersons403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListPersons403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListPersons403ResponseHeaders
+}
+
+func (response PeopleListPersons403ApplicationProblemPlusJSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersons404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListPersons404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListPersons404ResponseHeaders
+}
+
+func (response PeopleListPersons404ApplicationProblemPlusJSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersons409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListPersons409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListPersons409ResponseHeaders
+}
+
+func (response PeopleListPersons409ApplicationProblemPlusJSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersons422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListPersons422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListPersons422ResponseHeaders
+}
+
+func (response PeopleListPersons422ApplicationProblemPlusJSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListPersonsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListPersonsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListPersonsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListPersonsdefaultApplicationProblemPlusJSONResponse) VisitPeopleListPersonsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePersonRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *PeopleCreatePersonJSONRequestBody
+}
+
+type PeopleCreatePersonResponseObject interface {
+	VisitPeopleCreatePersonResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreatePerson201JSONResponse Person
+
+func (response PeopleCreatePerson201JSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePerson401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreatePerson401ApplicationProblemPlusJSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePerson403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreatePerson403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreatePerson403ResponseHeaders
+}
+
+func (response PeopleCreatePerson403ApplicationProblemPlusJSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePerson404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreatePerson404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreatePerson404ResponseHeaders
+}
+
+func (response PeopleCreatePerson404ApplicationProblemPlusJSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePerson409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreatePerson409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreatePerson409ResponseHeaders
+}
+
+func (response PeopleCreatePerson409ApplicationProblemPlusJSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePerson422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreatePerson422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreatePerson422ResponseHeaders
+}
+
+func (response PeopleCreatePerson422ApplicationProblemPlusJSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreatePersondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreatePersondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreatePersondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreatePersondefaultApplicationProblemPlusJSONResponse) VisitPeopleCreatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPersonRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	PersonId openapi_types.UUID `json:"person_id"`
+}
+
+type PeopleGetPersonResponseObject interface {
+	VisitPeopleGetPersonResponse(w http.ResponseWriter) error
+}
+
+type PeopleGetPerson200ResponseHeaders struct {
+	ETag *string
+}
+
+type PeopleGetPerson200JSONResponse struct {
+	Body    Person
+	Headers PeopleGetPerson200ResponseHeaders
+}
+
+func (response PeopleGetPerson200JSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPerson401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleGetPerson401ApplicationProblemPlusJSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPerson403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetPerson403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetPerson403ResponseHeaders
+}
+
+func (response PeopleGetPerson403ApplicationProblemPlusJSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPerson404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetPerson404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetPerson404ResponseHeaders
+}
+
+func (response PeopleGetPerson404ApplicationProblemPlusJSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPerson409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetPerson409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetPerson409ResponseHeaders
+}
+
+func (response PeopleGetPerson409ApplicationProblemPlusJSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPerson422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetPerson422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetPerson422ResponseHeaders
+}
+
+func (response PeopleGetPerson422ApplicationProblemPlusJSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetPersondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetPersondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleGetPersondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleGetPersondefaultApplicationProblemPlusJSONResponse) VisitPeopleGetPersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePersonRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	PersonId openapi_types.UUID `json:"person_id"`
+	Params   PeopleUpdatePersonParams
+	Body     *PeopleUpdatePersonJSONRequestBody
+}
+
+type PeopleUpdatePersonResponseObject interface {
+	VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error
+}
+
+type PeopleUpdatePerson200ResponseHeaders struct {
+	ETag *string
+}
+
+type PeopleUpdatePerson200JSONResponse struct {
+	Body    Person
+	Headers PeopleUpdatePerson200ResponseHeaders
+}
+
+func (response PeopleUpdatePerson200JSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePerson401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleUpdatePerson401ApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePerson403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdatePerson403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdatePerson403ResponseHeaders
+}
+
+func (response PeopleUpdatePerson403ApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePerson404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdatePerson404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdatePerson404ResponseHeaders
+}
+
+func (response PeopleUpdatePerson404ApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePerson409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdatePerson409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdatePerson409ResponseHeaders
+}
+
+func (response PeopleUpdatePerson409ApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePerson422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdatePerson422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdatePerson422ResponseHeaders
+}
+
+func (response PeopleUpdatePerson422ApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdatePersondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdatePersondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleUpdatePersondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleUpdatePersondefaultApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExportsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params TenancyListSiteExportsParams
+}
+
+type TenancyListSiteExportsResponseObject interface {
+	VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error
+}
+
+type TenancyListSiteExports200JSONResponse SiteExportList
+
+func (response TenancyListSiteExports200JSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExports401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyListSiteExports401ApplicationProblemPlusJSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExports403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSiteExports403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSiteExports403ResponseHeaders
+}
+
+func (response TenancyListSiteExports403ApplicationProblemPlusJSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExports404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSiteExports404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSiteExports404ResponseHeaders
+}
+
+func (response TenancyListSiteExports404ApplicationProblemPlusJSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExports409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSiteExports409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSiteExports409ResponseHeaders
+}
+
+func (response TenancyListSiteExports409ApplicationProblemPlusJSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExports422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSiteExports422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSiteExports422ResponseHeaders
+}
+
+func (response TenancyListSiteExports422ApplicationProblemPlusJSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSiteExportsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSiteExportsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyListSiteExportsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyListSiteExportsdefaultApplicationProblemPlusJSONResponse) VisitTenancyListSiteExportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDownloadSiteExportRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	ExportId openapi_types.UUID `json:"export_id"`
+}
+
+type TenancyDownloadSiteExportResponseObject interface {
+	VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error
+}
+
+type TenancyDownloadSiteExport200ApplicationoctetStreamResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response TenancyDownloadSiteExport200ApplicationoctetStreamResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type TenancyDownloadSiteExport401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyDownloadSiteExport401ApplicationProblemPlusJSONResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDownloadSiteExport403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDownloadSiteExport403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDownloadSiteExport403ResponseHeaders
+}
+
+func (response TenancyDownloadSiteExport403ApplicationProblemPlusJSONResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDownloadSiteExport404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDownloadSiteExport404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDownloadSiteExport404ResponseHeaders
+}
+
+func (response TenancyDownloadSiteExport404ApplicationProblemPlusJSONResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDownloadSiteExport409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDownloadSiteExport409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDownloadSiteExport409ResponseHeaders
+}
+
+func (response TenancyDownloadSiteExport409ApplicationProblemPlusJSONResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDownloadSiteExport422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDownloadSiteExport422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDownloadSiteExport422ResponseHeaders
+}
+
+func (response TenancyDownloadSiteExport422ApplicationProblemPlusJSONResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDownloadSiteExportdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDownloadSiteExportdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyDownloadSiteExportdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyDownloadSiteExportdefaultApplicationProblemPlusJSONResponse) VisitTenancyDownloadSiteExportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchiveRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *multipart.Reader
+}
+
+type TenancyImportSiteArchiveResponseObject interface {
+	VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error
+}
+
+type TenancyImportSiteArchive201JSONResponse SiteExport
+
+func (response TenancyImportSiteArchive201JSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchive401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyImportSiteArchive401ApplicationProblemPlusJSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchive403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportSiteArchive403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportSiteArchive403ResponseHeaders
+}
+
+func (response TenancyImportSiteArchive403ApplicationProblemPlusJSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchive404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportSiteArchive404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportSiteArchive404ResponseHeaders
+}
+
+func (response TenancyImportSiteArchive404ApplicationProblemPlusJSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchive409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportSiteArchive409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportSiteArchive409ResponseHeaders
+}
+
+func (response TenancyImportSiteArchive409ApplicationProblemPlusJSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchive422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportSiteArchive422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportSiteArchive422ResponseHeaders
+}
+
+func (response TenancyImportSiteArchive422ApplicationProblemPlusJSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportSiteArchivedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportSiteArchivedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyImportSiteArchivedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyImportSiteArchivedefaultApplicationProblemPlusJSONResponse) VisitTenancyImportSiteArchiveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSitesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params TenancyListSitesParams
+}
+
+type TenancyListSitesResponseObject interface {
+	VisitTenancyListSitesResponse(w http.ResponseWriter) error
+}
+
+type TenancyListSites200JSONResponse SiteList
+
+func (response TenancyListSites200JSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSites401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyListSites401ApplicationProblemPlusJSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSites403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSites403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSites403ResponseHeaders
+}
+
+func (response TenancyListSites403ApplicationProblemPlusJSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSites404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSites404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSites404ResponseHeaders
+}
+
+func (response TenancyListSites404ApplicationProblemPlusJSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSites409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSites409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSites409ResponseHeaders
+}
+
+func (response TenancyListSites409ApplicationProblemPlusJSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSites422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSites422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListSites422ResponseHeaders
+}
+
+func (response TenancyListSites422ApplicationProblemPlusJSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListSitesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListSitesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyListSitesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyListSitesdefaultApplicationProblemPlusJSONResponse) VisitTenancyListSitesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSiteRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *TenancyCreateSiteJSONRequestBody
+}
+
+type TenancyCreateSiteResponseObject interface {
+	VisitTenancyCreateSiteResponse(w http.ResponseWriter) error
+}
+
+type TenancyCreateSite201JSONResponse Site
+
+func (response TenancyCreateSite201JSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSite401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyCreateSite401ApplicationProblemPlusJSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSite403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateSite403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateSite403ResponseHeaders
+}
+
+func (response TenancyCreateSite403ApplicationProblemPlusJSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSite404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateSite404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateSite404ResponseHeaders
+}
+
+func (response TenancyCreateSite404ApplicationProblemPlusJSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSite409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateSite409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateSite409ResponseHeaders
+}
+
+func (response TenancyCreateSite409ApplicationProblemPlusJSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSite422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateSite422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateSite422ResponseHeaders
+}
+
+func (response TenancyCreateSite422ApplicationProblemPlusJSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateSitedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateSitedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyCreateSitedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyCreateSitedefaultApplicationProblemPlusJSONResponse) VisitTenancyCreateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSiteRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type TenancyGetSiteResponseObject interface {
+	VisitTenancyGetSiteResponse(w http.ResponseWriter) error
+}
+
+type TenancyGetSite200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyGetSite200JSONResponse struct {
+	Body    Site
+	Headers TenancyGetSite200ResponseHeaders
+}
+
+func (response TenancyGetSite200JSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSite401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyGetSite401ApplicationProblemPlusJSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSite403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetSite403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetSite403ResponseHeaders
+}
+
+func (response TenancyGetSite403ApplicationProblemPlusJSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSite404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetSite404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetSite404ResponseHeaders
+}
+
+func (response TenancyGetSite404ApplicationProblemPlusJSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSite409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetSite409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetSite409ResponseHeaders
+}
+
+func (response TenancyGetSite409ApplicationProblemPlusJSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSite422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetSite422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetSite422ResponseHeaders
+}
+
+func (response TenancyGetSite422ApplicationProblemPlusJSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetSitedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetSitedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyGetSitedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyGetSitedefaultApplicationProblemPlusJSONResponse) VisitTenancyGetSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSiteRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Params TenancyUpdateSiteParams
+	Body   *TenancyUpdateSiteJSONRequestBody
+}
+
+type TenancyUpdateSiteResponseObject interface {
+	VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error
+}
+
+type TenancyUpdateSite200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyUpdateSite200JSONResponse struct {
+	Body    Site
+	Headers TenancyUpdateSite200ResponseHeaders
+}
+
+func (response TenancyUpdateSite200JSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSite401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyUpdateSite401ApplicationProblemPlusJSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSite403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateSite403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateSite403ResponseHeaders
+}
+
+func (response TenancyUpdateSite403ApplicationProblemPlusJSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSite404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateSite404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateSite404ResponseHeaders
+}
+
+func (response TenancyUpdateSite404ApplicationProblemPlusJSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSite409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateSite409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateSite409ResponseHeaders
+}
+
+func (response TenancyUpdateSite409ApplicationProblemPlusJSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSite422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateSite422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateSite422ResponseHeaders
+}
+
+func (response TenancyUpdateSite422ApplicationProblemPlusJSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateSitedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateSitedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyUpdateSitedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyUpdateSitedefaultApplicationProblemPlusJSONResponse) VisitTenancyUpdateSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeysRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type TenancyListAllocationKeysResponseObject interface {
+	VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error
+}
+
+type TenancyListAllocationKeys200JSONResponse AllocationKeyList
+
+func (response TenancyListAllocationKeys200JSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeys401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyListAllocationKeys401ApplicationProblemPlusJSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeys403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListAllocationKeys403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListAllocationKeys403ResponseHeaders
+}
+
+func (response TenancyListAllocationKeys403ApplicationProblemPlusJSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeys404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListAllocationKeys404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListAllocationKeys404ResponseHeaders
+}
+
+func (response TenancyListAllocationKeys404ApplicationProblemPlusJSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeys409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListAllocationKeys409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListAllocationKeys409ResponseHeaders
+}
+
+func (response TenancyListAllocationKeys409ApplicationProblemPlusJSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeys422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListAllocationKeys422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListAllocationKeys422ResponseHeaders
+}
+
+func (response TenancyListAllocationKeys422ApplicationProblemPlusJSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListAllocationKeysdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListAllocationKeysdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyListAllocationKeysdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyListAllocationKeysdefaultApplicationProblemPlusJSONResponse) VisitTenancyListAllocationKeysResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKeyRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Body   *TenancyCreateAllocationKeyJSONRequestBody
+}
+
+type TenancyCreateAllocationKeyResponseObject interface {
+	VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error
+}
+
+type TenancyCreateAllocationKey201JSONResponse AllocationKey
+
+func (response TenancyCreateAllocationKey201JSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKey401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyCreateAllocationKey401ApplicationProblemPlusJSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKey403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateAllocationKey403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateAllocationKey403ResponseHeaders
+}
+
+func (response TenancyCreateAllocationKey403ApplicationProblemPlusJSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKey404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateAllocationKey404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateAllocationKey404ResponseHeaders
+}
+
+func (response TenancyCreateAllocationKey404ApplicationProblemPlusJSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKey409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateAllocationKey409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateAllocationKey409ResponseHeaders
+}
+
+func (response TenancyCreateAllocationKey409ApplicationProblemPlusJSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKey422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateAllocationKey422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateAllocationKey422ResponseHeaders
+}
+
+func (response TenancyCreateAllocationKey422ApplicationProblemPlusJSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateAllocationKeydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateAllocationKeydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyCreateAllocationKeydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyCreateAllocationKeydefaultApplicationProblemPlusJSONResponse) VisitTenancyCreateAllocationKeyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocksRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type TenancyListBlocksResponseObject interface {
+	VisitTenancyListBlocksResponse(w http.ResponseWriter) error
+}
+
+type TenancyListBlocks200JSONResponse BlockList
+
+func (response TenancyListBlocks200JSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocks401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyListBlocks401ApplicationProblemPlusJSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocks403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListBlocks403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListBlocks403ResponseHeaders
+}
+
+func (response TenancyListBlocks403ApplicationProblemPlusJSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocks404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListBlocks404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListBlocks404ResponseHeaders
+}
+
+func (response TenancyListBlocks404ApplicationProblemPlusJSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocks409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListBlocks409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListBlocks409ResponseHeaders
+}
+
+func (response TenancyListBlocks409ApplicationProblemPlusJSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocks422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListBlocks422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListBlocks422ResponseHeaders
+}
+
+func (response TenancyListBlocks422ApplicationProblemPlusJSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListBlocksdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListBlocksdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyListBlocksdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyListBlocksdefaultApplicationProblemPlusJSONResponse) VisitTenancyListBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlockRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Body   *TenancyCreateBlockJSONRequestBody
+}
+
+type TenancyCreateBlockResponseObject interface {
+	VisitTenancyCreateBlockResponse(w http.ResponseWriter) error
+}
+
+type TenancyCreateBlock201JSONResponse Block
+
+func (response TenancyCreateBlock201JSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlock401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyCreateBlock401ApplicationProblemPlusJSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlock403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateBlock403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateBlock403ResponseHeaders
+}
+
+func (response TenancyCreateBlock403ApplicationProblemPlusJSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlock404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateBlock404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateBlock404ResponseHeaders
+}
+
+func (response TenancyCreateBlock404ApplicationProblemPlusJSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlock409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateBlock409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateBlock409ResponseHeaders
+}
+
+func (response TenancyCreateBlock409ApplicationProblemPlusJSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlock422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateBlock422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateBlock422ResponseHeaders
+}
+
+func (response TenancyCreateBlock422ApplicationProblemPlusJSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateBlockdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateBlockdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyCreateBlockdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyCreateBlockdefaultApplicationProblemPlusJSONResponse) VisitTenancyCreateBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectoryRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Params PeopleListDirectoryParams
+}
+
+type PeopleListDirectoryResponseObject interface {
+	VisitPeopleListDirectoryResponse(w http.ResponseWriter) error
+}
+
+type PeopleListDirectory200JSONResponse DirectoryList
+
+func (response PeopleListDirectory200JSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectory401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListDirectory401ApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectory403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListDirectory403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListDirectory403ResponseHeaders
+}
+
+func (response PeopleListDirectory403ApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectory404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListDirectory404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListDirectory404ResponseHeaders
+}
+
+func (response PeopleListDirectory404ApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectory409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListDirectory409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListDirectory409ResponseHeaders
+}
+
+func (response PeopleListDirectory409ApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectory422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListDirectory422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListDirectory422ResponseHeaders
+}
+
+func (response PeopleListDirectory422ApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListDirectorydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListDirectorydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListDirectorydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListDirectorydefaultApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsentRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Body   *PeopleSetDirectoryConsentJSONRequestBody
+}
+
+type PeopleSetDirectoryConsentResponseObject interface {
+	VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error
+}
+
+type PeopleSetDirectoryConsent200JSONResponse DirectoryConsent
+
+func (response PeopleSetDirectoryConsent200JSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsent401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleSetDirectoryConsent401ApplicationProblemPlusJSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsent403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetDirectoryConsent403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetDirectoryConsent403ResponseHeaders
+}
+
+func (response PeopleSetDirectoryConsent403ApplicationProblemPlusJSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsent404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetDirectoryConsent404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetDirectoryConsent404ResponseHeaders
+}
+
+func (response PeopleSetDirectoryConsent404ApplicationProblemPlusJSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsent409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetDirectoryConsent409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetDirectoryConsent409ResponseHeaders
+}
+
+func (response PeopleSetDirectoryConsent409ApplicationProblemPlusJSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsent422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetDirectoryConsent422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleSetDirectoryConsent422ResponseHeaders
+}
+
+func (response PeopleSetDirectoryConsent422ApplicationProblemPlusJSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleSetDirectoryConsentdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleSetDirectoryConsentdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleSetDirectoryConsentdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleSetDirectoryConsentdefaultApplicationProblemPlusJSONResponse) VisitPeopleSetDirectoryConsentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSiteRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type TenancyExportSiteResponseObject interface {
+	VisitTenancyExportSiteResponse(w http.ResponseWriter) error
+}
+
+type TenancyExportSite201JSONResponse SiteExport
+
+func (response TenancyExportSite201JSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSite401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyExportSite401ApplicationProblemPlusJSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSite403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportSite403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportSite403ResponseHeaders
+}
+
+func (response TenancyExportSite403ApplicationProblemPlusJSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSite404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportSite404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportSite404ResponseHeaders
+}
+
+func (response TenancyExportSite404ApplicationProblemPlusJSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSite409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportSite409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportSite409ResponseHeaders
+}
+
+func (response TenancyExportSite409ApplicationProblemPlusJSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSite422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportSite422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportSite422ResponseHeaders
+}
+
+func (response TenancyExportSite422ApplicationProblemPlusJSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportSitedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportSitedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyExportSitedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyExportSitedefaultApplicationProblemPlusJSONResponse) VisitTenancyExportSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnitsRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Body   *multipart.Reader
+}
+
+type TenancyImportUnitsResponseObject interface {
+	VisitTenancyImportUnitsResponse(w http.ResponseWriter) error
+}
+
+type TenancyImportUnits200JSONResponse ImportReport
+
+func (response TenancyImportUnits200JSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnits401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyImportUnits401ApplicationProblemPlusJSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnits403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportUnits403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportUnits403ResponseHeaders
+}
+
+func (response TenancyImportUnits403ApplicationProblemPlusJSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnits404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportUnits404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportUnits404ResponseHeaders
+}
+
+func (response TenancyImportUnits404ApplicationProblemPlusJSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnits409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportUnits409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportUnits409ResponseHeaders
+}
+
+func (response TenancyImportUnits409ApplicationProblemPlusJSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnits422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportUnits422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyImportUnits422ResponseHeaders
+}
+
+func (response TenancyImportUnits422ApplicationProblemPlusJSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyImportUnitsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyImportUnitsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyImportUnitsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyImportUnitsdefaultApplicationProblemPlusJSONResponse) VisitTenancyImportUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCodeRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type PeopleGetJoinCodeResponseObject interface {
+	VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error
+}
+
+type PeopleGetJoinCode200JSONResponse JoinCode
+
+func (response PeopleGetJoinCode200JSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCode401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleGetJoinCode401ApplicationProblemPlusJSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCode403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetJoinCode403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetJoinCode403ResponseHeaders
+}
+
+func (response PeopleGetJoinCode403ApplicationProblemPlusJSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCode404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetJoinCode404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetJoinCode404ResponseHeaders
+}
+
+func (response PeopleGetJoinCode404ApplicationProblemPlusJSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCode409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetJoinCode409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetJoinCode409ResponseHeaders
+}
+
+func (response PeopleGetJoinCode409ApplicationProblemPlusJSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCode422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetJoinCode422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetJoinCode422ResponseHeaders
+}
+
+func (response PeopleGetJoinCode422ApplicationProblemPlusJSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetJoinCodedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetJoinCodedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleGetJoinCodedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleGetJoinCodedefaultApplicationProblemPlusJSONResponse) VisitPeopleGetJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCodeRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type PeopleRotateJoinCodeResponseObject interface {
+	VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error
+}
+
+type PeopleRotateJoinCode201JSONResponse JoinCode
+
+func (response PeopleRotateJoinCode201JSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCode401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleRotateJoinCode401ApplicationProblemPlusJSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCode403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRotateJoinCode403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRotateJoinCode403ResponseHeaders
+}
+
+func (response PeopleRotateJoinCode403ApplicationProblemPlusJSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCode404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRotateJoinCode404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRotateJoinCode404ResponseHeaders
+}
+
+func (response PeopleRotateJoinCode404ApplicationProblemPlusJSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCode409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRotateJoinCode409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRotateJoinCode409ResponseHeaders
+}
+
+func (response PeopleRotateJoinCode409ApplicationProblemPlusJSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCode422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRotateJoinCode422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRotateJoinCode422ResponseHeaders
+}
+
+func (response PeopleRotateJoinCode422ApplicationProblemPlusJSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRotateJoinCodedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRotateJoinCodedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleRotateJoinCodedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleRotateJoinCodedefaultApplicationProblemPlusJSONResponse) VisitPeopleRotateJoinCodeResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSiteRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type TenancyOffboardSiteResponseObject interface {
+	VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error
+}
+
+type TenancyOffboardSite200JSONResponse Site
+
+func (response TenancyOffboardSite200JSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSite401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyOffboardSite401ApplicationProblemPlusJSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSite403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyOffboardSite403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyOffboardSite403ResponseHeaders
+}
+
+func (response TenancyOffboardSite403ApplicationProblemPlusJSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSite404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyOffboardSite404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyOffboardSite404ResponseHeaders
+}
+
+func (response TenancyOffboardSite404ApplicationProblemPlusJSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSite409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyOffboardSite409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyOffboardSite409ResponseHeaders
+}
+
+func (response TenancyOffboardSite409ApplicationProblemPlusJSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSite422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyOffboardSite422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyOffboardSite422ResponseHeaders
+}
+
+func (response TenancyOffboardSite422ApplicationProblemPlusJSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyOffboardSitedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyOffboardSitedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyOffboardSitedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyOffboardSitedefaultApplicationProblemPlusJSONResponse) VisitTenancyOffboardSiteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnitsRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Params TenancyListUnitsParams
+}
+
+type TenancyListUnitsResponseObject interface {
+	VisitTenancyListUnitsResponse(w http.ResponseWriter) error
+}
+
+type TenancyListUnits200JSONResponse UnitList
+
+func (response TenancyListUnits200JSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnits401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyListUnits401ApplicationProblemPlusJSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnits403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListUnits403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListUnits403ResponseHeaders
+}
+
+func (response TenancyListUnits403ApplicationProblemPlusJSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnits404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListUnits404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListUnits404ResponseHeaders
+}
+
+func (response TenancyListUnits404ApplicationProblemPlusJSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnits409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListUnits409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListUnits409ResponseHeaders
+}
+
+func (response TenancyListUnits409ApplicationProblemPlusJSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnits422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListUnits422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListUnits422ResponseHeaders
+}
+
+func (response TenancyListUnits422ApplicationProblemPlusJSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListUnitsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListUnitsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyListUnitsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyListUnitsdefaultApplicationProblemPlusJSONResponse) VisitTenancyListUnitsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnitRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Body   *TenancyCreateUnitJSONRequestBody
+}
+
+type TenancyCreateUnitResponseObject interface {
+	VisitTenancyCreateUnitResponse(w http.ResponseWriter) error
+}
+
+type TenancyCreateUnit201JSONResponse Unit
+
+func (response TenancyCreateUnit201JSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnit401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyCreateUnit401ApplicationProblemPlusJSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnit403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateUnit403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateUnit403ResponseHeaders
+}
+
+func (response TenancyCreateUnit403ApplicationProblemPlusJSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnit404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateUnit404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateUnit404ResponseHeaders
+}
+
+func (response TenancyCreateUnit404ApplicationProblemPlusJSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnit409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateUnit409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateUnit409ResponseHeaders
+}
+
+func (response TenancyCreateUnit409ApplicationProblemPlusJSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnit422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateUnit422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateUnit422ResponseHeaders
+}
+
+func (response TenancyCreateUnit422ApplicationProblemPlusJSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateUnitdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateUnitdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyCreateUnitdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyCreateUnitdefaultApplicationProblemPlusJSONResponse) VisitTenancyCreateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehiclesRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	Params TenancyListVehiclesParams
+}
+
+type TenancyListVehiclesResponseObject interface {
+	VisitTenancyListVehiclesResponse(w http.ResponseWriter) error
+}
+
+type TenancyListVehicles200JSONResponse VehicleList
+
+func (response TenancyListVehicles200JSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehicles401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyListVehicles401ApplicationProblemPlusJSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehicles403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListVehicles403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListVehicles403ResponseHeaders
+}
+
+func (response TenancyListVehicles403ApplicationProblemPlusJSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehicles404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListVehicles404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListVehicles404ResponseHeaders
+}
+
+func (response TenancyListVehicles404ApplicationProblemPlusJSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehicles409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListVehicles409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListVehicles409ResponseHeaders
+}
+
+func (response TenancyListVehicles409ApplicationProblemPlusJSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehicles422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListVehicles422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyListVehicles422ResponseHeaders
+}
+
+func (response TenancyListVehicles422ApplicationProblemPlusJSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyListVehiclesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyListVehiclesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyListVehiclesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyListVehiclesdefaultApplicationProblemPlusJSONResponse) VisitTenancyListVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportVehiclesRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+type TenancyExportVehiclesResponseObject interface {
+	VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error
+}
+
+type TenancyExportVehicles200TextcsvResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response TenancyExportVehicles200TextcsvResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "text/csv")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type TenancyExportVehicles401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyExportVehicles401ApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportVehicles403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportVehicles403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportVehicles403ResponseHeaders
+}
+
+func (response TenancyExportVehicles403ApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportVehicles404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportVehicles404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportVehicles404ResponseHeaders
+}
+
+func (response TenancyExportVehicles404ApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportVehicles409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportVehicles409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportVehicles409ResponseHeaders
+}
+
+func (response TenancyExportVehicles409ApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportVehicles422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportVehicles422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyExportVehicles422ResponseHeaders
+}
+
+func (response TenancyExportVehicles422ApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyExportVehiclesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyExportVehiclesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyExportVehiclesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyExportVehiclesdefaultApplicationProblemPlusJSONResponse) VisitTenancyExportVehiclesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaimsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params PeopleListClaimsParams
+}
+
+type PeopleListClaimsResponseObject interface {
+	VisitPeopleListClaimsResponse(w http.ResponseWriter) error
+}
+
+type PeopleListClaims200JSONResponse UnitClaimList
+
+func (response PeopleListClaims200JSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaims401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListClaims401ApplicationProblemPlusJSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaims403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListClaims403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListClaims403ResponseHeaders
+}
+
+func (response PeopleListClaims403ApplicationProblemPlusJSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaims404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListClaims404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListClaims404ResponseHeaders
+}
+
+func (response PeopleListClaims404ApplicationProblemPlusJSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaims409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListClaims409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListClaims409ResponseHeaders
+}
+
+func (response PeopleListClaims409ApplicationProblemPlusJSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaims422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListClaims422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListClaims422ResponseHeaders
+}
+
+func (response PeopleListClaims422ApplicationProblemPlusJSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListClaimsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListClaimsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListClaimsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListClaimsdefaultApplicationProblemPlusJSONResponse) VisitPeopleListClaimsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaimRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	ClaimId openapi_types.UUID `json:"claim_id"`
+	Body    *PeopleApproveClaimJSONRequestBody
+}
+
+type PeopleApproveClaimResponseObject interface {
+	VisitPeopleApproveClaimResponse(w http.ResponseWriter) error
+}
+
+type PeopleApproveClaim200JSONResponse UnitClaim
+
+func (response PeopleApproveClaim200JSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaim401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleApproveClaim401ApplicationProblemPlusJSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaim403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleApproveClaim403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleApproveClaim403ResponseHeaders
+}
+
+func (response PeopleApproveClaim403ApplicationProblemPlusJSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaim404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleApproveClaim404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleApproveClaim404ResponseHeaders
+}
+
+func (response PeopleApproveClaim404ApplicationProblemPlusJSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaim409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleApproveClaim409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleApproveClaim409ResponseHeaders
+}
+
+func (response PeopleApproveClaim409ApplicationProblemPlusJSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaim422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleApproveClaim422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleApproveClaim422ResponseHeaders
+}
+
+func (response PeopleApproveClaim422ApplicationProblemPlusJSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleApproveClaimdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleApproveClaimdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleApproveClaimdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleApproveClaimdefaultApplicationProblemPlusJSONResponse) VisitPeopleApproveClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaimRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	ClaimId openapi_types.UUID `json:"claim_id"`
+	Body    *PeopleRejectClaimJSONRequestBody
+}
+
+type PeopleRejectClaimResponseObject interface {
+	VisitPeopleRejectClaimResponse(w http.ResponseWriter) error
+}
+
+type PeopleRejectClaim200JSONResponse UnitClaim
+
+func (response PeopleRejectClaim200JSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaim401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleRejectClaim401ApplicationProblemPlusJSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaim403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRejectClaim403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRejectClaim403ResponseHeaders
+}
+
+func (response PeopleRejectClaim403ApplicationProblemPlusJSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaim404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRejectClaim404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRejectClaim404ResponseHeaders
+}
+
+func (response PeopleRejectClaim404ApplicationProblemPlusJSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaim409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRejectClaim409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRejectClaim409ResponseHeaders
+}
+
+func (response PeopleRejectClaim409ApplicationProblemPlusJSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaim422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRejectClaim422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRejectClaim422ResponseHeaders
+}
+
+func (response PeopleRejectClaim422ApplicationProblemPlusJSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRejectClaimdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRejectClaimdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleRejectClaimdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleRejectClaimdefaultApplicationProblemPlusJSONResponse) VisitPeopleRejectClaimResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnitRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+}
+
+type TenancyGetUnitResponseObject interface {
+	VisitTenancyGetUnitResponse(w http.ResponseWriter) error
+}
+
+type TenancyGetUnit200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyGetUnit200JSONResponse struct {
+	Body    Unit
+	Headers TenancyGetUnit200ResponseHeaders
+}
+
+func (response TenancyGetUnit200JSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnit401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyGetUnit401ApplicationProblemPlusJSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnit403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetUnit403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetUnit403ResponseHeaders
+}
+
+func (response TenancyGetUnit403ApplicationProblemPlusJSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnit404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetUnit404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetUnit404ResponseHeaders
+}
+
+func (response TenancyGetUnit404ApplicationProblemPlusJSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnit409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetUnit409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetUnit409ResponseHeaders
+}
+
+func (response TenancyGetUnit409ApplicationProblemPlusJSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnit422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetUnit422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyGetUnit422ResponseHeaders
+}
+
+func (response TenancyGetUnit422ApplicationProblemPlusJSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyGetUnitdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyGetUnitdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyGetUnitdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyGetUnitdefaultApplicationProblemPlusJSONResponse) VisitTenancyGetUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnitRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+	Params TenancyUpdateUnitParams
+	Body   *TenancyUpdateUnitJSONRequestBody
+}
+
+type TenancyUpdateUnitResponseObject interface {
+	VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error
+}
+
+type TenancyUpdateUnit200ResponseHeaders struct {
+	ETag *string
+}
+
+type TenancyUpdateUnit200JSONResponse struct {
+	Body    Unit
+	Headers TenancyUpdateUnit200ResponseHeaders
+}
+
+func (response TenancyUpdateUnit200JSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnit401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyUpdateUnit401ApplicationProblemPlusJSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnit403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateUnit403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateUnit403ResponseHeaders
+}
+
+func (response TenancyUpdateUnit403ApplicationProblemPlusJSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnit404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateUnit404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateUnit404ResponseHeaders
+}
+
+func (response TenancyUpdateUnit404ApplicationProblemPlusJSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnit409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateUnit409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateUnit409ResponseHeaders
+}
+
+func (response TenancyUpdateUnit409ApplicationProblemPlusJSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnit422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateUnit422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyUpdateUnit422ResponseHeaders
+}
+
+func (response TenancyUpdateUnit422ApplicationProblemPlusJSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyUpdateUnitdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyUpdateUnitdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyUpdateUnitdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyUpdateUnitdefaultApplicationProblemPlusJSONResponse) VisitTenancyUpdateUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitationsRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+}
+
+type PeopleListHouseholdInvitationsResponseObject interface {
+	VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error
+}
+
+type PeopleListHouseholdInvitations200JSONResponse InvitationList
+
+func (response PeopleListHouseholdInvitations200JSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitations401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListHouseholdInvitations401ApplicationProblemPlusJSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitations403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListHouseholdInvitations403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListHouseholdInvitations403ResponseHeaders
+}
+
+func (response PeopleListHouseholdInvitations403ApplicationProblemPlusJSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitations404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListHouseholdInvitations404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListHouseholdInvitations404ResponseHeaders
+}
+
+func (response PeopleListHouseholdInvitations404ApplicationProblemPlusJSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitations409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListHouseholdInvitations409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListHouseholdInvitations409ResponseHeaders
+}
+
+func (response PeopleListHouseholdInvitations409ApplicationProblemPlusJSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitations422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListHouseholdInvitations422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListHouseholdInvitations422ResponseHeaders
+}
+
+func (response PeopleListHouseholdInvitations422ApplicationProblemPlusJSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListHouseholdInvitationsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListHouseholdInvitationsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListHouseholdInvitationsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListHouseholdInvitationsdefaultApplicationProblemPlusJSONResponse) VisitPeopleListHouseholdInvitationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitationRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+	Body   *PeopleCreateHouseholdInvitationJSONRequestBody
+}
+
+type PeopleCreateHouseholdInvitationResponseObject interface {
+	VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreateHouseholdInvitation201JSONResponse Invitation
+
+func (response PeopleCreateHouseholdInvitation201JSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitation401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreateHouseholdInvitation401ApplicationProblemPlusJSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitation403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateHouseholdInvitation403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateHouseholdInvitation403ResponseHeaders
+}
+
+func (response PeopleCreateHouseholdInvitation403ApplicationProblemPlusJSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateHouseholdInvitation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateHouseholdInvitation404ResponseHeaders
+}
+
+func (response PeopleCreateHouseholdInvitation404ApplicationProblemPlusJSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitation409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateHouseholdInvitation409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateHouseholdInvitation409ResponseHeaders
+}
+
+func (response PeopleCreateHouseholdInvitation409ApplicationProblemPlusJSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateHouseholdInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateHouseholdInvitation422ResponseHeaders
+}
+
+func (response PeopleCreateHouseholdInvitation422ApplicationProblemPlusJSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateHouseholdInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateHouseholdInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreateHouseholdInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreateHouseholdInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleCreateHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeHouseholdInvitationRequestObject struct {
+	OrgId        OrgId              `json:"org_id"`
+	UnitId       openapi_types.UUID `json:"unit_id"`
+	InvitationId openapi_types.UUID `json:"invitation_id"`
+}
+
+type PeopleRevokeHouseholdInvitationResponseObject interface {
+	VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error
+}
+
+type PeopleRevokeHouseholdInvitation204Response struct {
+}
+
+func (response PeopleRevokeHouseholdInvitation204Response) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PeopleRevokeHouseholdInvitation401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleRevokeHouseholdInvitation401ApplicationProblemPlusJSONResponse) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeHouseholdInvitation403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeHouseholdInvitation403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeHouseholdInvitation403ResponseHeaders
+}
+
+func (response PeopleRevokeHouseholdInvitation403ApplicationProblemPlusJSONResponse) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeHouseholdInvitation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeHouseholdInvitation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeHouseholdInvitation404ResponseHeaders
+}
+
+func (response PeopleRevokeHouseholdInvitation404ApplicationProblemPlusJSONResponse) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeHouseholdInvitation409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeHouseholdInvitation409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeHouseholdInvitation409ResponseHeaders
+}
+
+func (response PeopleRevokeHouseholdInvitation409ApplicationProblemPlusJSONResponse) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeHouseholdInvitation422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeHouseholdInvitation422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleRevokeHouseholdInvitation422ResponseHeaders
+}
+
+func (response PeopleRevokeHouseholdInvitation422ApplicationProblemPlusJSONResponse) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleRevokeHouseholdInvitationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleRevokeHouseholdInvitationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleRevokeHouseholdInvitationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleRevokeHouseholdInvitationdefaultApplicationProblemPlusJSONResponse) VisitPeopleRevokeHouseholdInvitationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndHouseholdOccupancyRequestObject struct {
+	OrgId       OrgId              `json:"org_id"`
+	UnitId      openapi_types.UUID `json:"unit_id"`
+	OccupancyId openapi_types.UUID `json:"occupancy_id"`
+}
+
+type PeopleEndHouseholdOccupancyResponseObject interface {
+	VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error
+}
+
+type PeopleEndHouseholdOccupancy204Response struct {
+}
+
+func (response PeopleEndHouseholdOccupancy204Response) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PeopleEndHouseholdOccupancy401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleEndHouseholdOccupancy401ApplicationProblemPlusJSONResponse) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndHouseholdOccupancy403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndHouseholdOccupancy403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndHouseholdOccupancy403ResponseHeaders
+}
+
+func (response PeopleEndHouseholdOccupancy403ApplicationProblemPlusJSONResponse) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndHouseholdOccupancy404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndHouseholdOccupancy404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndHouseholdOccupancy404ResponseHeaders
+}
+
+func (response PeopleEndHouseholdOccupancy404ApplicationProblemPlusJSONResponse) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndHouseholdOccupancy409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndHouseholdOccupancy409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndHouseholdOccupancy409ResponseHeaders
+}
+
+func (response PeopleEndHouseholdOccupancy409ApplicationProblemPlusJSONResponse) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndHouseholdOccupancy422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndHouseholdOccupancy422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleEndHouseholdOccupancy422ResponseHeaders
+}
+
+func (response PeopleEndHouseholdOccupancy422ApplicationProblemPlusJSONResponse) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleEndHouseholdOccupancydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleEndHouseholdOccupancydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleEndHouseholdOccupancydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleEndHouseholdOccupancydefaultApplicationProblemPlusJSONResponse) VisitPeopleEndHouseholdOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancyRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+	Body   *PeopleCreateOccupancyJSONRequestBody
+}
+
+type PeopleCreateOccupancyResponseObject interface {
+	VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreateOccupancy201JSONResponse Occupancy
+
+func (response PeopleCreateOccupancy201JSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancy401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreateOccupancy401ApplicationProblemPlusJSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancy403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateOccupancy403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateOccupancy403ResponseHeaders
+}
+
+func (response PeopleCreateOccupancy403ApplicationProblemPlusJSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancy404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateOccupancy404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateOccupancy404ResponseHeaders
+}
+
+func (response PeopleCreateOccupancy404ApplicationProblemPlusJSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancy409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateOccupancy409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateOccupancy409ResponseHeaders
+}
+
+func (response PeopleCreateOccupancy409ApplicationProblemPlusJSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancy422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateOccupancy422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateOccupancy422ResponseHeaders
+}
+
+func (response PeopleCreateOccupancy422ApplicationProblemPlusJSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateOccupancydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateOccupancydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreateOccupancydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreateOccupancydefaultApplicationProblemPlusJSONResponse) VisitPeopleCreateOccupancyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTagsRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+	Params TenancySetUnitTagsParams
+	Body   *TenancySetUnitTagsJSONRequestBody
+}
+
+type TenancySetUnitTagsResponseObject interface {
+	VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error
+}
+
+type TenancySetUnitTags200JSONResponse Unit
+
+func (response TenancySetUnitTags200JSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTags401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancySetUnitTags401ApplicationProblemPlusJSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTags403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetUnitTags403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetUnitTags403ResponseHeaders
+}
+
+func (response TenancySetUnitTags403ApplicationProblemPlusJSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTags404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetUnitTags404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetUnitTags404ResponseHeaders
+}
+
+func (response TenancySetUnitTags404ApplicationProblemPlusJSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTags409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetUnitTags409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetUnitTags409ResponseHeaders
+}
+
+func (response TenancySetUnitTags409ApplicationProblemPlusJSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTags422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetUnitTags422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancySetUnitTags422ResponseHeaders
+}
+
+func (response TenancySetUnitTags422ApplicationProblemPlusJSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancySetUnitTagsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancySetUnitTagsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancySetUnitTagsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancySetUnitTagsdefaultApplicationProblemPlusJSONResponse) VisitTenancySetUnitTagsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicleRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+	Body   *TenancyCreateVehicleJSONRequestBody
+}
+
+type TenancyCreateVehicleResponseObject interface {
+	VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error
+}
+
+type TenancyCreateVehicle201JSONResponse Vehicle
+
+func (response TenancyCreateVehicle201JSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicle401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyCreateVehicle401ApplicationProblemPlusJSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicle403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateVehicle403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateVehicle403ResponseHeaders
+}
+
+func (response TenancyCreateVehicle403ApplicationProblemPlusJSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicle404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateVehicle404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateVehicle404ResponseHeaders
+}
+
+func (response TenancyCreateVehicle404ApplicationProblemPlusJSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicle409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateVehicle409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateVehicle409ResponseHeaders
+}
+
+func (response TenancyCreateVehicle409ApplicationProblemPlusJSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicle422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateVehicle422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyCreateVehicle422ResponseHeaders
+}
+
+func (response TenancyCreateVehicle422ApplicationProblemPlusJSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyCreateVehicledefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyCreateVehicledefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyCreateVehicledefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyCreateVehicledefaultApplicationProblemPlusJSONResponse) VisitTenancyCreateVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDeleteVehicleRequestObject struct {
+	OrgId     OrgId              `json:"org_id"`
+	VehicleId openapi_types.UUID `json:"vehicle_id"`
+}
+
+type TenancyDeleteVehicleResponseObject interface {
+	VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error
+}
+
+type TenancyDeleteVehicle204Response struct {
+}
+
+func (response TenancyDeleteVehicle204Response) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type TenancyDeleteVehicle401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response TenancyDeleteVehicle401ApplicationProblemPlusJSONResponse) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDeleteVehicle403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDeleteVehicle403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDeleteVehicle403ResponseHeaders
+}
+
+func (response TenancyDeleteVehicle403ApplicationProblemPlusJSONResponse) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDeleteVehicle404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDeleteVehicle404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDeleteVehicle404ResponseHeaders
+}
+
+func (response TenancyDeleteVehicle404ApplicationProblemPlusJSONResponse) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDeleteVehicle409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDeleteVehicle409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDeleteVehicle409ResponseHeaders
+}
+
+func (response TenancyDeleteVehicle409ApplicationProblemPlusJSONResponse) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDeleteVehicle422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDeleteVehicle422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers TenancyDeleteVehicle422ResponseHeaders
+}
+
+func (response TenancyDeleteVehicle422ApplicationProblemPlusJSONResponse) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TenancyDeleteVehicledefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type TenancyDeleteVehicledefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    TenancyDeleteVehicledefaultResponseHeaders
+	StatusCode int
+}
+
+func (response TenancyDeleteVehicledefaultApplicationProblemPlusJSONResponse) VisitTenancyDeleteVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendorsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params PeopleListVendorsParams
+}
+
+type PeopleListVendorsResponseObject interface {
+	VisitPeopleListVendorsResponse(w http.ResponseWriter) error
+}
+
+type PeopleListVendors200JSONResponse VendorList
+
+func (response PeopleListVendors200JSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendors401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleListVendors401ApplicationProblemPlusJSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendors403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListVendors403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListVendors403ResponseHeaders
+}
+
+func (response PeopleListVendors403ApplicationProblemPlusJSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendors404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListVendors404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListVendors404ResponseHeaders
+}
+
+func (response PeopleListVendors404ApplicationProblemPlusJSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendors409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListVendors409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListVendors409ResponseHeaders
+}
+
+func (response PeopleListVendors409ApplicationProblemPlusJSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendors422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListVendors422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleListVendors422ResponseHeaders
+}
+
+func (response PeopleListVendors422ApplicationProblemPlusJSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleListVendorsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleListVendorsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleListVendorsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleListVendorsdefaultApplicationProblemPlusJSONResponse) VisitPeopleListVendorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendorRequestObject struct {
+	OrgId OrgId `json:"org_id"`
+	Body  *PeopleCreateVendorJSONRequestBody
+}
+
+type PeopleCreateVendorResponseObject interface {
+	VisitPeopleCreateVendorResponse(w http.ResponseWriter) error
+}
+
+type PeopleCreateVendor201JSONResponse Vendor
+
+func (response PeopleCreateVendor201JSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleCreateVendor401ApplicationProblemPlusJSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateVendor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateVendor403ResponseHeaders
+}
+
+func (response PeopleCreateVendor403ApplicationProblemPlusJSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateVendor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateVendor404ResponseHeaders
+}
+
+func (response PeopleCreateVendor404ApplicationProblemPlusJSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateVendor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateVendor409ResponseHeaders
+}
+
+func (response PeopleCreateVendor409ApplicationProblemPlusJSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateVendor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleCreateVendor422ResponseHeaders
+}
+
+func (response PeopleCreateVendor422ApplicationProblemPlusJSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleCreateVendordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleCreateVendordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleCreateVendordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleCreateVendordefaultApplicationProblemPlusJSONResponse) VisitPeopleCreateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleDeleteVendorRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	VendorId openapi_types.UUID `json:"vendor_id"`
+}
+
+type PeopleDeleteVendorResponseObject interface {
+	VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error
+}
+
+type PeopleDeleteVendor204Response struct {
+}
+
+func (response PeopleDeleteVendor204Response) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type PeopleDeleteVendor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleDeleteVendor401ApplicationProblemPlusJSONResponse) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleDeleteVendor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleDeleteVendor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleDeleteVendor403ResponseHeaders
+}
+
+func (response PeopleDeleteVendor403ApplicationProblemPlusJSONResponse) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleDeleteVendor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleDeleteVendor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleDeleteVendor404ResponseHeaders
+}
+
+func (response PeopleDeleteVendor404ApplicationProblemPlusJSONResponse) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleDeleteVendor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleDeleteVendor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleDeleteVendor409ResponseHeaders
+}
+
+func (response PeopleDeleteVendor409ApplicationProblemPlusJSONResponse) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleDeleteVendor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleDeleteVendor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleDeleteVendor422ResponseHeaders
+}
+
+func (response PeopleDeleteVendor422ApplicationProblemPlusJSONResponse) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleDeleteVendordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleDeleteVendordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleDeleteVendordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleDeleteVendordefaultApplicationProblemPlusJSONResponse) VisitPeopleDeleteVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendorRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	VendorId openapi_types.UUID `json:"vendor_id"`
+}
+
+type PeopleGetVendorResponseObject interface {
+	VisitPeopleGetVendorResponse(w http.ResponseWriter) error
+}
+
+type PeopleGetVendor200ResponseHeaders struct {
+	ETag *string
+}
+
+type PeopleGetVendor200JSONResponse struct {
+	Body    Vendor
+	Headers PeopleGetVendor200ResponseHeaders
+}
+
+func (response PeopleGetVendor200JSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleGetVendor401ApplicationProblemPlusJSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetVendor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetVendor403ResponseHeaders
+}
+
+func (response PeopleGetVendor403ApplicationProblemPlusJSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetVendor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetVendor404ResponseHeaders
+}
+
+func (response PeopleGetVendor404ApplicationProblemPlusJSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetVendor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetVendor409ResponseHeaders
+}
+
+func (response PeopleGetVendor409ApplicationProblemPlusJSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetVendor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleGetVendor422ResponseHeaders
+}
+
+func (response PeopleGetVendor422ApplicationProblemPlusJSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleGetVendordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleGetVendordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleGetVendordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleGetVendordefaultApplicationProblemPlusJSONResponse) VisitPeopleGetVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendorRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	VendorId openapi_types.UUID `json:"vendor_id"`
+	Params   PeopleUpdateVendorParams
+	Body     *PeopleUpdateVendorJSONRequestBody
+}
+
+type PeopleUpdateVendorResponseObject interface {
+	VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error
+}
+
+type PeopleUpdateVendor200ResponseHeaders struct {
+	ETag *string
+}
+
+type PeopleUpdateVendor200JSONResponse struct {
+	Body    Vendor
+	Headers PeopleUpdateVendor200ResponseHeaders
+}
+
+func (response PeopleUpdateVendor200JSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response PeopleUpdateVendor401ApplicationProblemPlusJSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateVendor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateVendor403ResponseHeaders
+}
+
+func (response PeopleUpdateVendor403ApplicationProblemPlusJSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateVendor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateVendor404ResponseHeaders
+}
+
+func (response PeopleUpdateVendor404ApplicationProblemPlusJSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateVendor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateVendor409ResponseHeaders
+}
+
+func (response PeopleUpdateVendor409ApplicationProblemPlusJSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateVendor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers PeopleUpdateVendor422ResponseHeaders
+}
+
+func (response PeopleUpdateVendor422ApplicationProblemPlusJSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PeopleUpdateVendordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type PeopleUpdateVendordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    PeopleUpdateVendordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response PeopleUpdateVendordefaultApplicationProblemPlusJSONResponse) VisitPeopleUpdateVendorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// InstanceGetDiscovery Instance discovery document
@@ -4097,9 +23961,24 @@ type StrictServerInterface interface {
 	// AuthRefreshToken Exchange a refresh token for a new token pair
 	// (POST /v1/auth/token/refresh)
 	AuthRefreshToken(ctx context.Context, request AuthRefreshTokenRequestObject) (AuthRefreshTokenResponseObject, error)
+	// InstanceGetCodes Labels of the API's codes
+	// (GET /v1/codes)
+	InstanceGetCodes(ctx context.Context, request InstanceGetCodesRequestObject) (InstanceGetCodesResponseObject, error)
 	// InstanceGetInstance Instance information (authenticated)
 	// (GET /v1/instance)
 	InstanceGetInstance(ctx context.Context, request InstanceGetInstanceRequestObject) (InstanceGetInstanceResponseObject, error)
+	// PeoplePreviewInvitation Preview an invitation
+	// (GET /v1/invitations/{token})
+	PeoplePreviewInvitation(ctx context.Context, request PeoplePreviewInvitationRequestObject) (PeoplePreviewInvitationResponseObject, error)
+	// PeopleAcceptInvitation Accept an invitation
+	// (POST /v1/invitations/{token}/accept)
+	PeopleAcceptInvitation(ctx context.Context, request PeopleAcceptInvitationRequestObject) (PeopleAcceptInvitationResponseObject, error)
+	// PeoplePreviewJoin Preview the site behind a join code
+	// (GET /v1/join/{code})
+	PeoplePreviewJoin(ctx context.Context, request PeoplePreviewJoinRequestObject) (PeoplePreviewJoinResponseObject, error)
+	// PeopleCreateClaim Claim a unit through a join code
+	// (POST /v1/join/{code}/claims)
+	PeopleCreateClaim(ctx context.Context, request PeopleCreateClaimRequestObject) (PeopleCreateClaimResponseObject, error)
 	// MeGet The signed-in user, organizations, roles and permissions
 	// (GET /v1/me)
 	MeGet(ctx context.Context, request MeGetRequestObject) (MeGetResponseObject, error)
@@ -4118,9 +23997,189 @@ type StrictServerInterface interface {
 	// OrgUpdate Change an organization's settings
 	// (PATCH /v1/orgs/{org_id})
 	OrgUpdate(ctx context.Context, request OrgUpdateRequestObject) (OrgUpdateResponseObject, error)
+	// TenancyGetAllocationKey Read an allocation key with its values
+	// (GET /v1/orgs/{org_id}/allocation-keys/{key_id})
+	TenancyGetAllocationKey(ctx context.Context, request TenancyGetAllocationKeyRequestObject) (TenancyGetAllocationKeyResponseObject, error)
+	// TenancyUpdateAllocationKey Rename an allocation key
+	// (PATCH /v1/orgs/{org_id}/allocation-keys/{key_id})
+	TenancyUpdateAllocationKey(ctx context.Context, request TenancyUpdateAllocationKeyRequestObject) (TenancyUpdateAllocationKeyResponseObject, error)
+	// TenancySetAllocationKeyValues Replace a share or table key's values
+	// (PUT /v1/orgs/{org_id}/allocation-keys/{key_id}/values)
+	TenancySetAllocationKeyValues(ctx context.Context, request TenancySetAllocationKeyValuesRequestObject) (TenancySetAllocationKeyValuesResponseObject, error)
 	// AuditList List the organization's audit events
 	// (GET /v1/orgs/{org_id}/audit)
 	AuditList(ctx context.Context, request AuditListRequestObject) (AuditListResponseObject, error)
+	// TenancyUpdateBlock Rename, hide or reorder a block
+	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
+	TenancyUpdateBlock(ctx context.Context, request TenancyUpdateBlockRequestObject) (TenancyUpdateBlockResponseObject, error)
+	// PeopleListInvitations List invitations
+	// (GET /v1/orgs/{org_id}/invitations)
+	PeopleListInvitations(ctx context.Context, request PeopleListInvitationsRequestObject) (PeopleListInvitationsResponseObject, error)
+	// PeopleCreateInvitation Invite a person to a unit
+	// (POST /v1/orgs/{org_id}/invitations)
+	PeopleCreateInvitation(ctx context.Context, request PeopleCreateInvitationRequestObject) (PeopleCreateInvitationResponseObject, error)
+	// PeopleRevokeInvitation Revoke a pending invitation
+	// (DELETE /v1/orgs/{org_id}/invitations/{invitation_id})
+	PeopleRevokeInvitation(ctx context.Context, request PeopleRevokeInvitationRequestObject) (PeopleRevokeInvitationResponseObject, error)
+	// PeopleResendInvitation Send an invitation again with a new link
+	// (POST /v1/orgs/{org_id}/invitations/{invitation_id}/resend)
+	PeopleResendInvitation(ctx context.Context, request PeopleResendInvitationRequestObject) (PeopleResendInvitationResponseObject, error)
+	// PeopleListMemberships List role memberships
+	// (GET /v1/orgs/{org_id}/memberships)
+	PeopleListMemberships(ctx context.Context, request PeopleListMembershipsRequestObject) (PeopleListMembershipsResponseObject, error)
+	// PeopleCreateMembership Grant a role
+	// (POST /v1/orgs/{org_id}/memberships)
+	PeopleCreateMembership(ctx context.Context, request PeopleCreateMembershipRequestObject) (PeopleCreateMembershipResponseObject, error)
+	// PeopleEndMembership End a membership
+	// (DELETE /v1/orgs/{org_id}/memberships/{membership_id})
+	PeopleEndMembership(ctx context.Context, request PeopleEndMembershipRequestObject) (PeopleEndMembershipResponseObject, error)
+	// PeopleGetMoveOut Read a move-out
+	// (GET /v1/orgs/{org_id}/move-outs/{move_out_id})
+	PeopleGetMoveOut(ctx context.Context, request PeopleGetMoveOutRequestObject) (PeopleGetMoveOutResponseObject, error)
+	// PeopleListOccupancies List occupancies
+	// (GET /v1/orgs/{org_id}/occupancies)
+	PeopleListOccupancies(ctx context.Context, request PeopleListOccupanciesRequestObject) (PeopleListOccupanciesResponseObject, error)
+	// PeopleUpdateOccupancy Change an occupancy
+	// (PATCH /v1/orgs/{org_id}/occupancies/{occupancy_id})
+	PeopleUpdateOccupancy(ctx context.Context, request PeopleUpdateOccupancyRequestObject) (PeopleUpdateOccupancyResponseObject, error)
+	// PeopleSetMoneyAccess Let a household member see (or stop seeing) the unit's money
+	// (PUT /v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access)
+	PeopleSetMoneyAccess(ctx context.Context, request PeopleSetMoneyAccessRequestObject) (PeopleSetMoneyAccessResponseObject, error)
+	// PeopleMoveOut Record a move-out or transfer
+	// (POST /v1/orgs/{org_id}/occupancies/{occupancy_id}/move-out)
+	PeopleMoveOut(ctx context.Context, request PeopleMoveOutRequestObject) (PeopleMoveOutResponseObject, error)
+	// PeopleListPersons List people
+	// (GET /v1/orgs/{org_id}/persons)
+	PeopleListPersons(ctx context.Context, request PeopleListPersonsRequestObject) (PeopleListPersonsResponseObject, error)
+	// PeopleCreatePerson Add a person
+	// (POST /v1/orgs/{org_id}/persons)
+	PeopleCreatePerson(ctx context.Context, request PeopleCreatePersonRequestObject) (PeopleCreatePersonResponseObject, error)
+	// PeopleGetPerson Read a person
+	// (GET /v1/orgs/{org_id}/persons/{person_id})
+	PeopleGetPerson(ctx context.Context, request PeopleGetPersonRequestObject) (PeopleGetPersonResponseObject, error)
+	// PeopleUpdatePerson Change a person
+	// (PATCH /v1/orgs/{org_id}/persons/{person_id})
+	PeopleUpdatePerson(ctx context.Context, request PeopleUpdatePersonRequestObject) (PeopleUpdatePersonResponseObject, error)
+	// TenancyListSiteExports List site exports and imports
+	// (GET /v1/orgs/{org_id}/site-exports)
+	TenancyListSiteExports(ctx context.Context, request TenancyListSiteExportsRequestObject) (TenancyListSiteExportsResponseObject, error)
+	// TenancyDownloadSiteExport Download an export's archive
+	// (GET /v1/orgs/{org_id}/site-exports/{export_id}/archive)
+	TenancyDownloadSiteExport(ctx context.Context, request TenancyDownloadSiteExportRequestObject) (TenancyDownloadSiteExportResponseObject, error)
+	// TenancyImportSiteArchive Import a site archive into the organization
+	// (POST /v1/orgs/{org_id}/site-imports)
+	TenancyImportSiteArchive(ctx context.Context, request TenancyImportSiteArchiveRequestObject) (TenancyImportSiteArchiveResponseObject, error)
+	// TenancyListSites List sites
+	// (GET /v1/orgs/{org_id}/sites)
+	TenancyListSites(ctx context.Context, request TenancyListSitesRequestObject) (TenancyListSitesResponseObject, error)
+	// TenancyCreateSite Create a site
+	// (POST /v1/orgs/{org_id}/sites)
+	TenancyCreateSite(ctx context.Context, request TenancyCreateSiteRequestObject) (TenancyCreateSiteResponseObject, error)
+	// TenancyGetSite Read a site
+	// (GET /v1/orgs/{org_id}/sites/{site_id})
+	TenancyGetSite(ctx context.Context, request TenancyGetSiteRequestObject) (TenancyGetSiteResponseObject, error)
+	// TenancyUpdateSite Change a site's settings
+	// (PATCH /v1/orgs/{org_id}/sites/{site_id})
+	TenancyUpdateSite(ctx context.Context, request TenancyUpdateSiteRequestObject) (TenancyUpdateSiteResponseObject, error)
+	// TenancyListAllocationKeys List a site's allocation keys
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/allocation-keys)
+	TenancyListAllocationKeys(ctx context.Context, request TenancyListAllocationKeysRequestObject) (TenancyListAllocationKeysResponseObject, error)
+	// TenancyCreateAllocationKey Add a custom allocation key
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/allocation-keys)
+	TenancyCreateAllocationKey(ctx context.Context, request TenancyCreateAllocationKeyRequestObject) (TenancyCreateAllocationKeyResponseObject, error)
+	// TenancyListBlocks List a site's blocks
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/blocks)
+	TenancyListBlocks(ctx context.Context, request TenancyListBlocksRequestObject) (TenancyListBlocksResponseObject, error)
+	// TenancyCreateBlock Add a block
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/blocks)
+	TenancyCreateBlock(ctx context.Context, request TenancyCreateBlockRequestObject) (TenancyCreateBlockResponseObject, error)
+	// PeopleListDirectory The site directory
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/directory)
+	PeopleListDirectory(ctx context.Context, request PeopleListDirectoryRequestObject) (PeopleListDirectoryResponseObject, error)
+	// PeopleSetDirectoryConsent Choose what the directory shows about me
+	// (PUT /v1/orgs/{org_id}/sites/{site_id}/directory-consent)
+	PeopleSetDirectoryConsent(ctx context.Context, request PeopleSetDirectoryConsentRequestObject) (PeopleSetDirectoryConsentResponseObject, error)
+	// TenancyExportSite Export a whole site to an archive
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/export)
+	TenancyExportSite(ctx context.Context, request TenancyExportSiteRequestObject) (TenancyExportSiteResponseObject, error)
+	// TenancyImportUnits Import units and people from a spreadsheet
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/import)
+	TenancyImportUnits(ctx context.Context, request TenancyImportUnitsRequestObject) (TenancyImportUnitsResponseObject, error)
+	// PeopleGetJoinCode Read the site's join code
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/join-code)
+	PeopleGetJoinCode(ctx context.Context, request PeopleGetJoinCodeRequestObject) (PeopleGetJoinCodeResponseObject, error)
+	// PeopleRotateJoinCode Create or replace the site's join code
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/join-code)
+	PeopleRotateJoinCode(ctx context.Context, request PeopleRotateJoinCodeRequestObject) (PeopleRotateJoinCodeResponseObject, error)
+	// TenancyOffboardSite Offboard a site after its hand-over
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/offboard)
+	TenancyOffboardSite(ctx context.Context, request TenancyOffboardSiteRequestObject) (TenancyOffboardSiteResponseObject, error)
+	// TenancyListUnits List a site's units
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/units)
+	TenancyListUnits(ctx context.Context, request TenancyListUnitsRequestObject) (TenancyListUnitsResponseObject, error)
+	// TenancyCreateUnit Add a unit
+	// (POST /v1/orgs/{org_id}/sites/{site_id}/units)
+	TenancyCreateUnit(ctx context.Context, request TenancyCreateUnitRequestObject) (TenancyCreateUnitResponseObject, error)
+	// TenancyListVehicles List a site's vehicles
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles)
+	TenancyListVehicles(ctx context.Context, request TenancyListVehiclesRequestObject) (TenancyListVehiclesResponseObject, error)
+	// TenancyExportVehicles Export the site's plates as CSV
+	// (GET /v1/orgs/{org_id}/sites/{site_id}/vehicles/export)
+	TenancyExportVehicles(ctx context.Context, request TenancyExportVehiclesRequestObject) (TenancyExportVehiclesResponseObject, error)
+	// PeopleListClaims List unit claims
+	// (GET /v1/orgs/{org_id}/unit-claims)
+	PeopleListClaims(ctx context.Context, request PeopleListClaimsRequestObject) (PeopleListClaimsResponseObject, error)
+	// PeopleApproveClaim Approve a unit claim
+	// (POST /v1/orgs/{org_id}/unit-claims/{claim_id}/approve)
+	PeopleApproveClaim(ctx context.Context, request PeopleApproveClaimRequestObject) (PeopleApproveClaimResponseObject, error)
+	// PeopleRejectClaim Reject a unit claim
+	// (POST /v1/orgs/{org_id}/unit-claims/{claim_id}/reject)
+	PeopleRejectClaim(ctx context.Context, request PeopleRejectClaimRequestObject) (PeopleRejectClaimResponseObject, error)
+	// TenancyGetUnit Read a unit
+	// (GET /v1/orgs/{org_id}/units/{unit_id})
+	TenancyGetUnit(ctx context.Context, request TenancyGetUnitRequestObject) (TenancyGetUnitResponseObject, error)
+	// TenancyUpdateUnit Change a unit
+	// (PATCH /v1/orgs/{org_id}/units/{unit_id})
+	TenancyUpdateUnit(ctx context.Context, request TenancyUpdateUnitRequestObject) (TenancyUpdateUnitResponseObject, error)
+	// PeopleListHouseholdInvitations List a unit's household invitations
+	// (GET /v1/orgs/{org_id}/units/{unit_id}/household-invitations)
+	PeopleListHouseholdInvitations(ctx context.Context, request PeopleListHouseholdInvitationsRequestObject) (PeopleListHouseholdInvitationsResponseObject, error)
+	// PeopleCreateHouseholdInvitation Invite a household member to a unit
+	// (POST /v1/orgs/{org_id}/units/{unit_id}/household-invitations)
+	PeopleCreateHouseholdInvitation(ctx context.Context, request PeopleCreateHouseholdInvitationRequestObject) (PeopleCreateHouseholdInvitationResponseObject, error)
+	// PeopleRevokeHouseholdInvitation Revoke a household invitation
+	// (DELETE /v1/orgs/{org_id}/units/{unit_id}/household-invitations/{invitation_id})
+	PeopleRevokeHouseholdInvitation(ctx context.Context, request PeopleRevokeHouseholdInvitationRequestObject) (PeopleRevokeHouseholdInvitationResponseObject, error)
+	// PeopleEndHouseholdOccupancy End a household member's occupancy
+	// (DELETE /v1/orgs/{org_id}/units/{unit_id}/household/{occupancy_id})
+	PeopleEndHouseholdOccupancy(ctx context.Context, request PeopleEndHouseholdOccupancyRequestObject) (PeopleEndHouseholdOccupancyResponseObject, error)
+	// PeopleCreateOccupancy Add an occupancy to a unit
+	// (POST /v1/orgs/{org_id}/units/{unit_id}/occupancies)
+	PeopleCreateOccupancy(ctx context.Context, request PeopleCreateOccupancyRequestObject) (PeopleCreateOccupancyResponseObject, error)
+	// TenancySetUnitTags Replace a unit's tags
+	// (PUT /v1/orgs/{org_id}/units/{unit_id}/tags)
+	TenancySetUnitTags(ctx context.Context, request TenancySetUnitTagsRequestObject) (TenancySetUnitTagsResponseObject, error)
+	// TenancyCreateVehicle Register a plate for a unit
+	// (POST /v1/orgs/{org_id}/units/{unit_id}/vehicles)
+	TenancyCreateVehicle(ctx context.Context, request TenancyCreateVehicleRequestObject) (TenancyCreateVehicleResponseObject, error)
+	// TenancyDeleteVehicle Remove a vehicle
+	// (DELETE /v1/orgs/{org_id}/vehicles/{vehicle_id})
+	TenancyDeleteVehicle(ctx context.Context, request TenancyDeleteVehicleRequestObject) (TenancyDeleteVehicleResponseObject, error)
+	// PeopleListVendors List vendors
+	// (GET /v1/orgs/{org_id}/vendors)
+	PeopleListVendors(ctx context.Context, request PeopleListVendorsRequestObject) (PeopleListVendorsResponseObject, error)
+	// PeopleCreateVendor Add a vendor
+	// (POST /v1/orgs/{org_id}/vendors)
+	PeopleCreateVendor(ctx context.Context, request PeopleCreateVendorRequestObject) (PeopleCreateVendorResponseObject, error)
+	// PeopleDeleteVendor Remove a vendor
+	// (DELETE /v1/orgs/{org_id}/vendors/{vendor_id})
+	PeopleDeleteVendor(ctx context.Context, request PeopleDeleteVendorRequestObject) (PeopleDeleteVendorResponseObject, error)
+	// PeopleGetVendor Read a vendor
+	// (GET /v1/orgs/{org_id}/vendors/{vendor_id})
+	PeopleGetVendor(ctx context.Context, request PeopleGetVendorRequestObject) (PeopleGetVendorResponseObject, error)
+	// PeopleUpdateVendor Change a vendor
+	// (PATCH /v1/orgs/{org_id}/vendors/{vendor_id})
+	PeopleUpdateVendor(ctx context.Context, request PeopleUpdateVendorRequestObject) (PeopleUpdateVendorResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -4458,6 +24517,32 @@ func (sh *strictHandler) AuthRefreshToken(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// InstanceGetCodes operation middleware
+func (sh *strictHandler) InstanceGetCodes(w http.ResponseWriter, r *http.Request, params InstanceGetCodesParams) {
+	var request InstanceGetCodesRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.InstanceGetCodes(ctx, request.(InstanceGetCodesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "InstanceGetCodes")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(InstanceGetCodesResponseObject); ok {
+		if err := validResponse.VisitInstanceGetCodesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // InstanceGetInstance operation middleware
 func (sh *strictHandler) InstanceGetInstance(w http.ResponseWriter, r *http.Request) {
 	var request InstanceGetInstanceRequestObject
@@ -4475,6 +24560,124 @@ func (sh *strictHandler) InstanceGetInstance(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(InstanceGetInstanceResponseObject); ok {
 		if err := validResponse.VisitInstanceGetInstanceResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeoplePreviewInvitation operation middleware
+func (sh *strictHandler) PeoplePreviewInvitation(w http.ResponseWriter, r *http.Request, token string) {
+	var request PeoplePreviewInvitationRequestObject
+
+	request.Token = token
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeoplePreviewInvitation(ctx, request.(PeoplePreviewInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeoplePreviewInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeoplePreviewInvitationResponseObject); ok {
+		if err := validResponse.VisitPeoplePreviewInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleAcceptInvitation operation middleware
+func (sh *strictHandler) PeopleAcceptInvitation(w http.ResponseWriter, r *http.Request, token string) {
+	var request PeopleAcceptInvitationRequestObject
+
+	request.Token = token
+
+	var body PeopleAcceptInvitationJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleAcceptInvitation(ctx, request.(PeopleAcceptInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleAcceptInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleAcceptInvitationResponseObject); ok {
+		if err := validResponse.VisitPeopleAcceptInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeoplePreviewJoin operation middleware
+func (sh *strictHandler) PeoplePreviewJoin(w http.ResponseWriter, r *http.Request, code string) {
+	var request PeoplePreviewJoinRequestObject
+
+	request.Code = code
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeoplePreviewJoin(ctx, request.(PeoplePreviewJoinRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeoplePreviewJoin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeoplePreviewJoinResponseObject); ok {
+		if err := validResponse.VisitPeoplePreviewJoinResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreateClaim operation middleware
+func (sh *strictHandler) PeopleCreateClaim(w http.ResponseWriter, r *http.Request, code string) {
+	var request PeopleCreateClaimRequestObject
+
+	request.Code = code
+
+	var body PeopleCreateClaimJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreateClaim(ctx, request.(PeopleCreateClaimRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreateClaim")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreateClaimResponseObject); ok {
+		if err := validResponse.VisitPeopleCreateClaimResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -4640,6 +24843,103 @@ func (sh *strictHandler) OrgUpdate(w http.ResponseWriter, r *http.Request, orgId
 	}
 }
 
+// TenancyGetAllocationKey operation middleware
+func (sh *strictHandler) TenancyGetAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID) {
+	var request TenancyGetAllocationKeyRequestObject
+
+	request.OrgId = orgId
+	request.KeyId = keyId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyGetAllocationKey(ctx, request.(TenancyGetAllocationKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyGetAllocationKey")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyGetAllocationKeyResponseObject); ok {
+		if err := validResponse.VisitTenancyGetAllocationKeyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyUpdateAllocationKey operation middleware
+func (sh *strictHandler) TenancyUpdateAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancyUpdateAllocationKeyParams) {
+	var request TenancyUpdateAllocationKeyRequestObject
+
+	request.OrgId = orgId
+	request.KeyId = keyId
+	request.Params = params
+
+	var body TenancyUpdateAllocationKeyJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyUpdateAllocationKey(ctx, request.(TenancyUpdateAllocationKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyUpdateAllocationKey")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyUpdateAllocationKeyResponseObject); ok {
+		if err := validResponse.VisitTenancyUpdateAllocationKeyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancySetAllocationKeyValues operation middleware
+func (sh *strictHandler) TenancySetAllocationKeyValues(w http.ResponseWriter, r *http.Request, orgId OrgId, keyId openapi_types.UUID, params TenancySetAllocationKeyValuesParams) {
+	var request TenancySetAllocationKeyValuesRequestObject
+
+	request.OrgId = orgId
+	request.KeyId = keyId
+	request.Params = params
+
+	var body TenancySetAllocationKeyValuesJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancySetAllocationKeyValues(ctx, request.(TenancySetAllocationKeyValuesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancySetAllocationKeyValues")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancySetAllocationKeyValuesResponseObject); ok {
+		if err := validResponse.VisitTenancySetAllocationKeyValuesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // AuditList operation middleware
 func (sh *strictHandler) AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams) {
 	var request AuditListRequestObject
@@ -4667,138 +24967,2050 @@ func (sh *strictHandler) AuditList(w http.ResponseWriter, r *http.Request, orgId
 	}
 }
 
+// TenancyUpdateBlock operation middleware
+func (sh *strictHandler) TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams) {
+	var request TenancyUpdateBlockRequestObject
+
+	request.OrgId = orgId
+	request.BlockId = blockId
+	request.Params = params
+
+	var body TenancyUpdateBlockJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyUpdateBlock(ctx, request.(TenancyUpdateBlockRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyUpdateBlock")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyUpdateBlockResponseObject); ok {
+		if err := validResponse.VisitTenancyUpdateBlockResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListInvitations operation middleware
+func (sh *strictHandler) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
+	var request PeopleListInvitationsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListInvitations(ctx, request.(PeopleListInvitationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListInvitations")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListInvitationsResponseObject); ok {
+		if err := validResponse.VisitPeopleListInvitationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreateInvitation operation middleware
+func (sh *strictHandler) PeopleCreateInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request PeopleCreateInvitationRequestObject
+
+	request.OrgId = orgId
+
+	var body PeopleCreateInvitationJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreateInvitation(ctx, request.(PeopleCreateInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreateInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreateInvitationResponseObject); ok {
+		if err := validResponse.VisitPeopleCreateInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleRevokeInvitation operation middleware
+func (sh *strictHandler) PeopleRevokeInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID) {
+	var request PeopleRevokeInvitationRequestObject
+
+	request.OrgId = orgId
+	request.InvitationId = invitationId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleRevokeInvitation(ctx, request.(PeopleRevokeInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleRevokeInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleRevokeInvitationResponseObject); ok {
+		if err := validResponse.VisitPeopleRevokeInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleResendInvitation operation middleware
+func (sh *strictHandler) PeopleResendInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, invitationId openapi_types.UUID) {
+	var request PeopleResendInvitationRequestObject
+
+	request.OrgId = orgId
+	request.InvitationId = invitationId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleResendInvitation(ctx, request.(PeopleResendInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleResendInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleResendInvitationResponseObject); ok {
+		if err := validResponse.VisitPeopleResendInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListMemberships operation middleware
+func (sh *strictHandler) PeopleListMemberships(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListMembershipsParams) {
+	var request PeopleListMembershipsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListMemberships(ctx, request.(PeopleListMembershipsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListMemberships")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListMembershipsResponseObject); ok {
+		if err := validResponse.VisitPeopleListMembershipsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreateMembership operation middleware
+func (sh *strictHandler) PeopleCreateMembership(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request PeopleCreateMembershipRequestObject
+
+	request.OrgId = orgId
+
+	var body PeopleCreateMembershipJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreateMembership(ctx, request.(PeopleCreateMembershipRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreateMembership")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreateMembershipResponseObject); ok {
+		if err := validResponse.VisitPeopleCreateMembershipResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleEndMembership operation middleware
+func (sh *strictHandler) PeopleEndMembership(w http.ResponseWriter, r *http.Request, orgId OrgId, membershipId openapi_types.UUID) {
+	var request PeopleEndMembershipRequestObject
+
+	request.OrgId = orgId
+	request.MembershipId = membershipId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleEndMembership(ctx, request.(PeopleEndMembershipRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleEndMembership")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleEndMembershipResponseObject); ok {
+		if err := validResponse.VisitPeopleEndMembershipResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleGetMoveOut operation middleware
+func (sh *strictHandler) PeopleGetMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, moveOutId openapi_types.UUID) {
+	var request PeopleGetMoveOutRequestObject
+
+	request.OrgId = orgId
+	request.MoveOutId = moveOutId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleGetMoveOut(ctx, request.(PeopleGetMoveOutRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleGetMoveOut")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleGetMoveOutResponseObject); ok {
+		if err := validResponse.VisitPeopleGetMoveOutResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListOccupancies operation middleware
+func (sh *strictHandler) PeopleListOccupancies(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListOccupanciesParams) {
+	var request PeopleListOccupanciesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListOccupancies(ctx, request.(PeopleListOccupanciesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListOccupancies")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListOccupanciesResponseObject); ok {
+		if err := validResponse.VisitPeopleListOccupanciesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleUpdateOccupancy operation middleware
+func (sh *strictHandler) PeopleUpdateOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID, params PeopleUpdateOccupancyParams) {
+	var request PeopleUpdateOccupancyRequestObject
+
+	request.OrgId = orgId
+	request.OccupancyId = occupancyId
+	request.Params = params
+
+	var body PeopleUpdateOccupancyJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleUpdateOccupancy(ctx, request.(PeopleUpdateOccupancyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleUpdateOccupancy")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleUpdateOccupancyResponseObject); ok {
+		if err := validResponse.VisitPeopleUpdateOccupancyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleSetMoneyAccess operation middleware
+func (sh *strictHandler) PeopleSetMoneyAccess(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID, params PeopleSetMoneyAccessParams) {
+	var request PeopleSetMoneyAccessRequestObject
+
+	request.OrgId = orgId
+	request.OccupancyId = occupancyId
+	request.Params = params
+
+	var body PeopleSetMoneyAccessJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleSetMoneyAccess(ctx, request.(PeopleSetMoneyAccessRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleSetMoneyAccess")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleSetMoneyAccessResponseObject); ok {
+		if err := validResponse.VisitPeopleSetMoneyAccessResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleMoveOut operation middleware
+func (sh *strictHandler) PeopleMoveOut(w http.ResponseWriter, r *http.Request, orgId OrgId, occupancyId openapi_types.UUID) {
+	var request PeopleMoveOutRequestObject
+
+	request.OrgId = orgId
+	request.OccupancyId = occupancyId
+
+	var body PeopleMoveOutJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleMoveOut(ctx, request.(PeopleMoveOutRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleMoveOut")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleMoveOutResponseObject); ok {
+		if err := validResponse.VisitPeopleMoveOutResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListPersons operation middleware
+func (sh *strictHandler) PeopleListPersons(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListPersonsParams) {
+	var request PeopleListPersonsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListPersons(ctx, request.(PeopleListPersonsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListPersons")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListPersonsResponseObject); ok {
+		if err := validResponse.VisitPeopleListPersonsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreatePerson operation middleware
+func (sh *strictHandler) PeopleCreatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request PeopleCreatePersonRequestObject
+
+	request.OrgId = orgId
+
+	var body PeopleCreatePersonJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreatePerson(ctx, request.(PeopleCreatePersonRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreatePerson")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreatePersonResponseObject); ok {
+		if err := validResponse.VisitPeopleCreatePersonResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleGetPerson operation middleware
+func (sh *strictHandler) PeopleGetPerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID) {
+	var request PeopleGetPersonRequestObject
+
+	request.OrgId = orgId
+	request.PersonId = personId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleGetPerson(ctx, request.(PeopleGetPersonRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleGetPerson")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleGetPersonResponseObject); ok {
+		if err := validResponse.VisitPeopleGetPersonResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleUpdatePerson operation middleware
+func (sh *strictHandler) PeopleUpdatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID, params PeopleUpdatePersonParams) {
+	var request PeopleUpdatePersonRequestObject
+
+	request.OrgId = orgId
+	request.PersonId = personId
+	request.Params = params
+
+	var body PeopleUpdatePersonJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleUpdatePerson(ctx, request.(PeopleUpdatePersonRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleUpdatePerson")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleUpdatePersonResponseObject); ok {
+		if err := validResponse.VisitPeopleUpdatePersonResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyListSiteExports operation middleware
+func (sh *strictHandler) TenancyListSiteExports(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSiteExportsParams) {
+	var request TenancyListSiteExportsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyListSiteExports(ctx, request.(TenancyListSiteExportsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyListSiteExports")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyListSiteExportsResponseObject); ok {
+		if err := validResponse.VisitTenancyListSiteExportsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyDownloadSiteExport operation middleware
+func (sh *strictHandler) TenancyDownloadSiteExport(w http.ResponseWriter, r *http.Request, orgId OrgId, exportId openapi_types.UUID) {
+	var request TenancyDownloadSiteExportRequestObject
+
+	request.OrgId = orgId
+	request.ExportId = exportId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyDownloadSiteExport(ctx, request.(TenancyDownloadSiteExportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyDownloadSiteExport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyDownloadSiteExportResponseObject); ok {
+		if err := validResponse.VisitTenancyDownloadSiteExportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyImportSiteArchive operation middleware
+func (sh *strictHandler) TenancyImportSiteArchive(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request TenancyImportSiteArchiveRequestObject
+
+	request.OrgId = orgId
+
+	if reader, err := r.MultipartReader(); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode multipart body: %w", err))
+		return
+	} else {
+		request.Body = reader
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyImportSiteArchive(ctx, request.(TenancyImportSiteArchiveRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyImportSiteArchive")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyImportSiteArchiveResponseObject); ok {
+		if err := validResponse.VisitTenancyImportSiteArchiveResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyListSites operation middleware
+func (sh *strictHandler) TenancyListSites(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSitesParams) {
+	var request TenancyListSitesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyListSites(ctx, request.(TenancyListSitesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyListSites")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyListSitesResponseObject); ok {
+		if err := validResponse.VisitTenancyListSitesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyCreateSite operation middleware
+func (sh *strictHandler) TenancyCreateSite(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request TenancyCreateSiteRequestObject
+
+	request.OrgId = orgId
+
+	var body TenancyCreateSiteJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyCreateSite(ctx, request.(TenancyCreateSiteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyCreateSite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyCreateSiteResponseObject); ok {
+		if err := validResponse.VisitTenancyCreateSiteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyGetSite operation middleware
+func (sh *strictHandler) TenancyGetSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyGetSiteRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyGetSite(ctx, request.(TenancyGetSiteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyGetSite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyGetSiteResponseObject); ok {
+		if err := validResponse.VisitTenancyGetSiteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyUpdateSite operation middleware
+func (sh *strictHandler) TenancyUpdateSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyUpdateSiteParams) {
+	var request TenancyUpdateSiteRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+	request.Params = params
+
+	var body TenancyUpdateSiteJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyUpdateSite(ctx, request.(TenancyUpdateSiteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyUpdateSite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyUpdateSiteResponseObject); ok {
+		if err := validResponse.VisitTenancyUpdateSiteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyListAllocationKeys operation middleware
+func (sh *strictHandler) TenancyListAllocationKeys(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyListAllocationKeysRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyListAllocationKeys(ctx, request.(TenancyListAllocationKeysRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyListAllocationKeys")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyListAllocationKeysResponseObject); ok {
+		if err := validResponse.VisitTenancyListAllocationKeysResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyCreateAllocationKey operation middleware
+func (sh *strictHandler) TenancyCreateAllocationKey(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyCreateAllocationKeyRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	var body TenancyCreateAllocationKeyJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyCreateAllocationKey(ctx, request.(TenancyCreateAllocationKeyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyCreateAllocationKey")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyCreateAllocationKeyResponseObject); ok {
+		if err := validResponse.VisitTenancyCreateAllocationKeyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyListBlocks operation middleware
+func (sh *strictHandler) TenancyListBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyListBlocksRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyListBlocks(ctx, request.(TenancyListBlocksRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyListBlocks")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyListBlocksResponseObject); ok {
+		if err := validResponse.VisitTenancyListBlocksResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyCreateBlock operation middleware
+func (sh *strictHandler) TenancyCreateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyCreateBlockRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	var body TenancyCreateBlockJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyCreateBlock(ctx, request.(TenancyCreateBlockRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyCreateBlock")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyCreateBlockResponseObject); ok {
+		if err := validResponse.VisitTenancyCreateBlockResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListDirectory operation middleware
+func (sh *strictHandler) PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params PeopleListDirectoryParams) {
+	var request PeopleListDirectoryRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListDirectory(ctx, request.(PeopleListDirectoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListDirectory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListDirectoryResponseObject); ok {
+		if err := validResponse.VisitPeopleListDirectoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleSetDirectoryConsent operation middleware
+func (sh *strictHandler) PeopleSetDirectoryConsent(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request PeopleSetDirectoryConsentRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	var body PeopleSetDirectoryConsentJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleSetDirectoryConsent(ctx, request.(PeopleSetDirectoryConsentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleSetDirectoryConsent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleSetDirectoryConsentResponseObject); ok {
+		if err := validResponse.VisitPeopleSetDirectoryConsentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyExportSite operation middleware
+func (sh *strictHandler) TenancyExportSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyExportSiteRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyExportSite(ctx, request.(TenancyExportSiteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyExportSite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyExportSiteResponseObject); ok {
+		if err := validResponse.VisitTenancyExportSiteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyImportUnits operation middleware
+func (sh *strictHandler) TenancyImportUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyImportUnitsRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	if reader, err := r.MultipartReader(); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode multipart body: %w", err))
+		return
+	} else {
+		request.Body = reader
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyImportUnits(ctx, request.(TenancyImportUnitsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyImportUnits")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyImportUnitsResponseObject); ok {
+		if err := validResponse.VisitTenancyImportUnitsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleGetJoinCode operation middleware
+func (sh *strictHandler) PeopleGetJoinCode(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request PeopleGetJoinCodeRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleGetJoinCode(ctx, request.(PeopleGetJoinCodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleGetJoinCode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleGetJoinCodeResponseObject); ok {
+		if err := validResponse.VisitPeopleGetJoinCodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleRotateJoinCode operation middleware
+func (sh *strictHandler) PeopleRotateJoinCode(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request PeopleRotateJoinCodeRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleRotateJoinCode(ctx, request.(PeopleRotateJoinCodeRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleRotateJoinCode")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleRotateJoinCodeResponseObject); ok {
+		if err := validResponse.VisitPeopleRotateJoinCodeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyOffboardSite operation middleware
+func (sh *strictHandler) TenancyOffboardSite(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyOffboardSiteRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyOffboardSite(ctx, request.(TenancyOffboardSiteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyOffboardSite")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyOffboardSiteResponseObject); ok {
+		if err := validResponse.VisitTenancyOffboardSiteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyListUnits operation middleware
+func (sh *strictHandler) TenancyListUnits(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListUnitsParams) {
+	var request TenancyListUnitsRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyListUnits(ctx, request.(TenancyListUnitsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyListUnits")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyListUnitsResponseObject); ok {
+		if err := validResponse.VisitTenancyListUnitsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyCreateUnit operation middleware
+func (sh *strictHandler) TenancyCreateUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyCreateUnitRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	var body TenancyCreateUnitJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyCreateUnit(ctx, request.(TenancyCreateUnitRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyCreateUnit")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyCreateUnitResponseObject); ok {
+		if err := validResponse.VisitTenancyCreateUnitResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyListVehicles operation middleware
+func (sh *strictHandler) TenancyListVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID, params TenancyListVehiclesParams) {
+	var request TenancyListVehiclesRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyListVehicles(ctx, request.(TenancyListVehiclesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyListVehicles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyListVehiclesResponseObject); ok {
+		if err := validResponse.VisitTenancyListVehiclesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyExportVehicles operation middleware
+func (sh *strictHandler) TenancyExportVehicles(w http.ResponseWriter, r *http.Request, orgId OrgId, siteId openapi_types.UUID) {
+	var request TenancyExportVehiclesRequestObject
+
+	request.OrgId = orgId
+	request.SiteId = siteId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyExportVehicles(ctx, request.(TenancyExportVehiclesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyExportVehicles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyExportVehiclesResponseObject); ok {
+		if err := validResponse.VisitTenancyExportVehiclesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListClaims operation middleware
+func (sh *strictHandler) PeopleListClaims(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListClaimsParams) {
+	var request PeopleListClaimsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListClaims(ctx, request.(PeopleListClaimsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListClaims")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListClaimsResponseObject); ok {
+		if err := validResponse.VisitPeopleListClaimsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleApproveClaim operation middleware
+func (sh *strictHandler) PeopleApproveClaim(w http.ResponseWriter, r *http.Request, orgId OrgId, claimId openapi_types.UUID) {
+	var request PeopleApproveClaimRequestObject
+
+	request.OrgId = orgId
+	request.ClaimId = claimId
+
+	var body PeopleApproveClaimJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleApproveClaim(ctx, request.(PeopleApproveClaimRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleApproveClaim")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleApproveClaimResponseObject); ok {
+		if err := validResponse.VisitPeopleApproveClaimResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleRejectClaim operation middleware
+func (sh *strictHandler) PeopleRejectClaim(w http.ResponseWriter, r *http.Request, orgId OrgId, claimId openapi_types.UUID) {
+	var request PeopleRejectClaimRequestObject
+
+	request.OrgId = orgId
+	request.ClaimId = claimId
+
+	var body PeopleRejectClaimJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleRejectClaim(ctx, request.(PeopleRejectClaimRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleRejectClaim")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleRejectClaimResponseObject); ok {
+		if err := validResponse.VisitPeopleRejectClaimResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyGetUnit operation middleware
+func (sh *strictHandler) TenancyGetUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	var request TenancyGetUnitRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyGetUnit(ctx, request.(TenancyGetUnitRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyGetUnit")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyGetUnitResponseObject); ok {
+		if err := validResponse.VisitTenancyGetUnitResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyUpdateUnit operation middleware
+func (sh *strictHandler) TenancyUpdateUnit(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, params TenancyUpdateUnitParams) {
+	var request TenancyUpdateUnitRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+	request.Params = params
+
+	var body TenancyUpdateUnitJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyUpdateUnit(ctx, request.(TenancyUpdateUnitRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyUpdateUnit")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyUpdateUnitResponseObject); ok {
+		if err := validResponse.VisitTenancyUpdateUnitResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListHouseholdInvitations operation middleware
+func (sh *strictHandler) PeopleListHouseholdInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	var request PeopleListHouseholdInvitationsRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListHouseholdInvitations(ctx, request.(PeopleListHouseholdInvitationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListHouseholdInvitations")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListHouseholdInvitationsResponseObject); ok {
+		if err := validResponse.VisitPeopleListHouseholdInvitationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreateHouseholdInvitation operation middleware
+func (sh *strictHandler) PeopleCreateHouseholdInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	var request PeopleCreateHouseholdInvitationRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+
+	var body PeopleCreateHouseholdInvitationJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreateHouseholdInvitation(ctx, request.(PeopleCreateHouseholdInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreateHouseholdInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreateHouseholdInvitationResponseObject); ok {
+		if err := validResponse.VisitPeopleCreateHouseholdInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleRevokeHouseholdInvitation operation middleware
+func (sh *strictHandler) PeopleRevokeHouseholdInvitation(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, invitationId openapi_types.UUID) {
+	var request PeopleRevokeHouseholdInvitationRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+	request.InvitationId = invitationId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleRevokeHouseholdInvitation(ctx, request.(PeopleRevokeHouseholdInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleRevokeHouseholdInvitation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleRevokeHouseholdInvitationResponseObject); ok {
+		if err := validResponse.VisitPeopleRevokeHouseholdInvitationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleEndHouseholdOccupancy operation middleware
+func (sh *strictHandler) PeopleEndHouseholdOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, occupancyId openapi_types.UUID) {
+	var request PeopleEndHouseholdOccupancyRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+	request.OccupancyId = occupancyId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleEndHouseholdOccupancy(ctx, request.(PeopleEndHouseholdOccupancyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleEndHouseholdOccupancy")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleEndHouseholdOccupancyResponseObject); ok {
+		if err := validResponse.VisitPeopleEndHouseholdOccupancyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreateOccupancy operation middleware
+func (sh *strictHandler) PeopleCreateOccupancy(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	var request PeopleCreateOccupancyRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+
+	var body PeopleCreateOccupancyJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreateOccupancy(ctx, request.(PeopleCreateOccupancyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreateOccupancy")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreateOccupancyResponseObject); ok {
+		if err := validResponse.VisitPeopleCreateOccupancyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancySetUnitTags operation middleware
+func (sh *strictHandler) TenancySetUnitTags(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID, params TenancySetUnitTagsParams) {
+	var request TenancySetUnitTagsRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+	request.Params = params
+
+	var body TenancySetUnitTagsJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancySetUnitTags(ctx, request.(TenancySetUnitTagsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancySetUnitTags")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancySetUnitTagsResponseObject); ok {
+		if err := validResponse.VisitTenancySetUnitTagsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyCreateVehicle operation middleware
+func (sh *strictHandler) TenancyCreateVehicle(w http.ResponseWriter, r *http.Request, orgId OrgId, unitId openapi_types.UUID) {
+	var request TenancyCreateVehicleRequestObject
+
+	request.OrgId = orgId
+	request.UnitId = unitId
+
+	var body TenancyCreateVehicleJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyCreateVehicle(ctx, request.(TenancyCreateVehicleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyCreateVehicle")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyCreateVehicleResponseObject); ok {
+		if err := validResponse.VisitTenancyCreateVehicleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TenancyDeleteVehicle operation middleware
+func (sh *strictHandler) TenancyDeleteVehicle(w http.ResponseWriter, r *http.Request, orgId OrgId, vehicleId openapi_types.UUID) {
+	var request TenancyDeleteVehicleRequestObject
+
+	request.OrgId = orgId
+	request.VehicleId = vehicleId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TenancyDeleteVehicle(ctx, request.(TenancyDeleteVehicleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TenancyDeleteVehicle")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TenancyDeleteVehicleResponseObject); ok {
+		if err := validResponse.VisitTenancyDeleteVehicleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleListVendors operation middleware
+func (sh *strictHandler) PeopleListVendors(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListVendorsParams) {
+	var request PeopleListVendorsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleListVendors(ctx, request.(PeopleListVendorsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleListVendors")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleListVendorsResponseObject); ok {
+		if err := validResponse.VisitPeopleListVendorsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleCreateVendor operation middleware
+func (sh *strictHandler) PeopleCreateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId) {
+	var request PeopleCreateVendorRequestObject
+
+	request.OrgId = orgId
+
+	var body PeopleCreateVendorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleCreateVendor(ctx, request.(PeopleCreateVendorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleCreateVendor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleCreateVendorResponseObject); ok {
+		if err := validResponse.VisitPeopleCreateVendorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleDeleteVendor operation middleware
+func (sh *strictHandler) PeopleDeleteVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID) {
+	var request PeopleDeleteVendorRequestObject
+
+	request.OrgId = orgId
+	request.VendorId = vendorId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleDeleteVendor(ctx, request.(PeopleDeleteVendorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleDeleteVendor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleDeleteVendorResponseObject); ok {
+		if err := validResponse.VisitPeopleDeleteVendorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleGetVendor operation middleware
+func (sh *strictHandler) PeopleGetVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID) {
+	var request PeopleGetVendorRequestObject
+
+	request.OrgId = orgId
+	request.VendorId = vendorId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleGetVendor(ctx, request.(PeopleGetVendorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleGetVendor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleGetVendorResponseObject); ok {
+		if err := validResponse.VisitPeopleGetVendorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PeopleUpdateVendor operation middleware
+func (sh *strictHandler) PeopleUpdateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID, params PeopleUpdateVendorParams) {
+	var request PeopleUpdateVendorRequestObject
+
+	request.OrgId = orgId
+	request.VendorId = vendorId
+	request.Params = params
+
+	var body PeopleUpdateVendorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PeopleUpdateVendor(ctx, request.(PeopleUpdateVendorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PeopleUpdateVendor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PeopleUpdateVendorResponseObject); ok {
+		if err := validResponse.VisitPeopleUpdateVendorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // Base64 encoded, compressed with deflate, json marshaled OpenAPI spec.
 // Stored as a slice of fixed-width chunks rather than one concatenated
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"Oz2pDjy9bU110EsPD/9/AA==",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

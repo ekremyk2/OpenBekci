@@ -342,7 +342,7 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			Id: o.ID, Slug: o.Slug, Name: o.Name, Roles: roles,
 			DefaultLocale: o.DefaultLocale,
 			Permissions:   s.permissionGrants(o),
-			Sites:         []gen.MeSite{}, // phase B: sites the caller can see
+			Sites:         meSites(o.Sites),
 		})
 	}
 	return gen.MeGet200JSONResponse(gen.Me{
@@ -351,7 +351,7 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			Locale: me.User.Locale, IsPlatformAdmin: me.User.IsPlatformAdmin,
 		},
 		Organizations: orgs,
-		Occupancies:   []map[string]interface{}{}, // phase B: occupancies
+		Occupancies:   meOccupancies(me.Occupancies),
 		Policies:      map[string]interface{}{},
 	}), nil
 }
