@@ -107,9 +107,9 @@ func jpegBytes() []byte {
 }
 
 // upload sends a photo as token and returns the file id (a draft until attached).
-func (e *opsEnv) upload(t *testing.T, token string, org authztest.Org) uuid.UUID {
+func (e *opsEnv) upload(t *testing.T, token string, org authztest.Org, site uuid.UUID) uuid.UUID {
 	t.Helper()
-	body, ctype := multipartBody(map[string]string{}, "leak.jpg", jpegBytes())
+	body, ctype := multipartBody(map[string]string{"site_id": site.String()}, "leak.jpg", jpegBytes())
 	rec := e.call(t, token, "POST", orgURL(org, "/files"), body, "Content-Type", ctype)
 	mustStatus(t, rec, 201)
 	return jsonOf[struct {
@@ -149,7 +149,7 @@ func TestIntegrationTicketFlowAndVisibility(t *testing.T) {
 	bob := e.addResident(t, s.SiteFix, otherUnit, "tenant", "Bob")
 
 	// the resident opens a private ticket with a photo; the unit is her only one
-	photo := e.upload(t, ann.token, org)
+	photo := e.upload(t, ann.token, org, s.Site)
 	rec := e.call(t, ann.token, "POST", orgURL(org, "/tickets"), fmt.Sprintf(`{"site_id":%q,"category_id":%q,"title":"Kitchen tap leaks","description":"since monday","attachment_file_ids":[%q]}`, s.Site, private, photo))
 	mustStatus(t, rec, 201)
 	tk := jsonOf[ticketJSON](t, rec)
@@ -157,8 +157,8 @@ func TestIntegrationTicketFlowAndVisibility(t *testing.T) {
 		t.Fatalf("created ticket: %s", rec.Body.String())
 	}
 	// the photo is visible to the reporter and refused to the neighbour
-	mustStatus(t, e.call(t, ann.token, "GET", orgURL(org, "/files/"+photo.String()+"/content"), ""), 200)
-	if rec := e.call(t, bob.token, "GET", orgURL(org, "/files/"+photo.String()+"/content"), ""); rec.Code == 200 {
+	mustStatus(t, e.call(t, ann.token, "GET", orgURL(org, "/files/"+photo.String()), ""), 200)
+	if rec := e.call(t, bob.token, "GET", orgURL(org, "/files/"+photo.String()), ""); rec.Code == 200 {
 		t.Fatalf("a neighbour downloaded the photo of a private ticket")
 	}
 
@@ -359,7 +359,7 @@ func TestIntegrationWorkflowEditing(t *testing.T) {
 		IsDefault bool                    `json:"is_default"`
 		Version   int                     `json:"version"`
 	}](t, rec)
-	if len(wf.Statuses) != 3 || !wf.IsDefault || wf.Statuses[1].Name != "In progress" {
+	if len(wf.Statuses) != 3 || !wf.IsDefault || wf.Statuses[1].Name != "Devam ediyor" {
 		t.Fatalf("restored workflow: %s", rec.Body.String())
 	}
 	// categories: archived is tri-state
@@ -653,23 +653,23 @@ func TestIntegrationDocumentsVisibilityAndFormerOccupants(t *testing.T) {
 	}
 	_, _ = board, owners
 	// documents: a file filed in a folder is readable (file download follows the folder)
-	file := e.upload(t, mgr, org)
+	file := e.upload(t, mgr, org, s.Site)
 	rec := e.call(t, mgr, "POST", orgURL(org, "/documents"), fmt.Sprintf(`{"site_id":%q,"folder_id":%q,"title":"Insurance policy","file_id":%q}`, s.Site, everyone, file))
 	mustStatus(t, rec, 201)
 	doc := jsonOf[struct {
 		ID uuid.UUID `json:"id"`
 	}](t, rec)
 	mustStatus(t, e.call(t, ann.token, "GET", orgURL(org, "/documents/"+doc.ID.String()), ""), 200)
-	mustStatus(t, e.call(t, ann.token, "GET", orgURL(org, "/files/"+file.String()+"/content"), ""), 200)
+	mustStatus(t, e.call(t, ann.token, "GET", orgURL(org, "/files/"+file.String()), ""), 200)
 	// ... and refused where the folder is closed
-	file2 := e.upload(t, mgr, org)
+	file2 := e.upload(t, mgr, org, s.Site)
 	rec = e.call(t, mgr, "POST", orgURL(org, "/documents"), fmt.Sprintf(`{"site_id":%q,"folder_id":%q,"title":"Board minutes","file_id":%q}`, s.Site, board, file2))
 	mustStatus(t, rec, 201)
 	closed := jsonOf[struct {
 		ID uuid.UUID `json:"id"`
 	}](t, rec)
 	mustStatus(t, e.call(t, ann.token, "GET", orgURL(org, "/documents/"+closed.ID.String()), ""), 404)
-	if rec := e.call(t, ann.token, "GET", orgURL(org, "/files/"+file2.String()+"/content"), ""); rec.Code == 200 {
+	if rec := e.call(t, ann.token, "GET", orgURL(org, "/files/"+file2.String()), ""); rec.Code == 200 {
 		t.Fatalf("a resident downloaded a board-only document")
 	}
 	rec = e.call(t, ann.token, "GET", orgURL(org, "/documents")+"?site_id="+s.Site.String(), "")
@@ -687,7 +687,7 @@ func TestIntegrationDocumentsVisibilityAndFormerOccupants(t *testing.T) {
 	}](t, rec).Items {
 		ownFolder = f.ID
 	}
-	lease := e.upload(t, ann.token, org)
+	lease := e.upload(t, ann.token, org, s.Site)
 	mustStatus(t, e.call(t, ann.token, "POST", orgURL(org, "/documents"), fmt.Sprintf(`{"site_id":%q,"folder_id":%q,"title":"Lease","file_id":%q}`, s.Site, ownFolder, lease)), 201)
 	// the neighbour cannot read it, the manager can
 	rec = e.call(t, mgr, "GET", orgURL(org, "/documents")+"?site_id="+s.Site.String()+"&folder_id="+ownFolder.String(), "")
@@ -698,7 +698,7 @@ func TestIntegrationDocumentsVisibilityAndFormerOccupants(t *testing.T) {
 	if strings.Contains(rec.Body.String(), "Lease") {
 		t.Fatalf("the neighbour sees the lease")
 	}
-	if rec := e.call(t, bob.token, "GET", orgURL(org, "/files/"+lease.String()+"/content"), ""); rec.Code == 200 {
+	if rec := e.call(t, bob.token, "GET", orgURL(org, "/files/"+lease.String()), ""); rec.Code == 200 {
 		t.Fatalf("the neighbour downloaded the lease")
 	}
 
@@ -724,10 +724,8 @@ func TestIntegrationDocumentsVisibilityAndFormerOccupants(t *testing.T) {
 	if !strings.Contains(rec.Body.String(), "Closing statement") || strings.Contains(rec.Body.String(), "Insurance policy") || strings.Contains(rec.Body.String(), "Lease") {
 		t.Fatalf("former occupant documents: %s", rec.Body.String())
 	}
-	if f := folders(former.token); len(f) != 0 {
-		t.Fatalf("a former occupant sees folders: %v", f)
-	}
-	mustStatus(t, e.call(t, former.token, "GET", orgURL(org, "/files/"+gen.FileID.String()+"/content"), ""), 200)
+	mustStatus(t, e.call(t, former.token, "GET", orgURL(org, "/folders")+"?site_id="+s.Site.String(), ""), 403) // no folders for a former occupant
+	mustStatus(t, e.call(t, former.token, "GET", orgURL(org, "/files/"+gen.FileID.String()), ""), 200)
 	// current residents of the unit read it through the unit folder
 	rec = e.call(t, ann.token, "GET", orgURL(org, "/documents")+"?site_id="+s.Site.String()+"&source=generated", "")
 	if !strings.Contains(rec.Body.String(), "Closing statement") {

@@ -423,5 +423,3 @@ func actorUser(ctx context.Context) *uuid.UUID {
 	}
 	return nil
 }
-
-var errNotFound = errors.New("not found")

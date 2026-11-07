@@ -43,9 +43,6 @@ type opsServices struct {
 	documents     *documents.Service
 	dashboards    *dashboards.Service
 	codes         *codes.Service
-	// money plugs the money module's figures into the dashboards; until it is
-	// merged the dashboards show zeros.
-	money dashboards.MoneyFigures
 }
 
 // newOps builds the daily-operations modules. They register their file

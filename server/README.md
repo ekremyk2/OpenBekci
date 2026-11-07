@@ -300,3 +300,7 @@ internal/platform/ db (pools, tenant tx, migrations), jobs (River), id (UUIDv7),
 internal/webassets web app embed; -tags nowebassets serves a placeholder
 db/migrations/     goose SQL        db/queries/  sqlc inputs
 ```
+
+## Daily operations (tickets, announcements, documents, notifications, dashboards, codes)
+
+Modules `internal/core/{tickets,announcements,documents,notifications,dashboards}` plus `codes` (org labels). Other modules tell people things by inserting a `jobs.NotifyArgs` job (`notifications.deliver`) in their transaction through a `jobs.Notifier`; the dispatcher resolves recipients, applies mutes and the site channel defaults (decision O5) and writes in-app rows, emails and SMS (per-site monthly counter). Generated documents are filed with `documents.FileGenerated(ctx, tx, GeneratedParams)`; the dashboards take money figures from a `dashboards.MoneyFigures` implementation (zeros until the money module provides one). Per-unit private folders are created by a database trigger on `unit`. Scheduled announcements are published by the `announcements.publish_due` task (`jobs.Task`, every minute).

@@ -6,6 +6,7 @@ package dashboards
 
 import (
 	"context"
+	"errors"
 	"slices"
 	"time"
 
@@ -161,7 +162,7 @@ type SiteDashboard struct {
 
 func siteOf(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) (currency string, err error) {
 	err = tx.QueryRow(ctx, `SELECT currency FROM site WHERE org_id = $1 AND id = $2 AND status = 'active'`, orgID, siteID).Scan(&currency)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return "", problem.NotFound("no such site")
 	}
 	return
@@ -360,7 +361,7 @@ func (s *Service) Me(ctx context.Context, orgID uuid.UUID, siteID *uuid.UUID) (M
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		var person uuid.UUID
 		if err := tx.QueryRow(ctx, `SELECT id FROM person WHERE org_id = $1 AND user_id = $2`, orgID, authz.PrincipalFromContext(ctx).UserID).Scan(&person); err != nil {
-			if err == pgx.ErrNoRows {
+			if errors.Is(err, pgx.ErrNoRows) {
 				return nil
 			}
 			return err

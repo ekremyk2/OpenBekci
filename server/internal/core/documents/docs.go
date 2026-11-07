@@ -75,7 +75,7 @@ func (a access) canSee(t tree, d Document) bool {
 	if d.addressed != nil && a.person != uuid.Nil && *d.addressed == a.person {
 		return true
 	}
-	if !(a.read || a.manage) || !a.folderVisible(t, d.FolderID) {
+	if (!a.read && !a.manage) || !a.folderVisible(t, d.FolderID) {
 		return false
 	}
 	f := t[d.FolderID]

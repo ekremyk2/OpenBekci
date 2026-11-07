@@ -215,8 +215,6 @@ func (c caps) canWork(t Ticket) bool {
 	return c.manage || (c.work && t.Assignee != nil && t.Assignee.PersonID != nil && *t.Assignee.PersonID == c.person)
 }
 
-func (c caps) sees(t Ticket) bool { return c.all() || c.canWork(t) }
-
 func (s *Service) fillAttachments(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, _ caps, ts []*Ticket) error {
 	if len(ts) == 0 {
 		return nil
@@ -899,17 +897,16 @@ func (s *Service) SetVote(ctx context.Context, orgID, ticketID uuid.UUID, voted 
 
 // Comment is a message on a ticket; internal ones are hidden from residents.
 type Comment struct {
-	ID           uuid.UUID    `json:"id"`
-	OrgID        uuid.UUID    `json:"org_id"`
-	TicketID     uuid.UUID    `json:"ticket_id"`
-	AuthorID     uuid.UUID    `json:"author_person_id"`
-	AuthorName   string       `json:"author_display_name"`
-	Body         string       `json:"body"`
-	Visibility   string       `json:"visibility"`
-	Attachments  []Attachment `json:"attachments"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
-	authorPerson uuid.UUID
+	ID          uuid.UUID    `json:"id"`
+	OrgID       uuid.UUID    `json:"org_id"`
+	TicketID    uuid.UUID    `json:"ticket_id"`
+	AuthorID    uuid.UUID    `json:"author_person_id"`
+	AuthorName  string       `json:"author_display_name"`
+	Body        string       `json:"body"`
+	Visibility  string       `json:"visibility"`
+	Attachments []Attachment `json:"attachments"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
 }
 
 func (s *Service) canSeeInternal(c caps, t Ticket) bool { return c.internalAll() || c.canWork(t) }

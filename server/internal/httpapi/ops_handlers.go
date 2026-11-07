@@ -3,7 +3,6 @@ package httpapi
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
 
@@ -62,8 +61,6 @@ func deref[T any](p *T) T {
 	}
 	return *p
 }
-
-func dateStart(d *time.Time) *time.Time { return d }
 
 // body reads a required JSON body as a Doc.
 func bodyDoc(isNil bool, body any) (tenancy.Doc, error) {
@@ -589,7 +586,7 @@ func (s *apiServer) OperationsListAnnouncements(ctx context.Context, req gen.Ope
 		f.From = &t
 	}
 	if p.To != nil {
-		t := p.To.Time.AddDate(0, 0, 1) // inclusive end date
+		t := p.To.AddDate(0, 0, 1) // inclusive end date
 		f.To = &t
 	}
 	items, next, err := a.List(ctx, req.OrgId, f, pageOf(p.Limit, p.Cursor))

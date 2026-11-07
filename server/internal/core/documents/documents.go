@@ -276,7 +276,7 @@ func (a access) folderVisible(t tree, id uuid.UUID) bool {
 		}
 		seen[*cur] = true
 		if f.Kind == "unit" {
-			if !(a.managerOf || (f.UnitID != nil && slices.Contains(a.ownUnits, *f.UnitID))) {
+			if !a.managerOf && (f.UnitID == nil || !slices.Contains(a.ownUnits, *f.UnitID)) {
 				return false
 			}
 		} else if !a.levelOK(f.Visibility) {
@@ -373,7 +373,7 @@ func (s *Service) loadFolder(ctx context.Context, tx pgx.Tx, orgID, folderID uui
 	if err != nil {
 		return Folder{}, a, nil, err
 	}
-	if !(a.read || a.manage) || !a.folderVisible(t, folderID) {
+	if (!a.read && !a.manage) || !a.folderVisible(t, folderID) {
 		return Folder{}, a, t, problem.NotFound("no such folder")
 	}
 	f := t[folderID]
