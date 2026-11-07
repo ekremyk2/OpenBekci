@@ -245,7 +245,7 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 					switch {
 					case tg.name == "other" || a.Role == "":
 						want = 404
-					case !holdsAll(matrix[string(a.Role)], required):
+					case !holdsAny(matrix[string(a.Role)], required):
 						want = 403
 					}
 				}
@@ -260,13 +260,14 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 	}
 }
 
-func holdsAll(have, need []string) bool {
+// holdsAny: several permissions on an operation mean any one of them suffices.
+func holdsAny(have, need []string) bool {
 	for _, n := range need {
-		if !slices.Contains(have, n) {
-			return false
+		if slices.Contains(have, n) {
+			return true
 		}
 	}
-	return true
+	return len(need) == 0
 }
 
 // TestAuthzMatrixRowsCoverSpec checks the table against the spec without a database: every operation has a row, every org operation is annotated, no row is stale.

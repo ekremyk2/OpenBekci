@@ -55,7 +55,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
+	srv := &apiServer{mny: deps.Money, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -91,6 +91,7 @@ type apiServer struct {
 	identity        *identity.Service
 	tenancy         *tenancy.Service
 	people          *people.Service
+	mny             MoneyDeps
 	audit           *audit.Service
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie

@@ -16,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
@@ -73,7 +74,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		instance.PGIDSource{DB: d}, methods)
 	e.h = NewRouter(Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Money: MoneyDeps{Ledger: ledger.NewService(d, nil)}, Audit: audit.NewService(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}, Options{})
 	return e

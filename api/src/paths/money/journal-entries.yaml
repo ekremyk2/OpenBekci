@@ -1,0 +1,70 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+get:
+  operationId: money.listJournalEntries
+  summary: List journal entries
+  description: |-
+    **Release 0.1.** List journal entries.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.read]
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: End of the range (inclusive).
+    - name: account_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `account_id`.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: source_type
+      in: query
+      schema:
+        type: string
+      description: Filter by `source_type`.
+    - name: source_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `source_id`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/JournalEntryList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

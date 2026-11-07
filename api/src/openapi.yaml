@@ -28,6 +28,8 @@ tags:
   - name: platform
     description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
+  - name: money
+    description: Ledger, billing, payments, expenses, collections, statements and reports.
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
 paths:
@@ -163,6 +165,34 @@ paths:
     $ref: './paths/people/vendors-vendor_id.yaml'
   /v1/platform/audit:
     $ref: './paths/platform-audit.yaml'
+  /v1/orgs/{org_id}/funds:
+    $ref: './paths/money/funds.yaml'
+  /v1/orgs/{org_id}/funds/{fund_id}:
+    $ref: './paths/money/funds-fund_id.yaml'
+  /v1/orgs/{org_id}/accounts:
+    $ref: './paths/money/accounts.yaml'
+  /v1/orgs/{org_id}/accounts/{account_id}:
+    $ref: './paths/money/accounts-account_id.yaml'
+  /v1/orgs/{org_id}/cash-boxes:
+    $ref: './paths/money/cash-boxes.yaml'
+  /v1/orgs/{org_id}/cash-boxes/{cash_box_id}:
+    $ref: './paths/money/cash-boxes-cash_box_id.yaml'
+  /v1/orgs/{org_id}/fiscal-years:
+    $ref: './paths/money/fiscal-years.yaml'
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:
+    $ref: './paths/money/fiscal-years-fiscal_year_id.yaml'
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:close:
+    $ref: './paths/money/fiscal-years-fiscal_year_id_close.yaml'
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:approve:
+    $ref: './paths/money/fiscal-years-fiscal_year_id_approve.yaml'
+  /v1/orgs/{org_id}/journal-entries:
+    $ref: './paths/money/journal-entries.yaml'
+  /v1/orgs/{org_id}/journal-entries/{entry_id}:
+    $ref: './paths/money/journal-entries-entry_id.yaml'
+  /v1/orgs/{org_id}/journal-entries/{entry_id}:reverse:
+    $ref: './paths/money/journal-entries-entry_id_reverse.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/lock-date:
+    $ref: './paths/money/sites-site_id-lock-date.yaml'
 components:
   securitySchemes:
     cookieAuth:
@@ -409,3 +439,47 @@ components:
       $ref: './components/people.yaml#/schemas/VendorUpdate'
     MeOccupancy:
       $ref: './components/people.yaml#/schemas/MeOccupancy'
+    Account:
+      $ref: './components/money.yaml#/schemas/Account'
+    AccountCreate:
+      $ref: './components/money.yaml#/schemas/AccountCreate'
+    AccountList:
+      $ref: './components/money.yaml#/schemas/AccountList'
+    AccountUpdate:
+      $ref: './components/money.yaml#/schemas/AccountUpdate'
+    CashBox:
+      $ref: './components/money.yaml#/schemas/CashBox'
+    CashBoxCreate:
+      $ref: './components/money.yaml#/schemas/CashBoxCreate'
+    CashBoxList:
+      $ref: './components/money.yaml#/schemas/CashBoxList'
+    CashBoxUpdate:
+      $ref: './components/money.yaml#/schemas/CashBoxUpdate'
+    FiscalYear:
+      $ref: './components/money.yaml#/schemas/FiscalYear'
+    FiscalYearClose:
+      $ref: './components/money.yaml#/schemas/FiscalYearClose'
+    FiscalYearCreate:
+      $ref: './components/money.yaml#/schemas/FiscalYearCreate'
+    FiscalYearList:
+      $ref: './components/money.yaml#/schemas/FiscalYearList'
+    Fund:
+      $ref: './components/money.yaml#/schemas/Fund'
+    FundCreate:
+      $ref: './components/money.yaml#/schemas/FundCreate'
+    FundList:
+      $ref: './components/money.yaml#/schemas/FundList'
+    FundUpdate:
+      $ref: './components/money.yaml#/schemas/FundUpdate'
+    JournalEntry:
+      $ref: './components/money.yaml#/schemas/JournalEntry'
+    JournalEntryList:
+      $ref: './components/money.yaml#/schemas/JournalEntryList'
+    JournalLine:
+      $ref: './components/money.yaml#/schemas/JournalLine'
+    JournalReverse:
+      $ref: './components/money.yaml#/schemas/JournalReverse'
+    LockDate:
+      $ref: './components/money.yaml#/schemas/LockDate'
+    LockDateSet:
+      $ref: './components/money.yaml#/schemas/LockDateSet'

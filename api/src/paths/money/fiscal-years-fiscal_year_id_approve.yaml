@@ -1,0 +1,53 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: fiscal_year_id
+    in: path
+    required: true
+    description: Id of the fiscal year.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: money.approveFiscalYear
+  summary: Mark a fiscal year approved
+  description: |-
+    **Release 0.1.** Records the assembly approval; with a `decision_id` from release 0.2.
+
+    Permission: `money.lock`.
+
+    Problems: `conflict` (409), `idempotency_mismatch` (422).
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.lock]
+  x-idempotent: required
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/money-params.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/money.yaml#/schemas/FiscalYearClose
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/FiscalYear
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

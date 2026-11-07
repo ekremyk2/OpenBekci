@@ -11,6 +11,7 @@ schemas:
       - audit.read
       - audit.report
       - claim.manage
+      - collections.manage
       - directory.consent
       - directory.read
       - import.run
@@ -19,6 +20,10 @@ schemas:
       - me.read
       - membership.manage
       - membership.read
+      - money.lock
+      - money.manage
+      - money.post
+      - money.read
       - moveout.manage
       - moveout.read
       - occupancy.grant_money
@@ -26,9 +31,14 @@ schemas:
       - occupancy.read
       - org.manage
       - org.read
+      - payments.declare
+      - payments.record
       - person.manage
       - person.read
       - platform.manage
+      - reports.aggregate
+      - reports.debtors
+      - reports.read
       - sessions.manage_own
       - site.create
       - site.export
@@ -36,6 +46,8 @@ schemas:
       - site.manage
       - site.offboard
       - site.read
+      - statements.read
+      - statements.read_own
       - unit.manage
       - unit.read
       - vehicle.manage
@@ -48,6 +60,7 @@ x-openbekci-roles:
     - allocation.read
     - audit.read
     - claim.manage
+    - collections.manage
     - directory.consent
     - directory.read
     - import.run
@@ -56,6 +69,10 @@ x-openbekci-roles:
     - me.read
     - membership.manage
     - membership.read
+    - money.lock
+    - money.manage
+    - money.post
+    - money.read
     - moveout.manage
     - moveout.read
     - occupancy.grant_money
@@ -63,8 +80,13 @@ x-openbekci-roles:
     - occupancy.read
     - org.manage
     - org.read
+    - payments.declare
+    - payments.record
     - person.manage
     - person.read
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - sessions.manage_own
     - site.create
     - site.export
@@ -72,6 +94,8 @@ x-openbekci-roles:
     - site.manage
     - site.offboard
     - site.read
+    - statements.read
+    - statements.read_own
     - unit.manage
     - unit.read
     - vehicle.manage
@@ -82,6 +106,7 @@ x-openbekci-roles:
     - allocation.manage
     - allocation.read
     - claim.manage
+    - collections.manage
     - directory.consent
     - directory.read
     - import.run
@@ -90,17 +115,28 @@ x-openbekci-roles:
     - me.read
     - membership.manage
     - membership.read
+    - money.lock
+    - money.manage
+    - money.post
+    - money.read
     - moveout.manage
     - moveout.read
     - occupancy.grant_money
     - occupancy.manage
     - occupancy.read
     - org.read
+    - payments.declare
+    - payments.record
     - person.manage
     - person.read
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - sessions.manage_own
     - site.manage
     - site.read
+    - statements.read
+    - statements.read_own
     - unit.manage
     - unit.read
     - vehicle.manage
@@ -109,16 +145,26 @@ x-openbekci-roles:
     - vendor.read
   board_member:
     - allocation.read
+    - collections.manage
     - directory.consent
     - directory.read
     - me.read
     - membership.read
+    - money.manage
+    - money.post
+    - money.read
     - moveout.read
     - occupancy.read
     - org.read
+    - payments.record
     - person.read
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - sessions.manage_own
     - site.read
+    - statements.read
+    - statements.read_own
     - unit.read
     - vehicle.read
     - vendor.read
@@ -130,12 +176,18 @@ x-openbekci-roles:
     - directory.read
     - me.read
     - membership.read
+    - money.read
     - moveout.read
     - occupancy.read
     - org.read
     - person.read
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - sessions.manage_own
     - site.read
+    - statements.read
+    - statements.read_own
     - unit.read
     - vehicle.read
     - vendor.read
@@ -144,11 +196,21 @@ x-openbekci-roles:
     - allocation.read
     - directory.consent
     - me.read
+    - money.lock
+    - money.manage
+    - money.post
+    - money.read
     - moveout.read
     - occupancy.read
     - org.read
+    - payments.record
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - sessions.manage_own
     - site.read
+    - statements.read
+    - statements.read_own
     - unit.read
     - vendor.manage
     - vendor.read
@@ -156,6 +218,7 @@ x-openbekci-roles:
     - directory.consent
     - me.read
     - org.read
+    - payments.record
     - sessions.manage_own
     - site.read
     - unit.read

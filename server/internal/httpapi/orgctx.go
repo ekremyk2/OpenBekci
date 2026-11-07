@@ -99,9 +99,18 @@ func (p *pipeline) authzContext(next http.Handler) http.Handler {
 			// validation, the idempotency store (a stored response is replayed
 			// without reaching the service) and the handler. The services check
 			// again with the concrete scope (defence in depth).
-			for _, perm := range p.op(r).perms {
-				if !g.HasInOrg(perm, orgID) {
-					problem.Write(w, r, problem.Forbidden("you do not have the "+string(perm)+" permission here"))
+			// Several listed permissions mean "any one of" (the draft contract); the
+			// service narrows to what the held permission allows.
+			if perms := p.op(r).perms; len(perms) > 0 {
+				held := false
+				for _, perm := range perms {
+					if g.HasInOrg(perm, orgID) {
+						held = true
+						break
+					}
+				}
+				if !held {
+					problem.Write(w, r, problem.Forbidden("you do not have the "+string(perms[0])+" permission here"))
 					return
 				}
 			}

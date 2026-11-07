@@ -1,0 +1,38 @@
+parameters:
+  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - name: fiscal_year_id
+    in: path
+    required: true
+    description: Id of the fiscal year.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: money.getFiscalYear
+  summary: Get fiscal year
+  description: |-
+    **Release 0.1.** Get fiscal year.
+
+    Permission: `money.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles: [money.read]
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/FiscalYear
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

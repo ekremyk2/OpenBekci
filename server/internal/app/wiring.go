@@ -92,6 +92,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 		Authz:       authz.NewResolver(d, reg, nil),
 		Tenancy:     tenancy.NewService(d),
 		People:      peopleSvc,
+		Money:       newMoney(d),
 		Audit:       audit.NewService(d),
 		Authenticator: httpapi.SessionAuthenticator{
 			Identity: ident,

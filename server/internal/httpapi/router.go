@@ -45,7 +45,9 @@ type Deps struct {
 	Authz   *authz.Resolver
 	Tenancy *tenancy.Service
 	People  *people.Service
-	Audit   *audit.Service
+	// Money are the money services (ledger, billing, payments, ...).
+	Money MoneyDeps
+	Audit *audit.Service
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).

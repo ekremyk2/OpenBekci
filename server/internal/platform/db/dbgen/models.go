@@ -10,6 +10,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Account struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Type      string
+	Subtype   pgtype.Text
+	FundID    pgtype.UUID
+	IsSystem  bool
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
 type AllocationKey struct {
 	ID        pgtype.UUID
 	OrgID     pgtype.UUID
@@ -63,6 +79,18 @@ type Block struct {
 	Version   int32
 }
 
+type CashBox struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	Name              string
+	AccountID         pgtype.UUID
+	CollectorPersonID pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
 type DeliveryLog struct {
 	ID      pgtype.UUID
 	At      pgtype.Timestamptz
@@ -92,6 +120,33 @@ type Facility struct {
 	SiteID    pgtype.UUID
 	Name      string
 	Rules     []byte
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type FiscalYear struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	StartOn              pgtype.Date
+	EndOn                pgtype.Date
+	Status               string
+	ApprovedByDecisionID pgtype.UUID
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type Fund struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Kind      string
+	IsDefault bool
+	Archived  bool
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Version   int32
@@ -181,6 +236,38 @@ type Invitation struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type JournalEntry struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	EntryDate       pgtype.Date
+	DocumentDate    pgtype.Date
+	FiscalYearID    pgtype.UUID
+	Memo            string
+	SourceType      string
+	SourceID        pgtype.UUID
+	PostedBy        pgtype.UUID
+	PostedAt        pgtype.Timestamptz
+	ReversesEntryID pgtype.UUID
+}
+
+type JournalLine struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	EntryID    pgtype.UUID
+	EntryDate  pgtype.Date
+	AccountID  pgtype.UUID
+	FundID     pgtype.UUID
+	Debit      int64
+	Credit     int64
+	UnitID     pgtype.UUID
+	DebtorKind pgtype.Text
+	PersonID   pgtype.UUID
+	BlockID    pgtype.UUID
+	VendorID   pgtype.UUID
 }
 
 type LoginAttempt struct {
@@ -306,6 +393,14 @@ type PlatformAuditEvent struct {
 	Ip          *netip.Addr
 	RequestID   pgtype.Text
 	At          pgtype.Timestamptz
+}
+
+type Sequence struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Kind   string
+	Year   int32
+	Last   int32
 }
 
 type Session struct {
