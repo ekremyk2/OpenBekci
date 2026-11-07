@@ -75,7 +75,7 @@ parameters:
   GuardSession:
     name: X-Guard-Session
     in: header
-    description: Token from `community.createGuardSession` (quick PIN switch); attributes the action to that guard instead of the console login.
+    description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
     schema:
       type: string
 schemas:

@@ -1,0 +1,41 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: gate.listGuards
+  summary: List the guards of a site (booth picker)
+  description: |-
+    **Release 0.3.** The people holding an active guard membership on the site, by display name and id only: the booth shows them as buttons so the guard picks their name and then enters a PIN (`community.createGuardSession`). Guards hold no `people.read`, so this is their only way to see colleagues; no phone, e-mail or other data is returned.
+
+    Permission: `gate.operate`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - gate.operate
+    site_manager:
+      - gate.operate
+    guard:
+      - gate.operate
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/GuardList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

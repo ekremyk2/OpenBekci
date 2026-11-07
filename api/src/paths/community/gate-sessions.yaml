@@ -4,9 +4,9 @@ post:
   operationId: community.createGuardSession
   summary: Switch guard with a quick PIN
   description: |-
-    **Release 0.3.** The console is a shared booth device: the PIN identifies the guard so every action is attributed to a person.
+    **Release 0.3.** The console is a shared booth device: the guard picks their name (`gate.listGuards`) and enters their PIN so every action is attributed to a person. A wrong PIN, an unknown person, a person without a PIN and a person who is not a guard of the site all answer the same `invalid_grant` (401).
 
-    Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+    **Rate limit.** PIN attempts are limited per person and per console: 5 failed attempts in 15 minutes lock that guard for 15 minutes (429 `rate_limited` with `Retry-After`, also for a correct PIN during the lock), and a console that fails 20 times in an hour is locked for an hour. Every failed attempt is audited.
 
     Permission: `gate.operate`.
 

@@ -590,6 +590,8 @@ paths:
     $ref: ./paths/community/gate-deliveries-delivery_id_collect.yaml
   /v1/orgs/{org_id}/gate/sessions:
     $ref: ./paths/community/gate-sessions.yaml
+  /v1/orgs/{org_id}/gate/guards:
+    $ref: ./paths/community/gate-guards.yaml
   /v1/orgs/{org_id}/persons/{person_id}/gate-pin:
     $ref: ./paths/community/persons-person_id-gate-pin.yaml
   /v1/orgs/{org_id}/access-points:
@@ -1754,3 +1756,7 @@ components:
       $ref: ./components/people.yaml#/schemas/CarriedCharge
     StaffDashboard:
       $ref: ./components/dashboards.yaml#/schemas/StaffDashboard
+    GuardRef:
+      $ref: ./components/community.yaml#/schemas/GuardRef
+    GuardList:
+      $ref: ./components/community.yaml#/schemas/GuardList
