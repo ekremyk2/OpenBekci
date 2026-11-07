@@ -25,7 +25,7 @@ func TestScheduleAt(t *testing.T) {
 		{From: d(2026, 7, 1), Amount: try(2750000), DecisionID: &dec},
 		{From: d(2026, 1, 1), To: dp(2026, 6, 30), Amount: try(2400000)},
 	}}
-	if err := s.Validate(true); err != nil {
+	if err := s.Validate(time.UTC, true); err != nil {
 		t.Fatal(err)
 	}
 	cases := []struct {
@@ -41,12 +41,12 @@ func TestScheduleAt(t *testing.T) {
 		{d(2030, 1, 1), 2750000, true},
 	}
 	for _, c := range cases {
-		r, ok := s.At(c.at)
+		r, ok := s.At(c.at, time.UTC)
 		if ok != c.ok || r.Amount.Amount != c.want {
 			t.Errorf("At(%v) = %v,%v want %d,%v", c.at, r.Amount, ok, c.want, c.ok)
 		}
 	}
-	if r, _ := s.At(d(2026, 8, 1)); r.DecisionID == nil || *r.DecisionID != dec {
+	if r, _ := s.At(d(2026, 8, 1), time.UTC); r.DecisionID == nil || *r.DecisionID != dec {
 		t.Error("decision id lost")
 	}
 }
@@ -70,13 +70,13 @@ func TestScheduleValidate(t *testing.T) {
 		{"contiguous ok", []rates.Rate{{From: d(2026, 1, 1), To: dp(2026, 1, 31), Amount: try(1)}, {From: d(2026, 2, 1), Amount: try(2)}}, true, nil},
 	}
 	for _, c := range cases {
-		err := rates.Schedule{Rates: c.rs}.Validate(c.contiguous)
+		err := rates.Schedule{Rates: c.rs}.Validate(nil, c.contiguous)
 		if !errors.Is(err, c.want) {
 			t.Errorf("%s: got %v want %v", c.name, err, c.want)
 		}
 	}
 	// the zero schedule has no rate
-	if _, ok := (rates.Schedule{}).At(d(2026, 1, 1)); ok {
+	if _, ok := (rates.Schedule{}).At(d(2026, 1, 1), time.UTC); ok {
 		t.Error("empty schedule has no rate")
 	}
 }
@@ -128,10 +128,10 @@ func TestPeriodsEndAndWindow(t *testing.T) {
 	if got := keys(ps); len(got) != 1 || got[0] != "2026-03" {
 		t.Fatalf("window got %v", got)
 	}
-	// plan starting after its first due day still bills the containing period
+	// plan starting after its first due day still bills the containing period, due on the next DueDay
 	late := rates.Plan{Frequency: rates.Monthly, Start: d(2026, 1, 20), DueDay: 5}
-	ps, _ = rates.Periods(late, d(2026, 1, 1), d(2026, 1, 31), time.UTC)
-	if len(ps) != 1 || ps[0].Key != "2026-01" {
+	ps, _ = rates.Periods(late, d(2026, 1, 1), d(2026, 2, 28), time.UTC)
+	if len(ps) != 2 || ps[0].Key != "2026-01" || !ps[0].DueDate.Equal(d(2026, 2, 5)) {
 		t.Fatalf("late start: %v", keys(ps))
 	}
 	// empty window
@@ -150,7 +150,7 @@ func TestPeriodsQuarterlyYearly(t *testing.T) {
 	if !ps[1].DueDate.Equal(d(2026, 4, 15)) || !ps[1].Start.Equal(d(2026, 4, 1)) || !ps[1].End.Equal(d(2026, 6, 30)) {
 		t.Errorf("Q2 %+v", ps[1])
 	}
-	if !ps[0].DueDate.Equal(d(2026, 1, 15)) {
+	if !ps[0].DueDate.Equal(d(2026, 2, 15)) { // 15 Jan is before Start (10 Feb)
 		t.Errorf("Q1 due %v", ps[0].DueDate)
 	}
 	y := rates.Plan{Frequency: rates.Yearly, Start: d(2026, 6, 1), End: dp(2027, 6, 1), DueDay: 31}
@@ -158,7 +158,7 @@ func TestPeriodsQuarterlyYearly(t *testing.T) {
 	if got := keys(ps); len(got) != 2 || got[0] != "2026" || got[1] != "2027" {
 		t.Fatalf("yearly %v", got)
 	}
-	if !ps[0].DueDate.Equal(d(2026, 1, 31)) || !ps[0].End.Equal(d(2026, 12, 31)) {
+	if !ps[0].DueDate.Equal(d(2026, 6, 30)) || !ps[0].End.Equal(d(2026, 12, 31)) { // 31 clamped to 30 June, first on or after Start
 		t.Errorf("yearly %+v", ps[0])
 	}
 }
@@ -183,7 +183,7 @@ func TestPeriodsDSTSafe(t *testing.T) {
 		}
 	}
 	// a time late in the evening in a western zone is still that local date
-	plan := rates.Plan{Frequency: rates.Monthly, Start: d(2026, 3, 1), DueDay: 1}
+	plan := rates.Plan{Frequency: rates.Monthly, Start: time.Date(2026, 3, 1, 0, 0, 0, 0, ny), DueDay: 1}
 	ps, _ := rates.Periods(plan, time.Date(2026, 3, 1, 23, 30, 0, 0, ny), time.Date(2026, 3, 1, 23, 30, 0, 0, ny), ny)
 	if len(ps) != 1 {
 		t.Fatalf("local date handling: %v", keys(ps))
@@ -234,7 +234,7 @@ func TestPropMonthlyPeriods(t *testing.T) {
 				t.Fatalf("duplicate key %s", p.Key)
 			}
 			seen[p.Key] = true
-			if !p.DueDate.After(prev) || p.DueDate.Before(from) || p.DueDate.After(to) {
+			if p.DueDate.Before(prev) || p.DueDate.Before(start) || p.DueDate.Before(from) || p.DueDate.After(to) {
 				t.Fatalf("bad due %v", p.DueDate)
 			}
 			prev = p.DueDate

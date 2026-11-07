@@ -23,9 +23,10 @@ var (
 	ErrBadPlan      = errors.New("rates: invalid plan")
 )
 
-// Rate is an amount valid from From to To, both inclusive calendar dates (the
-// date part of the time value in the zone the value carries; the clock time is
-// ignored). A nil To means open-ended. DecisionID optionally links the rate to
+// Rate is an amount valid from From to To, both inclusive calendar dates (read
+// in the site time zone passed to Validate and At, never in the zone the value
+// happens to carry; the clock time is ignored). A nil To means open-ended.
+// DecisionID optionally links the rate to
 // the assembly decision that set it (governance G5).
 type Rate struct {
 	From       time.Time
@@ -39,22 +40,22 @@ type Schedule struct {
 	Rates []Rate
 }
 
-func day(t time.Time) int { return civil.Day(t, t.Location()) }
+func day(t time.Time, tz *time.Location) int { return civil.Day(t, tz) }
 
-func (r Rate) bounds() (from, to int) {
-	from = day(r.From)
+func (r Rate) bounds(tz *time.Location) (from, to int) {
+	from = day(r.From, tz)
 	to = int(^uint(0) >> 1)
 	if r.To != nil {
-		to = day(*r.To)
+		to = day(*r.To, tz)
 	}
 	return from, to
 }
 
 // sorted returns the rates ordered by From (stable).
-func (s Schedule) sorted() []Rate {
+func (s Schedule) sorted(tz *time.Location) []Rate {
 	rs := make([]Rate, len(s.Rates))
 	copy(rs, s.Rates)
-	sort.SliceStable(rs, func(i, j int) bool { return day(rs[i].From) < day(rs[j].From) })
+	sort.SliceStable(rs, func(i, j int) bool { return day(rs[i].From, tz) < day(rs[j].From, tz) })
 	return rs
 }
 
@@ -63,8 +64,11 @@ func (s Schedule) sorted() []Rate {
 // there must also be no gap between a rate's To and the next From (each rate
 // then ends the day before the next begins), which plans that must always
 // have an amount require.
-func (s Schedule) Validate(contiguous bool) error {
-	rs := s.sorted()
+func (s Schedule) Validate(tz *time.Location, contiguous bool) error {
+	if tz == nil {
+		tz = time.UTC
+	}
+	rs := s.sorted(tz)
 	for i, r := range rs {
 		if err := r.Amount.Validate(); err != nil {
 			return err
@@ -75,14 +79,14 @@ func (s Schedule) Validate(contiguous bool) error {
 		if r.Amount.Currency != rs[0].Amount.Currency {
 			return ErrCurrency
 		}
-		from, to := r.bounds()
+		from, to := r.bounds(tz)
 		if to < from {
 			return fmt.Errorf("%w: rate %d", ErrBadRange, i)
 		}
 		if i == 0 {
 			continue
 		}
-		_, prevTo := rs[i-1].bounds()
+		_, prevTo := rs[i-1].bounds(tz)
 		switch {
 		case prevTo == int(^uint(0)>>1):
 			return fmt.Errorf("%w: rate %d", ErrOpenNotLast, i-1)
@@ -98,12 +102,15 @@ func (s Schedule) Validate(contiguous bool) error {
 // At returns the rate in force on date (calendar date of the value), if any.
 // On an invalid (overlapping) schedule the rate with the latest From wins, so
 // the lookup is deterministic; Validate before saving.
-func (s Schedule) At(date time.Time) (Rate, bool) {
-	d := day(date)
+func (s Schedule) At(date time.Time, tz *time.Location) (Rate, bool) {
+	if tz == nil {
+		tz = time.UTC
+	}
+	d := day(date, tz)
 	var found Rate
 	ok := false
-	for _, r := range s.sorted() {
-		from, to := r.bounds()
+	for _, r := range s.sorted(tz) {
+		from, to := r.bounds(tz)
 		if d >= from && d <= to {
 			found, ok = r, true
 		}
@@ -147,6 +154,17 @@ type Period struct {
 // contains Start is the first and the one that contains End is the last
 // (periods are never prorated here). The due date is DueDay of the first
 // month of the period, clamped to the month length (31 becomes 28/29/30).
+//
+// A due date is never before Start: when DueDay of the first period falls
+// before Start, that period's due date is the first date on or after Start
+// whose day is DueDay (clamped). So a monthly plan starting 20 March with
+// DueDay 5 bills period 2026-03 (the period containing Start, not prorated)
+// due 5 April, followed by 2026-04, also due 5 April; a quarterly plan
+// starting 15 February with DueDay 15 bills 2026-Q1 due 15 February. Only the
+// first period is ever moved, and the result is independent of from: from and
+// to only filter by due date, so a caller passing an earlier from never
+// creates a charge that is overdue the day it is created.
+//
 // All arithmetic is on calendar dates, so DST transitions never shift or
 // duplicate a period; returned times are the start of the day in tz (the
 // first valid instant of that date if midnight does not exist).
@@ -188,6 +206,9 @@ func Periods(p Plan, from, to time.Time, tz *time.Location) ([]Period, error) {
 			dd = dim
 		}
 		due := civil.FromYMD(y, m, dd)
+		if due < startD {
+			due = firstDueOnOrAfter(startD, p.DueDay)
+		}
 		if pStart > toD {
 			break
 		}
@@ -202,6 +223,36 @@ func Periods(p Plan, from, to time.Time, tz *time.Location) ([]Period, error) {
 		y, m = ey, em
 	}
 	return out, nil
+}
+
+// firstDueOnOrAfter returns the first date >= day whose day of month is
+// dueDay, clamped to the month length.
+func firstDueOnOrAfter(day, dueDay int) int {
+	y, m, _ := civil.YMD(day)
+	for {
+		dd := dueDay
+		if dim := civil.DaysInMonth(y, m); dd > dim {
+			dd = dim
+		}
+		if c := civil.FromYMD(y, m, dd); c >= day {
+			return c
+		}
+		if m == time.December {
+			y, m = y+1, time.January
+		} else {
+			m++
+		}
+	}
+}
+
+// ForPeriod returns the rate that applies to a billing period: the rate in
+// force on the period's DUE DATE (decision M3), read in tz. A rate that takes
+// effect after the due date therefore starts with the next period, however
+// early in the period it begins; a rate effective on the due date itself
+// applies to this one. The choice is by due date, not by period start,
+// because the amount is what is invoiced on that date.
+func ForPeriod(s Schedule, p Period, tz *time.Location) (Rate, bool) {
+	return s.At(p.DueDate, tz)
 }
 
 func (p Plan) step() (int, error) {
