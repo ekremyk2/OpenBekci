@@ -322,7 +322,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -351,7 +351,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -487,7 +487,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The key id. */
                 key_id: string;
@@ -510,7 +510,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The key id. */
                 key_id: string;
@@ -535,7 +535,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The block id. */
                 block_id: string;
@@ -557,7 +557,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -581,7 +581,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The invitation id. */
                 invitation_id: string;
@@ -603,7 +603,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The invitation id. */
                 invitation_id: string;
@@ -625,7 +625,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -649,7 +649,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The membership id. */
                 membership_id: string;
@@ -674,7 +674,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The move out id. */
                 move_out_id: string;
@@ -696,7 +696,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -716,7 +716,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The occupancy id. */
                 occupancy_id: string;
@@ -738,7 +738,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The occupancy id. */
                 occupancy_id: string;
@@ -763,7 +763,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The occupancy id. */
                 occupancy_id: string;
@@ -788,7 +788,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -809,7 +809,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The person id. */
                 person_id: string;
@@ -832,7 +832,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -852,7 +852,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The export id. */
                 export_id: string;
@@ -877,7 +877,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -900,7 +900,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -927,7 +927,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -953,7 +953,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -976,7 +976,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -999,7 +999,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1024,7 +1024,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1046,7 +1046,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1071,7 +1071,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1096,7 +1096,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1125,7 +1125,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1150,7 +1150,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1176,7 +1176,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1198,7 +1198,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -1223,7 +1223,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -1243,7 +1243,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The claim id. */
                 claim_id: string;
@@ -1268,7 +1268,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The claim id. */
                 claim_id: string;
@@ -1290,7 +1290,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1313,7 +1313,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1342,7 +1342,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1366,7 +1366,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1393,7 +1393,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1418,7 +1418,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1443,7 +1443,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -1468,7 +1468,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The vehicle id. */
                 vehicle_id: string;
@@ -1490,7 +1490,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -1511,7 +1511,7 @@ export interface paths {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The vendor id. */
                 vendor_id: string;
@@ -1528,6 +1528,947 @@ export interface paths {
         head?: never;
         /** Change a vendor */
         patch: operations["people.updateVendor"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List facilities
+         * @description **Release 0.3.** Cursor-paginated list of facilitys.
+         *
+         *     Permission (any one of): `bookings.read`, `facilities.manage`.
+         */
+        get: operations["community.listFacilities"];
+        put?: never;
+        /**
+         * Create facility
+         * @description **Release 0.3.** Creates a facility.
+         *
+         *     Permission: `facilities.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.createFacility"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/facilities/{facility_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get facility
+         * @description **Release 0.3.** Get facility.
+         *
+         *     Permission (any one of): `bookings.read`, `facilities.manage`.
+         */
+        get: operations["community.getFacility"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete facility
+         * @description **Release 0.3.** Only without future bookings (409 `conflict`).
+         *
+         *     Permission: `facilities.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        delete: operations["community.deleteFacility"];
+        options?: never;
+        head?: never;
+        /**
+         * Update facility
+         * @description **Release 0.3.** Update facility.
+         *
+         *     Permission: `facilities.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["community.updateFacility"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/facilities/{facility_id}/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List blocked dates
+         * @description **Release 0.3.** List blocked dates.
+         *
+         *     Permission (any one of): `bookings.read`, `facilities.manage`.
+         */
+        get: operations["community.listFacilityBlocks"];
+        put?: never;
+        /**
+         * Block dates
+         * @description **Release 0.3.** Existing bookings in the range are not cancelled automatically (409 `conflict` lists them).
+         *
+         *     Permission: `facilities.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.createFacilityBlock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+                /** @description Id of the block. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove a block
+         * @description **Release 0.3.** Remove a block.
+         *
+         *     Permission: `facilities.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["community.deleteFacilityBlock"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/facilities/{facility_id}/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Taken and blocked slots
+         * @description **Release 0.3.** Taken and blocked slots.
+         *
+         *     Permission: `bookings.create`.
+         */
+        get: operations["community.getFacilityAvailability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List bookings
+         * @description **Release 0.3.** List bookings.
+         *
+         *     Permission: `bookings.read` (residents: their own unit).
+         */
+        get: operations["community.listBookings"];
+        put?: never;
+        /**
+         * Book a facility
+         * @description **Release 0.3.** Checks hours, duration, lead time, quota and who may book; a taken slot is 409 `conflict`. A fee posts a charge on the unit side.
+         *
+         *     Permission: `bookings.create`.
+         *
+         *     Problems: `conflict` (409), `validation_failed` (422), `idempotency_mismatch` (422).
+         */
+        post: operations["community.createBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/bookings/{booking_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the booking. */
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a booking
+         * @description **Release 0.3.** Get a booking.
+         *
+         *     Permission: `bookings.read`.
+         */
+        get: operations["community.getBooking"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/bookings/{booking_id}:cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the booking. */
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a booking
+         * @description **Release 0.3.** Refunds the fee automatically when cancelled before the facility cutoff.
+         *
+         *     Permission (any one of): `bookings.manage`, `bookings.create`.
+         *
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["community.cancelBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List visitor entries
+         * @description **Release 0.3.** Cursor-paginated list of visitor entrys.
+         *
+         *     Permission (any one of): `visitors.read`, `visitors.manage`.
+         */
+        get: operations["community.listVisitorEntries"];
+        put?: never;
+        /**
+         * Create visitor entry
+         * @description **Release 0.3.** Pre-registration: the response carries the QR token the resident shares with the guest.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.createVisitorEntry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-entries/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get visitor entry
+         * @description **Release 0.3.** Get visitor entry.
+         *
+         *     Permission (any one of): `visitors.read`, `visitors.manage`.
+         */
+        get: operations["community.getVisitorEntry"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update visitor entry
+         * @description **Release 0.3.** Update visitor entry.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["community.updateVisitorEntry"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a visitor entry
+         * @description **Release 0.3.** Cancel a visitor entry.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.cancelVisitorEntry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/recurring-visitors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List recurring visitors
+         * @description **Release 0.3.** Cursor-paginated list of recurring visitors.
+         *
+         *     Permission (any one of): `visitors.read`, `visitors.manage`.
+         */
+        get: operations["community.listRecurringVisitors"];
+        put?: never;
+        /**
+         * Create recurring visitor
+         * @description **Release 0.3.** Creates a recurring visitor.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.createRecurringVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get recurring visitor
+         * @description **Release 0.3.** Get recurring visitor.
+         *
+         *     Permission (any one of): `visitors.read`, `visitors.manage`.
+         */
+        get: operations["community.getRecurringVisitor"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update recurring visitor
+         * @description **Release 0.3.** Update recurring visitor.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["community.updateRecurringVisitor"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revoke a recurring visitor
+         * @description **Release 0.3.** Takes effect immediately, also at the gate.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.revokeRecurringVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-approval-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * My visitor approval requests
+         * @description **Release 0.3.** Polled while pending.
+         *
+         *     Permission: `visitors.decide`.
+         */
+        get: operations["community.listVisitorApprovalRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the request. */
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve or deny a visitor
+         * @description **Release 0.3.** Approval creates a single-use credential for the access agent within seconds (0.3 gate control). A decision after expiry is 409 `conflict`.
+         *
+         *     Permission: `visitors.decide`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.decideVisitorApprovalRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List parcels of my unit (or of the site)
+         * @description **Release 0.3.** List parcels of my unit (or of the site).
+         *
+         *     Permission (any one of): `deliveries.read`, `visitors.read`.
+         */
+        get: operations["community.listDeliveries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/console": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Guard console snapshot
+         * @description **Release 0.3.** Today's expected visitors, pending approvals, waiting parcels and the access agent state.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["community.getGateConsole"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Search visitors by name or plate
+         * @description **Release 0.3.** Search visitors by name or plate.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["community.listGateVisitors"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Poll one visitor (approval status)
+         * @description **Release 0.3.** Poll one visitor (approval status).
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["community.getGateVisitor"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors:scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Scan a visitor QR
+         * @description **Release 0.3.** Online validation against the visitor entry; does not need the access agent. If valid, admit with `community.arriveGateVisitor`.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.scanGateVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors:walk-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register a walk-in and ask the resident
+         * @description **Release 0.3.** Creates an entry with `approval_status = requested` and sends the resident an approve / deny request (in-app and SMS).
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `sms_unavailable` (503), `conflict` (409).
+         */
+        post: operations["community.createWalkInVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a visitor arrived
+         * @description **Release 0.3.** Only for a valid pre-approved or approved entry.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.arriveGateVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors/{entry_id}:leave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a visitor left
+         * @description **Release 0.3.** Mark a visitor left.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.leaveGateVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * The number to call when the resident does not answer
+         * @description **Release 0.3.** Only the gate contact number the resident chose to share, and only for a pending request.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        get: operations["community.getGateVisitorCallContact"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/plates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Look up a plate
+         * @description **Release 0.3.** Registered resident plates: plate and door number only.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["community.searchGatePlates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Waiting parcels
+         * @description **Release 0.3.** Waiting parcels.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["community.listGateDeliveries"];
+        put?: never;
+        /**
+         * Log a parcel against a unit
+         * @description **Release 0.3.** Notifies the resident (in-app plus their preferred channel).
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.createGateDelivery"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the delivery. */
+                delivery_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a parcel collected
+         * @description **Release 0.3.** Mark a parcel collected.
+         *
+         *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.collectGateDelivery"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Switch guard with a quick PIN
+         * @description **Release 0.3.** The console is a shared booth device: the guard picks their name (`gate.listGuards`) and enters their PIN so every action is attributed to a person. A wrong PIN, an unknown person, a person without a PIN and a person who is not a guard of the site all answer the same `invalid_grant` (401).
+         *
+         *     **Rate limit.** PIN attempts are limited per person and per console: 5 failed attempts in 15 minutes lock that guard for 15 minutes (429 `rate_limited` with `Retry-After`, also for a correct PIN during the lock), and a console that fails 20 times in an hour is locked for an hour. Every failed attempt is audited.
+         *
+         *     Permission: `gate.operate`.
+         *
+         *     Problems: `rate_limited` (429), `invalid_grant` (401), `conflict` (409).
+         */
+        post: operations["community.createGuardSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/gate/guards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the guards of a site (booth picker)
+         * @description **Release 0.3.** The people holding an active guard membership on the site, by display name and id only: the booth shows them as buttons so the guard picks their name and then enters a PIN (`community.createGuardSession`). Guards hold no `people.read`, so this is their only way to see colleagues; no phone, e-mail or other data is returned.
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["gate.listGuards"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/persons/{person_id}/gate-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set or reset a guard PIN
+         * @description **Release 0.3.** For a person with a guard membership; stored hashed; 4 to 8 digits. PINs are per person and are checked together with `person_id` at the booth, so they need not be unique. Setting a PIN clears a lock.
+         *
+         *     Permission: `gate.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["community.setGuardPin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/platform/audit": {
@@ -1913,7 +2854,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "allocation.manage" | "allocation.read" | "audit.read" | "audit.report" | "claim.manage" | "directory.consent" | "directory.read" | "import.run" | "invitation.household" | "invitation.manage" | "me.read" | "membership.manage" | "membership.read" | "moveout.manage" | "moveout.read" | "occupancy.grant_money" | "occupancy.manage" | "occupancy.read" | "org.manage" | "org.read" | "person.manage" | "person.read" | "platform.manage" | "sessions.manage_own" | "site.create" | "site.export" | "site.import" | "site.manage" | "site.offboard" | "site.read" | "unit.manage" | "unit.read" | "vehicle.manage" | "vehicle.read" | "vendor.manage" | "vendor.read";
+        Permission: "allocation.manage" | "allocation.read" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claim.manage" | "deliveries.read" | "directory.consent" | "directory.read" | "facilities.manage" | "gate.manage" | "gate.operate" | "import.run" | "invitation.household" | "invitation.manage" | "me.read" | "membership.manage" | "membership.read" | "moveout.manage" | "moveout.read" | "occupancy.grant_money" | "occupancy.manage" | "occupancy.read" | "org.manage" | "org.read" | "person.manage" | "person.read" | "platform.manage" | "sessions.manage_own" | "site.create" | "site.export" | "site.import" | "site.manage" | "site.offboard" | "site.read" | "unit.manage" | "unit.read" | "vehicle.manage" | "vehicle.read" | "vendor.manage" | "vendor.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
         Organization: {
             /** Format: uuid */
             id: string;
@@ -2986,6 +3927,1019 @@ export interface components {
             /** @description False for a former occupancy (read access bounded by its dates). */
             current: boolean;
         };
+        OpeningHours: {
+            /** @description ISO weekdays, 1 = Monday. */
+            days: number[];
+            /** @example 09:00 */
+            start: string;
+            /** @example 09:00 */
+            end: string;
+        };
+        /** @description Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue. */
+        FacilityRules: {
+            /** @description Site timezone. */
+            opening_hours: components["schemas"]["OpeningHours"][];
+            /** Format: int64 */
+            max_duration_minutes: number;
+            /**
+             * Format: int64
+             * @description How far ahead a booking may be made.
+             */
+            max_days_ahead: number;
+            /** Format: int64 */
+            min_notice_minutes: number | null;
+            /** Format: int64 */
+            quota_per_unit: number | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            quota_period: "week" | "month" | null;
+            who_may_book: ("owner" | "tenant" | "household")[];
+            /** @description Becomes a charge on the unit side when the booking is confirmed (default: the side of whoever booked). */
+            fee: components["schemas"]["Money"] | null;
+            /**
+             * Format: int64
+             * @description A fee is refunded automatically when cancelled earlier than this.
+             */
+            cancel_refund_cutoff_hours: number | null;
+        };
+        /**
+         * @description A bookable thing: hall, barbecue area, court, guest flat.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "description": null,
+         *       "rules": {
+         *         "opening_hours": [
+         *           {
+         *             "days": [],
+         *             "start": "09:00",
+         *             "end": "09:00"
+         *           }
+         *         ],
+         *         "max_duration_minutes": 1,
+         *         "max_days_ahead": 1,
+         *         "min_notice_minutes": null,
+         *         "quota_per_unit": null,
+         *         "quota_period": "week",
+         *         "who_may_book": [
+         *           "owner"
+         *         ],
+         *         "fee": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "cancel_refund_cutoff_hours": null
+         *       },
+         *       "enabled": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Facility: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            description: string | null;
+            rules: components["schemas"]["FacilityRules"];
+            enabled: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        FacilityCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            description?: string | null;
+            rules: components["schemas"]["FacilityRules"];
+            enabled?: boolean;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        FacilityUpdate: {
+            name?: string;
+            description?: string | null;
+            rules?: components["schemas"]["FacilityRules"];
+            enabled?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "description": null,
+         *           "rules": {
+         *             "opening_hours": [
+         *               {
+         *                 "days": [],
+         *                 "start": "09:00",
+         *                 "end": "09:00"
+         *               }
+         *             ],
+         *             "max_duration_minutes": 1,
+         *             "max_days_ahead": 1,
+         *             "min_notice_minutes": null,
+         *             "quota_per_unit": null,
+         *             "quota_period": "week",
+         *             "who_may_book": [
+         *               "owner"
+         *             ],
+         *             "fee": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "cancel_refund_cutoff_hours": null
+         *           },
+         *           "enabled": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        FacilityList: {
+            items: components["schemas"]["Facility"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        TimeRange: {
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+        };
+        /**
+         * @description Dates the manager blocks.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "facility_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "start": "2026-03-01T09:00:00Z",
+         *       "end": "2026-03-01T09:00:00Z",
+         *       "reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        FacilityBlock: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            facility_id: string;
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            reason: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        FacilityBlockCreate: {
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            reason?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "facility_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "start": "2026-03-01T09:00:00Z",
+         *           "end": "2026-03-01T09:00:00Z",
+         *           "reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        FacilityBlockList: {
+            items: components["schemas"]["FacilityBlock"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        Availability: {
+            /** Format: uuid */
+            facility_id: string;
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            /** @description Residents see slots only as taken; names stay with the manager (KVKK). */
+            taken: components["schemas"]["TimeRange"][];
+            blocked: components["schemas"]["TimeRange"][];
+        };
+        /**
+         * @description A facility booking; confirmed instantly when it satisfies the rules.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "facility_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "facility_name": "Community hall",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "unit door number",
+         *       "person_id": null,
+         *       "person_display_name": null,
+         *       "start": "2026-03-14T18:00:00Z",
+         *       "end": "2026-03-14T22:00:00Z",
+         *       "status": "confirmed",
+         *       "charge_id": null,
+         *       "fee": null,
+         *       "refund": null,
+         *       "cancelled_reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Booking: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            facility_id: string;
+            facility_name: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /** Format: uuid */
+            person_id: string | null;
+            /** @description Managers and the booker only. */
+            person_display_name: string | null;
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "confirmed" | "cancelled";
+            /** Format: uuid */
+            charge_id: string | null;
+            fee: components["schemas"]["Money"] | null;
+            refund: components["schemas"]["Money"] | null;
+            cancelled_reason: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "facility_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "facility_name": "Community hall",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "person_id": null,
+         *           "person_display_name": null,
+         *           "start": "2026-03-14T18:00:00Z",
+         *           "end": "2026-03-14T22:00:00Z",
+         *           "status": "confirmed",
+         *           "charge_id": null,
+         *           "fee": null,
+         *           "refund": null,
+         *           "cancelled_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        BookingList: {
+            items: components["schemas"]["Booking"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        BookingCreate: {
+            /** Format: uuid */
+            facility_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            /**
+             * Format: uuid
+             * @description Managers may book on behalf of a unit.
+             */
+            person_id?: string;
+            /**
+             * @description Side charged for the fee.
+             * @enum {string}
+             */
+            debtor_kind?: "owner" | "tenant";
+        };
+        BookingCancel: {
+            reason?: string;
+        };
+        /**
+         * @description A visitor. Valid for the window plus 30 minutes either side; single entry unless recurring.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "unit door number",
+         *       "name": "Mehmet Kaya",
+         *       "plate": "34ABC123",
+         *       "window_from": "2026-03-01T09:00:00Z",
+         *       "window_to": "2026-03-01T09:00:00Z",
+         *       "approval_status": "pre_approved",
+         *       "source": "pre_registered",
+         *       "qr_token": null,
+         *       "decided_by": null,
+         *       "decided_at": null,
+         *       "arrived_at": null,
+         *       "left_at": null,
+         *       "cancelled": false,
+         *       "recurring_visitor_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        VisitorEntry: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            name: string;
+            plate: string | null;
+            /** Format: date-time */
+            window_from: string;
+            /** Format: date-time */
+            window_to: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            approval_status: "pre_approved" | "requested" | "approved" | "denied" | "expired";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            source: "pre_registered" | "walk_in" | "recurring";
+            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
+            qr_token: string | null;
+            /** Format: uuid */
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            /** Format: date-time */
+            arrived_at: string | null;
+            /** Format: date-time */
+            left_at: string | null;
+            cancelled: boolean;
+            /** Format: uuid */
+            recurring_visitor_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        VisitorEntryCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            name: string;
+            plate?: string | null;
+            /** Format: date-time */
+            window_from: string;
+            /** Format: date-time */
+            window_to: string;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        VisitorEntryUpdate: {
+            name?: string;
+            plate?: string | null;
+            /** Format: date-time */
+            window_from?: string;
+            /** Format: date-time */
+            window_to?: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "name": "Mehmet Kaya",
+         *           "plate": "34ABC123",
+         *           "window_from": "2026-03-01T09:00:00Z",
+         *           "window_to": "2026-03-01T09:00:00Z",
+         *           "approval_status": "pre_approved",
+         *           "source": "pre_registered",
+         *           "qr_token": null,
+         *           "decided_by": null,
+         *           "decided_at": null,
+         *           "arrived_at": null,
+         *           "left_at": null,
+         *           "cancelled": false,
+         *           "recurring_visitor_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        VisitorEntryList: {
+            items: components["schemas"]["VisitorEntry"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "name": "Ali Veli",
+         *       "plate": null,
+         *       "days": [
+         *         1
+         *       ],
+         *       "start": "09:00",
+         *       "end": "09:00",
+         *       "valid_from": "2026-03-01",
+         *       "valid_to": null,
+         *       "status": "active",
+         *       "qr_token": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        RecurringVisitor: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            name: string;
+            plate: string | null;
+            /** @description ISO weekdays. */
+            days: number[];
+            /** @example 09:00 */
+            start: string;
+            /** @example 09:00 */
+            end: string;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "active" | "revoked" | "expired";
+            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
+            qr_token: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        RecurringVisitorCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            name: string;
+            plate?: string | null;
+            days: number[];
+            /** @example 09:00 */
+            start: string;
+            /** @example 09:00 */
+            end: string;
+            /** Format: date */
+            valid_from: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        RecurringVisitorUpdate: {
+            name?: string;
+            plate?: string | null;
+            days?: number[];
+            /** @example 09:00 */
+            start?: string;
+            /** @example 09:00 */
+            end?: string;
+            /** Format: date */
+            valid_to?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "name": "Ali Veli",
+         *           "plate": null,
+         *           "days": [
+         *             1
+         *           ],
+         *           "start": "09:00",
+         *           "end": "09:00",
+         *           "valid_from": "2026-03-01",
+         *           "valid_to": null,
+         *           "status": "active",
+         *           "qr_token": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        RecurringVisitorList: {
+            items: components["schemas"]["RecurringVisitor"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "entry_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "unit_door_number": "unit door number",
+         *       "visitor_name": "Ali Veli",
+         *       "plate": null,
+         *       "requested_at": "2026-03-01T09:00:00Z",
+         *       "expires_at": "2026-03-01T09:00:00Z",
+         *       "status": "pending",
+         *       "decided_by": null,
+         *       "decided_at": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        VisitorApprovalRequest: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            entry_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            visitor_name: string;
+            plate: string | null;
+            /** Format: date-time */
+            requested_at: string;
+            /** Format: date-time */
+            expires_at: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "approved" | "denied" | "expired";
+            /** Format: uuid */
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "entry_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "unit_door_number": "unit door number",
+         *           "visitor_name": "Ali Veli",
+         *           "plate": null,
+         *           "requested_at": "2026-03-01T09:00:00Z",
+         *           "expires_at": "2026-03-01T09:00:00Z",
+         *           "status": "pending",
+         *           "decided_by": null,
+         *           "decided_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        VisitorApprovalRequestList: {
+            items: components["schemas"]["VisitorApprovalRequest"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        VisitorDecision: {
+            /** @enum {string} */
+            decision: "approve" | "deny";
+        };
+        /**
+         * @description A parcel logged by the guard.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "unit_door_number": "unit door number",
+         *       "received_at": "2026-03-01T09:00:00Z",
+         *       "received_by_display_name": null,
+         *       "description": null,
+         *       "status": "waiting",
+         *       "collected_at": null,
+         *       "collected_by_name": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Delivery: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /** Format: date-time */
+            received_at: string;
+            received_by_display_name: string | null;
+            description: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "waiting" | "collected";
+            /** Format: date-time */
+            collected_at: string | null;
+            collected_by_name: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        DeliveryCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            description?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "unit_door_number": "unit door number",
+         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "received_by_display_name": null,
+         *           "description": null,
+         *           "status": "waiting",
+         *           "collected_at": null,
+         *           "collected_by_name": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        DeliveryList: {
+            items: components["schemas"]["Delivery"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        DeliveryCollect: {
+            collected_by_name: string;
+        };
+        /**
+         * @description What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "name": "Ali Veli",
+         *       "plate": null,
+         *       "unit_door_number": "unit door number",
+         *       "window_from": "2026-03-01T09:00:00Z",
+         *       "window_to": "2026-03-01T09:00:00Z",
+         *       "approval_status": "pre_approved",
+         *       "approval_expires_at": null,
+         *       "arrived_at": null,
+         *       "left_at": null,
+         *       "recurring": false
+         *     }
+         */
+        GuardVisitor: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            plate: string | null;
+            unit_door_number: string;
+            /** Format: date-time */
+            window_from: string;
+            /** Format: date-time */
+            window_to: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            approval_status: "pre_approved" | "requested" | "approved" | "denied" | "expired";
+            /** Format: date-time */
+            approval_expires_at: string | null;
+            /** Format: date-time */
+            arrived_at: string | null;
+            /** Format: date-time */
+            left_at: string | null;
+            recurring: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "name": "Ali Veli",
+         *           "plate": null,
+         *           "unit_door_number": "unit door number",
+         *           "window_from": "2026-03-01T09:00:00Z",
+         *           "window_to": "2026-03-01T09:00:00Z",
+         *           "approval_status": "pre_approved",
+         *           "approval_expires_at": null,
+         *           "arrived_at": null,
+         *           "left_at": null,
+         *           "recurring": false
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GuardVisitorList: {
+            items: components["schemas"]["GuardVisitor"][];
+            next_cursor: string | null;
+        };
+        GateAgentStatus: {
+            connected: boolean;
+            /** Format: date-time */
+            last_seen_at: string | null;
+            points: components["schemas"]["GatePoint"][];
+        };
+        GatePoint: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            kind: string;
+            direction: string;
+            enabled: boolean;
+        };
+        /** @description Everything the booth page shows at once; auto-refreshed. */
+        GateConsole: {
+            /** Format: date-time */
+            server_time: string;
+            expected_visitors: components["schemas"]["GuardVisitor"][];
+            pending_approvals: components["schemas"]["GuardVisitor"][];
+            waiting_deliveries: components["schemas"]["GateDelivery"][];
+            /** @description Absent when the site has no access agent. */
+            agent: components["schemas"]["GateAgentStatus"] | null;
+        };
+        /**
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "unit door number",
+         *       "received_at": "2026-03-01T09:00:00Z",
+         *       "description": null,
+         *       "status": "waiting",
+         *       "collected_by_name": null
+         *     }
+         */
+        GateDelivery: {
+            /** Format: uuid */
+            id: string;
+            unit_door_number: string;
+            /** Format: date-time */
+            received_at: string;
+            description: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "waiting" | "collected";
+            collected_by_name: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "description": null,
+         *           "status": "waiting",
+         *           "collected_by_name": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GateDeliveryList: {
+            items: components["schemas"]["GateDelivery"][];
+            next_cursor: string | null;
+        };
+        /**
+         * @example {
+         *       "plate": "plate",
+         *       "unit_door_number": "unit door number"
+         *     }
+         */
+        GatePlate: {
+            plate: string;
+            unit_door_number: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "plate": "plate",
+         *           "unit_door_number": "unit door number"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GatePlateList: {
+            items: components["schemas"]["GatePlate"][];
+            next_cursor: string | null;
+        };
+        ScanRequest: {
+            /** @description The scanned QR value, `obk1.<token>`. */
+            token: string;
+            /** Format: uuid */
+            point_id?: string;
+        };
+        ScanResult: {
+            valid: boolean;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            reason: "match" | "unknown" | "outside_window" | "used_up" | "revoked" | "wrong_site";
+            entry: components["schemas"]["GuardVisitor"] | null;
+        };
+        WalkInCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            name: string;
+            plate?: string;
+        };
+        VisitorArrive: {
+            /** Format: uuid */
+            point_id?: string;
+        };
+        /** @description The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident's number the visitor entry points to, with no other contact data. */
+        CallContact: {
+            display_name: string | null;
+            /** @description E.164. */
+            phone: string;
+        };
+        /**
+         * @description Quick PIN switch at the booth: the guard picks their name from `gate.listGuards`, then types the PIN. The PIN is checked against that one person, so PINs need not be unique per site.
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "pin": "1234"
+         *     }
+         */
+        GuardSessionCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /**
+             * Format: uuid
+             * @description The guard, from `gate.listGuards`.
+             */
+            person_id: string;
+            /** @description 4 to 8 digits (`community.setGuardPin`). */
+            pin: string;
+        };
+        /** @description A short-lived guard session. Send `token` as `X-Guard-Session` on guard operations (semantics: the header parameter). */
+        GuardSession: {
+            /** @description Opaque bearer for the `X-Guard-Session` header. Valid until `expires_at` (12 hours), bound to the console login session and the site it was created for; ends earlier on logout of the console, on a new `createGuardSession` by the same console, or when the guard membership ends. */
+            token: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+        };
+        GatePinSet: {
+            /** @description 4 to 8 digits. */
+            pin: string;
+        };
+        /**
+         * @description A guard of the site as the booth shows it: name and id only, no contact data.
+         * @example {
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "display_name": "Ali Veli",
+         *       "has_pin": true
+         *     }
+         */
+        GuardRef: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            /** @description False until a manager has set a PIN (`community.setGuardPin`); such a guard cannot switch in. */
+            has_pin: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "display_name": "Ali Veli",
+         *           "has_pin": true
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GuardList: {
+            items: components["schemas"]["GuardRef"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
         ReauthEmailCode: {
             /**
              * @description Always `email_code`. (enum property replaced by openapi-typescript)
@@ -3019,8 +4973,16 @@ export interface components {
         Cursor: string;
         /** @description Client-generated unique key; replays within 7 days return the stored response. */
         IdempotencyKey: string;
-        /** @description The organization id. */
+        /** @description Organization id. */
         OrgId: string;
+        /** @description The site this resource belongs to. */
+        SiteIdRequired: string;
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+        IfMatch: string;
+        /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+        IdempotencyKeyRequired: string;
+        /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+        GuardSession: string;
     };
     requestBodies: never;
     headers: never;
@@ -3435,7 +5397,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -3471,7 +5433,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -3521,7 +5483,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -3696,7 +5658,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The key id. */
                 key_id: string;
@@ -3735,7 +5697,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The key id. */
                 key_id: string;
@@ -3778,7 +5740,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The key id. */
                 key_id: string;
@@ -3819,7 +5781,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The block id. */
                 block_id: string;
@@ -3865,7 +5827,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -3894,7 +5856,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -3927,7 +5889,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The invitation id. */
                 invitation_id: string;
@@ -3956,7 +5918,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The invitation id. */
                 invitation_id: string;
@@ -3996,7 +5958,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4025,7 +5987,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4058,7 +6020,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The membership id. */
                 membership_id: string;
@@ -4087,7 +6049,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The move out id. */
                 move_out_id: string;
@@ -4131,7 +6093,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4166,7 +6128,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The occupancy id. */
                 occupancy_id: string;
@@ -4209,7 +6171,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The occupancy id. */
                 occupancy_id: string;
@@ -4244,7 +6206,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The occupancy id. */
                 occupancy_id: string;
@@ -4288,7 +6250,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4317,7 +6279,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4350,7 +6312,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The person id. */
                 person_id: string;
@@ -4389,7 +6351,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The person id. */
                 person_id: string;
@@ -4431,7 +6393,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4460,7 +6422,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The export id. */
                 export_id: string;
@@ -4491,7 +6453,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4529,7 +6491,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4558,7 +6520,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -4591,7 +6553,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4630,7 +6592,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4667,7 +6629,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4698,7 +6660,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4733,7 +6695,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4764,7 +6726,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4802,7 +6764,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4833,7 +6795,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4868,7 +6830,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4899,7 +6861,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4934,7 +6896,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4965,7 +6927,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -4996,7 +6958,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -5042,7 +7004,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -5073,7 +7035,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -5117,7 +7079,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -5148,7 +7110,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The site id. */
                 site_id: string;
@@ -5188,7 +7150,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -5217,7 +7179,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The claim id. */
                 claim_id: string;
@@ -5252,7 +7214,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The claim id. */
                 claim_id: string;
@@ -5287,7 +7249,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5326,7 +7288,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5363,7 +7325,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5394,7 +7356,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5429,7 +7391,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5460,7 +7422,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5491,7 +7453,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5532,7 +7494,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5567,7 +7529,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The unit id. */
                 unit_id: string;
@@ -5602,7 +7564,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The vehicle id. */
                 vehicle_id: string;
@@ -5636,7 +7598,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -5665,7 +7627,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
             };
             cookie?: never;
@@ -5698,7 +7660,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The vendor id. */
                 vendor_id: string;
@@ -5731,7 +7693,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The vendor id. */
                 vendor_id: string;
@@ -5766,7 +7728,7 @@ export interface operations {
                 "If-Match"?: string;
             };
             path: {
-                /** @description The organization id. */
+                /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
                 /** @description The vendor id. */
                 vendor_id: string;
@@ -5789,6 +7751,1487 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Vendor"];
                 };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listFacilities": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `enabled`. */
+                enabled?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FacilityList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createFacility": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FacilityCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Facility"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getFacility": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Facility"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.deleteFacility": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.updateFacility": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FacilityUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Facility"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listFacilityBlocks": {
+        parameters: {
+            query?: {
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FacilityBlockList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createFacilityBlock": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FacilityBlockCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FacilityBlock"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.deleteFacilityBlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+                /** @description Id of the block. */
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getFacilityAvailability": {
+        parameters: {
+            query: {
+                /** @description Start of the range (inclusive). */
+                from: string;
+                /** @description End of the range (inclusive). */
+                to: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the facility. */
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Availability"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listBookings": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `facility_id`. */
+                facility_id?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Filter by `mine`. */
+                mine?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createBooking": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Booking"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getBooking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the booking. */
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Booking"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.cancelBooking": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the booking. */
+                booking_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["BookingCancel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Booking"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listVisitorEntries": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `approval_status`. */
+                approval_status?: string;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Filter by `arrived`. */
+                arrived?: boolean;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createVisitorEntry": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VisitorEntryCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getVisitorEntry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.updateVisitorEntry": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VisitorEntryUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.cancelVisitorEntry": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listRecurringVisitors": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitorList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createRecurringVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecurringVisitorCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getRecurringVisitor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.updateRecurringVisitor": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecurringVisitorUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.revokeRecurringVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listVisitorApprovalRequests": {
+        parameters: {
+            query?: {
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorApprovalRequestList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.decideVisitorApprovalRequest": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the request. */
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VisitorDecision"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorApprovalRequest"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listDeliveries": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeliveryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getGateConsole": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateConsole"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listGateVisitors": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Filter by `date`. */
+                date?: string;
+                /** @description Filter by `plate`. */
+                plate?: string;
+                /** @description Filter by `unit_door_number`. */
+                unit_door_number?: string;
+                /** @description Filter by `approval_status`. */
+                approval_status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardVisitorList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getGateVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.scanGateVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScanRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScanResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createWalkInVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WalkInCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.arriveGateVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["VisitorArrive"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.leaveGateVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.getGateVisitorCallContact": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallContact"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.searchGatePlates": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Free-text search. */
+                q: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GatePlateList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.listGateDeliveries": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `unit_door_number`. */
+                unit_door_number?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateDeliveryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createGateDelivery": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeliveryCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateDelivery"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.collectGateDelivery": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the delivery. */
+                delivery_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeliveryCollect"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateDelivery"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.createGuardSession": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GuardSessionCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardSession"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "gate.listGuards": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.setGuardPin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GatePinSet"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];

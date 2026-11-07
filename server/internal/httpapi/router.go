@@ -12,6 +12,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -45,7 +46,9 @@ type Deps struct {
 	Authz   *authz.Resolver
 	Tenancy *tenancy.Service
 	People  *people.Service
-	Audit   *audit.Service
+	// Community serves the community operations (bookings, visitors, guard console, parcels).
+	Community *community.Service
+	Audit     *audit.Service
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).

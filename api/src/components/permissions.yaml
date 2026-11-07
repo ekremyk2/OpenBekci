@@ -10,9 +10,16 @@ schemas:
       - allocation.read
       - audit.read
       - audit.report
+      - bookings.create
+      - bookings.manage
+      - bookings.read
       - claim.manage
+      - deliveries.read
       - directory.consent
       - directory.read
+      - facilities.manage
+      - gate.manage
+      - gate.operate
       - import.run
       - invitation.household
       - invitation.manage
@@ -42,14 +49,23 @@ schemas:
       - vehicle.read
       - vendor.manage
       - vendor.read
+      - visitors.decide
+      - visitors.manage
+      - visitors.read
 x-openbekci-roles:
   org_admin:
     - allocation.manage
     - allocation.read
     - audit.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - claim.manage
     - directory.consent
     - directory.read
+    - facilities.manage
+    - gate.manage
+    - gate.operate
     - import.run
     - invitation.household
     - invitation.manage
@@ -78,12 +94,20 @@ x-openbekci-roles:
     - vehicle.read
     - vendor.manage
     - vendor.read
+    - visitors.manage
+    - visitors.read
   site_manager:
     - allocation.manage
     - allocation.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - claim.manage
     - directory.consent
     - directory.read
+    - facilities.manage
+    - gate.manage
+    - gate.operate
     - import.run
     - invitation.household
     - invitation.manage
@@ -107,10 +131,16 @@ x-openbekci-roles:
     - vehicle.read
     - vendor.manage
     - vendor.read
+    - visitors.manage
+    - visitors.read
   board_member:
     - allocation.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - directory.consent
     - directory.read
+    - facilities.manage
     - me.read
     - membership.read
     - moveout.read
@@ -122,6 +152,8 @@ x-openbekci-roles:
     - unit.read
     - vehicle.read
     - vendor.read
+    - visitors.manage
+    - visitors.read
   auditor:
     - allocation.read
     - audit.read
@@ -139,6 +171,7 @@ x-openbekci-roles:
     - unit.read
     - vehicle.read
     - vendor.read
+    - visitors.read
   accountant:
     - allocation.manage
     - allocation.read
@@ -163,6 +196,7 @@ x-openbekci-roles:
     - vendor.read
   guard:
     - directory.consent
+    - gate.operate
     - me.read
     - sessions.manage_own
     - vehicle.read

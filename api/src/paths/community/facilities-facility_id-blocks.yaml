@@ -1,0 +1,120 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: facility_id
+    in: path
+    required: true
+    description: Id of the facility.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: community.listFacilityBlocks
+  summary: List blocked dates
+  description: |-
+    **Release 0.3.** List blocked dates.
+
+    Permission (any one of): `bookings.read`, `facilities.manage`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - bookings.read
+      - facilities.manage
+    site_manager:
+      - bookings.read
+      - facilities.manage
+    board_member:
+      - bookings.read
+      - facilities.manage
+    owner:
+      - bookings.read
+    tenant:
+      - bookings.read
+    household:
+      - bookings.read
+  x-stability: preview
+  parameters:
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: End of the range (inclusive).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/FacilityBlockList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: community.createFacilityBlock
+  summary: Block dates
+  description: |-
+    **Release 0.3.** Existing bookings in the range are not cancelled automatically (409 `conflict` lists them).
+
+    Permission: `facilities.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - facilities.manage
+    site_manager:
+      - facilities.manage
+    board_member:
+      - facilities.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/community.yaml#/schemas/FacilityBlockCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/FacilityBlock
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -113,8 +113,8 @@ func (r *Registry) Register(module string, defs ...PermissionDef) error {
 			return fmt.Errorf("authz: %s: permission %q is already registered by %s", module, d.Name, r.modules[d.Name])
 		case d.Description == "":
 			return fmt.Errorf("authz: %s: permission %q has no description", module, d.Name)
-		case len(d.Roles) == 0:
-			return fmt.Errorf("authz: %s: permission %q has no roles", module, d.Name)
+		case len(d.Roles) == 0 && len(d.Occupants) == 0:
+			return fmt.Errorf("authz: %s: permission %q has no roles or occupancy kinds", module, d.Name)
 		case len(d.Scopes) == 0:
 			return fmt.Errorf("authz: %s: permission %q has no scopes", module, d.Name)
 		}

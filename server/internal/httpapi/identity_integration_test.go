@@ -14,6 +14,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -39,6 +40,7 @@ type idEnv struct {
 	mail   *mail.Recorder
 	people *people.Service
 	tenSvc *tenancy.Service
+	comm   *community.Service
 	cookie *http.Cookie
 }
 
@@ -67,13 +69,17 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		t.Fatal(perr)
 	}
 	e.tenSvc = tenancy.NewService(d)
+	e.comm, perr = community.NewService(d, community.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, Platform: d, Log: cfg.Log})
+	if perr != nil {
+		t.Fatal(perr)
+	}
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.h = NewRouter(Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Community: e.comm, Audit: audit.NewService(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}, Options{})
 	return e

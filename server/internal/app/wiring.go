@@ -7,6 +7,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -66,6 +67,19 @@ func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) 
 	})
 }
 
+// newCommunity builds the community service. The money, notifications and QR
+// modules are not wired yet, so the booking charger and the notifier are the
+// no-op defaults (a booking stores its fee, a notification is dropped); a later
+// phase passes the real ones here.
+func newCommunity(cfg Config, log *slog.Logger, d *db.DB) (*community.Service, error) {
+	return community.NewService(d, community.Config{
+		EncryptionKey: cfg.EncryptionKey,
+		BaseURL:       cfg.BaseURL,
+		Platform:      d,
+		Log:           log,
+	})
+}
+
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
 func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (httpapi.Deps, error) {
@@ -75,6 +89,10 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{}) // sites and blocks exist from phase B on
 	peopleSvc, err := newPeople(cfg, log, d, ident)
+	if err != nil {
+		return httpapi.Deps{}, err
+	}
+	communitySvc, err := newCommunity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
@@ -92,6 +110,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store) (ht
 		Authz:       authz.NewResolver(d, reg, nil),
 		Tenancy:     tenancy.NewService(d),
 		People:      peopleSvc,
+		Community:   communitySvc,
 		Audit:       audit.NewService(d),
 		Authenticator: httpapi.SessionAuthenticator{
 			Identity: ident,

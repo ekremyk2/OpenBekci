@@ -265,7 +265,7 @@ func minimalArchive(org authztest.Org) string {
 	sid := id.New()
 	row := fmt.Sprintf(`{"id":%q,"org_id":%q,"name":"Imported","address":{},"timezone":"Europe/Istanbul","currency":"TRY","fiscal_year_start_month":1,"lock_date":null,`+
 		`"settings":{},"bank_details":{},"status":"active","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z","version":1}`, sid, org.ID)
-	tables := []string{"block", "unit", "allocation_key", "allocation_key_value", "unit_tag", "vehicle", "facility", "person", "occupancy", "move_out", "directory_consent", "vendor", "unit_claim", "membership"}
+	tables := []string{"block", "unit", "allocation_key", "allocation_key_value", "unit_tag", "vehicle", "facility", "facility_block", "person", "occupancy", "move_out", "directory_consent", "vendor", "unit_claim", "membership"}
 	var b strings.Builder
 	fmt.Fprintf(&b, `{"format":"openbekci.site-archive","version":1,"exported_at":"2026-01-01T00:00:00Z","source_org_id":%q,"site_id":%q,"site_name":"Imported","tables":{"site":[%s]`, uuid.New(), sid, row)
 	for _, tb := range tables {

@@ -60,6 +60,9 @@ func TestRolePermissionsGolden(t *testing.T) {
 				held = true
 			}
 		}
+		if def, ok := reg.Lookup(p); ok && len(def.Roles) == 0 && len(def.Occupants) > 0 {
+			continue // a portal permission: held through occupancies only
+		}
 		if !held {
 			t.Errorf("permission %s is registered but no role in the golden table holds it", p)
 		}

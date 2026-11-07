@@ -27,6 +27,8 @@ tags:
     description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
   - name: platform
     description: Instance operation (platform administrators).
+  - name: community
+    description: Facilities and bookings, visitors with QR admission and approvals, recurring visitors, the guard console and parcels.
 paths:
   /.well-known/openbekci.json:
     get:
@@ -3454,6 +3456,2357 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/facilities:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listFacilities
+      summary: List facilities
+      description: |-
+        **Release 0.3.** Cursor-paginated list of facilitys.
+
+        Permission (any one of): `bookings.read`, `facilities.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.read
+          - facilities.manage
+        site_manager:
+          - bookings.read
+          - facilities.manage
+        board_member:
+          - bookings.read
+          - facilities.manage
+        owner:
+          - bookings.read
+        tenant:
+          - bookings.read
+        household:
+          - bookings.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `enabled`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: community.createFacility
+      summary: Create facility
+      description: |-
+        **Release 0.3.** Creates a facility.
+
+        Permission: `facilities.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - facilities.manage
+        site_manager:
+          - facilities.manage
+        board_member:
+          - facilities.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Facility'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/facilities/{facility_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: facility_id
+        in: path
+        required: true
+        description: Id of the facility.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getFacility
+      summary: Get facility
+      description: |-
+        **Release 0.3.** Get facility.
+
+        Permission (any one of): `bookings.read`, `facilities.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.read
+          - facilities.manage
+        site_manager:
+          - bookings.read
+          - facilities.manage
+        board_member:
+          - bookings.read
+          - facilities.manage
+        owner:
+          - bookings.read
+        tenant:
+          - bookings.read
+        household:
+          - bookings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Facility'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: community.updateFacility
+      summary: Update facility
+      description: |-
+        **Release 0.3.** Update facility.
+
+        Permission: `facilities.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - facilities.manage
+        site_manager:
+          - facilities.manage
+        board_member:
+          - facilities.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Facility'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: community.deleteFacility
+      summary: Delete facility
+      description: |-
+        **Release 0.3.** Only without future bookings (409 `conflict`).
+
+        Permission: `facilities.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - facilities.manage
+        site_manager:
+          - facilities.manage
+        board_member:
+          - facilities.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/facilities/{facility_id}/blocks:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: facility_id
+        in: path
+        required: true
+        description: Id of the facility.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.listFacilityBlocks
+      summary: List blocked dates
+      description: |-
+        **Release 0.3.** List blocked dates.
+
+        Permission (any one of): `bookings.read`, `facilities.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.read
+          - facilities.manage
+        site_manager:
+          - bookings.read
+          - facilities.manage
+        board_member:
+          - bookings.read
+          - facilities.manage
+        owner:
+          - bookings.read
+        tenant:
+          - bookings.read
+        household:
+          - bookings.read
+      x-stability: preview
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of the range (inclusive).
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityBlockList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: community.createFacilityBlock
+      summary: Block dates
+      description: |-
+        **Release 0.3.** Existing bookings in the range are not cancelled automatically (409 `conflict` lists them).
+
+        Permission: `facilities.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - facilities.manage
+        site_manager:
+          - facilities.manage
+        board_member:
+          - facilities.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityBlockCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityBlock'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: facility_id
+        in: path
+        required: true
+        description: Id of the facility.
+        schema:
+          type: string
+          format: uuid
+      - name: block_id
+        in: path
+        required: true
+        description: Id of the block.
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: community.deleteFacilityBlock
+      summary: Remove a block
+      description: |-
+        **Release 0.3.** Remove a block.
+
+        Permission: `facilities.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - facilities.manage
+        site_manager:
+          - facilities.manage
+        board_member:
+          - facilities.manage
+      x-idempotent: optional
+      x-stability: preview
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/facilities/{facility_id}/availability:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: facility_id
+        in: path
+        required: true
+        description: Id of the facility.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getFacilityAvailability
+      summary: Taken and blocked slots
+      description: |-
+        **Release 0.3.** Taken and blocked slots.
+
+        Permission: `bookings.create`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.create
+        site_manager:
+          - bookings.create
+        board_member:
+          - bookings.create
+        owner:
+          - bookings.create
+        tenant:
+          - bookings.create
+        household:
+          - bookings.create
+      x-stability: preview
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of the range (inclusive).
+          required: true
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of the range (inclusive).
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Availability'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bookings:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listBookings
+      summary: List bookings
+      description: |-
+        **Release 0.3.** List bookings.
+
+        Permission: `bookings.read` (residents: their own unit).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.read
+        site_manager:
+          - bookings.read
+        board_member:
+          - bookings.read
+        owner:
+          - bookings.read
+        tenant:
+          - bookings.read
+        household:
+          - bookings.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: facility_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `facility_id`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - confirmed
+              - cancelled
+          description: Filter by `status`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of the range (inclusive).
+        - name: mine
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `mine`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: community.createBooking
+      summary: Book a facility
+      description: |-
+        **Release 0.3.** Checks hours, duration, lead time, quota and who may book; a taken slot is 409 `conflict`. A fee posts a charge on the unit side.
+
+        Permission: `bookings.create`.
+
+        Problems: `conflict` (409), `validation_failed` (422), `idempotency_mismatch` (422).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.create
+        site_manager:
+          - bookings.create
+        board_member:
+          - bookings.create
+        owner:
+          - bookings.create
+        tenant:
+          - bookings.create
+        household:
+          - bookings.create
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bookings/{booking_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: booking_id
+        in: path
+        required: true
+        description: Id of the booking.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getBooking
+      summary: Get a booking
+      description: |-
+        **Release 0.3.** Get a booking.
+
+        Permission: `bookings.read`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.read
+        site_manager:
+          - bookings.read
+        board_member:
+          - bookings.read
+        owner:
+          - bookings.read
+        tenant:
+          - bookings.read
+        household:
+          - bookings.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bookings/{booking_id}:cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: booking_id
+        in: path
+        required: true
+        description: Id of the booking.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.cancelBooking
+      summary: Cancel a booking
+      description: |-
+        **Release 0.3.** Refunds the fee automatically when cancelled before the facility cutoff.
+
+        Permission (any one of): `bookings.manage`, `bookings.create`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - bookings.manage
+          - bookings.create
+        site_manager:
+          - bookings.manage
+          - bookings.create
+        board_member:
+          - bookings.manage
+          - bookings.create
+        owner:
+          - bookings.create
+        tenant:
+          - bookings.create
+        household:
+          - bookings.create
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCancel'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-entries:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listVisitorEntries
+      summary: List visitor entries
+      description: |-
+        **Release 0.3.** Cursor-paginated list of visitor entrys.
+
+        Permission (any one of): `visitors.read`, `visitors.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.read
+          - visitors.manage
+        site_manager:
+          - visitors.read
+          - visitors.manage
+        board_member:
+          - visitors.read
+          - visitors.manage
+        auditor:
+          - visitors.read
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: approval_status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - pre_approved
+              - requested
+              - approved
+              - denied
+              - expired
+          description: Filter by `approval_status`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of the range (inclusive).
+        - name: arrived
+          in: query
+          schema:
+            type: boolean
+          description: Filter by `arrived`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntryList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: community.createVisitorEntry
+      summary: Create visitor entry
+      description: |-
+        **Release 0.3.** Pre-registration: the response carries the QR token the resident shares with the guest.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitorEntryCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getVisitorEntry
+      summary: Get visitor entry
+      description: |-
+        **Release 0.3.** Get visitor entry.
+
+        Permission (any one of): `visitors.read`, `visitors.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.read
+          - visitors.manage
+        site_manager:
+          - visitors.read
+          - visitors.manage
+        board_member:
+          - visitors.read
+          - visitors.manage
+        auditor:
+          - visitors.read
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: community.updateVisitorEntry
+      summary: Update visitor entry
+      description: |-
+        **Release 0.3.** Update visitor entry.
+
+        Permission: `visitors.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitorEntryUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.cancelVisitorEntry
+      summary: Cancel a visitor entry
+      description: |-
+        **Release 0.3.** Cancel a visitor entry.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/recurring-visitors:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listRecurringVisitors
+      summary: List recurring visitors
+      description: |-
+        **Release 0.3.** Cursor-paginated list of recurring visitors.
+
+        Permission (any one of): `visitors.read`, `visitors.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.read
+          - visitors.manage
+        site_manager:
+          - visitors.read
+          - visitors.manage
+        board_member:
+          - visitors.read
+          - visitors.manage
+        auditor:
+          - visitors.read
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - active
+              - revoked
+              - expired
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitorList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: community.createRecurringVisitor
+      summary: Create recurring visitor
+      description: |-
+        **Release 0.3.** Creates a recurring visitor.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringVisitorCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: recurring_visitor_id
+        in: path
+        required: true
+        description: Id of the recurring visitor.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getRecurringVisitor
+      summary: Get recurring visitor
+      description: |-
+        **Release 0.3.** Get recurring visitor.
+
+        Permission (any one of): `visitors.read`, `visitors.manage`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.read
+          - visitors.manage
+        site_manager:
+          - visitors.read
+          - visitors.manage
+        board_member:
+          - visitors.read
+          - visitors.manage
+        auditor:
+          - visitors.read
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: community.updateRecurringVisitor
+      summary: Update recurring visitor
+      description: |-
+        **Release 0.3.** Update recurring visitor.
+
+        Permission: `visitors.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringVisitorUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: recurring_visitor_id
+        in: path
+        required: true
+        description: Id of the recurring visitor.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.revokeRecurringVisitor
+      summary: Revoke a recurring visitor
+      description: |-
+        **Release 0.3.** Takes effect immediately, also at the gate.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-approval-requests:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listVisitorApprovalRequests
+      summary: My visitor approval requests
+      description: |-
+        **Release 0.3.** Polled while pending.
+
+        Permission: `visitors.decide`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        owner:
+          - visitors.decide
+        tenant:
+          - visitors.decide
+        household:
+          - visitors.decide
+      x-stability: preview
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - pending
+              - approved
+              - denied
+              - expired
+          description: Filter by `status`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorApprovalRequestList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: request_id
+        in: path
+        required: true
+        description: Id of the request.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.decideVisitorApprovalRequest
+      summary: Approve or deny a visitor
+      description: |-
+        **Release 0.3.** Approval creates a single-use credential for the access agent within seconds (0.3 gate control). A decision after expiry is 409 `conflict`.
+
+        Permission: `visitors.decide`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        owner:
+          - visitors.decide
+        tenant:
+          - visitors.decide
+        household:
+          - visitors.decide
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitorDecision'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorApprovalRequest'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/deliveries:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listDeliveries
+      summary: List parcels of my unit (or of the site)
+      description: |-
+        **Release 0.3.** List parcels of my unit (or of the site).
+
+        Permission (any one of): `deliveries.read`, `visitors.read`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.read
+        site_manager:
+          - visitors.read
+        board_member:
+          - visitors.read
+        auditor:
+          - visitors.read
+        owner:
+          - deliveries.read
+        tenant:
+          - deliveries.read
+        household:
+          - deliveries.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - waiting
+              - collected
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/console:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.getGateConsole
+      summary: Guard console snapshot
+      description: |-
+        **Release 0.3.** Today's expected visitors, pending approvals, waiting parcels and the access agent state.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateConsole'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listGateVisitors
+      summary: Search visitors by name or plate
+      description: |-
+        **Release 0.3.** Search visitors by name or plate.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - name: date
+          in: query
+          schema:
+            type: string
+          description: Filter by `date`.
+        - name: plate
+          in: query
+          schema:
+            type: string
+          description: Filter by `plate`.
+        - name: unit_door_number
+          in: query
+          schema:
+            type: string
+          description: Filter by `unit_door_number`.
+        - name: approval_status
+          in: query
+          schema:
+            type: string
+          description: Filter by `approval_status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardVisitorList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getGateVisitor
+      summary: Poll one visitor (approval status)
+      description: |-
+        **Release 0.3.** Poll one visitor (approval status).
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors:scan:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: community.scanGateVisitor
+      summary: Scan a visitor QR
+      description: |-
+        **Release 0.3.** Online validation against the visitor entry; does not need the access agent. If valid, admit with `community.arriveGateVisitor`.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScanRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanResult'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors:walk-in:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: community.createWalkInVisitor
+      summary: Register a walk-in and ask the resident
+      description: |-
+        **Release 0.3.** Creates an entry with `approval_status = requested` and sends the resident an approve / deny request (in-app and SMS).
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+
+        Problems: `sms_unavailable` (503), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalkInCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.arriveGateVisitor
+      summary: Mark a visitor arrived
+      description: |-
+        **Release 0.3.** Only for a valid pre-approved or approved entry.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisitorArrive'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:leave:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.leaveGateVisitor
+      summary: Mark a visitor left
+      description: |-
+        **Release 0.3.** Mark a visitor left.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: community.getGateVisitorCallContact
+      summary: The number to call when the resident does not answer
+      description: |-
+        **Release 0.3.** Only the gate contact number the resident chose to share, and only for a pending request.
+
+        Permission: `gate.operate`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallContact'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/plates:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.searchGatePlates
+      summary: Look up a plate
+      description: |-
+        **Release 0.3.** Registered resident plates: plate and door number only.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+          required: true
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatePlateList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/deliveries:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: community.listGateDeliveries
+      summary: Waiting parcels
+      description: |-
+        **Release 0.3.** Waiting parcels.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_door_number
+          in: query
+          schema:
+            type: string
+          description: Filter by `unit_door_number`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - waiting
+              - collected
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateDeliveryList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: community.createGateDelivery
+      summary: Log a parcel against a unit
+      description: |-
+        **Release 0.3.** Notifies the resident (in-app plus their preferred channel).
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateDelivery'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: delivery_id
+        in: path
+        required: true
+        description: Id of the delivery.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.collectGateDelivery
+      summary: Mark a parcel collected
+      description: |-
+        **Release 0.3.** Mark a parcel collected.
+
+        Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
+
+        Permission: `gate.operate`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/GuardSession'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryCollect'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateDelivery'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/sessions:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: community.createGuardSession
+      summary: Switch guard with a quick PIN
+      description: |-
+        **Release 0.3.** The console is a shared booth device: the guard picks their name (`gate.listGuards`) and enters their PIN so every action is attributed to a person. A wrong PIN, an unknown person, a person without a PIN and a person who is not a guard of the site all answer the same `invalid_grant` (401).
+
+        **Rate limit.** PIN attempts are limited per person and per console: 5 failed attempts in 15 minutes lock that guard for 15 minutes (429 `rate_limited` with `Retry-After`, also for a correct PIN during the lock), and a console that fails 20 times in an hour is locked for an hour. Every failed attempt is audited.
+
+        Permission: `gate.operate`.
+
+        Problems: `rate_limited` (429), `invalid_grant` (401), `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardSessionCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardSession'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/guards:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: gate.listGuards
+      summary: List the guards of a site (booth picker)
+      description: |-
+        **Release 0.3.** The people holding an active guard membership on the site, by display name and id only: the booth shows them as buttons so the guard picks their name and then enters a PIN (`community.createGuardSession`). Guards hold no `people.read`, so this is their only way to see colleagues; no phone, e-mail or other data is returned.
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/persons/{person_id}/gate-pin:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: person_id
+        in: path
+        required: true
+        description: Id of the person.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: community.setGuardPin
+      summary: Set or reset a guard PIN
+      description: |-
+        **Release 0.3.** For a person with a guard membership; stored hashed; 4 to 8 digits. PINs are per person and are checked together with `person_id` at the booth, so they need not be unique. Setting a PIN clears a lock.
+
+        Permission: `gate.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.manage
+        site_manager:
+          - gate.manage
+      x-idempotent: optional
+      x-stability: preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GatePinSet'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/platform/audit:
     get:
       operationId: platform.listAudit
@@ -3553,10 +5906,42 @@ components:
       name: org_id
       in: path
       required: true
-      description: The organization id.
+      description: Organization id.
       schema:
         type: string
         format: uuid
+    SiteIdRequired:
+      name: site_id
+      in: query
+      required: true
+      description: The site this resource belongs to.
+      schema:
+        type: string
+        format: uuid
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+      schema:
+        type: string
+        example: '"3"'
+    IdempotencyKeyRequired:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 128
+    GuardSession:
+      name: X-Guard-Session
+      in: header
+      x-go-name: GuardSessionHeader
+      description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+      schema:
+        type: string
   responses:
     Problem:
       description: Error. RFC 9457 problem details with a stable `code`.
@@ -4292,9 +6677,16 @@ components:
         - allocation.read
         - audit.read
         - audit.report
+        - bookings.create
+        - bookings.manage
+        - bookings.read
         - claim.manage
+        - deliveries.read
         - directory.consent
         - directory.read
+        - facilities.manage
+        - gate.manage
+        - gate.operate
         - import.run
         - invitation.household
         - invitation.manage
@@ -4324,6 +6716,9 @@ components:
         - vehicle.read
         - vendor.manage
         - vendor.read
+        - visitors.decide
+        - visitors.manage
+        - visitors.read
     Organization:
       type: object
       required:
@@ -6668,6 +9063,1605 @@ components:
         current:
           type: boolean
           description: False for a former occupancy (read access bounded by its dates).
+    OpeningHours:
+      type: object
+      required:
+        - days
+        - start
+        - end
+      properties:
+        days:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: ISO weekdays, 1 = Monday.
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+    FacilityRules:
+      type: object
+      description: Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue.
+      required:
+        - opening_hours
+        - max_duration_minutes
+        - max_days_ahead
+        - min_notice_minutes
+        - quota_per_unit
+        - quota_period
+        - who_may_book
+        - fee
+        - cancel_refund_cutoff_hours
+      properties:
+        opening_hours:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpeningHours'
+          description: Site timezone.
+        max_duration_minutes:
+          type: integer
+          format: int64
+        max_days_ahead:
+          type: integer
+          format: int64
+          description: How far ahead a booking may be made.
+        min_notice_minutes:
+          type: integer
+          format: int64
+          nullable: true
+        quota_per_unit:
+          type: integer
+          format: int64
+          nullable: true
+        quota_period:
+          type: string
+          description: Open enum.
+          enum:
+            - week
+            - month
+          x-open-enum: true
+          nullable: true
+        who_may_book:
+          type: array
+          items:
+            type: string
+            enum:
+              - owner
+              - tenant
+              - household
+        fee:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+          description: 'Becomes a charge on the unit side when the booking is confirmed (default: the side of whoever booked).'
+        cancel_refund_cutoff_hours:
+          type: integer
+          format: int64
+          nullable: true
+          description: A fee is refunded automatically when cancelled earlier than this.
+    Facility:
+      type: object
+      description: 'A bookable thing: hall, barbecue area, court, guest flat.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - description
+        - rules
+        - enabled
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        rules:
+          $ref: '#/components/schemas/FacilityRules'
+        enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        name: Ali Veli
+        description: null
+        rules:
+          opening_hours:
+            - days: []
+              start: '09:00'
+              end: '09:00'
+          max_duration_minutes: 1
+          max_days_ahead: 1
+          min_notice_minutes: null
+          quota_per_unit: null
+          quota_period: week
+          who_may_book:
+            - owner
+          fee:
+            amount: 200000
+            currency: TRY
+          cancel_refund_cutoff_hours: null
+        enabled: false
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    FacilityCreate:
+      type: object
+      required:
+        - site_id
+        - name
+        - rules
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        rules:
+          $ref: '#/components/schemas/FacilityRules'
+        enabled:
+          type: boolean
+    FacilityUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        rules:
+          $ref: '#/components/schemas/FacilityRules'
+        enabled:
+          type: boolean
+    FacilityList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Facility'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            name: Ali Veli
+            description: null
+            rules:
+              opening_hours:
+                - days: []
+                  start: '09:00'
+                  end: '09:00'
+              max_duration_minutes: 1
+              max_days_ahead: 1
+              min_notice_minutes: null
+              quota_per_unit: null
+              quota_period: week
+              who_may_book:
+                - owner
+              fee:
+                amount: 200000
+                currency: TRY
+              cancel_refund_cutoff_hours: null
+            enabled: false
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    TimeRange:
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+    FacilityBlock:
+      type: object
+      description: Dates the manager blocks.
+      required:
+        - id
+        - org_id
+        - facility_id
+        - start
+        - end
+        - reason
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        facility_id:
+          type: string
+          format: uuid
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        facility_id: 0192a3f0-1000-7000-8000-000000000004
+        start: '2026-03-01T09:00:00Z'
+        end: '2026-03-01T09:00:00Z'
+        reason: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    FacilityBlockCreate:
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          nullable: true
+    FacilityBlockList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityBlock'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            facility_id: 0192a3f0-1000-7000-8000-000000000004
+            start: '2026-03-01T09:00:00Z'
+            end: '2026-03-01T09:00:00Z'
+            reason: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    Availability:
+      type: object
+      required:
+        - facility_id
+        - from
+        - to
+        - taken
+        - blocked
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+        taken:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRange'
+          description: Residents see slots only as taken; names stay with the manager (KVKK).
+        blocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRange'
+    Booking:
+      type: object
+      description: A facility booking; confirmed instantly when it satisfies the rules.
+      required:
+        - id
+        - org_id
+        - site_id
+        - facility_id
+        - facility_name
+        - unit_id
+        - unit_door_number
+        - person_id
+        - person_display_name
+        - start
+        - end
+        - status
+        - charge_id
+        - fee
+        - refund
+        - cancelled_reason
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        facility_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        person_display_name:
+          type: string
+          nullable: true
+          description: Managers and the booker only.
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - confirmed
+            - cancelled
+          x-open-enum: true
+        charge_id:
+          type: string
+          format: uuid
+          nullable: true
+        fee:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+        refund:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+        cancelled_reason:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        facility_id: 0192a3f0-1000-7000-8000-000000000003
+        facility_name: Community hall
+        unit_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_door_number: unit door number
+        person_id: null
+        person_display_name: null
+        start: '2026-03-14T18:00:00Z'
+        end: '2026-03-14T22:00:00Z'
+        status: confirmed
+        charge_id: null
+        fee: null
+        refund: null
+        cancelled_reason: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    BookingList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Booking'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            facility_id: 0192a3f0-1000-7000-8000-000000000003
+            facility_name: Community hall
+            unit_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_door_number: unit door number
+            person_id: null
+            person_display_name: null
+            start: '2026-03-14T18:00:00Z'
+            end: '2026-03-14T22:00:00Z'
+            status: confirmed
+            charge_id: null
+            fee: null
+            refund: null
+            cancelled_reason: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    BookingCreate:
+      type: object
+      required:
+        - facility_id
+        - unit_id
+        - start
+        - end
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        person_id:
+          type: string
+          format: uuid
+          description: Managers may book on behalf of a unit.
+        debtor_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: Side charged for the fee.
+    BookingCancel:
+      type: object
+      properties:
+        reason:
+          type: string
+    VisitorEntry:
+      type: object
+      description: A visitor. Valid for the window plus 30 minutes either side; single entry unless recurring.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - unit_door_number
+        - name
+        - plate
+        - window_from
+        - window_to
+        - approval_status
+        - source
+        - qr_token
+        - decided_by
+        - decided_at
+        - arrived_at
+        - left_at
+        - cancelled
+        - recurring_visitor_id
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+        approval_status:
+          type: string
+          description: Open enum.
+          enum:
+            - pre_approved
+            - requested
+            - approved
+            - denied
+            - expired
+          x-open-enum: true
+        source:
+          type: string
+          description: Open enum.
+          enum:
+            - pre_registered
+            - walk_in
+            - recurring
+          x-open-enum: true
+        qr_token:
+          type: string
+          nullable: true
+          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+        decided_by:
+          type: string
+          format: uuid
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        arrived_at:
+          type: string
+          format: date-time
+          nullable: true
+        left_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled:
+          type: boolean
+        recurring_visitor_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000003
+        org_id: 0192a3f0-1000-7000-8000-000000000001
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_id: 0192a3f0-1000-7000-8000-000000000002
+        unit_door_number: unit door number
+        name: Mehmet Kaya
+        plate: 34ABC123
+        window_from: '2026-03-01T09:00:00Z'
+        window_to: '2026-03-01T09:00:00Z'
+        approval_status: pre_approved
+        source: pre_registered
+        qr_token: null
+        decided_by: null
+        decided_at: null
+        arrived_at: null
+        left_at: null
+        cancelled: false
+        recurring_visitor_id: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    VisitorEntryCreate:
+      type: object
+      required:
+        - site_id
+        - unit_id
+        - name
+        - window_from
+        - window_to
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+    VisitorEntryUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+    VisitorEntryList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisitorEntry'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            org_id: 0192a3f0-1000-7000-8000-000000000001
+            site_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_id: 0192a3f0-1000-7000-8000-000000000002
+            unit_door_number: unit door number
+            name: Mehmet Kaya
+            plate: 34ABC123
+            window_from: '2026-03-01T09:00:00Z'
+            window_to: '2026-03-01T09:00:00Z'
+            approval_status: pre_approved
+            source: pre_registered
+            qr_token: null
+            decided_by: null
+            decided_at: null
+            arrived_at: null
+            left_at: null
+            cancelled: false
+            recurring_visitor_id: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    RecurringVisitor:
+      type: object
+      description: A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - name
+        - plate
+        - days
+        - start
+        - end
+        - valid_from
+        - valid_to
+        - status
+        - qr_token
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        days:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: ISO weekdays.
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - active
+            - revoked
+            - expired
+          x-open-enum: true
+        qr_token:
+          type: string
+          nullable: true
+          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        name: Ali Veli
+        plate: null
+        days:
+          - 1
+        start: '09:00'
+        end: '09:00'
+        valid_from: '2026-03-01'
+        valid_to: null
+        status: active
+        qr_token: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    RecurringVisitorCreate:
+      type: object
+      required:
+        - site_id
+        - unit_id
+        - name
+        - days
+        - start
+        - end
+        - valid_from
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        days:
+          type: array
+          items:
+            type: integer
+            format: int64
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+    RecurringVisitorUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        days:
+          type: array
+          items:
+            type: integer
+            format: int64
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+          example: '09:00'
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+    RecurringVisitorList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecurringVisitor'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            name: Ali Veli
+            plate: null
+            days:
+              - 1
+            start: '09:00'
+            end: '09:00'
+            valid_from: '2026-03-01'
+            valid_to: null
+            status: active
+            qr_token: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    VisitorApprovalRequest:
+      type: object
+      description: The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS).
+      required:
+        - id
+        - org_id
+        - entry_id
+        - unit_id
+        - unit_door_number
+        - visitor_name
+        - plate
+        - requested_at
+        - expires_at
+        - status
+        - decided_by
+        - decided_at
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        entry_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        visitor_name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        requested_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - pending
+            - approved
+            - denied
+            - expired
+          x-open-enum: true
+        decided_by:
+          type: string
+          format: uuid
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        entry_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        unit_door_number: unit door number
+        visitor_name: Ali Veli
+        plate: null
+        requested_at: '2026-03-01T09:00:00Z'
+        expires_at: '2026-03-01T09:00:00Z'
+        status: pending
+        decided_by: null
+        decided_at: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    VisitorApprovalRequestList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisitorApprovalRequest'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            entry_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            unit_door_number: unit door number
+            visitor_name: Ali Veli
+            plate: null
+            requested_at: '2026-03-01T09:00:00Z'
+            expires_at: '2026-03-01T09:00:00Z'
+            status: pending
+            decided_by: null
+            decided_at: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    VisitorDecision:
+      type: object
+      required:
+        - decision
+      properties:
+        decision:
+          type: string
+          enum:
+            - approve
+            - deny
+    Delivery:
+      type: object
+      description: A parcel logged by the guard.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - unit_door_number
+        - received_at
+        - received_by_display_name
+        - description
+        - status
+        - collected_at
+        - collected_by_name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        received_at:
+          type: string
+          format: date-time
+        received_by_display_name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - waiting
+            - collected
+          x-open-enum: true
+        collected_at:
+          type: string
+          format: date-time
+          nullable: true
+        collected_by_name:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        unit_door_number: unit door number
+        received_at: '2026-03-01T09:00:00Z'
+        received_by_display_name: null
+        description: null
+        status: waiting
+        collected_at: null
+        collected_by_name: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    DeliveryCreate:
+      type: object
+      required:
+        - site_id
+        - unit_id
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+          nullable: true
+    DeliveryList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Delivery'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            unit_door_number: unit door number
+            received_at: '2026-03-01T09:00:00Z'
+            received_by_display_name: null
+            description: null
+            status: waiting
+            collected_at: null
+            collected_by_name: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    DeliveryCollect:
+      type: object
+      required:
+        - collected_by_name
+      properties:
+        collected_by_name:
+          type: string
+    GuardVisitor:
+      type: object
+      description: 'What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token.'
+      required:
+        - id
+        - name
+        - plate
+        - unit_door_number
+        - window_from
+        - window_to
+        - approval_status
+        - approval_expires_at
+        - arrived_at
+        - left_at
+        - recurring
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        plate:
+          type: string
+          nullable: true
+        unit_door_number:
+          type: string
+        window_from:
+          type: string
+          format: date-time
+        window_to:
+          type: string
+          format: date-time
+        approval_status:
+          type: string
+          description: Open enum.
+          enum:
+            - pre_approved
+            - requested
+            - approved
+            - denied
+            - expired
+          x-open-enum: true
+        approval_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        arrived_at:
+          type: string
+          format: date-time
+          nullable: true
+        left_at:
+          type: string
+          format: date-time
+          nullable: true
+        recurring:
+          type: boolean
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        name: Ali Veli
+        plate: null
+        unit_door_number: unit door number
+        window_from: '2026-03-01T09:00:00Z'
+        window_to: '2026-03-01T09:00:00Z'
+        approval_status: pre_approved
+        approval_expires_at: null
+        arrived_at: null
+        left_at: null
+        recurring: false
+    GuardVisitorList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardVisitor'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            name: Ali Veli
+            plate: null
+            unit_door_number: unit door number
+            window_from: '2026-03-01T09:00:00Z'
+            window_to: '2026-03-01T09:00:00Z'
+            approval_status: pre_approved
+            approval_expires_at: null
+            arrived_at: null
+            left_at: null
+            recurring: false
+        next_cursor: null
+    GateAgentStatus:
+      type: object
+      required:
+        - connected
+        - last_seen_at
+        - points
+      properties:
+        connected:
+          type: boolean
+        last_seen_at:
+          type: string
+          format: date-time
+          nullable: true
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/GatePoint'
+    GatePoint:
+      type: object
+      required:
+        - id
+        - name
+        - kind
+        - direction
+        - enabled
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+        direction:
+          type: string
+        enabled:
+          type: boolean
+    GateConsole:
+      type: object
+      description: Everything the booth page shows at once; auto-refreshed.
+      required:
+        - server_time
+        - expected_visitors
+        - pending_approvals
+        - waiting_deliveries
+        - agent
+      properties:
+        server_time:
+          type: string
+          format: date-time
+        expected_visitors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardVisitor'
+        pending_approvals:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardVisitor'
+        waiting_deliveries:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateDelivery'
+        agent:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GateAgentStatus'
+          nullable: true
+          description: Absent when the site has no access agent.
+    GateDelivery:
+      type: object
+      required:
+        - id
+        - unit_door_number
+        - received_at
+        - description
+        - status
+        - collected_by_name
+      properties:
+        id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        received_at:
+          type: string
+          format: date-time
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - waiting
+            - collected
+          x-open-enum: true
+        collected_by_name:
+          type: string
+          nullable: true
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        unit_door_number: unit door number
+        received_at: '2026-03-01T09:00:00Z'
+        description: null
+        status: waiting
+        collected_by_name: null
+    GateDeliveryList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateDelivery'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            unit_door_number: unit door number
+            received_at: '2026-03-01T09:00:00Z'
+            description: null
+            status: waiting
+            collected_by_name: null
+        next_cursor: null
+    GatePlate:
+      type: object
+      required:
+        - plate
+        - unit_door_number
+      properties:
+        plate:
+          type: string
+        unit_door_number:
+          type: string
+      example:
+        plate: plate
+        unit_door_number: unit door number
+    GatePlateList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GatePlate'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - plate: plate
+            unit_door_number: unit door number
+        next_cursor: null
+    ScanRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: The scanned QR value, `obk1.<token>`.
+        point_id:
+          type: string
+          format: uuid
+    ScanResult:
+      type: object
+      required:
+        - valid
+        - reason
+        - entry
+      properties:
+        valid:
+          type: boolean
+        reason:
+          type: string
+          description: Open enum.
+          enum:
+            - match
+            - unknown
+            - outside_window
+            - used_up
+            - revoked
+            - wrong_site
+          x-open-enum: true
+        entry:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GuardVisitor'
+          nullable: true
+    WalkInCreate:
+      type: object
+      required:
+        - site_id
+        - unit_id
+        - name
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        plate:
+          type: string
+    VisitorArrive:
+      type: object
+      properties:
+        point_id:
+          type: string
+          format: uuid
+    CallContact:
+      type: object
+      required:
+        - display_name
+        - phone
+      properties:
+        display_name:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          description: E.164.
+      description: 'The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident''s number the visitor entry points to, with no other contact data.'
+    GuardSessionCreate:
+      type: object
+      description: 'Quick PIN switch at the booth: the guard picks their name from `gate.listGuards`, then types the PIN. The PIN is checked against that one person, so PINs need not be unique per site.'
+      required:
+        - site_id
+        - person_id
+        - pin
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        person_id:
+          type: string
+          format: uuid
+          description: The guard, from `gate.listGuards`.
+        pin:
+          type: string
+          pattern: ^\d{4,8}$
+          description: 4 to 8 digits (`community.setGuardPin`).
+      example:
+        site_id: 0192a3f0-1000-7000-8000-000000000002
+        person_id: 0192a3f0-1000-7000-8000-000000000004
+        pin: '1234'
+    GuardSession:
+      type: object
+      required:
+        - token
+        - expires_at
+        - person_id
+        - display_name
+      properties:
+        token:
+          type: string
+          description: Opaque bearer for the `X-Guard-Session` header. Valid until `expires_at` (12 hours), bound to the console login session and the site it was created for; ends earlier on logout of the console, on a new `createGuardSession` by the same console, or when the guard membership ends.
+        expires_at:
+          type: string
+          format: date-time
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+      description: 'A short-lived guard session. Send `token` as `X-Guard-Session` on guard operations (semantics: the header parameter).'
+    GatePinSet:
+      type: object
+      required:
+        - pin
+      properties:
+        pin:
+          type: string
+          description: 4 to 8 digits.
+    GuardRef:
+      type: object
+      description: 'A guard of the site as the booth shows it: name and id only, no contact data.'
+      required:
+        - person_id
+        - display_name
+        - has_pin
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        has_pin:
+          type: boolean
+          description: False until a manager has set a PIN (`community.setGuardPin`); such a guard cannot switch in.
+      example:
+        person_id: 0192a3f0-1000-7000-8000-000000000004
+        display_name: Ali Veli
+        has_pin: true
+    GuardList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardRef'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - person_id: 0192a3f0-1000-7000-8000-000000000004
+            display_name: Ali Veli
+            has_pin: true
+        next_cursor: null
     ReauthEmailCode:
       type: object
       required:
@@ -6686,9 +10680,15 @@ x-openbekci-roles:
     - allocation.manage
     - allocation.read
     - audit.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - claim.manage
     - directory.consent
     - directory.read
+    - facilities.manage
+    - gate.manage
+    - gate.operate
     - import.run
     - invitation.household
     - invitation.manage
@@ -6717,12 +10717,20 @@ x-openbekci-roles:
     - vehicle.read
     - vendor.manage
     - vendor.read
+    - visitors.manage
+    - visitors.read
   site_manager:
     - allocation.manage
     - allocation.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - claim.manage
     - directory.consent
     - directory.read
+    - facilities.manage
+    - gate.manage
+    - gate.operate
     - import.run
     - invitation.household
     - invitation.manage
@@ -6746,10 +10754,16 @@ x-openbekci-roles:
     - vehicle.read
     - vendor.manage
     - vendor.read
+    - visitors.manage
+    - visitors.read
   board_member:
     - allocation.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - directory.consent
     - directory.read
+    - facilities.manage
     - me.read
     - membership.read
     - moveout.read
@@ -6761,6 +10775,8 @@ x-openbekci-roles:
     - unit.read
     - vehicle.read
     - vendor.read
+    - visitors.manage
+    - visitors.read
   auditor:
     - allocation.read
     - audit.read
@@ -6778,6 +10794,7 @@ x-openbekci-roles:
     - unit.read
     - vehicle.read
     - vendor.read
+    - visitors.read
   accountant:
     - allocation.manage
     - allocation.read
@@ -6802,6 +10819,7 @@ x-openbekci-roles:
     - vendor.read
   guard:
     - directory.consent
+    - gate.operate
     - me.read
     - sessions.manage_own
     - vehicle.read

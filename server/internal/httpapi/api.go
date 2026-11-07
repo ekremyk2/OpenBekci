@@ -12,6 +12,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -55,7 +56,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
+	srv := &apiServer{community: deps.Community, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -71,9 +72,18 @@ func MountAPI(r chi.Router, deps Deps) {
 	r.NotFound(notFound)
 	r.MethodNotAllowed(methodNotAllowed(r))
 	gen.HandlerWithOptions(strict, gen.ChiServerOptions{
-		BaseRouter:       r,
-		Middlewares:      genMiddlewares(p.Middlewares()),
-		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) { problem.Write(w, r, requestBindError(err)) },
+		BaseRouter:  r,
+		Middlewares: genMiddlewares(p.Middlewares()),
+		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			// The generated wrapper binds required headers and query parameters before the
+			// middleware chain runs; authentication still has to come first, so a caller who
+			// is not signed in learns nothing about the parameters.
+			if aerr := p.authenticateFirst(r); aerr != nil {
+				problem.Write(w, r, aerr)
+				return
+			}
+			problem.Write(w, r, requestBindError(err))
+		},
 	})
 	// No catch-all route for /v1/* or /.well-known/*: a catch-all matches every
 	// method and would hide chi's 405. Unknown paths reach NotFound instead
@@ -91,6 +101,7 @@ type apiServer struct {
 	identity        *identity.Service
 	tenancy         *tenancy.Service
 	people          *people.Service
+	community       *community.Service
 	audit           *audit.Service
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie

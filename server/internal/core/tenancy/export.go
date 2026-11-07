@@ -50,6 +50,7 @@ var exportTables = []exportTable{
 	{"unit_tag", `SELECT to_jsonb(t) FROM unit_tag t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"vehicle", `SELECT to_jsonb(t) FROM vehicle t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"facility", `SELECT to_jsonb(t) FROM facility t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"facility_block", `SELECT to_jsonb(t) FROM facility_block t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"person", `SELECT to_jsonb(t) FROM person t WHERE t.org_id = $1 AND (t.site_id = $2 OR t.id IN (` + personsOfSite + `)) ORDER BY t.id`},
 	{"occupancy", `SELECT to_jsonb(t) FROM occupancy t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"move_out", `SELECT to_jsonb(t) FROM move_out t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
@@ -68,6 +69,15 @@ var excludedTables = map[string]string{
 	"import_batch": "operational record of spreadsheet imports",
 	"import_row":   "operational record of spreadsheet imports",
 	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
+
+	"booking":                  "booking history and its fee charges stay with the organization that charged them",
+	"visitor_entry":            "visitor logs are short-lived personal data (KVKK retention) and are not handed over",
+	"recurring_visitor":        "standing visitor permissions and their QR tokens are not handed over; the residents register them again",
+	"visitor_approval_request": "belongs to a visitor log entry",
+	"delivery":                 "parcel logs are short-lived and are not handed over",
+	"gate_pin":                 "guard PINs are credentials of the organization's people and are set again after the hand-over",
+	"gate_pin_attempt":         "operational record of PIN attempts",
+	"guard_session":            "console sessions end with the hand-over",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

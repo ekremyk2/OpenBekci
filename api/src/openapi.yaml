@@ -27,6 +27,8 @@ tags:
     description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
   - name: platform
     description: Instance operation (platform administrators).
+  - name: community
+    description: Facilities and bookings, visitors with QR admission and approvals, recurring visitors, the guard console and parcels.
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -161,6 +163,68 @@ paths:
     $ref: './paths/people/vendors.yaml'
   /v1/orgs/{org_id}/vendors/{vendor_id}:
     $ref: './paths/people/vendors-vendor_id.yaml'
+  /v1/orgs/{org_id}/facilities:
+    $ref: './paths/community/facilities.yaml'
+  /v1/orgs/{org_id}/facilities/{facility_id}:
+    $ref: './paths/community/facilities-facility_id.yaml'
+  /v1/orgs/{org_id}/facilities/{facility_id}/blocks:
+    $ref: './paths/community/facilities-facility_id-blocks.yaml'
+  /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id}:
+    $ref: './paths/community/facilities-facility_id-blocks-block_id.yaml'
+  /v1/orgs/{org_id}/facilities/{facility_id}/availability:
+    $ref: './paths/community/facilities-facility_id-availability.yaml'
+  /v1/orgs/{org_id}/bookings:
+    $ref: './paths/community/bookings.yaml'
+  /v1/orgs/{org_id}/bookings/{booking_id}:
+    $ref: './paths/community/bookings-booking_id.yaml'
+  /v1/orgs/{org_id}/bookings/{booking_id}:cancel:
+    $ref: './paths/community/bookings-booking_id_cancel.yaml'
+  /v1/orgs/{org_id}/visitor-entries:
+    $ref: './paths/community/visitor-entries.yaml'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:
+    $ref: './paths/community/visitor-entries-entry_id.yaml'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel:
+    $ref: './paths/community/visitor-entries-entry_id_cancel.yaml'
+  /v1/orgs/{org_id}/recurring-visitors:
+    $ref: './paths/community/recurring-visitors.yaml'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:
+    $ref: './paths/community/recurring-visitors-recurring_visitor_id.yaml'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke:
+    $ref: './paths/community/recurring-visitors-recurring_visitor_id_revoke.yaml'
+  /v1/orgs/{org_id}/visitor-approval-requests:
+    $ref: './paths/community/visitor-approval-requests.yaml'
+  /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide:
+    $ref: './paths/community/visitor-approval-requests-request_id_decide.yaml'
+  /v1/orgs/{org_id}/deliveries:
+    $ref: './paths/community/deliveries.yaml'
+  /v1/orgs/{org_id}/gate/console:
+    $ref: './paths/community/gate-console.yaml'
+  /v1/orgs/{org_id}/gate/visitors:
+    $ref: './paths/community/gate-visitors.yaml'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:
+    $ref: './paths/community/gate-visitors-entry_id.yaml'
+  /v1/orgs/{org_id}/gate/visitors:scan:
+    $ref: './paths/community/gate-visitors_scan.yaml'
+  /v1/orgs/{org_id}/gate/visitors:walk-in:
+    $ref: './paths/community/gate-visitors_walk-in.yaml'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive:
+    $ref: './paths/community/gate-visitors-entry_id_arrive.yaml'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}:leave:
+    $ref: './paths/community/gate-visitors-entry_id_leave.yaml'
+  /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact:
+    $ref: './paths/community/gate-visitors-entry_id-call-contact.yaml'
+  /v1/orgs/{org_id}/gate/plates:
+    $ref: './paths/community/gate-plates.yaml'
+  /v1/orgs/{org_id}/gate/deliveries:
+    $ref: './paths/community/gate-deliveries.yaml'
+  /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect:
+    $ref: './paths/community/gate-deliveries-delivery_id_collect.yaml'
+  /v1/orgs/{org_id}/gate/sessions:
+    $ref: './paths/community/gate-sessions.yaml'
+  /v1/orgs/{org_id}/gate/guards:
+    $ref: './paths/community/gate-guards.yaml'
+  /v1/orgs/{org_id}/persons/{person_id}/gate-pin:
+    $ref: './paths/community/persons-person_id-gate-pin.yaml'
   /v1/platform/audit:
     $ref: './paths/platform-audit.yaml'
 components:
@@ -409,3 +473,101 @@ components:
       $ref: './components/people.yaml#/schemas/VendorUpdate'
     MeOccupancy:
       $ref: './components/people.yaml#/schemas/MeOccupancy'
+    OpeningHours:
+      $ref: './components/community.yaml#/schemas/OpeningHours'
+    FacilityRules:
+      $ref: './components/community.yaml#/schemas/FacilityRules'
+    Facility:
+      $ref: './components/community.yaml#/schemas/Facility'
+    FacilityCreate:
+      $ref: './components/community.yaml#/schemas/FacilityCreate'
+    FacilityUpdate:
+      $ref: './components/community.yaml#/schemas/FacilityUpdate'
+    FacilityList:
+      $ref: './components/community.yaml#/schemas/FacilityList'
+    TimeRange:
+      $ref: './components/community.yaml#/schemas/TimeRange'
+    FacilityBlock:
+      $ref: './components/community.yaml#/schemas/FacilityBlock'
+    FacilityBlockCreate:
+      $ref: './components/community.yaml#/schemas/FacilityBlockCreate'
+    FacilityBlockList:
+      $ref: './components/community.yaml#/schemas/FacilityBlockList'
+    Availability:
+      $ref: './components/community.yaml#/schemas/Availability'
+    Booking:
+      $ref: './components/community.yaml#/schemas/Booking'
+    BookingList:
+      $ref: './components/community.yaml#/schemas/BookingList'
+    BookingCreate:
+      $ref: './components/community.yaml#/schemas/BookingCreate'
+    BookingCancel:
+      $ref: './components/community.yaml#/schemas/BookingCancel'
+    VisitorEntry:
+      $ref: './components/community.yaml#/schemas/VisitorEntry'
+    VisitorEntryCreate:
+      $ref: './components/community.yaml#/schemas/VisitorEntryCreate'
+    VisitorEntryUpdate:
+      $ref: './components/community.yaml#/schemas/VisitorEntryUpdate'
+    VisitorEntryList:
+      $ref: './components/community.yaml#/schemas/VisitorEntryList'
+    RecurringVisitor:
+      $ref: './components/community.yaml#/schemas/RecurringVisitor'
+    RecurringVisitorCreate:
+      $ref: './components/community.yaml#/schemas/RecurringVisitorCreate'
+    RecurringVisitorUpdate:
+      $ref: './components/community.yaml#/schemas/RecurringVisitorUpdate'
+    RecurringVisitorList:
+      $ref: './components/community.yaml#/schemas/RecurringVisitorList'
+    VisitorApprovalRequest:
+      $ref: './components/community.yaml#/schemas/VisitorApprovalRequest'
+    VisitorApprovalRequestList:
+      $ref: './components/community.yaml#/schemas/VisitorApprovalRequestList'
+    VisitorDecision:
+      $ref: './components/community.yaml#/schemas/VisitorDecision'
+    Delivery:
+      $ref: './components/community.yaml#/schemas/Delivery'
+    DeliveryCreate:
+      $ref: './components/community.yaml#/schemas/DeliveryCreate'
+    DeliveryList:
+      $ref: './components/community.yaml#/schemas/DeliveryList'
+    DeliveryCollect:
+      $ref: './components/community.yaml#/schemas/DeliveryCollect'
+    GuardVisitor:
+      $ref: './components/community.yaml#/schemas/GuardVisitor'
+    GuardVisitorList:
+      $ref: './components/community.yaml#/schemas/GuardVisitorList'
+    GateAgentStatus:
+      $ref: './components/community.yaml#/schemas/GateAgentStatus'
+    GatePoint:
+      $ref: './components/community.yaml#/schemas/GatePoint'
+    GateConsole:
+      $ref: './components/community.yaml#/schemas/GateConsole'
+    GateDelivery:
+      $ref: './components/community.yaml#/schemas/GateDelivery'
+    GateDeliveryList:
+      $ref: './components/community.yaml#/schemas/GateDeliveryList'
+    GatePlate:
+      $ref: './components/community.yaml#/schemas/GatePlate'
+    GatePlateList:
+      $ref: './components/community.yaml#/schemas/GatePlateList'
+    ScanRequest:
+      $ref: './components/community.yaml#/schemas/ScanRequest'
+    ScanResult:
+      $ref: './components/community.yaml#/schemas/ScanResult'
+    WalkInCreate:
+      $ref: './components/community.yaml#/schemas/WalkInCreate'
+    VisitorArrive:
+      $ref: './components/community.yaml#/schemas/VisitorArrive'
+    CallContact:
+      $ref: './components/community.yaml#/schemas/CallContact'
+    GuardSessionCreate:
+      $ref: './components/community.yaml#/schemas/GuardSessionCreate'
+    GuardSession:
+      $ref: './components/community.yaml#/schemas/GuardSession'
+    GatePinSet:
+      $ref: './components/community.yaml#/schemas/GatePinSet'
+    GuardRef:
+      $ref: './components/community.yaml#/schemas/GuardRef'
+    GuardList:
+      $ref: './components/community.yaml#/schemas/GuardList'

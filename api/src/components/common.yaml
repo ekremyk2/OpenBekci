@@ -41,7 +41,7 @@ parameters:
     name: org_id
     in: path
     required: true
-    description: The organization id.
+    description: Organization id.
     schema:
       type: string
       format: uuid

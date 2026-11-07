@@ -191,7 +191,7 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 		}
 		orgScoped := isOrgPath(key.path)
 		var required []string
-		hasRoles := extJSON(t, op.Extensions, "x-openbekci-roles", &required)
+		hasRoles, anyOf := opRoles(t, op.Extensions, &required)
 		if orgScoped && (!hasRoles || len(required) == 0) {
 			t.Errorf("operation %s (%s %s) is under /v1/orgs/{org_id} but has no x-openbekci-roles: list the permission(s) it requires", id, key.method, key.path)
 			continue
@@ -245,7 +245,7 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 					switch {
 					case tg.name == "other" || a.Role == "":
 						want = 404
-					case !holdsAll(matrix[string(a.Role)], required):
+					case !holdsRequired(matrix[string(a.Role)], required, anyOf):
 						want = 403
 					}
 				}
@@ -258,6 +258,59 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 			}
 		}
 	}
+}
+
+// opRoles reads an operation's x-openbekci-roles into perms: the permission
+// list B's operations carry, or, for the draft contract's role map form
+// (community), the sorted union of the permissions of every role with anyOf
+// set, meaning one of them suffices.
+func opRoles(t *testing.T, ext map[string]any, perms *[]string) (has, anyOf bool) {
+	t.Helper()
+	var asList []string
+	if extJSON2(ext, "x-openbekci-roles", &asList) {
+		*perms = asList
+		return true, false
+	}
+	var byRole map[string][]string
+	if !extJSON(t, ext, "x-openbekci-roles", &byRole) {
+		return false, false
+	}
+	seen := map[string]bool{}
+	for _, ps := range byRole {
+		for _, p := range ps {
+			if !seen[p] {
+				seen[p] = true
+				*perms = append(*perms, p)
+			}
+		}
+	}
+	sort.Strings(*perms)
+	return true, true
+}
+
+// extJSON2 is extJSON without failing the test on another shape.
+func extJSON2(ext map[string]any, name string, into any) bool {
+	raw, ok := ext[name]
+	if !ok {
+		return false
+	}
+	b, err := json.Marshal(raw)
+	if rm, isRaw := raw.(json.RawMessage); isRaw {
+		b, err = rm, nil
+	}
+	return err == nil && json.Unmarshal(b, into) == nil
+}
+
+func holdsRequired(have, need []string, anyOf bool) bool {
+	if !anyOf {
+		return holdsAll(have, need)
+	}
+	for _, n := range need {
+		if slices.Contains(have, n) {
+			return true
+		}
+	}
+	return false
 }
 
 func holdsAll(have, need []string) bool {
@@ -281,7 +334,7 @@ func TestAuthzMatrixRowsCoverSpec(t *testing.T) {
 			}
 			if isOrgPath(path) {
 				var roles []string
-				if !extJSON(t, op.Extensions, "x-openbekci-roles", &roles) || len(roles) == 0 {
+				if ok, _ := opRoles(t, op.Extensions, &roles); !ok || len(roles) == 0 {
 					t.Errorf("operation %s (%s %s) is under /v1/orgs/{org_id} but has no x-openbekci-roles", op.OperationID, method, path)
 				}
 			}

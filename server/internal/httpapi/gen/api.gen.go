@@ -137,6 +137,42 @@ func (e AuthResultClient) Valid() bool {
 	}
 }
 
+// Defines values for BookingStatus.
+const (
+	BookingStatusCancelled BookingStatus = "cancelled"
+	BookingStatusConfirmed BookingStatus = "confirmed"
+)
+
+// Valid indicates whether the value is a known member of the BookingStatus enum.
+func (e BookingStatus) Valid() bool {
+	switch e {
+	case BookingStatusCancelled:
+		return true
+	case BookingStatusConfirmed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BookingCreateDebtorKind.
+const (
+	BookingCreateDebtorKindOwner  BookingCreateDebtorKind = "owner"
+	BookingCreateDebtorKindTenant BookingCreateDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the BookingCreateDebtorKind enum.
+func (e BookingCreateDebtorKind) Valid() bool {
+	switch e {
+	case BookingCreateDebtorKindOwner:
+		return true
+	case BookingCreateDebtorKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ClaimApproveSide.
 const (
 	ClaimApproveSideOwner  ClaimApproveSide = "owner"
@@ -188,6 +224,108 @@ func (e CredentialsClient) Valid() bool {
 	case CredentialsClientMobile:
 		return true
 	case CredentialsClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DeliveryStatus.
+const (
+	DeliveryStatusCollected DeliveryStatus = "collected"
+	DeliveryStatusWaiting   DeliveryStatus = "waiting"
+)
+
+// Valid indicates whether the value is a known member of the DeliveryStatus enum.
+func (e DeliveryStatus) Valid() bool {
+	switch e {
+	case DeliveryStatusCollected:
+		return true
+	case DeliveryStatusWaiting:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FacilityRulesQuotaPeriod.
+const (
+	FacilityRulesQuotaPeriodMonth FacilityRulesQuotaPeriod = "month"
+	FacilityRulesQuotaPeriodWeek  FacilityRulesQuotaPeriod = "week"
+)
+
+// Valid indicates whether the value is a known member of the FacilityRulesQuotaPeriod enum.
+func (e FacilityRulesQuotaPeriod) Valid() bool {
+	switch e {
+	case FacilityRulesQuotaPeriodMonth:
+		return true
+	case FacilityRulesQuotaPeriodWeek:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FacilityRulesWhoMayBook.
+const (
+	FacilityRulesWhoMayBookHousehold FacilityRulesWhoMayBook = "household"
+	FacilityRulesWhoMayBookOwner     FacilityRulesWhoMayBook = "owner"
+	FacilityRulesWhoMayBookTenant    FacilityRulesWhoMayBook = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the FacilityRulesWhoMayBook enum.
+func (e FacilityRulesWhoMayBook) Valid() bool {
+	switch e {
+	case FacilityRulesWhoMayBookHousehold:
+		return true
+	case FacilityRulesWhoMayBookOwner:
+		return true
+	case FacilityRulesWhoMayBookTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GateDeliveryStatus.
+const (
+	GateDeliveryStatusCollected GateDeliveryStatus = "collected"
+	GateDeliveryStatusWaiting   GateDeliveryStatus = "waiting"
+)
+
+// Valid indicates whether the value is a known member of the GateDeliveryStatus enum.
+func (e GateDeliveryStatus) Valid() bool {
+	switch e {
+	case GateDeliveryStatusCollected:
+		return true
+	case GateDeliveryStatusWaiting:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for GuardVisitorApprovalStatus.
+const (
+	GuardVisitorApprovalStatusApproved    GuardVisitorApprovalStatus = "approved"
+	GuardVisitorApprovalStatusDenied      GuardVisitorApprovalStatus = "denied"
+	GuardVisitorApprovalStatusExpired     GuardVisitorApprovalStatus = "expired"
+	GuardVisitorApprovalStatusPreApproved GuardVisitorApprovalStatus = "pre_approved"
+	GuardVisitorApprovalStatusRequested   GuardVisitorApprovalStatus = "requested"
+)
+
+// Valid indicates whether the value is a known member of the GuardVisitorApprovalStatus enum.
+func (e GuardVisitorApprovalStatus) Valid() bool {
+	switch e {
+	case GuardVisitorApprovalStatusApproved:
+		return true
+	case GuardVisitorApprovalStatusDenied:
+		return true
+	case GuardVisitorApprovalStatusExpired:
+		return true
+	case GuardVisitorApprovalStatusPreApproved:
+		return true
+	case GuardVisitorApprovalStatusRequested:
 		return true
 	default:
 		return false
@@ -860,9 +998,16 @@ const (
 	PermissionAllocationRead      Permission = "allocation.read"
 	PermissionAuditRead           Permission = "audit.read"
 	PermissionAuditReport         Permission = "audit.report"
+	PermissionBookingsCreate      Permission = "bookings.create"
+	PermissionBookingsManage      Permission = "bookings.manage"
+	PermissionBookingsRead        Permission = "bookings.read"
 	PermissionClaimManage         Permission = "claim.manage"
+	PermissionDeliveriesRead      Permission = "deliveries.read"
 	PermissionDirectoryConsent    Permission = "directory.consent"
 	PermissionDirectoryRead       Permission = "directory.read"
+	PermissionFacilitiesManage    Permission = "facilities.manage"
+	PermissionGateManage          Permission = "gate.manage"
+	PermissionGateOperate         Permission = "gate.operate"
 	PermissionImportRun           Permission = "import.run"
 	PermissionInvitationHousehold Permission = "invitation.household"
 	PermissionInvitationManage    Permission = "invitation.manage"
@@ -892,6 +1037,9 @@ const (
 	PermissionVehicleRead         Permission = "vehicle.read"
 	PermissionVendorManage        Permission = "vendor.manage"
 	PermissionVendorRead          Permission = "vendor.read"
+	PermissionVisitorsDecide      Permission = "visitors.decide"
+	PermissionVisitorsManage      Permission = "visitors.manage"
+	PermissionVisitorsRead        Permission = "visitors.read"
 )
 
 // Valid indicates whether the value is a known member of the Permission enum.
@@ -905,11 +1053,25 @@ func (e Permission) Valid() bool {
 		return true
 	case PermissionAuditReport:
 		return true
+	case PermissionBookingsCreate:
+		return true
+	case PermissionBookingsManage:
+		return true
+	case PermissionBookingsRead:
+		return true
 	case PermissionClaimManage:
+		return true
+	case PermissionDeliveriesRead:
 		return true
 	case PermissionDirectoryConsent:
 		return true
 	case PermissionDirectoryRead:
+		return true
+	case PermissionFacilitiesManage:
+		return true
+	case PermissionGateManage:
+		return true
+	case PermissionGateOperate:
 		return true
 	case PermissionImportRun:
 		return true
@@ -968,6 +1130,12 @@ func (e Permission) Valid() bool {
 	case PermissionVendorManage:
 		return true
 	case PermissionVendorRead:
+		return true
+	case PermissionVisitorsDecide:
+		return true
+	case PermissionVisitorsManage:
+		return true
+	case PermissionVisitorsRead:
 		return true
 	default:
 		return false
@@ -1055,6 +1223,27 @@ func (e ProblemCode) Valid() bool {
 	}
 }
 
+// Defines values for RecurringVisitorStatus.
+const (
+	RecurringVisitorStatusActive  RecurringVisitorStatus = "active"
+	RecurringVisitorStatusExpired RecurringVisitorStatus = "expired"
+	RecurringVisitorStatusRevoked RecurringVisitorStatus = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the RecurringVisitorStatus enum.
+func (e RecurringVisitorStatus) Valid() bool {
+	switch e {
+	case RecurringVisitorStatusActive:
+		return true
+	case RecurringVisitorStatusExpired:
+		return true
+	case RecurringVisitorStatusRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for RoleGrantRole.
 const (
 	RoleGrantRoleAccountant  RoleGrantRole = "accountant"
@@ -1103,6 +1292,36 @@ func (e RoleGrantScopeType) Valid() bool {
 	case RoleGrantScopeTypeOrg:
 		return true
 	case RoleGrantScopeTypeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ScanResultReason.
+const (
+	ScanResultReasonMatch         ScanResultReason = "match"
+	ScanResultReasonOutsideWindow ScanResultReason = "outside_window"
+	ScanResultReasonRevoked       ScanResultReason = "revoked"
+	ScanResultReasonUnknown       ScanResultReason = "unknown"
+	ScanResultReasonUsedUp        ScanResultReason = "used_up"
+	ScanResultReasonWrongSite     ScanResultReason = "wrong_site"
+)
+
+// Valid indicates whether the value is a known member of the ScanResultReason enum.
+func (e ScanResultReason) Valid() bool {
+	switch e {
+	case ScanResultReasonMatch:
+		return true
+	case ScanResultReasonOutsideWindow:
+		return true
+	case ScanResultReasonRevoked:
+		return true
+	case ScanResultReasonUnknown:
+		return true
+	case ScanResultReasonUsedUp:
+		return true
+	case ScanResultReasonWrongSite:
 		return true
 	default:
 		return false
@@ -1406,6 +1625,96 @@ func (e UnitUpdatePayerOverrides) Valid() bool {
 	}
 }
 
+// Defines values for VisitorApprovalRequestStatus.
+const (
+	VisitorApprovalRequestStatusApproved VisitorApprovalRequestStatus = "approved"
+	VisitorApprovalRequestStatusDenied   VisitorApprovalRequestStatus = "denied"
+	VisitorApprovalRequestStatusExpired  VisitorApprovalRequestStatus = "expired"
+	VisitorApprovalRequestStatusPending  VisitorApprovalRequestStatus = "pending"
+)
+
+// Valid indicates whether the value is a known member of the VisitorApprovalRequestStatus enum.
+func (e VisitorApprovalRequestStatus) Valid() bool {
+	switch e {
+	case VisitorApprovalRequestStatusApproved:
+		return true
+	case VisitorApprovalRequestStatusDenied:
+		return true
+	case VisitorApprovalRequestStatusExpired:
+		return true
+	case VisitorApprovalRequestStatusPending:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VisitorDecisionDecision.
+const (
+	VisitorDecisionDecisionApprove VisitorDecisionDecision = "approve"
+	VisitorDecisionDecisionDeny    VisitorDecisionDecision = "deny"
+)
+
+// Valid indicates whether the value is a known member of the VisitorDecisionDecision enum.
+func (e VisitorDecisionDecision) Valid() bool {
+	switch e {
+	case VisitorDecisionDecisionApprove:
+		return true
+	case VisitorDecisionDecisionDeny:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VisitorEntryApprovalStatus.
+const (
+	VisitorEntryApprovalStatusApproved    VisitorEntryApprovalStatus = "approved"
+	VisitorEntryApprovalStatusDenied      VisitorEntryApprovalStatus = "denied"
+	VisitorEntryApprovalStatusExpired     VisitorEntryApprovalStatus = "expired"
+	VisitorEntryApprovalStatusPreApproved VisitorEntryApprovalStatus = "pre_approved"
+	VisitorEntryApprovalStatusRequested   VisitorEntryApprovalStatus = "requested"
+)
+
+// Valid indicates whether the value is a known member of the VisitorEntryApprovalStatus enum.
+func (e VisitorEntryApprovalStatus) Valid() bool {
+	switch e {
+	case VisitorEntryApprovalStatusApproved:
+		return true
+	case VisitorEntryApprovalStatusDenied:
+		return true
+	case VisitorEntryApprovalStatusExpired:
+		return true
+	case VisitorEntryApprovalStatusPreApproved:
+		return true
+	case VisitorEntryApprovalStatusRequested:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VisitorEntrySource.
+const (
+	VisitorEntrySourcePreRegistered VisitorEntrySource = "pre_registered"
+	VisitorEntrySourceRecurring     VisitorEntrySource = "recurring"
+	VisitorEntrySourceWalkIn        VisitorEntrySource = "walk_in"
+)
+
+// Valid indicates whether the value is a known member of the VisitorEntrySource enum.
+func (e VisitorEntrySource) Valid() bool {
+	switch e {
+	case VisitorEntrySourcePreRegistered:
+		return true
+	case VisitorEntrySourceRecurring:
+		return true
+	case VisitorEntrySourceWalkIn:
+		return true
+	default:
+		return false
+	}
+}
+
 // AcceptInvitation defines model for AcceptInvitation.
 type AcceptInvitation struct {
 	Locale *string `json:"locale,omitempty"`
@@ -1600,6 +1909,17 @@ type AuthUser struct {
 	Phone nullable.Nullable[string] `json:"phone"`
 }
 
+// Availability defines model for Availability.
+type Availability struct {
+	Blocked    []TimeRange        `json:"blocked"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	From       time.Time          `json:"from"`
+
+	// Taken Residents see slots only as taken; names stay with the manager (KVKK).
+	Taken []TimeRange `json:"taken"`
+	To    time.Time   `json:"to"`
+}
+
 // Block defines model for Block.
 type Block struct {
 	CreatedAt time.Time `json:"created_at"`
@@ -1636,12 +1956,80 @@ type BlockUpdate struct {
 	SortOrder *int    `json:"sort_order,omitempty"`
 }
 
+// Booking A facility booking; confirmed instantly when it satisfies the rules.
+//
+// Example: {"cancelled_reason":null,"charge_id":null,"created_at":"2026-03-01T09:00:00Z","end":"2026-03-14T22:00:00Z","facility_id":"0192a3f0-1000-7000-8000-000000000003","facility_name":"Community hall","fee":null,"id":"0192a3f0-1000-7000-8000-000000000003","org_id":"0192a3f0-1000-7000-8000-000000000001","person_display_name":null,"person_id":null,"refund":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","start":"2026-03-14T18:00:00Z","status":"confirmed","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000002","updated_at":"2026-03-01T09:00:00Z"}
+type Booking struct {
+	CancelledReason nullable.Nullable[string]             `json:"cancelled_reason"`
+	ChargeId        nullable.Nullable[openapi_types.UUID] `json:"charge_id"`
+	CreatedAt       time.Time                             `json:"created_at"`
+	End             time.Time                             `json:"end"`
+	FacilityId      openapi_types.UUID                    `json:"facility_id"`
+	FacilityName    string                                `json:"facility_name"`
+	Fee             nullable.Nullable[Money]              `json:"fee"`
+	Id              openapi_types.UUID                    `json:"id"`
+	OrgId           openapi_types.UUID                    `json:"org_id"`
+
+	// PersonDisplayName Managers and the booker only.
+	PersonDisplayName nullable.Nullable[string]             `json:"person_display_name"`
+	PersonId          nullable.Nullable[openapi_types.UUID] `json:"person_id"`
+	Refund            nullable.Nullable[Money]              `json:"refund"`
+	SiteId            openapi_types.UUID                    `json:"site_id"`
+	Start             time.Time                             `json:"start"`
+
+	// Status Open enum.
+	Status         BookingStatus      `json:"status"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+	UnitId         openapi_types.UUID `json:"unit_id"`
+	UpdatedAt      time.Time          `json:"updated_at"`
+}
+
+// BookingStatus Open enum.
+type BookingStatus string
+
+// BookingCancel defines model for BookingCancel.
+type BookingCancel struct {
+	Reason *string `json:"reason,omitempty"`
+}
+
+// BookingCreate defines model for BookingCreate.
+type BookingCreate struct {
+	// DebtorKind Side charged for the fee.
+	DebtorKind *BookingCreateDebtorKind `json:"debtor_kind,omitempty"`
+	End        time.Time                `json:"end"`
+	FacilityId openapi_types.UUID       `json:"facility_id"`
+
+	// PersonId Managers may book on behalf of a unit.
+	PersonId *openapi_types.UUID `json:"person_id,omitempty"`
+	Start    time.Time           `json:"start"`
+	UnitId   openapi_types.UUID  `json:"unit_id"`
+}
+
+// BookingCreateDebtorKind Side charged for the fee.
+type BookingCreateDebtorKind string
+
+// BookingList Example: {"items":[{"cancelled_reason":null,"charge_id":null,"created_at":"2026-03-01T09:00:00Z","end":"2026-03-14T22:00:00Z","facility_id":"0192a3f0-1000-7000-8000-000000000003","facility_name":"Community hall","fee":null,"id":"0192a3f0-1000-7000-8000-000000000003","org_id":"0192a3f0-1000-7000-8000-000000000001","person_display_name":null,"person_id":null,"refund":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","start":"2026-03-14T18:00:00Z","status":"confirmed","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000002","updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type BookingList struct {
+	Items []Booking `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
 // Branding defines model for Branding.
 type Branding struct {
 	LogoUrl *string `json:"logo_url,omitempty"`
 
 	// PrimaryColor Example: #1a73e8
 	PrimaryColor *string `json:"primary_color,omitempty"`
+}
+
+// CallContact The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident's number the visitor entry points to, with no other contact data.
+type CallContact struct {
+	DisplayName nullable.Nullable[string] `json:"display_name"`
+
+	// Phone E.164.
+	Phone string `json:"phone"`
 }
 
 // ChangePasswordRequest defines model for ChangePasswordRequest.
@@ -1709,6 +2097,50 @@ type Credentials struct {
 // CredentialsClient `mobile` makes an emailed link use the `openbekci://` scheme.
 type CredentialsClient string
 
+// Delivery A parcel logged by the guard.
+//
+// Example: {"collected_at":null,"collected_by_name":null,"created_at":"2026-03-01T09:00:00Z","description":null,"id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","received_at":"2026-03-01T09:00:00Z","received_by_display_name":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","status":"waiting","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z"}
+type Delivery struct {
+	CollectedAt           nullable.Nullable[time.Time] `json:"collected_at"`
+	CollectedByName       nullable.Nullable[string]    `json:"collected_by_name"`
+	CreatedAt             time.Time                    `json:"created_at"`
+	Description           nullable.Nullable[string]    `json:"description"`
+	Id                    openapi_types.UUID           `json:"id"`
+	OrgId                 openapi_types.UUID           `json:"org_id"`
+	ReceivedAt            time.Time                    `json:"received_at"`
+	ReceivedByDisplayName nullable.Nullable[string]    `json:"received_by_display_name"`
+	SiteId                openapi_types.UUID           `json:"site_id"`
+
+	// Status Open enum.
+	Status         DeliveryStatus     `json:"status"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+	UnitId         openapi_types.UUID `json:"unit_id"`
+	UpdatedAt      time.Time          `json:"updated_at"`
+}
+
+// DeliveryStatus Open enum.
+type DeliveryStatus string
+
+// DeliveryCollect defines model for DeliveryCollect.
+type DeliveryCollect struct {
+	CollectedByName string `json:"collected_by_name"`
+}
+
+// DeliveryCreate defines model for DeliveryCreate.
+type DeliveryCreate struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	SiteId      openapi_types.UUID        `json:"site_id"`
+	UnitId      openapi_types.UUID        `json:"unit_id"`
+}
+
+// DeliveryList Example: {"items":[{"collected_at":null,"collected_by_name":null,"created_at":"2026-03-01T09:00:00Z","description":null,"id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","received_at":"2026-03-01T09:00:00Z","received_by_display_name":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","status":"waiting","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type DeliveryList struct {
+	Items []Delivery `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
 // DirectoryConsent defines model for DirectoryConsent.
 type DirectoryConsent struct {
 	ShareName  bool               `json:"share_name"`
@@ -1768,6 +2200,246 @@ type DiscoveryDocument struct {
 
 	// ServerVersion Example: 0.1.0
 	ServerVersion string `json:"server_version"`
+}
+
+// Facility A bookable thing: hall, barbecue area, court, guest flat.
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","description":null,"enabled":false,"id":"0192a3f0-1000-7000-8000-000000000002","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","rules":{"cancel_refund_cutoff_hours":null,"fee":{"amount":200000,"currency":"TRY"},"max_days_ahead":1,"max_duration_minutes":1,"min_notice_minutes":null,"opening_hours":[{"days":[],"end":"09:00","start":"09:00"}],"quota_per_unit":null,"quota_period":"week","who_may_book":["owner"]},"site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}
+type Facility struct {
+	CreatedAt   time.Time                 `json:"created_at"`
+	Description nullable.Nullable[string] `json:"description"`
+	Enabled     bool                      `json:"enabled"`
+	Id          openapi_types.UUID        `json:"id"`
+	Name        string                    `json:"name"`
+	OrgId       openapi_types.UUID        `json:"org_id"`
+
+	// Rules Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue.
+	Rules     FacilityRules      `json:"rules"`
+	SiteId    openapi_types.UUID `json:"site_id"`
+	UpdatedAt time.Time          `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// FacilityBlock Dates the manager blocks.
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","end":"2026-03-01T09:00:00Z","facility_id":"0192a3f0-1000-7000-8000-000000000004","id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","reason":null,"start":"2026-03-01T09:00:00Z","updated_at":"2026-03-01T09:00:00Z"}
+type FacilityBlock struct {
+	CreatedAt  time.Time                 `json:"created_at"`
+	End        time.Time                 `json:"end"`
+	FacilityId openapi_types.UUID        `json:"facility_id"`
+	Id         openapi_types.UUID        `json:"id"`
+	OrgId      openapi_types.UUID        `json:"org_id"`
+	Reason     nullable.Nullable[string] `json:"reason"`
+	Start      time.Time                 `json:"start"`
+	UpdatedAt  time.Time                 `json:"updated_at"`
+}
+
+// FacilityBlockCreate defines model for FacilityBlockCreate.
+type FacilityBlockCreate struct {
+	End    time.Time                 `json:"end"`
+	Reason nullable.Nullable[string] `json:"reason,omitempty"`
+	Start  time.Time                 `json:"start"`
+}
+
+// FacilityBlockList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","end":"2026-03-01T09:00:00Z","facility_id":"0192a3f0-1000-7000-8000-000000000004","id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","reason":null,"start":"2026-03-01T09:00:00Z","updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type FacilityBlockList struct {
+	Items []FacilityBlock `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// FacilityCreate defines model for FacilityCreate.
+type FacilityCreate struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Enabled     *bool                     `json:"enabled,omitempty"`
+	Name        string                    `json:"name"`
+
+	// Rules Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue.
+	Rules  FacilityRules      `json:"rules"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+// FacilityList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","description":null,"enabled":false,"id":"0192a3f0-1000-7000-8000-000000000002","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","rules":{"cancel_refund_cutoff_hours":null,"fee":{"amount":200000,"currency":"TRY"},"max_days_ahead":1,"max_duration_minutes":1,"min_notice_minutes":null,"opening_hours":[{"days":[],"end":"09:00","start":"09:00"}],"quota_per_unit":null,"quota_period":"week","who_may_book":["owner"]},"site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type FacilityList struct {
+	Items []Facility `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// FacilityRules Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue.
+type FacilityRules struct {
+	// CancelRefundCutoffHours A fee is refunded automatically when cancelled earlier than this.
+	CancelRefundCutoffHours nullable.Nullable[int64] `json:"cancel_refund_cutoff_hours"`
+
+	// Fee Becomes a charge on the unit side when the booking is confirmed (default: the side of whoever booked).
+	Fee nullable.Nullable[Money] `json:"fee"`
+
+	// MaxDaysAhead How far ahead a booking may be made.
+	MaxDaysAhead       int64                    `json:"max_days_ahead"`
+	MaxDurationMinutes int64                    `json:"max_duration_minutes"`
+	MinNoticeMinutes   nullable.Nullable[int64] `json:"min_notice_minutes"`
+
+	// OpeningHours Site timezone.
+	OpeningHours []OpeningHours           `json:"opening_hours"`
+	QuotaPerUnit nullable.Nullable[int64] `json:"quota_per_unit"`
+
+	// QuotaPeriod Open enum.
+	QuotaPeriod nullable.Nullable[FacilityRulesQuotaPeriod] `json:"quota_period"`
+	WhoMayBook  []FacilityRulesWhoMayBook                   `json:"who_may_book"`
+}
+
+// FacilityRulesQuotaPeriod Open enum.
+type FacilityRulesQuotaPeriod string
+
+// FacilityRulesWhoMayBook defines model for FacilityRules.WhoMayBook.
+type FacilityRulesWhoMayBook string
+
+// FacilityUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type FacilityUpdate struct {
+	Description nullable.Nullable[string] `json:"description,omitempty"`
+	Enabled     *bool                     `json:"enabled,omitempty"`
+	Name        *string                   `json:"name,omitempty"`
+
+	// Rules Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue.
+	Rules *FacilityRules `json:"rules,omitempty"`
+}
+
+// GateAgentStatus defines model for GateAgentStatus.
+type GateAgentStatus struct {
+	Connected  bool                         `json:"connected"`
+	LastSeenAt nullable.Nullable[time.Time] `json:"last_seen_at"`
+	Points     []GatePoint                  `json:"points"`
+}
+
+// GateConsole Everything the booth page shows at once; auto-refreshed.
+type GateConsole struct {
+	// Agent Absent when the site has no access agent.
+	Agent             nullable.Nullable[GateAgentStatus] `json:"agent"`
+	ExpectedVisitors  []GuardVisitor                     `json:"expected_visitors"`
+	PendingApprovals  []GuardVisitor                     `json:"pending_approvals"`
+	ServerTime        time.Time                          `json:"server_time"`
+	WaitingDeliveries []GateDelivery                     `json:"waiting_deliveries"`
+}
+
+// GateDelivery Example: {"collected_by_name":null,"description":null,"id":"0192a3f0-1000-7000-8000-000000000002","received_at":"2026-03-01T09:00:00Z","status":"waiting","unit_door_number":"unit door number"}
+type GateDelivery struct {
+	CollectedByName nullable.Nullable[string] `json:"collected_by_name"`
+	Description     nullable.Nullable[string] `json:"description"`
+	Id              openapi_types.UUID        `json:"id"`
+	ReceivedAt      time.Time                 `json:"received_at"`
+
+	// Status Open enum.
+	Status         GateDeliveryStatus `json:"status"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+}
+
+// GateDeliveryStatus Open enum.
+type GateDeliveryStatus string
+
+// GateDeliveryList Example: {"items":[{"collected_by_name":null,"description":null,"id":"0192a3f0-1000-7000-8000-000000000002","received_at":"2026-03-01T09:00:00Z","status":"waiting","unit_door_number":"unit door number"}],"next_cursor":null}
+type GateDeliveryList struct {
+	Items      []GateDelivery            `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// GatePinSet defines model for GatePinSet.
+type GatePinSet struct {
+	// Pin 4 to 8 digits.
+	Pin string `json:"pin"`
+}
+
+// GatePlate Example: {"plate":"plate","unit_door_number":"unit door number"}
+type GatePlate struct {
+	Plate          string `json:"plate"`
+	UnitDoorNumber string `json:"unit_door_number"`
+}
+
+// GatePlateList Example: {"items":[{"plate":"plate","unit_door_number":"unit door number"}],"next_cursor":null}
+type GatePlateList struct {
+	Items      []GatePlate               `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// GatePoint defines model for GatePoint.
+type GatePoint struct {
+	Direction string             `json:"direction"`
+	Enabled   bool               `json:"enabled"`
+	Id        openapi_types.UUID `json:"id"`
+	Kind      string             `json:"kind"`
+	Name      string             `json:"name"`
+}
+
+// GuardList Example: {"items":[{"display_name":"Ali Veli","has_pin":true,"person_id":"0192a3f0-1000-7000-8000-000000000004"}],"next_cursor":null}
+type GuardList struct {
+	Items []GuardRef `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// GuardRef A guard of the site as the booth shows it: name and id only, no contact data.
+//
+// Example: {"display_name":"Ali Veli","has_pin":true,"person_id":"0192a3f0-1000-7000-8000-000000000004"}
+type GuardRef struct {
+	DisplayName string `json:"display_name"`
+
+	// HasPin False until a manager has set a PIN (`community.setGuardPin`); such a guard cannot switch in.
+	HasPin   bool               `json:"has_pin"`
+	PersonId openapi_types.UUID `json:"person_id"`
+}
+
+// GuardSession A short-lived guard session. Send `token` as `X-Guard-Session` on guard operations (semantics: the header parameter).
+type GuardSession struct {
+	DisplayName string             `json:"display_name"`
+	ExpiresAt   time.Time          `json:"expires_at"`
+	PersonId    openapi_types.UUID `json:"person_id"`
+
+	// Token Opaque bearer for the `X-Guard-Session` header. Valid until `expires_at` (12 hours), bound to the console login session and the site it was created for; ends earlier on logout of the console, on a new `createGuardSession` by the same console, or when the guard membership ends.
+	Token string `json:"token"`
+}
+
+// GuardSessionCreate Quick PIN switch at the booth: the guard picks their name from `gate.listGuards`, then types the PIN. The PIN is checked against that one person, so PINs need not be unique per site.
+//
+// Example: {"person_id":"0192a3f0-1000-7000-8000-000000000004","pin":"1234","site_id":"0192a3f0-1000-7000-8000-000000000002"}
+type GuardSessionCreate struct {
+	// PersonId The guard, from `gate.listGuards`.
+	PersonId openapi_types.UUID `json:"person_id"`
+
+	// Pin 4 to 8 digits (`community.setGuardPin`).
+	Pin    string             `json:"pin"`
+	SiteId openapi_types.UUID `json:"site_id"`
+}
+
+// GuardVisitor What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token.
+//
+// Example: {"approval_expires_at":null,"approval_status":"pre_approved","arrived_at":null,"id":"0192a3f0-1000-7000-8000-000000000002","left_at":null,"name":"Ali Veli","plate":null,"recurring":false,"unit_door_number":"unit door number","window_from":"2026-03-01T09:00:00Z","window_to":"2026-03-01T09:00:00Z"}
+type GuardVisitor struct {
+	ApprovalExpiresAt nullable.Nullable[time.Time] `json:"approval_expires_at"`
+
+	// ApprovalStatus Open enum.
+	ApprovalStatus GuardVisitorApprovalStatus   `json:"approval_status"`
+	ArrivedAt      nullable.Nullable[time.Time] `json:"arrived_at"`
+	Id             openapi_types.UUID           `json:"id"`
+	LeftAt         nullable.Nullable[time.Time] `json:"left_at"`
+	Name           string                       `json:"name"`
+	Plate          nullable.Nullable[string]    `json:"plate"`
+	Recurring      bool                         `json:"recurring"`
+	UnitDoorNumber string                       `json:"unit_door_number"`
+	WindowFrom     time.Time                    `json:"window_from"`
+	WindowTo       time.Time                    `json:"window_to"`
+}
+
+// GuardVisitorApprovalStatus Open enum.
+type GuardVisitorApprovalStatus string
+
+// GuardVisitorList Example: {"items":[{"approval_expires_at":null,"approval_status":"pre_approved","arrived_at":null,"id":"0192a3f0-1000-7000-8000-000000000002","left_at":null,"name":"Ali Veli","plate":null,"recurring":false,"unit_door_number":"unit door number","window_from":"2026-03-01T09:00:00Z","window_to":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type GuardVisitorList struct {
+	Items      []GuardVisitor            `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
 }
 
 // HouseholdInvitationCreate Invite a household member to this unit. They get no money access.
@@ -2184,6 +2856,15 @@ type MinAppVersion struct {
 	Ios string `json:"ios"`
 }
 
+// Money Integer minor units with an ISO 4217 currency code.
+type Money struct {
+	// Amount Example: 123450
+	Amount int64 `json:"amount"`
+
+	// Currency Example: TRY
+	Currency string `json:"currency"`
+}
+
 // MoneyAccess defines model for MoneyAccess.
 type MoneyAccess struct {
 	MaySeeMoney bool `json:"may_see_money"`
@@ -2324,6 +3005,18 @@ type OccupancyUpdate struct {
 	SharePct        nullable.Nullable[float32]            `json:"share_pct,omitempty"`
 	ValidFrom       *openapi_types.Date                   `json:"valid_from,omitempty"`
 	ValidTo         nullable.Nullable[openapi_types.Date] `json:"valid_to,omitempty"`
+}
+
+// OpeningHours defines model for OpeningHours.
+type OpeningHours struct {
+	// Days ISO weekdays, 1 = Monday.
+	Days []int64 `json:"days"`
+
+	// End Example: 09:00
+	End string `json:"end"`
+
+	// Start Example: 09:00
+	Start string `json:"start"`
 }
 
 // OrgAccess defines model for OrgAccess.
@@ -2542,6 +3235,82 @@ type ReauthSmsOtp struct {
 	Method string `json:"method"`
 }
 
+// RecurringVisitor A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone.
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","days":[1],"end":"09:00","id":"0192a3f0-1000-7000-8000-000000000002","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","plate":null,"qr_token":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","start":"09:00","status":"active","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z","valid_from":"2026-03-01","valid_to":null,"version":1}
+type RecurringVisitor struct {
+	CreatedAt time.Time `json:"created_at"`
+
+	// Days ISO weekdays.
+	Days []int64 `json:"days"`
+
+	// End Example: 09:00
+	End   string                    `json:"end"`
+	Id    openapi_types.UUID        `json:"id"`
+	Name  string                    `json:"name"`
+	OrgId openapi_types.UUID        `json:"org_id"`
+	Plate nullable.Nullable[string] `json:"plate"`
+
+	// QrToken The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+	QrToken nullable.Nullable[string] `json:"qr_token"`
+	SiteId  openapi_types.UUID        `json:"site_id"`
+
+	// Start Example: 09:00
+	Start string `json:"start"`
+
+	// Status Open enum.
+	Status    RecurringVisitorStatus                `json:"status"`
+	UnitId    openapi_types.UUID                    `json:"unit_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+	ValidFrom openapi_types.Date                    `json:"valid_from"`
+	ValidTo   nullable.Nullable[openapi_types.Date] `json:"valid_to"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// RecurringVisitorStatus Open enum.
+type RecurringVisitorStatus string
+
+// RecurringVisitorCreate defines model for RecurringVisitorCreate.
+type RecurringVisitorCreate struct {
+	Days []int64 `json:"days"`
+
+	// End Example: 09:00
+	End    string                    `json:"end"`
+	Name   string                    `json:"name"`
+	Plate  nullable.Nullable[string] `json:"plate,omitempty"`
+	SiteId openapi_types.UUID        `json:"site_id"`
+
+	// Start Example: 09:00
+	Start     string                                `json:"start"`
+	UnitId    openapi_types.UUID                    `json:"unit_id"`
+	ValidFrom openapi_types.Date                    `json:"valid_from"`
+	ValidTo   nullable.Nullable[openapi_types.Date] `json:"valid_to,omitempty"`
+}
+
+// RecurringVisitorList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","days":[1],"end":"09:00","id":"0192a3f0-1000-7000-8000-000000000002","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","plate":null,"qr_token":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","start":"09:00","status":"active","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z","valid_from":"2026-03-01","valid_to":null,"version":1}],"next_cursor":null}
+type RecurringVisitorList struct {
+	Items []RecurringVisitor `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// RecurringVisitorUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type RecurringVisitorUpdate struct {
+	Days *[]int64 `json:"days,omitempty"`
+
+	// End Example: 09:00
+	End   *string                   `json:"end,omitempty"`
+	Name  *string                   `json:"name,omitempty"`
+	Plate nullable.Nullable[string] `json:"plate,omitempty"`
+
+	// Start Example: 09:00
+	Start   *string                               `json:"start,omitempty"`
+	ValidTo nullable.Nullable[openapi_types.Date] `json:"valid_to,omitempty"`
+}
+
 // RefreshRequest defines model for RefreshRequest.
 type RefreshRequest struct {
 	RefreshToken string `json:"refresh_token"`
@@ -2571,6 +3340,26 @@ type RoleGrantRole string
 
 // RoleGrantScopeType Open enum.
 type RoleGrantScopeType string
+
+// ScanRequest defines model for ScanRequest.
+type ScanRequest struct {
+	PointId *openapi_types.UUID `json:"point_id,omitempty"`
+
+	// Token The scanned QR value, `obk1.<token>`.
+	Token string `json:"token"`
+}
+
+// ScanResult defines model for ScanResult.
+type ScanResult struct {
+	Entry nullable.Nullable[GuardVisitor] `json:"entry"`
+
+	// Reason Open enum.
+	Reason ScanResultReason `json:"reason"`
+	Valid  bool             `json:"valid"`
+}
+
+// ScanResultReason Open enum.
+type ScanResultReason string
 
 // Session One open session of the caller. Mobile sessions keep their id across token rotation.
 type Session struct {
@@ -2729,6 +3518,12 @@ type SiteUpdate struct {
 	Name                 *string                               `json:"name,omitempty"`
 	Settings             *map[string]interface{}               `json:"settings,omitempty"`
 	Timezone             *string                               `json:"timezone,omitempty"`
+}
+
+// TimeRange defines model for TimeRange.
+type TimeRange struct {
+	End   time.Time `json:"end"`
+	Start time.Time `json:"start"`
 }
 
 // TokenResponse A mobile or integration session. The access token is short-lived and
@@ -2949,14 +3744,149 @@ type VendorUpdate struct {
 	TaxId                    nullable.Nullable[string]             `json:"tax_id,omitempty"`
 }
 
+// VisitorApprovalRequest The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS).
+//
+// Example: {"created_at":"2026-03-01T09:00:00Z","decided_at":null,"decided_by":null,"entry_id":"0192a3f0-1000-7000-8000-000000000004","expires_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","plate":null,"requested_at":"2026-03-01T09:00:00Z","status":"pending","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z","visitor_name":"Ali Veli"}
+type VisitorApprovalRequest struct {
+	CreatedAt   time.Time                             `json:"created_at"`
+	DecidedAt   nullable.Nullable[time.Time]          `json:"decided_at"`
+	DecidedBy   nullable.Nullable[openapi_types.UUID] `json:"decided_by"`
+	EntryId     openapi_types.UUID                    `json:"entry_id"`
+	ExpiresAt   time.Time                             `json:"expires_at"`
+	Id          openapi_types.UUID                    `json:"id"`
+	OrgId       openapi_types.UUID                    `json:"org_id"`
+	Plate       nullable.Nullable[string]             `json:"plate"`
+	RequestedAt time.Time                             `json:"requested_at"`
+
+	// Status Open enum.
+	Status         VisitorApprovalRequestStatus `json:"status"`
+	UnitDoorNumber string                       `json:"unit_door_number"`
+	UnitId         openapi_types.UUID           `json:"unit_id"`
+	UpdatedAt      time.Time                    `json:"updated_at"`
+	VisitorName    string                       `json:"visitor_name"`
+}
+
+// VisitorApprovalRequestStatus Open enum.
+type VisitorApprovalRequestStatus string
+
+// VisitorApprovalRequestList Example: {"items":[{"created_at":"2026-03-01T09:00:00Z","decided_at":null,"decided_by":null,"entry_id":"0192a3f0-1000-7000-8000-000000000004","expires_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","plate":null,"requested_at":"2026-03-01T09:00:00Z","status":"pending","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z","visitor_name":"Ali Veli"}],"next_cursor":null}
+type VisitorApprovalRequestList struct {
+	Items []VisitorApprovalRequest `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// VisitorArrive defines model for VisitorArrive.
+type VisitorArrive struct {
+	PointId *openapi_types.UUID `json:"point_id,omitempty"`
+}
+
+// VisitorDecision defines model for VisitorDecision.
+type VisitorDecision struct {
+	Decision VisitorDecisionDecision `json:"decision"`
+}
+
+// VisitorDecisionDecision defines model for VisitorDecision.Decision.
+type VisitorDecisionDecision string
+
+// VisitorEntry A visitor. Valid for the window plus 30 minutes either side; single entry unless recurring.
+//
+// Example: {"approval_status":"pre_approved","arrived_at":null,"cancelled":false,"created_at":"2026-03-01T09:00:00Z","decided_at":null,"decided_by":null,"id":"0192a3f0-1000-7000-8000-000000000003","left_at":null,"name":"Mehmet Kaya","org_id":"0192a3f0-1000-7000-8000-000000000001","plate":"34ABC123","qr_token":null,"recurring_visitor_id":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","source":"pre_registered","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000002","updated_at":"2026-03-01T09:00:00Z","version":1,"window_from":"2026-03-01T09:00:00Z","window_to":"2026-03-01T09:00:00Z"}
+type VisitorEntry struct {
+	// ApprovalStatus Open enum.
+	ApprovalStatus VisitorEntryApprovalStatus            `json:"approval_status"`
+	ArrivedAt      nullable.Nullable[time.Time]          `json:"arrived_at"`
+	Cancelled      bool                                  `json:"cancelled"`
+	CreatedAt      time.Time                             `json:"created_at"`
+	DecidedAt      nullable.Nullable[time.Time]          `json:"decided_at"`
+	DecidedBy      nullable.Nullable[openapi_types.UUID] `json:"decided_by"`
+	Id             openapi_types.UUID                    `json:"id"`
+	LeftAt         nullable.Nullable[time.Time]          `json:"left_at"`
+	Name           string                                `json:"name"`
+	OrgId          openapi_types.UUID                    `json:"org_id"`
+	Plate          nullable.Nullable[string]             `json:"plate"`
+
+	// QrToken The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+	QrToken            nullable.Nullable[string]             `json:"qr_token"`
+	RecurringVisitorId nullable.Nullable[openapi_types.UUID] `json:"recurring_visitor_id"`
+	SiteId             openapi_types.UUID                    `json:"site_id"`
+
+	// Source Open enum.
+	Source         VisitorEntrySource `json:"source"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+	UnitId         openapi_types.UUID `json:"unit_id"`
+	UpdatedAt      time.Time          `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version    int64     `json:"version"`
+	WindowFrom time.Time `json:"window_from"`
+	WindowTo   time.Time `json:"window_to"`
+}
+
+// VisitorEntryApprovalStatus Open enum.
+type VisitorEntryApprovalStatus string
+
+// VisitorEntrySource Open enum.
+type VisitorEntrySource string
+
+// VisitorEntryCreate defines model for VisitorEntryCreate.
+type VisitorEntryCreate struct {
+	Name       string                    `json:"name"`
+	Plate      nullable.Nullable[string] `json:"plate,omitempty"`
+	SiteId     openapi_types.UUID        `json:"site_id"`
+	UnitId     openapi_types.UUID        `json:"unit_id"`
+	WindowFrom time.Time                 `json:"window_from"`
+	WindowTo   time.Time                 `json:"window_to"`
+}
+
+// VisitorEntryList Example: {"items":[{"approval_status":"pre_approved","arrived_at":null,"cancelled":false,"created_at":"2026-03-01T09:00:00Z","decided_at":null,"decided_by":null,"id":"0192a3f0-1000-7000-8000-000000000003","left_at":null,"name":"Mehmet Kaya","org_id":"0192a3f0-1000-7000-8000-000000000001","plate":"34ABC123","qr_token":null,"recurring_visitor_id":null,"site_id":"0192a3f0-1000-7000-8000-000000000002","source":"pre_registered","unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000002","updated_at":"2026-03-01T09:00:00Z","version":1,"window_from":"2026-03-01T09:00:00Z","window_to":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type VisitorEntryList struct {
+	Items []VisitorEntry `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// VisitorEntryUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type VisitorEntryUpdate struct {
+	Name       *string                   `json:"name,omitempty"`
+	Plate      nullable.Nullable[string] `json:"plate,omitempty"`
+	WindowFrom *time.Time                `json:"window_from,omitempty"`
+	WindowTo   *time.Time                `json:"window_to,omitempty"`
+}
+
+// WalkInCreate defines model for WalkInCreate.
+type WalkInCreate struct {
+	Name   string             `json:"name"`
+	Plate  *string            `json:"plate,omitempty"`
+	SiteId openapi_types.UUID `json:"site_id"`
+	UnitId openapi_types.UUID `json:"unit_id"`
+}
+
 // Cursor defines model for Cursor.
 type Cursor = string
+
+// GuardSessionHeader defines model for GuardSession.
+type GuardSessionHeader = string
+
+// IdempotencyKey defines model for IdempotencyKey.
+type IdempotencyKey = string
+
+// IdempotencyKeyRequired defines model for IdempotencyKeyRequired.
+type IdempotencyKeyRequired = string
+
+// IfMatch Example: "3"
+type IfMatch = string
 
 // Limit defines model for Limit.
 type Limit = int
 
 // OrgId defines model for OrgId.
 type OrgId = openapi_types.UUID
+
+// SiteIdRequired defines model for SiteIdRequired.
+type SiteIdRequired = openapi_types.UUID
 
 // InstanceGetCodesParams defines parameters for InstanceGetCodes.
 type InstanceGetCodesParams struct {
@@ -3015,6 +3945,291 @@ type TenancyUpdateBlockParams struct {
 	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
 	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
 	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// CommunityListBookingsParams defines parameters for CommunityListBookings.
+type CommunityListBookingsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// FacilityId Filter by `facility_id`.
+	FacilityId *openapi_types.UUID `form:"facility_id,omitempty" json:"facility_id,omitempty"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Mine Filter by `mine`.
+	Mine *bool `form:"mine,omitempty" json:"mine,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityCreateBookingParams defines parameters for CommunityCreateBooking.
+type CommunityCreateBookingParams struct {
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// CommunityCancelBookingParams defines parameters for CommunityCancelBooking.
+type CommunityCancelBookingParams struct {
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// CommunityListDeliveriesParams defines parameters for CommunityListDeliveries.
+type CommunityListDeliveriesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityListFacilitiesParams defines parameters for CommunityListFacilities.
+type CommunityListFacilitiesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Enabled Filter by `enabled`.
+	Enabled *bool `form:"enabled,omitempty" json:"enabled,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityCreateFacilityParams defines parameters for CommunityCreateFacility.
+type CommunityCreateFacilityParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityDeleteFacilityParams defines parameters for CommunityDeleteFacility.
+type CommunityDeleteFacilityParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CommunityUpdateFacilityParams defines parameters for CommunityUpdateFacility.
+type CommunityUpdateFacilityParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CommunityGetFacilityAvailabilityParams defines parameters for CommunityGetFacilityAvailability.
+type CommunityGetFacilityAvailabilityParams struct {
+	// From Start of the range (inclusive).
+	From time.Time `form:"from" json:"from"`
+
+	// To End of the range (inclusive).
+	To time.Time `form:"to" json:"to"`
+}
+
+// CommunityListFacilityBlocksParams defines parameters for CommunityListFacilityBlocks.
+type CommunityListFacilityBlocksParams struct {
+	// From Start of the range (inclusive).
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityCreateFacilityBlockParams defines parameters for CommunityCreateFacilityBlock.
+type CommunityCreateFacilityBlockParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityGetGateConsoleParams defines parameters for CommunityGetGateConsole.
+type CommunityGetGateConsoleParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+}
+
+// CommunityListGateDeliveriesParams defines parameters for CommunityListGateDeliveries.
+type CommunityListGateDeliveriesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitDoorNumber Filter by `unit_door_number`.
+	UnitDoorNumber *string `form:"unit_door_number,omitempty" json:"unit_door_number,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+}
+
+// CommunityCreateGateDeliveryParams defines parameters for CommunityCreateGateDelivery.
+type CommunityCreateGateDeliveryParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityCollectGateDeliveryParams defines parameters for CommunityCollectGateDelivery.
+type CommunityCollectGateDeliveryParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// GateListGuardsParams defines parameters for GateListGuards.
+type GateListGuardsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunitySearchGatePlatesParams defines parameters for CommunitySearchGatePlates.
+type CommunitySearchGatePlatesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Q Free-text search.
+	Q string `form:"q" json:"q"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+}
+
+// CommunityCreateGuardSessionParams defines parameters for CommunityCreateGuardSession.
+type CommunityCreateGuardSessionParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityListGateVisitorsParams defines parameters for CommunityListGateVisitors.
+type CommunityListGateVisitorsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Date Filter by `date`.
+	Date *string `form:"date,omitempty" json:"date,omitempty"`
+
+	// Plate Filter by `plate`.
+	Plate *string `form:"plate,omitempty" json:"plate,omitempty"`
+
+	// UnitDoorNumber Filter by `unit_door_number`.
+	UnitDoorNumber *string `form:"unit_door_number,omitempty" json:"unit_door_number,omitempty"`
+
+	// ApprovalStatus Filter by `approval_status`.
+	ApprovalStatus *string `form:"approval_status,omitempty" json:"approval_status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+}
+
+// CommunityGetGateVisitorParams defines parameters for CommunityGetGateVisitor.
+type CommunityGetGateVisitorParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+}
+
+// CommunityGetGateVisitorCallContactParams defines parameters for CommunityGetGateVisitorCallContact.
+type CommunityGetGateVisitorCallContactParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+}
+
+// CommunityArriveGateVisitorParams defines parameters for CommunityArriveGateVisitor.
+type CommunityArriveGateVisitorParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityLeaveGateVisitorParams defines parameters for CommunityLeaveGateVisitor.
+type CommunityLeaveGateVisitorParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityScanGateVisitorParams defines parameters for CommunityScanGateVisitor.
+type CommunityScanGateVisitorParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityCreateWalkInVisitorParams defines parameters for CommunityCreateWalkInVisitor.
+type CommunityCreateWalkInVisitorParams struct {
+	// GuardSessionHeader Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+	GuardSessionHeader *GuardSessionHeader `json:"X-Guard-Session,omitempty"`
+
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
 }
 
 // PeopleListInvitationsParams defines parameters for PeopleListInvitations.
@@ -3102,6 +4317,42 @@ type PeopleUpdatePersonParams struct {
 	// IfMatch The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
 	// `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
 	IfMatch *string `json:"If-Match,omitempty"`
+}
+
+// CommunityListRecurringVisitorsParams defines parameters for CommunityListRecurringVisitors.
+type CommunityListRecurringVisitorsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityCreateRecurringVisitorParams defines parameters for CommunityCreateRecurringVisitor.
+type CommunityCreateRecurringVisitorParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityUpdateRecurringVisitorParams defines parameters for CommunityUpdateRecurringVisitor.
+type CommunityUpdateRecurringVisitorParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CommunityRevokeRecurringVisitorParams defines parameters for CommunityRevokeRecurringVisitor.
+type CommunityRevokeRecurringVisitorParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
 }
 
 // TenancyListSiteExportsParams defines parameters for TenancyListSiteExports.
@@ -3219,6 +4470,75 @@ type PeopleUpdateVendorParams struct {
 	IfMatch *string `json:"If-Match,omitempty"`
 }
 
+// CommunityListVisitorApprovalRequestsParams defines parameters for CommunityListVisitorApprovalRequests.
+type CommunityListVisitorApprovalRequestsParams struct {
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityDecideVisitorApprovalRequestParams defines parameters for CommunityDecideVisitorApprovalRequest.
+type CommunityDecideVisitorApprovalRequestParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityListVisitorEntriesParams defines parameters for CommunityListVisitorEntries.
+type CommunityListVisitorEntriesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// ApprovalStatus Filter by `approval_status`.
+	ApprovalStatus *string `form:"approval_status,omitempty" json:"approval_status,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *time.Time `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
+
+	// Arrived Filter by `arrived`.
+	Arrived *bool `form:"arrived,omitempty" json:"arrived,omitempty"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// CommunityCreateVisitorEntryParams defines parameters for CommunityCreateVisitorEntry.
+type CommunityCreateVisitorEntryParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// CommunityUpdateVisitorEntryParams defines parameters for CommunityUpdateVisitorEntry.
+type CommunityUpdateVisitorEntryParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CommunityCancelVisitorEntryParams defines parameters for CommunityCancelVisitorEntry.
+type CommunityCancelVisitorEntryParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
 // PlatformListAuditParams defines parameters for PlatformListAudit.
 type PlatformListAuditParams struct {
 	// Limit Page size.
@@ -3282,6 +4602,39 @@ type TenancySetAllocationKeyValuesJSONRequestBody = AllocationKeyValues
 // TenancyUpdateBlockJSONRequestBody defines body for TenancyUpdateBlock for application/json ContentType.
 type TenancyUpdateBlockJSONRequestBody = BlockUpdate
 
+// CommunityCreateBookingJSONRequestBody defines body for CommunityCreateBooking for application/json ContentType.
+type CommunityCreateBookingJSONRequestBody = BookingCreate
+
+// CommunityCancelBookingJSONRequestBody defines body for CommunityCancelBooking for application/json ContentType.
+type CommunityCancelBookingJSONRequestBody = BookingCancel
+
+// CommunityCreateFacilityJSONRequestBody defines body for CommunityCreateFacility for application/json ContentType.
+type CommunityCreateFacilityJSONRequestBody = FacilityCreate
+
+// CommunityUpdateFacilityJSONRequestBody defines body for CommunityUpdateFacility for application/json ContentType.
+type CommunityUpdateFacilityJSONRequestBody = FacilityUpdate
+
+// CommunityCreateFacilityBlockJSONRequestBody defines body for CommunityCreateFacilityBlock for application/json ContentType.
+type CommunityCreateFacilityBlockJSONRequestBody = FacilityBlockCreate
+
+// CommunityCreateGateDeliveryJSONRequestBody defines body for CommunityCreateGateDelivery for application/json ContentType.
+type CommunityCreateGateDeliveryJSONRequestBody = DeliveryCreate
+
+// CommunityCollectGateDeliveryJSONRequestBody defines body for CommunityCollectGateDelivery for application/json ContentType.
+type CommunityCollectGateDeliveryJSONRequestBody = DeliveryCollect
+
+// CommunityCreateGuardSessionJSONRequestBody defines body for CommunityCreateGuardSession for application/json ContentType.
+type CommunityCreateGuardSessionJSONRequestBody = GuardSessionCreate
+
+// CommunityArriveGateVisitorJSONRequestBody defines body for CommunityArriveGateVisitor for application/json ContentType.
+type CommunityArriveGateVisitorJSONRequestBody = VisitorArrive
+
+// CommunityScanGateVisitorJSONRequestBody defines body for CommunityScanGateVisitor for application/json ContentType.
+type CommunityScanGateVisitorJSONRequestBody = ScanRequest
+
+// CommunityCreateWalkInVisitorJSONRequestBody defines body for CommunityCreateWalkInVisitor for application/json ContentType.
+type CommunityCreateWalkInVisitorJSONRequestBody = WalkInCreate
+
 // PeopleCreateInvitationJSONRequestBody defines body for PeopleCreateInvitation for application/json ContentType.
 type PeopleCreateInvitationJSONRequestBody = InvitationCreate
 
@@ -3302,6 +4655,15 @@ type PeopleCreatePersonJSONRequestBody = PersonCreate
 
 // PeopleUpdatePersonJSONRequestBody defines body for PeopleUpdatePerson for application/json ContentType.
 type PeopleUpdatePersonJSONRequestBody = PersonUpdate
+
+// CommunitySetGuardPinJSONRequestBody defines body for CommunitySetGuardPin for application/json ContentType.
+type CommunitySetGuardPinJSONRequestBody = GatePinSet
+
+// CommunityCreateRecurringVisitorJSONRequestBody defines body for CommunityCreateRecurringVisitor for application/json ContentType.
+type CommunityCreateRecurringVisitorJSONRequestBody = RecurringVisitorCreate
+
+// CommunityUpdateRecurringVisitorJSONRequestBody defines body for CommunityUpdateRecurringVisitor for application/json ContentType.
+type CommunityUpdateRecurringVisitorJSONRequestBody = RecurringVisitorUpdate
 
 // TenancyImportSiteArchiveMultipartRequestBody defines body for TenancyImportSiteArchive for multipart/form-data ContentType.
 type TenancyImportSiteArchiveMultipartRequestBody = ArchiveUpload
@@ -3353,6 +4715,15 @@ type PeopleCreateVendorJSONRequestBody = VendorCreate
 
 // PeopleUpdateVendorJSONRequestBody defines body for PeopleUpdateVendor for application/json ContentType.
 type PeopleUpdateVendorJSONRequestBody = VendorUpdate
+
+// CommunityDecideVisitorApprovalRequestJSONRequestBody defines body for CommunityDecideVisitorApprovalRequest for application/json ContentType.
+type CommunityDecideVisitorApprovalRequestJSONRequestBody = VisitorDecision
+
+// CommunityCreateVisitorEntryJSONRequestBody defines body for CommunityCreateVisitorEntry for application/json ContentType.
+type CommunityCreateVisitorEntryJSONRequestBody = VisitorEntryCreate
+
+// CommunityUpdateVisitorEntryJSONRequestBody defines body for CommunityUpdateVisitorEntry for application/json ContentType.
+type CommunityUpdateVisitorEntryJSONRequestBody = VisitorEntryUpdate
 
 // Getter for additional properties for SiteSettings. Returns the specified
 // element and whether it was found
@@ -3690,6 +5061,90 @@ type ServerInterface interface {
 	// TenancyUpdateBlock Rename, hide or reorder a block
 	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 	TenancyUpdateBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, blockId openapi_types.UUID, params TenancyUpdateBlockParams)
+	// CommunityListBookings List bookings
+	// (GET /v1/orgs/{org_id}/bookings)
+	CommunityListBookings(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListBookingsParams)
+	// CommunityCreateBooking Book a facility
+	// (POST /v1/orgs/{org_id}/bookings)
+	CommunityCreateBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateBookingParams)
+	// CommunityGetBooking Get a booking
+	// (GET /v1/orgs/{org_id}/bookings/{booking_id})
+	CommunityGetBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, bookingId openapi_types.UUID)
+	// CommunityCancelBooking Cancel a booking
+	// (POST /v1/orgs/{org_id}/bookings/{booking_id}:cancel)
+	CommunityCancelBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, bookingId openapi_types.UUID, params CommunityCancelBookingParams)
+	// CommunityListDeliveries List parcels of my unit (or of the site)
+	// (GET /v1/orgs/{org_id}/deliveries)
+	CommunityListDeliveries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListDeliveriesParams)
+	// CommunityListFacilities List facilities
+	// (GET /v1/orgs/{org_id}/facilities)
+	CommunityListFacilities(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListFacilitiesParams)
+	// CommunityCreateFacility Create facility
+	// (POST /v1/orgs/{org_id}/facilities)
+	CommunityCreateFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateFacilityParams)
+	// CommunityDeleteFacility Delete facility
+	// (DELETE /v1/orgs/{org_id}/facilities/{facility_id})
+	CommunityDeleteFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityDeleteFacilityParams)
+	// CommunityGetFacility Get facility
+	// (GET /v1/orgs/{org_id}/facilities/{facility_id})
+	CommunityGetFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID)
+	// CommunityUpdateFacility Update facility
+	// (PATCH /v1/orgs/{org_id}/facilities/{facility_id})
+	CommunityUpdateFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityUpdateFacilityParams)
+	// CommunityGetFacilityAvailability Taken and blocked slots
+	// (GET /v1/orgs/{org_id}/facilities/{facility_id}/availability)
+	CommunityGetFacilityAvailability(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityGetFacilityAvailabilityParams)
+	// CommunityListFacilityBlocks List blocked dates
+	// (GET /v1/orgs/{org_id}/facilities/{facility_id}/blocks)
+	CommunityListFacilityBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityListFacilityBlocksParams)
+	// CommunityCreateFacilityBlock Block dates
+	// (POST /v1/orgs/{org_id}/facilities/{facility_id}/blocks)
+	CommunityCreateFacilityBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityCreateFacilityBlockParams)
+	// CommunityDeleteFacilityBlock Remove a block
+	// (DELETE /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id})
+	CommunityDeleteFacilityBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, blockId openapi_types.UUID)
+	// CommunityGetGateConsole Guard console snapshot
+	// (GET /v1/orgs/{org_id}/gate/console)
+	CommunityGetGateConsole(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityGetGateConsoleParams)
+	// CommunityListGateDeliveries Waiting parcels
+	// (GET /v1/orgs/{org_id}/gate/deliveries)
+	CommunityListGateDeliveries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListGateDeliveriesParams)
+	// CommunityCreateGateDelivery Log a parcel against a unit
+	// (POST /v1/orgs/{org_id}/gate/deliveries)
+	CommunityCreateGateDelivery(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateGateDeliveryParams)
+	// CommunityCollectGateDelivery Mark a parcel collected
+	// (POST /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect)
+	CommunityCollectGateDelivery(w http.ResponseWriter, r *http.Request, orgId OrgId, deliveryId openapi_types.UUID, params CommunityCollectGateDeliveryParams)
+	// GateListGuards List the guards of a site (booth picker)
+	// (GET /v1/orgs/{org_id}/gate/guards)
+	GateListGuards(w http.ResponseWriter, r *http.Request, orgId OrgId, params GateListGuardsParams)
+	// CommunitySearchGatePlates Look up a plate
+	// (GET /v1/orgs/{org_id}/gate/plates)
+	CommunitySearchGatePlates(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunitySearchGatePlatesParams)
+	// CommunityCreateGuardSession Switch guard with a quick PIN
+	// (POST /v1/orgs/{org_id}/gate/sessions)
+	CommunityCreateGuardSession(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateGuardSessionParams)
+	// CommunityListGateVisitors Search visitors by name or plate
+	// (GET /v1/orgs/{org_id}/gate/visitors)
+	CommunityListGateVisitors(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListGateVisitorsParams)
+	// CommunityGetGateVisitor Poll one visitor (approval status)
+	// (GET /v1/orgs/{org_id}/gate/visitors/{entry_id})
+	CommunityGetGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityGetGateVisitorParams)
+	// CommunityGetGateVisitorCallContact The number to call when the resident does not answer
+	// (GET /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact)
+	CommunityGetGateVisitorCallContact(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityGetGateVisitorCallContactParams)
+	// CommunityArriveGateVisitor Mark a visitor arrived
+	// (POST /v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive)
+	CommunityArriveGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityArriveGateVisitorParams)
+	// CommunityLeaveGateVisitor Mark a visitor left
+	// (POST /v1/orgs/{org_id}/gate/visitors/{entry_id}:leave)
+	CommunityLeaveGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityLeaveGateVisitorParams)
+	// CommunityScanGateVisitor Scan a visitor QR
+	// (POST /v1/orgs/{org_id}/gate/visitors:scan)
+	CommunityScanGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityScanGateVisitorParams)
+	// CommunityCreateWalkInVisitor Register a walk-in and ask the resident
+	// (POST /v1/orgs/{org_id}/gate/visitors:walk-in)
+	CommunityCreateWalkInVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateWalkInVisitorParams)
 	// PeopleListInvitations List invitations
 	// (GET /v1/orgs/{org_id}/invitations)
 	PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams)
@@ -3738,6 +5193,24 @@ type ServerInterface interface {
 	// PeopleUpdatePerson Change a person
 	// (PATCH /v1/orgs/{org_id}/persons/{person_id})
 	PeopleUpdatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID, params PeopleUpdatePersonParams)
+	// CommunitySetGuardPin Set or reset a guard PIN
+	// (PUT /v1/orgs/{org_id}/persons/{person_id}/gate-pin)
+	CommunitySetGuardPin(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID)
+	// CommunityListRecurringVisitors List recurring visitors
+	// (GET /v1/orgs/{org_id}/recurring-visitors)
+	CommunityListRecurringVisitors(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListRecurringVisitorsParams)
+	// CommunityCreateRecurringVisitor Create recurring visitor
+	// (POST /v1/orgs/{org_id}/recurring-visitors)
+	CommunityCreateRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateRecurringVisitorParams)
+	// CommunityGetRecurringVisitor Get recurring visitor
+	// (GET /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id})
+	CommunityGetRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID)
+	// CommunityUpdateRecurringVisitor Update recurring visitor
+	// (PATCH /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id})
+	CommunityUpdateRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID, params CommunityUpdateRecurringVisitorParams)
+	// CommunityRevokeRecurringVisitor Revoke a recurring visitor
+	// (POST /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke)
+	CommunityRevokeRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID, params CommunityRevokeRecurringVisitorParams)
 	// TenancyListSiteExports List site exports and imports
 	// (GET /v1/orgs/{org_id}/site-exports)
 	TenancyListSiteExports(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListSiteExportsParams)
@@ -3858,6 +5331,27 @@ type ServerInterface interface {
 	// PeopleUpdateVendor Change a vendor
 	// (PATCH /v1/orgs/{org_id}/vendors/{vendor_id})
 	PeopleUpdateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID, params PeopleUpdateVendorParams)
+	// CommunityListVisitorApprovalRequests My visitor approval requests
+	// (GET /v1/orgs/{org_id}/visitor-approval-requests)
+	CommunityListVisitorApprovalRequests(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListVisitorApprovalRequestsParams)
+	// CommunityDecideVisitorApprovalRequest Approve or deny a visitor
+	// (POST /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide)
+	CommunityDecideVisitorApprovalRequest(w http.ResponseWriter, r *http.Request, orgId OrgId, requestId openapi_types.UUID, params CommunityDecideVisitorApprovalRequestParams)
+	// CommunityListVisitorEntries List visitor entries
+	// (GET /v1/orgs/{org_id}/visitor-entries)
+	CommunityListVisitorEntries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListVisitorEntriesParams)
+	// CommunityCreateVisitorEntry Create visitor entry
+	// (POST /v1/orgs/{org_id}/visitor-entries)
+	CommunityCreateVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateVisitorEntryParams)
+	// CommunityGetVisitorEntry Get visitor entry
+	// (GET /v1/orgs/{org_id}/visitor-entries/{entry_id})
+	CommunityGetVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID)
+	// CommunityUpdateVisitorEntry Update visitor entry
+	// (PATCH /v1/orgs/{org_id}/visitor-entries/{entry_id})
+	CommunityUpdateVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityUpdateVisitorEntryParams)
+	// CommunityCancelVisitorEntry Cancel a visitor entry
+	// (POST /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel)
+	CommunityCancelVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityCancelVisitorEntryParams)
 	// PlatformListAudit List the instance-level audit events
 	// (GET /v1/platform/audit)
 	PlatformListAudit(w http.ResponseWriter, r *http.Request, params PlatformListAuditParams)
@@ -4035,6 +5529,174 @@ func (_ Unimplemented) TenancyUpdateBlock(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// CommunityListBookings List bookings
+// (GET /v1/orgs/{org_id}/bookings)
+func (_ Unimplemented) CommunityListBookings(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListBookingsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateBooking Book a facility
+// (POST /v1/orgs/{org_id}/bookings)
+func (_ Unimplemented) CommunityCreateBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateBookingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetBooking Get a booking
+// (GET /v1/orgs/{org_id}/bookings/{booking_id})
+func (_ Unimplemented) CommunityGetBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, bookingId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCancelBooking Cancel a booking
+// (POST /v1/orgs/{org_id}/bookings/{booking_id}:cancel)
+func (_ Unimplemented) CommunityCancelBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, bookingId openapi_types.UUID, params CommunityCancelBookingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListDeliveries List parcels of my unit (or of the site)
+// (GET /v1/orgs/{org_id}/deliveries)
+func (_ Unimplemented) CommunityListDeliveries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListDeliveriesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListFacilities List facilities
+// (GET /v1/orgs/{org_id}/facilities)
+func (_ Unimplemented) CommunityListFacilities(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListFacilitiesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateFacility Create facility
+// (POST /v1/orgs/{org_id}/facilities)
+func (_ Unimplemented) CommunityCreateFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateFacilityParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityDeleteFacility Delete facility
+// (DELETE /v1/orgs/{org_id}/facilities/{facility_id})
+func (_ Unimplemented) CommunityDeleteFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityDeleteFacilityParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetFacility Get facility
+// (GET /v1/orgs/{org_id}/facilities/{facility_id})
+func (_ Unimplemented) CommunityGetFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityUpdateFacility Update facility
+// (PATCH /v1/orgs/{org_id}/facilities/{facility_id})
+func (_ Unimplemented) CommunityUpdateFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityUpdateFacilityParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetFacilityAvailability Taken and blocked slots
+// (GET /v1/orgs/{org_id}/facilities/{facility_id}/availability)
+func (_ Unimplemented) CommunityGetFacilityAvailability(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityGetFacilityAvailabilityParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListFacilityBlocks List blocked dates
+// (GET /v1/orgs/{org_id}/facilities/{facility_id}/blocks)
+func (_ Unimplemented) CommunityListFacilityBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityListFacilityBlocksParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateFacilityBlock Block dates
+// (POST /v1/orgs/{org_id}/facilities/{facility_id}/blocks)
+func (_ Unimplemented) CommunityCreateFacilityBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityCreateFacilityBlockParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityDeleteFacilityBlock Remove a block
+// (DELETE /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id})
+func (_ Unimplemented) CommunityDeleteFacilityBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, blockId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetGateConsole Guard console snapshot
+// (GET /v1/orgs/{org_id}/gate/console)
+func (_ Unimplemented) CommunityGetGateConsole(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityGetGateConsoleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListGateDeliveries Waiting parcels
+// (GET /v1/orgs/{org_id}/gate/deliveries)
+func (_ Unimplemented) CommunityListGateDeliveries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListGateDeliveriesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateGateDelivery Log a parcel against a unit
+// (POST /v1/orgs/{org_id}/gate/deliveries)
+func (_ Unimplemented) CommunityCreateGateDelivery(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateGateDeliveryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCollectGateDelivery Mark a parcel collected
+// (POST /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect)
+func (_ Unimplemented) CommunityCollectGateDelivery(w http.ResponseWriter, r *http.Request, orgId OrgId, deliveryId openapi_types.UUID, params CommunityCollectGateDeliveryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GateListGuards List the guards of a site (booth picker)
+// (GET /v1/orgs/{org_id}/gate/guards)
+func (_ Unimplemented) GateListGuards(w http.ResponseWriter, r *http.Request, orgId OrgId, params GateListGuardsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunitySearchGatePlates Look up a plate
+// (GET /v1/orgs/{org_id}/gate/plates)
+func (_ Unimplemented) CommunitySearchGatePlates(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunitySearchGatePlatesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateGuardSession Switch guard with a quick PIN
+// (POST /v1/orgs/{org_id}/gate/sessions)
+func (_ Unimplemented) CommunityCreateGuardSession(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateGuardSessionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListGateVisitors Search visitors by name or plate
+// (GET /v1/orgs/{org_id}/gate/visitors)
+func (_ Unimplemented) CommunityListGateVisitors(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListGateVisitorsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetGateVisitor Poll one visitor (approval status)
+// (GET /v1/orgs/{org_id}/gate/visitors/{entry_id})
+func (_ Unimplemented) CommunityGetGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityGetGateVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetGateVisitorCallContact The number to call when the resident does not answer
+// (GET /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact)
+func (_ Unimplemented) CommunityGetGateVisitorCallContact(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityGetGateVisitorCallContactParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityArriveGateVisitor Mark a visitor arrived
+// (POST /v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive)
+func (_ Unimplemented) CommunityArriveGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityArriveGateVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityLeaveGateVisitor Mark a visitor left
+// (POST /v1/orgs/{org_id}/gate/visitors/{entry_id}:leave)
+func (_ Unimplemented) CommunityLeaveGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityLeaveGateVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityScanGateVisitor Scan a visitor QR
+// (POST /v1/orgs/{org_id}/gate/visitors:scan)
+func (_ Unimplemented) CommunityScanGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityScanGateVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateWalkInVisitor Register a walk-in and ask the resident
+// (POST /v1/orgs/{org_id}/gate/visitors:walk-in)
+func (_ Unimplemented) CommunityCreateWalkInVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateWalkInVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // PeopleListInvitations List invitations
 // (GET /v1/orgs/{org_id}/invitations)
 func (_ Unimplemented) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
@@ -4128,6 +5790,42 @@ func (_ Unimplemented) PeopleGetPerson(w http.ResponseWriter, r *http.Request, o
 // PeopleUpdatePerson Change a person
 // (PATCH /v1/orgs/{org_id}/persons/{person_id})
 func (_ Unimplemented) PeopleUpdatePerson(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID, params PeopleUpdatePersonParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunitySetGuardPin Set or reset a guard PIN
+// (PUT /v1/orgs/{org_id}/persons/{person_id}/gate-pin)
+func (_ Unimplemented) CommunitySetGuardPin(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListRecurringVisitors List recurring visitors
+// (GET /v1/orgs/{org_id}/recurring-visitors)
+func (_ Unimplemented) CommunityListRecurringVisitors(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListRecurringVisitorsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateRecurringVisitor Create recurring visitor
+// (POST /v1/orgs/{org_id}/recurring-visitors)
+func (_ Unimplemented) CommunityCreateRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateRecurringVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetRecurringVisitor Get recurring visitor
+// (GET /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id})
+func (_ Unimplemented) CommunityGetRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityUpdateRecurringVisitor Update recurring visitor
+// (PATCH /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id})
+func (_ Unimplemented) CommunityUpdateRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID, params CommunityUpdateRecurringVisitorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityRevokeRecurringVisitor Revoke a recurring visitor
+// (POST /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke)
+func (_ Unimplemented) CommunityRevokeRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID, params CommunityRevokeRecurringVisitorParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -4368,6 +6066,48 @@ func (_ Unimplemented) PeopleGetVendor(w http.ResponseWriter, r *http.Request, o
 // PeopleUpdateVendor Change a vendor
 // (PATCH /v1/orgs/{org_id}/vendors/{vendor_id})
 func (_ Unimplemented) PeopleUpdateVendor(w http.ResponseWriter, r *http.Request, orgId OrgId, vendorId openapi_types.UUID, params PeopleUpdateVendorParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListVisitorApprovalRequests My visitor approval requests
+// (GET /v1/orgs/{org_id}/visitor-approval-requests)
+func (_ Unimplemented) CommunityListVisitorApprovalRequests(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListVisitorApprovalRequestsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityDecideVisitorApprovalRequest Approve or deny a visitor
+// (POST /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide)
+func (_ Unimplemented) CommunityDecideVisitorApprovalRequest(w http.ResponseWriter, r *http.Request, orgId OrgId, requestId openapi_types.UUID, params CommunityDecideVisitorApprovalRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityListVisitorEntries List visitor entries
+// (GET /v1/orgs/{org_id}/visitor-entries)
+func (_ Unimplemented) CommunityListVisitorEntries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListVisitorEntriesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCreateVisitorEntry Create visitor entry
+// (POST /v1/orgs/{org_id}/visitor-entries)
+func (_ Unimplemented) CommunityCreateVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateVisitorEntryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityGetVisitorEntry Get visitor entry
+// (GET /v1/orgs/{org_id}/visitor-entries/{entry_id})
+func (_ Unimplemented) CommunityGetVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityUpdateVisitorEntry Update visitor entry
+// (PATCH /v1/orgs/{org_id}/visitor-entries/{entry_id})
+func (_ Unimplemented) CommunityUpdateVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityUpdateVisitorEntryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommunityCancelVisitorEntry Cancel a visitor entry
+// (POST /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel)
+func (_ Unimplemented) CommunityCancelVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityCancelVisitorEntryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5158,6 +6898,2058 @@ func (siw *ServerInterfaceWrapper) TenancyUpdateBlock(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.TenancyUpdateBlock(w, r, orgId, blockId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListBookings operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListBookings(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListBookingsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "facility_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "facility_id", r.URL.Query(), &params.FacilityId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "facility_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "mine" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "mine", r.URL.Query(), &params.Mine, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "mine"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "mine", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListBookings(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateBooking operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateBooking(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateBookingParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateBooking(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetBooking operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetBooking(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "booking_id" -------------
+	var bookingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "booking_id", chi.URLParam(r, "booking_id"), &bookingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "booking_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetBooking(w, r, orgId, bookingId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCancelBooking operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCancelBooking(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "booking_id" -------------
+	var bookingId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "booking_id", chi.URLParam(r, "booking_id"), &bookingId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "booking_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCancelBookingParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCancelBooking(w, r, orgId, bookingId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListDeliveries operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListDeliveries(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListDeliveriesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListDeliveries(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListFacilities operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListFacilities(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListFacilitiesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "enabled" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "enabled", r.URL.Query(), &params.Enabled, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "enabled"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "enabled", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListFacilities(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateFacility operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateFacility(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateFacilityParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateFacility(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityDeleteFacility operation middleware
+func (siw *ServerInterfaceWrapper) CommunityDeleteFacility(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityDeleteFacilityParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityDeleteFacility(w, r, orgId, facilityId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetFacility operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetFacility(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetFacility(w, r, orgId, facilityId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityUpdateFacility operation middleware
+func (siw *ServerInterfaceWrapper) CommunityUpdateFacility(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityUpdateFacilityParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityUpdateFacility(w, r, orgId, facilityId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetFacilityAvailability operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetFacilityAvailability(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityGetFacilityAvailabilityParams
+
+	// ------------- Required query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Required query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetFacilityAvailability(w, r, orgId, facilityId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListFacilityBlocks operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListFacilityBlocks(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListFacilityBlocksParams
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListFacilityBlocks(w, r, orgId, facilityId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateFacilityBlock operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateFacilityBlock(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateFacilityBlockParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateFacilityBlock(w, r, orgId, facilityId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityDeleteFacilityBlock operation middleware
+func (siw *ServerInterfaceWrapper) CommunityDeleteFacilityBlock(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "facility_id" -------------
+	var facilityId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "facility_id", chi.URLParam(r, "facility_id"), &facilityId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "facility_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "block_id" -------------
+	var blockId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "block_id", chi.URLParam(r, "block_id"), &blockId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "block_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityDeleteFacilityBlock(w, r, orgId, facilityId, blockId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetGateConsole operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetGateConsole(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityGetGateConsoleParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetGateConsole(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListGateDeliveries operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListGateDeliveries(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListGateDeliveriesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_door_number" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_door_number", r.URL.Query(), &params.UnitDoorNumber, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_door_number"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_door_number", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListGateDeliveries(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateGateDelivery operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateGateDelivery(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateGateDeliveryParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateGateDelivery(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCollectGateDelivery operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCollectGateDelivery(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "delivery_id" -------------
+	var deliveryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "delivery_id", chi.URLParam(r, "delivery_id"), &deliveryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "delivery_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCollectGateDeliveryParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCollectGateDelivery(w, r, orgId, deliveryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GateListGuards operation middleware
+func (siw *ServerInterfaceWrapper) GateListGuards(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GateListGuardsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GateListGuards(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunitySearchGatePlates operation middleware
+func (siw *ServerInterfaceWrapper) CommunitySearchGatePlates(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunitySearchGatePlatesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Required query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunitySearchGatePlates(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateGuardSession operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateGuardSession(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateGuardSessionParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateGuardSession(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListGateVisitors operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListGateVisitors(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListGateVisitorsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "date" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "date", r.URL.Query(), &params.Date, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "date"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "date", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "plate" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "plate", r.URL.Query(), &params.Plate, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "plate"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "plate", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_door_number" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_door_number", r.URL.Query(), &params.UnitDoorNumber, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_door_number"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_door_number", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "approval_status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "approval_status", r.URL.Query(), &params.ApprovalStatus, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "approval_status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "approval_status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListGateVisitors(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetGateVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetGateVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityGetGateVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetGateVisitor(w, r, orgId, entryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetGateVisitorCallContact operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetGateVisitorCallContact(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityGetGateVisitorCallContactParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetGateVisitorCallContact(w, r, orgId, entryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityArriveGateVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityArriveGateVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityArriveGateVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityArriveGateVisitor(w, r, orgId, entryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityLeaveGateVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityLeaveGateVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityLeaveGateVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityLeaveGateVisitor(w, r, orgId, entryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityScanGateVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityScanGateVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityScanGateVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityScanGateVisitor(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateWalkInVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateWalkInVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateWalkInVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-Guard-Session" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Guard-Session")]; found {
+		var GuardSessionHeader GuardSessionHeader
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-Guard-Session", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-Guard-Session", valueList[0], &GuardSessionHeader, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-Guard-Session", Err: err})
+			return
+		}
+
+		params.GuardSessionHeader = &GuardSessionHeader
+
+	}
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateWalkInVisitor(w, r, orgId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -5973,6 +9765,342 @@ func (siw *ServerInterfaceWrapper) PeopleUpdatePerson(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PeopleUpdatePerson(w, r, orgId, personId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunitySetGuardPin operation middleware
+func (siw *ServerInterfaceWrapper) CommunitySetGuardPin(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "person_id" -------------
+	var personId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "person_id", chi.URLParam(r, "person_id"), &personId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunitySetGuardPin(w, r, orgId, personId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListRecurringVisitors operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListRecurringVisitors(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListRecurringVisitorsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListRecurringVisitors(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateRecurringVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateRecurringVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateRecurringVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateRecurringVisitor(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetRecurringVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetRecurringVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "recurring_visitor_id" -------------
+	var recurringVisitorId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "recurring_visitor_id", chi.URLParam(r, "recurring_visitor_id"), &recurringVisitorId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "recurring_visitor_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetRecurringVisitor(w, r, orgId, recurringVisitorId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityUpdateRecurringVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityUpdateRecurringVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "recurring_visitor_id" -------------
+	var recurringVisitorId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "recurring_visitor_id", chi.URLParam(r, "recurring_visitor_id"), &recurringVisitorId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "recurring_visitor_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityUpdateRecurringVisitorParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityUpdateRecurringVisitor(w, r, orgId, recurringVisitorId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityRevokeRecurringVisitor operation middleware
+func (siw *ServerInterfaceWrapper) CommunityRevokeRecurringVisitor(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "recurring_visitor_id" -------------
+	var recurringVisitorId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "recurring_visitor_id", chi.URLParam(r, "recurring_visitor_id"), &recurringVisitorId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "recurring_visitor_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityRevokeRecurringVisitorParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityRevokeRecurringVisitor(w, r, orgId, recurringVisitorId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -7740,6 +11868,499 @@ func (siw *ServerInterfaceWrapper) PeopleUpdateVendor(w http.ResponseWriter, r *
 	handler.ServeHTTP(w, r)
 }
 
+// CommunityListVisitorApprovalRequests operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListVisitorApprovalRequests(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListVisitorApprovalRequestsParams
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListVisitorApprovalRequests(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityDecideVisitorApprovalRequest operation middleware
+func (siw *ServerInterfaceWrapper) CommunityDecideVisitorApprovalRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "request_id" -------------
+	var requestId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "request_id", chi.URLParam(r, "request_id"), &requestId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "request_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityDecideVisitorApprovalRequestParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityDecideVisitorApprovalRequest(w, r, orgId, requestId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityListVisitorEntries operation middleware
+func (siw *ServerInterfaceWrapper) CommunityListVisitorEntries(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityListVisitorEntriesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "approval_status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "approval_status", r.URL.Query(), &params.ApprovalStatus, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "approval_status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "approval_status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "arrived" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "arrived", r.URL.Query(), &params.Arrived, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "arrived"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "arrived", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityListVisitorEntries(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCreateVisitorEntry operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCreateVisitorEntry(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCreateVisitorEntryParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCreateVisitorEntry(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityGetVisitorEntry operation middleware
+func (siw *ServerInterfaceWrapper) CommunityGetVisitorEntry(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityGetVisitorEntry(w, r, orgId, entryId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityUpdateVisitorEntry operation middleware
+func (siw *ServerInterfaceWrapper) CommunityUpdateVisitorEntry(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityUpdateVisitorEntryParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityUpdateVisitorEntry(w, r, orgId, entryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommunityCancelVisitorEntry operation middleware
+func (siw *ServerInterfaceWrapper) CommunityCancelVisitorEntry(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "entry_id" -------------
+	var entryId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "entry_id", chi.URLParam(r, "entry_id"), &entryId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "entry_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommunityCancelVisitorEntryParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommunityCancelVisitorEntry(w, r, orgId, entryId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // PlatformListAudit operation middleware
 func (siw *ServerInterfaceWrapper) PlatformListAudit(w http.ResponseWriter, r *http.Request) {
 
@@ -8202,6 +12823,129 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/vendors/{vendor_id}", wrapper.PeopleUpdateVendor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/facilities", wrapper.CommunityListFacilities)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/facilities", wrapper.CommunityCreateFacility)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}", wrapper.CommunityDeleteFacility)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}", wrapper.CommunityGetFacility)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}", wrapper.CommunityUpdateFacility)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}/blocks", wrapper.CommunityListFacilityBlocks)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}/blocks", wrapper.CommunityCreateFacilityBlock)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id}", wrapper.CommunityDeleteFacilityBlock)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/facilities/{facility_id}/availability", wrapper.CommunityGetFacilityAvailability)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bookings", wrapper.CommunityListBookings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/bookings", wrapper.CommunityCreateBooking)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bookings/{booking_id}", wrapper.CommunityGetBooking)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/bookings/{booking_id}:cancel", wrapper.CommunityCancelBooking)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/visitor-entries", wrapper.CommunityListVisitorEntries)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/visitor-entries", wrapper.CommunityCreateVisitorEntry)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/visitor-entries/{entry_id}", wrapper.CommunityGetVisitorEntry)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/visitor-entries/{entry_id}", wrapper.CommunityUpdateVisitorEntry)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel", wrapper.CommunityCancelVisitorEntry)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/recurring-visitors", wrapper.CommunityListRecurringVisitors)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/recurring-visitors", wrapper.CommunityCreateRecurringVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}", wrapper.CommunityGetRecurringVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}", wrapper.CommunityUpdateRecurringVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke", wrapper.CommunityRevokeRecurringVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/visitor-approval-requests", wrapper.CommunityListVisitorApprovalRequests)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide", wrapper.CommunityDecideVisitorApprovalRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/deliveries", wrapper.CommunityListDeliveries)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/console", wrapper.CommunityGetGateConsole)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors", wrapper.CommunityListGateVisitors)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors/{entry_id}", wrapper.CommunityGetGateVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors:scan", wrapper.CommunityScanGateVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors:walk-in", wrapper.CommunityCreateWalkInVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive", wrapper.CommunityArriveGateVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors/{entry_id}:leave", wrapper.CommunityLeaveGateVisitor)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact", wrapper.CommunityGetGateVisitorCallContact)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/plates", wrapper.CommunitySearchGatePlates)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/deliveries", wrapper.CommunityListGateDeliveries)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/deliveries", wrapper.CommunityCreateGateDelivery)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect", wrapper.CommunityCollectGateDelivery)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/gate/sessions", wrapper.CommunityCreateGuardSession)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/gate/guards", wrapper.GateListGuards)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/orgs/{org_id}/persons/{person_id}/gate-pin", wrapper.CommunitySetGuardPin)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/platform/audit", wrapper.PlatformListAudit)
@@ -12438,6 +17182,4877 @@ func (response TenancyUpdateBlockdefaultApplicationProblemPlusJSONResponse) Visi
 	return err
 }
 
+type CommunityListBookingsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListBookingsParams
+}
+
+type CommunityListBookingsResponseObject interface {
+	VisitCommunityListBookingsResponse(w http.ResponseWriter) error
+}
+
+type CommunityListBookings200JSONResponse BookingList
+
+func (response CommunityListBookings200JSONResponse) VisitCommunityListBookingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListBookings401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListBookings401ApplicationProblemPlusJSONResponse) VisitCommunityListBookingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListBookings403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListBookings403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListBookings403ResponseHeaders
+}
+
+func (response CommunityListBookings403ApplicationProblemPlusJSONResponse) VisitCommunityListBookingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListBookings422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListBookings422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListBookings422ResponseHeaders
+}
+
+func (response CommunityListBookings422ApplicationProblemPlusJSONResponse) VisitCommunityListBookingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListBookingsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListBookingsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListBookingsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListBookingsdefaultApplicationProblemPlusJSONResponse) VisitCommunityListBookingsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateBookingRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateBookingParams
+	Body   *CommunityCreateBookingJSONRequestBody
+}
+
+type CommunityCreateBookingResponseObject interface {
+	VisitCommunityCreateBookingResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateBooking201JSONResponse Booking
+
+func (response CommunityCreateBooking201JSONResponse) VisitCommunityCreateBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateBooking401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateBooking401ApplicationProblemPlusJSONResponse) VisitCommunityCreateBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateBooking403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateBooking403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateBooking403ResponseHeaders
+}
+
+func (response CommunityCreateBooking403ApplicationProblemPlusJSONResponse) VisitCommunityCreateBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateBooking409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateBooking409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateBooking409ResponseHeaders
+}
+
+func (response CommunityCreateBooking409ApplicationProblemPlusJSONResponse) VisitCommunityCreateBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateBooking422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateBooking422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateBooking422ResponseHeaders
+}
+
+func (response CommunityCreateBooking422ApplicationProblemPlusJSONResponse) VisitCommunityCreateBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateBookingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateBookingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateBookingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateBookingdefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetBookingRequestObject struct {
+	OrgId     OrgId              `json:"org_id"`
+	BookingId openapi_types.UUID `json:"booking_id"`
+}
+
+type CommunityGetBookingResponseObject interface {
+	VisitCommunityGetBookingResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetBooking200JSONResponse Booking
+
+func (response CommunityGetBooking200JSONResponse) VisitCommunityGetBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetBooking401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetBooking401ApplicationProblemPlusJSONResponse) VisitCommunityGetBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetBooking403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetBooking403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetBooking403ResponseHeaders
+}
+
+func (response CommunityGetBooking403ApplicationProblemPlusJSONResponse) VisitCommunityGetBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetBooking404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetBooking404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetBooking404ResponseHeaders
+}
+
+func (response CommunityGetBooking404ApplicationProblemPlusJSONResponse) VisitCommunityGetBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetBookingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetBookingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetBookingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetBookingdefaultApplicationProblemPlusJSONResponse) VisitCommunityGetBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBookingRequestObject struct {
+	OrgId     OrgId              `json:"org_id"`
+	BookingId openapi_types.UUID `json:"booking_id"`
+	Params    CommunityCancelBookingParams
+	Body      *CommunityCancelBookingJSONRequestBody
+}
+
+type CommunityCancelBookingResponseObject interface {
+	VisitCommunityCancelBookingResponse(w http.ResponseWriter) error
+}
+
+type CommunityCancelBooking200JSONResponse Booking
+
+func (response CommunityCancelBooking200JSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBooking401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCancelBooking401ApplicationProblemPlusJSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBooking403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelBooking403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelBooking403ResponseHeaders
+}
+
+func (response CommunityCancelBooking403ApplicationProblemPlusJSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBooking404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelBooking404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelBooking404ResponseHeaders
+}
+
+func (response CommunityCancelBooking404ApplicationProblemPlusJSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBooking409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelBooking409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelBooking409ResponseHeaders
+}
+
+func (response CommunityCancelBooking409ApplicationProblemPlusJSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBooking422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelBooking422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelBooking422ResponseHeaders
+}
+
+func (response CommunityCancelBooking422ApplicationProblemPlusJSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelBookingdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelBookingdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCancelBookingdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCancelBookingdefaultApplicationProblemPlusJSONResponse) VisitCommunityCancelBookingResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListDeliveriesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListDeliveriesParams
+}
+
+type CommunityListDeliveriesResponseObject interface {
+	VisitCommunityListDeliveriesResponse(w http.ResponseWriter) error
+}
+
+type CommunityListDeliveries200JSONResponse DeliveryList
+
+func (response CommunityListDeliveries200JSONResponse) VisitCommunityListDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListDeliveries401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListDeliveries401ApplicationProblemPlusJSONResponse) VisitCommunityListDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListDeliveries403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListDeliveries403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListDeliveries403ResponseHeaders
+}
+
+func (response CommunityListDeliveries403ApplicationProblemPlusJSONResponse) VisitCommunityListDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListDeliveries422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListDeliveries422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListDeliveries422ResponseHeaders
+}
+
+func (response CommunityListDeliveries422ApplicationProblemPlusJSONResponse) VisitCommunityListDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListDeliveriesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListDeliveriesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListDeliveriesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListDeliveriesdefaultApplicationProblemPlusJSONResponse) VisitCommunityListDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilitiesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListFacilitiesParams
+}
+
+type CommunityListFacilitiesResponseObject interface {
+	VisitCommunityListFacilitiesResponse(w http.ResponseWriter) error
+}
+
+type CommunityListFacilities200JSONResponse FacilityList
+
+func (response CommunityListFacilities200JSONResponse) VisitCommunityListFacilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilities401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListFacilities401ApplicationProblemPlusJSONResponse) VisitCommunityListFacilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilities403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilities403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListFacilities403ResponseHeaders
+}
+
+func (response CommunityListFacilities403ApplicationProblemPlusJSONResponse) VisitCommunityListFacilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilities422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilities422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListFacilities422ResponseHeaders
+}
+
+func (response CommunityListFacilities422ApplicationProblemPlusJSONResponse) VisitCommunityListFacilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilitiesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilitiesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListFacilitiesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListFacilitiesdefaultApplicationProblemPlusJSONResponse) VisitCommunityListFacilitiesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateFacilityParams
+	Body   *CommunityCreateFacilityJSONRequestBody
+}
+
+type CommunityCreateFacilityResponseObject interface {
+	VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateFacility201JSONResponse Facility
+
+func (response CommunityCreateFacility201JSONResponse) VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacility401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateFacility401ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacility403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacility403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacility403ResponseHeaders
+}
+
+func (response CommunityCreateFacility403ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacility409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacility409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacility409ResponseHeaders
+}
+
+func (response CommunityCreateFacility409ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacility422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacility422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacility422ResponseHeaders
+}
+
+func (response CommunityCreateFacility422ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilitydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacilitydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateFacilitydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateFacilitydefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilityRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	Params     CommunityDeleteFacilityParams
+}
+
+type CommunityDeleteFacilityResponseObject interface {
+	VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error
+}
+
+type CommunityDeleteFacility204Response struct {
+}
+
+func (response CommunityDeleteFacility204Response) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type CommunityDeleteFacility401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityDeleteFacility401ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacility403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacility403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacility403ResponseHeaders
+}
+
+func (response CommunityDeleteFacility403ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacility404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacility404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacility404ResponseHeaders
+}
+
+func (response CommunityDeleteFacility404ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacility409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacility409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacility409ResponseHeaders
+}
+
+func (response CommunityDeleteFacility409ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacility422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacility422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacility422ResponseHeaders
+}
+
+func (response CommunityDeleteFacility422ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilitydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacilitydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityDeleteFacilitydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityDeleteFacilitydefaultApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+}
+
+type CommunityGetFacilityResponseObject interface {
+	VisitCommunityGetFacilityResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetFacility200JSONResponse Facility
+
+func (response CommunityGetFacility200JSONResponse) VisitCommunityGetFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacility401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetFacility401ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacility403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacility403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetFacility403ResponseHeaders
+}
+
+func (response CommunityGetFacility403ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacility404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacility404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetFacility404ResponseHeaders
+}
+
+func (response CommunityGetFacility404ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilitydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacilitydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetFacilitydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetFacilitydefaultApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacilityRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	Params     CommunityUpdateFacilityParams
+	Body       *CommunityUpdateFacilityJSONRequestBody
+}
+
+type CommunityUpdateFacilityResponseObject interface {
+	VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error
+}
+
+type CommunityUpdateFacility200JSONResponse Facility
+
+func (response CommunityUpdateFacility200JSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacility401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityUpdateFacility401ApplicationProblemPlusJSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacility403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateFacility403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateFacility403ResponseHeaders
+}
+
+func (response CommunityUpdateFacility403ApplicationProblemPlusJSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacility404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateFacility404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateFacility404ResponseHeaders
+}
+
+func (response CommunityUpdateFacility404ApplicationProblemPlusJSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacility409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateFacility409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateFacility409ResponseHeaders
+}
+
+func (response CommunityUpdateFacility409ApplicationProblemPlusJSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacility422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateFacility422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateFacility422ResponseHeaders
+}
+
+func (response CommunityUpdateFacility422ApplicationProblemPlusJSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateFacilitydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateFacilitydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityUpdateFacilitydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityUpdateFacilitydefaultApplicationProblemPlusJSONResponse) VisitCommunityUpdateFacilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityAvailabilityRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	Params     CommunityGetFacilityAvailabilityParams
+}
+
+type CommunityGetFacilityAvailabilityResponseObject interface {
+	VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetFacilityAvailability200JSONResponse Availability
+
+func (response CommunityGetFacilityAvailability200JSONResponse) VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityAvailability401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetFacilityAvailability401ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityAvailability403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacilityAvailability403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetFacilityAvailability403ResponseHeaders
+}
+
+func (response CommunityGetFacilityAvailability403ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityAvailability404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacilityAvailability404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetFacilityAvailability404ResponseHeaders
+}
+
+func (response CommunityGetFacilityAvailability404ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityAvailability422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacilityAvailability422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetFacilityAvailability422ResponseHeaders
+}
+
+func (response CommunityGetFacilityAvailability422ApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetFacilityAvailabilitydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetFacilityAvailabilitydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetFacilityAvailabilitydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetFacilityAvailabilitydefaultApplicationProblemPlusJSONResponse) VisitCommunityGetFacilityAvailabilityResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilityBlocksRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	Params     CommunityListFacilityBlocksParams
+}
+
+type CommunityListFacilityBlocksResponseObject interface {
+	VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error
+}
+
+type CommunityListFacilityBlocks200JSONResponse FacilityBlockList
+
+func (response CommunityListFacilityBlocks200JSONResponse) VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilityBlocks401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListFacilityBlocks401ApplicationProblemPlusJSONResponse) VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilityBlocks403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilityBlocks403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListFacilityBlocks403ResponseHeaders
+}
+
+func (response CommunityListFacilityBlocks403ApplicationProblemPlusJSONResponse) VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilityBlocks404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilityBlocks404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListFacilityBlocks404ResponseHeaders
+}
+
+func (response CommunityListFacilityBlocks404ApplicationProblemPlusJSONResponse) VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilityBlocks422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilityBlocks422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListFacilityBlocks422ResponseHeaders
+}
+
+func (response CommunityListFacilityBlocks422ApplicationProblemPlusJSONResponse) VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListFacilityBlocksdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListFacilityBlocksdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListFacilityBlocksdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListFacilityBlocksdefaultApplicationProblemPlusJSONResponse) VisitCommunityListFacilityBlocksResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlockRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	Params     CommunityCreateFacilityBlockParams
+	Body       *CommunityCreateFacilityBlockJSONRequestBody
+}
+
+type CommunityCreateFacilityBlockResponseObject interface {
+	VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateFacilityBlock201JSONResponse FacilityBlock
+
+func (response CommunityCreateFacilityBlock201JSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlock401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateFacilityBlock401ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlock403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacilityBlock403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacilityBlock403ResponseHeaders
+}
+
+func (response CommunityCreateFacilityBlock403ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlock404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacilityBlock404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacilityBlock404ResponseHeaders
+}
+
+func (response CommunityCreateFacilityBlock404ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlock409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacilityBlock409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacilityBlock409ResponseHeaders
+}
+
+func (response CommunityCreateFacilityBlock409ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlock422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacilityBlock422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateFacilityBlock422ResponseHeaders
+}
+
+func (response CommunityCreateFacilityBlock422ApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateFacilityBlockdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateFacilityBlockdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateFacilityBlockdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateFacilityBlockdefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilityBlockRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	FacilityId openapi_types.UUID `json:"facility_id"`
+	BlockId    openapi_types.UUID `json:"block_id"`
+}
+
+type CommunityDeleteFacilityBlockResponseObject interface {
+	VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error
+}
+
+type CommunityDeleteFacilityBlock204Response struct {
+}
+
+func (response CommunityDeleteFacilityBlock204Response) VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type CommunityDeleteFacilityBlock401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityDeleteFacilityBlock401ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilityBlock403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacilityBlock403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacilityBlock403ResponseHeaders
+}
+
+func (response CommunityDeleteFacilityBlock403ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilityBlock404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacilityBlock404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacilityBlock404ResponseHeaders
+}
+
+func (response CommunityDeleteFacilityBlock404ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilityBlock409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacilityBlock409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDeleteFacilityBlock409ResponseHeaders
+}
+
+func (response CommunityDeleteFacilityBlock409ApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDeleteFacilityBlockdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDeleteFacilityBlockdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityDeleteFacilityBlockdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityDeleteFacilityBlockdefaultApplicationProblemPlusJSONResponse) VisitCommunityDeleteFacilityBlockResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateConsoleRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityGetGateConsoleParams
+}
+
+type CommunityGetGateConsoleResponseObject interface {
+	VisitCommunityGetGateConsoleResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetGateConsole200JSONResponse GateConsole
+
+func (response CommunityGetGateConsole200JSONResponse) VisitCommunityGetGateConsoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateConsole401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetGateConsole401ApplicationProblemPlusJSONResponse) VisitCommunityGetGateConsoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateConsole403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateConsole403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateConsole403ResponseHeaders
+}
+
+func (response CommunityGetGateConsole403ApplicationProblemPlusJSONResponse) VisitCommunityGetGateConsoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateConsole422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateConsole422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateConsole422ResponseHeaders
+}
+
+func (response CommunityGetGateConsole422ApplicationProblemPlusJSONResponse) VisitCommunityGetGateConsoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateConsoledefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateConsoledefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetGateConsoledefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetGateConsoledefaultApplicationProblemPlusJSONResponse) VisitCommunityGetGateConsoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateDeliveriesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListGateDeliveriesParams
+}
+
+type CommunityListGateDeliveriesResponseObject interface {
+	VisitCommunityListGateDeliveriesResponse(w http.ResponseWriter) error
+}
+
+type CommunityListGateDeliveries200JSONResponse GateDeliveryList
+
+func (response CommunityListGateDeliveries200JSONResponse) VisitCommunityListGateDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateDeliveries401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListGateDeliveries401ApplicationProblemPlusJSONResponse) VisitCommunityListGateDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateDeliveries403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListGateDeliveries403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListGateDeliveries403ResponseHeaders
+}
+
+func (response CommunityListGateDeliveries403ApplicationProblemPlusJSONResponse) VisitCommunityListGateDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateDeliveries422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListGateDeliveries422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListGateDeliveries422ResponseHeaders
+}
+
+func (response CommunityListGateDeliveries422ApplicationProblemPlusJSONResponse) VisitCommunityListGateDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateDeliveriesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListGateDeliveriesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListGateDeliveriesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListGateDeliveriesdefaultApplicationProblemPlusJSONResponse) VisitCommunityListGateDeliveriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGateDeliveryRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateGateDeliveryParams
+	Body   *CommunityCreateGateDeliveryJSONRequestBody
+}
+
+type CommunityCreateGateDeliveryResponseObject interface {
+	VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateGateDelivery201JSONResponse GateDelivery
+
+func (response CommunityCreateGateDelivery201JSONResponse) VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGateDelivery401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateGateDelivery401ApplicationProblemPlusJSONResponse) VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGateDelivery403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGateDelivery403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGateDelivery403ResponseHeaders
+}
+
+func (response CommunityCreateGateDelivery403ApplicationProblemPlusJSONResponse) VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGateDelivery409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGateDelivery409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGateDelivery409ResponseHeaders
+}
+
+func (response CommunityCreateGateDelivery409ApplicationProblemPlusJSONResponse) VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGateDelivery422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGateDelivery422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGateDelivery422ResponseHeaders
+}
+
+func (response CommunityCreateGateDelivery422ApplicationProblemPlusJSONResponse) VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGateDeliverydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGateDeliverydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateGateDeliverydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateGateDeliverydefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDeliveryRequestObject struct {
+	OrgId      OrgId              `json:"org_id"`
+	DeliveryId openapi_types.UUID `json:"delivery_id"`
+	Params     CommunityCollectGateDeliveryParams
+	Body       *CommunityCollectGateDeliveryJSONRequestBody
+}
+
+type CommunityCollectGateDeliveryResponseObject interface {
+	VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error
+}
+
+type CommunityCollectGateDelivery200JSONResponse GateDelivery
+
+func (response CommunityCollectGateDelivery200JSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDelivery401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCollectGateDelivery401ApplicationProblemPlusJSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDelivery403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCollectGateDelivery403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCollectGateDelivery403ResponseHeaders
+}
+
+func (response CommunityCollectGateDelivery403ApplicationProblemPlusJSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDelivery404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCollectGateDelivery404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCollectGateDelivery404ResponseHeaders
+}
+
+func (response CommunityCollectGateDelivery404ApplicationProblemPlusJSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDelivery409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCollectGateDelivery409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCollectGateDelivery409ResponseHeaders
+}
+
+func (response CommunityCollectGateDelivery409ApplicationProblemPlusJSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDelivery422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCollectGateDelivery422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCollectGateDelivery422ResponseHeaders
+}
+
+func (response CommunityCollectGateDelivery422ApplicationProblemPlusJSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCollectGateDeliverydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCollectGateDeliverydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCollectGateDeliverydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCollectGateDeliverydefaultApplicationProblemPlusJSONResponse) VisitCommunityCollectGateDeliveryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GateListGuardsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params GateListGuardsParams
+}
+
+type GateListGuardsResponseObject interface {
+	VisitGateListGuardsResponse(w http.ResponseWriter) error
+}
+
+type GateListGuards200JSONResponse GuardList
+
+func (response GateListGuards200JSONResponse) VisitGateListGuardsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GateListGuards401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response GateListGuards401ApplicationProblemPlusJSONResponse) VisitGateListGuardsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GateListGuards403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GateListGuards403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GateListGuards403ResponseHeaders
+}
+
+func (response GateListGuards403ApplicationProblemPlusJSONResponse) VisitGateListGuardsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GateListGuards422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GateListGuards422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers GateListGuards422ResponseHeaders
+}
+
+func (response GateListGuards422ApplicationProblemPlusJSONResponse) VisitGateListGuardsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GateListGuardsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type GateListGuardsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    GateListGuardsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response GateListGuardsdefaultApplicationProblemPlusJSONResponse) VisitGateListGuardsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySearchGatePlatesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunitySearchGatePlatesParams
+}
+
+type CommunitySearchGatePlatesResponseObject interface {
+	VisitCommunitySearchGatePlatesResponse(w http.ResponseWriter) error
+}
+
+type CommunitySearchGatePlates200JSONResponse GatePlateList
+
+func (response CommunitySearchGatePlates200JSONResponse) VisitCommunitySearchGatePlatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySearchGatePlates401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunitySearchGatePlates401ApplicationProblemPlusJSONResponse) VisitCommunitySearchGatePlatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySearchGatePlates403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySearchGatePlates403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunitySearchGatePlates403ResponseHeaders
+}
+
+func (response CommunitySearchGatePlates403ApplicationProblemPlusJSONResponse) VisitCommunitySearchGatePlatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySearchGatePlates422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySearchGatePlates422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunitySearchGatePlates422ResponseHeaders
+}
+
+func (response CommunitySearchGatePlates422ApplicationProblemPlusJSONResponse) VisitCommunitySearchGatePlatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySearchGatePlatesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySearchGatePlatesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunitySearchGatePlatesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunitySearchGatePlatesdefaultApplicationProblemPlusJSONResponse) VisitCommunitySearchGatePlatesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSessionRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateGuardSessionParams
+	Body   *CommunityCreateGuardSessionJSONRequestBody
+}
+
+type CommunityCreateGuardSessionResponseObject interface {
+	VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateGuardSession201JSONResponse GuardSession
+
+func (response CommunityCreateGuardSession201JSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSession401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateGuardSession401ApplicationProblemPlusJSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSession403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGuardSession403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGuardSession403ResponseHeaders
+}
+
+func (response CommunityCreateGuardSession403ApplicationProblemPlusJSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSession409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGuardSession409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGuardSession409ResponseHeaders
+}
+
+func (response CommunityCreateGuardSession409ApplicationProblemPlusJSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSession422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGuardSession422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGuardSession422ResponseHeaders
+}
+
+func (response CommunityCreateGuardSession422ApplicationProblemPlusJSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSession429ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGuardSession429ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateGuardSession429ResponseHeaders
+}
+
+func (response CommunityCreateGuardSession429ApplicationProblemPlusJSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateGuardSessiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateGuardSessiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateGuardSessiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateGuardSessiondefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateGuardSessionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateVisitorsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListGateVisitorsParams
+}
+
+type CommunityListGateVisitorsResponseObject interface {
+	VisitCommunityListGateVisitorsResponse(w http.ResponseWriter) error
+}
+
+type CommunityListGateVisitors200JSONResponse GuardVisitorList
+
+func (response CommunityListGateVisitors200JSONResponse) VisitCommunityListGateVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateVisitors401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListGateVisitors401ApplicationProblemPlusJSONResponse) VisitCommunityListGateVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateVisitors403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListGateVisitors403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListGateVisitors403ResponseHeaders
+}
+
+func (response CommunityListGateVisitors403ApplicationProblemPlusJSONResponse) VisitCommunityListGateVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateVisitors422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListGateVisitors422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListGateVisitors422ResponseHeaders
+}
+
+func (response CommunityListGateVisitors422ApplicationProblemPlusJSONResponse) VisitCommunityListGateVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListGateVisitorsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListGateVisitorsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListGateVisitorsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListGateVisitorsdefaultApplicationProblemPlusJSONResponse) VisitCommunityListGateVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+	Params  CommunityGetGateVisitorParams
+}
+
+type CommunityGetGateVisitorResponseObject interface {
+	VisitCommunityGetGateVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetGateVisitor200JSONResponse GuardVisitor
+
+func (response CommunityGetGateVisitor200JSONResponse) VisitCommunityGetGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetGateVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateVisitor403ResponseHeaders
+}
+
+func (response CommunityGetGateVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateVisitor404ResponseHeaders
+}
+
+func (response CommunityGetGateVisitor404ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetGateVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetGateVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorCallContactRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+	Params  CommunityGetGateVisitorCallContactParams
+}
+
+type CommunityGetGateVisitorCallContactResponseObject interface {
+	VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetGateVisitorCallContact200JSONResponse CallContact
+
+func (response CommunityGetGateVisitorCallContact200JSONResponse) VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorCallContact401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetGateVisitorCallContact401ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorCallContact403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitorCallContact403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateVisitorCallContact403ResponseHeaders
+}
+
+func (response CommunityGetGateVisitorCallContact403ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorCallContact404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitorCallContact404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateVisitorCallContact404ResponseHeaders
+}
+
+func (response CommunityGetGateVisitorCallContact404ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorCallContact409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitorCallContact409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetGateVisitorCallContact409ResponseHeaders
+}
+
+func (response CommunityGetGateVisitorCallContact409ApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetGateVisitorCallContactdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetGateVisitorCallContactdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetGateVisitorCallContactdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetGateVisitorCallContactdefaultApplicationProblemPlusJSONResponse) VisitCommunityGetGateVisitorCallContactResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitorRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+	Params  CommunityArriveGateVisitorParams
+	Body    *CommunityArriveGateVisitorJSONRequestBody
+}
+
+type CommunityArriveGateVisitorResponseObject interface {
+	VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityArriveGateVisitor200JSONResponse GuardVisitor
+
+func (response CommunityArriveGateVisitor200JSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityArriveGateVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityArriveGateVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityArriveGateVisitor403ResponseHeaders
+}
+
+func (response CommunityArriveGateVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityArriveGateVisitor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityArriveGateVisitor404ResponseHeaders
+}
+
+func (response CommunityArriveGateVisitor404ApplicationProblemPlusJSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityArriveGateVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityArriveGateVisitor409ResponseHeaders
+}
+
+func (response CommunityArriveGateVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityArriveGateVisitor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityArriveGateVisitor422ResponseHeaders
+}
+
+func (response CommunityArriveGateVisitor422ApplicationProblemPlusJSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityArriveGateVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityArriveGateVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityArriveGateVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityArriveGateVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityArriveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityLeaveGateVisitorRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+	Params  CommunityLeaveGateVisitorParams
+}
+
+type CommunityLeaveGateVisitorResponseObject interface {
+	VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityLeaveGateVisitor200JSONResponse GuardVisitor
+
+func (response CommunityLeaveGateVisitor200JSONResponse) VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityLeaveGateVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityLeaveGateVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityLeaveGateVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityLeaveGateVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityLeaveGateVisitor403ResponseHeaders
+}
+
+func (response CommunityLeaveGateVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityLeaveGateVisitor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityLeaveGateVisitor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityLeaveGateVisitor404ResponseHeaders
+}
+
+func (response CommunityLeaveGateVisitor404ApplicationProblemPlusJSONResponse) VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityLeaveGateVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityLeaveGateVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityLeaveGateVisitor409ResponseHeaders
+}
+
+func (response CommunityLeaveGateVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityLeaveGateVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityLeaveGateVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityLeaveGateVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityLeaveGateVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityLeaveGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityScanGateVisitorRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityScanGateVisitorParams
+	Body   *CommunityScanGateVisitorJSONRequestBody
+}
+
+type CommunityScanGateVisitorResponseObject interface {
+	VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityScanGateVisitor200JSONResponse ScanResult
+
+func (response CommunityScanGateVisitor200JSONResponse) VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityScanGateVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityScanGateVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityScanGateVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityScanGateVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityScanGateVisitor403ResponseHeaders
+}
+
+func (response CommunityScanGateVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityScanGateVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityScanGateVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityScanGateVisitor409ResponseHeaders
+}
+
+func (response CommunityScanGateVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityScanGateVisitor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityScanGateVisitor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityScanGateVisitor422ResponseHeaders
+}
+
+func (response CommunityScanGateVisitor422ApplicationProblemPlusJSONResponse) VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityScanGateVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityScanGateVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityScanGateVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityScanGateVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityScanGateVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitorRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateWalkInVisitorParams
+	Body   *CommunityCreateWalkInVisitorJSONRequestBody
+}
+
+type CommunityCreateWalkInVisitorResponseObject interface {
+	VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateWalkInVisitor201JSONResponse GuardVisitor
+
+func (response CommunityCreateWalkInVisitor201JSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateWalkInVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateWalkInVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateWalkInVisitor403ResponseHeaders
+}
+
+func (response CommunityCreateWalkInVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateWalkInVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateWalkInVisitor409ResponseHeaders
+}
+
+func (response CommunityCreateWalkInVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateWalkInVisitor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateWalkInVisitor422ResponseHeaders
+}
+
+func (response CommunityCreateWalkInVisitor422ApplicationProblemPlusJSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitor503ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateWalkInVisitor503ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateWalkInVisitor503ResponseHeaders
+}
+
+func (response CommunityCreateWalkInVisitor503ApplicationProblemPlusJSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateWalkInVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateWalkInVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateWalkInVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateWalkInVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateWalkInVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PeopleListInvitationsRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params PeopleListInvitationsParams
@@ -15787,6 +25402,1067 @@ type PeopleUpdatePersondefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response PeopleUpdatePersondefaultApplicationProblemPlusJSONResponse) VisitPeopleUpdatePersonResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySetGuardPinRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	PersonId openapi_types.UUID `json:"person_id"`
+	Body     *CommunitySetGuardPinJSONRequestBody
+}
+
+type CommunitySetGuardPinResponseObject interface {
+	VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error
+}
+
+type CommunitySetGuardPin204Response struct {
+}
+
+func (response CommunitySetGuardPin204Response) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type CommunitySetGuardPin401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunitySetGuardPin401ApplicationProblemPlusJSONResponse) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySetGuardPin403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySetGuardPin403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunitySetGuardPin403ResponseHeaders
+}
+
+func (response CommunitySetGuardPin403ApplicationProblemPlusJSONResponse) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySetGuardPin404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySetGuardPin404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunitySetGuardPin404ResponseHeaders
+}
+
+func (response CommunitySetGuardPin404ApplicationProblemPlusJSONResponse) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySetGuardPin409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySetGuardPin409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunitySetGuardPin409ResponseHeaders
+}
+
+func (response CommunitySetGuardPin409ApplicationProblemPlusJSONResponse) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySetGuardPin422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySetGuardPin422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunitySetGuardPin422ResponseHeaders
+}
+
+func (response CommunitySetGuardPin422ApplicationProblemPlusJSONResponse) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunitySetGuardPindefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunitySetGuardPindefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunitySetGuardPindefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunitySetGuardPindefaultApplicationProblemPlusJSONResponse) VisitCommunitySetGuardPinResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListRecurringVisitorsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListRecurringVisitorsParams
+}
+
+type CommunityListRecurringVisitorsResponseObject interface {
+	VisitCommunityListRecurringVisitorsResponse(w http.ResponseWriter) error
+}
+
+type CommunityListRecurringVisitors200JSONResponse RecurringVisitorList
+
+func (response CommunityListRecurringVisitors200JSONResponse) VisitCommunityListRecurringVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListRecurringVisitors401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListRecurringVisitors401ApplicationProblemPlusJSONResponse) VisitCommunityListRecurringVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListRecurringVisitors403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListRecurringVisitors403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListRecurringVisitors403ResponseHeaders
+}
+
+func (response CommunityListRecurringVisitors403ApplicationProblemPlusJSONResponse) VisitCommunityListRecurringVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListRecurringVisitors422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListRecurringVisitors422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListRecurringVisitors422ResponseHeaders
+}
+
+func (response CommunityListRecurringVisitors422ApplicationProblemPlusJSONResponse) VisitCommunityListRecurringVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListRecurringVisitorsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListRecurringVisitorsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListRecurringVisitorsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListRecurringVisitorsdefaultApplicationProblemPlusJSONResponse) VisitCommunityListRecurringVisitorsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateRecurringVisitorRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateRecurringVisitorParams
+	Body   *CommunityCreateRecurringVisitorJSONRequestBody
+}
+
+type CommunityCreateRecurringVisitorResponseObject interface {
+	VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateRecurringVisitor201JSONResponse RecurringVisitor
+
+func (response CommunityCreateRecurringVisitor201JSONResponse) VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateRecurringVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateRecurringVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateRecurringVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateRecurringVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateRecurringVisitor403ResponseHeaders
+}
+
+func (response CommunityCreateRecurringVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateRecurringVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateRecurringVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateRecurringVisitor409ResponseHeaders
+}
+
+func (response CommunityCreateRecurringVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateRecurringVisitor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateRecurringVisitor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateRecurringVisitor422ResponseHeaders
+}
+
+func (response CommunityCreateRecurringVisitor422ApplicationProblemPlusJSONResponse) VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateRecurringVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateRecurringVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateRecurringVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateRecurringVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetRecurringVisitorRequestObject struct {
+	OrgId              OrgId              `json:"org_id"`
+	RecurringVisitorId openapi_types.UUID `json:"recurring_visitor_id"`
+}
+
+type CommunityGetRecurringVisitorResponseObject interface {
+	VisitCommunityGetRecurringVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetRecurringVisitor200JSONResponse RecurringVisitor
+
+func (response CommunityGetRecurringVisitor200JSONResponse) VisitCommunityGetRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetRecurringVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetRecurringVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityGetRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetRecurringVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetRecurringVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetRecurringVisitor403ResponseHeaders
+}
+
+func (response CommunityGetRecurringVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityGetRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetRecurringVisitor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetRecurringVisitor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetRecurringVisitor404ResponseHeaders
+}
+
+func (response CommunityGetRecurringVisitor404ApplicationProblemPlusJSONResponse) VisitCommunityGetRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetRecurringVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetRecurringVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetRecurringVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetRecurringVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityGetRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitorRequestObject struct {
+	OrgId              OrgId              `json:"org_id"`
+	RecurringVisitorId openapi_types.UUID `json:"recurring_visitor_id"`
+	Params             CommunityUpdateRecurringVisitorParams
+	Body               *CommunityUpdateRecurringVisitorJSONRequestBody
+}
+
+type CommunityUpdateRecurringVisitorResponseObject interface {
+	VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityUpdateRecurringVisitor200JSONResponse RecurringVisitor
+
+func (response CommunityUpdateRecurringVisitor200JSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityUpdateRecurringVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateRecurringVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateRecurringVisitor403ResponseHeaders
+}
+
+func (response CommunityUpdateRecurringVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateRecurringVisitor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateRecurringVisitor404ResponseHeaders
+}
+
+func (response CommunityUpdateRecurringVisitor404ApplicationProblemPlusJSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateRecurringVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateRecurringVisitor409ResponseHeaders
+}
+
+func (response CommunityUpdateRecurringVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitor422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateRecurringVisitor422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateRecurringVisitor422ResponseHeaders
+}
+
+func (response CommunityUpdateRecurringVisitor422ApplicationProblemPlusJSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateRecurringVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateRecurringVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityUpdateRecurringVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityUpdateRecurringVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityUpdateRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityRevokeRecurringVisitorRequestObject struct {
+	OrgId              OrgId              `json:"org_id"`
+	RecurringVisitorId openapi_types.UUID `json:"recurring_visitor_id"`
+	Params             CommunityRevokeRecurringVisitorParams
+}
+
+type CommunityRevokeRecurringVisitorResponseObject interface {
+	VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error
+}
+
+type CommunityRevokeRecurringVisitor200JSONResponse RecurringVisitor
+
+func (response CommunityRevokeRecurringVisitor200JSONResponse) VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityRevokeRecurringVisitor401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityRevokeRecurringVisitor401ApplicationProblemPlusJSONResponse) VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityRevokeRecurringVisitor403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityRevokeRecurringVisitor403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityRevokeRecurringVisitor403ResponseHeaders
+}
+
+func (response CommunityRevokeRecurringVisitor403ApplicationProblemPlusJSONResponse) VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityRevokeRecurringVisitor404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityRevokeRecurringVisitor404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityRevokeRecurringVisitor404ResponseHeaders
+}
+
+func (response CommunityRevokeRecurringVisitor404ApplicationProblemPlusJSONResponse) VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityRevokeRecurringVisitor409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityRevokeRecurringVisitor409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityRevokeRecurringVisitor409ResponseHeaders
+}
+
+func (response CommunityRevokeRecurringVisitor409ApplicationProblemPlusJSONResponse) VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityRevokeRecurringVisitordefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityRevokeRecurringVisitordefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityRevokeRecurringVisitordefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityRevokeRecurringVisitordefaultApplicationProblemPlusJSONResponse) VisitCommunityRevokeRecurringVisitorResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -24238,6 +34914,1219 @@ func (response PeopleUpdateVendordefaultApplicationProblemPlusJSONResponse) Visi
 	return err
 }
 
+type CommunityListVisitorApprovalRequestsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListVisitorApprovalRequestsParams
+}
+
+type CommunityListVisitorApprovalRequestsResponseObject interface {
+	VisitCommunityListVisitorApprovalRequestsResponse(w http.ResponseWriter) error
+}
+
+type CommunityListVisitorApprovalRequests200JSONResponse VisitorApprovalRequestList
+
+func (response CommunityListVisitorApprovalRequests200JSONResponse) VisitCommunityListVisitorApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorApprovalRequests401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListVisitorApprovalRequests401ApplicationProblemPlusJSONResponse) VisitCommunityListVisitorApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorApprovalRequests403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListVisitorApprovalRequests403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListVisitorApprovalRequests403ResponseHeaders
+}
+
+func (response CommunityListVisitorApprovalRequests403ApplicationProblemPlusJSONResponse) VisitCommunityListVisitorApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorApprovalRequests422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListVisitorApprovalRequests422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListVisitorApprovalRequests422ResponseHeaders
+}
+
+func (response CommunityListVisitorApprovalRequests422ApplicationProblemPlusJSONResponse) VisitCommunityListVisitorApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorApprovalRequestsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListVisitorApprovalRequestsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListVisitorApprovalRequestsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListVisitorApprovalRequestsdefaultApplicationProblemPlusJSONResponse) VisitCommunityListVisitorApprovalRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequestRequestObject struct {
+	OrgId     OrgId              `json:"org_id"`
+	RequestId openapi_types.UUID `json:"request_id"`
+	Params    CommunityDecideVisitorApprovalRequestParams
+	Body      *CommunityDecideVisitorApprovalRequestJSONRequestBody
+}
+
+type CommunityDecideVisitorApprovalRequestResponseObject interface {
+	VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error
+}
+
+type CommunityDecideVisitorApprovalRequest200JSONResponse VisitorApprovalRequest
+
+func (response CommunityDecideVisitorApprovalRequest200JSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequest401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityDecideVisitorApprovalRequest401ApplicationProblemPlusJSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequest403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDecideVisitorApprovalRequest403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDecideVisitorApprovalRequest403ResponseHeaders
+}
+
+func (response CommunityDecideVisitorApprovalRequest403ApplicationProblemPlusJSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequest404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDecideVisitorApprovalRequest404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDecideVisitorApprovalRequest404ResponseHeaders
+}
+
+func (response CommunityDecideVisitorApprovalRequest404ApplicationProblemPlusJSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequest409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDecideVisitorApprovalRequest409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDecideVisitorApprovalRequest409ResponseHeaders
+}
+
+func (response CommunityDecideVisitorApprovalRequest409ApplicationProblemPlusJSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequest422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDecideVisitorApprovalRequest422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityDecideVisitorApprovalRequest422ResponseHeaders
+}
+
+func (response CommunityDecideVisitorApprovalRequest422ApplicationProblemPlusJSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityDecideVisitorApprovalRequestdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityDecideVisitorApprovalRequestdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityDecideVisitorApprovalRequestdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityDecideVisitorApprovalRequestdefaultApplicationProblemPlusJSONResponse) VisitCommunityDecideVisitorApprovalRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorEntriesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityListVisitorEntriesParams
+}
+
+type CommunityListVisitorEntriesResponseObject interface {
+	VisitCommunityListVisitorEntriesResponse(w http.ResponseWriter) error
+}
+
+type CommunityListVisitorEntries200JSONResponse VisitorEntryList
+
+func (response CommunityListVisitorEntries200JSONResponse) VisitCommunityListVisitorEntriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorEntries401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityListVisitorEntries401ApplicationProblemPlusJSONResponse) VisitCommunityListVisitorEntriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorEntries403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListVisitorEntries403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListVisitorEntries403ResponseHeaders
+}
+
+func (response CommunityListVisitorEntries403ApplicationProblemPlusJSONResponse) VisitCommunityListVisitorEntriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorEntries422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListVisitorEntries422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityListVisitorEntries422ResponseHeaders
+}
+
+func (response CommunityListVisitorEntries422ApplicationProblemPlusJSONResponse) VisitCommunityListVisitorEntriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityListVisitorEntriesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityListVisitorEntriesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityListVisitorEntriesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityListVisitorEntriesdefaultApplicationProblemPlusJSONResponse) VisitCommunityListVisitorEntriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateVisitorEntryRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params CommunityCreateVisitorEntryParams
+	Body   *CommunityCreateVisitorEntryJSONRequestBody
+}
+
+type CommunityCreateVisitorEntryResponseObject interface {
+	VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error
+}
+
+type CommunityCreateVisitorEntry201JSONResponse VisitorEntry
+
+func (response CommunityCreateVisitorEntry201JSONResponse) VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateVisitorEntry401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCreateVisitorEntry401ApplicationProblemPlusJSONResponse) VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateVisitorEntry403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateVisitorEntry403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateVisitorEntry403ResponseHeaders
+}
+
+func (response CommunityCreateVisitorEntry403ApplicationProblemPlusJSONResponse) VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateVisitorEntry409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateVisitorEntry409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateVisitorEntry409ResponseHeaders
+}
+
+func (response CommunityCreateVisitorEntry409ApplicationProblemPlusJSONResponse) VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateVisitorEntry422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateVisitorEntry422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCreateVisitorEntry422ResponseHeaders
+}
+
+func (response CommunityCreateVisitorEntry422ApplicationProblemPlusJSONResponse) VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCreateVisitorEntrydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCreateVisitorEntrydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCreateVisitorEntrydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCreateVisitorEntrydefaultApplicationProblemPlusJSONResponse) VisitCommunityCreateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetVisitorEntryRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+}
+
+type CommunityGetVisitorEntryResponseObject interface {
+	VisitCommunityGetVisitorEntryResponse(w http.ResponseWriter) error
+}
+
+type CommunityGetVisitorEntry200JSONResponse VisitorEntry
+
+func (response CommunityGetVisitorEntry200JSONResponse) VisitCommunityGetVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetVisitorEntry401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityGetVisitorEntry401ApplicationProblemPlusJSONResponse) VisitCommunityGetVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetVisitorEntry403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetVisitorEntry403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetVisitorEntry403ResponseHeaders
+}
+
+func (response CommunityGetVisitorEntry403ApplicationProblemPlusJSONResponse) VisitCommunityGetVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetVisitorEntry404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetVisitorEntry404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityGetVisitorEntry404ResponseHeaders
+}
+
+func (response CommunityGetVisitorEntry404ApplicationProblemPlusJSONResponse) VisitCommunityGetVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityGetVisitorEntrydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityGetVisitorEntrydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityGetVisitorEntrydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityGetVisitorEntrydefaultApplicationProblemPlusJSONResponse) VisitCommunityGetVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntryRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+	Params  CommunityUpdateVisitorEntryParams
+	Body    *CommunityUpdateVisitorEntryJSONRequestBody
+}
+
+type CommunityUpdateVisitorEntryResponseObject interface {
+	VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error
+}
+
+type CommunityUpdateVisitorEntry200JSONResponse VisitorEntry
+
+func (response CommunityUpdateVisitorEntry200JSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntry401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityUpdateVisitorEntry401ApplicationProblemPlusJSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntry403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateVisitorEntry403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateVisitorEntry403ResponseHeaders
+}
+
+func (response CommunityUpdateVisitorEntry403ApplicationProblemPlusJSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntry404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateVisitorEntry404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateVisitorEntry404ResponseHeaders
+}
+
+func (response CommunityUpdateVisitorEntry404ApplicationProblemPlusJSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntry409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateVisitorEntry409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateVisitorEntry409ResponseHeaders
+}
+
+func (response CommunityUpdateVisitorEntry409ApplicationProblemPlusJSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntry422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateVisitorEntry422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityUpdateVisitorEntry422ResponseHeaders
+}
+
+func (response CommunityUpdateVisitorEntry422ApplicationProblemPlusJSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityUpdateVisitorEntrydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityUpdateVisitorEntrydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityUpdateVisitorEntrydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityUpdateVisitorEntrydefaultApplicationProblemPlusJSONResponse) VisitCommunityUpdateVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelVisitorEntryRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	EntryId openapi_types.UUID `json:"entry_id"`
+	Params  CommunityCancelVisitorEntryParams
+}
+
+type CommunityCancelVisitorEntryResponseObject interface {
+	VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error
+}
+
+type CommunityCancelVisitorEntry200JSONResponse VisitorEntry
+
+func (response CommunityCancelVisitorEntry200JSONResponse) VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelVisitorEntry401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response CommunityCancelVisitorEntry401ApplicationProblemPlusJSONResponse) VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelVisitorEntry403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelVisitorEntry403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelVisitorEntry403ResponseHeaders
+}
+
+func (response CommunityCancelVisitorEntry403ApplicationProblemPlusJSONResponse) VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelVisitorEntry404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelVisitorEntry404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelVisitorEntry404ResponseHeaders
+}
+
+func (response CommunityCancelVisitorEntry404ApplicationProblemPlusJSONResponse) VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelVisitorEntry409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelVisitorEntry409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers CommunityCancelVisitorEntry409ResponseHeaders
+}
+
+func (response CommunityCancelVisitorEntry409ApplicationProblemPlusJSONResponse) VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommunityCancelVisitorEntrydefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type CommunityCancelVisitorEntrydefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    CommunityCancelVisitorEntrydefaultResponseHeaders
+	StatusCode int
+}
+
+func (response CommunityCancelVisitorEntrydefaultApplicationProblemPlusJSONResponse) VisitCommunityCancelVisitorEntryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PlatformListAuditRequestObject struct {
 	Params PlatformListAuditParams
 }
@@ -24468,6 +36357,90 @@ type StrictServerInterface interface {
 	// TenancyUpdateBlock Rename, hide or reorder a block
 	// (PATCH /v1/orgs/{org_id}/blocks/{block_id})
 	TenancyUpdateBlock(ctx context.Context, request TenancyUpdateBlockRequestObject) (TenancyUpdateBlockResponseObject, error)
+	// CommunityListBookings List bookings
+	// (GET /v1/orgs/{org_id}/bookings)
+	CommunityListBookings(ctx context.Context, request CommunityListBookingsRequestObject) (CommunityListBookingsResponseObject, error)
+	// CommunityCreateBooking Book a facility
+	// (POST /v1/orgs/{org_id}/bookings)
+	CommunityCreateBooking(ctx context.Context, request CommunityCreateBookingRequestObject) (CommunityCreateBookingResponseObject, error)
+	// CommunityGetBooking Get a booking
+	// (GET /v1/orgs/{org_id}/bookings/{booking_id})
+	CommunityGetBooking(ctx context.Context, request CommunityGetBookingRequestObject) (CommunityGetBookingResponseObject, error)
+	// CommunityCancelBooking Cancel a booking
+	// (POST /v1/orgs/{org_id}/bookings/{booking_id}:cancel)
+	CommunityCancelBooking(ctx context.Context, request CommunityCancelBookingRequestObject) (CommunityCancelBookingResponseObject, error)
+	// CommunityListDeliveries List parcels of my unit (or of the site)
+	// (GET /v1/orgs/{org_id}/deliveries)
+	CommunityListDeliveries(ctx context.Context, request CommunityListDeliveriesRequestObject) (CommunityListDeliveriesResponseObject, error)
+	// CommunityListFacilities List facilities
+	// (GET /v1/orgs/{org_id}/facilities)
+	CommunityListFacilities(ctx context.Context, request CommunityListFacilitiesRequestObject) (CommunityListFacilitiesResponseObject, error)
+	// CommunityCreateFacility Create facility
+	// (POST /v1/orgs/{org_id}/facilities)
+	CommunityCreateFacility(ctx context.Context, request CommunityCreateFacilityRequestObject) (CommunityCreateFacilityResponseObject, error)
+	// CommunityDeleteFacility Delete facility
+	// (DELETE /v1/orgs/{org_id}/facilities/{facility_id})
+	CommunityDeleteFacility(ctx context.Context, request CommunityDeleteFacilityRequestObject) (CommunityDeleteFacilityResponseObject, error)
+	// CommunityGetFacility Get facility
+	// (GET /v1/orgs/{org_id}/facilities/{facility_id})
+	CommunityGetFacility(ctx context.Context, request CommunityGetFacilityRequestObject) (CommunityGetFacilityResponseObject, error)
+	// CommunityUpdateFacility Update facility
+	// (PATCH /v1/orgs/{org_id}/facilities/{facility_id})
+	CommunityUpdateFacility(ctx context.Context, request CommunityUpdateFacilityRequestObject) (CommunityUpdateFacilityResponseObject, error)
+	// CommunityGetFacilityAvailability Taken and blocked slots
+	// (GET /v1/orgs/{org_id}/facilities/{facility_id}/availability)
+	CommunityGetFacilityAvailability(ctx context.Context, request CommunityGetFacilityAvailabilityRequestObject) (CommunityGetFacilityAvailabilityResponseObject, error)
+	// CommunityListFacilityBlocks List blocked dates
+	// (GET /v1/orgs/{org_id}/facilities/{facility_id}/blocks)
+	CommunityListFacilityBlocks(ctx context.Context, request CommunityListFacilityBlocksRequestObject) (CommunityListFacilityBlocksResponseObject, error)
+	// CommunityCreateFacilityBlock Block dates
+	// (POST /v1/orgs/{org_id}/facilities/{facility_id}/blocks)
+	CommunityCreateFacilityBlock(ctx context.Context, request CommunityCreateFacilityBlockRequestObject) (CommunityCreateFacilityBlockResponseObject, error)
+	// CommunityDeleteFacilityBlock Remove a block
+	// (DELETE /v1/orgs/{org_id}/facilities/{facility_id}/blocks/{block_id})
+	CommunityDeleteFacilityBlock(ctx context.Context, request CommunityDeleteFacilityBlockRequestObject) (CommunityDeleteFacilityBlockResponseObject, error)
+	// CommunityGetGateConsole Guard console snapshot
+	// (GET /v1/orgs/{org_id}/gate/console)
+	CommunityGetGateConsole(ctx context.Context, request CommunityGetGateConsoleRequestObject) (CommunityGetGateConsoleResponseObject, error)
+	// CommunityListGateDeliveries Waiting parcels
+	// (GET /v1/orgs/{org_id}/gate/deliveries)
+	CommunityListGateDeliveries(ctx context.Context, request CommunityListGateDeliveriesRequestObject) (CommunityListGateDeliveriesResponseObject, error)
+	// CommunityCreateGateDelivery Log a parcel against a unit
+	// (POST /v1/orgs/{org_id}/gate/deliveries)
+	CommunityCreateGateDelivery(ctx context.Context, request CommunityCreateGateDeliveryRequestObject) (CommunityCreateGateDeliveryResponseObject, error)
+	// CommunityCollectGateDelivery Mark a parcel collected
+	// (POST /v1/orgs/{org_id}/gate/deliveries/{delivery_id}:collect)
+	CommunityCollectGateDelivery(ctx context.Context, request CommunityCollectGateDeliveryRequestObject) (CommunityCollectGateDeliveryResponseObject, error)
+	// GateListGuards List the guards of a site (booth picker)
+	// (GET /v1/orgs/{org_id}/gate/guards)
+	GateListGuards(ctx context.Context, request GateListGuardsRequestObject) (GateListGuardsResponseObject, error)
+	// CommunitySearchGatePlates Look up a plate
+	// (GET /v1/orgs/{org_id}/gate/plates)
+	CommunitySearchGatePlates(ctx context.Context, request CommunitySearchGatePlatesRequestObject) (CommunitySearchGatePlatesResponseObject, error)
+	// CommunityCreateGuardSession Switch guard with a quick PIN
+	// (POST /v1/orgs/{org_id}/gate/sessions)
+	CommunityCreateGuardSession(ctx context.Context, request CommunityCreateGuardSessionRequestObject) (CommunityCreateGuardSessionResponseObject, error)
+	// CommunityListGateVisitors Search visitors by name or plate
+	// (GET /v1/orgs/{org_id}/gate/visitors)
+	CommunityListGateVisitors(ctx context.Context, request CommunityListGateVisitorsRequestObject) (CommunityListGateVisitorsResponseObject, error)
+	// CommunityGetGateVisitor Poll one visitor (approval status)
+	// (GET /v1/orgs/{org_id}/gate/visitors/{entry_id})
+	CommunityGetGateVisitor(ctx context.Context, request CommunityGetGateVisitorRequestObject) (CommunityGetGateVisitorResponseObject, error)
+	// CommunityGetGateVisitorCallContact The number to call when the resident does not answer
+	// (GET /v1/orgs/{org_id}/gate/visitors/{entry_id}/call-contact)
+	CommunityGetGateVisitorCallContact(ctx context.Context, request CommunityGetGateVisitorCallContactRequestObject) (CommunityGetGateVisitorCallContactResponseObject, error)
+	// CommunityArriveGateVisitor Mark a visitor arrived
+	// (POST /v1/orgs/{org_id}/gate/visitors/{entry_id}:arrive)
+	CommunityArriveGateVisitor(ctx context.Context, request CommunityArriveGateVisitorRequestObject) (CommunityArriveGateVisitorResponseObject, error)
+	// CommunityLeaveGateVisitor Mark a visitor left
+	// (POST /v1/orgs/{org_id}/gate/visitors/{entry_id}:leave)
+	CommunityLeaveGateVisitor(ctx context.Context, request CommunityLeaveGateVisitorRequestObject) (CommunityLeaveGateVisitorResponseObject, error)
+	// CommunityScanGateVisitor Scan a visitor QR
+	// (POST /v1/orgs/{org_id}/gate/visitors:scan)
+	CommunityScanGateVisitor(ctx context.Context, request CommunityScanGateVisitorRequestObject) (CommunityScanGateVisitorResponseObject, error)
+	// CommunityCreateWalkInVisitor Register a walk-in and ask the resident
+	// (POST /v1/orgs/{org_id}/gate/visitors:walk-in)
+	CommunityCreateWalkInVisitor(ctx context.Context, request CommunityCreateWalkInVisitorRequestObject) (CommunityCreateWalkInVisitorResponseObject, error)
 	// PeopleListInvitations List invitations
 	// (GET /v1/orgs/{org_id}/invitations)
 	PeopleListInvitations(ctx context.Context, request PeopleListInvitationsRequestObject) (PeopleListInvitationsResponseObject, error)
@@ -24516,6 +36489,24 @@ type StrictServerInterface interface {
 	// PeopleUpdatePerson Change a person
 	// (PATCH /v1/orgs/{org_id}/persons/{person_id})
 	PeopleUpdatePerson(ctx context.Context, request PeopleUpdatePersonRequestObject) (PeopleUpdatePersonResponseObject, error)
+	// CommunitySetGuardPin Set or reset a guard PIN
+	// (PUT /v1/orgs/{org_id}/persons/{person_id}/gate-pin)
+	CommunitySetGuardPin(ctx context.Context, request CommunitySetGuardPinRequestObject) (CommunitySetGuardPinResponseObject, error)
+	// CommunityListRecurringVisitors List recurring visitors
+	// (GET /v1/orgs/{org_id}/recurring-visitors)
+	CommunityListRecurringVisitors(ctx context.Context, request CommunityListRecurringVisitorsRequestObject) (CommunityListRecurringVisitorsResponseObject, error)
+	// CommunityCreateRecurringVisitor Create recurring visitor
+	// (POST /v1/orgs/{org_id}/recurring-visitors)
+	CommunityCreateRecurringVisitor(ctx context.Context, request CommunityCreateRecurringVisitorRequestObject) (CommunityCreateRecurringVisitorResponseObject, error)
+	// CommunityGetRecurringVisitor Get recurring visitor
+	// (GET /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id})
+	CommunityGetRecurringVisitor(ctx context.Context, request CommunityGetRecurringVisitorRequestObject) (CommunityGetRecurringVisitorResponseObject, error)
+	// CommunityUpdateRecurringVisitor Update recurring visitor
+	// (PATCH /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id})
+	CommunityUpdateRecurringVisitor(ctx context.Context, request CommunityUpdateRecurringVisitorRequestObject) (CommunityUpdateRecurringVisitorResponseObject, error)
+	// CommunityRevokeRecurringVisitor Revoke a recurring visitor
+	// (POST /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke)
+	CommunityRevokeRecurringVisitor(ctx context.Context, request CommunityRevokeRecurringVisitorRequestObject) (CommunityRevokeRecurringVisitorResponseObject, error)
 	// TenancyListSiteExports List site exports and imports
 	// (GET /v1/orgs/{org_id}/site-exports)
 	TenancyListSiteExports(ctx context.Context, request TenancyListSiteExportsRequestObject) (TenancyListSiteExportsResponseObject, error)
@@ -24636,6 +36627,27 @@ type StrictServerInterface interface {
 	// PeopleUpdateVendor Change a vendor
 	// (PATCH /v1/orgs/{org_id}/vendors/{vendor_id})
 	PeopleUpdateVendor(ctx context.Context, request PeopleUpdateVendorRequestObject) (PeopleUpdateVendorResponseObject, error)
+	// CommunityListVisitorApprovalRequests My visitor approval requests
+	// (GET /v1/orgs/{org_id}/visitor-approval-requests)
+	CommunityListVisitorApprovalRequests(ctx context.Context, request CommunityListVisitorApprovalRequestsRequestObject) (CommunityListVisitorApprovalRequestsResponseObject, error)
+	// CommunityDecideVisitorApprovalRequest Approve or deny a visitor
+	// (POST /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide)
+	CommunityDecideVisitorApprovalRequest(ctx context.Context, request CommunityDecideVisitorApprovalRequestRequestObject) (CommunityDecideVisitorApprovalRequestResponseObject, error)
+	// CommunityListVisitorEntries List visitor entries
+	// (GET /v1/orgs/{org_id}/visitor-entries)
+	CommunityListVisitorEntries(ctx context.Context, request CommunityListVisitorEntriesRequestObject) (CommunityListVisitorEntriesResponseObject, error)
+	// CommunityCreateVisitorEntry Create visitor entry
+	// (POST /v1/orgs/{org_id}/visitor-entries)
+	CommunityCreateVisitorEntry(ctx context.Context, request CommunityCreateVisitorEntryRequestObject) (CommunityCreateVisitorEntryResponseObject, error)
+	// CommunityGetVisitorEntry Get visitor entry
+	// (GET /v1/orgs/{org_id}/visitor-entries/{entry_id})
+	CommunityGetVisitorEntry(ctx context.Context, request CommunityGetVisitorEntryRequestObject) (CommunityGetVisitorEntryResponseObject, error)
+	// CommunityUpdateVisitorEntry Update visitor entry
+	// (PATCH /v1/orgs/{org_id}/visitor-entries/{entry_id})
+	CommunityUpdateVisitorEntry(ctx context.Context, request CommunityUpdateVisitorEntryRequestObject) (CommunityUpdateVisitorEntryResponseObject, error)
+	// CommunityCancelVisitorEntry Cancel a visitor entry
+	// (POST /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel)
+	CommunityCancelVisitorEntry(ctx context.Context, request CommunityCancelVisitorEntryRequestObject) (CommunityCancelVisitorEntryResponseObject, error)
 	// PlatformListAudit List the instance-level audit events
 	// (GET /v1/platform/audit)
 	PlatformListAudit(ctx context.Context, request PlatformListAuditRequestObject) (PlatformListAuditResponseObject, error)
@@ -25485,6 +37497,857 @@ func (sh *strictHandler) TenancyUpdateBlock(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// CommunityListBookings operation middleware
+func (sh *strictHandler) CommunityListBookings(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListBookingsParams) {
+	var request CommunityListBookingsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListBookings(ctx, request.(CommunityListBookingsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListBookings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListBookingsResponseObject); ok {
+		if err := validResponse.VisitCommunityListBookingsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateBooking operation middleware
+func (sh *strictHandler) CommunityCreateBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateBookingParams) {
+	var request CommunityCreateBookingRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateBookingJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateBooking(ctx, request.(CommunityCreateBookingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateBooking")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateBookingResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateBookingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetBooking operation middleware
+func (sh *strictHandler) CommunityGetBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, bookingId openapi_types.UUID) {
+	var request CommunityGetBookingRequestObject
+
+	request.OrgId = orgId
+	request.BookingId = bookingId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetBooking(ctx, request.(CommunityGetBookingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetBooking")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetBookingResponseObject); ok {
+		if err := validResponse.VisitCommunityGetBookingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCancelBooking operation middleware
+func (sh *strictHandler) CommunityCancelBooking(w http.ResponseWriter, r *http.Request, orgId OrgId, bookingId openapi_types.UUID, params CommunityCancelBookingParams) {
+	var request CommunityCancelBookingRequestObject
+
+	request.OrgId = orgId
+	request.BookingId = bookingId
+	request.Params = params
+
+	var body CommunityCancelBookingJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCancelBooking(ctx, request.(CommunityCancelBookingRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCancelBooking")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCancelBookingResponseObject); ok {
+		if err := validResponse.VisitCommunityCancelBookingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListDeliveries operation middleware
+func (sh *strictHandler) CommunityListDeliveries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListDeliveriesParams) {
+	var request CommunityListDeliveriesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListDeliveries(ctx, request.(CommunityListDeliveriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListDeliveries")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListDeliveriesResponseObject); ok {
+		if err := validResponse.VisitCommunityListDeliveriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListFacilities operation middleware
+func (sh *strictHandler) CommunityListFacilities(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListFacilitiesParams) {
+	var request CommunityListFacilitiesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListFacilities(ctx, request.(CommunityListFacilitiesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListFacilities")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListFacilitiesResponseObject); ok {
+		if err := validResponse.VisitCommunityListFacilitiesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateFacility operation middleware
+func (sh *strictHandler) CommunityCreateFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateFacilityParams) {
+	var request CommunityCreateFacilityRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateFacilityJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateFacility(ctx, request.(CommunityCreateFacilityRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateFacility")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateFacilityResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateFacilityResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityDeleteFacility operation middleware
+func (sh *strictHandler) CommunityDeleteFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityDeleteFacilityParams) {
+	var request CommunityDeleteFacilityRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityDeleteFacility(ctx, request.(CommunityDeleteFacilityRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityDeleteFacility")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityDeleteFacilityResponseObject); ok {
+		if err := validResponse.VisitCommunityDeleteFacilityResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetFacility operation middleware
+func (sh *strictHandler) CommunityGetFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID) {
+	var request CommunityGetFacilityRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetFacility(ctx, request.(CommunityGetFacilityRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetFacility")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetFacilityResponseObject); ok {
+		if err := validResponse.VisitCommunityGetFacilityResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityUpdateFacility operation middleware
+func (sh *strictHandler) CommunityUpdateFacility(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityUpdateFacilityParams) {
+	var request CommunityUpdateFacilityRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+	request.Params = params
+
+	var body CommunityUpdateFacilityJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityUpdateFacility(ctx, request.(CommunityUpdateFacilityRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityUpdateFacility")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityUpdateFacilityResponseObject); ok {
+		if err := validResponse.VisitCommunityUpdateFacilityResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetFacilityAvailability operation middleware
+func (sh *strictHandler) CommunityGetFacilityAvailability(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityGetFacilityAvailabilityParams) {
+	var request CommunityGetFacilityAvailabilityRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetFacilityAvailability(ctx, request.(CommunityGetFacilityAvailabilityRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetFacilityAvailability")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetFacilityAvailabilityResponseObject); ok {
+		if err := validResponse.VisitCommunityGetFacilityAvailabilityResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListFacilityBlocks operation middleware
+func (sh *strictHandler) CommunityListFacilityBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityListFacilityBlocksParams) {
+	var request CommunityListFacilityBlocksRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListFacilityBlocks(ctx, request.(CommunityListFacilityBlocksRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListFacilityBlocks")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListFacilityBlocksResponseObject); ok {
+		if err := validResponse.VisitCommunityListFacilityBlocksResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateFacilityBlock operation middleware
+func (sh *strictHandler) CommunityCreateFacilityBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, params CommunityCreateFacilityBlockParams) {
+	var request CommunityCreateFacilityBlockRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+	request.Params = params
+
+	var body CommunityCreateFacilityBlockJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateFacilityBlock(ctx, request.(CommunityCreateFacilityBlockRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateFacilityBlock")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateFacilityBlockResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateFacilityBlockResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityDeleteFacilityBlock operation middleware
+func (sh *strictHandler) CommunityDeleteFacilityBlock(w http.ResponseWriter, r *http.Request, orgId OrgId, facilityId openapi_types.UUID, blockId openapi_types.UUID) {
+	var request CommunityDeleteFacilityBlockRequestObject
+
+	request.OrgId = orgId
+	request.FacilityId = facilityId
+	request.BlockId = blockId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityDeleteFacilityBlock(ctx, request.(CommunityDeleteFacilityBlockRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityDeleteFacilityBlock")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityDeleteFacilityBlockResponseObject); ok {
+		if err := validResponse.VisitCommunityDeleteFacilityBlockResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetGateConsole operation middleware
+func (sh *strictHandler) CommunityGetGateConsole(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityGetGateConsoleParams) {
+	var request CommunityGetGateConsoleRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetGateConsole(ctx, request.(CommunityGetGateConsoleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetGateConsole")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetGateConsoleResponseObject); ok {
+		if err := validResponse.VisitCommunityGetGateConsoleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListGateDeliveries operation middleware
+func (sh *strictHandler) CommunityListGateDeliveries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListGateDeliveriesParams) {
+	var request CommunityListGateDeliveriesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListGateDeliveries(ctx, request.(CommunityListGateDeliveriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListGateDeliveries")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListGateDeliveriesResponseObject); ok {
+		if err := validResponse.VisitCommunityListGateDeliveriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateGateDelivery operation middleware
+func (sh *strictHandler) CommunityCreateGateDelivery(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateGateDeliveryParams) {
+	var request CommunityCreateGateDeliveryRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateGateDeliveryJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateGateDelivery(ctx, request.(CommunityCreateGateDeliveryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateGateDelivery")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateGateDeliveryResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateGateDeliveryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCollectGateDelivery operation middleware
+func (sh *strictHandler) CommunityCollectGateDelivery(w http.ResponseWriter, r *http.Request, orgId OrgId, deliveryId openapi_types.UUID, params CommunityCollectGateDeliveryParams) {
+	var request CommunityCollectGateDeliveryRequestObject
+
+	request.OrgId = orgId
+	request.DeliveryId = deliveryId
+	request.Params = params
+
+	var body CommunityCollectGateDeliveryJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCollectGateDelivery(ctx, request.(CommunityCollectGateDeliveryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCollectGateDelivery")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCollectGateDeliveryResponseObject); ok {
+		if err := validResponse.VisitCommunityCollectGateDeliveryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GateListGuards operation middleware
+func (sh *strictHandler) GateListGuards(w http.ResponseWriter, r *http.Request, orgId OrgId, params GateListGuardsParams) {
+	var request GateListGuardsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GateListGuards(ctx, request.(GateListGuardsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GateListGuards")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GateListGuardsResponseObject); ok {
+		if err := validResponse.VisitGateListGuardsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunitySearchGatePlates operation middleware
+func (sh *strictHandler) CommunitySearchGatePlates(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunitySearchGatePlatesParams) {
+	var request CommunitySearchGatePlatesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunitySearchGatePlates(ctx, request.(CommunitySearchGatePlatesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunitySearchGatePlates")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunitySearchGatePlatesResponseObject); ok {
+		if err := validResponse.VisitCommunitySearchGatePlatesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateGuardSession operation middleware
+func (sh *strictHandler) CommunityCreateGuardSession(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateGuardSessionParams) {
+	var request CommunityCreateGuardSessionRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateGuardSessionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateGuardSession(ctx, request.(CommunityCreateGuardSessionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateGuardSession")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateGuardSessionResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateGuardSessionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListGateVisitors operation middleware
+func (sh *strictHandler) CommunityListGateVisitors(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListGateVisitorsParams) {
+	var request CommunityListGateVisitorsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListGateVisitors(ctx, request.(CommunityListGateVisitorsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListGateVisitors")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListGateVisitorsResponseObject); ok {
+		if err := validResponse.VisitCommunityListGateVisitorsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetGateVisitor operation middleware
+func (sh *strictHandler) CommunityGetGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityGetGateVisitorParams) {
+	var request CommunityGetGateVisitorRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetGateVisitor(ctx, request.(CommunityGetGateVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetGateVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetGateVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityGetGateVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetGateVisitorCallContact operation middleware
+func (sh *strictHandler) CommunityGetGateVisitorCallContact(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityGetGateVisitorCallContactParams) {
+	var request CommunityGetGateVisitorCallContactRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetGateVisitorCallContact(ctx, request.(CommunityGetGateVisitorCallContactRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetGateVisitorCallContact")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetGateVisitorCallContactResponseObject); ok {
+		if err := validResponse.VisitCommunityGetGateVisitorCallContactResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityArriveGateVisitor operation middleware
+func (sh *strictHandler) CommunityArriveGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityArriveGateVisitorParams) {
+	var request CommunityArriveGateVisitorRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+	request.Params = params
+
+	var body CommunityArriveGateVisitorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityArriveGateVisitor(ctx, request.(CommunityArriveGateVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityArriveGateVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityArriveGateVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityArriveGateVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityLeaveGateVisitor operation middleware
+func (sh *strictHandler) CommunityLeaveGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityLeaveGateVisitorParams) {
+	var request CommunityLeaveGateVisitorRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityLeaveGateVisitor(ctx, request.(CommunityLeaveGateVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityLeaveGateVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityLeaveGateVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityLeaveGateVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityScanGateVisitor operation middleware
+func (sh *strictHandler) CommunityScanGateVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityScanGateVisitorParams) {
+	var request CommunityScanGateVisitorRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityScanGateVisitorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityScanGateVisitor(ctx, request.(CommunityScanGateVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityScanGateVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityScanGateVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityScanGateVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateWalkInVisitor operation middleware
+func (sh *strictHandler) CommunityCreateWalkInVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateWalkInVisitorParams) {
+	var request CommunityCreateWalkInVisitorRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateWalkInVisitorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateWalkInVisitor(ctx, request.(CommunityCreateWalkInVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateWalkInVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateWalkInVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateWalkInVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PeopleListInvitations operation middleware
 func (sh *strictHandler) PeopleListInvitations(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListInvitationsParams) {
 	var request PeopleListInvitationsRequestObject
@@ -25959,6 +38822,191 @@ func (sh *strictHandler) PeopleUpdatePerson(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PeopleUpdatePersonResponseObject); ok {
 		if err := validResponse.VisitPeopleUpdatePersonResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunitySetGuardPin operation middleware
+func (sh *strictHandler) CommunitySetGuardPin(w http.ResponseWriter, r *http.Request, orgId OrgId, personId openapi_types.UUID) {
+	var request CommunitySetGuardPinRequestObject
+
+	request.OrgId = orgId
+	request.PersonId = personId
+
+	var body CommunitySetGuardPinJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunitySetGuardPin(ctx, request.(CommunitySetGuardPinRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunitySetGuardPin")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunitySetGuardPinResponseObject); ok {
+		if err := validResponse.VisitCommunitySetGuardPinResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListRecurringVisitors operation middleware
+func (sh *strictHandler) CommunityListRecurringVisitors(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListRecurringVisitorsParams) {
+	var request CommunityListRecurringVisitorsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListRecurringVisitors(ctx, request.(CommunityListRecurringVisitorsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListRecurringVisitors")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListRecurringVisitorsResponseObject); ok {
+		if err := validResponse.VisitCommunityListRecurringVisitorsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateRecurringVisitor operation middleware
+func (sh *strictHandler) CommunityCreateRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateRecurringVisitorParams) {
+	var request CommunityCreateRecurringVisitorRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateRecurringVisitorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateRecurringVisitor(ctx, request.(CommunityCreateRecurringVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateRecurringVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateRecurringVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateRecurringVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetRecurringVisitor operation middleware
+func (sh *strictHandler) CommunityGetRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID) {
+	var request CommunityGetRecurringVisitorRequestObject
+
+	request.OrgId = orgId
+	request.RecurringVisitorId = recurringVisitorId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetRecurringVisitor(ctx, request.(CommunityGetRecurringVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetRecurringVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetRecurringVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityGetRecurringVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityUpdateRecurringVisitor operation middleware
+func (sh *strictHandler) CommunityUpdateRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID, params CommunityUpdateRecurringVisitorParams) {
+	var request CommunityUpdateRecurringVisitorRequestObject
+
+	request.OrgId = orgId
+	request.RecurringVisitorId = recurringVisitorId
+	request.Params = params
+
+	var body CommunityUpdateRecurringVisitorJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityUpdateRecurringVisitor(ctx, request.(CommunityUpdateRecurringVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityUpdateRecurringVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityUpdateRecurringVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityUpdateRecurringVisitorResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityRevokeRecurringVisitor operation middleware
+func (sh *strictHandler) CommunityRevokeRecurringVisitor(w http.ResponseWriter, r *http.Request, orgId OrgId, recurringVisitorId openapi_types.UUID, params CommunityRevokeRecurringVisitorParams) {
+	var request CommunityRevokeRecurringVisitorRequestObject
+
+	request.OrgId = orgId
+	request.RecurringVisitorId = recurringVisitorId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityRevokeRecurringVisitor(ctx, request.(CommunityRevokeRecurringVisitorRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityRevokeRecurringVisitor")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityRevokeRecurringVisitorResponseObject); ok {
+		if err := validResponse.VisitCommunityRevokeRecurringVisitorResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -27171,6 +40219,219 @@ func (sh *strictHandler) PeopleUpdateVendor(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// CommunityListVisitorApprovalRequests operation middleware
+func (sh *strictHandler) CommunityListVisitorApprovalRequests(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListVisitorApprovalRequestsParams) {
+	var request CommunityListVisitorApprovalRequestsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListVisitorApprovalRequests(ctx, request.(CommunityListVisitorApprovalRequestsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListVisitorApprovalRequests")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListVisitorApprovalRequestsResponseObject); ok {
+		if err := validResponse.VisitCommunityListVisitorApprovalRequestsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityDecideVisitorApprovalRequest operation middleware
+func (sh *strictHandler) CommunityDecideVisitorApprovalRequest(w http.ResponseWriter, r *http.Request, orgId OrgId, requestId openapi_types.UUID, params CommunityDecideVisitorApprovalRequestParams) {
+	var request CommunityDecideVisitorApprovalRequestRequestObject
+
+	request.OrgId = orgId
+	request.RequestId = requestId
+	request.Params = params
+
+	var body CommunityDecideVisitorApprovalRequestJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityDecideVisitorApprovalRequest(ctx, request.(CommunityDecideVisitorApprovalRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityDecideVisitorApprovalRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityDecideVisitorApprovalRequestResponseObject); ok {
+		if err := validResponse.VisitCommunityDecideVisitorApprovalRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityListVisitorEntries operation middleware
+func (sh *strictHandler) CommunityListVisitorEntries(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityListVisitorEntriesParams) {
+	var request CommunityListVisitorEntriesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityListVisitorEntries(ctx, request.(CommunityListVisitorEntriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityListVisitorEntries")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityListVisitorEntriesResponseObject); ok {
+		if err := validResponse.VisitCommunityListVisitorEntriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCreateVisitorEntry operation middleware
+func (sh *strictHandler) CommunityCreateVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, params CommunityCreateVisitorEntryParams) {
+	var request CommunityCreateVisitorEntryRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body CommunityCreateVisitorEntryJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCreateVisitorEntry(ctx, request.(CommunityCreateVisitorEntryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCreateVisitorEntry")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCreateVisitorEntryResponseObject); ok {
+		if err := validResponse.VisitCommunityCreateVisitorEntryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityGetVisitorEntry operation middleware
+func (sh *strictHandler) CommunityGetVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID) {
+	var request CommunityGetVisitorEntryRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityGetVisitorEntry(ctx, request.(CommunityGetVisitorEntryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityGetVisitorEntry")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityGetVisitorEntryResponseObject); ok {
+		if err := validResponse.VisitCommunityGetVisitorEntryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityUpdateVisitorEntry operation middleware
+func (sh *strictHandler) CommunityUpdateVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityUpdateVisitorEntryParams) {
+	var request CommunityUpdateVisitorEntryRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+	request.Params = params
+
+	var body CommunityUpdateVisitorEntryJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityUpdateVisitorEntry(ctx, request.(CommunityUpdateVisitorEntryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityUpdateVisitorEntry")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityUpdateVisitorEntryResponseObject); ok {
+		if err := validResponse.VisitCommunityUpdateVisitorEntryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommunityCancelVisitorEntry operation middleware
+func (sh *strictHandler) CommunityCancelVisitorEntry(w http.ResponseWriter, r *http.Request, orgId OrgId, entryId openapi_types.UUID, params CommunityCancelVisitorEntryParams) {
+	var request CommunityCancelVisitorEntryRequestObject
+
+	request.OrgId = orgId
+	request.EntryId = entryId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommunityCancelVisitorEntry(ctx, request.(CommunityCancelVisitorEntryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommunityCancelVisitorEntry")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommunityCancelVisitorEntryResponseObject); ok {
+		if err := validResponse.VisitCommunityCancelVisitorEntryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PlatformListAudit operation middleware
 func (sh *strictHandler) PlatformListAudit(w http.ResponseWriter, r *http.Request, params PlatformListAuditParams) {
 	var request PlatformListAuditRequestObject
@@ -27202,337 +40463,499 @@ func (sh *strictHandler) PlatformListAudit(w http.ResponseWriter, r *http.Reques
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
-	"AwA=",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

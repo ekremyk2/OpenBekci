@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"sort"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -79,6 +80,7 @@ type opInfo struct {
 	auth       authMode
 	orgScoped  bool               // path under /v1/orgs/{org_id}: membership is resolved first
 	perms      []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
+	anyPerm    bool               // x-openbekci-roles is the draft contract's role map: holding any one of perms suffices
 	query      map[string]bool    // declared query parameter names
 }
 
@@ -117,6 +119,7 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				query:      queryParams(item, op),
 				orgScoped:  isOrgPath(path),
 				perms:      extPermissions(op.Extensions),
+				anyPerm:    extPermsAny(op.Extensions),
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -161,7 +164,10 @@ func authModeOf(spec *openapi3.T, op *openapi3.Operation) authMode {
 	return authRequired
 }
 
-// extPermissions reads the x-openbekci-roles list of an operation.
+// extPermissions reads the x-openbekci-roles of an operation: the list of
+// permissions it requires, or (the draft contract's form, a map of role to
+// permission list) the sorted union of the permissions any role holds, of
+// which one suffices (see extPermsAny).
 func extPermissions(ext map[string]any) []authz.Permission {
 	var raw []byte
 	switch v := ext["x-openbekci-roles"].(type) {
@@ -176,13 +182,66 @@ func extPermissions(ext map[string]any) []authz.Permission {
 	}
 	var names []string
 	if json.Unmarshal(raw, &names) != nil {
-		return nil
+		var byRole map[string][]string
+		if json.Unmarshal(raw, &byRole) != nil {
+			return nil
+		}
+		seen := map[string]bool{}
+		for _, ps := range byRole {
+			for _, p := range ps {
+				if !seen[p] {
+					seen[p] = true
+					names = append(names, p)
+				}
+			}
+		}
+		slices.Sort(names)
 	}
 	out := make([]authz.Permission, len(names))
 	for i, n := range names {
 		out[i] = authz.Permission(n)
 	}
 	return out
+}
+
+// extPermsAny reports whether x-openbekci-roles is the role map form, where
+// holding any one of the listed permissions is enough.
+func extPermsAny(ext map[string]any) bool {
+	var raw []byte
+	switch v := ext["x-openbekci-roles"].(type) {
+	case nil:
+		return false
+	case json.RawMessage:
+		raw = v
+	case []byte:
+		raw = v
+	default:
+		raw, _ = json.Marshal(v)
+	}
+	var byRole map[string][]string
+	return json.Unmarshal(raw, &byRole) == nil && byRole != nil
+}
+
+// holdsPerms reports whether held answers true for the permissions of an
+// operation: all of them, or any one for the role map form.
+func (i opInfo) holdsPerms(held func(authz.Permission) bool) (missing authz.Permission, ok bool) {
+	if i.anyPerm {
+		for _, p := range i.perms {
+			if held(p) {
+				return "", true
+			}
+		}
+		if len(i.perms) == 0 {
+			return "", true
+		}
+		return i.perms[0], false
+	}
+	for _, p := range i.perms {
+		if !held(p) {
+			return p, false
+		}
+	}
+	return "", true
 }
 
 // extString reads a string extension that arrives as json.RawMessage or a decoded value.
@@ -294,6 +353,24 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r.WithContext(authz.WithPrincipal(r.Context(), pr)))
 	})
+}
+
+// authenticateFirst runs the authentication step for a request whose
+// parameters failed to bind (the generated wrapper binds before the
+// middleware chain), and returns the problem an unauthenticated caller must
+// see instead of the binding error; nil when the caller may learn the error.
+func (p *pipeline) authenticateFirst(r *http.Request) error {
+	if p.op(r).auth != authRequired {
+		return nil
+	}
+	pr, err := p.auth.Authenticate(r)
+	if err != nil {
+		return err
+	}
+	if pr == nil {
+		return problem.Unauthenticated("authentication is required")
+	}
+	return nil
 }
 
 // notFound renders unknown API paths as problem+json.
