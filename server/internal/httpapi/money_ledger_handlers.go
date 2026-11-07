@@ -34,7 +34,7 @@ func (s *apiServer) lg() (*ledger.Service, error) {
 
 // siteOf reads the site_id query parameter; the services answer 422 for the
 // nil id (the spec leaves the parameter optional so authentication comes first).
-func siteOf(p openapi_types.UUID) uuid.UUID { return uuid.UUID(p) }
+func siteOf(p openapi_types.UUID) uuid.UUID { return p }
 
 // dateStr renders an optional date parameter as a civil date ("" when absent).
 func dateStr(d *openapi_types.Date) string {

@@ -13610,6 +13610,11 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             unit_id: string;
+            /** @description Door number of the unit, for display next to the debtor. */
+            unit_door_number?: string;
+            /** @description Block and door number ("A Blok / 12"). */
+            unit_label?: string;
+            block_name?: string | null;
             /**
              * @description Open enum.
              * @enum {string}
@@ -14186,7 +14191,7 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "transferred_at": "2026-03-01T09:00:00Z",
+         *       "transferred_on": "2026-03-01",
          *       "memo": null,
          *       "kind": "cash_handover",
          *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
@@ -14207,8 +14212,8 @@ export interface components {
             /** Format: uuid */
             to_account_id: string;
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at: string;
+            /** Format: date */
+            transferred_on: string;
             memo: string | null;
             /**
              * @description Open enum.
@@ -14232,8 +14237,8 @@ export interface components {
             /** Format: uuid */
             to_account_id: string;
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at: string;
+            /** Format: date */
+            transferred_on: string;
             memo?: string | null;
             /**
              * @description Open enum.
@@ -14254,7 +14259,7 @@ export interface components {
          *             "amount": 200000,
          *             "currency": "TRY"
          *           },
-         *           "transferred_at": "2026-03-01T09:00:00Z",
+         *           "transferred_on": "2026-03-01",
          *           "memo": null,
          *           "kind": "cash_handover",
          *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
@@ -14287,7 +14292,7 @@ export interface components {
          *       "reason": "reason",
          *       "kind": "overpayment",
          *       "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
-         *       "refunded_at": "2026-03-01T09:00:00Z",
+         *       "refunded_on": "2026-03-01",
          *       "credit_id": null,
          *       "payment_id": null,
          *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
@@ -14320,8 +14325,8 @@ export interface components {
             kind: "overpayment" | "deposit_return" | "other";
             /** Format: uuid */
             paid_from_account_id: string;
-            /** Format: date-time */
-            refunded_at: string;
+            /** Format: date */
+            refunded_on: string;
             /** Format: uuid */
             credit_id: string | null;
             /** Format: uuid */
@@ -14354,8 +14359,8 @@ export interface components {
             kind: "overpayment" | "deposit_return" | "other";
             /** Format: uuid */
             paid_from_account_id: string;
-            /** Format: date-time */
-            refunded_at: string;
+            /** Format: date */
+            refunded_on: string;
             /** Format: uuid */
             credit_id?: string | null;
             /** Format: uuid */
@@ -14378,7 +14383,7 @@ export interface components {
          *           "reason": "reason",
          *           "kind": "overpayment",
          *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
-         *           "refunded_at": "2026-03-01T09:00:00Z",
+         *           "refunded_on": "2026-03-01",
          *           "credit_id": null,
          *           "payment_id": null,
          *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
@@ -14767,6 +14772,13 @@ export interface components {
             document_no?: string | null;
             /** Format: uuid */
             file_id?: string | null;
+            /** @description Makes this a monthly recurring expense in one atomic call (the first occurrence is posted now). */
+            recurring?: {
+                /** @enum {string} */
+                frequency: "monthly";
+                /** @description Day of the month; defaults to the day of `paid_on`. */
+                day?: number;
+            } | null;
         };
         /**
          * @example {
