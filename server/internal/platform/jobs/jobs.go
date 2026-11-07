@@ -30,6 +30,10 @@ type Options struct {
 	// Files is run hourly by maintenance.prune_files (retention, the blobs of
 	// deleted files). Nil registers neither the worker nor the schedule.
 	Files FilePruner
+	// Notifications runs notifications.deliver jobs. Nil registers no worker.
+	Notifications Deliverer
+	// Tasks are run periodically by the worker (each also once at start).
+	Tasks []Task
 }
 
 // FilePruner removes expired and deleted files (*files.Service); the count is
@@ -122,6 +126,17 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 	if o.Files != nil {
 		river.AddWorker(workers, &pruneFilesWorker{log: log, pruner: o.Files})
 	}
+	if o.Notifications != nil {
+		river.AddWorker(workers, &notifyWorker{log: log, d: o.Notifications})
+	}
+
+	if len(o.Tasks) > 0 {
+		tm := map[string]Task{}
+		for _, t := range o.Tasks {
+			tm[t.Name] = t
+		}
+		river.AddWorker(workers, &taskWorker{log: log, tasks: tm})
+	}
 
 	cfg := &river.Config{
 		Logger:   log,
@@ -138,6 +153,14 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 			cfg.PeriodicJobs = append(cfg.PeriodicJobs, river.NewPeriodicJob(
 				river.PeriodicInterval(PruneIdempotencyInterval),
 				func() (river.JobArgs, *river.InsertOpts) { return PruneIdempotencyArgs{}, nil },
+				&river.PeriodicJobOpts{RunOnStart: true},
+			))
+		}
+		for _, t := range o.Tasks {
+			name := t.Name
+			cfg.PeriodicJobs = append(cfg.PeriodicJobs, river.NewPeriodicJob(
+				river.PeriodicInterval(t.Every),
+				func() (river.JobArgs, *river.InsertOpts) { return TaskArgs{Name: name}, nil },
 				&river.PeriodicJobOpts{RunOnStart: true},
 			))
 		}

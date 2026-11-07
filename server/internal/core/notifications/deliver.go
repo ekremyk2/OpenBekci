@@ -1,0 +1,341 @@
+package notifications
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"slices"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+
+	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/openbekci/openbekci/server/internal/platform/mail"
+)
+
+// maxAttempts matches the job's MaxAttempts: after the last try a failed
+// delivery stays failed and the job ends.
+const maxAttempts = 8
+
+type contact struct {
+	person       uuid.UUID
+	email, phone string
+	locale       string
+}
+
+type pendingSend struct {
+	deliveryID uuid.UUID
+	channel    string
+	attempts   int
+	person     uuid.UUID
+	text       Rendered
+	link       string
+}
+
+// Deliver runs one notifications.deliver job: it resolves the recipients,
+// drops those who muted the type, writes the in-app rows and then sends email
+// and SMS, recording every delivery. It is safe to run twice (River retries):
+// rows are keyed by the job's Key and only unfinished deliveries are sent
+// again.
+func (s *Service) Deliver(ctx context.Context, a jobs.NotifyArgs, attempt int) error {
+	if a.OrgID == uuid.Nil || a.Type == "" || a.Key == "" {
+		return nil // malformed: retrying cannot help
+	}
+	var sends []pendingSend
+	var siteName string
+	err := s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
+		var orgLocale string
+		if err := tx.QueryRow(ctx, `SELECT default_locale FROM organization WHERE id = $1`, a.OrgID).Scan(&orgLocale); err != nil {
+			return err
+		}
+		if a.SiteID != nil {
+			if err := tx.QueryRow(ctx, `SELECT name FROM site WHERE org_id = $1 AND id = $2`, a.OrgID, *a.SiteID).Scan(&siteName); err != nil && !errors.Is(err, pgx.ErrNoRows) {
+				return err
+			}
+		}
+		people, err := s.resolve(ctx, tx, a, orgLocale)
+		if err != nil {
+			return err
+		}
+		channels := NormalizeChannels(a.Channels)
+		if len(channels) == 0 {
+			channels = DefaultChannels(a.Type)
+			if a.SiteID != nil {
+				if err := tx.QueryRow(ctx, `SELECT channels FROM site_channel_default WHERE org_id = $1 AND site_id = $2 AND type = $3`,
+					a.OrgID, *a.SiteID, a.Type).Scan(&channels); err != nil && !errors.Is(err, pgx.ErrNoRows) {
+					return err
+				}
+			}
+		}
+		muted := map[uuid.UUID]bool{}
+		if !a.Unmutable && !IsUnmutable(a.Type) {
+			ids := make([]uuid.UUID, len(people))
+			for i, p := range people {
+				ids[i] = p.person
+			}
+			rows, err := tx.Query(ctx, `SELECT person_id FROM notification_mute WHERE org_id = $1 AND type = $2 AND person_id = ANY($3)`, a.OrgID, a.Type, ids)
+			if err != nil {
+				return err
+			}
+			for rows.Next() {
+				var p uuid.UUID
+				if err := rows.Scan(&p); err != nil {
+					rows.Close()
+					return err
+				}
+				muted[p] = true
+			}
+			rows.Close()
+			if err := rows.Err(); err != nil {
+				return err
+			}
+		}
+		payload := map[string]any{}
+		for k, v := range a.Payload {
+			payload[k] = v
+		}
+		if _, ok := payload["site"]; !ok {
+			payload["site"] = siteName
+		}
+		raw, _ := json.Marshal(a.Payload)
+		if a.Payload == nil {
+			raw = []byte(`{}`)
+		}
+		for _, p := range people {
+			if muted[p.person] {
+				continue
+			}
+			nid := id.New()
+			var link *string
+			if a.Link != "" {
+				link = &a.Link
+			}
+			tag, err := tx.Exec(ctx, `INSERT INTO notification (id, org_id, site_id, person_id, type, payload, link, dedupe_key)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (org_id, person_id, dedupe_key) WHERE dedupe_key IS NOT NULL DO NOTHING`,
+				nid, a.OrgID, a.SiteID, p.person, a.Type, raw, link, a.Key)
+			if err != nil {
+				return err
+			}
+			if tag.RowsAffected() == 1 {
+				for _, ch := range channels {
+					status, why := "pending", ""
+					switch {
+					case ch == jobs.ChannelInApp:
+						status = "sent"
+					case ch == jobs.ChannelEmail && (p.email == "" || s.cfg.Mail == nil):
+						status, why = "skipped", skipReason(p.email == "", "no_address", "mail_unavailable")
+					case ch == jobs.ChannelSMS && (p.phone == "" || s.cfg.SMS == nil):
+						status, why = "skipped", skipReason(p.phone == "", "no_address", "sms_unavailable")
+					case ch == jobs.ChannelPush:
+						status, why = "skipped", "push_unavailable"
+					}
+					if _, err := tx.Exec(ctx, `INSERT INTO notification_delivery (id, org_id, notification_id, channel, status, last_error)
+						VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''))`, id.New(), a.OrgID, nid, ch, status, why); err != nil {
+						return err
+					}
+				}
+			}
+		}
+		// every unfinished email and SMS delivery of this job (first try or retry)
+		rows, err := tx.Query(ctx, `SELECT d.id, d.channel, d.attempts, n.person_id, n.link
+			FROM notification n JOIN notification_delivery d ON d.org_id = n.org_id AND d.notification_id = n.id
+			WHERE n.org_id = $1 AND n.dedupe_key = $2 AND d.channel IN ('email', 'sms') AND d.status IN ('pending', 'failed') AND d.attempts < $3`, a.OrgID, a.Key, maxAttempts)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		byPerson := map[uuid.UUID]contact{}
+		for _, p := range people {
+			byPerson[p.person] = p
+		}
+		cache := map[string]Rendered{}
+		for rows.Next() {
+			var ps pendingSend
+			var link *string
+			if err := rows.Scan(&ps.deliveryID, &ps.channel, &ps.attempts, &ps.person, &link); err != nil {
+				return err
+			}
+			c, ok := byPerson[ps.person]
+			if !ok {
+				continue
+			}
+			if link != nil {
+				ps.link = *link
+			}
+			r, ok := cache[c.locale]
+			if !ok {
+				r = Render(a.Type, c.locale, payload)
+				cache[c.locale] = r
+			}
+			ps.text = r
+			sends = append(sends, ps)
+		}
+		return rows.Err()
+	})
+	if err != nil {
+		return fmt.Errorf("prepare notification: %w", err)
+	}
+	if len(sends) == 0 {
+		return nil
+	}
+	// contacts again by person, outside the first transaction's closure
+	contacts := map[uuid.UUID]contact{}
+	err = s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
+		ps := make([]uuid.UUID, 0, len(sends))
+		for _, p := range sends {
+			ps = append(ps, p.person)
+		}
+		rows, err := tx.Query(ctx, personQuery+` WHERE p.org_id = $1 AND p.id = ANY($2)`, a.OrgID, ps)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			c, err := scanContact(rows)
+			if err != nil {
+				return err
+			}
+			contacts[c.person] = c
+		}
+		return rows.Err()
+	})
+	if err != nil {
+		return fmt.Errorf("load contacts: %w", err)
+	}
+	type result struct {
+		p        pendingSend
+		err      error
+		provider string
+		segments int
+	}
+	var results []result
+	for _, p := range sends {
+		c := contacts[p.person]
+		r := result{p: p}
+		switch p.channel {
+		case jobs.ChannelEmail:
+			body := p.text.Body
+			if p.link != "" && s.cfg.BaseURL != "" {
+				body += "\n\n" + strings.TrimRight(s.cfg.BaseURL, "/") + p.link
+			}
+			r.err = s.cfg.Mail.Send(ctx, mail.Message{To: c.email, Subject: p.text.Subject, Body: body})
+		case jobs.ChannelSMS:
+			r.provider, r.err = s.cfg.SMS.Send(ctx, c.phone, p.text.SMS)
+			if r.err == nil {
+				r.segments = SMSSegments(p.text.SMS)
+			}
+		}
+		results = append(results, r)
+	}
+	var failed int
+	err = s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
+		var msgs, segs int
+		for _, r := range results {
+			if r.err != nil {
+				failed++
+				if _, err := tx.Exec(ctx, `UPDATE notification_delivery SET status = 'failed', attempts = attempts + 1, last_error = $3, updated_at = now() WHERE org_id = $1 AND id = $2`,
+					a.OrgID, r.p.deliveryID, truncate(r.err.Error(), 300)); err != nil {
+					return err
+				}
+				continue
+			}
+			if _, err := tx.Exec(ctx, `UPDATE notification_delivery SET status = 'sent', attempts = attempts + 1, last_error = NULL, provider_id = NULLIF($3, ''), sms_segments = $4, updated_at = now() WHERE org_id = $1 AND id = $2`,
+				a.OrgID, r.p.deliveryID, r.provider, r.segments); err != nil {
+				return err
+			}
+			if r.p.channel == jobs.ChannelSMS {
+				msgs++
+				segs += r.segments
+			}
+		}
+		if msgs > 0 && a.SiteID != nil {
+			month := time.Now().UTC()
+			if s.cfg.Now != nil {
+				month = s.cfg.Now().UTC()
+			}
+			first := time.Date(month.Year(), month.Month(), 1, 0, 0, 0, 0, time.UTC)
+			if _, err := tx.Exec(ctx, `INSERT INTO sms_usage (org_id, site_id, month, messages, segments) VALUES ($1, $2, $3, $4, $5)
+				ON CONFLICT (org_id, site_id, month) DO UPDATE SET messages = sms_usage.messages + EXCLUDED.messages, segments = sms_usage.segments + EXCLUDED.segments`,
+				a.OrgID, *a.SiteID, first, msgs, segs); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("record deliveries: %w", err)
+	}
+	if failed > 0 && attempt < maxAttempts {
+		return fmt.Errorf("%d deliveries failed", failed)
+	}
+	return nil
+}
+
+func skipReason(cond bool, a, b string) string {
+	if cond {
+		return a
+	}
+	return b
+}
+
+func truncate(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n]
+}
+
+const personQuery = `SELECT p.id, coalesce(p.contact->>'email', u.email::text, ''), coalesce(p.contact->>'phone', u.phone, ''), coalesce(u.locale, '')
+	FROM person p LEFT JOIN "user" u ON u.id = p.user_id`
+
+func scanContact(row pgx.Row) (contact, error) {
+	var c contact
+	err := row.Scan(&c.person, &c.email, &c.phone, &c.locale)
+	return c, err
+}
+
+// resolve turns the job's recipients into people of the organization with
+// their addresses and language.
+func (s *Service) resolve(ctx context.Context, tx pgx.Tx, a jobs.NotifyArgs, orgLocale string) ([]contact, error) {
+	var pids, uids []uuid.UUID
+	for _, r := range a.Recipients {
+		if r.PersonID != nil {
+			pids = append(pids, *r.PersonID)
+		}
+		if r.UserID != nil {
+			uids = append(uids, *r.UserID)
+		}
+	}
+	rows, err := tx.Query(ctx, personQuery+` WHERE p.org_id = $1 AND (p.id = ANY($2) OR p.user_id = ANY($3))`, a.OrgID, pids, uids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []contact
+	seen := map[uuid.UUID]bool{}
+	for rows.Next() {
+		c, err := scanContact(rows)
+		if err != nil {
+			return nil, err
+		}
+		if seen[c.person] {
+			continue
+		}
+		seen[c.person] = true
+		switch {
+		case a.Locale != "" && NormalizeLocale(a.Locale) != "":
+			c.locale = NormalizeLocale(a.Locale)
+		case NormalizeLocale(c.locale) != "":
+			c.locale = NormalizeLocale(c.locale)
+		default:
+			c.locale = NormalizeLocale(orgLocale)
+		}
+		out = append(out, c)
+	}
+	slices.SortFunc(out, func(x, y contact) int { return strings.Compare(x.person.String(), y.person.String()) })
+	return out, rows.Err()
+}

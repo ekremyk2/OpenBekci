@@ -100,7 +100,7 @@ func (p *pipeline) authzContext(next http.Handler) http.Handler {
 			// without reaching the service) and the handler. The services check
 			// again with the concrete scope (defence in depth).
 			for _, perm := range p.op(r).perms {
-				if !g.HasInOrg(perm, orgID) {
+				if !g.HasAnyInOrg(perm, orgID) { // "a|b" lists alternatives (authz.AnyOf)
 					problem.Write(w, r, problem.Forbidden("you do not have the "+string(perm)+" permission here"))
 					return
 				}

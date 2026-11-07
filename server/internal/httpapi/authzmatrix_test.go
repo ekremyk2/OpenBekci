@@ -314,7 +314,11 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 
 func holdsAll(have, need []string) bool {
 	for _, n := range need {
-		if !slices.Contains(have, n) {
+		ok := false
+		for _, alt := range authz.Permission(n).Alternatives() { // "a|b" is any of
+			ok = ok || slices.Contains(have, string(alt))
+		}
+		if !ok {
 			return false
 		}
 	}

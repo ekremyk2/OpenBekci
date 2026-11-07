@@ -11,8 +11,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
-	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"

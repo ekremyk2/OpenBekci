@@ -32,6 +32,21 @@ type Grant struct {
 	Permission Permission
 	ScopeType  ScopeType
 	ScopeID    *uuid.UUID
+	// FromOccupancy marks a portal right derived from an occupancy, as opposed
+	// to a role membership (see Grants.HasViaRole).
+	FromOccupancy bool
+}
+
+// HasViaRole is Has restricted to grants that come from role memberships:
+// owners and tenants do not count. Services use it to tell "the board side"
+// of a site from its residents.
+func (g Grants) HasViaRole(perm Permission, want Scope) bool {
+	for _, it := range g.Items {
+		if it.Permission == perm && !it.FromOccupancy && it.contains(g.OrgID, want) {
+			return true
+		}
+	}
+	return false
 }
 
 // contains reports whether the grant covers the requested scope:
@@ -612,6 +627,7 @@ func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID
 	}
 	g = Grants{OrgID: orgID, Items: GrantsFromMemberships(r.reg, ms), Occupancies: occs, Today: today}
 	g.Items = append(g.Items, r.occupantGrants(g.Current())...)
+	g.Items = append(g.Items, r.formerGrants(g.Occupancies, g.Current())...)
 	return g, true, nil
 }
 
@@ -632,7 +648,7 @@ func (r *Resolver) occupantGrants(current []OccupancyAccess) []Grant {
 			}
 			seen[k] = true
 			site := o.SiteID
-			out = append(out, Grant{Permission: perm, ScopeType: ScopeSite, ScopeID: &site})
+			out = append(out, Grant{Permission: perm, ScopeType: ScopeSite, ScopeID: &site, FromOccupancy: true})
 		}
 	}
 	return out
