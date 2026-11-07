@@ -11,12 +11,14 @@ package files
 import (
 	"context"
 	"log/slog"
+	"runtime"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/platform/ratelimit"
 	"github.com/openbekci/openbekci/server/internal/platform/storage"
 )
 
@@ -40,6 +42,8 @@ const (
 	DefaultUnattachedTTL = 7 * 24 * time.Hour
 	// DefaultLinkTTL is how long the download links in file metadata work.
 	DefaultLinkTTL = 5 * time.Minute
+	// DefaultUploadsPerMinute is the per-user upload rate.
+	DefaultUploadsPerMinute = 30
 )
 
 // Config configures the Service. Zero values take the defaults above.
@@ -48,8 +52,14 @@ type Config struct {
 	MaxUploadBytes int64
 	// Types is the extension allowlist; nil means DefaultTypes().
 	Types []TypeRule
-	// MaxImagePixels refuses images with more pixels than this (default 64 million).
+	// MaxImagePixels refuses images with more pixels than this (default 25 million).
 	MaxImagePixels int
+	// ImageWorkers is how many images are decoded and re-encoded at once in the
+	// process (default max(1, NumCPU/2)); others wait their turn.
+	ImageWorkers int
+	// UploadsPerMinute is each user's upload rate (default 30; a burst of that
+	// many is allowed); beyond it Upload answers 429 rate_limited.
+	UploadsPerMinute int
 	// MaxImageDimension downscales stored images.
 	MaxImageDimension int
 	// UnattachedTTL is the lifetime of an upload without a scope.
@@ -71,6 +81,9 @@ type Service struct {
 	blob storage.Blob
 	cfg  Config
 
+	imageSem chan struct{}
+	uploads  *ratelimit.Limiter
+
 	mu     sync.RWMutex
 	scopes map[string]scopeEntry
 }
@@ -89,7 +102,13 @@ func NewService(db TxRunner, blob storage.Blob, cfg Config) *Service {
 		cfg.Types = DefaultTypes()
 	}
 	if cfg.MaxImagePixels <= 0 {
-		cfg.MaxImagePixels = defaultMaxPixel
+		cfg.MaxImagePixels = DefaultMaxImagePixels
+	}
+	if cfg.UploadsPerMinute <= 0 {
+		cfg.UploadsPerMinute = DefaultUploadsPerMinute
+	}
+	if cfg.ImageWorkers <= 0 {
+		cfg.ImageWorkers = max(1, runtime.NumCPU()/2)
 	}
 	if cfg.MaxImageDimension <= 0 {
 		cfg.MaxImageDimension = DefaultMaxImageDimension
@@ -106,7 +125,7 @@ func NewService(db TxRunner, blob storage.Blob, cfg Config) *Service {
 	if cfg.Now == nil {
 		cfg.Now = time.Now
 	}
-	return &Service{db: db, blob: blob, cfg: cfg, scopes: map[string]scopeEntry{}}
+	return &Service{db: db, blob: blob, cfg: cfg, imageSem: make(chan struct{}, cfg.ImageWorkers), uploads: ratelimit.New(cfg.UploadsPerMinute, time.Minute/time.Duration(cfg.UploadsPerMinute)), scopes: map[string]scopeEntry{}}
 }
 
 func (s *Service) now() time.Time { return s.cfg.Now().UTC() }

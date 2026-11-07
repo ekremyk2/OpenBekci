@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"path"
 	"regexp"
 	"strings"
@@ -61,6 +62,9 @@ func (s *Service) Upload(ctx context.Context, p UploadParams) (File, error) {
 		return File{}, err
 	}
 	uid := authz.PrincipalFromContext(ctx).UserID
+	if ok, retry := s.uploads.Allow(uid.String()); !ok {
+		return File{}, problem.RateLimited(retry)
+	}
 	return s.ingest(ctx, p, ingestMode{uploadedBy: &uid, source: SourceUploaded, authorize: true})
 }
 
@@ -277,61 +281,81 @@ func (s *Service) store(ctx context.Context, f File, content io.Reader) (stored,
 	case !ok:
 		return stored{}, problem.New(http.StatusUnsupportedMediaType, problem.CodeUnsupportedMediaType, "the content of the file does not match its extension")
 	}
-	full := io.MultiReader(bytes.NewReader(head), lr)
-	if rule.Image {
-		return s.storeImage(ctx, f, rule, full)
-	}
-	return s.storeStream(ctx, f, rule, full)
-}
 
-// storeStream streams a non-image to storage while hashing it.
-func (s *Service) storeStream(ctx context.Context, f File, rule TypeRule, r io.Reader) (stored, error) {
+	// Spool the upload to a temporary file: the scanner and the image decoder
+	// read it from there (no io.ReadAll of the whole upload, no read-back from
+	// the blob store), and nothing reaches storage before it passed both.
+	tmp, err := os.CreateTemp("", "openbekci-upload-*")
+	if err != nil {
+		return stored{}, fmt.Errorf("spool upload: %w", err)
+	}
+	defer func() {
+		_ = tmp.Close()
+		_ = os.Remove(tmp.Name())
+	}()
 	h := sha256.New()
-	cr := &countReader{r: io.TeeReader(r, h)}
-	if err := s.blob.Put(ctx, f.Key, cr, -1, rule.MIME); err != nil {
-		return stored{}, err
-	}
-	res := stored{name: f.Name, mime: rule.MIME, size: cr.n, sha: hex.EncodeToString(h.Sum(nil)), status: StatusReady, variants: map[string]Variant{}}
-	if s.cfg.Scanner != nil {
-		rc, err := s.blob.Get(ctx, f.Key)
-		if err != nil {
-			return stored{}, err
-		}
-		v, err := s.cfg.Scanner.Scan(ctx, rc)
-		_ = rc.Close()
-		if err != nil {
-			return stored{}, scanError(err)
-		}
-		if v.Infected {
-			s.cfg.Log.WarnContext(ctx, "upload quarantined by the virus scanner", "file_id", f.ID, "org_id", f.OrgID, "signature", v.Signature)
-			res.status = StatusQuarantined
-		}
-	}
-	return res, nil
-}
-
-// storeImage processes an image in memory (the upload limit bounds it).
-func (s *Service) storeImage(ctx context.Context, f File, rule TypeRule, r io.Reader) (stored, error) {
-	data, err := io.ReadAll(r)
+	size, err := io.Copy(io.MultiWriter(tmp, h), io.MultiReader(bytes.NewReader(head), lr))
 	if err != nil {
 		return stored{}, err
 	}
+	rawSum := hex.EncodeToString(h.Sum(nil))
+
+	status := StatusReady
 	if s.cfg.Scanner != nil {
-		v, err := s.cfg.Scanner.Scan(ctx, bytes.NewReader(data))
+		if _, err := tmp.Seek(0, io.SeekStart); err != nil {
+			return stored{}, err
+		}
+		v, err := s.cfg.Scanner.Scan(ctx, tmp)
 		if err != nil {
 			return stored{}, scanError(err)
 		}
 		if v.Infected {
-			// keep the bytes as uploaded for an administrator to look at; no variants
 			s.cfg.Log.WarnContext(ctx, "upload quarantined by the virus scanner", "file_id", f.ID, "org_id", f.OrgID, "signature", v.Signature)
-			sum := sha256.Sum256(data)
-			if err := s.blob.Put(ctx, f.Key, bytes.NewReader(data), int64(len(data)), rule.MIME); err != nil {
-				return stored{}, err
-			}
-			return stored{name: f.Name, mime: rule.MIME, size: int64(len(data)), sha: hex.EncodeToString(sum[:]), status: StatusQuarantined, variants: map[string]Variant{}}, nil
+			status = StatusQuarantined
 		}
 	}
-	img, err := processImage(data, s.cfg.MaxImagePixels, s.cfg.MaxImageDimension)
+	if rule.Image && status == StatusReady {
+		return s.storeImage(ctx, f, tmp, size)
+	}
+	// A non-image, or a flagged image (kept as uploaded for an administrator
+	// to look at; no variants): the bytes go to storage as they are.
+	if _, err := tmp.Seek(0, io.SeekStart); err != nil {
+		return stored{}, err
+	}
+	if err := s.blob.Put(ctx, f.Key, tmp, size, rule.MIME); err != nil {
+		return stored{}, err
+	}
+	return stored{name: f.Name, mime: rule.MIME, size: size, sha: rawSum, status: status, variants: map[string]Variant{}}, nil
+}
+
+// storeImage re-encodes the spooled image and stores the original and its
+// variants. At most Config.ImageWorkers images are processed at once in the
+// process, and an image over Config.MaxImagePixels is refused (422) after
+// reading only its header.
+func (s *Service) storeImage(ctx context.Context, f File, tmp *os.File, size int64) (stored, error) {
+	select {
+	case s.imageSem <- struct{}{}:
+		defer func() { <-s.imageSem }()
+	case <-ctx.Done():
+		return stored{}, ctx.Err()
+	}
+	put := func(name, mime string, w, h int, enc func(io.Writer) error) (encoded, error) {
+		key := f.Key
+		if name != "" {
+			key = variantKey(f.Key, name)
+		}
+		pr, pw := io.Pipe()
+		go func() { pw.CloseWithError(enc(pw)) }()
+		sum := sha256.New()
+		cr := &countReader{r: io.TeeReader(pr, sum)}
+		err := s.blob.Put(ctx, key, cr, -1, mime)
+		_ = pr.CloseWithError(err) // lets the encoder stop if Put gave up early
+		if err != nil {
+			return encoded{}, err
+		}
+		return encoded{v: Variant{Width: w, Height: h, Size: cr.n, Mime: mime}, sha: hex.EncodeToString(sum.Sum(nil))}, nil
+	}
+	orig, variants, err := renderImage(tmp, size, s.cfg.MaxImagePixels, s.cfg.MaxImageDimension, put)
 	switch {
 	case errors.Is(err, errImageTooBig):
 		return stored{}, problem.Validation(problem.Field{Field: "file", Code: "too_large"})
@@ -340,19 +364,11 @@ func (s *Service) storeImage(ctx context.Context, f File, rule TypeRule, r io.Re
 	case err != nil:
 		return stored{}, err
 	}
-	orig := img.original
-	if err := s.blob.Put(ctx, f.Key, bytes.NewReader(orig.data), orig.v.Size, orig.v.Mime); err != nil {
-		return stored{}, err
+	out := stored{name: renameForMIME(f.Name, orig.v.Mime), mime: orig.v.Mime, size: orig.v.Size, sha: orig.sha, status: StatusReady, variants: map[string]Variant{}}
+	for name, v := range variants {
+		out.variants[name] = v.v
 	}
-	variants := map[string]Variant{}
-	for name, v := range img.variants {
-		if err := s.blob.Put(ctx, variantKey(f.Key, name), bytes.NewReader(v.data), v.v.Size, v.v.Mime); err != nil {
-			return stored{}, err
-		}
-		variants[name] = v.v
-	}
-	sum := sha256.Sum256(orig.data)
-	return stored{name: renameForMIME(f.Name, orig.v.Mime), mime: orig.v.Mime, size: orig.v.Size, sha: hex.EncodeToString(sum[:]), status: StatusReady, variants: variants}, nil
+	return out, nil
 }
 
 func variantKey(key, variant string) string { return key + "." + variant }

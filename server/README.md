@@ -181,6 +181,11 @@ server: `POST /v1/orgs/{org_id}/files` (multipart; form fields first, then `file
 | `OPENBEKCI_FILES_ALLOWED_EXTENSIONS` | jpg jpeg png webp pdf txt csv docx xlsx pptx odt ods doc xls | narrows the built-in allowlist |
 | `OPENBEKCI_STORAGE_DRIVER` | `local` | `local` or `s3` |
 | `OPENBEKCI_CLAMAV_ADDR` | unset | clamd `host:port` or `unix:/path`; unset skips scanning, unreachable refuses uploads with 503 `scan_unavailable` |
+| `OPENBEKCI_CLAMAV_TIMEOUT` | 60s | longest one scan may take (connecting is limited to 5 s); slower is 503 `scan_unavailable` |
+| `OPENBEKCI_MAX_IMAGE_PIXELS` | 25000000 | images with more pixels are 422, decided from the header alone (a decoded image costs 4 bytes per pixel) |
+| `OPENBEKCI_IMAGE_WORKERS` | max(1, CPUs/2) | images decoded and re-encoded at once, process wide; the others wait |
+
+Each user may upload 30 files a minute (in-memory token bucket per instance), then 429 `rate_limited`.
 
 What an upload goes through: the extension must be allowed and the first bytes must really be that type
 (`http.DetectContentType`; a renamed executable is 415), over-limit files are 413 (no partial blob is kept), images are

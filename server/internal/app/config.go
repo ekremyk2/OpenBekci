@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -60,6 +61,14 @@ type Config struct {
 	// ClamAVAddr is a clamd address (host:port or unix:/path); empty skips
 	// virus scanning (OPENBEKCI_CLAMAV_ADDR).
 	ClamAVAddr string
+	// ClamAVTimeout bounds one virus scan (OPENBEKCI_CLAMAV_TIMEOUT, default 60s).
+	ClamAVTimeout time.Duration
+	// MaxImagePixels refuses uploaded images with more pixels than this
+	// (OPENBEKCI_MAX_IMAGE_PIXELS, default 25 million).
+	MaxImagePixels int
+	// ImageWorkers is how many images the process decodes at once
+	// (OPENBEKCI_IMAGE_WORKERS, default max(1, NumCPU/2)).
+	ImageWorkers int
 
 	// Worker runs the job worker inside serve.
 	Worker      bool
@@ -260,6 +269,25 @@ func (c *Config) loadFiles(l lookup) error {
 		return fmt.Errorf("%sSTORAGE_DRIVER=s3 needs STORAGE_S3_BUCKET", envPrefix)
 	}
 	c.ClamAVAddr = l.must("CLAMAV_ADDR")
+	if v := l.must("CLAMAV_TIMEOUT"); v != "" {
+		d, derr := time.ParseDuration(v)
+		if derr != nil || d <= 0 {
+			return fmt.Errorf("%sCLAMAV_TIMEOUT: %q is not a positive duration such as 60s", envPrefix, v)
+		}
+		c.ClamAVTimeout = d
+	}
+	for _, s := range []struct {
+		name string
+		dst  *int
+	}{{"MAX_IMAGE_PIXELS", &c.MaxImagePixels}, {"IMAGE_WORKERS", &c.ImageWorkers}} {
+		if v := l.must(s.name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil || n < 1 {
+				return fmt.Errorf("%s%s: %q is not a positive integer", envPrefix, s.name, v)
+			}
+			*s.dst = n
+		}
+	}
 	return nil
 }
 

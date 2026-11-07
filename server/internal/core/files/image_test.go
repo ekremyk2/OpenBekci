@@ -174,7 +174,7 @@ func TestOrientEveryCase(t *testing.T) {
 		}
 	}
 	corner := func(o int) (w, h int, x, y int) {
-		dst := orient(src, o)
+		dst := orient(src, o).(*image.RGBA)
 		w, h = dst.Bounds().Dx(), dst.Bounds().Dy()
 		for yy := 0; yy < h; yy++ {
 			for xx := 0; xx < w; xx++ {
