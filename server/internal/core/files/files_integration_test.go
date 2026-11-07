@@ -604,8 +604,8 @@ func TestIntegrationDeleteAndPrune(t *testing.T) {
 	keep := e.mustUpload(actx, e.world.OrgA, "keep.txt", []byte("keep"), &files.ScopeRef{Type: ticketScope, ID: e.ticket(admin)})
 	expired := e.mustUpload(actx, e.world.OrgA, "old.txt", []byte("old"), nil)
 
-	// only files.manage deletes
-	wantStatus(t, e.svc.Delete(sctx, e.world.OrgA.ID, doc.ID), 403, "delete by a member without files.manage")
+	// somebody else's draft is not even visible, so it cannot be deleted
+	wantStatus(t, e.svc.Delete(sctx, e.world.OrgA.ID, doc.ID), 404, "delete of someone else's draft")
 	if err := e.svc.Delete(actx, e.world.OrgA.ID, img.ID); err != nil {
 		t.Fatal(err)
 	}

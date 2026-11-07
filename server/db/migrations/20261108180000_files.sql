@@ -14,7 +14,8 @@ CREATE TABLE file (
     size           bigint      NOT NULL DEFAULT 0 CHECK (size >= 0),
     mime           text        NOT NULL,
     sha256         text        CHECK (sha256 ~ '^[0-9a-f]{64}$'),
-    uploaded_by    uuid        REFERENCES "user" (id),
+    -- a user that is erased leaves the file behind without an uploader
+    uploaded_by    uuid        REFERENCES "user" (id) ON DELETE SET NULL,
     -- the resource the file is attached to, resolved by the owning module's visibility resolver
     scope_type     text,
     scope_id       uuid,
@@ -28,6 +29,8 @@ CREATE TABLE file (
     -- {"thumb": {"width": 256, "height": 171, "size": 9876, "mime": "image/jpeg"}, ...}
     variants       jsonb       NOT NULL DEFAULT '{}',
     created_at     timestamptz NOT NULL DEFAULT now(),
+    -- last change of the row (stored, attached, detached, deleted)
+    updated_at     timestamptz NOT NULL DEFAULT now(),
     deleted_at     timestamptz,
     -- set once the blobs of a deleted file are gone
     purged_at      timestamptz,

@@ -2,6 +2,8 @@ package files
 
 import (
 	"encoding/json"
+	"errors"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -40,6 +42,24 @@ type ScopeRef struct {
 	ID   uuid.UUID
 }
 
+// String is the wire form of a scope: "<type>:<id>", for example
+// "ticket:2f9c4e1a-...".
+func (r ScopeRef) String() string { return r.Type + ":" + r.ID.String() }
+
+// ParseScope reads the wire form "<type>:<id>". It does not check that the
+// type is registered.
+func ParseScope(s string) (ScopeRef, error) {
+	t, id, ok := strings.Cut(s, ":")
+	if !ok || !scopeTypeRE.MatchString(t) {
+		return ScopeRef{}, errors.New("files: scope must look like <type>:<uuid>")
+	}
+	u, err := uuid.Parse(id)
+	if err != nil || u == uuid.Nil {
+		return ScopeRef{}, errors.New("files: scope must look like <type>:<uuid>")
+	}
+	return ScopeRef{Type: t, ID: u}, nil
+}
+
 // Variant describes a generated rendition of an image.
 type Variant struct {
 	Width  int    `json:"width"`
@@ -71,13 +91,14 @@ type File struct {
 	RetentionUntil *time.Time
 	Variants       map[string]Variant
 	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 // IsImage reports whether the file is an image (it then has variants).
 func (f File) IsImage() bool { return isImageMIME(f.Mime) }
 
 const fileColumns = `id, org_id, site_id, key, name, size, mime, coalesce(sha256, ''), uploaded_by, scope_type, scope_id,
-	status, source, retention_until, variants, created_at`
+	status, source, retention_until, variants, created_at, updated_at`
 
 func scanFile(row pgx.Row) (File, error) {
 	var f File
@@ -86,7 +107,7 @@ func scanFile(row pgx.Row) (File, error) {
 	var variants []byte
 	var status, source string
 	err := row.Scan(&f.ID, &f.OrgID, &f.SiteID, &f.Key, &f.Name, &f.Size, &f.Mime, &f.SHA256, &f.UploadedBy, &scopeType, &scopeID,
-		&status, &source, &f.RetentionUntil, &variants, &f.CreatedAt)
+		&status, &source, &f.RetentionUntil, &variants, &f.CreatedAt, &f.UpdatedAt)
 	if err != nil {
 		return File{}, err
 	}
@@ -94,7 +115,7 @@ func scanFile(row pgx.Row) (File, error) {
 	if scopeType != nil && scopeID != nil {
 		f.Scope = &ScopeRef{Type: *scopeType, ID: *scopeID}
 	}
-	f.CreatedAt = f.CreatedAt.UTC()
+	f.CreatedAt, f.UpdatedAt = f.CreatedAt.UTC(), f.UpdatedAt.UTC()
 	if f.RetentionUntil != nil {
 		t := f.RetentionUntil.UTC()
 		f.RetentionUntil = &t
