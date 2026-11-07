@@ -153,6 +153,14 @@ func init() {
 			e := cmEntry(w, t, f, "pre_approved", time.Now(), time.Now().Add(time.Hour))
 			return jsonReq("POST", orgPath(org, "/visitor-entries/"+e.String()+":cancel"), "")
 		}},
+		"community.rotateVisitorEntryQr": {perms: p(community.PermVisitorsManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			e := cmEntry(w, t, f, "pre_approved", time.Now(), time.Now().Add(time.Hour))
+			return jsonReq("POST", orgPath(org, "/visitor-entries/"+e.String()+":rotate-qr"), "")
+		}},
+		"community.rotateRecurringVisitorQr": {perms: p(community.PermVisitorsManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/recurring-visitors/"+cmRecurring(w, t, w.NewSite(t, org)).String()+":rotate-qr"), "")
+		}},
 		"community.listRecurringVisitors": {perms: p(community.PermVisitorsRead, community.PermVisitorsManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: siteQ(org, w.NewSite(t, org), "/recurring-visitors")}
 		}},

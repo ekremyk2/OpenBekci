@@ -596,7 +596,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
-        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
       decided_by:
         type: string
         format: uuid
@@ -800,7 +800,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
-        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
       created_at:
         type: string
         format: date-time

@@ -4521,6 +4521,64 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.rotateVisitorEntryQr
+      summary: Rotate the QR of a visitor entry
+      description: |-
+        **Release 0.3.** Issue a new QR token for a pre-registration that has not been used; the old QR stops working at once. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/recurring-visitors:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -4770,6 +4828,64 @@ paths:
       summary: Revoke a recurring visitor
       description: |-
         **Release 0.3.** Takes effect immediately, also at the gate.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: recurring_visitor_id
+        in: path
+        required: true
+        description: Id of the recurring visitor.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.rotateRecurringVisitorQr
+      summary: Rotate the QR of a recurring visitor
+      description: |-
+        **Release 0.3.** Issue a new QR token for a recurring visitor; the old QR stops working at once, also at the gate. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
 
         Permission: `visitors.manage`.
 
@@ -9660,7 +9776,7 @@ components:
         qr_token:
           type: string
           nullable: true
-          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
         decided_by:
           type: string
           format: uuid
@@ -9864,7 +9980,7 @@ components:
         qr_token:
           type: string
           nullable: true
-          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
         created_at:
           type: string
           format: date-time

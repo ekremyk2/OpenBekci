@@ -185,12 +185,16 @@ paths:
     $ref: './paths/community/visitor-entries-entry_id.yaml'
   /v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel:
     $ref: './paths/community/visitor-entries-entry_id_cancel.yaml'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
+    $ref: './paths/community/visitor-entries-entry_id_rotate-qr.yaml'
   /v1/orgs/{org_id}/recurring-visitors:
     $ref: './paths/community/recurring-visitors.yaml'
   /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:
     $ref: './paths/community/recurring-visitors-recurring_visitor_id.yaml'
   /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke:
     $ref: './paths/community/recurring-visitors-recurring_visitor_id_revoke.yaml'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
+    $ref: './paths/community/recurring-visitors-recurring_visitor_id_rotate-qr.yaml'
   /v1/orgs/{org_id}/visitor-approval-requests:
     $ref: './paths/community/visitor-approval-requests.yaml'
   /v1/orgs/{org_id}/visitor-approval-requests/{request_id}:decide:

@@ -1,0 +1,57 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: recurring_visitor_id
+    in: path
+    required: true
+    description: Id of the recurring visitor.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: community.rotateRecurringVisitorQr
+  summary: Rotate the QR of a recurring visitor
+  description: |-
+    **Release 0.3.** Issue a new QR token for a recurring visitor; the old QR stops working at once, also at the gate. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+
+    Permission: `visitors.manage`.
+
+    Problems: `conflict` (409).
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.manage
+    site_manager:
+      - visitors.manage
+    board_member:
+      - visitors.manage
+    owner:
+      - visitors.manage
+    tenant:
+      - visitors.manage
+    household:
+      - visitors.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/RecurringVisitor
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

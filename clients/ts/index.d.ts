@@ -1885,6 +1885,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate the QR of a visitor entry
+         * @description **Release 0.3.** Issue a new QR token for a pre-registration that has not been used; the old QR stops working at once. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.rotateVisitorEntryQr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/recurring-visitors": {
         parameters: {
             query?: never;
@@ -1976,6 +2005,35 @@ export interface paths {
          *     Problems: `conflict` (409).
          */
         post: operations["community.revokeRecurringVisitor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate the QR of a recurring visitor
+         * @description **Release 0.3.** Issue a new QR token for a recurring visitor; the old QR stops working at once, also at the gate. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.rotateRecurringVisitorQr"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4323,7 +4381,7 @@ export interface components {
              * @enum {string}
              */
             source: "pre_registered" | "walk_in" | "recurring";
-            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
+            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: uuid */
             decided_by: string | null;
@@ -4451,7 +4509,7 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "revoked" | "expired";
-            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
+            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: date-time */
             created_at: string;
@@ -8401,6 +8459,39 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "community.rotateVisitorEntryQr": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "community.listRecurringVisitors": {
         parameters: {
             query: {
@@ -8542,6 +8633,39 @@ export interface operations {
         };
     };
     "community.revokeRecurringVisitor": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.rotateRecurringVisitorQr": {
         parameters: {
             query?: never;
             header?: {

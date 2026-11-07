@@ -3,6 +3,7 @@ package community
 import (
 	"context"
 	"errors"
+	"slices"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -108,13 +110,16 @@ func loadEntry(ctx context.Context, tx pgx.Tx, orgID, entryID uuid.UUID, forUpda
 // visitorAccess decides what the caller may do with something of a unit:
 // readers of the whole site (visitors.read: board, managers, auditors) see
 // everything, residents only their own unit's (anything else is a 404, so
-// units do not leak). token says whether the QR token may be shown.
+// units do not leak). token says whether the QR token may be shown: only to
+// the unit's current occupants (owner, tenant, household); a QR is a bearer
+// admission credential, so managers, board and auditors never receive it
+// (managers use the rotate-qr operations to issue a new one to the occupants).
 func visitorAccess(ctx context.Context, sc authz.Scope, unitID uuid.UUID) (token bool, err error) {
 	if authz.PrincipalFromContext(ctx) == nil {
 		return false, problem.Unauthenticated("authentication is required")
 	}
 	if authz.Has(ctx, PermVisitorsRead, sc) {
-		return managerLevel(ctx, sc) && authz.Has(ctx, PermVisitorsManage, sc), nil
+		return canSeeToken(ctx, unitID), nil
 	}
 	if authz.Has(ctx, PermVisitorsManage, sc) && authz.CanActOnUnit(ctx, unitID) == nil {
 		return true, nil
@@ -123,6 +128,12 @@ func visitorAccess(ctx context.Context, sc authz.Scope, unitID uuid.UUID) (token
 		return false, problem.NotFound("no such visitor")
 	}
 	return false, problem.Forbidden("you do not have the visitors.read permission here")
+}
+
+// canSeeToken reports whether the caller currently lives at or owns the unit,
+// the only people who are shown its QR tokens.
+func canSeeToken(ctx context.Context, unitID uuid.UUID) bool {
+	return authz.CanActOnUnit(ctx, unitID) == nil
 }
 
 // requireManageUnit passes for board and managers, and for residents of the unit.
@@ -139,13 +150,15 @@ func requireManageUnit(ctx context.Context, sc authz.Scope, unitID uuid.UUID) er
 	return nil
 }
 
-// withToken fills the QR token of an entry the caller may see: the plaintext
-// when it was just created, else the unsealed stored one.
+// withToken fills the QR token of an entry for a caller who may see it (show):
+// the plaintext when it was just created or rotated, else the unsealed stored
+// one. A caller who may not see it never gets it, not even a fresh one.
 func (s *Service) withToken(v *VisitorEntry, show bool, plain string) {
 	switch {
+	case !show:
 	case plain != "":
 		v.QRToken = &plain
-	case show && len(v.sealed) > 0 && v.Source == "pre_registered":
+	case len(v.sealed) > 0 && v.Source == "pre_registered":
 		if t := s.openQRToken(v.OrgID, v.ID, v.sealed); t != "" {
 			v.QRToken = &t
 		}
@@ -227,7 +240,7 @@ func (s *Service) CreateVisitorEntry(ctx context.Context, orgID uuid.UUID, d Doc
 		if err != nil {
 			return err
 		}
-		s.withToken(&out, true, qr)
+		s.withToken(&out, canSeeToken(ctx, unitID), qr)
 		diff, err := audit.Diff("visitor_entry", visitorAudit{}, out.auditView())
 		if err != nil {
 			return err
@@ -307,16 +320,15 @@ func (s *Service) ListVisitorEntries(ctx context.Context, orgID uuid.UUID, f Ent
 			return err
 		}
 		all := authz.Has(ctx, PermVisitorsRead, sc)
-		showTokens := all && managerLevel(ctx, sc)
+		mine := residentUnits(ctx, f.SiteID)
 		var units []uuid.UUID
 		if !all {
-			units = residentUnits(ctx, f.SiteID)
+			units = mine
 			if f.UnitID != nil {
 				if err := authz.CanActOnUnit(ctx, *f.UnitID); err != nil {
 					return err
 				}
 			}
-			showTokens = true
 		}
 		q := strings.TrimSpace(f.Q)
 		rows, err := tx.Query(ctx, entrySelect+` WHERE e.org_id = $1 AND e.site_id = $2 AND e.id > $3
@@ -336,7 +348,7 @@ func (s *Service) ListVisitorEntries(ctx context.Context, orgID uuid.UUID, f Ent
 			if err != nil {
 				return err
 			}
-			s.withToken(&v, showTokens, "")
+			s.withToken(&v, slices.Contains(mine, v.UnitID), "")
 			out = append(out, v)
 		}
 		return rows.Err()
@@ -411,7 +423,7 @@ func (s *Service) UpdateVisitorEntry(ctx context.Context, orgID, entryID uuid.UU
 			return err
 		}
 		if len(diff) == 0 {
-			s.withToken(&before, true, "")
+			s.withToken(&before, canSeeToken(ctx, before.UnitID), "")
 			out = before
 			return nil
 		}
@@ -423,7 +435,7 @@ func (s *Service) UpdateVisitorEntry(ctx context.Context, orgID, entryID uuid.UU
 		if err != nil {
 			return err
 		}
-		s.withToken(&out, true, "")
+		s.withToken(&out, canSeeToken(ctx, out.UnitID), "")
 		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.SiteID, Action: "visitor.update", TargetType: "visitor_entry", TargetID: entryID, Diff: diff}); err != nil {
 			return err
 		}
@@ -464,12 +476,72 @@ func (s *Service) CancelVisitorEntry(ctx context.Context, orgID, entryID uuid.UU
 		if err != nil {
 			return err
 		}
-		s.withToken(&out, true, "")
+		s.withToken(&out, canSeeToken(ctx, out.UnitID), "")
 		diff, err := audit.Diff("visitor_entry", before.auditView(), out.auditView())
 		if err != nil {
 			return err
 		}
 		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.SiteID, Action: "visitor.cancel", TargetType: "visitor_entry", TargetID: entryID, Diff: diff}); err != nil {
+			return err
+		}
+		return s.visitorChanged(ctx, tx, out.SiteID, "visitor_entry", entryID)
+	})
+	if err != nil {
+		return VisitorEntry{}, tenancy.DBProblem(err, "visitor entry")
+	}
+	return out, nil
+}
+
+// rotateTokenNotice tells the unit's current occupants that a new QR was
+// issued (the message never carries the token: they open the app to see it).
+func (s *Service) rotateTokenNotice(ctx context.Context, tx pgx.Tx, orgID, siteID, unitID uuid.UUID, kind string, rowID uuid.UUID, visitor string) error {
+	people, err := unitOccupants(ctx, tx, orgID, unitID, s.now())
+	if err != nil || len(people) == 0 {
+		return err
+	}
+	return s.cfg.Notifier.Notify(ctx, tx, jobs.Notify{OrgID: orgID, SiteID: &siteID, PersonIDs: people, Template: "visitor.qr_rotated",
+		Data: map[string]any{"visitor_name": visitor}, Channels: []string{"inapp"}, DedupeKey: "visitor.qr_rotated:" + kind + ":" + rowID.String() + ":" + s.now().UTC().Format(time.RFC3339Nano)})
+}
+
+// RotateVisitorEntryQR issues a new QR token for a pre-registration that has
+// not been used (visitors.manage); the old one stops working at once. The new
+// token goes to the unit's current occupants only: a manager who rotates it
+// gets the entry back without the token. Audited.
+func (s *Service) RotateVisitorEntryQR(ctx context.Context, orgID, entryID uuid.UUID) (VisitorEntry, error) {
+	var out VisitorEntry
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		before, err := loadEntry(ctx, tx, orgID, entryID, true)
+		if err != nil {
+			return err
+		}
+		sc, err := siteScope(ctx, tx, before.SiteID)
+		if err != nil {
+			return err
+		}
+		if err := requireManageUnit(ctx, sc, before.UnitID); err != nil {
+			return err
+		}
+		if before.Source != "pre_registered" || before.Cancelled || before.ArrivedAt != nil {
+			return problem.Conflict("only a pre-registration that has not been used has a QR to rotate")
+		}
+		qr, hash, sealed, err := s.newQRToken(orgID, entryID)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `UPDATE visitor_entry SET qr_token_hash = $3, qr_token_sealed = $4, updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`,
+			orgID, entryID, hash, sealed); err != nil {
+			return err
+		}
+		out, err = loadEntry(ctx, tx, orgID, entryID, false)
+		if err != nil {
+			return err
+		}
+		s.withToken(&out, canSeeToken(ctx, out.UnitID), qr)
+		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.SiteID, Action: "visitor.rotate_qr", TargetType: "visitor_entry", TargetID: entryID,
+			Diff: audit.Changes{"qr_token": {After: mustJSON("rotated")}}}); err != nil {
+			return err
+		}
+		if err := s.rotateTokenNotice(ctx, tx, orgID, out.SiteID, out.UnitID, "entry", entryID, out.Name); err != nil {
 			return err
 		}
 		return s.visitorChanged(ctx, tx, out.SiteID, "visitor_entry", entryID)
@@ -574,9 +646,10 @@ func loadRecurring(ctx context.Context, tx pgx.Tx, orgID, rvID uuid.UUID, forUpd
 
 func (s *Service) recurringToken(r *RecurringVisitor, show bool, plain string) {
 	switch {
+	case !show:
 	case plain != "":
 		r.QRToken = &plain
-	case show && len(r.sealed) > 0:
+	case len(r.sealed) > 0:
 		if t := s.openQRToken(r.OrgID, r.ID, r.sealed); t != "" {
 			r.QRToken = &t
 		}
@@ -680,7 +753,7 @@ func (s *Service) CreateRecurringVisitor(ctx context.Context, orgID uuid.UUID, d
 		if err != nil {
 			return err
 		}
-		s.recurringToken(&out, true, qr)
+		s.recurringToken(&out, canSeeToken(ctx, unitID), qr)
 		diff, err := audit.Diff("recurring_visitor", recurringAudit{}, out.auditView())
 		if err != nil {
 			return err
@@ -738,10 +811,10 @@ func (s *Service) ListRecurringVisitors(ctx context.Context, orgID, siteID uuid.
 			return err
 		}
 		all := authz.Has(ctx, PermVisitorsRead, sc)
-		show := !all || managerLevel(ctx, sc)
+		mine := residentUnits(ctx, siteID)
 		var units []uuid.UUID
 		if !all {
-			units = residentUnits(ctx, siteID)
+			units = mine
 			if unitID != nil {
 				if err := authz.CanActOnUnit(ctx, *unitID); err != nil {
 					return err
@@ -762,7 +835,7 @@ func (s *Service) ListRecurringVisitors(ctx context.Context, orgID, siteID uuid.
 			if status != "" && r.Status != status {
 				continue
 			}
-			s.recurringToken(&r, show, "")
+			s.recurringToken(&r, slices.Contains(mine, r.UnitID), "")
 			out = append(out, r)
 		}
 		return rows.Err()
@@ -848,7 +921,7 @@ func (s *Service) UpdateRecurringVisitor(ctx context.Context, orgID, rvID uuid.U
 			return err
 		}
 		if len(diff) == 0 {
-			s.recurringToken(&before, true, "")
+			s.recurringToken(&before, canSeeToken(ctx, before.UnitID), "")
 			out = before
 			return nil
 		}
@@ -864,7 +937,7 @@ func (s *Service) UpdateRecurringVisitor(ctx context.Context, orgID, rvID uuid.U
 		if err != nil {
 			return err
 		}
-		s.recurringToken(&out, true, "")
+		s.recurringToken(&out, canSeeToken(ctx, out.UnitID), "")
 		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.SiteID, Action: "recurring_visitor.update", TargetType: "recurring_visitor", TargetID: rvID, Diff: diff}); err != nil {
 			return err
 		}
@@ -901,12 +974,60 @@ func (s *Service) RevokeRecurringVisitor(ctx context.Context, orgID, rvID uuid.U
 		if err != nil {
 			return err
 		}
-		s.recurringToken(&out, true, "")
+		s.recurringToken(&out, canSeeToken(ctx, out.UnitID), "")
 		diff, err := audit.Diff("recurring_visitor", before.auditView(), out.auditView())
 		if err != nil {
 			return err
 		}
 		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.SiteID, Action: "recurring_visitor.revoke", TargetType: "recurring_visitor", TargetID: rvID, Diff: diff}); err != nil {
+			return err
+		}
+		return s.visitorChanged(ctx, tx, out.SiteID, "recurring_visitor", rvID)
+	})
+	if err != nil {
+		return RecurringVisitor{}, tenancy.DBProblem(err, "recurring visitor")
+	}
+	return out, nil
+}
+
+// RotateRecurringVisitorQR issues a new QR token for a recurring visitor
+// (visitors.manage); the old one stops working at once. Like
+// RotateVisitorEntryQR the token goes to the unit's current occupants only.
+func (s *Service) RotateRecurringVisitorQR(ctx context.Context, orgID, rvID uuid.UUID) (RecurringVisitor, error) {
+	var out RecurringVisitor
+	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		before, err := loadRecurring(ctx, tx, orgID, rvID, true)
+		if err != nil {
+			return err
+		}
+		sc, err := siteScope(ctx, tx, before.SiteID)
+		if err != nil {
+			return err
+		}
+		if err := requireManageUnit(ctx, sc, before.UnitID); err != nil {
+			return err
+		}
+		if before.Status == "revoked" {
+			return problem.Conflict("the recurring visitor was revoked")
+		}
+		qr, hash, sealed, err := s.newQRToken(orgID, rvID)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, `UPDATE recurring_visitor SET qr_token_hash = $3, qr_token_sealed = $4, updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`,
+			orgID, rvID, hash, sealed); err != nil {
+			return err
+		}
+		out, err = loadRecurring(ctx, tx, orgID, rvID, false)
+		if err != nil {
+			return err
+		}
+		s.recurringToken(&out, canSeeToken(ctx, out.UnitID), qr)
+		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &out.SiteID, Action: "recurring_visitor.rotate_qr", TargetType: "recurring_visitor", TargetID: rvID,
+			Diff: audit.Changes{"qr_token": {After: mustJSON("rotated")}}}); err != nil {
+			return err
+		}
+		if err := s.rotateTokenNotice(ctx, tx, orgID, out.SiteID, out.UnitID, "recurring", rvID, out.Name); err != nil {
 			return err
 		}
 		return s.visitorChanged(ctx, tx, out.SiteID, "recurring_visitor", rvID)

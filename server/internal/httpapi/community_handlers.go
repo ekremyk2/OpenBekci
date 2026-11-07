@@ -318,6 +318,32 @@ func (s *apiServer) CommunityCancelVisitorEntry(ctx context.Context, req gen.Com
 	return gen.CommunityCancelVisitorEntry200JSONResponse(out), err
 }
 
+func (s *apiServer) CommunityRotateVisitorEntryQr(ctx context.Context, req gen.CommunityRotateVisitorEntryQrRequestObject) (gen.CommunityRotateVisitorEntryQrResponseObject, error) {
+	c, err := s.cm()
+	if err != nil {
+		return nil, err
+	}
+	v, err := c.RotateVisitorEntryQR(ctx, req.OrgId, req.EntryId)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.VisitorEntry](v)
+	return gen.CommunityRotateVisitorEntryQr200JSONResponse(out), err
+}
+
+func (s *apiServer) CommunityRotateRecurringVisitorQr(ctx context.Context, req gen.CommunityRotateRecurringVisitorQrRequestObject) (gen.CommunityRotateRecurringVisitorQrResponseObject, error) {
+	c, err := s.cm()
+	if err != nil {
+		return nil, err
+	}
+	r, err := c.RotateRecurringVisitorQR(ctx, req.OrgId, req.RecurringVisitorId)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.RecurringVisitor](r)
+	return gen.CommunityRotateRecurringVisitorQr200JSONResponse(out), err
+}
+
 func (s *apiServer) CommunityListRecurringVisitors(ctx context.Context, req gen.CommunityListRecurringVisitorsRequestObject) (gen.CommunityListRecurringVisitorsResponseObject, error) {
 	c, err := s.cm()
 	if err != nil {

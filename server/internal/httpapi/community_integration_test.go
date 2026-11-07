@@ -408,18 +408,55 @@ func TestIntegrationCommunityVisitorQRAdmission(t *testing.T) {
 	}
 	entryID := e["id"].(string)
 
-	// the token is shown to the people of the unit and to managers, to nobody else
+	// the token is shown to the current occupants of the unit and to nobody else:
+	// not to managers, board members or auditors, not in the list either
 	if got := c.want(c.req(owner, "GET", c.path("/visitor-entries/"+entryID), ""), 200); got["qr_token"] != qr {
 		t.Fatalf("the unit's people see the QR again: %v", got["qr_token"])
 	}
-	if got := c.want(c.req(c.manager, "GET", c.path("/visitor-entries/"+entryID), ""), 200); got["qr_token"] != qr {
-		t.Fatal("managers see the token")
+	member, _ := c.resident("household1", c.f.Unit, "household")
+	if got := c.want(c.req(member, "GET", c.path("/visitor-entries/"+entryID), ""), 200); got["qr_token"] != qr {
+		t.Fatal("a household member of the unit sees the QR")
 	}
-	if got := c.want(c.req(c.auditor, "GET", c.path("/visitor-entries/"+entryID), ""), 200); got["qr_token"] != nil {
-		t.Fatal("an auditor must not see the token")
+	for role, tok := range map[string]string{"manager": c.manager, "board": c.board, "auditor": c.auditor} {
+		if got := c.want(c.req(tok, "GET", c.path("/visitor-entries/"+entryID), ""), 200); got["qr_token"] != nil {
+			t.Fatalf("%s must not see the token on GET", role)
+		}
+		list := c.want(c.req(tok, "GET", c.path("/visitor-entries?site_id="+c.f.Site.String()), ""), 200)
+		if items, _ := list["items"].([]any); len(items) == 0 {
+			t.Fatalf("%s: the entry is missing from the list", role)
+		} else {
+			for _, it := range items {
+				if it.(map[string]any)["qr_token"] != nil {
+					t.Fatalf("%s must not see a token in the list", role)
+				}
+			}
+		}
 	}
 	c.want(c.req(stranger, "GET", c.path("/visitor-entries/"+entryID), ""), 404)
 	c.problemCode(c.req(c.guard, "GET", c.path("/visitor-entries/"+entryID), ""), 403, "insufficient_permission")
+
+	// rotating: managers and board have the operation but never receive the new token; the occupants do, and the old QR stops
+	for role, tok := range map[string]string{"manager": c.manager, "board": c.board} {
+		rot := c.want(c.req(tok, "POST", c.path("/visitor-entries/"+entryID+":rotate-qr"), ""), 200)
+		if rot["qr_token"] != nil {
+			t.Fatalf("%s got the rotated token", role)
+		}
+	}
+	c.problemCode(c.req(c.auditor, "POST", c.path("/visitor-entries/"+entryID+":rotate-qr"), ""), 403, "insufficient_permission")
+	c.problemCode(c.req(c.guard, "POST", c.path("/visitor-entries/"+entryID+":rotate-qr"), ""), 403, "insufficient_permission")
+	c.want(c.req(stranger, "POST", c.path("/visitor-entries/"+entryID+":rotate-qr"), ""), 404)
+	reissued := c.want(c.req(owner, "GET", c.path("/visitor-entries/"+entryID), ""), 200)["qr_token"]
+	if reissued == nil || reissued == qr {
+		t.Fatalf("the occupants should hold a new token, got %v", reissued)
+	}
+	if res := c.want(c.req(c.guard, "POST", c.path("/gate/visitors:scan"), fmt.Sprintf(`{"token":%q}`, qr)), 200); res["valid"] != false {
+		t.Fatalf("the old QR must not scan after a rotation: %v", res)
+	}
+	own := c.want(c.req(owner, "POST", c.path("/visitor-entries/"+entryID+":rotate-qr"), ""), 200)
+	if own["qr_token"] == nil || own["qr_token"] == reissued {
+		t.Fatalf("an occupant who rotates gets the new token: %v", own["qr_token"])
+	}
+	qr = own["qr_token"].(string)
 	// only the hash is a lookup key
 	var hashLen int
 	_ = c.w.DB.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
@@ -539,6 +576,28 @@ func TestIntegrationCommunityRecurringVisitors(t *testing.T) {
 		t.Fatalf("recurring = %v", r)
 	}
 	rvID := r["id"].(string)
+	// the long-lived QR is shown to the unit's occupants only; managers rotate it instead
+	for role, tok := range map[string]string{"manager": c.manager, "board": c.board, "auditor": c.auditor} {
+		if got := c.want(c.req(tok, "GET", c.path("/recurring-visitors/"+rvID), ""), 200); got["qr_token"] != nil {
+			t.Fatalf("%s must not see the recurring token on GET", role)
+		}
+		list := c.want(c.req(tok, "GET", c.path("/recurring-visitors?site_id="+c.f.Site.String()), ""), 200)
+		for _, it := range list["items"].([]any) {
+			if it.(map[string]any)["qr_token"] != nil {
+				t.Fatalf("%s must not see a recurring token in the list", role)
+			}
+		}
+	}
+	c.problemCode(c.req(c.guard, "GET", c.path("/recurring-visitors/"+rvID), ""), 403, "insufficient_permission")
+	if rot := c.want(c.req(c.manager, "POST", c.path("/recurring-visitors/"+rvID+":rotate-qr"), ""), 200); rot["qr_token"] != nil {
+		t.Fatal("a manager must not receive the rotated recurring token")
+	}
+	c.problemCode(c.req(c.auditor, "POST", c.path("/recurring-visitors/"+rvID+":rotate-qr"), ""), 403, "insufficient_permission")
+	if got := c.want(c.req(owner, "GET", c.path("/recurring-visitors/"+rvID), ""), 200); got["qr_token"] == nil || got["qr_token"] == qr {
+		t.Fatalf("the occupant should hold the new recurring token: %v", got["qr_token"])
+	} else {
+		qr = got["qr_token"].(string)
+	}
 	// scanning creates (once) the visit; arriving logs it; a second scan after arrival makes a new visit
 	scan := func() map[string]any {
 		return c.want(c.req(c.guard, "POST", c.path("/gate/visitors:scan"), fmt.Sprintf(`{"token":%q}`, qr)), 200)
@@ -553,7 +612,7 @@ func TestIntegrationCommunityRecurringVisitors(t *testing.T) {
 		t.Fatal("the next visit is a new entry")
 	}
 	// visit list of the unit shows the visits; update then revoke takes effect at the gate at once
-	upd := c.want(c.req(owner, "PATCH", c.path("/recurring-visitors/"+rvID), `{"end":"23:30"}`, "If-Match", `"1"`), 200)
+	upd := c.want(c.req(owner, "PATCH", c.path("/recurring-visitors/"+rvID), `{"end":"23:30"}`, "If-Match", `"2"`), 200)
 	if upd["end"] != "23:30" {
 		t.Fatalf("update = %v", upd)
 	}
