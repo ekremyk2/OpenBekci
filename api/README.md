@@ -90,6 +90,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |
 | `x-open-enum` | schema | `true` | marks an open enum (see above) |
 | `x-known-values` | schema | list | documents the known values of an open string without an `enum` |
+| `x-requires-setting` | operation | a site setting name | the operation exists only while that site setting is on (for example `bills_enabled`); otherwise 404 `not_found` |
 
 ## Request pipeline
 
@@ -122,7 +123,11 @@ Draft-only conventions on top of the list above:
 
 - **Site scoping:** `site_id` is a query parameter on lists (required where the resource is site-scoped) and a body field on
   create; resources that are plainly part of a site live under `/sites/{site_id}/...` (settings, bank details, lock date).
-- **Updates** are `PATCH` with `If-Match: "<version>"` (stale: 409 `version_conflict`); every updatable read model returns `version`.
+- **Updates** are `PATCH` with `If-Match: "<version>"` (stale: 409 `version_conflict`); every updatable read model returns `version`. Singleton settings written with `PUT` (governance settings, budget lines, late-fee policy, lock date, notification defaults, polls, unit tag members) take the same required `If-Match`.
+- **Re-authentication.** Operations that answer 403 `reauth_required` without a re-authentication in the last 10 minutes (backend plan section 16): contact and password change, moving the lock date back, opening-balance create, void and import, waivers above the site threshold, ending a site-owned membership, site export, import and offboard, erasing a person.
+- **Idempotency.** Every operation that moves money, sends messages or creates a rule that generates charges is `x-idempotent: required` (dunning runs, decision effects, fiscal-year close and approval, plan rates, statements, announcements and decision notices included).
+- **Dates and periods.** A `format: date` field is named `*_on` (`paid_on`, `booked_on`, `opened_on`, `closed_on`); older names such as `due_date`, `as_of` and `valid_from` stay; `*_at` is always a timestamp. A `period` is the accrual month `^\d{4}-(0[1-9]|1[0-2])$` for every plan frequency; there are no quarter or year period strings.
+- **Debtors.** `DebtorRef` addresses who owes: `(unit_id, debtor_kind)` or `person_id` (carried debt of a former occupant), exactly one mode.
 - **Custom actions** use the Google style suffix: `/charges/{id}:cancel`, `/charge-plans:preview`, `/units:import`.
 - **Reports and statements** take `format=json|csv|xlsx|pdf` (`json` default) and answer with the matching content type;
   `POST /exports` is for jobs too big for that.

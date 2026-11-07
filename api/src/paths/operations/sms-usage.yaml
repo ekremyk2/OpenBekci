@@ -24,7 +24,8 @@ get:
       in: query
       schema:
         type: string
-      description: Filter by `month`.
+        pattern: ^\d{4}-(0[1-9]|1[0-2])$
+      description: Filter by month, `YYYY-MM`.
   responses:
     "200":
       description: OK

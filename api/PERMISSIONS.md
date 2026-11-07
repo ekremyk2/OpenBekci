@@ -55,10 +55,10 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `money.manage` | Edit accounts, funds, cash boxes, plans, budgets, policies and importers. | `org_admin`, `site_manager`, `board_member`, `accountant` |
 | `money.post` | Post money movements: charges, expenses, bills, transfers, refunds, waivers, opening balances, reversals. | `org_admin`, `site_manager`, `board_member`, `accountant` |
 | `money.lock` | Move the lock date and close fiscal years (moving it back needs re-authentication). | `org_admin`, `site_manager`, `accountant` |
-| `payments.record` | Record and confirm payments, allocate them and issue receipts. | `org_admin`, `site_manager`, `board_member`, `accountant` |
+| `payments.record` | Record and confirm payments, allocate them and issue receipts. Cash collectors (a person bound to a cash box: `staff` such as the kapici, or a board member) hold it only for payments into their own cash box. | `org_admin`, `site_manager`, `board_member`, `accountant`, `staff` |
 | `payments.declare` | Declare a bank transfer already made ("I have paid"). | `owner`, `tenant` |
 | `statements.read` | Read unit-side and person statements. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |
-| `statements.read_own` | Read statements and balances of the caller's own side (household: only with may_see_money; former occupants: their period). | `owner`, `tenant`, `household`, `former_occupant` |
+| `statements.read_own` | Read statements, balances, charges, payments and receipts of the caller's own side only, including the resident lists of charges and payments (household: only with may_see_money; former occupants: their period). | `owner`, `tenant`, `household`, `former_occupant` |
 | `reports.read` | Read the financial reports. | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |
 | `reports.debtors` | Read the debtor list (never public). | `org_admin`, `site_manager`, `board_member`, `auditor`, `accountant` |
 | `reports.aggregate` | Read gelir-gider and budget vs actual when the site enables financial transparency to owners. | `owner` |
@@ -136,7 +136,7 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | Permission | Meaning | Roles |
 |---|---|---|
 | `access.read` | Read agents, access points, credentials and agent status. | `org_admin`, `site_manager`, `board_member`, `auditor` |
-| `access.manage` | Create and edit agents and access points; revoke, re-enrol, rotate; rebuild the allow-list. | `org_admin`, `site_manager` |
+| `access.manage` | Create and edit agents and access points; revoke, re-enrol, rotate; rebuild the allow-list; create and revoke manual tag and PIN credentials. | `org_admin`, `site_manager` |
 | `access.open` | Open an access point manually. | `org_admin`, `site_manager`, `guard` |
 | `access.view_events` | Read the access event log. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 

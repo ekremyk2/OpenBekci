@@ -340,8 +340,6 @@ paths:
     $ref: ./paths/money/bills.yaml
   /v1/orgs/{org_id}/bills/{bill_id}:
     $ref: ./paths/money/bills-bill_id.yaml
-  /v1/orgs/{org_id}/bills/{bill_id}:cancel:
-    $ref: ./paths/money/bills-bill_id_cancel.yaml
   /v1/orgs/{org_id}/bills/{bill_id}/payments:
     $ref: ./paths/money/bills-bill_id-payments.yaml
   /v1/orgs/{org_id}/dunning-stages:
@@ -794,14 +792,8 @@ components:
       $ref: ./components/draft-common.yaml#/schemas/Job
     JobList:
       $ref: ./components/draft-common.yaml#/schemas/JobList
-    Permission:
-      $ref: ./components/draft-common.yaml#/schemas/Permission
-    Role:
-      $ref: ./components/draft-common.yaml#/schemas/Role
     Organization:
       $ref: ./components/tenancy.yaml#/schemas/Organization
-    OrganizationCreate:
-      $ref: ./components/tenancy.yaml#/schemas/OrganizationCreate
     OrganizationUpdate:
       $ref: ./components/tenancy.yaml#/schemas/OrganizationUpdate
     AccessSettings:
@@ -1024,8 +1016,6 @@ components:
       $ref: ./components/money.yaml#/schemas/FiscalYear
     FiscalYearCreate:
       $ref: ./components/money.yaml#/schemas/FiscalYearCreate
-    FiscalYearUpdate:
-      $ref: ./components/money.yaml#/schemas/FiscalYearUpdate
     FiscalYearList:
       $ref: ./components/money.yaml#/schemas/FiscalYearList
     FiscalYearClose:
@@ -1046,8 +1036,6 @@ components:
       $ref: ./components/money.yaml#/schemas/OpeningBalance
     OpeningBalanceCreate:
       $ref: ./components/money.yaml#/schemas/OpeningBalanceCreate
-    OpeningBalanceUpdate:
-      $ref: ./components/money.yaml#/schemas/OpeningBalanceUpdate
     OpeningBalanceList:
       $ref: ./components/money.yaml#/schemas/OpeningBalanceList
     Budget:
@@ -1068,8 +1056,6 @@ components:
       $ref: ./components/money.yaml#/schemas/ChargePlanRate
     ChargePlanRateCreate:
       $ref: ./components/money.yaml#/schemas/ChargePlanRateCreate
-    ChargePlanRateUpdate:
-      $ref: ./components/money.yaml#/schemas/ChargePlanRateUpdate
     ChargePlanRateList:
       $ref: ./components/money.yaml#/schemas/ChargePlanRateList
     ChargePlan:
@@ -1098,8 +1084,6 @@ components:
       $ref: ./components/money.yaml#/schemas/Charge
     ChargeCreate:
       $ref: ./components/money.yaml#/schemas/ChargeCreate
-    ChargeUpdate:
-      $ref: ./components/money.yaml#/schemas/ChargeUpdate
     ChargeList:
       $ref: ./components/money.yaml#/schemas/ChargeList
     ChargeCancel:
@@ -1122,8 +1106,6 @@ components:
       $ref: ./components/money.yaml#/schemas/LateFeeWaiver
     LateFeeWaiverCreate:
       $ref: ./components/money.yaml#/schemas/LateFeeWaiverCreate
-    LateFeeWaiverUpdate:
-      $ref: ./components/money.yaml#/schemas/LateFeeWaiverUpdate
     LateFeeWaiverList:
       $ref: ./components/money.yaml#/schemas/LateFeeWaiverList
     LateFeeFreeze:
@@ -1168,16 +1150,12 @@ components:
       $ref: ./components/money.yaml#/schemas/Transfer
     TransferCreate:
       $ref: ./components/money.yaml#/schemas/TransferCreate
-    TransferUpdate:
-      $ref: ./components/money.yaml#/schemas/TransferUpdate
     TransferList:
       $ref: ./components/money.yaml#/schemas/TransferList
     Refund:
       $ref: ./components/money.yaml#/schemas/Refund
     RefundCreate:
       $ref: ./components/money.yaml#/schemas/RefundCreate
-    RefundUpdate:
-      $ref: ./components/money.yaml#/schemas/RefundUpdate
     RefundList:
       $ref: ./components/money.yaml#/schemas/RefundList
     BankImporter:
@@ -1204,8 +1182,6 @@ components:
       $ref: ./components/money.yaml#/schemas/Expense
     ExpenseCreate:
       $ref: ./components/money.yaml#/schemas/ExpenseCreate
-    ExpenseUpdate:
-      $ref: ./components/money.yaml#/schemas/ExpenseUpdate
     ExpenseList:
       $ref: ./components/money.yaml#/schemas/ExpenseList
     ExpenseVoid:
@@ -1222,18 +1198,12 @@ components:
       $ref: ./components/money.yaml#/schemas/Bill
     BillCreate:
       $ref: ./components/money.yaml#/schemas/BillCreate
-    BillUpdate:
-      $ref: ./components/money.yaml#/schemas/BillUpdate
     BillList:
       $ref: ./components/money.yaml#/schemas/BillList
     BillPayment:
       $ref: ./components/money.yaml#/schemas/BillPayment
     BillPaymentCreate:
       $ref: ./components/money.yaml#/schemas/BillPaymentCreate
-    BillPaymentUpdate:
-      $ref: ./components/money.yaml#/schemas/BillPaymentUpdate
-    BillPaymentList:
-      $ref: ./components/money.yaml#/schemas/BillPaymentList
     DunningStage:
       $ref: ./components/money.yaml#/schemas/DunningStage
     DunningStageCreate:
@@ -1332,8 +1302,6 @@ components:
       $ref: ./components/operations.yaml#/schemas/TicketAssignee
     TicketAttachment:
       $ref: ./components/operations.yaml#/schemas/TicketAttachment
-    TicketAttachmentList:
-      $ref: ./components/operations.yaml#/schemas/TicketAttachmentList
     TicketAttachmentCreate:
       $ref: ./components/operations.yaml#/schemas/TicketAttachmentCreate
     Ticket:
@@ -1354,8 +1322,6 @@ components:
       $ref: ./components/operations.yaml#/schemas/TicketComment
     TicketCommentCreate:
       $ref: ./components/operations.yaml#/schemas/TicketCommentCreate
-    TicketCommentUpdate:
-      $ref: ./components/operations.yaml#/schemas/TicketCommentUpdate
     TicketCommentList:
       $ref: ./components/operations.yaml#/schemas/TicketCommentList
     TicketStatusChange:
@@ -1428,8 +1394,6 @@ components:
       $ref: ./components/operations.yaml#/schemas/SmsUsage
     File:
       $ref: ./components/operations.yaml#/schemas/File
-    FileList:
-      $ref: ./components/operations.yaml#/schemas/FileList
     ExportRequest:
       $ref: ./components/operations.yaml#/schemas/ExportRequest
     AuditEvent:
@@ -1440,8 +1404,6 @@ components:
       $ref: ./components/operations.yaml#/schemas/AuditNote
     AuditNoteCreate:
       $ref: ./components/operations.yaml#/schemas/AuditNoteCreate
-    AuditNoteUpdate:
-      $ref: ./components/operations.yaml#/schemas/AuditNoteUpdate
     AuditNoteList:
       $ref: ./components/operations.yaml#/schemas/AuditNoteList
     QuorumRule:
@@ -1574,8 +1536,6 @@ components:
       $ref: ./components/community.yaml#/schemas/FacilityBlock
     FacilityBlockCreate:
       $ref: ./components/community.yaml#/schemas/FacilityBlockCreate
-    FacilityBlockUpdate:
-      $ref: ./components/community.yaml#/schemas/FacilityBlockUpdate
     FacilityBlockList:
       $ref: ./components/community.yaml#/schemas/FacilityBlockList
     Availability:
@@ -1614,8 +1574,6 @@ components:
       $ref: ./components/community.yaml#/schemas/Delivery
     DeliveryCreate:
       $ref: ./components/community.yaml#/schemas/DeliveryCreate
-    DeliveryUpdate:
-      $ref: ./components/community.yaml#/schemas/DeliveryUpdate
     DeliveryList:
       $ref: ./components/community.yaml#/schemas/DeliveryList
     DeliveryCollect:
@@ -1772,3 +1730,11 @@ components:
       $ref: ./components/people.yaml#/schemas/PersonErase
     UnitTagMembersSet:
       $ref: ./components/tenancy.yaml#/schemas/UnitTagMembersSet
+    CredentialCreate:
+      $ref: ./components/access.yaml#/schemas/CredentialCreate
+    AgingBucketAmount:
+      $ref: ./components/money.yaml#/schemas/AgingBucketAmount
+    MeOccupancy:
+      $ref: ./components/auth.yaml#/schemas/MeOccupancy
+    MePolicies:
+      $ref: ./components/auth.yaml#/schemas/MePolicies

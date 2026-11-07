@@ -170,6 +170,26 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          user_id: null
+          display_name: Ayse Yilmaz
+          contact: {}
+          national_id_masked: "*******1234"
+          national_id_country: TR
+          gate_contact_phone: null
+          notes: null
+          join_status: no_account
+          directory_consent:
+            - site_id: 0192a3f0-1000-7000-8000-000000000002
+              consent: false
+              show_phone: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   NationalId:
     type: object
     required:
@@ -388,6 +408,25 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          person_id: 0192a3f0-1000-7000-8000-000000000001
+          person_display_name: Ayse Yilmaz
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: A-12
+          kind: owner
+          side: owner
+          share_pct: 100
+          is_correspondent: false
+          may_see_money: false
+          valid_from: 2024-01-01
+          valid_to: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   MoneyAccessSet:
     type: object
     required:
@@ -506,6 +545,53 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      occupancy_id: 0192a3f0-1000-7000-8000-000000000004
+      as_of: 2026-03-01
+      closing_statement_file_id: null
+      certificate_file_id: null
+      open_charges: carry_to_person
+      carried:
+        - charge_id: 0192a3f0-1000-7000-8000-000000000001
+          charge_type: dues
+          period: 2026-02
+          balance:
+            amount: 200000
+            currency: TRY
+          outcome: carried_to_person
+          person_id: 0192a3f0-1000-7000-8000-000000000001
+      disposition_reason: null
+      transferred_to_person_id: null
+      decided_by: 0192a3f0-1000-7000-8000-000000000005
+      balance:
+        occupancy_id: 0192a3f0-1000-7000-8000-000000000006
+        as_of: 2026-03-01
+        principal:
+          amount: 200000
+          currency: TRY
+        late_fee:
+          amount: 200000
+          currency: TRY
+        credit:
+          amount: 200000
+          currency: TRY
+        total:
+          amount: 200000
+          currency: TRY
+        default_open_charges: carry_to_person
+        carried:
+          - charge_id: 0192a3f0-1000-7000-8000-000000000001
+            charge_type: dues
+            period: 2026-02
+            balance:
+              amount: 200000
+              currency: TRY
+            outcome: carried_to_person
+            person_id: 0192a3f0-1000-7000-8000-000000000001
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   MoveOutList:
     type: object
     required:
@@ -520,6 +606,55 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          occupancy_id: 0192a3f0-1000-7000-8000-000000000004
+          as_of: 2026-03-01
+          closing_statement_file_id: null
+          certificate_file_id: null
+          open_charges: carry_to_person
+          carried:
+            - charge_id: 0192a3f0-1000-7000-8000-000000000001
+              charge_type: dues
+              period: 2026-02
+              balance:
+                amount: 200000
+                currency: TRY
+              outcome: carried_to_person
+              person_id: 0192a3f0-1000-7000-8000-000000000001
+          disposition_reason: null
+          transferred_to_person_id: null
+          decided_by: 0192a3f0-1000-7000-8000-000000000005
+          balance:
+            occupancy_id: 0192a3f0-1000-7000-8000-000000000006
+            as_of: 2026-03-01
+            principal:
+              amount: 200000
+              currency: TRY
+            late_fee:
+              amount: 200000
+              currency: TRY
+            credit:
+              amount: 200000
+              currency: TRY
+            total:
+              amount: 200000
+              currency: TRY
+            default_open_charges: carry_to_person
+            carried:
+              - charge_id: 0192a3f0-1000-7000-8000-000000000001
+                charge_type: dues
+                period: 2026-02
+                balance:
+                  amount: 200000
+                  currency: TRY
+                outcome: carried_to_person
+                person_id: 0192a3f0-1000-7000-8000-000000000001
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   MoveOutCreate:
     type: object
     required:
@@ -622,6 +757,21 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      person_id: 0192a3f0-1000-7000-8000-000000000004
+      person_display_name: Ali Veli
+      role: org_admin
+      scope_type: org
+      scope_id: null
+      valid_from: 2026-03-01
+      valid_to: null
+      decision_id: null
+      site_owned: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   MembershipCreate:
     type: object
     required:
@@ -728,6 +878,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          person_id: 0192a3f0-1000-7000-8000-000000000004
+          person_display_name: Ali Veli
+          role: org_admin
+          scope_type: org
+          scope_id: null
+          valid_from: 2026-03-01
+          valid_to: null
+          decision_id: null
+          site_owned: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   Invitation:
     type: object
     description: "An invitation to join. Links: `{BASE_URL}/invite/{token}`."
@@ -808,6 +975,21 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      kind: manager
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      person_id: null
+      unit_id: null
+      channel: sms
+      destination: destination
+      status: pending
+      expires_at: 2026-03-01T09:00:00Z
+      accepted_at: null
+      invited_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   InvitationList:
     type: object
     required:
@@ -822,6 +1004,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          kind: manager
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          person_id: null
+          unit_id: null
+          channel: sms
+          destination: destination
+          status: pending
+          expires_at: 2026-03-01T09:00:00Z
+          accepted_at: null
+          invited_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   InvitationCreate:
     type: object
     required:
@@ -986,6 +1185,10 @@ schemas:
         type: string
       block_name:
         type: string
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      door_number: door number
+      block_name: Ali Veli
   JoinUnitList:
     type: object
     required:
@@ -999,6 +1202,12 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          door_number: door number
+          block_name: Ali Veli
+      next_cursor: null
   UnitClaimCreate:
     type: object
     required:
@@ -1087,6 +1296,21 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      user_id: 0192a3f0-1000-7000-8000-000000000004
+      display_name: Ali Veli
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      unit_door_number: unit door number
+      claimed_role: owner
+      status: pending
+      decided_by: null
+      decided_at: null
+      decision_note: null
+      note: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   UnitClaimList:
     type: object
     required:
@@ -1101,6 +1325,23 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          user_id: 0192a3f0-1000-7000-8000-000000000004
+          display_name: Ali Veli
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          unit_door_number: unit door number
+          claimed_role: owner
+          status: pending
+          decided_by: null
+          decided_at: null
+          decision_note: null
+          note: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   UnitClaimApprove:
     type: object
     properties:
@@ -1165,6 +1406,15 @@ schemas:
         format: email
         nullable: true
         description: Only for managers and board.
+    example:
+      person_id: 0192a3f0-1000-7000-8000-000000000002
+      display_name: Ali Veli
+      units:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000003
+          door_number: door number
+          kind: owner
+      phone: null
+      email: null
   DirectoryEntryList:
     type: object
     required:
@@ -1178,6 +1428,17 @@ schemas:
       next_cursor:
         type: string
         nullable: true
+    example:
+      items:
+        - person_id: 0192a3f0-1000-7000-8000-000000000002
+          display_name: Ali Veli
+          units:
+            - unit_id: 0192a3f0-1000-7000-8000-000000000003
+              door_number: door number
+              kind: owner
+          phone: null
+          email: null
+      next_cursor: null
   Vendor:
     type: object
     description: A supplier, also used as a ticket assignee label (O2).
@@ -1222,6 +1483,27 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      name: Ali Veli
+      tax_id: null
+      contact:
+        email: null
+        phone: null
+        preferred_channel: sms
+        address:
+          line1: line1
+          line2: null
+          district: null
+          city: null
+          postal_code: null
+          country_code: country code
+      default_expense_category_id: null
+      archived: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   VendorCreate:
     type: object
     required:
@@ -1271,6 +1553,29 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          name: Ali Veli
+          tax_id: null
+          contact:
+            email: null
+            phone: null
+            preferred_channel: sms
+            address:
+              line1: line1
+              line2: null
+              district: null
+              city: null
+              postal_code: null
+              country_code: country code
+          default_expense_category_id: null
+          archived: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   RoleDefinition:
     type: object
     required:
@@ -1401,6 +1706,7 @@ schemas:
         type: string
         nullable: true
         pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        description: "The accrual month, `YYYY-MM` (pattern `^\\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates."
       balance:
         $ref: ./common.yaml#/schemas/Money
       outcome:

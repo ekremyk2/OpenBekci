@@ -48,20 +48,6 @@ schemas:
       version:
         type: integer
         format: int64
-  OrganizationCreate:
-    type: object
-    properties:
-      name:
-        type: string
-      default_locale:
-        type: string
-      timezone:
-        type: string
-      country_code:
-        type: string
-      settings:
-        type: object
-        additionalProperties: true
   OrganizationUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
@@ -279,6 +265,25 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      name: Ali Veli
+      address:
+        line1: line1
+        line2: null
+        district: null
+        city: null
+        postal_code: null
+        country_code: country code
+      timezone: timezone
+      currency: currency
+      fiscal_year_start_month: 1
+      lock_date: null
+      status: active
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   SiteCreate:
     type: object
     required:
@@ -326,6 +331,27 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          name: Ali Veli
+          address:
+            line1: line1
+            line2: null
+            district: null
+            city: null
+            postal_code: null
+            country_code: country code
+          timezone: timezone
+          currency: currency
+          fiscal_year_start_month: 1
+          lock_date: null
+          status: active
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   BankDetails:
     type: object
     description: Shown to payers (M5).
@@ -404,6 +430,15 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      is_default: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   BlockCreate:
     type: object
     required:
@@ -435,6 +470,17 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          is_default: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   OccupancySummary:
     type: object
     required:
@@ -659,6 +705,28 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          block_id: 0192a3f0-1000-7000-8000-000000000003
+          door_number: A-12
+          legal_ref: 12/34
+          type: flat
+          area_m2: 96.5
+          parent_unit_id: null
+          status: active
+          vacant: false
+          occupancy:
+            owners: 1
+            tenants: 1
+            household: 1
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+          payer_overrides: {}
+      next_cursor: null
   AllocationKey:
     type: object
     description: How a cost is split (M2).
@@ -709,6 +777,17 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      kind: share
+      is_system: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   AllocationKeyCreate:
     type: object
     required:
@@ -764,6 +843,19 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          kind: share
+          is_system: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   AllocationKeyValue:
     type: object
     required:
@@ -779,6 +871,10 @@ schemas:
         description: Weight; for `equal` and `area` computed, for `share` and `table` stored.
       computed:
         type: boolean
+    example:
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      value: 1.5
+      computed: false
   AllocationKeyValueList:
     type: object
     required:
@@ -800,6 +896,14 @@ schemas:
       complete:
         type: boolean
         description: Every active unit in scope has a value.
+    example:
+      items:
+        - unit_id: 0192a3f0-1000-7000-8000-000000000002
+          value: 1.5
+          computed: false
+      next_cursor: null
+      total: 1.5
+      complete: false
   AllocationKeyValuesPut:
     type: object
     required:
@@ -856,6 +960,15 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      code: code
+      name: Ali Veli
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   UnitTagCreate:
     type: object
     required:
@@ -892,6 +1005,17 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          code: code
+          name: Ali Veli
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   UnitTagMembers:
     type: object
     required:
@@ -961,6 +1085,19 @@ schemas:
         type: integer
         format: int64
         description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      plate: plate
+      plate_normalized: plate normalized
+      description: null
+      archived: false
+      warning: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
   VehicleCreate:
     type: object
     required:
@@ -1009,6 +1146,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          plate: plate
+          plate_normalized: plate normalized
+          description: null
+          archived: false
+          warning: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
   SiteTransfer:
     type: object
     description: Record of a site export, import or offboarding (D2).
@@ -1078,6 +1230,19 @@ schemas:
       updated_at:
         type: string
         format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      direction: export
+      site_id: null
+      archive_file_id: null
+      source_org_id: null
+      target_org_id: null
+      status: queued
+      job_id: null
+      at: 2026-03-01T09:00:00Z
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
   SiteTransferList:
     type: object
     required:
@@ -1092,6 +1257,21 @@ schemas:
         type: string
         nullable: true
         description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          direction: export
+          site_id: null
+          archive_file_id: null
+          source_org_id: null
+          target_org_id: null
+          status: queued
+          job_id: null
+          at: 2026-03-01T09:00:00Z
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
   SiteExportRequest:
     type: object
     properties:
