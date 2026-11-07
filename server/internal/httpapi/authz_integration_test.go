@@ -558,7 +558,7 @@ func TestIntegrationIdentityMutationsAreAudited(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if actor == nil || *actor != u.UserID || ip == nil || *ip != "203.0.113.9" || reqID == nil || *reqID == "" {
+	if actor == nil || *actor != u.UserID || ip == nil || *ip != "203.0.113.0" || reqID == nil || *reqID == "" {
 		t.Errorf("session.revoke actor/ip/request id = %v %v %v", actor, ip != nil, reqID != nil)
 	}
 	// no secret material in any event

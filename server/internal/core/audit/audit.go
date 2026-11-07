@@ -7,7 +7,11 @@
 //
 // Events that belong to no organization (password changes, session
 // revocation, platform-administrator promotion) go to platform_audit_event,
-// which only the platform role can read.
+// which only the platform role can read; platform administrators read it
+// through GET /v1/platform/audit (Service.ListPlatform). That table has no
+// org_id and is not touched by privacy erasure: its diffs hold ids and keyed
+// hashes, never personal values, and the IP address is stored truncated to
+// its /24 (IPv4) or /48 (IPv6) network.
 package audit
 
 import (
@@ -99,8 +103,14 @@ func Record(ctx context.Context, tx pgx.Tx, e Event) error {
 	}
 	ip := nullIfEmpty(e.IP)
 	if ip != nil {
-		if _, err := netip.ParseAddr(*ip); err != nil {
+		addr, err := netip.ParseAddr(*ip)
+		switch {
+		case err != nil:
 			ip = nil // not an address (behind a proxy without TRUSTED_PROXIES): store nothing
+		case e.OrgID == uuid.Nil:
+			// The instance-level trail is not reached by per-organization
+			// erasure, so it keeps a network, not a household: /24 or /48.
+			ip = truncatedIP(addr)
 		}
 	}
 	if e.OrgID == uuid.Nil {
@@ -118,6 +128,17 @@ func Record(ctx context.Context, tx pgx.Tx, e Event) error {
 		return fmt.Errorf("audit: record %s: %w", e.Action, err)
 	}
 	return nil
+}
+
+// truncatedIP is the /24 (IPv4) or /48 (IPv6) network of addr, as CIDR text.
+func truncatedIP(addr netip.Addr) *string {
+	addr = addr.Unmap()
+	bits := 48
+	if addr.Is4() {
+		bits = 24
+	}
+	s := netip.PrefixFrom(addr, bits).Masked().String()
+	return &s
 }
 
 func nullIfEmpty(s string) *string {

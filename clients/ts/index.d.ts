@@ -343,6 +343,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/platform/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the instance-level audit events
+         * @description Events that belong to no organization: password changes, session revocation,
+         *     platform-administrator promotion. Newest first. Needs the `platform.manage`
+         *     permission (platform administrators only). Cursor pagination over `(at, id)`.
+         *
+         *     Personal data in a `diff` appears only as hashes, and `ip` is truncated to
+         *     its /24 (IPv4) or /48 (IPv6) network. Erasing a person does not change these
+         *     events: they hold ids and hashes, no personal values. `site_id` is always null.
+         */
+        get: operations["platform.listAudit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -734,8 +760,10 @@ export interface components {
         };
         /**
          * @description One changed field. Personal data carries only `hash_before` and
-         *     `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
-         *     fields carry `before` and `after` (absent when the field did not exist on that side).
+         *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+         *     is comparable within one instance and field only). Other fields carry `before` and
+         *     `after` (absent when the field did not exist on that side). The change of a field of an
+         *     entity without a personal data registration is an empty object: only the key changed.
          */
         AuditChange: {
             /** @description Previous value (any JSON). */
@@ -1298,6 +1326,43 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "platform.listAudit": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only events with this action, such as `session.revoke`. */
+                action?: string;
+                /** @description Only events caused by this user id. */
+                actor?: string;
+                /** @description Only events at or after this time. */
+                from?: string;
+                /** @description Only events before this time. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of events. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEventList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

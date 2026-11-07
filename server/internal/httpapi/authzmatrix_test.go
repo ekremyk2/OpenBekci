@@ -96,6 +96,18 @@ var authzMatrixRows = map[string]mrow{
 				headers: map[string]string{"If-Match": `"` + strconv.Itoa(w.OrgVersion(t, org)) + `"`}}
 		}},
 	"audit.list": {perms: []authz.Permission{audit.PermRead}, status: 200, build: mget("/v1/orgs/{org_id}/audit")},
+
+	// instance level: only platform administrators hold platform.manage
+	"platform.listAudit": {perms: []authz.Permission{audit.PermPlatformRead}, status: 200, build: mget("/v1/platform/audit"),
+		override: func(actor, _ string) (int, bool) {
+			switch actor {
+			case "anonymous":
+				return 0, false // 401 as derived
+			case "platform_admin":
+				return 200, true
+			}
+			return 403, true
+		}},
 }
 
 func extJSON(t *testing.T, ext map[string]any, name string, into any) bool {

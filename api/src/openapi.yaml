@@ -21,6 +21,8 @@ tags:
     description: Organizations.
   - name: audit
     description: The append-only audit trail.
+  - name: platform
+    description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
 x-openbekci-roles:
   $ref: './components/permissions.yaml#/x-openbekci-roles'
@@ -55,6 +57,8 @@ paths:
     $ref: './paths/orgs-org-id.yaml'
   /v1/orgs/{org_id}/audit:
     $ref: './paths/orgs-org-id-audit.yaml'
+  /v1/platform/audit:
+    $ref: './paths/platform-audit.yaml'
 components:
   securitySchemes:
     cookieAuth:

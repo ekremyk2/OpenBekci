@@ -21,6 +21,8 @@ tags:
     description: Organizations.
   - name: audit
     description: The append-only audit trail.
+  - name: platform
+    description: Instance operation (platform administrators).
 paths:
   /.well-known/openbekci.json:
     get:
@@ -596,6 +598,66 @@ paths:
         '403':
           $ref: '#/components/responses/Problem'
         '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/platform/audit:
+    get:
+      operationId: platform.listAudit
+      summary: List the instance-level audit events
+      description: |
+        Events that belong to no organization: password changes, session revocation,
+        platform-administrator promotion. Newest first. Needs the `platform.manage`
+        permission (platform administrators only). Cursor pagination over `(at, id)`.
+
+        Personal data in a `diff` appears only as hashes, and `ip` is truncated to
+        its /24 (IPv4) or /48 (IPv6) network. Erasing a person does not change these
+        events: they hold ids and hashes, no personal values. `site_id` is always null.
+      tags:
+        - platform
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - platform.manage
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: action
+          in: query
+          description: Only events with this action, such as `session.revoke`.
+          schema:
+            type: string
+        - name: actor
+          in: query
+          description: Only events caused by this user id.
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          description: Only events at or after this time.
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Only events before this time.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: One page of events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
@@ -1449,8 +1511,10 @@ components:
       type: object
       description: |
         One changed field. Personal data carries only `hash_before` and
-        `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
-        fields carry `before` and `after` (absent when the field did not exist on that side).
+        `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+        is comparable within one instance and field only). Other fields carry `before` and
+        `after` (absent when the field did not exist on that side). The change of a field of an
+        entity without a personal data registration is an empty object: only the key changed.
       properties:
         before:
           description: Previous value (any JSON).

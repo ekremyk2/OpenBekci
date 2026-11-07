@@ -63,6 +63,54 @@ func TestIntegrationAuditTriggersBlockTheOwner(t *testing.T) {
 	}
 }
 
+// GET /v1/platform/audit: platform administrators only, newest first, cursor
+// pagination, IP truncated to the /24.
+func TestIntegrationPlatformAuditIsReadable(t *testing.T) {
+	e := newAuthzEnv(t)
+	ctx := context.Background()
+	err := e.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		for i := 0; i < 3; i++ {
+			c := audit.WithRequestMeta(ctx, audit.RequestMeta{IP: "203.0.113.77", RequestID: "req-1"})
+			if err := audit.Record(c, tx, audit.Event{Action: "session.revoke", TargetType: "session", TargetID: id.New()}); err != nil {
+				return err
+			}
+		}
+		return audit.Record(audit.WithRequestMeta(ctx, audit.RequestMeta{IP: "2001:db8:1:2:3:4:5:6"}), tx,
+			audit.Event{Action: "session.revoke_all", TargetType: "user", TargetID: id.New()})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	admin := e.w.Actor("platform_admin")
+	e.problem(e.as(e.w.Actor("org_admin"), "GET", "/v1/platform/audit", ""), 403, "insufficient_permission")
+	e.problem(e.do("GET", "/v1/platform/audit", "", false), 401, "unauthenticated")
+
+	type page struct {
+		Items []struct {
+			Action string  `json:"action"`
+			IP     *string `json:"ip"`
+		} `json:"items"`
+		NextCursor *string `json:"next_cursor"`
+	}
+	var p1, p2 page
+	e.mustJSON(e.as(admin, "GET", "/v1/platform/audit?limit=2&action=session.revoke", ""), 200, &p1)
+	if len(p1.Items) != 2 || p1.NextCursor == nil {
+		t.Fatalf("first page: %+v", p1)
+	}
+	e.mustJSON(e.as(admin, "GET", "/v1/platform/audit?limit=2&action=session.revoke&cursor="+*p1.NextCursor, ""), 200, &p2)
+	if len(p2.Items) != 1 || p2.NextCursor != nil {
+		t.Fatalf("second page: %+v", p2)
+	}
+	if ip := p1.Items[0].IP; ip == nil || *ip != "203.0.113.0" {
+		t.Errorf("ip = %v, want the /24 network 203.0.113.0", ip)
+	}
+	var v6 page
+	e.mustJSON(e.as(admin, "GET", "/v1/platform/audit?action=session.revoke_all", ""), 200, &v6)
+	if len(v6.Items) != 1 || v6.Items[0].IP == nil || *v6.Items[0].IP != "2001:db8:1::" {
+		t.Errorf("ipv6 event: %+v", v6.Items)
+	}
+}
+
 // Events of one transaction get increasing timestamps (clock_timestamp, not
 // the transaction start), so the (at, id) cursor follows insertion order.
 func TestIntegrationAuditEventsAreStampedAtInsert(t *testing.T) {

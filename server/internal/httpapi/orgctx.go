@@ -69,6 +69,17 @@ func (p *pipeline) authzContext(next http.Handler) http.Handler {
 			return
 		}
 		ctx := authz.WithGrants(r.Context(), p.resolver.InstanceGrants(pr))
+		if !p.op(r).orgScoped {
+			// instance-level operations (account permissions, /v1/platform): the
+			// annotated permissions must be held at instance scope
+			grants := authz.GrantsFromContext(ctx)
+			for _, perm := range p.op(r).perms {
+				if !grants.Has(perm, authz.Scope{}) {
+					problem.Write(w, r, problem.Forbidden("you do not have the "+string(perm)+" permission"))
+					return
+				}
+			}
+		}
 		if p.op(r).orgScoped {
 			orgID, err := uuid.Parse(chi.URLParam(r, "org_id"))
 			if err != nil {

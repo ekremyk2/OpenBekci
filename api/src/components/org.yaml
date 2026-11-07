@@ -56,8 +56,10 @@ schemas:
     type: object
     description: |
       One changed field. Personal data carries only `hash_before` and
-      `hash_after` (SHA-256 of the canonical JSON value, 16 hex digits); other
-      fields carry `before` and `after` (absent when the field did not exist on that side).
+      `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+      is comparable within one instance and field only). Other fields carry `before` and
+      `after` (absent when the field did not exist on that side). The change of a field of an
+      entity without a personal data registration is an empty object: only the key changed.
     properties:
       before:
         description: Previous value (any JSON).
