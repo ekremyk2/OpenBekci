@@ -30,6 +30,10 @@ Open-source residential community management: apartment buildings, gated sites, 
 
 The blocking decisions (deployment model, data ownership, license, first-release scope, phone-first sign-in, gate control) were made on 2026-11-06 and are recorded in the [overview, §2.2](docs/plans/00-overview.md). Feature areas are being decided one at a time in plain language under [docs/decisions/](docs/decisions/) — [Money](docs/decisions/money.md), [Setup & people](docs/decisions/setup-people.md), [Daily operations](docs/decisions/daily-operations.md), [Governance](docs/decisions/governance.md), [Community](docs/decisions/community.md) — all five areas are decided. A decision file wins over conflicting text in the plans until the plans are revised. Licensing is per directory — see [LICENSING.md](LICENSING.md); the pack-linking exception is a draft pending legal review.
 
+## Operating notes
+
+Sign-in codes and links are budgeted so a runaway client or an attack cannot run up the SMS or mail bill: `OPENBEKCI_SEND_DAILY_BUDGET` (per phone number or address per day, default 10), `OPENBEKCI_SMS_HOURLY_BUDGET` (per instance, default 120) and `OPENBEKCI_MAIL_HOURLY_BUDGET` (per instance, default 300); a negative value removes a limit. A message over budget is dropped, logged at WARN as `delivery dropped` and listed by `openbekci admin delivery-log --failed`, which is also where gateway failures show up (requesters are never told whether a send worked).
+
 ## Contributing
 
 Not open for contributions yet. Watch this repository for the M0 milestone.

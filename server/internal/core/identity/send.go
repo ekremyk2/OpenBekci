@@ -46,7 +46,6 @@ func (s *Service) dispatch(ctx context.Context, job func(context.Context)) {
 	select {
 	case s.send.slots <- struct{}{}:
 	default:
-		s.log.WarnContext(ctx, "send queue full; a sign-in message was dropped")
 		s.recordDelivery(ctx, "", "", nil, "", deliveryDropped, "send queue full")
 		return
 	}
@@ -89,7 +88,6 @@ func (s *Service) checkDailyBudget(identifier string) error {
 // is dropped and recorded.
 func (s *Service) deliverSMS(ctx context.Context, purpose string, userID *uuid.UUID, phone, text string) {
 	if ok, _ := s.cfg.Limits.SMSHourly.Allow("instance"); !ok {
-		s.log.WarnContext(ctx, "hourly SMS budget exhausted; a sign-in code was not sent", "purpose", purpose)
 		s.recordDelivery(ctx, channelSMS, purpose, userID, phone, deliveryDropped, "hourly SMS budget exhausted")
 		return
 	}
@@ -104,7 +102,6 @@ func (s *Service) deliverSMS(ctx context.Context, purpose string, userID *uuid.U
 // deliverMail is deliverSMS for mail.
 func (s *Service) deliverMail(ctx context.Context, purpose string, userID *uuid.UUID, msg mail.Message) {
 	if ok, _ := s.cfg.Limits.MailHourly.Allow("instance"); !ok {
-		s.log.WarnContext(ctx, "hourly mail budget exhausted; a sign-in message was not sent", "purpose", purpose)
 		s.recordDelivery(ctx, channelEmail, purpose, userID, msg.To, deliveryDropped, "hourly mail budget exhausted")
 		return
 	}
@@ -119,6 +116,10 @@ func (s *Service) deliverMail(ctx context.Context, purpose string, userID *uuid.
 func (s *Service) recordDelivery(ctx context.Context, channel, purpose string, userID *uuid.UUID, target, status, detail string) {
 	if channel == "" {
 		channel = channelEmail // a dropped send has no channel; keep the column valid
+	}
+	if status == deliveryDropped {
+		// a dropped message means a budget or the send queue ran out: operators must notice
+		s.log.WarnContext(ctx, "delivery dropped", "channel", channel, "purpose", purpose, "reason", detail)
 	}
 	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `

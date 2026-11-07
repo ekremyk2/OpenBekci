@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -17,34 +18,21 @@ import (
 // still accepted, once, and answered with the same new pair (see Refresh).
 const RefreshGrace = 30 * time.Second
 
-// canDerive reports whether rotated tokens can be derived from the server
-// secret (needed for the refresh grace window).
-func (s *Service) canDerive() bool { return len(s.cfg.SecretKey) >= 16 }
-
-// rotatedTokens are the refresh and access token that replace the refresh
-// token row old. They are derived (HMAC of the server secret and the old row
-// id) rather than random, so that a retry of the rotation within the grace
-// window can be answered with the same pair without storing the tokens.
-func (s *Service) rotatedTokens(old uuid.UUID) (refresh, access string, refreshHash, accessHash []byte) {
-	refresh, refreshHash = crypto.DeriveToken(s.cfg.SecretKey, "rotated-refresh", old.String())
-	access, accessHash = crypto.DeriveToken(s.cfg.SecretKey, "rotated-access", old.String())
-	return refresh, access, refreshHash, accessHash
-}
-
 func (s *Service) insertPair(ctx context.Context, tx pgx.Tx, userID, family uuid.UUID, rotatedFrom *uuid.UUID, m Meta) (TokenPair, error) {
 	now := s.now().Truncate(time.Microsecond) // the database keeps microseconds; a replayed pair must match exactly
 	out := TokenPair{SessionID: family, AccessExpiresAt: now.Add(s.cfg.AccessTTL), RefreshExpiresAt: now.Add(s.cfg.RefreshTTL)}
-	refreshIn := sessionInsert{userID: userID, family: family, rotatedFrom: rotatedFrom, kind: KindRefreshToken, expires: out.RefreshExpiresAt, m: m}
-	accessIn := sessionInsert{userID: userID, family: family, kind: KindAccessToken, expires: out.AccessExpiresAt, m: m}
-	if rotatedFrom != nil && s.canDerive() {
-		refreshIn.fixedToken, accessIn.fixedToken, _, _ = s.rotatedTokens(*rotatedFrom)
-	}
 	var err error
-	if out.RefreshToken, _, err = s.insertSession(ctx, tx, refreshIn); err != nil {
+	if out.RefreshToken, _, err = s.insertSession(ctx, tx, sessionInsert{userID: userID, family: family, rotatedFrom: rotatedFrom, kind: KindRefreshToken, expires: out.RefreshExpiresAt, m: m}); err != nil {
 		return TokenPair{}, err
 	}
-	out.AccessToken, _, err = s.insertSession(ctx, tx, accessIn)
+	out.AccessToken, _, err = s.insertSession(ctx, tx, sessionInsert{userID: userID, family: family, kind: KindAccessToken, expires: out.AccessExpiresAt, m: m})
 	return out, err
+}
+
+// gracePair is what is sealed for a replay: the successor pair.
+type gracePair struct {
+	Refresh, Access       string
+	RefreshExp, AccessExp time.Time
 }
 
 // Refresh exchanges a refresh token for a new pair and retires the old
@@ -52,13 +40,14 @@ func (s *Service) insertPair(ctx context.Context, tx pgx.Tx, userID, family uuid
 //
 // Presenting a refresh token that was already rotated means it leaked (or the
 // client raced itself): the whole family is revoked and the user must sign in
-// again. One exception protects against a lost response: if the rotation
-// happened less than RefreshGrace ago and its new refresh token has not been
-// used yet, the old token is accepted ONCE more and answered with the same new
-// pair, so a client that never received the first answer can retry. The
-// trade-off: a thief who replays a stolen token inside those 30 seconds gets
-// the same pair as the owner; the next use of the old token, or of the pair by
-// the other party's rotation, is still caught by the reuse detection.
+// again. One exception protects against a lost response: at rotation the new
+// pair is stored on the old row, encrypted under a key derived (HKDF) from the
+// old refresh token itself, for RefreshGrace. A retry with the old token inside
+// that window decrypts it and gets the same pair, once; the blob is then
+// erased. Only a holder of the old token can open it and the token is never
+// stored in clear, so a database dump, even with the server secret, yields no
+// live token. The trade-off: a thief who replays a stolen token inside those
+// 30 seconds gets the same pair as the owner; any later reuse is still caught.
 func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (TokenPair, uuid.UUID, error) {
 	if err := s.ipGate(m.IP); err != nil {
 		return TokenPair{}, uuid.Nil, err
@@ -70,14 +59,15 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (Tok
 	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
 		var rowID, userID, family uuid.UUID
 		var expires time.Time
-		var revoked, graceUsed *time.Time
+		var revoked, graceUntil *time.Time
+		var blob []byte
 		var status string
 		var device *string
 		err := tx.QueryRow(ctx, `
-			SELECT s.id, s.user_id, s.family_id, s.expires_at, s.revoked_at, s.grace_used_at, s.device_name, u.status
+			SELECT s.id, s.user_id, s.family_id, s.expires_at, s.revoked_at, s.grace_until, s.grace_blob, s.device_name, u.status
 			FROM session s JOIN "user" u ON u.id = s.user_id
 			WHERE s.token_hash = $1 AND s.kind = $2 FOR UPDATE OF s`, crypto.HashToken(refreshToken), KindRefreshToken).
-			Scan(&rowID, &userID, &family, &expires, &revoked, &graceUsed, &device, &status)
+			Scan(&rowID, &userID, &family, &expires, &revoked, &graceUntil, &blob, &device, &status)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil
 		}
@@ -85,9 +75,21 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (Tok
 			return err
 		}
 		if revoked != nil {
-			if pair, replayed, err := s.replayRotation(ctx, tx, rowID, family, *revoked, graceUsed, expires, status); err != nil || replayed {
-				out, ok, owner = pair, replayed, userID
-				return err
+			if blob != nil {
+				// the one allowed replay: the blob is erased whatever the outcome
+				if _, err := tx.Exec(ctx, `UPDATE session SET grace_blob = NULL, grace_until = NULL WHERE id = $1`, rowID); err != nil {
+					return err
+				}
+				if graceUntil != nil && now.Before(*graceUntil) && expires.After(now) && status == "active" {
+					pair, replayed, err := s.replayRotation(ctx, tx, refreshToken, blob, family, now)
+					if err != nil {
+						return err
+					}
+					if replayed {
+						out, ok, owner = pair, true, userID
+						return nil
+					}
+				}
 			}
 			// Reuse detection: burn the family. This commits (fn returns nil).
 			s.log.WarnContext(ctx, "refresh token reuse detected; revoking session family", "user_id", userID, "family_id", family)
@@ -97,15 +99,25 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (Tok
 		if !expires.After(now) || status != "active" {
 			return nil
 		}
-		if _, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE id = $1`, rowID, now); err != nil {
-			return err
-		}
 		if m.DeviceName == "" && device != nil {
 			m.DeviceName = *device
 		}
-		out, err = s.insertPair(ctx, tx, userID, family, &rowID, m)
-		ok, owner = err == nil, userID
-		return err
+		if out, err = s.insertPair(ctx, tx, userID, family, &rowID, m); err != nil {
+			return err
+		}
+		sealed, err := json.Marshal(gracePair{Refresh: out.RefreshToken, Access: out.AccessToken, RefreshExp: out.RefreshExpiresAt, AccessExp: out.AccessExpiresAt})
+		if err != nil {
+			return err
+		}
+		if sealed, err = crypto.SealWithToken(refreshToken, sealed); err != nil {
+			return err
+		}
+		if _, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2, grace_blob = $3, grace_until = $4 WHERE id = $1`,
+			rowID, now, sealed, now.Add(RefreshGrace)); err != nil {
+			return err
+		}
+		ok, owner = true, userID
+		return nil
 	})
 	if err != nil {
 		return TokenPair{}, uuid.Nil, problem.Internal(fmt.Errorf("refresh: %w", err))
@@ -116,49 +128,31 @@ func (s *Service) Refresh(ctx context.Context, refreshToken string, m Meta) (Tok
 	return out, owner, nil
 }
 
-// replayRotation answers a retry of a rotation inside the grace window with
-// the pair the rotation issued. It reports false when the token is not
-// eligible (window over, already replayed once, the new pair already used or
-// revoked, the user disabled) and the caller must treat it as reuse.
-func (s *Service) replayRotation(ctx context.Context, tx pgx.Tx, oldID, family uuid.UUID, rotatedAt time.Time, graceUsed *time.Time, expires time.Time, status string) (TokenPair, bool, error) {
-	now := s.now()
-	if !s.canDerive() || graceUsed != nil || status != "active" || !expires.After(now) || now.Sub(rotatedAt) > RefreshGrace || now.Before(rotatedAt) {
+// replayRotation opens the sealed successor pair with the presented token. It
+// reports false when it cannot (wrong blob, or the new pair was rotated or
+// revoked meanwhile); the caller then treats the request as reuse.
+func (s *Service) replayRotation(ctx context.Context, tx pgx.Tx, oldToken string, blob []byte, family uuid.UUID, now time.Time) (TokenPair, bool, error) {
+	plain, err := crypto.OpenWithToken(oldToken, blob)
+	if err != nil {
 		return TokenPair{}, false, nil
 	}
-	refresh, access, refreshHash, accessHash := s.rotatedTokens(oldID)
-	out := TokenPair{SessionID: family, RefreshToken: refresh, AccessToken: access}
-	found := 0
-	rows, err := tx.Query(ctx, `
-		SELECT token_hash, expires_at FROM session
+	var gp gracePair
+	if json.Unmarshal(plain, &gp) != nil {
+		return TokenPair{}, false, nil
+	}
+	var alive int
+	if err := tx.QueryRow(ctx, `
+		SELECT count(*) FROM session
 		WHERE family_id = $1 AND token_hash IN ($2, $3) AND revoked_at IS NULL AND expires_at > $4`,
-		family, refreshHash, accessHash, now)
-	if err != nil {
+		family, crypto.HashToken(gp.Refresh), crypto.HashToken(gp.Access), now).Scan(&alive); err != nil {
 		return TokenPair{}, false, err
 	}
-	for rows.Next() {
-		var h []byte
-		var exp time.Time
-		if err := rows.Scan(&h, &exp); err != nil {
-			rows.Close()
-			return TokenPair{}, false, err
-		}
-		if crypto.Equal(h, refreshHash) {
-			out.RefreshExpiresAt = exp.In(now.Location())
-		} else {
-			out.AccessExpiresAt = exp.In(now.Location())
-		}
-		found++
-	}
-	rows.Close()
-	if err := rows.Err(); err != nil {
-		return TokenPair{}, false, err
-	}
-	if found != 2 {
+	if alive != 2 {
 		return TokenPair{}, false, nil // the new pair was rotated or revoked meanwhile
 	}
-	if _, err := tx.Exec(ctx, `UPDATE session SET grace_used_at = $2 WHERE id = $1`, oldID, now); err != nil {
-		return TokenPair{}, false, err
-	}
 	s.log.InfoContext(ctx, "refresh token replayed inside the grace window", "family_id", family)
-	return out, true, nil
+	return TokenPair{
+		SessionID: family, AccessToken: gp.Access, RefreshToken: gp.Refresh,
+		AccessExpiresAt: gp.AccessExp.In(now.Location()), RefreshExpiresAt: gp.RefreshExp.In(now.Location()),
+	}, true, nil
 }

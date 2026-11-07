@@ -45,15 +45,11 @@ type sessionInsert struct {
 	kind           string
 	expires        time.Time
 	m              Meta
-	// fixedToken is a derived token to use instead of a random one (rotation).
-	fixedToken string
 }
 
 func (s *Service) insertSession(ctx context.Context, tx pgx.Tx, in sessionInsert) (token string, rowID uuid.UUID, err error) {
-	var hash []byte
-	if in.fixedToken != "" {
-		token, hash = in.fixedToken, crypto.HashToken(in.fixedToken)
-	} else if token, hash, err = crypto.NewToken(); err != nil {
+	token, hash, err := crypto.NewToken()
+	if err != nil {
 		return "", uuid.Nil, err
 	}
 	rowID = id.New()
@@ -333,6 +329,8 @@ func (s *Service) Prune(ctx context.Context) (int64, error) {
 			{`DELETE FROM session WHERE COALESCE(revoked_at, expires_at) < $1`, now.Add(-7 * 24 * time.Hour)},
 			{`DELETE FROM otp_code WHERE expires_at < $1`, now.Add(-24 * time.Hour)},
 			{`DELETE FROM login_attempt WHERE at < $1`, now.Add(-90 * 24 * time.Hour)},
+			// sealed grace blobs are useless after their 30 s; erase stale ones
+			{`UPDATE session SET grace_blob = NULL, grace_until = NULL WHERE grace_blob IS NOT NULL AND grace_until < $1`, now},
 			{`DELETE FROM delivery_log WHERE at < $1`, now.Add(-90 * 24 * time.Hour)},
 		} {
 			tag, err := tx.Exec(ctx, q.sql, q.arg)
