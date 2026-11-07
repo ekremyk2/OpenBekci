@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -13,6 +14,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/permissions"
+	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 )
@@ -64,6 +66,22 @@ func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) 
 		Mail:          mailer,
 		Log:           log,
 	})
+}
+
+// newAccess builds the access-control service: agents authenticate with their
+// own tokens, the rotated token is sealed with ENCRYPTION_KEY, and visitor
+// credentials come from the community module once it supplies a source (until
+// then the projector handles vehicles only).
+func newAccess(cfg Config, log *slog.Logger, d *db.DB) (*access.Service, error) {
+	acfg := access.Config{BaseURL: cfg.BaseURL, InsecureDev: cfg.InsecureDev, Log: log}
+	if len(cfg.EncryptionKey) > 0 {
+		sealer, err := crypto.NewFieldCipher(cfg.EncryptionKey, "access.agent_token")
+		if err != nil {
+			return nil, err
+		}
+		acfg.Sealer = sealer
+	}
+	return access.NewService(d, acfg), nil
 }
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity

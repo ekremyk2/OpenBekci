@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -39,6 +40,7 @@ type idEnv struct {
 	mail   *mail.Recorder
 	people *people.Service
 	tenSvc *tenancy.Service
+	acc    *access.Service
 	cookie *http.Cookie
 }
 
@@ -67,13 +69,14 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		t.Fatal(perr)
 	}
 	e.tenSvc = tenancy.NewService(d)
+	e.acc = newTestAccess(t, d, cfg.Log)
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.h = NewRouter(Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Audit: audit.NewService(d), Access: e.acc,
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}, Options{})
 	return e

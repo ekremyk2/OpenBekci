@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -46,6 +47,9 @@ type Deps struct {
 	Tenancy *tenancy.Service
 	People  *people.Service
 	Audit   *audit.Service
+	// Access serves /v1/orgs/{org_id}/access-points, agents, credentials and events,
+	// and the agent transport under /v1/agent. Nil leaves them unwired (unit tests).
+	Access *access.Service
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).

@@ -68,6 +68,16 @@ var excludedTables = map[string]string{
 	"import_batch": "operational record of spreadsheet imports",
 	"import_row":   "operational record of spreadsheet imports",
 	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
+
+	// access control: bound to the hardware on the site and re-derived in the new organization
+	"agent":             "agents are enrolled against one organization; enrol again after the hand-over",
+	"access_point":      "access points name the agent that drives them; configure them again after the hand-over",
+	"access_site_state": "allow-list bookkeeping of the old organization",
+	"credential":        "derived from vehicles and visitor entries; the projector rebuilds them",
+	"allowlist_change":  "change log of the old organization's allow-list",
+	"agent_command":     "commands for agents of the old organization",
+	"access_event":      "the opening log stays with the organization that recorded it",
+	"access_dirty":      "outbox of the projector",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

@@ -10,10 +10,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/riverqueue/river"
 )
 
 const shutdownTimeout = 20 * time.Second
@@ -41,7 +43,9 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return err
 	}
 	go pruneIdentity(ctx, log, deps.Identity)
+	go rt.access.Run(ctx) // idle long-poll sessions
 	deps.Jobs = rt.jobs
+	deps.Access = rt.access
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
@@ -101,6 +105,7 @@ type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
 	idem    *idempotency.PG
+	access  *access.Service
 	working bool
 }
 
@@ -148,7 +153,15 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	d.WarnIfPlatformSuperuser(ctx, log)
 
 	idem := idempotency.NewPG(d)
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
+	acc, err := newAccess(cfg, log, d)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{
+		Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem,
+		Register: []func(*river.Workers){acc.Workers}, Periodic: access.PeriodicJobs(),
+	})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -159,7 +172,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, idem: idem, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, idem: idem, access: acc, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

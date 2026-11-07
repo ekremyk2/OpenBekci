@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -55,7 +56,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
+	srv := &apiServer{people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, audit: deps.Audit, access: deps.Access, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -70,6 +71,10 @@ func MountAPI(r chi.Router, deps Deps) {
 	})
 	r.NotFound(notFound)
 	r.MethodNotAllowed(methodNotAllowed(r))
+	if deps.Access != nil {
+		// the agent transport: documented in the spec, served outside the user pipeline
+		deps.Access.Mount(r)
+	}
 	gen.HandlerWithOptions(strict, gen.ChiServerOptions{
 		BaseRouter:       r,
 		Middlewares:      genMiddlewares(p.Middlewares()),
@@ -92,6 +97,7 @@ type apiServer struct {
 	tenancy         *tenancy.Service
 	people          *people.Service
 	audit           *audit.Service
+	access          *access.Service
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie
 }
