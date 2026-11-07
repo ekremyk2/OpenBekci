@@ -19,6 +19,16 @@ describe('site dashboard', () => {
   })
 })
 
+describe('staff dashboard', () => {
+  it('shows counts without money for staff', async () => {
+    mountApp('/orgs/org-1', 'staff')
+    expect(await screen.findByText('Assigned to you')).toBeInTheDocument()
+    expect(screen.getByText('Expected visitors today')).toBeInTheDocument()
+    expect(screen.queryByText('Cash')).not.toBeInTheDocument()
+    expect(screen.queryByText('Overdue', { selector: 'h2,h3,div' })).toBeInTheDocument()
+  })
+})
+
 describe('settings', () => {
   it('edits the organization name when allowed', async () => {
     mountApp('/orgs/org-1/settings', 'manager')

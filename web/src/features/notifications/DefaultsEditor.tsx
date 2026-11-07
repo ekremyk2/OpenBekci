@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { apiDraft, type Channel } from '@/api/draft'
+import { apiDraft, ifMatch, type Channel } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
@@ -56,7 +56,11 @@ export function DefaultsEditor() {
     mutationFn: async () =>
       must(
         await apiDraft.PUT('/v1/orgs/{org_id}/notification-defaults', {
-          params: { path: { org_id: orgId }, query: { site_id: siteId! } },
+          params: {
+            path: { org_id: orgId },
+            query: { site_id: siteId! },
+            header: ifMatch(query.data!.version),
+          },
           body: {
             defaults: (query.data?.defaults ?? [])
               .filter((d) => !d.locked)

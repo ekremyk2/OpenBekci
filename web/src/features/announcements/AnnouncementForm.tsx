@@ -297,9 +297,11 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
       if (intent === 'publish' && !scheduled) {
         saved = must(
           await apiDraft.POST('/v1/orgs/{org_id}/announcements/{announcement_id}:publish', {
-            params: { path: { org_id: orgId, announcement_id: saved.id } },
+            params: {
+              path: { org_id: orgId, announcement_id: saved.id },
+              header: { 'Idempotency-Key': publishKey.key },
+            },
             body: { channels: v.channels },
-            ...withIdempotencyKey(publishKey.key),
           }),
         )
       }

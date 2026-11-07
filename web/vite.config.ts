@@ -34,6 +34,11 @@ export default defineConfig({
       },
     },
   ],
+  // `--mode mock` runs next to the normal dev server (e2e): its own dependency cache, or the two
+  // optimizers invalidate each other's chunks mid-test
+  cacheDir: process.argv.some((a, i) => a === 'mock' && process.argv[i - 1] === '--mode')
+    ? 'node_modules/.vite-mock'
+    : 'node_modules/.vite',
   // lazily loaded dependencies: pre-bundled up front so the dev server never re-optimizes (and
   // reloads the page) the first time a lazy chunk is opened
   optimizeDeps: { include: ['react-markdown', 'msw/browser'] },

@@ -141,9 +141,12 @@ export function AnnouncementDetailPage({ announcementId }: { announcementId: str
     mutationFn: async () =>
       must(
         await apiDraft.POST('/v1/orgs/{org_id}/announcements/{announcement_id}:publish', {
-          params: { path: { org_id: orgId, announcement_id: announcementId } },
+          params: {
+            path: { org_id: orgId, announcement_id: announcementId },
+            // x-idempotent: required; one key per publish click (retries reuse it)
+            header: { 'Idempotency-Key': publishKey.key },
+          },
           body: {},
-          ...withIdempotencyKey(publishKey.key),
         }),
       ),
     onSuccess: refresh,

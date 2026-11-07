@@ -138,6 +138,7 @@ interface Db {
   orgs: Json[]
   settings: Json
   smsSent: number
+  defaultsVersion: number
   org: Json
 }
 
@@ -379,6 +380,7 @@ export function resetOperationsDb(role: MockRole = 'manager') {
     sms_configured: true,
   }
   db.smsSent = 412
+  db.defaultsVersion = 1
   seedTickets()
 }
 
@@ -1056,6 +1058,9 @@ route('DELETE', `${O}/announcements/{id}`, ({ p }) => {
 })
 route('POST', `${O}/announcements/{id}:publish`, async ({ p, request }) => {
   if (!can('announcements.publish')) return forbidden()
+  if (!request.headers.get('Idempotency-Key')) {
+    return problem(422, 'validation_failed', 'Idempotency-Key is required')
+  }
   const a = findAnn(p[0])
   if (!a) return notFound()
   let b: { channels?: string[] } = {}
@@ -1346,10 +1351,17 @@ route('POST', `/orgs/ORG/me/notifications:read-all`, () => {
   return new HttpResponse(null, { status: 204 })
 })
 route('GET', `${O}/notification-defaults`, ({ url }) =>
-  json({ site_id: url.searchParams.get('site_id'), defaults: db.defaults }),
+  json({
+    site_id: url.searchParams.get('site_id'),
+    defaults: db.defaults,
+    version: db.defaultsVersion,
+  }),
 )
 route('PUT', `${O}/notification-defaults`, async ({ request, url }) => {
   if (!can('notifications.manage')) return forbidden()
+  const bad = stale({ version: db.defaultsVersion }, request)
+  if (bad) return bad
+  db.defaultsVersion += 1
   const b = await body<{ defaults: { type: string; channels: string[] }[] }>(request)
   for (const d of b.defaults) {
     const row = db.defaults.find((x) => x.type === d.type)
@@ -1429,6 +1441,20 @@ route('GET', `${O}/audit-events/{id}`, ({ p }) => {
 })
 
 // -- dashboards, codes, organization
+route('GET', `${O}/sites/{id}/staff-dashboard`, ({ p }) => {
+  if (!can('dashboard.staff')) return forbidden()
+  const open = db.tickets.filter((t) => t.status_semantic === 'open_like' && !t.merged_into_id)
+  return json({
+    site_id: p[0],
+    as_of: NOW(),
+    assigned_open_tickets: open.filter((t) => (t.assignee as Json | null)?.person_id === personId())
+      .length,
+    assigned_overdue_tickets: 0,
+    open_common_tickets: open.filter((t) => t.visibility === 'common').length,
+    expected_visitors_today: 4,
+    waiting_deliveries: 2,
+  })
+})
 route('GET', `${O}/sites/{id}/dashboard`, ({ p }) => {
   if (!can('dashboard.site')) return forbidden()
   const money = (amount: number) => ({ amount, currency: 'TRY' })
