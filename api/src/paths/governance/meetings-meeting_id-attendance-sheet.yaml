@@ -1,0 +1,45 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.getAttendanceSheet
+  summary: Download the attendance list (hazirun cetveli)
+  description: |-
+    **Release 0.2.** Download the attendance list (hazirun cetveli).
+
+    Permission: `attendance.manage`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - attendance.manage
+    site_manager:
+      - attendance.manage
+    board_member:
+      - attendance.manage
+  x-stability: preview
+  responses:
+    "200":
+      description: The file.
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
