@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/openbekci/openbekci/server/internal/core/money"
+	"github.com/openbekci/openbekci/server/internal/core/money/internal/civil"
 )
 
 // Errors returned by Allocate.
@@ -17,6 +18,7 @@ var (
 	ErrNegativeItem    = errors.New("paymentalloc: negative remaining amount")
 	ErrBadKind         = errors.New("paymentalloc: unknown item kind")
 	ErrNilOrder        = errors.New("paymentalloc: nil order")
+	ErrUnknownCharge   = errors.New("paymentalloc: charge is not open")
 )
 
 // Kind is the component of a charge an open item represents.
@@ -56,12 +58,14 @@ type Result struct {
 // Order decides which open items a payment is applied to, and in what order.
 type Order interface {
 	// arrange returns the items eligible for allocation, in allocation order.
-	arrange(open []OpenItem) []OpenItem
+	arrange(open []OpenItem, tz *time.Location) ([]OpenItem, error)
 }
 
-type orderFunc func(open []OpenItem) []OpenItem
+type orderFunc func(open []OpenItem, tz *time.Location) ([]OpenItem, error)
 
-func (f orderFunc) arrange(open []OpenItem) []OpenItem { return f(open) }
+func (f orderFunc) arrange(open []OpenItem, tz *time.Location) ([]OpenItem, error) {
+	return f(open, tz)
+}
 
 func rank(k Kind, principalFirst bool) int {
 	if (k == Principal) == principalFirst {
@@ -70,19 +74,28 @@ func rank(k Kind, principalFirst bool) int {
 	return 1
 }
 
-func sortItems(open []OpenItem, principalFirst bool) []OpenItem {
+func sortItems(open []OpenItem, principalFirst bool, tz *time.Location) []OpenItem {
 	out := make([]OpenItem, len(open))
 	copy(out, open)
 	sort.SliceStable(out, func(i, j int) bool {
 		if ri, rj := rank(out[i].Kind, principalFirst), rank(out[j].Kind, principalFirst); ri != rj {
 			return ri < rj
 		}
-		if !out[i].DueDate.Equal(out[j].DueDate) {
-			return out[i].DueDate.Before(out[j].DueDate)
+		if di, dj := civil.Day(out[i].DueDate, tz), civil.Day(out[j].DueDate, tz); di != dj {
+			return di < dj
 		}
 		return bytesLess(out[i].ChargeID[:], out[j].ChargeID[:])
 	})
 	return out
+}
+
+func isOpen(open []OpenItem, id uuid.UUID) bool {
+	for _, it := range open {
+		if it.ChargeID == id && it.Remaining.Amount > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func bytesLess(a, b []byte) bool {
@@ -97,18 +110,24 @@ func bytesLess(a, b []byte) bool {
 // OldestFirstPrincipalBeforeFee is the default (decision M defaults): all open
 // principal first, oldest due date first, then fees, oldest first; ties by
 // charge id. Paying principal first stops fee accrual soonest.
-var OldestFirstPrincipalBeforeFee Order = orderFunc(func(open []OpenItem) []OpenItem { return sortItems(open, true) })
+var OldestFirstPrincipalBeforeFee Order = orderFunc(func(open []OpenItem, tz *time.Location) ([]OpenItem, error) {
+	return sortItems(open, true, tz), nil
+})
 
 // FeesFirst applies a payment to fees (oldest first) before principal.
 // Reserved for packs whose law requires costs and interest to be cleared first.
-var FeesFirst Order = orderFunc(func(open []OpenItem) []OpenItem { return sortItems(open, false) })
+var FeesFirst Order = orderFunc(func(open []OpenItem, tz *time.Location) ([]OpenItem, error) {
+	return sortItems(open, false, tz), nil
+})
 
 // Manual applies the payment only to the listed charges, in the listed order
 // (the principal of a charge before its fee). The manager picked these, so
-// nothing else is touched and what is left over becomes credit.
+// nothing else is touched and what is left over becomes credit. A listed id
+// that has no open amount (a typo, or a charge already settled) makes
+// Allocate fail with ErrUnknownCharge instead of parking the cash as credit.
 func Manual(chargeIDs []uuid.UUID) Order {
 	ids := append([]uuid.UUID(nil), chargeIDs...)
-	return orderFunc(func(open []OpenItem) []OpenItem {
+	return orderFunc(func(open []OpenItem, _ *time.Location) ([]OpenItem, error) {
 		var out []OpenItem
 		seen := map[uuid.UUID]bool{}
 		for _, id := range ids {
@@ -116,6 +135,9 @@ func Manual(chargeIDs []uuid.UUID) Order {
 				continue
 			}
 			seen[id] = true
+			if !isOpen(open, id) {
+				return nil, fmt.Errorf("%w: %s", ErrUnknownCharge, id)
+			}
 			for _, principalFirst := range []bool{true, false} {
 				for _, it := range open {
 					if it.ChargeID == id && (it.Kind == Principal) == principalFirst {
@@ -124,7 +146,7 @@ func Manual(chargeIDs []uuid.UUID) Order {
 				}
 			}
 		}
-		return out
+		return out, nil
 	})
 }
 
@@ -133,8 +155,10 @@ func Manual(chargeIDs []uuid.UUID) Order {
 // payment or more than an item's remaining amount; anything left over is
 // returned as Credit. Items with zero remaining are skipped; the same input
 // always gives the same output. A charge id listed twice in a Manual order is
-// served once.
-func Allocate(payment money.Money, open []OpenItem, order Order) (Result, error) {
+// served once. Due dates are compared as calendar days in tz (nil = UTC), so
+// two charges due the same date fall back to the charge id whatever zone their
+// values carry.
+func Allocate(payment money.Money, open []OpenItem, order Order, tz *time.Location) (Result, error) {
 	if order == nil {
 		return Result{}, ErrNilOrder
 	}
@@ -157,7 +181,14 @@ func Allocate(payment money.Money, open []OpenItem, order Order) (Result, error)
 	}
 	left := payment.Amount
 	res := Result{Credit: money.Zero(payment.Currency)}
-	for _, it := range order.arrange(open) {
+	if tz == nil {
+		tz = time.UTC
+	}
+	arranged, err := order.arrange(open, tz)
+	if err != nil {
+		return Result{}, err
+	}
+	for _, it := range arranged {
 		if left == 0 {
 			break
 		}

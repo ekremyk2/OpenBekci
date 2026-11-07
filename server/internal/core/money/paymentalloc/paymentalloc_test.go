@@ -59,11 +59,10 @@ func TestOrders(t *testing.T) {
 		{"fees first", pa.FeesFirst, 30, []int64{4, 5, 1, 20, 2, 5}, 0},
 		{"manual only listed", pa.Manual([]uuid.UUID{id(3), id(1)}), 500, []int64{3, 100, 1, 20}, 380},
 		{"manual order and dedupe", pa.Manual([]uuid.UUID{id(5), id(5), id(2)}), 120, []int64{5, 50, 2, 70}, 0},
-		{"manual unknown id", pa.Manual([]uuid.UUID{id(99)}), 10, nil, 10},
 		{"zero payment", pa.OldestFirstPrincipalBeforeFee, 0, nil, 0},
 	}
 	for _, c := range cases {
-		r, err := pa.Allocate(try(c.payment), open, c.order)
+		r, err := pa.Allocate(try(c.payment), open, c.order, nil)
 		if err != nil {
 			t.Fatalf("%s: %v", c.name, err)
 		}
@@ -75,7 +74,7 @@ func TestOrders(t *testing.T) {
 
 func TestManualPrincipalBeforeFeeOfSameCharge(t *testing.T) {
 	open := []pa.OpenItem{item(1, 0, pa.Fee, 10), item(1, 0, pa.Principal, 100)}
-	r, err := pa.Allocate(try(105), open, pa.Manual([]uuid.UUID{id(1)}))
+	r, err := pa.Allocate(try(105), open, pa.Manual([]uuid.UUID{id(1)}), nil)
 	if err != nil || r.Allocations[0].Kind != pa.Principal || r.Allocations[1].Amount.Amount != 5 {
 		t.Fatalf("%+v %v", r, err)
 	}
@@ -83,7 +82,7 @@ func TestManualPrincipalBeforeFeeOfSameCharge(t *testing.T) {
 
 func TestSkipsZeroRemaining(t *testing.T) {
 	open := []pa.OpenItem{item(1, 0, pa.Principal, 0), item(2, 5, pa.Principal, 10)}
-	r, _ := pa.Allocate(try(5), open, pa.OldestFirstPrincipalBeforeFee)
+	r, _ := pa.Allocate(try(5), open, pa.OldestFirstPrincipalBeforeFee, nil)
 	if len(r.Allocations) != 1 || r.Allocations[0].ChargeID != id(2) {
 		t.Fatalf("%+v", r)
 	}
@@ -91,22 +90,22 @@ func TestSkipsZeroRemaining(t *testing.T) {
 
 func TestErrors(t *testing.T) {
 	ok := []pa.OpenItem{item(1, 0, pa.Principal, 10)}
-	if _, err := pa.Allocate(try(1), ok, nil); !errors.Is(err, pa.ErrNilOrder) {
+	if _, err := pa.Allocate(try(1), ok, nil, nil); !errors.Is(err, pa.ErrNilOrder) {
 		t.Error(err)
 	}
-	if _, err := pa.Allocate(try(-1), ok, pa.FeesFirst); !errors.Is(err, pa.ErrNegativePayment) {
+	if _, err := pa.Allocate(try(-1), ok, pa.FeesFirst, nil); !errors.Is(err, pa.ErrNegativePayment) {
 		t.Error(err)
 	}
-	if _, err := pa.Allocate(money.New(1, "XXX"), ok, pa.FeesFirst); err == nil {
+	if _, err := pa.Allocate(money.New(1, "XXX"), ok, pa.FeesFirst, nil); err == nil {
 		t.Error("currency")
 	}
-	if _, err := pa.Allocate(money.New(1, money.EUR), ok, pa.FeesFirst); !errors.Is(err, money.ErrCurrencyMismatch) {
+	if _, err := pa.Allocate(money.New(1, money.EUR), ok, pa.FeesFirst, nil); !errors.Is(err, money.ErrCurrencyMismatch) {
 		t.Error(err)
 	}
-	if _, err := pa.Allocate(try(1), []pa.OpenItem{item(1, 0, pa.Principal, -1)}, pa.FeesFirst); !errors.Is(err, pa.ErrNegativeItem) {
+	if _, err := pa.Allocate(try(1), []pa.OpenItem{item(1, 0, pa.Principal, -1)}, pa.FeesFirst, nil); !errors.Is(err, pa.ErrNegativeItem) {
 		t.Error(err)
 	}
-	if _, err := pa.Allocate(try(1), []pa.OpenItem{item(1, 0, "bogus", 1)}, pa.FeesFirst); !errors.Is(err, pa.ErrBadKind) {
+	if _, err := pa.Allocate(try(1), []pa.OpenItem{item(1, 0, "bogus", 1)}, pa.FeesFirst, nil); !errors.Is(err, pa.ErrBadKind) {
 		t.Error(err)
 	}
 }
@@ -138,7 +137,10 @@ func TestPropNeverOverAllocates(t *testing.T) {
 			}
 			order = pa.Manual(ids)
 		}
-		r, err := pa.Allocate(try(payment), open, order)
+		r, err := pa.Allocate(try(payment), open, order, nil)
+		if errors.Is(err, pa.ErrUnknownCharge) {
+			return // a listed id was not open: refused, nothing allocated
+		}
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -159,7 +161,7 @@ func TestPropNeverOverAllocates(t *testing.T) {
 		if total+r.Credit.Amount != payment || r.Credit.Amount < 0 {
 			t.Fatalf("sum %d + credit %d != %d", total, r.Credit.Amount, payment)
 		}
-		again, _ := pa.Allocate(try(payment), open, order)
+		again, _ := pa.Allocate(try(payment), open, order, nil)
 		if !same(got(r), got(again)) {
 			t.Fatal("not deterministic")
 		}
