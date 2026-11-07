@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: fiscal_year_id
     in: path
     required: true
@@ -21,11 +21,17 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [money.lock]
+  x-openbekci-roles:
+    org_admin:
+      - money.lock
+    site_manager:
+      - money.lock
+    accountant:
+      - money.lock
   x-idempotent: required
   x-stability: stable
   parameters:
-    - $ref: ../../components/money-params.yaml#/parameters/IdempotencyKeyRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
   requestBody:
     required: false
     content:

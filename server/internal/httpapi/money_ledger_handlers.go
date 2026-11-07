@@ -34,12 +34,7 @@ func (s *apiServer) lg() (*ledger.Service, error) {
 
 // siteOf reads the site_id query parameter; the services answer 422 for the
 // nil id (the spec leaves the parameter optional so authentication comes first).
-func siteOf(p *openapi_types.UUID) uuid.UUID {
-	if p == nil {
-		return uuid.Nil
-	}
-	return *p
-}
+func siteOf(p openapi_types.UUID) uuid.UUID { return uuid.UUID(p) }
 
 // dateStr renders an optional date parameter as a civil date ("" when absent).
 func dateStr(d *openapi_types.Date) string {
@@ -100,7 +95,7 @@ func (s *apiServer) MoneyUpdateFund(ctx context.Context, req gen.MoneyUpdateFund
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +172,7 @@ func (s *apiServer) MoneyUpdateAccount(ctx context.Context, req gen.MoneyUpdateA
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +242,7 @@ func (s *apiServer) MoneyUpdateCashBox(ctx context.Context, req gen.MoneyUpdateC
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}
@@ -411,7 +406,7 @@ func (s *apiServer) MoneySetLockDate(ctx context.Context, req gen.MoneySetLockDa
 	if err != nil {
 		return nil, err
 	}
-	ver, err := ifMatchVersion(req.Params.IfMatch)
+	ver, err := ifMatchVersion(&req.Params.IfMatch)
 	if err != nil {
 		return nil, err
 	}

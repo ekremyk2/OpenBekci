@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: money.listAccounts
   summary: List accounts
@@ -12,10 +12,20 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [money.read]
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
   x-stability: stable
   parameters:
-    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: type
       in: query
       schema:
@@ -73,7 +83,15 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [money.manage]
+  x-openbekci-roles:
+    org_admin:
+      - money.manage
+    site_manager:
+      - money.manage
+    board_member:
+      - money.manage
+    accountant:
+      - money.manage
   x-idempotent: optional
   x-stability: stable
   parameters:

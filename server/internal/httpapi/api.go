@@ -71,9 +71,15 @@ func MountAPI(r chi.Router, deps Deps) {
 	r.NotFound(notFound)
 	r.MethodNotAllowed(methodNotAllowed(r))
 	gen.HandlerWithOptions(strict, gen.ChiServerOptions{
-		BaseRouter:       r,
-		Middlewares:      genMiddlewares(p.Middlewares()),
-		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) { problem.Write(w, r, requestBindError(err)) },
+		BaseRouter:  r,
+		Middlewares: genMiddlewares(p.Middlewares()),
+		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			if aerr := p.preAuth(r); aerr != nil {
+				problem.Write(w, r, aerr)
+				return
+			}
+			problem.Write(w, r, requestBindError(err))
+		},
 	})
 	// No catch-all route for /v1/* or /.well-known/*: a catch-all matches every
 	// method and would hide chi's 405. Unknown paths reach NotFound instead

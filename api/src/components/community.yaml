@@ -1,0 +1,1600 @@
+schemas:
+  OpeningHours:
+    type: object
+    required:
+      - days
+      - start
+      - end
+    properties:
+      days:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: ISO weekdays, 1 = Monday.
+      start:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      end:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+  FacilityRules:
+    type: object
+    description: Rules checked when booking; a booking inside the rules confirms instantly, with no approval queue.
+    required:
+      - opening_hours
+      - max_duration_minutes
+      - max_days_ahead
+      - min_notice_minutes
+      - quota_per_unit
+      - quota_period
+      - who_may_book
+      - fee
+      - cancel_refund_cutoff_hours
+    properties:
+      opening_hours:
+        type: array
+        items:
+          $ref: "#/schemas/OpeningHours"
+        description: Site timezone.
+      max_duration_minutes:
+        type: integer
+        format: int64
+      max_days_ahead:
+        type: integer
+        format: int64
+        description: How far ahead a booking may be made.
+      min_notice_minutes:
+        type: integer
+        format: int64
+        nullable: true
+      quota_per_unit:
+        type: integer
+        format: int64
+        nullable: true
+      quota_period:
+        type: string
+        description: Open enum.
+        enum:
+          - week
+          - month
+        x-open-enum: true
+        nullable: true
+      who_may_book:
+        type: array
+        items:
+          type: string
+          enum:
+            - owner
+            - tenant
+            - household
+      fee:
+        type: object
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        nullable: true
+        description: "Becomes a charge on the unit side when the booking is confirmed (default: the side of whoever booked)."
+      cancel_refund_cutoff_hours:
+        type: integer
+        format: int64
+        nullable: true
+        description: A fee is refunded automatically when cancelled earlier than this.
+  Facility:
+    type: object
+    description: "A bookable thing: hall, barbecue area, court, guest flat."
+    required:
+      - id
+      - org_id
+      - site_id
+      - name
+      - description
+      - rules
+      - enabled
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+        nullable: true
+      rules:
+        $ref: "#/schemas/FacilityRules"
+      enabled:
+        type: boolean
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      name: Ali Veli
+      description: null
+      rules:
+        opening_hours:
+          - days: []
+            start: 09:00
+            end: 09:00
+        max_duration_minutes: 1
+        max_days_ahead: 1
+        min_notice_minutes: null
+        quota_per_unit: null
+        quota_period: week
+        who_may_book:
+          - owner
+        fee:
+          amount: 200000
+          currency: TRY
+        cancel_refund_cutoff_hours: null
+      enabled: false
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  FacilityCreate:
+    type: object
+    required:
+      - site_id
+      - name
+      - rules
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+        nullable: true
+      rules:
+        $ref: "#/schemas/FacilityRules"
+      enabled:
+        type: boolean
+  FacilityUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+        nullable: true
+      rules:
+        $ref: "#/schemas/FacilityRules"
+      enabled:
+        type: boolean
+  FacilityList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Facility"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          name: Ali Veli
+          description: null
+          rules:
+            opening_hours:
+              - days: []
+                start: 09:00
+                end: 09:00
+            max_duration_minutes: 1
+            max_days_ahead: 1
+            min_notice_minutes: null
+            quota_per_unit: null
+            quota_period: week
+            who_may_book:
+              - owner
+            fee:
+              amount: 200000
+              currency: TRY
+            cancel_refund_cutoff_hours: null
+          enabled: false
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  TimeRange:
+    type: object
+    required:
+      - start
+      - end
+    properties:
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+  FacilityBlock:
+    type: object
+    description: Dates the manager blocks.
+    required:
+      - id
+      - org_id
+      - facility_id
+      - start
+      - end
+      - reason
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      facility_id:
+        type: string
+        format: uuid
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+      reason:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      facility_id: 0192a3f0-1000-7000-8000-000000000004
+      start: 2026-03-01T09:00:00Z
+      end: 2026-03-01T09:00:00Z
+      reason: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  FacilityBlockCreate:
+    type: object
+    required:
+      - start
+      - end
+    properties:
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+      reason:
+        type: string
+        nullable: true
+  FacilityBlockList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/FacilityBlock"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          facility_id: 0192a3f0-1000-7000-8000-000000000004
+          start: 2026-03-01T09:00:00Z
+          end: 2026-03-01T09:00:00Z
+          reason: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  Availability:
+    type: object
+    required:
+      - facility_id
+      - from
+      - to
+      - taken
+      - blocked
+    properties:
+      facility_id:
+        type: string
+        format: uuid
+      from:
+        type: string
+        format: date-time
+      to:
+        type: string
+        format: date-time
+      taken:
+        type: array
+        items:
+          $ref: "#/schemas/TimeRange"
+        description: Residents see slots only as taken; names stay with the manager (KVKK).
+      blocked:
+        type: array
+        items:
+          $ref: "#/schemas/TimeRange"
+  Booking:
+    type: object
+    description: A facility booking; confirmed instantly when it satisfies the rules.
+    required:
+      - id
+      - org_id
+      - site_id
+      - facility_id
+      - facility_name
+      - unit_id
+      - unit_door_number
+      - person_id
+      - person_display_name
+      - start
+      - end
+      - status
+      - charge_id
+      - fee
+      - refund
+      - cancelled_reason
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      facility_id:
+        type: string
+        format: uuid
+      facility_name:
+        type: string
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+      person_display_name:
+        type: string
+        nullable: true
+        description: Managers and the booker only.
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - confirmed
+          - cancelled
+        x-open-enum: true
+      charge_id:
+        type: string
+        format: uuid
+        nullable: true
+      fee:
+        type: object
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        nullable: true
+      refund:
+        type: object
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        nullable: true
+      cancelled_reason:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      facility_id: 0192a3f0-1000-7000-8000-000000000003
+      facility_name: Community hall
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_door_number: unit door number
+      person_id: null
+      person_display_name: null
+      start: 2026-03-14T18:00:00Z
+      end: 2026-03-14T22:00:00Z
+      status: confirmed
+      charge_id: null
+      fee: null
+      refund: null
+      cancelled_reason: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  BookingList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Booking"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          facility_id: 0192a3f0-1000-7000-8000-000000000003
+          facility_name: Community hall
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          person_id: null
+          person_display_name: null
+          start: 2026-03-14T18:00:00Z
+          end: 2026-03-14T22:00:00Z
+          status: confirmed
+          charge_id: null
+          fee: null
+          refund: null
+          cancelled_reason: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  BookingCreate:
+    type: object
+    required:
+      - facility_id
+      - unit_id
+      - start
+      - end
+    properties:
+      facility_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      start:
+        type: string
+        format: date-time
+      end:
+        type: string
+        format: date-time
+      person_id:
+        type: string
+        format: uuid
+        description: Managers may book on behalf of a unit.
+      debtor_kind:
+        type: string
+        enum:
+          - owner
+          - tenant
+        description: Side charged for the fee.
+  BookingCancel:
+    type: object
+    properties:
+      reason:
+        type: string
+  VisitorEntry:
+    type: object
+    description: A visitor. Valid for the window plus 30 minutes either side; single entry unless recurring.
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - unit_door_number
+      - name
+      - plate
+      - window_from
+      - window_to
+      - approval_status
+      - source
+      - qr_token
+      - decided_by
+      - decided_at
+      - arrived_at
+      - left_at
+      - cancelled
+      - recurring_visitor_id
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      window_from:
+        type: string
+        format: date-time
+      window_to:
+        type: string
+        format: date-time
+      approval_status:
+        type: string
+        description: Open enum.
+        enum:
+          - pre_approved
+          - requested
+          - approved
+          - denied
+          - expired
+        x-open-enum: true
+      source:
+        type: string
+        description: Open enum.
+        enum:
+          - pre_registered
+          - walk_in
+          - recurring
+        x-open-enum: true
+      qr_token:
+        type: string
+        nullable: true
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+      decided_by:
+        type: string
+        format: uuid
+        nullable: true
+      decided_at:
+        type: string
+        format: date-time
+        nullable: true
+      arrived_at:
+        type: string
+        format: date-time
+        nullable: true
+      left_at:
+        type: string
+        format: date-time
+        nullable: true
+      cancelled:
+        type: boolean
+      recurring_visitor_id:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000003
+      org_id: 0192a3f0-1000-7000-8000-000000000001
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_id: 0192a3f0-1000-7000-8000-000000000002
+      unit_door_number: unit door number
+      name: Mehmet Kaya
+      plate: 34ABC123
+      window_from: 2026-03-01T09:00:00Z
+      window_to: 2026-03-01T09:00:00Z
+      approval_status: pre_approved
+      source: pre_registered
+      qr_token: null
+      decided_by: null
+      decided_at: null
+      arrived_at: null
+      left_at: null
+      cancelled: false
+      recurring_visitor_id: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  VisitorEntryCreate:
+    type: object
+    required:
+      - site_id
+      - unit_id
+      - name
+      - window_from
+      - window_to
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      window_from:
+        type: string
+        format: date-time
+      window_to:
+        type: string
+        format: date-time
+  VisitorEntryUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      window_from:
+        type: string
+        format: date-time
+      window_to:
+        type: string
+        format: date-time
+  VisitorEntryList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/VisitorEntry"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          org_id: 0192a3f0-1000-7000-8000-000000000001
+          site_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          name: Mehmet Kaya
+          plate: 34ABC123
+          window_from: 2026-03-01T09:00:00Z
+          window_to: 2026-03-01T09:00:00Z
+          approval_status: pre_approved
+          source: pre_registered
+          qr_token: null
+          decided_by: null
+          decided_at: null
+          arrived_at: null
+          left_at: null
+          cancelled: false
+          recurring_visitor_id: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  RecurringVisitor:
+    type: object
+    description: A standing permission (cleaner, nanny, carer) with its own long-lived QR; times are in the site timezone.
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - name
+      - plate
+      - days
+      - start
+      - end
+      - valid_from
+      - valid_to
+      - status
+      - qr_token
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      days:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: ISO weekdays.
+      start:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      end:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - active
+          - revoked
+          - expired
+        x-open-enum: true
+      qr_token:
+        type: string
+        nullable: true
+        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        format: int64
+        description: Optimistic-lock counter; send it back as If-Match on updates.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      name: Ali Veli
+      plate: null
+      days:
+        - 1
+      start: 09:00
+      end: 09:00
+      valid_from: 2026-03-01
+      valid_to: null
+      status: active
+      qr_token: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+      version: 1
+  RecurringVisitorCreate:
+    type: object
+    required:
+      - site_id
+      - unit_id
+      - name
+      - days
+      - start
+      - end
+      - valid_from
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      days:
+        type: array
+        items:
+          type: integer
+          format: int64
+      start:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      end:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      valid_from:
+        type: string
+        format: date
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+  RecurringVisitorUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match."
+    properties:
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      days:
+        type: array
+        items:
+          type: integer
+          format: int64
+      start:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      end:
+        type: string
+        pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        example: 09:00
+      valid_to:
+        type: string
+        format: date
+        nullable: true
+  RecurringVisitorList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/RecurringVisitor"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          name: Ali Veli
+          plate: null
+          days:
+            - 1
+          start: 09:00
+          end: 09:00
+          valid_from: 2026-03-01
+          valid_to: null
+          status: active
+          qr_token: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+          version: 1
+      next_cursor: null
+  VisitorApprovalRequest:
+    type: object
+    description: The approve / deny request sent to the resident for an unexpected visitor (in-app and SMS).
+    required:
+      - id
+      - org_id
+      - entry_id
+      - unit_id
+      - unit_door_number
+      - visitor_name
+      - plate
+      - requested_at
+      - expires_at
+      - status
+      - decided_by
+      - decided_at
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      entry_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      visitor_name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      requested_at:
+        type: string
+        format: date-time
+      expires_at:
+        type: string
+        format: date-time
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - pending
+          - approved
+          - denied
+          - expired
+        x-open-enum: true
+      decided_by:
+        type: string
+        format: uuid
+        nullable: true
+      decided_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      entry_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      unit_door_number: unit door number
+      visitor_name: Ali Veli
+      plate: null
+      requested_at: 2026-03-01T09:00:00Z
+      expires_at: 2026-03-01T09:00:00Z
+      status: pending
+      decided_by: null
+      decided_at: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  VisitorApprovalRequestList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/VisitorApprovalRequest"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          entry_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          unit_door_number: unit door number
+          visitor_name: Ali Veli
+          plate: null
+          requested_at: 2026-03-01T09:00:00Z
+          expires_at: 2026-03-01T09:00:00Z
+          status: pending
+          decided_by: null
+          decided_at: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  VisitorDecision:
+    type: object
+    required:
+      - decision
+    properties:
+      decision:
+        type: string
+        enum:
+          - approve
+          - deny
+  Delivery:
+    type: object
+    description: A parcel logged by the guard.
+    required:
+      - id
+      - org_id
+      - site_id
+      - unit_id
+      - unit_door_number
+      - received_at
+      - received_by_display_name
+      - description
+      - status
+      - collected_at
+      - collected_by_name
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      received_at:
+        type: string
+        format: date-time
+      received_by_display_name:
+        type: string
+        nullable: true
+      description:
+        type: string
+        nullable: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - waiting
+          - collected
+        x-open-enum: true
+      collected_at:
+        type: string
+        format: date-time
+        nullable: true
+      collected_by_name:
+        type: string
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      site_id: 0192a3f0-1000-7000-8000-000000000004
+      unit_id: 0192a3f0-1000-7000-8000-000000000005
+      unit_door_number: unit door number
+      received_at: 2026-03-01T09:00:00Z
+      received_by_display_name: null
+      description: null
+      status: waiting
+      collected_at: null
+      collected_by_name: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  DeliveryCreate:
+    type: object
+    required:
+      - site_id
+      - unit_id
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      description:
+        type: string
+        nullable: true
+  DeliveryList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Delivery"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          site_id: 0192a3f0-1000-7000-8000-000000000004
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          unit_door_number: unit door number
+          received_at: 2026-03-01T09:00:00Z
+          received_by_display_name: null
+          description: null
+          status: waiting
+          collected_at: null
+          collected_by_name: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null
+  DeliveryCollect:
+    type: object
+    required:
+      - collected_by_name
+    properties:
+      collected_by_name:
+        type: string
+  GuardVisitor:
+    type: object
+    description: "What a guard sees of a visitor: never balances, contacts of residents, national ids or the QR token."
+    required:
+      - id
+      - name
+      - plate
+      - unit_door_number
+      - window_from
+      - window_to
+      - approval_status
+      - approval_expires_at
+      - arrived_at
+      - left_at
+      - recurring
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      plate:
+        type: string
+        nullable: true
+      unit_door_number:
+        type: string
+      window_from:
+        type: string
+        format: date-time
+      window_to:
+        type: string
+        format: date-time
+      approval_status:
+        type: string
+        description: Open enum.
+        enum:
+          - pre_approved
+          - requested
+          - approved
+          - denied
+          - expired
+        x-open-enum: true
+      approval_expires_at:
+        type: string
+        format: date-time
+        nullable: true
+      arrived_at:
+        type: string
+        format: date-time
+        nullable: true
+      left_at:
+        type: string
+        format: date-time
+        nullable: true
+      recurring:
+        type: boolean
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      name: Ali Veli
+      plate: null
+      unit_door_number: unit door number
+      window_from: 2026-03-01T09:00:00Z
+      window_to: 2026-03-01T09:00:00Z
+      approval_status: pre_approved
+      approval_expires_at: null
+      arrived_at: null
+      left_at: null
+      recurring: false
+  GuardVisitorList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GuardVisitor"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          name: Ali Veli
+          plate: null
+          unit_door_number: unit door number
+          window_from: 2026-03-01T09:00:00Z
+          window_to: 2026-03-01T09:00:00Z
+          approval_status: pre_approved
+          approval_expires_at: null
+          arrived_at: null
+          left_at: null
+          recurring: false
+      next_cursor: null
+  GateAgentStatus:
+    type: object
+    required:
+      - connected
+      - last_seen_at
+      - points
+    properties:
+      connected:
+        type: boolean
+      last_seen_at:
+        type: string
+        format: date-time
+        nullable: true
+      points:
+        type: array
+        items:
+          $ref: "#/schemas/GatePoint"
+  GatePoint:
+    type: object
+    required:
+      - id
+      - name
+      - kind
+      - direction
+      - enabled
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      kind:
+        type: string
+      direction:
+        type: string
+      enabled:
+        type: boolean
+  GateConsole:
+    type: object
+    description: Everything the booth page shows at once; auto-refreshed.
+    required:
+      - server_time
+      - expected_visitors
+      - pending_approvals
+      - waiting_deliveries
+      - agent
+    properties:
+      server_time:
+        type: string
+        format: date-time
+      expected_visitors:
+        type: array
+        items:
+          $ref: "#/schemas/GuardVisitor"
+      pending_approvals:
+        type: array
+        items:
+          $ref: "#/schemas/GuardVisitor"
+      waiting_deliveries:
+        type: array
+        items:
+          $ref: "#/schemas/GateDelivery"
+      agent:
+        type: object
+        allOf:
+          - $ref: "#/schemas/GateAgentStatus"
+        nullable: true
+        description: Absent when the site has no access agent.
+  GateDelivery:
+    type: object
+    required:
+      - id
+      - unit_door_number
+      - received_at
+      - description
+      - status
+      - collected_by_name
+    properties:
+      id:
+        type: string
+        format: uuid
+      unit_door_number:
+        type: string
+      received_at:
+        type: string
+        format: date-time
+      description:
+        type: string
+        nullable: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - waiting
+          - collected
+        x-open-enum: true
+      collected_by_name:
+        type: string
+        nullable: true
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      unit_door_number: unit door number
+      received_at: 2026-03-01T09:00:00Z
+      description: null
+      status: waiting
+      collected_by_name: null
+  GateDeliveryList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GateDelivery"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          unit_door_number: unit door number
+          received_at: 2026-03-01T09:00:00Z
+          description: null
+          status: waiting
+          collected_by_name: null
+      next_cursor: null
+  GatePlate:
+    type: object
+    required:
+      - plate
+      - unit_door_number
+    properties:
+      plate:
+        type: string
+      unit_door_number:
+        type: string
+    example:
+      plate: plate
+      unit_door_number: unit door number
+  GatePlateList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GatePlate"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - plate: plate
+          unit_door_number: unit door number
+      next_cursor: null
+  ScanRequest:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        description: The scanned QR value, `obk1.<token>`.
+      point_id:
+        type: string
+        format: uuid
+  ScanResult:
+    type: object
+    required:
+      - valid
+      - reason
+      - entry
+    properties:
+      valid:
+        type: boolean
+      reason:
+        type: string
+        description: Open enum.
+        enum:
+          - match
+          - unknown
+          - outside_window
+          - used_up
+          - revoked
+          - wrong_site
+        x-open-enum: true
+      entry:
+        type: object
+        allOf:
+          - $ref: "#/schemas/GuardVisitor"
+        nullable: true
+  WalkInCreate:
+    type: object
+    required:
+      - site_id
+      - unit_id
+      - name
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      unit_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      plate:
+        type: string
+  VisitorArrive:
+    type: object
+    properties:
+      point_id:
+        type: string
+        format: uuid
+  CallContact:
+    type: object
+    required:
+      - display_name
+      - phone
+    properties:
+      display_name:
+        type: string
+        nullable: true
+      phone:
+        type: string
+        description: E.164.
+    description: "The one contact a guard can reach: the number to call to ask a resident whether to admit a visitor. Returned only by `community.getGateVisitorCallContact`, for an open entry, and audited. It is the resident's number the visitor entry points to, with no other contact data."
+  GuardSessionCreate:
+    type: object
+    description: "Quick PIN switch at the booth: the guard picks their name from `gate.listGuards`, then types the PIN. The PIN is checked against that one person, so PINs need not be unique per site."
+    required:
+      - site_id
+      - person_id
+      - pin
+    properties:
+      site_id:
+        type: string
+        format: uuid
+      person_id:
+        type: string
+        format: uuid
+        description: The guard, from `gate.listGuards`.
+      pin:
+        type: string
+        pattern: ^\d{4,8}$
+        description: 4 to 8 digits (`community.setGuardPin`).
+    example:
+      site_id: 0192a3f0-1000-7000-8000-000000000002
+      person_id: 0192a3f0-1000-7000-8000-000000000004
+      pin: "1234"
+  GuardSession:
+    type: object
+    required:
+      - token
+      - expires_at
+      - person_id
+      - display_name
+    properties:
+      token:
+        type: string
+        description: Opaque bearer for the `X-Guard-Session` header. Valid until `expires_at` (12 hours), bound to the console login session and the site it was created for; ends earlier on logout of the console, on a new `createGuardSession` by the same console, or when the guard membership ends.
+      expires_at:
+        type: string
+        format: date-time
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+    description: "A short-lived guard session. Send `token` as `X-Guard-Session` on guard operations (semantics: the header parameter)."
+  GatePinSet:
+    type: object
+    required:
+      - pin
+    properties:
+      pin:
+        type: string
+        description: 4 to 8 digits.
+  GuardRef:
+    type: object
+    description: "A guard of the site as the booth shows it: name and id only, no contact data."
+    required:
+      - person_id
+      - display_name
+      - has_pin
+    properties:
+      person_id:
+        type: string
+        format: uuid
+      display_name:
+        type: string
+      has_pin:
+        type: boolean
+        description: False until a manager has set a PIN (`community.setGuardPin`); such a guard cannot switch in.
+    example:
+      person_id: 0192a3f0-1000-7000-8000-000000000004
+      display_name: Ali Veli
+      has_pin: true
+  GuardList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GuardRef"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - person_id: 0192a3f0-1000-7000-8000-000000000004
+          display_name: Ali Veli
+          has_pin: true
+      next_cursor: null

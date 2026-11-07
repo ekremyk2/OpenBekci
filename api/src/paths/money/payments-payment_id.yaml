@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: payment_id
     in: path
     required: true
@@ -19,7 +19,25 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [money.read, statements.read_own]
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
+    owner:
+      - statements.read_own
+    tenant:
+      - statements.read_own
+    household:
+      - statements.read_own
+    former_occupant:
+      - statements.read_own
   x-stability: stable
   responses:
     "200":

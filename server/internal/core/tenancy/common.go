@@ -114,6 +114,9 @@ func (p PageParams) Resolve() (limit int, after uuid.UUID, err error) {
 	return limit, after, nil
 }
 
+// CursorOf is the cursor of a page that ends at id.
+func CursorOf(id uuid.UUID) string { return base64.RawURLEncoding.EncodeToString([]byte(id.String())) }
+
 // Page cuts rows (fetched with limit+1) to the limit and returns the cursor
 // of the next page, empty on the last page. Lists are keyset-paginated by id,
 // which UUIDv7 makes creation order.

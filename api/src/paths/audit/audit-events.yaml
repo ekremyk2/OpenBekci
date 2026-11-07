@@ -1,0 +1,77 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: audit.listEvents
+  summary: List audit events
+  description: |-
+    **Release 0.1.** List audit events.
+
+    Permission: `audit.read`.
+  tags:
+    - audit
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - audit.read
+    site_manager:
+      - audit.read
+    board_member:
+      - audit.read
+    auditor:
+      - audit.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
+    - name: actor_user_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `actor_user_id`.
+    - name: action
+      in: query
+      schema:
+        type: string
+      description: Filter by `action`.
+    - name: target_type
+      in: query
+      schema:
+        type: string
+      description: Filter by `target_type`.
+    - name: target_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `target_id`.
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: Start of the range (inclusive).
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+      description: End of the range (inclusive).
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/AuditEventList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,62 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: point_id
+    in: path
+    required: true
+    description: Id of the point.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: access.openAccessPoint
+  summary: Open an access point manually
+  description: |-
+    **Release 0.3.** Fails at once with 409 `agent_offline` when the agent is not connected or seen within 90 seconds. The command expires after 15 seconds (`expires_at - issued_at` is at most 60 seconds for every `open_point`; the agent refuses a longer lifetime with `ack: refused`, reason `ttl`, and a failed or interrupted result is never retried); there is no automatic retry. Poll `access.getAgentCommand`. The server stamps the actor; a guard session (`X-Guard-Session`) attributes the opening to that guard.
+
+    Permission: `access.open`.
+
+    Problems: `agent_offline` (409), `conflict` (409), `rate_limited` (429), `idempotency_mismatch` (422).
+  tags:
+    - access
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - access.open
+    site_manager:
+      - access.open
+    guard:
+      - access.open
+  x-idempotent: required
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/GuardSession
+    - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/access.yaml#/schemas/OpenPointRequest
+  responses:
+    "202":
+      description: Accepted; the work continues as a job.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/access.yaml#/schemas/AgentCommand
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

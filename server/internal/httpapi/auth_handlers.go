@@ -388,7 +388,10 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 		},
 		Organizations: orgs,
 		Occupancies:   meOccupancies(me.Occupancies),
-		Policies:      map[string]interface{}{},
+		Policies: gen.MePolicies{
+			AppLockRequired:     false,
+			ReauthWindowMinutes: int64(svc.ReauthWindow() / time.Minute),
+		},
 	}), nil
 }
 

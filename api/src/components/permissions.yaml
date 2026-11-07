@@ -6,229 +6,255 @@ schemas:
     x-open-enum: true
     description: 'Open enum: every permission a role can hold (backend plan section 7).'
     enum:
-      - allocation.manage
-      - allocation.read
       - audit.read
       - audit.report
-      - claim.manage
+      - claims.decide
+      - codes.read
       - collections.manage
-      - directory.consent
       - directory.read
-      - import.run
-      - invitation.household
-      - invitation.manage
+      - exports.create
+      - invitations.household
+      - invitations.manage
+      - jobs.read
+      - me.manage
       - me.read
-      - membership.manage
-      - membership.read
+      - memberships.manage
+      - memberships.read
       - money.lock
       - money.manage
       - money.post
       - money.read
-      - moveout.manage
-      - moveout.read
-      - occupancy.grant_money
-      - occupancy.manage
-      - occupancy.read
+      - occupancies.grant_money
+      - occupancies.household
+      - occupancies.manage
+      - occupancies.read
       - org.manage
       - org.read
       - payments.declare
       - payments.record
-      - person.manage
-      - person.read
+      - people.erase
+      - people.manage
+      - people.move_out
+      - people.national_id
+      - people.read
       - platform.manage
       - reports.aggregate
       - reports.debtors
       - reports.read
+      - roles.read
       - sessions.manage_own
-      - site.create
-      - site.export
-      - site.import
-      - site.manage
-      - site.offboard
-      - site.read
+      - sites.bank_details
+      - sites.export
+      - sites.manage
+      - sites.offboard
+      - sites.read
       - statements.read
       - statements.read_own
-      - unit.manage
-      - unit.read
-      - vehicle.manage
-      - vehicle.read
-      - vendor.manage
-      - vendor.read
+      - units.import
+      - units.manage
+      - units.read
+      - vehicles.manage
+      - vehicles.read
+      - vendors.manage
+      - vendors.read
 x-openbekci-roles:
   org_admin:
-    - allocation.manage
-    - allocation.read
     - audit.read
-    - claim.manage
+    - claims.decide
+    - codes.read
     - collections.manage
-    - directory.consent
     - directory.read
-    - import.run
-    - invitation.household
-    - invitation.manage
+    - exports.create
+    - invitations.household
+    - invitations.manage
+    - jobs.read
+    - me.manage
     - me.read
-    - membership.manage
-    - membership.read
+    - memberships.manage
+    - memberships.read
     - money.lock
     - money.manage
     - money.post
     - money.read
-    - moveout.manage
-    - moveout.read
-    - occupancy.grant_money
-    - occupancy.manage
-    - occupancy.read
+    - occupancies.grant_money
+    - occupancies.household
+    - occupancies.manage
+    - occupancies.read
     - org.manage
     - org.read
     - payments.declare
     - payments.record
-    - person.manage
-    - person.read
+    - people.erase
+    - people.manage
+    - people.move_out
+    - people.national_id
+    - people.read
     - reports.aggregate
     - reports.debtors
     - reports.read
+    - roles.read
     - sessions.manage_own
-    - site.create
-    - site.export
-    - site.import
-    - site.manage
-    - site.offboard
-    - site.read
+    - sites.bank_details
+    - sites.export
+    - sites.manage
+    - sites.offboard
+    - sites.read
     - statements.read
     - statements.read_own
-    - unit.manage
-    - unit.read
-    - vehicle.manage
-    - vehicle.read
-    - vendor.manage
-    - vendor.read
+    - units.import
+    - units.manage
+    - units.read
+    - vehicles.manage
+    - vehicles.read
+    - vendors.manage
+    - vendors.read
   site_manager:
-    - allocation.manage
-    - allocation.read
-    - claim.manage
+    - claims.decide
+    - codes.read
     - collections.manage
-    - directory.consent
     - directory.read
-    - import.run
-    - invitation.household
-    - invitation.manage
+    - exports.create
+    - invitations.household
+    - invitations.manage
+    - jobs.read
+    - me.manage
     - me.read
-    - membership.manage
-    - membership.read
+    - memberships.manage
+    - memberships.read
     - money.lock
     - money.manage
     - money.post
     - money.read
-    - moveout.manage
-    - moveout.read
-    - occupancy.grant_money
-    - occupancy.manage
-    - occupancy.read
+    - occupancies.grant_money
+    - occupancies.household
+    - occupancies.manage
+    - occupancies.read
     - org.read
     - payments.declare
     - payments.record
-    - person.manage
-    - person.read
+    - people.manage
+    - people.move_out
+    - people.national_id
+    - people.read
     - reports.aggregate
     - reports.debtors
     - reports.read
+    - roles.read
     - sessions.manage_own
-    - site.manage
-    - site.read
+    - sites.bank_details
+    - sites.manage
+    - sites.read
     - statements.read
     - statements.read_own
-    - unit.manage
-    - unit.read
-    - vehicle.manage
-    - vehicle.read
-    - vendor.manage
-    - vendor.read
+    - units.import
+    - units.manage
+    - units.read
+    - vehicles.manage
+    - vehicles.read
+    - vendors.manage
+    - vendors.read
   board_member:
-    - allocation.read
+    - codes.read
     - collections.manage
-    - directory.consent
     - directory.read
+    - exports.create
+    - invitations.manage
+    - jobs.read
+    - me.manage
     - me.read
-    - membership.read
+    - memberships.read
     - money.manage
     - money.post
     - money.read
-    - moveout.read
-    - occupancy.read
+    - occupancies.manage
+    - occupancies.read
     - org.read
     - payments.record
-    - person.read
+    - people.manage
+    - people.read
     - reports.aggregate
     - reports.debtors
     - reports.read
+    - roles.read
     - sessions.manage_own
-    - site.read
+    - sites.bank_details
+    - sites.manage
+    - sites.read
     - statements.read
     - statements.read_own
-    - unit.read
-    - vehicle.read
-    - vendor.read
+    - units.manage
+    - units.read
+    - vehicles.manage
+    - vehicles.read
+    - vendors.manage
+    - vendors.read
   auditor:
-    - allocation.read
     - audit.read
     - audit.report
-    - directory.consent
+    - codes.read
     - directory.read
+    - exports.create
+    - jobs.read
+    - me.manage
     - me.read
-    - membership.read
+    - memberships.read
     - money.read
-    - moveout.read
-    - occupancy.read
+    - occupancies.read
     - org.read
-    - person.read
+    - people.read
     - reports.aggregate
     - reports.debtors
     - reports.read
+    - roles.read
     - sessions.manage_own
-    - site.read
+    - sites.bank_details
+    - sites.read
     - statements.read
     - statements.read_own
-    - unit.read
-    - vehicle.read
-    - vendor.read
+    - units.read
+    - vehicles.read
+    - vendors.read
   accountant:
-    - allocation.manage
-    - allocation.read
-    - directory.consent
+    - codes.read
+    - exports.create
+    - jobs.read
+    - me.manage
     - me.read
     - money.lock
     - money.manage
     - money.post
     - money.read
-    - moveout.read
-    - occupancy.read
     - org.read
     - payments.record
     - reports.aggregate
     - reports.debtors
     - reports.read
     - sessions.manage_own
-    - site.read
+    - sites.bank_details
+    - sites.read
     - statements.read
     - statements.read_own
-    - unit.read
-    - vendor.manage
-    - vendor.read
+    - units.read
+    - vendors.manage
+    - vendors.read
   staff:
-    - directory.consent
+    - codes.read
+    - jobs.read
+    - me.manage
     - me.read
     - org.read
     - payments.record
     - sessions.manage_own
-    - site.read
-    - unit.read
-    - vehicle.read
-    - vendor.read
+    - sites.read
+    - units.read
+    - vendors.read
   guard:
-    - directory.consent
+    - codes.read
+    - jobs.read
+    - me.manage
     - me.read
     - sessions.manage_own
-    - vehicle.read
+    - sites.read
   platform_admin:
     - me.read
     - platform.manage

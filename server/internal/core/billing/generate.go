@@ -232,6 +232,88 @@ func (s *Service) ChargeGenerationStatus(ctx context.Context, orgID, siteID uuid
 	return out, err
 }
 
+// ChargeInput is a one-off charge outside any plan.
+type ChargeInput struct {
+	SiteID          uuid.UUID   `json:"site_id"`
+	UnitID          uuid.UUID   `json:"unit_id"`
+	ChargeType      string      `json:"charge_type"`
+	DebtorKind      string      `json:"debtor_kind"`
+	Amount          money.Money `json:"amount"`
+	DueDate         string      `json:"due_date"`
+	Description     string      `json:"description"`
+	FundID          *uuid.UUID  `json:"fund_id"`
+	IncomeAccountID *uuid.UUID  `json:"income_account_id"`
+}
+
+// CreateCharge posts a one-off charge to a unit side (money.post). Without a
+// debtor_kind the effective payer rule decides (owner by default); the debtor
+// person is snapshotted from the occupancy on the due date.
+func (s *Service) CreateCharge(ctx context.Context, orgID uuid.UUID, in ChargeInput) (Charge, error) {
+	if in.Amount.Amount <= 0 {
+		return Charge{}, bad("amount", "invalid_value")
+	}
+	if _, err := ledger.ParseDate(in.DueDate); err != nil {
+		return Charge{}, bad("due_date", "invalid_format")
+	}
+	var out Charge
+	err := s.run(ctx, orgID, "charge", func(tx pgx.Tx) error {
+		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyPost, orgID, in.SiteID)
+		if err != nil {
+			return err
+		}
+		if in.Amount.Currency != ledger.Currency(site) {
+			return bad("amount", "invalid_value")
+		}
+		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
+		if err != nil {
+			return err
+		}
+		var raw []byte
+		if err := tx.QueryRow(ctx, `SELECT payer_overrides FROM unit WHERE org_id=$1 AND site_id=$2 AND id=$3`, orgID, in.SiteID, in.UnitID).Scan(&raw); err != nil {
+			return bad("unit_id", "invalid_value")
+		}
+		side := in.DebtorKind
+		if side == "" {
+			var po map[string]string
+			_ = json.Unmarshal(raw, &po)
+			side = tenancy.EffectivePayer(tenancy.Unit{PayerOverrides: po}, site, in.ChargeType, "owner")
+		}
+		if side != "owner" && side != "tenant" {
+			return bad("debtor_kind", "invalid_value")
+		}
+		person, err := occupantOn(ctx, tx, orgID, in.SiteID, in.UnitID, side, in.DueDate)
+		if err != nil {
+			return err
+		}
+		if side == "tenant" && person == nil && in.DebtorKind == "" {
+			side = "owner"
+			if person, err = occupantOn(ctx, tx, orgID, in.SiteID, in.UnitID, side, in.DueDate); err != nil {
+				return err
+			}
+		}
+		fund := ch.OperatingFund
+		if in.FundID != nil {
+			fund = *in.FundID
+		}
+		credit := ch.Account(ledger.IncomeSubtype(in.ChargeType))
+		if in.IncomeAccountID != nil {
+			credit = *in.IncomeAccountID
+		}
+		cid, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: in.SiteID, UnitID: in.UnitID, FundID: fund, Period: "", Kind: "principal", ChargeType: in.ChargeType,
+			DebtorKind: side, PersonID: person, Amount: in.Amount.Amount, DueDate: in.DueDate, EntryDate: entryDateFor(site, in.DueDate, ledger.Today(site.Timezone, s.Now())),
+			Description: in.Description, CreditAccount: credit, SourceType: "charge"})
+		if err != nil {
+			return err
+		}
+		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "charge.create", "charge", cid, nil, map[string]any{"unit_id": in.UnitID, "amount": in.Amount.Amount, "due_date": in.DueDate}); err != nil {
+			return err
+		}
+		out, err = scanCharge(tx.QueryRow(ctx, chargeSel+` WHERE c.org_id=$1 AND c.id=$2`, orgID, cid))
+		return err
+	})
+	return out, err
+}
+
 // Charge is a charge as the API shows it.
 type Charge struct {
 	ID              uuid.UUID   `json:"id"`

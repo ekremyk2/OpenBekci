@@ -1,54 +1,59 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: unit_id
     in: path
     required: true
-    description: The unit id.
+    description: Id of the unit.
     schema:
       type: string
       format: uuid
 put:
   operationId: tenancy.setUnitTags
   summary: Replace a unit's tags
-  description: 'Tags are cost-group memberships such as `lift` or `pool`.'
-  tags: [tenancy]
+  description: |-
+    **Release 0.1.** Not part of the original draft; phase B keeps it because the tag codes of a unit are stored with the unit (cost-group memberships such as `lift` or `pool`). It is superseded by the `unit-tags` resources once those are served; both write the same membership.
+
+    Permission: `units.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [unit.manage]
+  x-openbekci-roles:
+    org_admin:
+      - units.manage
+    site_manager:
+      - units.manage
+    board_member:
+      - units.manage
   x-idempotent: optional
+  x-stability: stable
   parameters:
-    - name: If-Match
-      in: header
-      required: false
-      description: |
-        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
-      schema:
-        type: string
-        pattern: '^"?[0-9]{1,9}"?$'
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/tenancy.yaml#/schemas/UnitTags'
+          $ref: ../../components/tenancy.yaml#/schemas/UnitTags
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/tenancy.yaml#/schemas/Unit'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/tenancy.yaml#/schemas/Unit
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,54 +1,117 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: key_id
     in: path
     required: true
-    description: The key id.
+    description: Id of the key.
     schema:
       type: string
       format: uuid
-put:
-  operationId: tenancy.setAllocationKeyValues
-  summary: Replace a share or table key's values
-  description: 'Values are rationals (`12/1000`) or decimals. The response carries sanity warnings, for example a share key that does not add up to one.'
-  tags: [tenancy]
+get:
+  operationId: tenancy.listAllocationKeyValues
+  summary: List the value of a key per unit
+  description: |-
+    **Release 0.1.** List the value of a key per unit.
+
+    Permission: `units.read`.
+  tags:
+    - tenancy
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [allocation.manage]
-  x-idempotent: optional
+  x-openbekci-roles:
+    org_admin:
+      - units.read
+    site_manager:
+      - units.read
+    board_member:
+      - units.read
+    auditor:
+      - units.read
+    accountant:
+      - units.read
+    staff:
+      - units.read
+    owner:
+      - units.read
+    tenant:
+      - units.read
+    household:
+      - units.read
+  x-stability: stable
   parameters:
-    - name: If-Match
-      in: header
-      required: false
-      description: |
-        The resource's `version` (as sent in `ETag`), optionally quoted. Required: without it the answer is 422
-        `validation_failed`. Declared optional only so an unauthenticated caller gets 401 first.
+    - name: block_id
+      in: query
       schema:
         type: string
-        pattern: '^"?[0-9]{1,9}"?$'
+        format: uuid
+      description: Filter by `block_id`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/tenancy.yaml#/schemas/AllocationKeyValueList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+put:
+  operationId: tenancy.putAllocationKeyValues
+  summary: Replace the values of a key
+  description: |-
+    **Release 0.1.** Only for `share` and `table` keys; `equal` and `area` are computed.
+
+    Permission: `sites.manage`.
+
+    Problems: `version_conflict` (409), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.manage
+    site_manager:
+      - sites.manage
+    board_member:
+      - sites.manage
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/tenancy.yaml#/schemas/AllocationKeyValues'
+          $ref: ../../components/tenancy.yaml#/schemas/AllocationKeyValuesPut
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/tenancy.yaml#/schemas/AllocationKeyDetail'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/tenancy.yaml#/schemas/AllocationKeyValuesSummary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -130,7 +130,12 @@ func init() {
 			seedChart(w, t, org, f.Site)
 			return jsonReq("POST", orgPath(org, "/charge-plans"), fmt.Sprintf(`{"site_id":"%s","name":"Aidat","kind":"recurring","charge_type":"dues","amount_mode":"per_unit","allocation_key_id":"%s","amount":{"amount":1000,"currency":"TRY"},"scope":{"type":"site","id":null},"start":"2026-01-01"}`, f.Site, f.Key))
 		}},
-		"money.listCharges":  siteQ("GET", "/charges", perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, ""),
+		"money.listCharges": siteQ("GET", "/charges", perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, ""),
+		"money.createCharge": {perms: perms(ledger.PermMoneyPost), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			f := w.NewSite(t, org)
+			seedChart(w, t, org, f.Site)
+			return jsonReq("POST", orgPath(org, "/charges"), fmt.Sprintf(`{"site_id":"%s","unit_id":"%s","charge_type":"special_assessment","amount":{"amount":500,"currency":"TRY"},"due_date":"2026-02-01"}`, f.Site, f.Unit), moneyIdem()...)
+		}},
 		"money.listPayments": siteQ("GET", "/payments", perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, ""),
 		"money.createPayment": {perms: perms(ledger.PermPaymentsRecord), status: 201, override: collectorOverride, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)

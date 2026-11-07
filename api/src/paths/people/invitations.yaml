@@ -1,75 +1,124 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: people.listInvitations
   summary: List invitations
-  tags: [people]
+  description: |-
+    **Release 0.1.** The "who has joined" view.
+
+    Permission: `invitations.manage`.
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [invitation.manage]
+  x-openbekci-roles:
+    org_admin:
+      - invitations.manage
+    site_manager:
+      - invitations.manage
+    board_member:
+      - invitations.manage
+  x-stability: stable
   parameters:
-    - $ref: '../../components/common.yaml#/parameters/Limit'
-    - $ref: '../../components/common.yaml#/parameters/Cursor'
-    - name: site_id
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
+    - name: kind
       in: query
-      description: 'Only this site.'
-      schema: {type: string, format: uuid}
+      schema:
+        type: string
+        x-known-values:
+          - manager
+          - site_code
+          - household
+      description: Filter by `kind`.
     - name: status
       in: query
-      description: 'pending, accepted, revoked or expired.'
-      schema: {type: string}
+      schema:
+        type: string
+        x-known-values:
+          - pending
+          - accepted
+          - expired
+          - revoked
+      description: Filter by `status`.
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by person.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:
-    '200':
-      description: 'Success.'
+    "200":
+      description: OK
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/InvitationList'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/InvitationList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem
 post:
   operationId: people.createInvitation
-  summary: Invite a person to a unit
-  description: 'Adds the person when needed and sends a one-time link by SMS or email. The response carries the token and link once.'
-  tags: [people]
+  summary: Invite a person
+  description: |-
+    **Release 0.1.** Sent by SMS when the person has a phone (otherwise email).
+
+    Permission: `invitations.manage`.
+
+    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [invitation.manage]
+  x-openbekci-roles:
+    org_admin:
+      - invitations.manage
+    site_manager:
+      - invitations.manage
+    board_member:
+      - invitations.manage
   x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/people.yaml#/schemas/InvitationCreate'
+          $ref: ../../components/people.yaml#/schemas/InvitationCreate
   responses:
-    '201':
-      description: 'Success.'
+    "201":
+      description: Created
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Invitation'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Invitation
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "503":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

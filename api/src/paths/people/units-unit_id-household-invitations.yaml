@@ -1,72 +1,63 @@
 parameters:
-  - $ref: '../../components/common.yaml#/parameters/OrgId'
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: unit_id
     in: path
     required: true
-    description: The unit id.
+    description: Id of the unit.
     schema:
       type: string
       format: uuid
-get:
-  operationId: people.listHouseholdInvitations
-  summary: List a unit's household invitations
-  description: 'For the unit''s owner or tenant (and managers).'
-  tags: [people]
-  security:
-    - cookieAuth: []
-    - bearerAuth: []
-  x-openbekci-roles: [invitation.household]
-  responses:
-    '200':
-      description: 'Success.'
-      content:
-        application/json:
-          schema:
-            $ref: '../../components/people.yaml#/schemas/InvitationList'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
 post:
   operationId: people.createHouseholdInvitation
-  summary: Invite a household member to a unit
-  description: 'For the unit''s owner or tenant (and managers). Creates a household occupancy on this unit only, without money access.'
-  tags: [people]
+  summary: Invite a household member to my unit
+  description: |-
+    **Release 0.1.** Invite a household member to my unit.
+
+    Listing and revoking what the caller sent: `me.listHouseholdInvitations`, `me.revokeHouseholdInvitation`; removing a member: `me.endHouseholdOccupancy`.
+
+    Permission: `invitations.household` (own unit only).
+
+    Problems: `sms_unavailable` (503), `mail_unavailable` (503), `rate_limited` (429), `conflict` (409).
+  tags:
+    - people
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [invitation.household]
+  x-openbekci-roles:
+    owner:
+      - invitations.household
+    tenant:
+      - invitations.household
   x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: '../../components/people.yaml#/schemas/HouseholdInvitationCreate'
+          $ref: ../../components/people.yaml#/schemas/HouseholdInvitationCreate
   responses:
-    '201':
-      description: 'Success.'
+    "201":
+      description: Created
       content:
         application/json:
           schema:
-            $ref: '../../components/people.yaml#/schemas/Invitation'
-    '401':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '403':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '404':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '409':
-      $ref: '../../components/problem.yaml#/responses/Problem'
-    '422':
-      $ref: '../../components/problem.yaml#/responses/Problem'
+            $ref: ../../components/people.yaml#/schemas/Invitation
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "503":
+      $ref: ../../components/problem.yaml#/responses/Problem
     default:
-      $ref: '../../components/problem.yaml#/responses/Problem'
+      $ref: ../../components/problem.yaml#/responses/Problem

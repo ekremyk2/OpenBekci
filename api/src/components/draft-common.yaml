@@ -222,7 +222,13 @@ schemas:
         type: object
         additionalProperties:
           type: string
-        description: Target field name to source column header (or zero-based index as a string).
+        description: |-
+          Target field name to source column header (or zero-based index as a string). The target names per import kind:
+          `importUnits`: `block`, `door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi`, `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+          `importPeople`: the owner and tenant columns of `importUnits` plus `door_number`;
+          `importAllocationKeyValues`: `door_number` (required), `value`;
+          `importOpeningBalances`: `kind`, `unit`, `side`, `principal`, `late_fee`, `account_id`.
+          The multipart `mapping` part is this object (or just its `columns`) as JSON text.
       date_format:
         type: string
         nullable: true

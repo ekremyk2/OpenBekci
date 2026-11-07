@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"mime/multipart"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -41,12 +42,16 @@ func jsonReq(method, path, body string, h ...string) mreq {
 }
 
 func multipartReq(path string, fields map[string]string, filename, content string) mreq {
+	return multipartField(path, "file", fields, filename, content)
+}
+
+func multipartField(path, field string, fields map[string]string, filename, content string) mreq {
 	var b bytes.Buffer
 	mw := multipart.NewWriter(&b)
 	for k, v := range fields {
 		_ = mw.WriteField(k, v)
 	}
-	fw, _ := mw.CreateFormFile("file", filename)
+	fw, _ := mw.CreateFormFile(field, filename)
 	_, _ = fw.Write([]byte(content))
 	_ = mw.Close()
 	return mreq{method: "POST", path: path, body: b.String(), headers: map[string]string{"Content-Type": mw.FormDataContentType()}}
@@ -58,203 +63,296 @@ func tokenFor(org authztest.Org) (string, []byte) {
 	return tok, crypto.HashToken(tok)
 }
 
+type idFn = func(*authztest.World, authztest.Org, *testing.T) string
+
 func init() {
-	siteOp := func(method, suffix string, ps []authz.Permission, status int, body string) mrow {
-		return mrow{perms: ps, status: status, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			f := w.NewSite(t, org)
-			return jsonReq(method, orgPath(org, "/sites/"+f.Site.String()+suffix), body)
+	ifm := "If-Match"
+	one := `"1"`
+	idem := func() []string { return []string{"Idempotency-Key", "matrix-" + uuid.NewString()} }
+	// get builds GET path with {id} replaced by mk's resource.
+	get := func(path string, ps []authz.Permission, mk idFn) mrow {
+		return mrow{perms: ps, status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, strings.ReplaceAll(path, "{id}", mk(w, org, t)))}
 		}}
 	}
-	ifm := "If-Match"
+	// siteGet is GET /sites/{site}{suffix}.
+	siteGet := func(suffix string, ps []authz.Permission) mrow {
+		return mrow{perms: ps, status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+suffix)}
+		}}
+	}
+	// siteQuery is a list under the organization with the site as a query parameter.
+	siteQuery := func(path string, ps []authz.Permission) mrow {
+		return mrow{perms: ps, status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, path+"?site_id="+w.NewSite(t, org).Site.String())}
+		}}
+	}
+	// send builds a request with {id} replaced by mk's resource and the given body.
+	send := func(method, path string, ps []authz.Permission, status int, mk idFn, body string, h ...string) mrow {
+		return mrow{perms: ps, status: status, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq(method, orgPath(org, strings.ReplaceAll(path, "{id}", mk(w, org, t))), body, h...)
+		}}
+	}
+	siteID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewSite(t, org).Site.String()
+	}
+	blockID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewSite(t, org).Block.String()
+	}
+	unitID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewSite(t, org).Unit.String()
+	}
+	keyID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewSite(t, org).Key.String()
+	}
+	personID := func(w *authztest.World, org authztest.Org, t *testing.T) string { return w.NewPerson(t, org).String() }
+	vehicleID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewVehicle(t, w.NewSite(t, org)).String()
+	}
+	vendorID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewVendor(t, w.NewSite(t, org)).String()
+	}
+	exportID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewExport(t, w.NewSite(t, org)).String()
+	}
+	membershipID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewMembership(t, org, w.NewPerson(t, org), "staff").String()
+	}
+	invitationID := func(kind string) idFn {
+		return func(w *authztest.World, org authztest.Org, t *testing.T) string {
+			_, h := tokenFor(org)
+			return w.NewInvitation(t, w.NewSite(t, org), kind, h).String()
+		}
+	}
+	occID := func(kind string) idFn {
+		return func(w *authztest.World, org authztest.Org, t *testing.T) string {
+			f := w.NewSite(t, org)
+			return w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), kind).String()
+		}
+	}
+	claimID := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewClaim(t, w.NewSite(t, org), w.Actor("no_membership").UserID).String()
+	}
+	emptyBlock := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		f := w.NewSite(t, org)
+		b := id.New()
+		w.Exec(t, `INSERT INTO block (id, org_id, site_id, name) VALUES ($1, $2, $3, 'Empty')`, b, org.ID, f.Site)
+		return b.String()
+	}
+	spareUnit := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		return w.NewUnit(t, w.NewSite(t, org)).String()
+	}
+	customKey := func(w *authztest.World, org authztest.Org, t *testing.T) string {
+		f := w.NewSite(t, org)
+		k := id.New()
+		w.Exec(t, `INSERT INTO allocation_key (id, org_id, site_id, code, name, kind) VALUES ($1, $2, $3, 'custom', 'Custom', 'table')`, k, org.ID, f.Site)
+		return k.String()
+	}
+	noReauth := func(actor, target string) (int, bool) {
+		if actor == "org_admin" && target == "own" {
+			return 403, true // needs a recent re-authentication
+		}
+		return 0, false
+	}
+	noReauthAny := func(actor, target string) (int, bool) {
+		if (actor == "org_admin" || actor == "site_manager") && target == "own" {
+			return 403, true
+		}
+		return 0, false
+	}
+	withOverride := func(r mrow, o func(string, string) (int, bool)) mrow { r.override = o; return r }
+	notTheirUnit := func(actor, target string) (int, bool) {
+		if target == "own" && (actor == "org_admin" || actor == "site_manager") {
+			return 404, true // managers own no unit: the household of one's own unit is empty
+		}
+		return 0, false
+	}
+	anon404 := func(actor, _ string) (int, bool) {
+		if actor == "anonymous" {
+			return 404, true
+		}
+		return 0, false
+	}
 	rows := map[string]mrow{
-		"instance.getCodes": {status: 200, build: mget("/v1/codes")},
-		"people.previewInvitation": {status: 404, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
+		"codes.listCodes": {perms: perms(people.PermCodesRead), status: 200, build: mget("/v1/orgs/{org_id}/codes")},
+		"people.previewInvitation": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
 			return mreq{method: "GET", path: "/v1/invitations/not-a-token"}
 		}},
 		"people.acceptInvitation": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
-			return jsonReq("POST", "/v1/invitations/not-a-token/accept", `{}`)
-		}, override: func(actor, _ string) (int, bool) {
-			if actor == "anonymous" {
-				return 404, true
-			}
-			return 0, false
-		}},
-		"people.previewJoin": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
+			return jsonReq("POST", "/v1/invitations/not-a-token:accept", `{}`)
+		}, override: anon404},
+		"people.getJoinInfo": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
 			return mreq{method: "GET", path: "/v1/join/not-a-code"}
-		}, override: func(actor, _ string) (int, bool) {
-			if actor == "anonymous" {
-				return 404, true
-			}
-			return 0, false
-		}},
-		"people.createClaim": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
-			return jsonReq("POST", "/v1/join/not-a-code/claims", fmt.Sprintf(`{"unit_id":%q,"kind":"owner"}`, uuid.New()))
+		}, override: anon404},
+		"people.listJoinUnits": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
+			return mreq{method: "GET", path: "/v1/join/not-a-code/units"}
+		}, override: anon404},
+		"people.createUnitClaim": {status: 404, build: func(_ *authztest.World, _ authztest.Org, _ *testing.T) mreq {
+			return jsonReq("POST", "/v1/join/not-a-code/claims", fmt.Sprintf(`{"unit_id":%q,"claimed_role":"owner"}`, uuid.New()))
 		}},
 
-		"tenancy.listSites":  {perms: perms(tenancy.PermSiteRead), status: 200, build: mget("/v1/orgs/{org_id}/sites")},
-		"tenancy.createSite": {perms: perms(tenancy.PermSiteCreate), status: 201, build: fixed("POST", "/v1/orgs/{org_id}/sites", `{"name":"Matrix site"}`)},
-		"tenancy.getSite":    siteOp("GET", "", perms(tenancy.PermSiteRead), 200, ""),
-		"tenancy.updateSite": {perms: perms(tenancy.PermSiteManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		// tenancy
+		"tenancy.getOrg": {perms: perms(tenancy.PermOrgRead), status: 200, build: mget("/v1/orgs/{org_id}")},
+		"tenancy.updateOrg": {perms: perms(tenancy.PermOrgManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("PATCH", "/v1/orgs/"+org.ID.String(), `{"name":"Renamed by the matrix","settings":{"matrix":true}}`, ifm, `"`+strconv.Itoa(w.OrgVersion(t, org))+`"`)
+		}},
+		"tenancy.listSites": {perms: perms(tenancy.PermSiteRead), status: 200, build: mget("/v1/orgs/{org_id}/sites")},
+		"tenancy.createSite": {perms: perms(tenancy.PermSiteManage), status: 201,
+			build: fixed("POST", "/v1/orgs/{org_id}/sites", `{"name":"Matrix site","timezone":"Europe/Istanbul","currency":"TRY"}`)},
+		"tenancy.getSite":            get("/sites/{id}", perms(tenancy.PermSiteRead), siteID),
+		"tenancy.updateSite":         send("PATCH", "/sites/{id}", perms(tenancy.PermSiteManage), 200, siteID, `{"name":"Renamed"}`, ifm, one),
+		"tenancy.getSiteSettings":    siteGet("/settings", perms(tenancy.PermSiteRead)),
+		"tenancy.updateSiteSettings": send("PATCH", "/sites/{id}/settings", perms(tenancy.PermSiteManage), 200, siteID, `{"bills_enabled":true,"owner_financial_transparency":true}`, ifm, one),
+		"tenancy.getBankDetails":     siteGet("/bank-details", perms(tenancy.PermSiteBankDetails)),
+		"tenancy.setBankDetails": send("PUT", "/sites/{id}/bank-details", perms(tenancy.PermSiteManage), 200, siteID,
+			`{"iban":"TR330006100519786457841326","holder":"Matrix Site Management"}`, ifm, one),
+		"tenancy.listBlocks": siteQuery("/blocks", perms(tenancy.PermSiteRead)),
+		"tenancy.createBlock": {perms: perms(tenancy.PermSiteManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/blocks"), fmt.Sprintf(`{"site_id":%q,"name":"Block X"}`, w.NewSite(t, org).Site))
+		}},
+		"tenancy.getBlock":    get("/blocks/{id}", perms(tenancy.PermSiteRead), blockID),
+		"tenancy.updateBlock": send("PATCH", "/blocks/{id}", perms(tenancy.PermSiteManage), 200, blockID, `{"name":"Renamed block"}`, ifm, one),
+		"tenancy.deleteBlock": send("DELETE", "/blocks/{id}", perms(tenancy.PermSiteManage), 204, emptyBlock, "", ifm, one),
+		"tenancy.listUnits":   siteQuery("/units", perms(tenancy.PermUnitRead)),
+		"tenancy.createUnit": {perms: perms(tenancy.PermUnitManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
-			return jsonReq("PATCH", orgPath(org, "/sites/"+f.Site.String()), `{"name":"Renamed"}`, ifm, `"1"`)
+			return jsonReq("POST", orgPath(org, "/units"), fmt.Sprintf(`{"site_id":%q,"block_id":%q,"door_number":"Z-1","type":"flat"}`, f.Site, f.Block))
 		}},
-		"tenancy.listBlocks":  siteOp("GET", "/blocks", perms(tenancy.PermSiteRead), 200, ""),
-		"tenancy.createBlock": siteOp("POST", "/blocks", perms(tenancy.PermSiteManage), 201, `{"name":"Block X"}`),
-		"tenancy.updateBlock": {perms: perms(tenancy.PermSiteManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"tenancy.getUnit":     get("/units/{id}", perms(tenancy.PermUnitRead), unitID),
+		"tenancy.updateUnit":  send("PATCH", "/units/{id}", perms(tenancy.PermUnitManage), 200, unitID, `{"area_m2":90.5,"payer_overrides":{"aidat":"tenant"}}`, ifm, one),
+		"tenancy.deleteUnit":  send("DELETE", "/units/{id}", perms(tenancy.PermUnitManage), 204, spareUnit, "", ifm, one),
+		"tenancy.setUnitTags": send("PUT", "/units/{id}/tags", perms(tenancy.PermUnitManage), 200, unitID, `{"tags":["lift"]}`, ifm, one),
+		"tenancy.importUnits": {perms: perms(tenancy.PermUnitImport), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
-			return jsonReq("PATCH", orgPath(org, "/blocks/"+f.Block.String()), `{"name":"Renamed block"}`, ifm, `"1"`)
+			return multipartReq(orgPath(org, "/units:import?dry_run=true"), map[string]string{"site_id": f.Site.String()}, "units.csv", "door_number,area_m2\nM-1,80\n")
 		}},
-		"tenancy.listUnits":  siteOp("GET", "/units", perms(tenancy.PermUnitRead), 200, ""),
-		"tenancy.createUnit": siteOp("POST", "/units", perms(tenancy.PermUnitManage), 201, `{"door_number":"Z-1"}`),
-		"tenancy.getUnit": {perms: perms(tenancy.PermUnitRead), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/units/"+w.NewSite(t, org).Unit.String())}
+		"tenancy.listAllocationKeys": siteQuery("/allocation-keys", perms(tenancy.PermUnitRead)),
+		"tenancy.createAllocationKey": {perms: perms(tenancy.PermSiteManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/allocation-keys"), fmt.Sprintf(`{"site_id":%q,"code":"lift_key","name":"Lift","kind":"table"}`, w.NewSite(t, org).Site))
 		}},
-		"tenancy.updateUnit": {perms: perms(tenancy.PermUnitManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("PATCH", orgPath(org, "/units/"+w.NewSite(t, org).Unit.String()), `{"area_m2":90.5,"payer_overrides":{"aidat":"tenant"}}`, ifm, `"1"`)
-		}},
-		"tenancy.setUnitTags": {perms: perms(tenancy.PermUnitManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("PUT", orgPath(org, "/units/"+w.NewSite(t, org).Unit.String()+"/tags"), `{"tags":["lift"]}`, ifm, `"1"`)
-		}},
-		"tenancy.listAllocationKeys":  siteOp("GET", "/allocation-keys", perms(tenancy.PermAllocationRead), 200, ""),
-		"tenancy.createAllocationKey": siteOp("POST", "/allocation-keys", perms(tenancy.PermAllocationManage), 201, `{"code":"lift_key","name":"Lift","kind":"table"}`),
-		"tenancy.getAllocationKey": {perms: perms(tenancy.PermAllocationRead), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/allocation-keys/"+w.NewSite(t, org).Key.String())}
-		}},
-		"tenancy.updateAllocationKey": {perms: perms(tenancy.PermAllocationManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("PATCH", orgPath(org, "/allocation-keys/"+w.NewSite(t, org).Key.String()), `{"name":"Renamed key"}`, ifm, `"1"`)
-		}},
-		"tenancy.setAllocationKeyValues": {perms: perms(tenancy.PermAllocationManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"tenancy.getAllocationKey":        get("/allocation-keys/{id}", perms(tenancy.PermUnitRead), keyID),
+		"tenancy.updateAllocationKey":     send("PATCH", "/allocation-keys/{id}", perms(tenancy.PermSiteManage), 200, keyID, `{"name":"Renamed key"}`, ifm, one),
+		"tenancy.deleteAllocationKey":     send("DELETE", "/allocation-keys/{id}", perms(tenancy.PermSiteManage), 204, customKey, "", ifm, one),
+		"tenancy.listAllocationKeyValues": get("/allocation-keys/{id}/values", perms(tenancy.PermUnitRead), keyID),
+		"tenancy.putAllocationKeyValues": {perms: perms(tenancy.PermSiteManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
-			return jsonReq("PUT", orgPath(org, "/allocation-keys/"+f.Key.String()+"/values"), fmt.Sprintf(`{"values":[{"unit_id":%q,"value":"1/1"}]}`, f.Unit), ifm, `"1"`)
+			return jsonReq("PUT", orgPath(org, "/allocation-keys/"+f.Key.String()+"/values"), fmt.Sprintf(`{"items":[{"unit_id":%q,"value":1,"computed":false}]}`, f.Unit), ifm, one)
 		}},
-		"tenancy.listVehicles": siteOp("GET", "/vehicles", perms(tenancy.PermVehicleRead), 200, ""),
+		"tenancy.listVehicles": siteQuery("/vehicles", perms(tenancy.PermVehicleRead)),
 		"tenancy.createVehicle": {perms: perms(tenancy.PermVehicleManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("POST", orgPath(org, "/units/"+w.NewSite(t, org).Unit.String()+"/vehicles"), `{"plate":"34 abc 123"}`)
+			f := w.NewSite(t, org)
+			return jsonReq("POST", orgPath(org, "/vehicles"), fmt.Sprintf(`{"site_id":%q,"unit_id":%q,"plate":"34 abc 123"}`, f.Site, f.Unit))
 		}},
-		"tenancy.deleteVehicle": {perms: perms(tenancy.PermVehicleManage), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "DELETE", path: orgPath(org, "/vehicles/"+w.NewVehicle(t, w.NewSite(t, org)).String())}
+		"tenancy.getVehicle":    get("/vehicles/{id}", perms(tenancy.PermVehicleRead), vehicleID),
+		"tenancy.updateVehicle": send("PATCH", "/vehicles/{id}", perms(tenancy.PermVehicleManage), 200, vehicleID, `{"description":"red car"}`, ifm, one),
+		"tenancy.deleteVehicle": send("DELETE", "/vehicles/{id}", perms(tenancy.PermVehicleManage), 204, vehicleID, "", ifm, one),
+		"tenancy.exportVehicles": {perms: perms(tenancy.PermVehicleRead), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "GET", path: orgPath(org, "/vehicles:export?site_id="+w.NewSite(t, org).Site.String())}
 		}},
-		"tenancy.exportVehicles":  siteOp("GET", "/vehicles/export", perms(tenancy.PermVehicleRead), 200, ""),
-		"tenancy.exportSite":      siteOp("POST", "/export", perms(tenancy.PermSiteExport), 201, ""),
-		"tenancy.listSiteExports": {perms: perms(tenancy.PermSiteExport), status: 200, build: mget("/v1/orgs/{org_id}/site-exports")},
-		"tenancy.downloadSiteExport": {perms: perms(tenancy.PermSiteExport), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/site-exports/"+w.NewExport(t, w.NewSite(t, org)).String()+"/archive")}
-		}},
-		"tenancy.importSiteArchive": {perms: perms(tenancy.PermSiteImport), status: 201, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
-			return multipartReq(orgPath(org, "/site-imports"), nil, "site.json", minimalArchive(org))
-		}},
+		"tenancy.exportSite": {perms: perms(tenancy.PermSiteExport), status: 202, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+":export"), `{}`)
+		}, override: noReauth},
+		"tenancy.importSite": {perms: perms(tenancy.PermSiteExport), status: 202, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
+			return multipartField(orgPath(org, "/sites:import"), "archive", nil, "site.json", minimalArchive(org))
+		}, override: noReauth},
 		"tenancy.offboardSite": {perms: perms(tenancy.PermSiteOffboard), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("POST", orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+"/offboard"), "")
-		}, override: func(actor, target string) (int, bool) {
-			if actor == "org_admin" && target == "own" {
-				return 403, true // needs a recent re-authentication
-			}
-			return 0, false
-		}},
+			f := w.NewSite(t, org)
+			return jsonReq("POST", orgPath(org, "/sites/"+f.Site.String()+":offboard"), fmt.Sprintf(`{"confirm_site_name":%q}`, f.SiteName))
+		}, override: noReauth},
+		"tenancy.listSiteTransfers":           {perms: perms(tenancy.PermSiteExport), status: 200, build: mget("/v1/orgs/{org_id}/site-transfers")},
+		"tenancy.getSiteTransfer":             get("/site-transfers/{id}", perms(tenancy.PermSiteExport), exportID),
+		"tenancy.downloadSiteTransferArchive": get("/site-transfers/{id}/archive", perms(tenancy.PermSiteExport), exportID),
 
-		"people.listPersons":  {perms: perms(people.PermPersonRead), status: 200, build: mget("/v1/orgs/{org_id}/persons")},
-		"people.createPerson": {perms: perms(people.PermPersonManage), status: 201, build: fixed("POST", "/v1/orgs/{org_id}/persons", `{"display_name":"Ayse Yilmaz","phone":"0532 123 45 67","national_id":"10000000146"}`)},
-		"people.getPerson": {perms: perms(people.PermPersonRead), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/persons/"+w.NewPerson(t, org).String())}
-		}},
-		"people.updatePerson": {perms: perms(people.PermPersonManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("PATCH", orgPath(org, "/persons/"+w.NewPerson(t, org).String()), `{"notes":"hello"}`, ifm, `"1"`)
-		}},
+		// people
+		"people.listPersons": {perms: perms(people.PermPersonRead), status: 200, build: mget("/v1/orgs/{org_id}/persons")},
+		"people.createPerson": {perms: perms(people.PermPersonManage), status: 201,
+			build: fixed("POST", "/v1/orgs/{org_id}/persons", `{"display_name":"Ayse Yilmaz","contact":{"phone":"0532 123 45 67"}}`)},
+		"people.getPerson":       get("/persons/{id}", perms(people.PermPersonRead), personID),
+		"people.updatePerson":    send("PATCH", "/persons/{id}", perms(people.PermPersonManage), 200, personID, `{"notes":"hello"}`, ifm, one),
+		"people.getNationalId":   withOverride(get("/persons/{id}/national-id", perms(people.PermNationalID), personID), noReauthAny),
+		"people.setNationalId":   send("PUT", "/persons/{id}/national-id", perms(people.PermNationalID), 200, personID, `{"country_code":"TR","value":"10000000146"}`),
+		"people.clearNationalId": send("DELETE", "/persons/{id}/national-id", perms(people.PermNationalID), 204, personID, ""),
 		"people.listOccupancies": {perms: perms(people.PermOccupancyRead), status: 200, build: mget("/v1/orgs/{org_id}/occupancies")},
 		"people.createOccupancy": {perms: perms(people.PermOccupancyManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
-			return jsonReq("POST", orgPath(org, "/units/"+f.Unit.String()+"/occupancies"), fmt.Sprintf(`{"person_id":%q,"kind":"owner","share_pct":50}`, w.NewPerson(t, org)))
+			return jsonReq("POST", orgPath(org, "/occupancies"), fmt.Sprintf(`{"person_id":%q,"unit_id":%q,"kind":"owner","share_pct":50,"valid_from":"2026-01-01"}`, w.NewPerson(t, org), f.Unit))
 		}},
-		"people.updateOccupancy": {perms: perms(people.PermOccupancyManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			f := w.NewSite(t, org)
-			o := w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "owner")
-			return jsonReq("PATCH", orgPath(org, "/occupancies/"+o.String()), `{"is_correspondent":true}`, ifm, `"1"`)
-		}},
-		"people.setMoneyAccess": {perms: perms(people.PermMoneyAccessGrant), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			f := w.NewSite(t, org)
-			o := w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "household")
-			return jsonReq("PUT", orgPath(org, "/occupancies/"+o.String()+"/money-access"), `{"may_see_money":true}`, ifm, `"1"`)
-		}},
+		"people.getOccupancy":    get("/occupancies/{id}", perms(people.PermOccupancyRead), occID("owner")),
+		"people.updateOccupancy": send("PATCH", "/occupancies/{id}", perms(people.PermOccupancyManage), 200, occID("owner"), `{"is_correspondent":true}`, ifm, one),
+		"people.deleteOccupancy": send("DELETE", "/occupancies/{id}", perms(people.PermOccupancyManage), 204, occID("owner"), "", ifm, one),
+		"people.setMoneyAccess":  send("PUT", "/occupancies/{id}/money-access", perms(people.PermMoneyAccessGrant), 200, occID("household"), `{"may_see_money":true}`),
 		"people.moveOut": {perms: perms(people.PermMoveOutManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			o := w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "owner")
-			return jsonReq("POST", orgPath(org, "/occupancies/"+o.String()+"/move-out"), `{"as_of":"2026-06-01"}`)
+			return jsonReq("POST", orgPath(org, "/occupancies/"+o.String()+"/move-out"), `{"as_of":"2026-06-01"}`, idem()...)
 		}},
-		"people.getMoveOut": {perms: perms(people.PermMoveOutRead), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/move-outs/"+w.NewMoveOut(t, w.NewSite(t, org)).String())}
-		}},
+		"people.listMoveOuts": {perms: perms(people.PermMoveOutManage), status: 200, build: mget("/v1/orgs/{org_id}/move-outs")},
+		"people.getMoveOut": get("/move-outs/{id}", perms(people.PermMoveOutManage), func(w *authztest.World, org authztest.Org, t *testing.T) string {
+			return w.NewMoveOut(t, w.NewSite(t, org)).String()
+		}),
 		"people.listMemberships": {perms: perms(people.PermMembershipRead), status: 200, build: mget("/v1/orgs/{org_id}/memberships")},
 		"people.createMembership": {perms: perms(people.PermMembershipManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("POST", orgPath(org, "/memberships"), fmt.Sprintf(`{"person_id":%q,"role":"accountant"}`, w.NewPerson(t, org)))
+			return jsonReq("POST", orgPath(org, "/memberships"), fmt.Sprintf(`{"person_id":%q,"role":"accountant","scope_type":"org","valid_from":"2026-01-01"}`, w.NewPerson(t, org)))
 		}},
-		"people.endMembership": {perms: perms(people.PermMembershipManage), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			m := w.NewMembership(t, org, w.NewPerson(t, org), "staff")
-			return mreq{method: "DELETE", path: orgPath(org, "/memberships/"+m.String())}
-		}},
-		"people.listInvitations": {perms: perms(people.PermInvitationManage), status: 200, build: mget("/v1/orgs/{org_id}/invitations")},
+		"people.getMembership":    get("/memberships/{id}", perms(people.PermMembershipRead), membershipID),
+		"people.deleteMembership": send("DELETE", "/memberships/{id}", perms(people.PermMembershipManage), 204, membershipID, "", ifm, one),
+		"people.listInvitations":  {perms: perms(people.PermInvitationManage), status: 200, build: mget("/v1/orgs/{org_id}/invitations")},
 		"people.createInvitation": {perms: perms(people.PermInvitationManage), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
-			return jsonReq("POST", orgPath(org, "/invitations"), fmt.Sprintf(`{"site_id":%q,"unit_id":%q,"display_name":"Mehmet","phone":"05321112233","occupancy_kind":"owner","channel":"link"}`, f.Site, f.Unit))
+			return jsonReq("POST", orgPath(org, "/invitations"), fmt.Sprintf(`{"site_id":%q,"person_id":%q,"channel":"sms"}`, f.Site, w.NewPerson(t, org)))
 		}},
-		"people.revokeInvitation": {perms: perms(people.PermInvitationManage), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			_, h := tokenFor(org)
-			return mreq{method: "DELETE", path: orgPath(org, "/invitations/"+w.NewInvitation(t, w.NewSite(t, org), "manager", h).String())}
-		}},
+		"people.getInvitation":    get("/invitations/{id}", perms(people.PermInvitationManage), invitationID("manager")),
+		"people.revokeInvitation": send("DELETE", "/invitations/{id}", perms(people.PermInvitationManage), 204, invitationID("manager"), ""),
 		"people.resendInvitation": {perms: perms(people.PermInvitationManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			_, h := tokenFor(org)
-			return jsonReq("POST", orgPath(org, "/invitations/"+w.NewInvitation(t, w.NewSite(t, org), "manager", h).String()+"/resend"), "")
-		}},
-		"people.listHouseholdInvitations": {perms: perms(people.PermInvitationHouse), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/units/"+w.NewSite(t, org).Unit.String()+"/household-invitations")}
+			return jsonReq("POST", orgPath(org, "/invitations/"+invitationID("manager")(w, org, t)+":resend"), "")
 		}},
 		"people.createHouseholdInvitation": {perms: perms(people.PermInvitationHouse), status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("POST", orgPath(org, "/units/"+w.NewSite(t, org).Unit.String()+"/household-invitations"), `{"display_name":"Zeynep","phone":"05329998877","channel":"link"}`)
+			return jsonReq("POST", orgPath(org, "/units/"+w.NewSite(t, org).Unit.String()+"/household-invitations"), `{"display_name":"Zeynep","channel":"sms","destination":"05329998877"}`)
 		}},
-		"people.revokeHouseholdInvitation": {perms: perms(people.PermInvitationHouse), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			f := w.NewSite(t, org)
-			_, h := tokenFor(org)
-			i := w.NewInvitation(t, f, "household", h)
-			return mreq{method: "DELETE", path: orgPath(org, "/units/"+f.Unit.String()+"/household-invitations/"+i.String())}
-		}},
-		"people.endHouseholdOccupancy": {perms: perms(people.PermInvitationHouse), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			f := w.NewSite(t, org)
-			o := w.NewOccupancy(t, f, f.Unit, w.NewPerson(t, org), "household")
-			return mreq{method: "DELETE", path: orgPath(org, "/units/"+f.Unit.String()+"/household/"+o.String())}
-		}},
-		"people.getJoinCode": {perms: perms(people.PermInvitationManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"me.listHouseholdMembers":     {perms: perms(people.PermInvitationHouse), status: 200, build: mget("/v1/orgs/{org_id}/me/household-members")},
+		"me.listHouseholdInvitations": {perms: perms(people.PermInvitationHouse), status: 200, build: mget("/v1/orgs/{org_id}/me/household-invitations")},
+		"me.revokeHouseholdInvitation": {perms: perms(people.PermInvitationHouse), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "DELETE", path: orgPath(org, "/me/household-invitations/"+invitationID("household")(w, org, t))}
+		}, override: notTheirUnit},
+		"me.endHouseholdOccupancy": {perms: perms(people.PermHouseholdEnd), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return mreq{method: "DELETE", path: orgPath(org, "/me/household-occupancies/"+occID("household")(w, org, t))}
+		}, override: notTheirUnit},
+		"people.getJoinCode": {perms: perms(people.PermClaimManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			code, _ := tokenFor(org)
 			w.NewJoinCode(t, f, code)
 			return mreq{method: "GET", path: orgPath(org, "/sites/"+f.Site.String()+"/join-code")}
 		}},
-		"people.rotateJoinCode": siteOp("POST", "/join-code", perms(people.PermInvitationManage), 201, ""),
-		"people.listClaims":     {perms: perms(people.PermClaimManage), status: 200, build: mget("/v1/orgs/{org_id}/unit-claims")},
-		"people.approveClaim": {perms: perms(people.PermClaimManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			c := w.NewClaim(t, w.NewSite(t, org), w.Actor("no_membership").UserID)
-			return jsonReq("POST", orgPath(org, "/unit-claims/"+c.String()+"/approve"), `{}`)
+		"people.setJoinCodeEnabled": send("PUT", "/sites/{id}/join-code", perms(people.PermClaimManage), 200, siteID, `{"enabled":true}`),
+		"people.rotateJoinCode": {perms: perms(people.PermClaimManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+"/join-code:rotate"), "")
 		}},
-		"people.rejectClaim": {perms: perms(people.PermClaimManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			c := w.NewClaim(t, w.NewSite(t, org), w.Actor("no_membership").UserID)
-			return jsonReq("POST", orgPath(org, "/unit-claims/"+c.String()+"/reject"), `{"note":"no"}`)
+		"people.listUnitClaims": {perms: perms(people.PermClaimManage), status: 200, build: mget("/v1/orgs/{org_id}/unit-claims")},
+		"people.getUnitClaim":   get("/unit-claims/{id}", perms(people.PermClaimManage), claimID),
+		"people.approveUnitClaim": {perms: perms(people.PermClaimManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/unit-claims/"+claimID(w, org, t)+":approve"), `{}`)
 		}},
-		"people.listDirectory":       siteOp("GET", "/directory", perms(people.PermDirectoryRead), 200, ""),
-		"people.setDirectoryConsent": siteOp("PUT", "/directory-consent", perms(people.PermDirectoryConsent), 200, `{"share_name":true,"share_phone":false}`),
-		"people.listVendors":         {perms: perms(people.PermVendorRead), status: 200, build: mget("/v1/orgs/{org_id}/vendors")},
-		"people.createVendor":        {perms: perms(people.PermVendorManage), status: 201, build: fixed("POST", "/v1/orgs/{org_id}/vendors", `{"name":"Lift Co"}`)},
-		"people.getVendor": {perms: perms(people.PermVendorRead), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "GET", path: orgPath(org, "/vendors/"+w.NewVendor(t, w.NewSite(t, org)).String())}
+		"people.rejectUnitClaim": {perms: perms(people.PermClaimManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("POST", orgPath(org, "/unit-claims/"+claimID(w, org, t)+":reject"), `{"reason":"no"}`)
 		}},
-		"people.updateVendor": {perms: perms(people.PermVendorManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return jsonReq("PATCH", orgPath(org, "/vendors/"+w.NewVendor(t, w.NewSite(t, org)).String()), `{"name":"Renamed"}`, ifm, `"1"`)
+		"people.listDirectory": siteQuery("/directory", perms(people.PermDirectoryRead)),
+		"people.listVendors":   {perms: perms(people.PermVendorRead), status: 200, build: mget("/v1/orgs/{org_id}/vendors")},
+		"people.createVendor":  {perms: perms(people.PermVendorManage), status: 201, build: fixed("POST", "/v1/orgs/{org_id}/vendors", `{"name":"Lift Co"}`)},
+		"people.getVendor":     get("/vendors/{id}", perms(people.PermVendorRead), vendorID),
+		"people.updateVendor":  send("PATCH", "/vendors/{id}", perms(people.PermVendorManage), 200, vendorID, `{"name":"Renamed"}`, ifm, one),
+		"people.deleteVendor":  send("DELETE", "/vendors/{id}", perms(people.PermVendorManage), 204, vendorID, ""),
+		"people.listRoles":     {perms: perms(people.PermRolesRead), status: 200, build: mget("/v1/orgs/{org_id}/roles")},
+
+		// the caller's own person and units
+		"people.getMyPerson": {perms: perms(people.PermMeManage), status: 200, build: mget("/v1/orgs/{org_id}/me/person")},
+		"people.updateMyPerson": {perms: perms(people.PermMeManage), status: 200, build: func(_ *authztest.World, org authztest.Org, _ *testing.T) mreq {
+			return jsonReq("PATCH", orgPath(org, "/me/person"), `{"display_name":"Me"}`, ifm, one)
 		}},
-		"people.deleteVendor": {perms: perms(people.PermVendorManage), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			return mreq{method: "DELETE", path: orgPath(org, "/vendors/"+w.NewVendor(t, w.NewSite(t, org)).String())}
+		"people.listMyOccupancies": {perms: perms(people.PermMeManage), status: 200, build: mget("/v1/orgs/{org_id}/me/occupancies")},
+		"people.setMyDirectoryConsent": {perms: perms(people.PermMeManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+			return jsonReq("PUT", orgPath(org, "/me/directory-consent"), fmt.Sprintf(`{"site_id":%q,"consent":true,"show_phone":false}`, w.NewSite(t, org).Site))
 		}},
 	}
-	rows["tenancy.importUnits"] = mrow{perms: perms(tenancy.PermImportRun), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-		f := w.NewSite(t, org)
-		return multipartReq(orgPath(org, "/sites/"+f.Site.String()+"/import"), map[string]string{"dry_run": "true"}, "units.csv", "door_number,area_m2\nM-1,80\n")
-	}}
 	for k, v := range rows {
 		authzMatrixRows[k] = v
 	}

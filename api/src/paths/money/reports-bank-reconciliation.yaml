@@ -1,0 +1,69 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.getBankReconciliationReport
+  summary: Bank reconciliation
+  description: |-
+    **Release 0.1.** Statement balance against the ledger. JSON by default; `format=csv|xlsx|pdf` downloads it.
+
+    Permission: `reports.read`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - reports.read
+    site_manager:
+      - reports.read
+    board_member:
+      - reports.read
+    auditor:
+      - reports.read
+    accountant:
+      - reports.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: account_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `account_id`.
+      required: true
+    - name: as_of
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Evaluate as of this date (default today).
+    - $ref: ../../components/draft-common.yaml#/parameters/Format
+  responses:
+    "200":
+      description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/money.yaml#/schemas/BankReconciliationReport
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

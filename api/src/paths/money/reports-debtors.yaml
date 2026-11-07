@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
 get:
   operationId: money.getDebtorReport
   summary: Debtor list (borclu listesi)
@@ -12,10 +12,20 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [reports.debtors]
+  x-openbekci-roles:
+    org_admin:
+      - reports.debtors
+    site_manager:
+      - reports.debtors
+    board_member:
+      - reports.debtors
+    auditor:
+      - reports.debtors
+    accountant:
+      - reports.debtors
   x-stability: stable
   parameters:
-    - $ref: ../../components/money-params.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
     - name: as_of
       in: query
       schema:

@@ -274,7 +274,7 @@ func (s *apiServer) openingList(ctx context.Context, orgID, siteID uuid.UUID, it
 	}
 	cur := money.Code("TRY")
 	if len(items) > 0 {
-		if c, err := s.siteCurrency(ctx, orgID, siteID); err == nil {
+		if c, err := s.moneySiteCurrency(ctx, orgID, siteID); err == nil {
 			cur = c
 		}
 	}
@@ -286,7 +286,7 @@ func (s *apiServer) openingList(ctx context.Context, orgID, siteID uuid.UUID, it
 	return rows, nil
 }
 
-func (s *apiServer) siteCurrency(ctx context.Context, orgID, siteID uuid.UUID) (money.Code, error) {
+func (s *apiServer) moneySiteCurrency(ctx context.Context, orgID, siteID uuid.UUID) (money.Code, error) {
 	t, err := s.tn()
 	if err != nil {
 		return "", err
@@ -353,7 +353,7 @@ func (s *apiServer) lateFeePolicyOut(ctx context.Context, orgID, siteID uuid.UUI
 	if err != nil {
 		return gen.LateFeePolicy{}, err
 	}
-	cur, err := s.siteCurrency(ctx, orgID, siteID)
+	cur, err := s.moneySiteCurrency(ctx, orgID, siteID)
 	if err != nil {
 		return gen.LateFeePolicy{}, err
 	}
@@ -434,7 +434,7 @@ func (s *apiServer) MoneyGetDebtorReport(ctx context.Context, req gen.MoneyGetDe
 	if f := req.Params.Format; f != nil && *f != gen.MoneyGetDebtorReportParamsFormatJson {
 		return nil, problem.Validation(problem.Field{Field: "format", Code: "unsupported"})
 	}
-	cur, err := s.siteCurrency(ctx, req.OrgId, site)
+	cur, err := s.moneySiteCurrency(ctx, req.OrgId, site)
 	if err != nil {
 		return nil, err
 	}
@@ -524,4 +524,24 @@ func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetU
 	out, err := conv[gen.Statement](map[string]any{"debtor": map[string]any{"unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, "from": from, "to": to, "opening_balance": st.Opening.Total,
 		"closing_balance": st.Closing.Total, "accrued_late_fee": st.AccruedFee, "credit": st.Credit, "total_due": st.Closing.Total, "lines": lines})
 	return gen.MoneyGetUnitStatement200JSONResponse(out), err
+}
+
+func (s *apiServer) MoneyCreateCharge(ctx context.Context, req gen.MoneyCreateChargeRequestObject) (gen.MoneyCreateChargeResponseObject, error) {
+	b, err := s.bl()
+	if err != nil {
+		return nil, err
+	}
+	if req.Body == nil {
+		return nil, hasBody(true)
+	}
+	in, err := conv[billing.ChargeInput](req.Body)
+	if err != nil {
+		return nil, err
+	}
+	v, err := b.CreateCharge(ctx, req.OrgId, in)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.Charge](v)
+	return gen.MoneyCreateCharge201JSONResponse(out), err
 }

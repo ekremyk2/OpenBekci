@@ -1,5 +1,5 @@
 parameters:
-  - $ref: ../../components/common.yaml#/parameters/OrgId
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
   - name: site_id
     in: path
     required: true
@@ -19,7 +19,17 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [money.read]
+  x-openbekci-roles:
+    org_admin:
+      - money.read
+    site_manager:
+      - money.read
+    board_member:
+      - money.read
+    auditor:
+      - money.read
+    accountant:
+      - money.read
   x-stability: stable
   responses:
     "200":
@@ -54,7 +64,13 @@ put:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles: [money.lock]
+  x-openbekci-roles:
+    org_admin:
+      - money.lock
+    site_manager:
+      - money.lock
+    accountant:
+      - money.lock
   x-idempotent: optional
   x-stability: stable
   requestBody:
@@ -83,4 +99,4 @@ put:
     default:
       $ref: ../../components/problem.yaml#/responses/Problem
   parameters:
-    - $ref: ../../components/money-params.yaml#/parameters/IfMatch
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
