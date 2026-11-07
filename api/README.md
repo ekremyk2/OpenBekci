@@ -88,7 +88,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |
-| `x-openbekci-stream` | operation | `true` | the operation streams its request body (multipart upload) or a binary response (download): the request body is not buffered for validation, an `x-idempotent` hash uses the declared `Content-Length` instead of the body, and a non-JSON response is not decoded by the response validator. Today: `files.upload` and `files.download` |
+| `x-openbekci-stream` | operation | `true` | the operation streams its request body (multipart upload) or a binary response (download): the request body is not buffered for validation, an `x-idempotent` request hash covers method, path and query only and the handler records a digest of what it streamed, which a retry must match, and a non-JSON response is not decoded by the response validator. Today: `operations.uploadFile` and `operations.downloadFile` |
 | `x-open-enum` | schema | `true` | marks an open enum (see above) |
 | `x-known-values` | schema | list | documents the known values of an open string without an `enum` |
 

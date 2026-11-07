@@ -174,6 +174,7 @@ type File struct {
 	RetentionUntil pgtype.Timestamptz
 	Variants       []byte
 	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
 	DeletedAt      pgtype.Timestamptz
 	PurgedAt       pgtype.Timestamptz
 }
@@ -208,6 +209,7 @@ type IdempotencyKey struct {
 	ExpiresAt           pgtype.Timestamptz
 	Owner               pgtype.UUID
 	ResponseHeaders     []byte
+	ContentDigest       pgtype.Text
 }
 
 type ImportBatch struct {

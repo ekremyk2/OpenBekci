@@ -45,7 +45,7 @@ schemas:
         format: date-time
   File:
     type: object
-    required: [id, org_id, site_id, name, size, mime, sha256, status, source, uploaded_by, scope_type, scope_id, retention_until, variants, links, created_at]
+    required: [id, org_id, site_id, name, size, mime, sha256, status, source, uploaded_by, scope, has_variants, retention_until, variants, links, created_at, updated_at]
     properties:
       id:
         type: string
@@ -86,15 +86,14 @@ schemas:
         type: string
         format: uuid
         nullable: true
-        description: The user who uploaded it; null for generated files.
-      scope_type:
+        description: The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+      scope:
         type: string
         nullable: true
-        description: The kind of resource the file is attached to (`ticket`, `document`, ...); null for a draft.
-      scope_id:
-        type: string
-        format: uuid
-        nullable: true
+        description: The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft.
+      has_variants:
+        type: boolean
+        description: 'Images: `thumb` and `medium` exist.'
       retention_until:
         type: string
         format: date-time
@@ -108,6 +107,9 @@ schemas:
       links:
         $ref: '#/schemas/FileLinks'
       created_at:
+        type: string
+        format: date-time
+      updated_at:
         type: string
         format: date-time
   FileList:
@@ -126,16 +128,16 @@ schemas:
     type: object
     description: |
       The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
-      it arrives, and fields after it are ignored. Request-body validation is skipped for this operation
+      it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+      `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
       (the body is not buffered); the server checks the fields itself.
     required: [file]
     properties:
-      scope_type:
+      scope:
         type: string
-        description: Attach the file to a resource of this kind (the owning module registers the kind). Needs `scope_id`.
-      scope_id:
-        type: string
-        format: uuid
+        description: |
+          Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+          (`ticket`) and the id a UUID. Without it the file is a draft.
       site_id:
         type: string
         format: uuid

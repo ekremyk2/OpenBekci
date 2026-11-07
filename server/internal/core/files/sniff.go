@@ -104,15 +104,23 @@ func isImageMIME(m string) bool {
 	return false
 }
 
+// isBidiControl reports the invisible characters that reorder text when it is
+// displayed (U+200E, U+200F, U+061C, U+202A..U+202E, U+2066..U+2069): "evil" + RLO + "fdp.txt"
+// would show as "eviltxt.pdf". They have no place in a file name.
+func isBidiControl(r rune) bool {
+	return r == 0x200E || r == 0x200F || r == 0x061C || (r >= 0x202A && r <= 0x202E) || (r >= 0x2066 && r <= 0x2069)
+}
+
 // cleanName turns a client-supplied file name into something safe to store
-// and echo back in a header: no directories, no control characters, bounded.
+// and echo back in a header: no directories, no control or bidi override
+// characters, bounded.
 func cleanName(s string) string {
 	s = strings.ReplaceAll(s, "\\", "/")
 	if i := strings.LastIndex(s, "/"); i >= 0 {
 		s = s[i+1:]
 	}
 	s = strings.Map(func(r rune) rune {
-		if unicode.IsControl(r) || r == '"' || r == 0x7f {
+		if unicode.IsControl(r) || r == '"' || r == 0x7f || isBidiControl(r) {
 			return -1
 		}
 		return r

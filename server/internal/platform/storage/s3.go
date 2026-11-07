@@ -181,6 +181,9 @@ func (s *S3) Stat(ctx context.Context, key string) (Info, error) {
 	return Info{Size: aws.ToInt64(out.ContentLength), ContentType: aws.ToString(out.ContentType)}, nil
 }
 
+// DirectDownloads implements DirectDownloader: the presigned URLs are the bucket's own.
+func (s *S3) DirectDownloads() bool { return true }
+
 // SignedURL implements Blob: a presigned GET.
 func (s *S3) SignedURL(ctx context.Context, key string, ttl time.Duration, opts ...SignOption) (string, error) {
 	k, err := s.key(key)

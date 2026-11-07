@@ -51,8 +51,18 @@ func gate(ctx context.Context, perm authz.Permission, orgID uuid.UUID) (orgWide 
 	return false, nil, problem.Forbidden("you do not have the " + string(perm) + " permission here")
 }
 
-func (s *Service) holds(ctx context.Context, perm authz.Permission, f File) bool {
-	return authz.Has(ctx, perm, authz.Scope{OrgID: f.OrgID, SiteID: f.SiteID})
+// holds reports whether the caller has perm for f: at the file's site when it
+// has one (the scope is derived from the stored site, never built by hand),
+// otherwise in the organization. Where the site cannot be resolved (sites do
+// not exist in every build) only an organization-wide grant counts.
+func (s *Service) holds(ctx context.Context, tx pgx.Tx, perm authz.Permission, f File) bool {
+	scope := authz.Scope{OrgID: f.OrgID}
+	if f.SiteID != nil {
+		if sc, err := authz.ScopeOfSite(ctx, tx, *f.SiteID); err == nil {
+			scope = sc
+		}
+	}
+	return authz.Has(ctx, perm, scope)
 }
 
 func (s *Service) isUploader(ctx context.Context, f File) bool {
@@ -60,18 +70,30 @@ func (s *Service) isUploader(ctx context.Context, f File) bool {
 	return pr != nil && f.UploadedBy != nil && *f.UploadedBy == pr.UserID
 }
 
+// CanSeeUploader reports whether the caller may be told who uploaded f: the
+// uploader and holders of files.manage.
+func (s *Service) CanSeeUploader(ctx context.Context, f File) bool {
+	return s.isUploader(ctx, f) || authz.Has(ctx, PermManage, authz.Scope{OrgID: f.OrgID})
+}
+
 // canRead decides whether the caller may see f: files.read is the gate; then
-// an administrator (files.manage) or the uploader may, and anyone else needs
-// the attached resource's visibility resolver to say yes. Only ready files
-// are visible to the last group.
+// an administrator (files.manage) always may. A draft (not attached to a
+// resource) is visible to its uploader. Once a file is attached, whoever
+// uploaded it is treated like anyone else: the attached resource's visibility
+// resolver decides, so a file that moved to a resource the uploader may no
+// longer read is hidden from them too. Only ready files are visible to
+// non-administrators.
 func (s *Service) canRead(ctx context.Context, tx pgx.Tx, f File) (bool, error) {
-	if f.Status == StatusPending || f.Status == StatusDeleted || !s.holds(ctx, PermRead, f) {
+	if f.Status == StatusPending || f.Status == StatusDeleted || !s.holds(ctx, tx, PermRead, f) {
 		return false, nil
 	}
-	if s.holds(ctx, PermManage, f) || s.isUploader(ctx, f) {
+	if s.holds(ctx, tx, PermManage, f) {
 		return true, nil
 	}
-	if f.Status != StatusReady || f.Scope == nil {
+	if f.Scope == nil {
+		return s.isUploader(ctx, f), nil
+	}
+	if f.Status != StatusReady {
 		return false, nil
 	}
 	e, ok := s.scope(f.Scope.Type)
@@ -82,7 +104,17 @@ func (s *Service) canRead(ctx context.Context, tx pgx.Tx, f File) (bool, error) 
 }
 
 func (s *Service) load(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID) (File, error) {
-	f, err := scanFile(tx.QueryRow(ctx, `SELECT `+fileColumns+` FROM file WHERE org_id = $1 AND id = $2`, orgID, fileID))
+	return s.loadRow(ctx, tx, orgID, fileID, "")
+}
+
+// loadForUpdate is load with the row locked until the transaction ends, for
+// the calls that change a file after deciding on what they read.
+func (s *Service) loadForUpdate(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID) (File, error) {
+	return s.loadRow(ctx, tx, orgID, fileID, " FOR UPDATE")
+}
+
+func (s *Service) loadRow(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID, lock string) (File, error) {
+	f, err := scanFile(tx.QueryRow(ctx, `SELECT `+fileColumns+` FROM file WHERE org_id = $1 AND id = $2`+lock, orgID, fileID))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return File{}, errNoFile
 	}
@@ -120,7 +152,7 @@ type ListParams struct {
 	// Scope lists the files attached to a resource; the caller needs read
 	// access to it (administrators always have it). Without a scope an
 	// administrator lists every file of the organization and anyone else the
-	// files they uploaded.
+	// drafts they uploaded (a file that is attached is visible through its resource).
 	Scope  *ScopeRef
 	Cursor string
 	Limit  int
@@ -166,7 +198,7 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, p ListParams) ([]Fi
 		atBound, idBound = &t, &c.ID
 	}
 	if p.Scope != nil && !scopeTypeRE.MatchString(p.Scope.Type) {
-		return nil, "", problem.Validation(problem.Field{Field: "scope_type", Code: "invalid_format"})
+		return nil, "", problem.Validation(problem.Field{Field: "scope", Code: "invalid_format"})
 	}
 	manager := authz.Has(ctx, PermManage, authz.Scope{OrgID: orgID})
 	me := authz.PrincipalFromContext(ctx).UserID
@@ -202,7 +234,7 @@ func (s *Service) List(ctx context.Context, orgID uuid.UUID, p ListParams) ([]Fi
 			WHERE org_id = $1 AND status NOT IN ('deleted', 'pending')
 			  AND ($2::text IS NULL OR scope_type = $2)
 			  AND ($3::uuid IS NULL OR scope_id = $3)
-			  AND ($4::uuid IS NULL OR uploaded_by = $4)
+			  AND ($4::uuid IS NULL OR (uploaded_by = $4 AND scope_id IS NULL))
 			  AND ($5::boolean OR status = 'ready')
 			  AND ($6::uuid[] IS NULL OR site_id = ANY ($6))
 			  AND ($7::timestamptz IS NULL OR (created_at, id) < ($7, $8::uuid))
@@ -247,6 +279,9 @@ type Download struct {
 	// offered as an attachment.
 	Inline bool
 	Body   io.ReadCloser
+	// RedirectURL is set instead of Body when the store serves the download
+	// itself (S3): answer 302 to it.
+	RedirectURL string
 }
 
 // ContentDisposition is the Content-Disposition header value: inline for
@@ -329,6 +364,16 @@ func (s *Service) open(ctx context.Context, f File, variant string) (*Download, 
 		}
 		key, d.Mime, d.Size = variantKey(f.Key, variant), v.Mime, v.Size
 	}
+	if storage.DirectDownloads(s.blob) {
+		// S3: the caller is authorized, so hand out a short-lived URL on the bucket.
+		u, err := s.blob.SignedURL(ctx, key, s.cfg.LinkTTL,
+			storage.WithDisposition(disposition(d.Inline, f.Name)), storage.WithContentType(d.Mime))
+		if err == nil {
+			d.RedirectURL = u
+			return d, nil
+		}
+		s.cfg.Log.WarnContext(ctx, "cannot sign a download url; streaming instead", "file_id", f.ID, "error", err)
+	}
 	rc, err := s.blob.Get(ctx, key)
 	if errors.Is(err, storage.ErrNotFound) {
 		s.cfg.Log.ErrorContext(ctx, "file blob is missing from storage", "file_id", f.ID, "org_id", f.OrgID, "key", key)
@@ -375,25 +420,42 @@ func (s *Service) Links(ctx context.Context, f File) Links {
 }
 
 // Delete marks a file deleted; its blobs are removed by maintenance.prune_files.
-// It needs files.manage (at the file's site, if it has one).
+//
+// Who may: a holder of files.manage (at the file's site, if it has one) may
+// delete any file. The uploader of a draft (a file not attached to a resource)
+// may discard it with files.upload; the uploader of an attached file gets 409
+// conflict, as it belongs to the resource now and the owning module detaches
+// it. Someone who may read the file but is neither gets 403, and someone who
+// may not read it 404.
 func (s *Service) Delete(ctx context.Context, orgID, fileID uuid.UUID) error {
-	if _, _, err := gate(ctx, PermManage, orgID); err != nil {
+	if _, _, err := gate(ctx, PermUpload, orgID); err != nil {
 		return err
 	}
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		f, err := s.load(ctx, tx, orgID, fileID)
+		f, err := s.loadForUpdate(ctx, tx, orgID, fileID)
 		if err != nil {
 			return err
 		}
-		if f.Status == StatusDeleted {
+		if f.Status == StatusDeleted || f.Status == StatusPending {
 			return errNoFile
 		}
-		if !s.holds(ctx, PermManage, f) {
-			return problem.Forbidden("you do not have the " + string(PermManage) + " permission here")
+		if !s.holds(ctx, tx, PermManage, f) {
+			ok, err := s.canRead(ctx, tx, f)
+			if err != nil {
+				return err
+			}
+			switch {
+			case !ok:
+				return errNoFile
+			case !s.isUploader(ctx, f) || !s.holds(ctx, tx, PermUpload, f):
+				return problem.Forbidden("you may not delete this file")
+			case f.Scope != nil:
+				return problem.Conflict("the file is attached to a resource; only an administrator or the resource's module can remove it")
+			}
 		}
 		before := f.auditView()
 		f.Status = StatusDeleted
-		if _, err := tx.Exec(ctx, `UPDATE file SET status = 'deleted', deleted_at = $2 WHERE id = $1`, f.ID, s.now()); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE file SET status = 'deleted', deleted_at = $2, updated_at = $2 WHERE id = $1`, f.ID, s.now()); err != nil {
 			return err
 		}
 		return s.record(ctx, tx, "files.delete", f, before, f.auditView())
@@ -408,7 +470,8 @@ func (s *Service) Delete(ctx context.Context, orgID, fileID uuid.UUID) error {
 // tenant transaction for orgID, so the attachment commits or rolls back with
 // the resource, for example a ticket and its photos). The module that owns the
 // resource has already authorized the caller; Attach checks the file: it must
-// be ready and unattached, and uploaded by the caller (or the caller must
+// be ready (a file the virus scanner flagged is 409 conflict and keeps its
+// expiry) and unattached, and uploaded by the caller (or the caller must
 // hold files.manage). Attaching clears a draft's expiry. The scope type needs
 // no registered resolver here, but readers cannot see the file through
 // visibility until one is registered. Beyond a scope type's WithMaxFiles limit
@@ -417,18 +480,23 @@ func (s *Service) Attach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID
 	if !scopeTypeRE.MatchString(ref.Type) || ref.ID == uuid.Nil {
 		return File{}, problem.Validation(problem.Field{Field: "scope", Code: "invalid_value"})
 	}
-	f, err := s.load(ctx, tx, orgID, fileID)
+	// The row is locked from here: the maintenance job cannot expire a draft
+	// between this read and the update below.
+	f, err := s.loadForUpdate(ctx, tx, orgID, fileID)
 	if err != nil {
 		return File{}, internalOr(err, "attach file")
 	}
 	if f.Status != StatusReady && f.Status != StatusQuarantined {
 		return File{}, errNoFile
 	}
-	if pr := authz.PrincipalFromContext(ctx); pr != nil && !s.isUploader(ctx, f) && !s.holds(ctx, PermManage, f) {
+	if pr := authz.PrincipalFromContext(ctx); pr != nil && !s.isUploader(ctx, f) && !s.holds(ctx, tx, PermManage, f) {
 		return File{}, errNoFile // somebody else's file: do not reveal it exists
 	}
 	if f.Scope != nil {
 		return File{}, problem.Conflict("the file is already attached to a resource")
+	}
+	if f.Status == StatusQuarantined {
+		return File{}, problem.Conflict("the virus scanner flagged this file; it cannot be attached to a resource")
 	}
 	if e, ok := s.scope(ref.Type); ok {
 		if err := s.checkMax(ctx, tx, orgID, ref, e.maxFiles); err != nil {
@@ -437,8 +505,14 @@ func (s *Service) Attach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID
 	}
 	before := f.auditView()
 	f.Scope, f.RetentionUntil = &ref, nil
-	if _, err := tx.Exec(ctx, `UPDATE file SET scope_type = $2, scope_id = $3, retention_until = NULL WHERE id = $1`, f.ID, ref.Type, ref.ID); err != nil {
+	tag, err := tx.Exec(ctx, `
+		UPDATE file SET scope_type = $2, scope_id = $3, retention_until = NULL, updated_at = $4
+		WHERE id = $1 AND status = 'ready' AND scope_type IS NULL`, f.ID, ref.Type, ref.ID, s.now())
+	if err != nil {
 		return File{}, internalOr(err, "attach file")
+	}
+	if tag.RowsAffected() != 1 {
+		return File{}, problem.Conflict("the file changed while it was being attached")
 	}
 	if err := s.record(ctx, tx, "files.attach", f, before, f.auditView()); err != nil {
 		return File{}, internalOr(err, "attach file")
@@ -451,7 +525,7 @@ func (s *Service) Attach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID
 // elsewhere; delete it with Delete (or let it expire) to get rid of it. The
 // caller (a module) has authorized the change to the resource.
 func (s *Service) Detach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID) error {
-	f, err := s.load(ctx, tx, orgID, fileID)
+	f, err := s.loadForUpdate(ctx, tx, orgID, fileID)
 	if err != nil {
 		return internalOr(err, "detach file")
 	}
@@ -461,7 +535,7 @@ func (s *Service) Detach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID
 	before := f.auditView()
 	f.Scope = nil
 	until := s.now().Add(s.cfg.UnattachedTTL)
-	if _, err := tx.Exec(ctx, `UPDATE file SET scope_type = NULL, scope_id = NULL, retention_until = $2 WHERE id = $1`, f.ID, until); err != nil {
+	if _, err := tx.Exec(ctx, `UPDATE file SET scope_type = NULL, scope_id = NULL, retention_until = $2, updated_at = $3 WHERE id = $1`, f.ID, until, s.now()); err != nil {
 		return internalOr(err, "detach file")
 	}
 	if err := s.record(ctx, tx, "files.detach", f, before, f.auditView()); err != nil {

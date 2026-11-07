@@ -72,15 +72,16 @@ func (fe *filesEnv) upload(t *testing.T, actor, filename string, content []byte,
 }
 
 func decodeFile(t *testing.T, rec *httptest.ResponseRecorder) (f struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Size      int64     `json:"size"`
-	Mime      string    `json:"mime"`
-	Sha256    string    `json:"sha256"`
-	Status    string    `json:"status"`
-	Source    string    `json:"source"`
-	ScopeType *string   `json:"scope_type"`
-	Variants  map[string]struct {
+	ID         uuid.UUID `json:"id"`
+	Name       string    `json:"name"`
+	Size       int64     `json:"size"`
+	Mime       string    `json:"mime"`
+	Sha256     string    `json:"sha256"`
+	Status     string    `json:"status"`
+	Source     string    `json:"source"`
+	Scope      *string   `json:"scope"`
+	UploadedBy *string   `json:"uploaded_by"`
+	Variants   map[string]struct {
 		Width, Height int
 	} `json:"variants"`
 	Links struct {
@@ -125,10 +126,10 @@ func TestIntegrationFilesUploadAndDownloadOverHTTP(t *testing.T) {
 		t.Fatalf("upload: %d %s", rec.Code, rec.Body.String())
 	}
 	f := decodeFile(t, rec)
-	if loc := rec.Header().Get("Location"); loc != "/v1/orgs/"+org+"/files/"+f.ID.String() {
+	if loc := rec.Header().Get("Location"); loc != "/v1/orgs/"+org+"/files/"+f.ID.String()+"/meta" {
 		t.Errorf("Location = %q", loc)
 	}
-	if f.Status != "ready" || f.Source != "uploaded" || f.Mime != "image/jpeg" || f.Name != "balcony.jpg" || f.ScopeType != nil {
+	if f.Status != "ready" || f.Source != "uploaded" || f.Mime != "image/jpeg" || f.Name != "balcony.jpg" || f.Scope != nil {
 		t.Errorf("file = %+v", f)
 	}
 	if f.Variants["thumb"].Width != 256 || f.Variants["thumb"].Height != 128 || f.Variants["medium"].Width != 1600 {
@@ -136,7 +137,7 @@ func TestIntegrationFilesUploadAndDownloadOverHTTP(t *testing.T) {
 	}
 
 	// the thumbnail through the API: image, inline, no EXIF, never cached
-	thumb := fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+f.ID.String()+"/content?variant=thumb", nil)
+	thumb := fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+f.ID.String()+"?variant=thumb", nil)
 	if thumb.Code != 200 {
 		t.Fatalf("thumb: %d %s", thumb.Code, thumb.Body.String())
 	}
@@ -150,7 +151,7 @@ func TestIntegrationFilesUploadAndDownloadOverHTTP(t *testing.T) {
 		t.Errorf("thumb decodes as %+v %s %v", cfg, format, err)
 	}
 	for _, name := range []string{"thumb", "medium", ""} {
-		path := "/v1/orgs/" + org + "/files/" + f.ID.String() + "/content"
+		path := "/v1/orgs/" + org + "/files/" + f.ID.String()
 		if name != "" {
 			path += "?variant=" + name
 		}
@@ -159,50 +160,50 @@ func TestIntegrationFilesUploadAndDownloadOverHTTP(t *testing.T) {
 			t.Errorf("variant %q still carries the EXIF GPS block", name)
 		}
 	}
-	if fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+f.ID.String()+"/content?variant=huge", nil).Code != 422 {
+	if fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+f.ID.String()+"?variant=huge", nil).Code != 422 {
 		t.Error("an unknown variant must be a validation error")
 	}
 
 	// a document is an attachment
 	doc := fe.upload(t, "staff", "rules.txt", []byte("No noise after ten."), nil)
 	df := decodeFile(t, doc)
-	d := fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String()+"/content", nil)
+	d := fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil)
 	if d.Code != 200 || !strings.HasPrefix(d.Header().Get("Content-Disposition"), "attachment") || !strings.Contains(d.Header().Get("Content-Disposition"), "rules.txt") ||
 		d.Body.String() != "No noise after ten." || d.Header().Get("Content-Type") != "text/plain" {
 		t.Errorf("document: %d %v %q", d.Code, d.Header(), d.Body.String())
 	}
 
 	// the uploader and administrators read it back; an unrelated member does not see a draft
-	if rec := fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 200 {
+	if rec := fe.do(t, "staff", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String()+"/meta", nil); rec.Code != 200 {
 		t.Errorf("get by the uploader: %d", rec.Code)
 	}
-	if rec := fe.do(t, "org_admin", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 200 {
+	if rec := fe.do(t, "org_admin", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String()+"/meta", nil); rec.Code != 200 {
 		t.Errorf("get by an administrator: %d", rec.Code)
 	}
-	if rec := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 404 {
+	if rec := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String()+"/meta", nil); rec.Code != 404 {
 		t.Errorf("get by an unrelated member: %d, want 404", rec.Code)
 	}
-	if rec := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String()+"/content", nil); rec.Code != 404 {
+	if rec := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 404 {
 		t.Errorf("download by an unrelated member: %d, want 404", rec.Code)
 	}
-	// delete: administrators only
-	if rec := fe.do(t, "staff", "DELETE", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 403 {
-		t.Errorf("delete by staff: %d", rec.Code)
+	// delete: an unrelated member cannot even see the draft; an administrator may delete it
+	if rec := fe.do(t, "guard", "DELETE", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 404 {
+		t.Errorf("delete by an unrelated member: %d, want 404", rec.Code)
 	}
 	if rec := fe.do(t, "org_admin", "DELETE", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 204 {
 		t.Errorf("delete by an administrator: %d", rec.Code)
 	}
-	if rec := fe.do(t, "org_admin", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String(), nil); rec.Code != 404 {
+	if rec := fe.do(t, "org_admin", "GET", "/v1/orgs/"+org+"/files/"+df.ID.String()+"/meta", nil); rec.Code != 404 {
 		t.Errorf("get after delete: %d", rec.Code)
 	}
 
 	// scoped upload and listing through the scope's resolver
 	scope := uuid.NewString()
-	rec = fe.upload(t, "staff", "att.txt", []byte("attached"), map[string]string{"scope_type": testScope, "scope_id": scope})
-	if rec.Code != 201 || decodeFile(t, rec).ScopeType == nil {
+	rec = fe.upload(t, "staff", "att.txt", []byte("attached"), map[string]string{"scope": testScope + ":" + scope})
+	if rec.Code != 201 || decodeFile(t, rec).Scope == nil {
 		t.Fatalf("scoped upload: %d %s", rec.Code, rec.Body.String())
 	}
-	list := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files?scope_type="+testScope+"&scope_id="+scope, nil)
+	list := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files?scope="+testScope+":"+scope, nil)
 	var page struct {
 		Items      []json.RawMessage `json:"items"`
 		NextCursor *string           `json:"next_cursor"`
@@ -210,8 +211,8 @@ func TestIntegrationFilesUploadAndDownloadOverHTTP(t *testing.T) {
 	if err := json.Unmarshal(list.Body.Bytes(), &page); err != nil || list.Code != 200 || len(page.Items) != 1 || page.NextCursor != nil {
 		t.Errorf("list by scope: %d %s", list.Code, list.Body.String())
 	}
-	if rec := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files?scope_type="+testScope, nil); rec.Code != 422 {
-		t.Errorf("scope_type without scope_id: %d", rec.Code)
+	if rec := fe.do(t, "guard", "GET", "/v1/orgs/"+org+"/files?scope=no-id", nil); rec.Code != 422 {
+		t.Errorf("a malformed scope: %d", rec.Code)
 	}
 }
 
@@ -261,17 +262,17 @@ func TestIntegrationFilesUploadRejections(t *testing.T) {
 	if rec = fe.do(t, "staff", "POST", "/v1/orgs/"+org+"/files", nofile.Bytes(), "Content-Type", "multipart/form-data; boundary=b"); rec.Code != 422 {
 		t.Errorf("no file part: %d %s", rec.Code, rec.Body.String())
 	}
-	if rec = fe.upload(t, "staff", "a.txt", []byte("a"), map[string]string{"scope_id": uuid.NewString()}); rec.Code != 422 {
-		t.Errorf("scope_id without scope_type: %d", rec.Code)
+	if rec = fe.upload(t, "staff", "a.txt", []byte("a"), map[string]string{"scope": "ticket"}); rec.Code != 422 {
+		t.Errorf("scope without an id: %d", rec.Code)
 	}
 	if rec = fe.upload(t, "staff", "a.txt", []byte("a"), map[string]string{"site_id": "nope"}); rec.Code != 422 {
 		t.Errorf("bad site id: %d", rec.Code)
 	}
-	if rec = fe.upload(t, "staff", "a.txt", []byte("a"), map[string]string{"scope_type": "nonesuch", "scope_id": uuid.NewString()}); rec.Code != 422 {
+	if rec = fe.upload(t, "staff", "a.txt", []byte("a"), map[string]string{"scope": "nonesuch:" + uuid.NewString()}); rec.Code != 422 {
 		t.Errorf("unregistered scope type: %d %s", rec.Code, rec.Body.String())
 	}
 	// ticket-style limit: the test scope allows 3 files per resource
-	scope := map[string]string{"scope_type": testScope, "scope_id": uuid.NewString()}
+	scope := map[string]string{"scope": testScope + ":" + uuid.NewString()}
 	for i := 0; i < 3; i++ {
 		if rec = fe.upload(t, "staff", "p.txt", []byte("p"), scope); rec.Code != 201 {
 			t.Fatalf("file %d on the resource: %d %s", i+1, rec.Code, rec.Body.String())
@@ -322,7 +323,7 @@ func TestIntegrationFilesSignedLinksOverHTTP(t *testing.T) {
 	}
 	u, _ := url.Parse(link)
 	q := u.Query()
-	base := "/v1/orgs/" + org + "/files/" + f.ID.String() + "/content"
+	base := "/v1/orgs/" + org + "/files/" + f.ID.String()
 	// no signature, a broken one, the signature on the original instead of the thumbnail, an extended expiry
 	for name, path := range map[string]string{
 		"no signature":         base,
@@ -336,7 +337,7 @@ func TestIntegrationFilesSignedLinksOverHTTP(t *testing.T) {
 		}
 	}
 	// a link for one organization does not open a file id of another
-	if rec := fe.do(t, "", "GET", "/v1/orgs/"+fe.w.OrgB.ID.String()+"/files/"+f.ID.String()+"/content?"+u.RawQuery, nil); rec.Code == 200 {
+	if rec := fe.do(t, "", "GET", "/v1/orgs/"+fe.w.OrgB.ID.String()+"/files/"+f.ID.String()+"?"+u.RawQuery, nil); rec.Code == 200 {
 		t.Error("a signed link opened another organization's path")
 	}
 }
@@ -345,7 +346,7 @@ func TestIntegrationFilesMatrixWiring(t *testing.T) {
 	// the spec marks the upload and download as streamed and the role matrix grants files.upload to every member
 	spec := loadSpec(t)
 	for _, c := range []struct{ path, method string }{
-		{"/v1/orgs/{org_id}/files", "POST"}, {"/v1/orgs/{org_id}/files/{file_id}/content", "GET"},
+		{"/v1/orgs/{org_id}/files", "POST"}, {"/v1/orgs/{org_id}/files/{file_id}", "GET"},
 	} {
 		op := spec.Paths.Find(c.path).GetOperation(c.method)
 		if !extBool(op.Extensions, "x-openbekci-stream") {

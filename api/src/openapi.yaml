@@ -27,10 +27,8 @@ tags:
     description: People, occupancies, memberships, invitations, join code and claims, directory, move-out and vendors.
   - name: platform
     description: Instance operation (platform administrators).
-  - name: files
-    description: Uploaded and generated files, streamed through the server.
   - name: operations
-    description: Tickets, announcements, documents and notifications.
+    description: 'Everyday operation of the building: tickets, announcements, documents, notifications and files (uploaded and generated, streamed through the server).'
   - name: dashboards
     description: Home screens per site, staff, organization and person.
   - name: codes
@@ -172,11 +170,11 @@ paths:
   /v1/platform/audit:
     $ref: './paths/platform-audit.yaml'
   /v1/orgs/{org_id}/files:
-    $ref: './paths/orgs-org-id-files.yaml'
+    $ref: './paths/operations/files.yaml'
   /v1/orgs/{org_id}/files/{file_id}:
-    $ref: './paths/orgs-org-id-files-file-id.yaml'
-  /v1/orgs/{org_id}/files/{file_id}/content:
-    $ref: './paths/orgs-org-id-files-file-id-content.yaml'
+    $ref: './paths/operations/files-file_id.yaml'
+  /v1/orgs/{org_id}/files/{file_id}/meta:
+    $ref: './paths/operations/files-file_id-meta.yaml'
   /v1/orgs/{org_id}/ticket-workflow:
     $ref: './paths/operations/ticket-workflow.yaml'
   /v1/orgs/{org_id}/ticket-categories:

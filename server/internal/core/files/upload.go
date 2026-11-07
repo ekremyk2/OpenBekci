@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -57,11 +59,43 @@ type UploadParams struct {
 // scan_unavailable when a virus scanner is configured but unreachable. A file
 // the scanner flags comes back with status quarantined.
 func (s *Service) Upload(ctx context.Context, p UploadParams) (File, error) {
-	if err := authz.Require(ctx, PermUpload, authz.Scope{OrgID: p.OrgID, SiteID: p.SiteID}); err != nil {
-		return File{}, err
-	}
+	if p.SiteID == nil {
+		if err := authz.Require(ctx, PermUpload, authz.Scope{OrgID: p.OrgID}); err != nil {
+			return File{}, err
+		}
+	} else if authz.PrincipalFromContext(ctx) == nil {
+		return File{}, problem.Unauthenticated("authentication is required")
+	} // for a site the scope is derived from the stored site inside the reservation transaction (see ingest)
 	uid := authz.PrincipalFromContext(ctx).UserID
+	if ok, retry := s.uploads.Allow(uid.String()); !ok {
+		return File{}, problem.RateLimited(retry)
+	}
 	return s.ingest(ctx, p, ingestMode{uploadedBy: &uid, source: SourceUploaded, authorize: true})
+}
+
+// Discard removes a file the caller has just uploaded with Upload, for the
+// HTTP layer to call when the rest of the request turns out to be invalid
+// (a form field after the file part): the file is marked deleted at once and
+// its blobs go with the next maintenance run. Only the uploader may.
+func (s *Service) Discard(ctx context.Context, f File) error {
+	if !s.isUploader(ctx, f) {
+		return errNoFile
+	}
+	err := s.db.InTenantTx(ctx, f.OrgID, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `
+			UPDATE file SET status = 'deleted', deleted_at = $2, updated_at = $2
+			WHERE id = $1 AND org_id = $3 AND status IN ('ready', 'quarantined')`, f.ID, s.now(), f.OrgID)
+		if err != nil || tag.RowsAffected() != 1 {
+			return err
+		}
+		before := f.auditView()
+		f.Status = StatusDeleted
+		return s.record(ctx, tx, "files.delete", f, before, f.auditView())
+	})
+	if err != nil {
+		return internalOr(err, "discard file")
+	}
+	return nil
 }
 
 // UploadGenerated stores a file the server produced itself (a statement, a
@@ -88,12 +122,12 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 	}
 	if p.Scope != nil {
 		if !scopeTypeRE.MatchString(p.Scope.Type) {
-			bad = append(bad, problem.Field{Field: "scope_type", Code: "invalid_format"})
+			bad = append(bad, problem.Field{Field: "scope", Code: "invalid_format"})
 		} else if _, ok := s.scope(p.Scope.Type); !ok && m.authorize {
-			bad = append(bad, problem.Field{Field: "scope_type", Code: "invalid_value"})
+			bad = append(bad, problem.Field{Field: "scope", Code: "invalid_value"})
 		}
 		if p.Scope.ID == uuid.Nil {
-			bad = append(bad, problem.Field{Field: "scope_id", Code: "invalid_value"})
+			bad = append(bad, problem.Field{Field: "scope", Code: "invalid_value"})
 		}
 	}
 	if len(bad) > 0 {
@@ -117,6 +151,18 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 	// 1. Reserve the row, so a crash leaves a pending row the maintenance job
 	// sweeps instead of an orphan blob nobody knows about.
 	err := s.db.InTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
+		if m.authorize && p.SiteID != nil {
+			sc, err := authz.ScopeOfSite(ctx, tx, *p.SiteID)
+			switch {
+			case errors.Is(err, authz.ErrScopeUnavailable):
+				return problem.Validation(problem.Field{Field: "site_id", Code: "invalid_value"}) // no sites in this build
+			case err != nil:
+				return err
+			}
+			if err := authz.Require(ctx, PermUpload, sc); err != nil {
+				return err
+			}
+		}
 		if p.Scope != nil {
 			if e, ok := s.scope(p.Scope.Type); ok {
 				if m.authorize {
@@ -157,15 +203,21 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 
 	// 3. Publish: ready (or quarantined), with usage and the audit event.
 	f.Name, f.Mime, f.Size, f.SHA256, f.Status, f.Variants = res.name, res.mime, res.size, res.sha, res.status, res.variants
+	if f.Status == StatusQuarantined && f.RetentionUntil == nil {
+		// a flagged file never stays forever, whatever it is attached to
+		t := now.Add(s.cfg.UnattachedTTL)
+		f.RetentionUntil = &t
+	}
 	err = s.db.InTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
 		variants, err := json.Marshal(f.Variants)
 		if err != nil {
 			return err
 		}
 		tag, err := tx.Exec(ctx, `
-			UPDATE file SET name = $2, size = $3, mime = $4, sha256 = $5, status = $6, variants = $7
+			UPDATE file SET name = $2, size = $3, mime = $4, sha256 = $5, status = $6, variants = $7,
+			       retention_until = $8, updated_at = $9
 			WHERE id = $1 AND status = 'pending'`,
-			f.ID, f.Name, f.Size, f.Mime, f.SHA256, string(f.Status), variants)
+			f.ID, f.Name, f.Size, f.Mime, f.SHA256, string(f.Status), variants, f.RetentionUntil, s.now())
 		if err != nil {
 			return err
 		}
@@ -239,7 +291,7 @@ func (s *Service) checkMax(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, ref 
 	}
 	var n int
 	if err := tx.QueryRow(ctx, `
-		SELECT count(*) FROM file WHERE org_id = $1 AND scope_type = $2 AND scope_id = $3 AND status <> 'deleted'`,
+		SELECT count(*) FROM file WHERE org_id = $1 AND scope_type = $2 AND scope_id = $3 AND status IN ('pending', 'ready')`,
 		orgID, ref.Type, ref.ID).Scan(&n); err != nil {
 		return err
 	}
@@ -277,61 +329,106 @@ func (s *Service) store(ctx context.Context, f File, content io.Reader) (stored,
 	case !ok:
 		return stored{}, problem.New(http.StatusUnsupportedMediaType, problem.CodeUnsupportedMediaType, "the content of the file does not match its extension")
 	}
-	full := io.MultiReader(bytes.NewReader(head), lr)
-	if rule.Image {
-		return s.storeImage(ctx, f, rule, full)
-	}
-	return s.storeStream(ctx, f, rule, full)
-}
 
-// storeStream streams a non-image to storage while hashing it.
-func (s *Service) storeStream(ctx context.Context, f File, rule TypeRule, r io.Reader) (stored, error) {
+	// Spool the upload to a temporary file: the scanner and the image decoder
+	// read it from there (no io.ReadAll of the whole upload, no read-back from
+	// the blob store), and nothing reaches storage before it passed both.
+	tmp, err := os.CreateTemp("", spoolPrefix+"*")
+	if err != nil {
+		return stored{}, fmt.Errorf("spool upload: %w", err)
+	}
+	defer func() {
+		_ = tmp.Close()
+		_ = os.Remove(tmp.Name())
+	}()
 	h := sha256.New()
-	cr := &countReader{r: io.TeeReader(r, h)}
-	if err := s.blob.Put(ctx, f.Key, cr, -1, rule.MIME); err != nil {
-		return stored{}, err
-	}
-	res := stored{name: f.Name, mime: rule.MIME, size: cr.n, sha: hex.EncodeToString(h.Sum(nil)), status: StatusReady, variants: map[string]Variant{}}
-	if s.cfg.Scanner != nil {
-		rc, err := s.blob.Get(ctx, f.Key)
-		if err != nil {
-			return stored{}, err
-		}
-		v, err := s.cfg.Scanner.Scan(ctx, rc)
-		_ = rc.Close()
-		if err != nil {
-			return stored{}, scanError(err)
-		}
-		if v.Infected {
-			s.cfg.Log.WarnContext(ctx, "upload quarantined by the virus scanner", "file_id", f.ID, "org_id", f.OrgID, "signature", v.Signature)
-			res.status = StatusQuarantined
-		}
-	}
-	return res, nil
-}
-
-// storeImage processes an image in memory (the upload limit bounds it).
-func (s *Service) storeImage(ctx context.Context, f File, rule TypeRule, r io.Reader) (stored, error) {
-	data, err := io.ReadAll(r)
+	size, err := io.Copy(io.MultiWriter(tmp, h), io.MultiReader(bytes.NewReader(head), lr))
 	if err != nil {
 		return stored{}, err
 	}
+	rawSum := hex.EncodeToString(h.Sum(nil))
+
+	status := StatusReady
 	if s.cfg.Scanner != nil {
-		v, err := s.cfg.Scanner.Scan(ctx, bytes.NewReader(data))
+		if _, err := tmp.Seek(0, io.SeekStart); err != nil {
+			return stored{}, err
+		}
+		v, err := s.cfg.Scanner.Scan(ctx, tmp)
 		if err != nil {
 			return stored{}, scanError(err)
 		}
 		if v.Infected {
-			// keep the bytes as uploaded for an administrator to look at; no variants
 			s.cfg.Log.WarnContext(ctx, "upload quarantined by the virus scanner", "file_id", f.ID, "org_id", f.OrgID, "signature", v.Signature)
-			sum := sha256.Sum256(data)
-			if err := s.blob.Put(ctx, f.Key, bytes.NewReader(data), int64(len(data)), rule.MIME); err != nil {
-				return stored{}, err
-			}
-			return stored{name: f.Name, mime: rule.MIME, size: int64(len(data)), sha: hex.EncodeToString(sum[:]), status: StatusQuarantined, variants: map[string]Variant{}}, nil
+			status = StatusQuarantined
 		}
 	}
-	img, err := processImage(data, s.cfg.MaxImagePixels, s.cfg.MaxImageDimension)
+	if rule.Image && status == StatusReady {
+		return s.storeImage(ctx, f, tmp, size)
+	}
+	// A non-image, or a flagged image (kept as uploaded for an administrator
+	// to look at; no variants): the bytes go to storage as they are.
+	if _, err := tmp.Seek(0, io.SeekStart); err != nil {
+		return stored{}, err
+	}
+	if err := s.blob.Put(ctx, f.Key, tmp, size, rule.MIME); err != nil {
+		return stored{}, err
+	}
+	return stored{name: f.Name, mime: rule.MIME, size: size, sha: rawSum, status: status, variants: map[string]Variant{}}, nil
+}
+
+// spoolPrefix names the temporary files an upload is spooled to.
+const spoolPrefix = "openbekci-upload-"
+
+// SweepSpool removes spooled uploads that a crash left in the temp directory,
+// when they are older than olderThan (an upload in progress is younger). The
+// server calls it at start-up. It returns how many files it removed.
+func SweepSpool(olderThan time.Duration) int {
+	entries, err := os.ReadDir(os.TempDir())
+	if err != nil {
+		return 0
+	}
+	removed, cutoff := 0, time.Now().Add(-olderThan)
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasPrefix(e.Name(), spoolPrefix) {
+			continue
+		}
+		if info, err := e.Info(); err == nil && info.ModTime().Before(cutoff) {
+			if os.Remove(filepath.Join(os.TempDir(), e.Name())) == nil {
+				removed++
+			}
+		}
+	}
+	return removed
+}
+
+// storeImage re-encodes the spooled image and stores the original and its
+// variants. At most Config.ImageWorkers images are processed at once in the
+// process, and an image over Config.MaxImagePixels is refused (422) after
+// reading only its header.
+func (s *Service) storeImage(ctx context.Context, f File, tmp *os.File, size int64) (stored, error) {
+	select {
+	case s.imageSem <- struct{}{}:
+		defer func() { <-s.imageSem }()
+	case <-ctx.Done():
+		return stored{}, ctx.Err()
+	}
+	put := func(name, mime string, w, h int, enc func(io.Writer) error) (encoded, error) {
+		key := f.Key
+		if name != "" {
+			key = variantKey(f.Key, name)
+		}
+		pr, pw := io.Pipe()
+		go func() { pw.CloseWithError(enc(pw)) }()
+		sum := sha256.New()
+		cr := &countReader{r: io.TeeReader(pr, sum)}
+		err := s.blob.Put(ctx, key, cr, -1, mime)
+		_ = pr.CloseWithError(err) // lets the encoder stop if Put gave up early
+		if err != nil {
+			return encoded{}, err
+		}
+		return encoded{v: Variant{Width: w, Height: h, Size: cr.n, Mime: mime}, sha: hex.EncodeToString(sum.Sum(nil))}, nil
+	}
+	orig, variants, err := renderImage(tmp, size, s.cfg.MaxImagePixels, s.cfg.MaxImageDimension, put)
 	switch {
 	case errors.Is(err, errImageTooBig):
 		return stored{}, problem.Validation(problem.Field{Field: "file", Code: "too_large"})
@@ -340,19 +437,11 @@ func (s *Service) storeImage(ctx context.Context, f File, rule TypeRule, r io.Re
 	case err != nil:
 		return stored{}, err
 	}
-	orig := img.original
-	if err := s.blob.Put(ctx, f.Key, bytes.NewReader(orig.data), orig.v.Size, orig.v.Mime); err != nil {
-		return stored{}, err
+	out := stored{name: renameForMIME(f.Name, orig.v.Mime), mime: orig.v.Mime, size: orig.v.Size, sha: orig.sha, status: StatusReady, variants: map[string]Variant{}}
+	for name, v := range variants {
+		out.variants[name] = v.v
 	}
-	variants := map[string]Variant{}
-	for name, v := range img.variants {
-		if err := s.blob.Put(ctx, variantKey(f.Key, name), bytes.NewReader(v.data), v.v.Size, v.v.Mime); err != nil {
-			return stored{}, err
-		}
-		variants[name] = v.v
-	}
-	sum := sha256.Sum256(orig.data)
-	return stored{name: renameForMIME(f.Name, orig.v.Mime), mime: orig.v.Mime, size: orig.v.Size, sha: hex.EncodeToString(sum[:]), status: StatusReady, variants: variants}, nil
+	return out, nil
 }
 
 func variantKey(key, variant string) string { return key + "." + variant }

@@ -85,14 +85,29 @@ func newFiles(ctx context.Context, cfg Config, log *slog.Logger, d *db.DB) (*fil
 	if err != nil {
 		return nil, err
 	}
-	fc := files.Config{MaxUploadBytes: cfg.MaxUploadBytes, Types: files.DefaultTypes(), Signer: signer, Log: log}
+	// A crash in the middle of a write leaves ".tmp-*" files (local driver) and
+	// spooled uploads in the temp directory; neither is ever picked up again.
+	if local, ok := blob.(*storage.Local); ok {
+		if n, serr := local.SweepTemp(time.Hour); serr != nil {
+			log.Warn("sweeping leftover temporary blobs", "error", serr)
+		} else if n > 0 {
+			log.Info("removed temporary blobs left by an earlier crash", "count", n)
+		}
+	}
+	if n := files.SweepSpool(time.Hour); n > 0 {
+		log.Info("removed spooled uploads left by an earlier crash", "count", n)
+	}
+	fc := files.Config{
+		MaxUploadBytes: cfg.MaxUploadBytes, Types: files.DefaultTypes(), Signer: signer, Log: log,
+		MaxImagePixels: cfg.MaxImagePixels, ImageWorkers: cfg.ImageWorkers,
+	}
 	if len(cfg.FilesAllowedExtensions) > 0 {
 		if fc.Types = files.FilterTypes(fc.Types, cfg.FilesAllowedExtensions); len(fc.Types) == 0 {
 			return nil, fmt.Errorf("%sFILES_ALLOWED_EXTENSIONS lists no known file type", envPrefix)
 		}
 	}
 	if cfg.ClamAVAddr != "" {
-		fc.Scanner = files.ClamAV{Addr: cfg.ClamAVAddr}
+		fc.Scanner = files.ClamAV{Addr: cfg.ClamAVAddr, Timeout: cfg.ClamAVTimeout}
 	}
 	return files.NewService(d, blob, fc), nil
 }

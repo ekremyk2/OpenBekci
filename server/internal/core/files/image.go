@@ -1,18 +1,21 @@
 package files
 
 import (
-	"bytes"
+	"bufio"
 	"errors"
 	"fmt"
 	"image"
 	"image/draw"
 	"image/jpeg"
 	"image/png"
+	"io"
+	"os"
 
 	// decoders for image.Decode
 	_ "golang.org/x/image/webp"
 
 	xdraw "golang.org/x/image/draw"
+	"golang.org/x/image/math/f64"
 )
 
 // Image variant boxes: the longer side of each variant is at most this many pixels.
@@ -22,58 +25,67 @@ const (
 )
 
 var (
-	errBadImage     = errors.New("files: not a valid image")
-	errImageTooBig  = errors.New("files: image has too many pixels")
-	errImageNoSize  = errors.New("files: image has no size")
-	jpegOriginalQ   = 88
-	jpegMediumQ     = 85
-	jpegThumbnailQ  = 80
-	pngCompression  = png.DefaultCompression
-	defaultMaxPixel = 64_000_000
+	errBadImage    = errors.New("files: not a valid image")
+	errImageTooBig = errors.New("files: image has too many pixels")
+	errImageNoSize = errors.New("files: image has no size")
+	jpegOriginalQ  = 88
+	jpegMediumQ    = 85
+	jpegThumbnailQ = 80
+	pngCompression = png.DefaultCompression
 )
 
-// rendition is one encoded image.
-type rendition struct {
-	data []byte
-	v    Variant
+// DefaultMaxImagePixels is the largest image (width times height) that is
+// decoded: 25 megapixels. A decoded image costs 4 bytes per pixel, so the cap
+// bounds the memory one upload can take (about 100 MB for the decoded pixels).
+const DefaultMaxImagePixels = 25_000_000
+
+// encoded is one stored rendition of an image.
+type encoded struct {
+	v   Variant
+	sha string // hex SHA-256 of the encoded bytes
 }
 
-// renditions is an uploaded image after processing: the cleaned original and
-// its variants.
-type renditions struct {
-	original rendition
-	variants map[string]rendition
-}
+// encodeSink stores one rendition. enc writes the encoded bytes to the writer
+// it is given; the sink returns the size and digest of what was written.
+type encodeSink func(name, mime string, w, h int, enc func(io.Writer) error) (encoded, error)
 
-// processImage decodes an uploaded image and returns it re-encoded, which
-// drops every piece of metadata (EXIF with its GPS location, XMP, ICC
-// profile, comments, embedded thumbnails): the encoders write pixels only.
-// The EXIF orientation of a JPEG is applied to the pixels first. The original
-// is downscaled to fit maxDim, and thumb and medium variants are made.
-// maxPixels guards against decompression bombs.
-func processImage(data []byte, maxPixels, maxDim int) (renditions, error) {
+// renderImage decodes the image in f and hands the re-encoded original and
+// its variants to put, one at a time (so only one scaled copy is alive at once).
+// Re-encoding drops every piece of metadata (EXIF with its GPS location, XMP,
+// ICC profile, comments, embedded thumbnails): the encoders write pixels only.
+// The EXIF orientation (JPEG, PNG and WebP carry one) is applied to the pixels
+// first. The original is downscaled to fit maxDim, and thumb and medium
+// variants are made. maxPixels guards against decompression bombs: only the
+// header is read to enforce it.
+func renderImage(f *os.File, size int64, maxPixels, maxDim int, put encodeSink) (encoded, map[string]encoded, error) {
 	if maxPixels <= 0 {
-		maxPixels = defaultMaxPixel
+		maxPixels = DefaultMaxImagePixels
 	}
-	cfg, format, err := image.DecodeConfig(bytes.NewReader(data))
+	if _, err := f.Seek(0, io.SeekStart); err != nil {
+		return encoded{}, nil, err
+	}
+	cfg, format, err := image.DecodeConfig(bufio.NewReader(f))
 	if err != nil {
-		return renditions{}, fmt.Errorf("%w: %w", errBadImage, err)
+		return encoded{}, nil, fmt.Errorf("%w: %w", errBadImage, err)
 	}
 	if cfg.Width <= 0 || cfg.Height <= 0 {
-		return renditions{}, errImageNoSize
+		return encoded{}, nil, errImageNoSize
 	}
 	if cfg.Width > maxPixels/cfg.Height { // avoids overflow of Width*Height
-		return renditions{}, errImageTooBig
+		return encoded{}, nil, errImageTooBig
 	}
-	src, _, err := image.Decode(bytes.NewReader(data))
+	orientation := imageOrientation(f, size, format)
+	if _, err := f.Seek(0, io.SeekStart); err != nil {
+		return encoded{}, nil, err
+	}
+	src, _, err := image.Decode(bufio.NewReader(f))
 	if err != nil {
-		return renditions{}, fmt.Errorf("%w: %w", errBadImage, err)
+		return encoded{}, nil, fmt.Errorf("%w: %w", errBadImage, err)
 	}
 	opaque := isOpaque(src)
-	img := toRGBA(src)
-	if format == "jpeg" {
-		img = orient(img, exifOrientation(data))
-	}
+	img := orient(src, orientation) // a copy only when it has to turn the pixels
+	src = nil                       //nolint:ineffassign,wastedassign // let the decoder's buffer go once oriented
+
 	// JPEG stays JPEG, PNG stays PNG; WebP (which Go cannot encode) becomes
 	// JPEG, or PNG when it has transparency.
 	asJPEG := opaque && format != "png"
@@ -81,54 +93,124 @@ func processImage(data []byte, maxPixels, maxDim int) (renditions, error) {
 	if asJPEG {
 		mime = "image/jpeg"
 	}
-
-	out := renditions{variants: map[string]rendition{}}
-	box := func(w, h, limit int) *image.RGBA {
-		nw, nh := fit(w, h, limit)
-		if nw == w && nh == h {
-			return img
-		}
-		dst := image.NewRGBA(image.Rect(0, 0, nw, nh))
-		xdraw.CatmullRom.Scale(dst, dst.Bounds(), img, img.Bounds(), xdraw.Src, nil)
-		return dst
+	one := func(name string, im image.Image, q int) (encoded, error) {
+		b := im.Bounds()
+		return put(name, mime, b.Dx(), b.Dy(), func(w io.Writer) error { return encode(w, im, asJPEG, q) })
 	}
-	b := img.Bounds()
+
+	// original -> medium -> thumb, each scaled from the previous one
+	cur := scaleTo(img, maxDim)
+	img = nil //nolint:ineffassign,wastedassign // cur holds the pixels from here on
+	orig, err := one("", cur, jpegOriginalQ)
+	if err != nil {
+		return encoded{}, nil, err
+	}
+	variants := map[string]encoded{}
 	for _, s := range []struct {
 		name  string
 		limit int
 		q     int
-	}{{"", maxDim, jpegOriginalQ}, {VariantMedium, mediumBox, jpegMediumQ}, {VariantThumb, thumbBox, jpegThumbnailQ}} {
-		scaled := img
-		if s.limit > 0 {
-			scaled = box(b.Dx(), b.Dy(), s.limit)
-		}
-		enc, err := encode(scaled, asJPEG, s.q)
-		if err != nil {
-			return renditions{}, err
-		}
-		r := rendition{data: enc, v: Variant{Width: scaled.Bounds().Dx(), Height: scaled.Bounds().Dy(), Size: int64(len(enc)), Mime: mime}}
-		if s.name == "" {
-			out.original = r
-		} else {
-			out.variants[s.name] = r
+	}{{VariantMedium, mediumBox, jpegMediumQ}, {VariantThumb, thumbBox, jpegThumbnailQ}} {
+		cur = scaleTo(cur, s.limit)
+		if variants[s.name], err = one(s.name, cur, s.q); err != nil {
+			return encoded{}, nil, err
 		}
 	}
-	return out, nil
+	return orig, variants, nil
 }
 
-func encode(img *image.RGBA, asJPEG bool, quality int) ([]byte, error) {
-	var buf bytes.Buffer
-	if asJPEG {
-		if err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: quality}); err != nil {
-			return nil, fmt.Errorf("encode jpeg: %w", err)
+// scaleTo returns img scaled down to fit a limit x limit box, or img itself
+// when it already fits (or limit is not positive).
+//
+// x/image's Kernel.Scale keeps a float64 intermediate of the destination width
+// times the source height (32 bytes per pixel: 650 MB for 5000x5000 down to
+// 4096), so it is not used on large images. Instead the image is halved with a
+// 2x2 box filter while it is at least twice the target, then resampled once
+// with Kernel.Transform, which works per output pixel and allocates only the
+// result; the remaining ratio is under 2, so it does not alias.
+func scaleTo(img image.Image, limit int) image.Image {
+	for {
+		b := img.Bounds()
+		nw, nh := fit(b.Dx(), b.Dy(), limit)
+		if nw == b.Dx() && nh == b.Dy() {
+			return img
 		}
-		return buf.Bytes(), nil
+		if limit > 0 && (b.Dx() >= 2*limit || b.Dy() >= 2*limit) && b.Dx() >= 2 && b.Dy() >= 2 {
+			img = halve(img)
+			continue
+		}
+		dst := image.NewRGBA(image.Rect(0, 0, nw, nh))
+		sx, sy := float64(nw)/float64(b.Dx()), float64(nh)/float64(b.Dy())
+		m := f64.Aff3{sx, 0, -sx * float64(b.Min.X), 0, sy, -sy * float64(b.Min.Y)}
+		xdraw.CatmullRom.Transform(dst, m, img, b, xdraw.Src, nil)
+		return dst
+	}
+}
+
+// halve returns img at half size (rounded up), each pixel the average of a 2x2
+// block (alpha-weighted for non-premultiplied images).
+func halve(img image.Image) image.Image {
+	switch s := img.(type) {
+	case *image.RGBA:
+		b := s.Bounds()
+		w, h := b.Dx(), b.Dy()
+		d := image.NewRGBA(image.Rect(0, 0, (w+1)/2, (h+1)/2))
+		for y := 0; y < d.Rect.Dy(); y++ {
+			y0, y1 := 2*y, min(2*y+1, h-1)
+			for x := 0; x < d.Rect.Dx(); x++ {
+				x0, x1 := 2*x, min(2*x+1, w-1)
+				p := [4]int{s.PixOffset(b.Min.X+x0, b.Min.Y+y0), s.PixOffset(b.Min.X+x1, b.Min.Y+y0), s.PixOffset(b.Min.X+x0, b.Min.Y+y1), s.PixOffset(b.Min.X+x1, b.Min.Y+y1)}
+				o := d.PixOffset(x, y)
+				for c := 0; c < 4; c++ {
+					d.Pix[o+c] = uint8((int(s.Pix[p[0]+c]) + int(s.Pix[p[1]+c]) + int(s.Pix[p[2]+c]) + int(s.Pix[p[3]+c]) + 2) / 4) //nolint:gosec // an average of four bytes fits a byte
+				}
+			}
+		}
+		return d
+	case *image.NRGBA:
+		b := s.Bounds()
+		w, h := b.Dx(), b.Dy()
+		d := image.NewNRGBA(image.Rect(0, 0, (w+1)/2, (h+1)/2))
+		for y := 0; y < d.Rect.Dy(); y++ {
+			y0, y1 := 2*y, min(2*y+1, h-1)
+			for x := 0; x < d.Rect.Dx(); x++ {
+				x0, x1 := 2*x, min(2*x+1, w-1)
+				p := [4]int{s.PixOffset(b.Min.X+x0, b.Min.Y+y0), s.PixOffset(b.Min.X+x1, b.Min.Y+y0), s.PixOffset(b.Min.X+x0, b.Min.Y+y1), s.PixOffset(b.Min.X+x1, b.Min.Y+y1)}
+				var sum [3]int
+				asum := 0
+				for _, o := range p {
+					a := int(s.Pix[o+3])
+					asum += a
+					for c := 0; c < 3; c++ {
+						sum[c] += int(s.Pix[o+c]) * a
+					}
+				}
+				o := d.PixOffset(x, y)
+				if asum > 0 {
+					for c := 0; c < 3; c++ {
+						d.Pix[o+c] = uint8((sum[c] + asum/2) / asum) //nolint:gosec // an alpha-weighted average of bytes fits a byte
+					}
+				}
+				d.Pix[o+3] = uint8((asum + 2) / 4)
+			}
+		}
+		return d
+	}
+	return halve(toRGBA(img))
+}
+
+func encode(w io.Writer, img image.Image, asJPEG bool, quality int) error {
+	if asJPEG {
+		if err := jpeg.Encode(w, img, &jpeg.Options{Quality: quality}); err != nil {
+			return fmt.Errorf("encode jpeg: %w", err)
+		}
+		return nil
 	}
 	enc := png.Encoder{CompressionLevel: pngCompression}
-	if err := enc.Encode(&buf, img); err != nil {
-		return nil, fmt.Errorf("encode png: %w", err)
+	if err := enc.Encode(w, img); err != nil {
+		return fmt.Errorf("encode png: %w", err)
 	}
-	return buf.Bytes(), nil
+	return nil
 }
 
 // fit returns the size of a w x h image scaled down to fit a limit x limit
@@ -158,17 +240,36 @@ func toRGBA(img image.Image) *image.RGBA {
 	return dst
 }
 
-// orient applies an EXIF orientation (1..8) to the pixels.
-func orient(src *image.RGBA, o int) *image.RGBA {
+// orient applies an EXIF orientation (1..8) to the pixels. Orientation 1 (or
+// none) returns src untouched, with no copy.
+func orient(src image.Image, o int) image.Image {
 	if o <= 1 || o > 8 {
 		return src
 	}
-	sw, sh := src.Bounds().Dx(), src.Bounds().Dy()
+	// RGBA and NRGBA are turned in their own layout (one new image); anything
+	// else (YCbCr, paletted) is converted to RGBA first.
+	sb := src.Bounds()
+	sw, sh := sb.Dx(), sb.Dy()
 	dw, dh := sw, sh
 	if o >= 5 {
 		dw, dh = sh, sw
 	}
-	dst := image.NewRGBA(image.Rect(0, 0, dw, dh))
+	drect := image.Rect(0, 0, dw, dh)
+	var (
+		spix, dpix []byte
+		soff, doff func(x, y int) int
+		out        image.Image
+	)
+	switch s := src.(type) {
+	case *image.NRGBA:
+		d := image.NewNRGBA(drect)
+		spix, dpix, soff, doff, out = s.Pix, d.Pix, s.PixOffset, d.PixOffset, d
+	case *image.RGBA:
+		d := image.NewRGBA(drect)
+		spix, dpix, soff, doff, out = s.Pix, d.Pix, s.PixOffset, d.PixOffset, d
+	default:
+		return orient(toRGBA(src), o)
+	}
 	for dy := 0; dy < dh; dy++ {
 		for dx := 0; dx < dw; dx++ {
 			var sx, sy int
@@ -188,10 +289,10 @@ func orient(src *image.RGBA, o int) *image.RGBA {
 			case 8:
 				sx, sy = sw-1-dy, dx
 			}
-			si := src.PixOffset(sx, sy)
-			di := dst.PixOffset(dx, dy)
-			copy(dst.Pix[di:di+4], src.Pix[si:si+4])
+			si := soff(sb.Min.X+sx, sb.Min.Y+sy)
+			di := doff(dx, dy)
+			copy(dpix[di:di+4], spix[si:si+4])
 		}
 	}
-	return dst
+	return out
 }

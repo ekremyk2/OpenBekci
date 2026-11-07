@@ -49,6 +49,20 @@ type Blob interface {
 	SignedURL(ctx context.Context, key string, ttl time.Duration, opts ...SignOption) (string, error)
 }
 
+// DirectDownloader is implemented by a driver whose signed URLs point at the
+// store itself (S3), so a download can be answered with a redirect to one
+// instead of streaming the bytes through the server.
+type DirectDownloader interface {
+	DirectDownloads() bool
+}
+
+// DirectDownloads reports whether b hands out signed URLs that can be
+// redirected to.
+func DirectDownloads(b Blob) bool {
+	d, ok := b.(DirectDownloader)
+	return ok && d.DirectDownloads()
+}
+
 // SignOption tunes a signed URL.
 type SignOption func(*SignOptions)
 

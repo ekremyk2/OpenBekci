@@ -8,7 +8,6 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -69,12 +68,17 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 		}
 
 		var body []byte
+		var digest *uploadDigest
 		if info.stream {
-			// A streamed body (file upload) is not buffered to be hashed: the
-			// declared length stands in for it. A boundary-less fingerprint
-			// also lets a client that retries with a fresh multipart boundary
-			// replay instead of tripping idempotency_mismatch.
-			body = []byte("stream:" + strconv.FormatInt(r.ContentLength, 10))
+			// A streamed body (file upload) is not buffered to be hashed, and
+			// its multipart boundary and length differ between retries, so the
+			// request hash covers method, path and query only. What was
+			// uploaded is compared by content: the handler records the SHA-256
+			// of the form while it streams it, the store keeps it with the key,
+			// and a retry is read through the same digest before it replays.
+			body = []byte("stream")
+			digest = &uploadDigest{}
+			r = r.WithContext(context.WithValue(r.Context(), uploadDigestKey{}, digest))
 		} else {
 			var err error
 			body, err = io.ReadAll(r.Body) // already capped by maxBody
@@ -103,6 +107,20 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 				"this Idempotency-Key was already used with a different request"))
 			return
 		case idempotency.Replay:
+			if info.stream && res.Response.Digest != "" {
+				// Same key, same route: it is a replay only if the same content
+				// comes in again. Nothing is stored on this path.
+				got, err := formDigest(r)
+				if err != nil {
+					problem.Write(w, r, err)
+					return
+				}
+				if got != res.Response.Digest {
+					problem.Write(w, r, problem.New(http.StatusUnprocessableEntity, problem.CodeIdempotencyMismatch,
+						"this Idempotency-Key was already used with a different file"))
+					return
+				}
+			}
 			replay(w, res.Response)
 			return
 		case idempotency.Acquired:
@@ -116,7 +134,11 @@ func (p *pipeline) idempotency(next http.Handler) http.Handler {
 			defer scancel()
 			var serr error
 			if finished && rec.statusCode() < http.StatusInternalServerError {
-				serr = p.idem.Complete(sctx, scope, key, res.Owner, rec.stored())
+				stored := rec.stored()
+				if digest != nil {
+					stored.Digest = digest.get()
+				}
+				serr = p.idem.Complete(sctx, scope, key, res.Owner, stored)
 			} else {
 				serr = p.idem.Abort(sctx, scope, key, res.Owner)
 			}

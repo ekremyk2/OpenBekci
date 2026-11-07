@@ -133,9 +133,9 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 				auth:       authModeOf(spec, op),
 				query:      queryParams(item, op),
 				orgScoped:  isOrgPath(path),
-				perms:      extPermissions(op.Extensions),
 				stream:     extBool(op.Extensions, "x-openbekci-stream"),
 				hasBody:    op.RequestBody != nil,
+				perms:      extPermissions(op.Extensions),
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -304,6 +304,13 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mode := p.op(r).auth
 		if mode == authNone {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if mode == authOptional && r.URL.Query().Has("sig") && p.op(r).query["sig"] && p.op(r).query["exp"] {
+			// A signed URL (a download link) stands on its signature: a session
+			// that comes along, from a cookie, a token or another organization,
+			// must not change the outcome, so it is not even looked at.
 			next.ServeHTTP(w, r)
 			return
 		}

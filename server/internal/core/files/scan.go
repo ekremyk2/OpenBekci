@@ -27,7 +27,7 @@ type Scanner interface {
 type ClamAV struct {
 	// Addr is host:port, or "unix:/path/to/clamd.sock".
 	Addr string
-	// Timeout bounds one scan; zero means two minutes.
+	// Timeout bounds one scan; zero means DefaultScanTimeout (60 seconds).
 	Timeout time.Duration
 }
 
@@ -35,11 +35,17 @@ var _ Scanner = ClamAV{}
 
 const clamChunk = 64 << 10
 
+// DefaultScanTimeout bounds one virus scan unless configured (OPENBEKCI_CLAMAV_TIMEOUT).
+const DefaultScanTimeout = 60 * time.Second
+
+// scanDialTimeout bounds connecting to clamd, so a blackholed address fails fast.
+const scanDialTimeout = 5 * time.Second
+
 // Scan implements Scanner.
 func (c ClamAV) Scan(ctx context.Context, r io.Reader) (Verdict, error) {
 	timeout := c.Timeout
 	if timeout == 0 {
-		timeout = 2 * time.Minute
+		timeout = DefaultScanTimeout
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -48,7 +54,7 @@ func (c ClamAV) Scan(ctx context.Context, r io.Reader) (Verdict, error) {
 	if rest, ok := strings.CutPrefix(c.Addr, "unix:"); ok {
 		network, addr = "unix", rest
 	}
-	var d net.Dialer
+	d := net.Dialer{Timeout: scanDialTimeout}
 	conn, err := d.DialContext(ctx, network, addr)
 	if err != nil {
 		return Verdict{}, fmt.Errorf("clamav: connect: %w", err)
