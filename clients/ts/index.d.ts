@@ -5029,8 +5029,8 @@ export interface components {
             valid_from: string;
             /** Format: date */
             valid_to: string;
-            /** @description A new election ends the old terms (G6). */
-            end_previous?: boolean;
+            /** @description Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.) */
+            replaces_membership_ids?: string[];
         };
         DecisionApplyBudget: {
             /**

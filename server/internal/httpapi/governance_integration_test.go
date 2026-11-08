@@ -428,7 +428,12 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	// end_previous: the new manager ends the old one's term
 	oldMgr := id.New()
 	w.Exec(t, `INSERT INTO membership (id, org_id, person_id, role, scope_type, scope_id, valid_from) VALUES ($1, $2, $3, 'site_manager', 'site', $4, '2025-01-01')`, oldMgr, org.ID, p4, f.Site)
-	applied := apply(gstr(d1, "id"), fmt.Sprintf(`{"kind":"membership","person_id":%q,"role":"site_manager","scope_type":"site","scope_id":%q,"valid_from":"2026-12-01","valid_to":"2027-12-01","end_previous":true}`, p3, f.Site), "apply-key-0007", 200)
+	// a second site manager is not touched, and neither is a board member: only the named holder ends
+	otherMgr := id.New()
+	w.Exec(t, `INSERT INTO membership (id, org_id, person_id, role, scope_type, scope_id, valid_from) VALUES ($1, $2, $3, 'site_manager', 'site', $4, '2025-01-01')`, otherMgr, org.ID, p5, f.Site)
+	apply(gstr(d1, "id"), fmt.Sprintf(`{"kind":"membership","person_id":%q,"role":"site_manager","scope_type":"site","scope_id":%q,"valid_from":"2026-12-01","valid_to":"2027-12-01","end_previous":true}`, p3, f.Site), "apply-key-0005", 422)
+	apply(gstr(d1, "id"), fmt.Sprintf(`{"kind":"membership","person_id":%q,"role":"site_manager","scope_type":"site","scope_id":%q,"valid_from":"2026-12-01","valid_to":"2027-12-01","replaces_membership_ids":[%q]}`, p3, f.Site, gstr(eff, "record_id")), "apply-key-0008", 422) // a board member's membership is not a manager's
+	applied := apply(gstr(d1, "id"), fmt.Sprintf(`{"kind":"membership","person_id":%q,"role":"site_manager","scope_type":"site","scope_id":%q,"valid_from":"2026-12-01","valid_to":"2027-12-01","replaces_membership_ids":[%q]}`, p3, f.Site, oldMgr), "apply-key-0007", 200)
 	if gmap(gmap(applied, "decision"), "effect") == nil {
 		t.Fatalf("applied = %v", applied)
 	}
@@ -438,6 +443,13 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	})
 	if endedAt.UTC().Format("2006-01-02") != "2026-12-01" {
 		t.Fatalf("the previous manager's term ends %v, want 2026-12-01", endedAt)
+	}
+	var otherEnd *time.Time
+	_ = e.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT valid_to FROM membership WHERE org_id = $1 AND id = $2`, org.ID, otherMgr).Scan(&otherEnd)
+	})
+	if otherEnd != nil {
+		t.Fatalf("a holder that was not named ended too: %v", otherEnd)
 	}
 
 	// minutes

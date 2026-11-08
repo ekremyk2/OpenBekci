@@ -10532,9 +10532,12 @@ components:
         valid_to:
           type: string
           format: date
-        end_previous:
-          type: boolean
-          description: A new election ends the old terms (G6).
+        replaces_membership_ids:
+          type: array
+          description: 'Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.)'
+          items:
+            type: string
+            format: uuid
     DecisionApplyBudget:
       type: object
       required:

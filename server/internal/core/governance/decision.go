@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"slices"
 	"strconv"
 	"strings"
@@ -712,25 +713,34 @@ func (s *Service) applyMembership(ctx context.Context, tx pgx.Tx, d Decision, in
 	if !exists {
 		return EffectRecord{}, nil, problem.Validation(problem.Field{Field: "person_id", Code: "invalid_value"})
 	}
-	endPrev, _ := in["end_previous"].(bool)
+	if _, has := in["end_previous"]; has {
+		return EffectRecord{}, nil, problem.Validation(problem.Field{Field: "end_previous", Code: "invalid_value", Params: map[string]any{"reason": "use_replaces_membership_ids"}})
+	}
+	// Only the holders being replaced end, named explicitly: a board has
+	// several members and electing one must not end the others. Default: none.
 	var toEnd []uuid.UUID
-	if endPrev {
-		rows, err := tx.Query(ctx, `SELECT id FROM membership WHERE org_id = $1 AND role = $2 AND scope_type = 'site' AND scope_id = $3
-			AND valid_from < $4 AND (valid_to IS NULL OR valid_to > $4) ORDER BY id`, d.OrgID, role, d.SiteID, from)
-		if err != nil {
-			return EffectRecord{}, nil, err
-		}
-		for rows.Next() {
-			var mid uuid.UUID
-			if err := rows.Scan(&mid); err != nil {
-				rows.Close()
-				return EffectRecord{}, nil, err
+	if raw, ok := in["replaces_membership_ids"].([]any); ok {
+		for i, r := range raw {
+			mid, err := uuid.Parse(fmt.Sprint(r))
+			if err != nil {
+				return EffectRecord{}, nil, problem.Validation(problem.Field{Field: "replaces_membership_ids[" + strconv.Itoa(i) + "]", Code: "invalid_value"})
 			}
-			toEnd = append(toEnd, mid)
+			if !slices.Contains(toEnd, mid) {
+				toEnd = append(toEnd, mid)
+			}
 		}
-		rows.Close()
-		if err := rows.Err(); err != nil {
+	} else if in["replaces_membership_ids"] != nil {
+		return EffectRecord{}, nil, problem.Validation(problem.Field{Field: "replaces_membership_ids", Code: "invalid_value"})
+	}
+	for i, mid := range toEnd {
+		var ok bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM membership WHERE org_id = $1 AND id = $2 AND role = $3 AND scope_type = 'site' AND scope_id = $4
+			AND valid_from < $5 AND (valid_to IS NULL OR valid_to > $5))`, d.OrgID, mid, role, d.SiteID, from).Scan(&ok); err != nil {
 			return EffectRecord{}, nil, err
+		}
+		if !ok {
+			return EffectRecord{}, nil, problem.Validation(problem.Field{Field: "replaces_membership_ids[" + strconv.Itoa(i) + "]", Code: "invalid_value",
+				Params: map[string]any{"reason": "not_a_current_holder_of_this_role_at_the_site"}})
 		}
 	}
 	siteOwned := role == string(authz.RoleBoardMember) || role == string(authz.RoleAuditor)
