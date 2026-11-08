@@ -13,11 +13,16 @@ export default function MarkdownView({ source }: { source: string }) {
         skipHtml
         disallowedElements={['img']}
         components={{
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer nofollow">
-              {children}
-            </a>
-          ),
+          // a blocked protocol (javascript:, data:, ...) leaves no href: show the text, not a link
+          // (an empty href would reload this page in a new tab)
+          a: ({ href, children }) =>
+            href ? (
+              <a href={href} target="_blank" rel="noopener noreferrer nofollow">
+                {children}
+              </a>
+            ) : (
+              <span>{children}</span>
+            ),
         }}
       >
         {source}
