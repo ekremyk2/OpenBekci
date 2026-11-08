@@ -100,7 +100,7 @@ func init() {
 		}},
 		"money.matchBankTransaction": {perms: rec, status: 200, override: collectorOverride, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			_, unit, _, _, in, _ := seedImport(w, t, org)
-			return jsonReq("POST", orgPath(org, "/bank-transactions/"+in.String()+":match"), fmt.Sprintf(`{"debtor":{"unit_id":"%s","debtor_kind":"owner"}}`, unit), moneyIdem()...)
+			return jsonReq("POST", orgPath(org, "/bank-transactions/"+in.String()+":match"), fmt.Sprintf(`{"debtor":{"mode":"unit_side","unit_id":"%s","debtor_kind":"owner"}}`, unit), moneyIdem()...)
 		}},
 		"money.unmatchBankTransaction": {perms: rec, status: 200, override: collectorOverride, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			site, unit, _, _, in, _ := seedImport(w, t, org)
@@ -155,7 +155,7 @@ func init() {
 		"money.createCollectionCase": {perms: manage, status: 201, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			seedChart(w, t, org, f.Site)
-			return jsonReq("POST", orgPath(org, "/collection-cases"), fmt.Sprintf(`{"site_id":"%s","debtor":{"unit_id":"%s","debtor_kind":"owner"},"opened_on":"2026-02-01","lawyer":"Av. Demir"}`, f.Site, f.Unit))
+			return jsonReq("POST", orgPath(org, "/collection-cases"), fmt.Sprintf(`{"site_id":"%s","debtor":{"mode":"unit_side","unit_id":"%s","debtor_kind":"owner"},"opened_on":"2026-02-01","lawyer":"Av. Demir"}`, f.Site, f.Unit))
 		}},
 		"money.getCollectionCase": {perms: read, status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: orgPath(org, "/collection-cases/"+seedCase(w, t, org).String())}

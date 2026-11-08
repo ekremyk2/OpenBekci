@@ -166,7 +166,7 @@ func init() {
 		"money.setLateFeePolicy": {perms: perms(ledger.PermMoneyManage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			seedChart(w, t, org, f.Site)
-			return jsonReq("PUT", orgPath(org, "/late-fee-policy?site_id="+f.Site.String()), `{"grace_days":0,"rate_pct_per_month":5}`, "If-Match", "0")
+			return jsonReq("PUT", orgPath(org, "/late-fee-policy?site_id="+f.Site.String()), `{"grace_days":0,"rate_pct_per_month":5}`, ifm, `"1"`)
 		}},
 		"money.getDebtorReport": siteQ("GET", "/reports/debtors", perms(ledger.PermReportsDebtors), 200, ""),
 		"money.getUnitStatement": {perms: anyPerms(ledger.PermStatementsRead, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {

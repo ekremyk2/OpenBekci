@@ -153,7 +153,7 @@ func init() {
 			return "", fmt.Sprintf(`{"plan_id":"%s","period":"2026-03"}`, s.plan(w, t)), nil
 		}),
 		"money.getChargeGenerationStatus": siteQ("/charge-generation", perms(ledger.PermMoneyRead), ""),
-		"money.getCharge": on(perms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, "GET", "/charges/", func(w *authztest.World, t *testing.T, s c2Site) (string, string, []string) {
+		"money.getCharge": on(anyPerms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), 200, "GET", "/charges/", func(w *authztest.World, t *testing.T, s c2Site) (string, string, []string) {
 			return s.charge(w, t).String(), "", nil
 		}),
 		"money.cancelCharge": on(perms(ledger.PermMoneyPost), 200, "POST", "/charges/", func(w *authztest.World, t *testing.T, s c2Site) (string, string, []string) {
@@ -201,24 +201,24 @@ func init() {
 			s := c2NewSite(w, t, org)
 			return jsonReq("POST", orgPath(org, "/payments/"+s.declared(w, t).String()+":reject"), `{"reason":"not received"}`)
 		}},
-		"money.getPersonStatement": {perms: perms(ledger.PermStatementsRead, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"money.getPersonStatement": {perms: anyPerms(ledger.PermStatementsRead, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			s := c2NewSite(w, t, org)
 			p := w.NewPerson(t, org)
 			cid := s.charge(w, t)
 			w.Exec(t, `UPDATE charge SET debtor_kind = 'person', debtor_person_id = $3 WHERE org_id = $1 AND id = $2`, org.ID, cid, p)
 			return mreq{method: "GET", path: orgPath(org, "/persons/"+p.String()+"/statement")}
 		}},
-		"money.getIncomeExpenseReport":    siteQ("/reports/income-expense", perms(ledger.PermReportsRead, ledger.PermReportsAggregate), "&from=2026-01-01&to=2026-12-31"),
+		"money.getIncomeExpenseReport":    siteQ("/reports/income-expense", anyPerms(ledger.PermReportsRead, ledger.PermReportsAggregate), "&from=2026-01-01&to=2026-12-31"),
 		"money.getTrialBalanceReport":     siteQ("/reports/trial-balance", perms(ledger.PermReportsRead), ""),
 		"money.getReceivablesAgingReport": siteQ("/reports/receivables-aging", perms(ledger.PermReportsRead), ""),
 		"money.getFundBalancesReport":     siteQ("/reports/fund-balances", perms(ledger.PermReportsRead), ""),
-		"money.getBudgetVsActualReport": {perms: perms(ledger.PermReportsRead, ledger.PermReportsAggregate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"money.getBudgetVsActualReport": {perms: anyPerms(ledger.PermReportsRead, ledger.PermReportsAggregate), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			s := c2NewSite(w, t, org)
 			return mreq{method: "GET", path: orgPath(org, "/reports/budget-vs-actual?site_id="+s.f.Site.String()+"&fiscal_year_id="+s.fiscalYear(w, t).String())}
 		}},
 		"money.getMoneyOverview": siteQ("/money/overview", perms(ledger.PermMoneyRead), ""),
 
-		"money.getPaymentReceipt": {perms: perms(ledger.PermPaymentsRecord, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		"money.getPaymentReceipt": {perms: anyPerms(ledger.PermPaymentsRecord, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: orgPath(org, "/payments/"+seedPayment(w, t, org).String()+"/receipt")}
 		}},
 		"money.sendPaymentReceipt": {perms: perms(ledger.PermPaymentsRecord), status: 204, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
