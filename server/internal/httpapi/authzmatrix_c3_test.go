@@ -13,9 +13,6 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
-	"github.com/openbekci/openbekci/server/internal/core/reports"
-	"github.com/openbekci/openbekci/server/internal/core/tenancy"
-	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
 
@@ -182,9 +179,3 @@ func init() {
 }
 
 // newTestMoney wires the money services of the test router.
-func newTestMoney(d *db.DB, tn *tenancy.Service) MoneyDeps {
-	bill := billing.NewService(d, tn, nil)
-	pay := payments.NewService(d, nil, nil)
-	return MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: bill, Payments: pay, Reports: reports.NewService(d, nil),
-		BankImport: bankimport.NewService(d, pay, nil), Collections: collections.NewService(d, bill, nil, nil)}
-}
