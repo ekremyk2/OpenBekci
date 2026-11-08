@@ -50,6 +50,16 @@ func TestPaymentConfirmedRendersTheAmount(t *testing.T) {
 	if len(bare) != 1 || bare[0].Payload["amount"] != amount {
 		t.Fatalf("bare amount payload = %+v, want %q", bare, amount)
 	}
+	// a fractional number is not minor units: it is left as it came, never truncated into an amount
+	frac := w.enqueue(t, ledger.NotifyPaymentConfirmed, map[string]any{"payment_id": p.ID.String(), "unit_id": w.unit.String(), "debtor_kind": "owner", "amount": 2000.5, "receipt_no": "R-10"})
+	if len(frac) != 1 || frac[0].Payload["amount"] != 2000.5 {
+		t.Fatalf("fractional amount payload = %+v, want it untouched", frac)
+	}
+	// an amount already formatted as text is not read again
+	text := w.enqueue(t, ledger.NotifyPaymentConfirmed, map[string]any{"payment_id": p.ID.String(), "unit_id": w.unit.String(), "debtor_kind": "owner", "amount": "₺1,00", "receipt_no": "R-11"})
+	if len(text) != 1 || text[0].Payload["amount"] != "₺1,00" {
+		t.Fatalf("text amount payload = %+v, want it untouched", text)
+	}
 	payload["site"] = "Site"
 	r := notifications.Render(notifications.TypePaymentConfirmed, "tr", payload)
 	want := "A-1 için " + amount + " ödemeniz onaylandı."
