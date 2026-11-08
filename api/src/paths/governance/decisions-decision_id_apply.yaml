@@ -21,13 +21,7 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - decisions.manage
-    site_manager:
-      - decisions.manage
-    board_member:
-      - decisions.manage
+  x-openbekci-roles: [decisions.manage]
   x-idempotent: required
   x-stability: preview
   parameters:

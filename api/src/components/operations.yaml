@@ -17,6 +17,7 @@ schemas:
       - claim.decided
       - meeting.called
       - meeting.decisions
+      - meeting.assembly_due
       - term.expiring
       - visitor.approval_requested
       - visitor.arrived

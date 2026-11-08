@@ -12,13 +12,7 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.manage
-    site_manager:
-      - meetings.manage
-    board_member:
-      - meetings.manage
+  x-openbekci-roles: [meetings.manage]
   x-stability: preview
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired

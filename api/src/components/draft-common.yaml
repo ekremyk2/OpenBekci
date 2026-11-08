@@ -30,6 +30,13 @@ parameters:
     schema:
       type: string
       example: '"3"'
+  IfMatchOptional:
+    name: If-Match
+    in: header
+    description: The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none.
+    schema:
+      type: string
+      example: '"3"'
   IdempotencyKeyRequired:
     name: Idempotency-Key
     in: header

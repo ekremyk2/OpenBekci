@@ -8,6 +8,7 @@ schemas:
     enum:
       - announcements.publish
       - announcements.read
+      - attendance.manage
       - audit.read
       - audit.report
       - claims.decide
@@ -15,6 +16,7 @@ schemas:
       - dashboard.portfolio
       - dashboard.site
       - dashboard.staff
+      - decisions.manage
       - directory.read
       - documents.manage
       - documents.read
@@ -30,6 +32,8 @@ schemas:
       - me.dashboard
       - me.manage
       - me.read
+      - meetings.manage
+      - meetings.read
       - memberships.manage
       - memberships.read
       - notifications.manage
@@ -46,6 +50,7 @@ schemas:
       - people.national_id
       - people.read
       - platform.manage
+      - polls.answer
       - roles.read
       - sessions.manage_own
       - sites.bank_details
@@ -69,11 +74,13 @@ x-openbekci-roles:
   org_admin:
     - announcements.publish
     - announcements.read
+    - attendance.manage
     - audit.read
     - claims.decide
     - codes.read
     - dashboard.portfolio
     - dashboard.site
+    - decisions.manage
     - directory.read
     - documents.manage
     - documents.read
@@ -87,6 +94,8 @@ x-openbekci-roles:
     - me.dashboard
     - me.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - memberships.manage
     - memberships.read
     - notifications.manage
@@ -102,6 +111,7 @@ x-openbekci-roles:
     - people.move_out
     - people.national_id
     - people.read
+    - polls.answer
     - roles.read
     - sessions.manage_own
     - sites.bank_details
@@ -122,10 +132,12 @@ x-openbekci-roles:
   site_manager:
     - announcements.publish
     - announcements.read
+    - attendance.manage
     - claims.decide
     - codes.read
     - dashboard.portfolio
     - dashboard.site
+    - decisions.manage
     - directory.read
     - documents.manage
     - documents.read
@@ -139,6 +151,8 @@ x-openbekci-roles:
     - me.dashboard
     - me.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - memberships.manage
     - memberships.read
     - notifications.manage
@@ -152,6 +166,7 @@ x-openbekci-roles:
     - people.move_out
     - people.national_id
     - people.read
+    - polls.answer
     - roles.read
     - sessions.manage_own
     - sites.bank_details
@@ -170,8 +185,10 @@ x-openbekci-roles:
   board_member:
     - announcements.publish
     - announcements.read
+    - attendance.manage
     - codes.read
     - dashboard.site
+    - decisions.manage
     - directory.read
     - documents.manage
     - documents.read
@@ -183,6 +200,8 @@ x-openbekci-roles:
     - me.dashboard
     - me.manage
     - me.read
+    - meetings.manage
+    - meetings.read
     - memberships.read
     - notifications.read
     - occupancies.manage
@@ -190,6 +209,7 @@ x-openbekci-roles:
     - org.read
     - people.manage
     - people.read
+    - polls.answer
     - roles.read
     - sessions.manage_own
     - sites.bank_details
@@ -220,6 +240,7 @@ x-openbekci-roles:
     - me.dashboard
     - me.manage
     - me.read
+    - meetings.read
     - memberships.read
     - notifications.read
     - occupancies.read

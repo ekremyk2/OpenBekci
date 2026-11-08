@@ -47,6 +47,8 @@ var Registered = []Field{
 	{"visitor", "plate"},
 	{"invitation", "email"},
 	{"invitation", "phone"},
+	{"decision", "dissents"},
+	{"meeting_notice", "tracking_no"},
 	{"*", "email"},
 	{"*", "phone"},
 	{"*", "national_id"},
@@ -74,7 +76,8 @@ var Registered = []Field{
 // audit diff of an unknown entity records the changed key names only, never
 // values (fail closed; see audit.Diff). Add an entity here in the same change
 // that adds its audited view.
-var PlainEntities = []string{"organization", "block", "unit", "allocation_key", "occupancy", "membership", "directory_consent"}
+var PlainEntities = []string{"organization", "block", "unit", "allocation_key", "occupancy", "membership", "directory_consent",
+	"governance_settings", "meeting", "agenda_item", "poll", "attendance", "vote_count", "term_reminder"}
 
 // KnownEntity reports whether entity may store non-PII values in clear: it
 // has entries of its own in Registered, or is in PlainEntities.

@@ -26,6 +26,7 @@ const (
 	TypeClaimDecided          = "claim.decided"
 	TypeMeetingCalled         = "meeting.called"
 	TypeMeetingDecisions      = "meeting.decisions"
+	TypeAssemblyDue           = "meeting.assembly_due"
 	TypeTermExpiring          = "term.expiring"
 	TypeVisitorApproval       = "visitor.approval_requested"
 	TypeVisitorArrived        = "visitor.arrived"
@@ -48,7 +49,7 @@ const (
 var Vocabulary = []string{
 	TypeAnnouncementPublished, TypeChargeDueSoon, TypeChargeOverdue, TypePaymentReceipt, TypePaymentDeclared,
 	TypePaymentConfirmed, TypePaymentRejected, TypeStatementSent, TypeTicketUpdated, TypeTicketCommented,
-	TypeClaimRequested, TypeClaimDecided, TypeMeetingCalled, TypeMeetingDecisions, TypeTermExpiring,
+	TypeClaimRequested, TypeClaimDecided, TypeMeetingCalled, TypeMeetingDecisions, TypeAssemblyDue, TypeTermExpiring,
 	TypeVisitorApproval, TypeVisitorArrived, TypeBookingConfirmed, TypeBookingCancelled, TypeDeliveryReceived,
 	TypeAgentSilent, TypeAgentClockSkew, TypeAgentStopped,
 }

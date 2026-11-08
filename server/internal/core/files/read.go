@@ -607,3 +607,12 @@ func (s *Service) Usage(ctx context.Context, orgID uuid.UUID) (Usage, error) {
 	}
 	return u, nil
 }
+
+// FileExists reports whether the organization has a stored (not deleted) file
+// with this id. Governance uses it to accept proof files, in the caller's
+// transaction (tenant isolation applies).
+func (s *Service) FileExists(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID) (bool, error) {
+	var ok bool
+	err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM file WHERE org_id = $1 AND id = $2 AND status IN ('ready', 'quarantined'))`, orgID, fileID).Scan(&ok)
+	return ok, err
+}

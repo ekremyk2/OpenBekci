@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -56,7 +57,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
+	srv := &apiServer{governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -94,12 +95,13 @@ func isAPIPath(path string) bool {
 
 // apiServer implements gen.StrictServerInterface by delegating to the modules.
 type apiServer struct {
-	instance *instance.Service
-	identity *identity.Service
-	tenancy  *tenancy.Service
-	people   *people.Service
-	audit    *audit.Service
-	files    *files.Service
+	instance   *instance.Service
+	identity   *identity.Service
+	tenancy    *tenancy.Service
+	people     *people.Service
+	governance *governance.Service
+	audit      *audit.Service
+	files      *files.Service
 	OpsDeps
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie

@@ -84,6 +84,20 @@ Anything else stays a text decision with an outcome.
 | Decision book | The system never claims to *be* the karar defteri; it produces numbered drafts and a yearly reminder for the notary closing **(verify)** |
 | Absent owners | After the meeting the decisions are sent to absent owners by the sender-chosen channels (O5) and the delivery is recorded like the call |
 
+## Refined after review of 0.2 (how the legal record is protected)
+
+| Topic | Rule |
+|---|---|
+| Which call was held | Recorded, never inferred from the clock: `:open-first-call` sets `held_call = first`; `:open-second-call` is allowed only after the first call failed its quorum (recorded as `first_call_failed_at`). Attendance is per call and does not carry over. Quorum, vote evaluation and the minutes read `held_call` |
+| Who may vote | The eligibility snapshot is a preview at the call and is retaken as of the day the session opens (G1): an owner who sold after the call loses the vote, the buyer of record can check in; the difference is audited |
+| Accepted decisions | Need recorded, non-empty counts whose threshold evaluation agrees, or an explicit `outcome_override` with a reason (audited). Shares are never estimated: without them the share-based rules are `undetermined` and cannot gate `accepted`. Counts are immutable once the item has a decision; after the meeting closes decisions are final except for dissents added within `dissent_window_days` (default 30, **verify**) |
+| Ties and abstentions | An abstention is present but not a yes; a tie rejects (every majority is strict); `simple_majority_present` is measured against those present; unanimity and four-fifths against all eligible votes (unreachable above the per-person cap) |
+| Delivery record | `sent_at` cannot be in the future or before the call; the proof must be a file of the organization; email and SMS count as a legal method only if the site setting `notice_electronic_allowed` (default off, **verify**) says so; a call that reached an owner late is flagged. The decisions notice is written when the delivery job runs, not when it is scheduled, and closing a meeting notifies nobody |
+| Transparency | Dissents (names, text) and vote counts are shown to staff; to owners only where `decision_details_visible_to_owners` is on (default off); tenants never |
+| Elected roles | `replaces_membership_ids[]` names the holders an election replaces (default none); `valid_to` defaults to `valid_from` + `default_term_months` |
+| Deviations | Settings more permissive than the Law 634 defaults need a `deviation_reason`, recorded in the audit trail |
+| Portability | The site export carries meetings, agenda items, notices, attendance, vote counts, polls, decisions, `decision_counter` and the generated documents |
+
 ## Still open in Governance
 
 - Whether the site or only the Turkish pack may edit the threshold table (default: site-editable with pack defaults, since the yönetim planı can deviate where the law allows).

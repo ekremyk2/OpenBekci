@@ -52,6 +52,9 @@ var siteScopedTables = map[string]bool{
 	"file": true, "ticket_workflow": true, "ticket_status": true, "ticket_category": true, "ticket": true,
 	"ticket_comment": true, "ticket_attachment": true, "ticket_status_history": true, "announcement": true,
 	"folder": true, "document": true, "site_notification_config": true, "site_channel_default": true,
+	// governance
+	"governance_settings": true, "meeting": true, "agenda_item": true, "meeting_document": true, "meeting_notice": true,
+	"poll": true, "poll_answer": true, "attendance": true, "vote_count": true, "decision_counter": true, "decision": true,
 }
 
 // childTables have no site column: each row hangs off a site-scoped parent of
@@ -69,12 +72,13 @@ var personColumns = map[string][]string{
 	"ticket": {"reporter_person_id", "assignee_person_id"}, "ticket_comment": {"author_person_id"},
 	"ticket_vote": {"person_id"}, "announcement_recipient": {"person_id"}, "announcement_read": {"person_id"},
 	"document": {"addressed_person_id"},
+	"attendance": {"person_id", "proxy_for_person_id"}, "meeting_notice": {"person_id"}, "poll_answer": {"answered_by"},
 }
 
 // neverFromArchive are columns that name an account or an action of the source
 // instance. They are cleared on import: an archive never links a person to a
 // login, and records of who did something do not carry over.
-var neverFromArchive = []string{"user_id", "created_by", "decided_by", "invited_by", "accepted_by", "invitation_id", "decision_id", "uploaded_by", "changed_by"}
+var neverFromArchive = []string{"user_id", "created_by", "decided_by", "invited_by", "accepted_by", "invitation_id", "uploaded_by", "changed_by", "recorded_by", "checked_in_by"}
 
 func invalidArchive(reason string) error {
 	return problem.Validation(problem.Field{Field: "file", Code: "invalid_value", Params: map[string]any{"reason": reason}})
@@ -159,6 +163,19 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, kee
 		}
 	}
 
+	// decisions travel with the site: agenda items and elected memberships keep
+	// their link when the decision is in the archive (a link to anything else is
+	// an invalid archive for agenda items and is cleared for memberships)
+	decisionIDs := map[string]bool{}
+	for _, r := range plan.rows["decision"] {
+		decisionIDs[fmt.Sprint(r["id"])] = true
+	}
+	for _, r := range plan.rows["agenda_item"] {
+		if r["decision_id"] != nil && !decisionIDs[fmt.Sprint(r["decision_id"])] {
+			return importPlan{}, invalidArchive("unknown_decision_in_agenda_item")
+		}
+	}
+
 	// memberships: site-owned board/auditor inside the site only
 	keptMembers := []map[string]any{}
 	droppedMembers := 0
@@ -169,6 +186,9 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, kee
 		owned, _ := r["site_owned"].(bool)
 		inside := (scope == "site" && sid == site) || (scope == "block" && blockIDs[sid])
 		if owned && (role == "board_member" || role == "auditor") && inside {
+			if r["decision_id"] != nil && !decisionIDs[fmt.Sprint(r["decision_id"])] {
+				r["decision_id"] = nil
+			}
 			keptMembers = append(keptMembers, r)
 		} else {
 			droppedMembers++

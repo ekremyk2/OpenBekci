@@ -17,6 +17,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
@@ -46,6 +47,7 @@ type idEnv struct {
 	mail   *mail.Recorder
 	people *people.Service
 	tenSvc *tenancy.Service
+	gov    *governance.Service
 	cookie *http.Cookie
 	files  *files.Service
 	ops    *opsTest
@@ -83,13 +85,14 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	allowAll := func(context.Context, pgx.Tx, files.ScopeRef) (bool, error) { return true, nil }
 	e.files.RegisterResolver(testScope, files.ResolverFuncs{Read: allowAll, Attach: allowAll}, files.WithMaxFiles(3))
 	e.ops = newOpsTest(d, e.files)
+	e.gov = governance.NewService(d, d, governance.Config{BaseURL: testBase, InstanceName: "Test", Log: cfg.Log})
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Audit: audit.NewService(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}
 	e.h = NewRouter(e.deps, Options{})

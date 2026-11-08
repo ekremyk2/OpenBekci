@@ -46,7 +46,11 @@ const personsOfSite = `SELECT person_id FROM occupancy WHERE org_id = $1 AND sit
 		UNION SELECT v.person_id FROM ticket_vote v JOIN ticket t ON t.org_id = v.org_id AND t.id = v.ticket_id WHERE v.org_id = $1 AND t.site_id = $2
 		UNION SELECT r.person_id FROM announcement_recipient r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2
 		UNION SELECT r.person_id FROM announcement_read r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2
-		UNION SELECT addressed_person_id FROM document WHERE org_id = $1 AND site_id = $2 AND addressed_person_id IS NOT NULL`
+		UNION SELECT addressed_person_id FROM document WHERE org_id = $1 AND site_id = $2 AND addressed_person_id IS NOT NULL
+	UNION SELECT person_id FROM attendance WHERE org_id = $1 AND site_id = $2
+	UNION SELECT proxy_for_person_id FROM attendance WHERE org_id = $1 AND site_id = $2 AND proxy_for_person_id IS NOT NULL
+	UNION SELECT person_id FROM meeting_notice WHERE org_id = $1 AND site_id = $2
+	UNION SELECT answered_by FROM poll_answer WHERE org_id = $1 AND site_id = $2`
 
 // exportTables are the tables of an archive in insertion order (parents first).
 // Every site-scoped tenant table belongs here or in excludedTables; the
@@ -86,10 +90,25 @@ var exportTables = []exportTable{
 	{"document", `SELECT to_jsonb(t) FROM document t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"site_notification_config", `SELECT to_jsonb(t) FROM site_notification_config t WHERE t.org_id = $1 AND t.site_id = $2`},
 	{"site_channel_default", `SELECT to_jsonb(t) FROM site_channel_default t WHERE t.org_id = $1 AND t.site_id = $2`},
+	// Governance (0.2): the site's legal paperwork travels with it, with the
+	// decision numbers (decision_counter) so the karar defteri continues without
+	// gaps. The foreign keys between decision, agenda_item and membership are
+	// deferred, so the order within the archive does not matter for them.
+	{"governance_settings", `SELECT to_jsonb(t) FROM governance_settings t WHERE t.org_id = $1 AND t.site_id = $2`},
+	{"meeting", `SELECT to_jsonb(t) FROM meeting t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"agenda_item", `SELECT to_jsonb(t) FROM agenda_item t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"meeting_document", `SELECT to_jsonb(t) FROM meeting_document t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"meeting_notice", `SELECT to_jsonb(t) FROM meeting_notice t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"poll", `SELECT to_jsonb(t) FROM poll t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.agenda_item_id`},
+	{"poll_answer", `SELECT to_jsonb(t) FROM poll_answer t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.agenda_item_id, t.unit_id`},
+	{"attendance", `SELECT to_jsonb(t) FROM attendance t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"vote_count", `SELECT to_jsonb(t) FROM vote_count t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.agenda_item_id`},
+	{"decision_counter", `SELECT to_jsonb(t) FROM decision_counter t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.year`},
+	{"decision", `SELECT to_jsonb(t) FROM decision t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.year, t.sequence_no`},
 }
 
 // excludedTables are tenant tables a site archive does not carry, with the reason.
-var excludedTables = map[string]string{
+var excludedTables = map[string]string{ //nolint:gosec // table names, not credentials
 	"organization": "the tenant root; the target organization already exists",
 	"audit_event":  "the audit trail stays with the organization that made the changes",
 	"site_export":  "the record of the hand-over itself",
@@ -102,6 +121,10 @@ var excludedTables = map[string]string{
 	"notification_mute":     "personal preferences of an account, not site data; people set them again",
 	"sms_usage":             "the instance's SMS counter of the old organization; the new site starts at zero",
 	"org_storage_usage":     "derived byte counter of the organization; recomputed from its files",
+	// Governance: the legal paperwork is exported, these two are not.
+	"attendance_token":  "check-in credentials of one meeting (stored hashed); useless after the hand-over",
+	"term_reminder":     "operational reminders; recomputed from the memberships by the daily job",
+	"assembly_reminder": "operational record of the yearly ordinary-assembly reminder",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

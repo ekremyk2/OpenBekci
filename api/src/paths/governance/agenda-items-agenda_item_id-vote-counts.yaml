@@ -11,7 +11,7 @@ get:
   operationId: governance.getVoteCounts
   summary: Get the in-room count
   description: |-
-    **Release 0.2.** Get the in-room count.
+    **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
 
     Permission: `meetings.read`.
   tags:
@@ -19,19 +19,7 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.read
-    site_manager:
-      - meetings.read
-    board_member:
-      - meetings.read
-    auditor:
-      - meetings.read
-    owner:
-      - meetings.read
-    tenant:
-      - meetings.read
+  x-openbekci-roles: [meetings.read]
   x-stability: preview
   responses:
     "200":
@@ -62,13 +50,7 @@ put:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - decisions.manage
-    site_manager:
-      - decisions.manage
-    board_member:
-      - decisions.manage
+  x-openbekci-roles: [decisions.manage]
   x-idempotent: optional
   x-stability: preview
   requestBody:

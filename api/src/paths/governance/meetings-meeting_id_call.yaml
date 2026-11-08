@@ -21,13 +21,7 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.manage
-    site_manager:
-      - meetings.manage
-    board_member:
-      - meetings.manage
+  x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
   x-stability: preview
   parameters:

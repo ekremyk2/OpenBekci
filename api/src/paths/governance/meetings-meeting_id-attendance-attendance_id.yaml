@@ -28,13 +28,7 @@ delete:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - attendance.manage
-    site_manager:
-      - attendance.manage
-    board_member:
-      - attendance.manage
+  x-openbekci-roles: [attendance.manage]
   x-idempotent: optional
   x-stability: preview
   responses:

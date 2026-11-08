@@ -37,6 +37,10 @@ type Options struct {
 	Notifications Deliverer
 	// Tasks are run periodically by the worker (each also once at start).
 	Tasks []Task
+	// Register adds a module's workers (for example governance). Optional.
+	Register func(*river.Workers)
+	// Periodic are a module's scheduled jobs, run by the elected leader. Optional.
+	Periodic []*river.PeriodicJob
 }
 
 // FilePruner removes expired and deleted files (*files.Service); the count is
@@ -148,6 +152,9 @@ func (w *pingWorker) Work(ctx context.Context, job *river.Job[PingArgs]) error {
 func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 	workers := river.NewWorkers()
 	river.AddWorker(workers, &pingWorker{log: log})
+	if o.Register != nil {
+		o.Register(workers)
+	}
 	if o.Idempotency != nil {
 		river.AddWorker(workers, &pruneIdempotencyWorker{log: log, pruner: o.Idempotency})
 	}
@@ -210,6 +217,9 @@ func New(pool *pgxpool.Pool, log *slog.Logger, o Options) (*Client, error) {
 				&river.PeriodicJobOpts{RunOnStart: true},
 			))
 		}
+	}
+	if o.Work {
+		cfg.PeriodicJobs = append(cfg.PeriodicJobs, o.Periodic...)
 	}
 	c, err := river.NewClient(riverpgxv5.New(pool), cfg)
 	if err != nil {

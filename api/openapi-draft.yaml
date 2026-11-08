@@ -17083,18 +17083,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -17128,12 +17117,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -17179,18 +17163,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - name: country_code
@@ -17231,18 +17204,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
@@ -17309,12 +17271,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17365,18 +17322,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -17408,12 +17354,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17458,12 +17399,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17508,12 +17444,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17595,6 +17526,100 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.openFirstCall
+      summary: Open the session at the first call
+      description: |-
+        **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.openSecondCall
+      summary: Open the second call
+      description: |-
+        **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/meetings/{meeting_id}:close:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -17620,12 +17645,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17672,12 +17692,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17730,15 +17745,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-          - attendance.manage
-        site_manager:
-          - meetings.manage
-          - attendance.manage
-        board_member:
-          - meetings.manage
-          - attendance.manage
+        - attendance.manage
       x-stability: preview
       responses:
         '200':
@@ -17769,7 +17776,7 @@ paths:
       operationId: governance.getCallLetter
       summary: Download the call letter
       description: |-
-        **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+        **Release 0.2.** Without `person_id` the generic call letter filed at the call. With `person_id` the per-owner letter that carries that owner's check-in QR token (the token is shown here and in `/me` and replaces the previously issued one: only its hash is stored). An owner may fetch only their own (403 otherwise); managers fetch anyone's. Check-in itself needs the session to be open.
 
         Permission: `meetings.read`.
       tags:
@@ -17778,18 +17785,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - name: person_id
@@ -17797,7 +17793,7 @@ paths:
           schema:
             type: string
             format: uuid
-          description: Filter by person.
+          description: The owner whose personal letter (with their check-in QR) is wanted.
       responses:
         '200':
           description: The file.
@@ -17839,12 +17835,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-stability: preview
       responses:
         '200':
@@ -17885,18 +17876,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -17938,12 +17918,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17988,18 +17963,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -18039,12 +18003,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-stability: preview
       parameters:
         - name: phase
@@ -18120,12 +18079,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18178,12 +18132,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18227,7 +18176,7 @@ paths:
       operationId: governance.notifyMeetingDecisions
       summary: Send the decisions to absent owners
       description: |-
-        **Release 0.2.** Creates `decisions` notices and records the delivery like the call; `dry_run=true` returns the counts only.
+        **Release 0.2.** Schedules the delivery of the decisions to the owners who were absent. The `decisions` notice (the legal record) is written when the delivery job runs, with the time it was delivered, not when it is scheduled; an owner whose delivery is recorded is skipped, and each notification carries a dedupe key, so sending twice never duplicates. Needs a closed meeting with at least one decision (otherwise 409). Closing a meeting does not notify anybody. `dry_run=true` returns the counts of owners still to be notified only.
 
         Permission: `meetings.manage`.
 
@@ -18238,12 +18187,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: required
       x-stability: preview
       parameters:
@@ -18299,18 +18243,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/Limit'
@@ -18345,12 +18278,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18405,12 +18333,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18455,12 +18378,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18505,12 +18423,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18557,18 +18470,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -18591,7 +18493,7 @@ paths:
       description: |-
         **Release 0.2.** Create or change the poll.
 
-        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+        The first creation of a poll needs no `If-Match`. Every later change requires it: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422). A closed poll (its `closes_at` has passed) is final: it cannot be reopened or changed (409 `conflict`).
 
         Permission: `meetings.manage`.
 
@@ -18602,12 +18504,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18636,7 +18533,7 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
       parameters:
-        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IfMatchOptional'
   /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -18662,9 +18559,10 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        owner:
-          - polls.answer
+        - polls.answer
       x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       x-stability: preview
       requestBody:
         required: true
@@ -18714,14 +18612,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
-        owner:
-          - polls.answer
+        - polls.answer
       x-stability: preview
       responses:
         '200':
@@ -18761,12 +18652,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/Limit'
@@ -18800,7 +18686,7 @@ paths:
       operationId: governance.getVoteCounts
       summary: Get the in-room count
       description: |-
-        **Release 0.2.** Get the in-room count.
+        **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
 
         Permission: `meetings.read`.
       tags:
@@ -18809,18 +18695,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -18852,12 +18727,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18908,12 +18778,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-stability: preview
       parameters:
         - name: mode
@@ -18966,12 +18831,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -19033,12 +18893,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-idempotent: optional
       x-stability: preview
       responses:
@@ -19079,12 +18934,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -19130,18 +18980,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
@@ -19209,12 +19048,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -19265,18 +19099,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -19308,12 +19131,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -19368,12 +19186,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: required
       x-stability: preview
       parameters:
@@ -19420,12 +19233,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
@@ -24001,6 +23809,13 @@ components:
       in: header
       required: true
       description: The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+      schema:
+        type: string
+        example: '"3"'
+    IfMatchOptional:
+      name: If-Match
+      in: header
+      description: The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none.
       schema:
         type: string
         example: '"3"'
@@ -33942,6 +33757,7 @@ components:
         - claim.decided
         - meeting.called
         - meeting.decisions
+        - meeting.assembly_due
         - term.expiring
         - visitor.approval_requested
         - visitor.arrived
@@ -36310,6 +36126,39 @@ components:
           type: integer
           format: int64
           description: Reminder lead time before a term ends.
+        vote_weight:
+          type: string
+          enum:
+            - per_unit
+            - per_owner
+          description: Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+        ordinary_assembly_month:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 12
+          description: Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+        default_term_months:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
+        notice_electronic_allowed:
+          type: boolean
+          description: Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`.
+        deviation_reason:
+          type: string
+          maxLength: 2000
+          description: 'Input only. Required when a value is more permissive than the Law 634 default (lower quorum or notice time, higher proxy or per-person caps, a weaker threshold): the reason (for example the clause of the yonetim plani) is recorded in the audit trail with the list of deviations. Not stored in the settings.'
+        decision_details_visible_to_owners:
+          type: boolean
+          description: Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them.
+        dissent_window_days:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 365
+          description: How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
     GovernanceSettings:
       type: object
       required:
@@ -36438,6 +36287,8 @@ components:
         - call_letter_document_id
         - minutes_document_id
         - called_at
+        - held_call
+        - first_call_failed_at
         - created_at
         - updated_at
         - version
@@ -36489,9 +36340,10 @@ components:
           x-open-enum: true
         eligibility_snapshot:
           type: object
-          additionalProperties: true
           nullable: true
-          description: Who could vote and with what weight as of the call date; fixed at `:call`.
+          allOf:
+            - $ref: '#/components/schemas/EligibilitySnapshot'
+          description: Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only.
         call_letter_document_id:
           type: string
           format: uuid
@@ -36504,6 +36356,19 @@ components:
           type: string
           format: date-time
           nullable: true
+        held_call:
+          type: string
+          nullable: true
+          description: The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
+        first_call_failed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the first call was found without quorum and the second call opened.
         created_at:
           type: string
           format: date-time
@@ -36529,6 +36394,8 @@ components:
         call_letter_document_id: null
         minutes_document_id: null
         called_at: null
+        held_call: null
+        first_call_failed_at: null
         created_at: '2026-03-01T09:00:00Z'
         updated_at: '2026-03-01T09:00:00Z'
         version: 1
@@ -36561,6 +36428,7 @@ components:
           x-open-enum: true
         title:
           type: string
+          maxLength: 200
           nullable: true
         scheduled_at:
           type: string
@@ -36570,12 +36438,14 @@ components:
           format: date-time
         location:
           type: string
+          maxLength: 300
     MeetingUpdate:
       type: object
       description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
       properties:
         title:
           type: string
+          maxLength: 200
           nullable: true
         scheduled_at:
           type: string
@@ -36585,6 +36455,7 @@ components:
           format: date-time
         location:
           type: string
+          maxLength: 300
     MeetingList:
       type: object
       required:
@@ -36615,6 +36486,8 @@ components:
             call_letter_document_id: null
             minutes_document_id: null
             called_at: null
+            held_call: null
+            first_call_failed_at: null
             created_at: '2026-03-01T09:00:00Z'
             updated_at: '2026-03-01T09:00:00Z'
             version: 1
@@ -36638,6 +36511,7 @@ components:
       properties:
         reason:
           type: string
+          maxLength: 1000
     Quorum:
       type: object
       description: Live quorum under the site rules; polled.
@@ -36823,9 +36697,13 @@ components:
           type: string
           format: uuid
           nullable: true
+          description: A file of the organization (the scanned receipt or signature page); checked when recorded.
         note:
           type: string
           nullable: true
+        late:
+          type: boolean
+          description: The call reached this owner less than `call_min_days` before the meeting (computed when recorded).
         created_at:
           type: string
           format: date-time
@@ -36845,6 +36723,7 @@ components:
         tracking_no: null
         proof_file_id: null
         note: null
+        late: false
         created_at: '2026-03-01T09:00:00Z'
         updated_at: '2026-03-01T09:00:00Z'
     MeetingNoticeList:
@@ -36903,11 +36782,13 @@ components:
           format: date-time
         tracking_no:
           type: string
+          maxLength: 100
         proof_file_id:
           type: string
           format: uuid
         note:
           type: string
+          maxLength: 1000
     MeetingNoticeBulk:
       type: object
       required:
@@ -37048,8 +36929,10 @@ components:
       properties:
         title:
           type: string
+          maxLength: 300
         description:
           type: string
+          maxLength: 4000
           nullable: true
         will_be_voted:
           type: boolean
@@ -37062,8 +36945,10 @@ components:
       properties:
         title:
           type: string
+          maxLength: 300
         description:
           type: string
+          maxLength: 4000
           nullable: true
         will_be_voted:
           type: boolean
@@ -37152,6 +37037,7 @@ components:
       properties:
         question:
           type: string
+          maxLength: 500
         opens_at:
           type: string
           format: date-time
@@ -37268,7 +37154,7 @@ components:
           description: 'Always false: the binding vote is counted in the room.'
     VoteCountSet:
       type: object
-      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi.'
+      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open.'
       required:
         - yes_count
         - no_count
@@ -37352,6 +37238,7 @@ components:
         - unit_ids
         - unit_labels
         - mode
+        - call
         - proxy_for_person_id
         - source
         - checked_in_at
@@ -37389,6 +37276,13 @@ components:
             - in_person
             - proxy
           x-open-enum: true
+        call:
+          type: string
+          description: The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
         proxy_for_person_id:
           type: string
           format: uuid
@@ -37424,6 +37318,7 @@ components:
         unit_labels:
           - Ali Veli
         mode: in_person
+        call: first
         proxy_for_person_id: null
         source: desk
         checked_in_at: '2026-03-01T09:00:00Z'
@@ -37456,6 +37351,7 @@ components:
             unit_labels:
               - Ali Veli
             mode: in_person
+            call: first
             proxy_for_person_id: null
             source: desk
             checked_in_at: '2026-03-01T09:00:00Z'
@@ -37520,6 +37416,7 @@ components:
           format: uuid
         text:
           type: string
+          maxLength: 4000
     DecisionEffect:
       type: object
       required:
@@ -37614,6 +37511,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Dissent'
+        outcome_override_reason:
+          type: string
+          nullable: true
+          description: Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited.
         concerns_residents:
           type: boolean
           description: Tenants see only decisions marked this way.
@@ -37677,6 +37578,7 @@ components:
           nullable: true
         text:
           type: string
+          maxLength: 10000
         outcome:
           type: string
           description: Open enum.
@@ -37692,12 +37594,22 @@ components:
             $ref: '#/components/schemas/DissentInput'
         concerns_residents:
           type: boolean
+        outcome_override:
+          type: object
+          description: 'Required to record `accepted` or `rejected` when the item''s counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited.'
+          required:
+            - reason
+          properties:
+            reason:
+              type: string
+              maxLength: 2000
     DecisionUpdate:
       type: object
       description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
       properties:
         text:
           type: string
+          maxLength: 10000
         outcome:
           type: string
           description: Open enum.
@@ -37778,7 +37690,6 @@ components:
         - scope_type
         - scope_id
         - valid_from
-        - valid_to
       properties:
         kind:
           type: string
@@ -37800,9 +37711,13 @@ components:
         valid_to:
           type: string
           format: date
-        end_previous:
-          type: boolean
-          description: A new election ends the old terms (G6).
+          description: End of the term. Optional, when omitted it is `valid_from` plus the site's `default_term_months`.
+        replaces_membership_ids:
+          type: array
+          description: 'Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.)'
+          items:
+            type: string
+            format: uuid
     DecisionApplyBudget:
       type: object
       required:
@@ -37825,7 +37740,9 @@ components:
           type: string
           description: '`special_assessment`'
         plan:
-          $ref: '#/components/schemas/ChargePlanCreate'
+          type: object
+          additionalProperties: true
+          description: A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged).
     DecisionApply:
       description: The change a decision triggers; the manager confirms each one (G5).
       oneOf:
@@ -41722,6 +41639,7 @@ components:
       enum:
         - announcements.publish
         - announcements.read
+        - attendance.manage
         - audit.read
         - audit.report
         - claims.decide
@@ -41729,6 +41647,7 @@ components:
         - dashboard.portfolio
         - dashboard.site
         - dashboard.staff
+        - decisions.manage
         - directory.read
         - documents.manage
         - documents.read
@@ -41744,6 +41663,8 @@ components:
         - me.dashboard
         - me.manage
         - me.read
+        - meetings.manage
+        - meetings.read
         - memberships.manage
         - memberships.read
         - notifications.manage
@@ -41760,6 +41681,7 @@ components:
         - people.national_id
         - people.read
         - platform.manage
+        - polls.answer
         - roles.read
         - sessions.manage_own
         - sites.bank_details
@@ -41897,3 +41819,93 @@ components:
           type: string
           nullable: true
           description: Pass as `cursor` for the next page; null on the last page.
+    EligibilityOwner:
+      type: object
+      description: An owner of record with the weight they vote with.
+      required:
+        - person_id
+        - display_name
+        - unit_ids
+        - unit_labels
+        - share
+        - vote_weight
+        - representative_of_unit_ids
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        unit_ids:
+          type: array
+          description: Every unit the person owns, including co-owned units another owner votes for.
+          items:
+            type: string
+            format: uuid
+        unit_labels:
+          type: array
+          description: Door numbers of `unit_ids`.
+          items:
+            type: string
+        share:
+          type: string
+          description: The arsa payi the person votes for, a decimal string (exact, not a float).
+        vote_weight:
+          type: integer
+          format: int64
+          description: Number of votes the person holds (before the per-person cap).
+        representative_of_unit_ids:
+          type: array
+          description: The units this person votes for (co-owners vote through one representative).
+          items:
+            type: string
+            format: uuid
+    EligibilitySnapshot:
+      type: object
+      description: Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it.
+      required:
+        - taken_at
+        - as_of
+        - vote_weight
+        - share_basis
+        - unit_count
+        - total_votes
+        - total_share
+        - owners
+        - unrepresented_units
+      properties:
+        taken_at:
+          type: string
+          format: date-time
+          description: When the snapshot was computed.
+        as_of:
+          type: string
+          format: date-time
+          description: The day whose owners of record it lists.
+        vote_weight:
+          type: string
+          description: Open enum. `per_unit` or `per_owner`.
+          x-open-enum: true
+          enum:
+            - per_unit
+            - per_owner
+        share_basis:
+          type: string
+          description: '`arsa_payi`, or `equal` when the site has no arsa payi values.'
+        unit_count:
+          type: integer
+          format: int64
+        total_votes:
+          type: integer
+          format: int64
+        total_share:
+          type: number
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/EligibilityOwner'
+        unrepresented_units:
+          type: array
+          description: Door numbers of units without an owner of record; nobody votes for them.
+          items:
+            type: string

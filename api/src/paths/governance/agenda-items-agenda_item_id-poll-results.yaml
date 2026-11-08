@@ -19,15 +19,7 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.manage
-    site_manager:
-      - meetings.manage
-    board_member:
-      - meetings.manage
-    owner:
-      - polls.answer
+  x-openbekci-roles: [polls.answer]
   x-stability: preview
   responses:
     "200":

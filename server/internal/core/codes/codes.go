@@ -135,6 +135,7 @@ var sections = map[string]map[string]pair{
 		"claim.decided":              {"Unit claim decided", "Daire talebi sonuçlandı"},
 		"meeting.called":             {"Meeting called", "Toplantıya çağrı"},
 		"meeting.decisions":          {"Meeting decisions", "Toplantı kararları"},
+		"meeting.assembly_due":       {"Ordinary assembly due", "Olağan genel kurul zamanı"},
 		"term.expiring":              {"Term ending", "Görev süresi doluyor"},
 		"visitor.approval_requested": {"Visitor at the gate", "Kapıda ziyaretçi"},
 		"visitor.arrived":            {"Visitor arrived", "Ziyaretçi geldi"},

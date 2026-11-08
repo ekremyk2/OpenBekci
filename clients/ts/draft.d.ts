@@ -6846,6 +6846,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the session at the first call
+         * @description **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openFirstCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the second call
+         * @description **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openSecondCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/meetings/{meeting_id}:close": {
         parameters: {
             query?: never;
@@ -6945,7 +7003,7 @@ export interface paths {
         };
         /**
          * Download the call letter
-         * @description **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+         * @description **Release 0.2.** Without `person_id` the generic call letter filed at the call. With `person_id` the per-owner letter that carries that owner's check-in QR token (the token is shown here and in `/me` and replaces the previously issued one: only its hash is stored). An owner may fetch only their own (403 otherwise); managers fetch anyone's. Check-in itself needs the session to be open.
          *
          *     Permission: `meetings.read`.
          */
@@ -7171,7 +7229,7 @@ export interface paths {
         put?: never;
         /**
          * Send the decisions to absent owners
-         * @description **Release 0.2.** Creates `decisions` notices and records the delivery like the call; `dry_run=true` returns the counts only.
+         * @description **Release 0.2.** Schedules the delivery of the decisions to the owners who were absent. The `decisions` notice (the legal record) is written when the delivery job runs, with the time it was delivered, not when it is scheduled; an owner whose delivery is recorded is skipped, and each notification carries a dedupe key, so sending twice never duplicates. Needs a closed meeting with at least one decision (otherwise 409). Closing a meeting does not notify anybody. `dry_run=true` returns the counts of owners still to be notified only.
          *
          *     Permission: `meetings.manage`.
          *
@@ -7308,7 +7366,7 @@ export interface paths {
          * Create or change the poll
          * @description **Release 0.2.** Create or change the poll.
          *
-         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *     The first creation of a poll needs no `If-Match`. Every later change requires it: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422). A closed poll (its `closes_at` has passed) is final: it cannot be reopened or changed (409 `conflict`).
          *
          *     Permission: `meetings.manage`.
          *
@@ -7419,7 +7477,7 @@ export interface paths {
         };
         /**
          * Get the in-room count
-         * @description **Release 0.2.** Get the in-room count.
+         * @description **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
          *
          *     Permission: `meetings.read`.
          */
@@ -17315,6 +17373,32 @@ export interface components {
              * @description Reminder lead time before a term ends.
              */
             term_reminder_days: number;
+            /**
+             * @description Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+             * @enum {string}
+             */
+            vote_weight?: "per_unit" | "per_owner";
+            /**
+             * Format: int64
+             * @description Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+             */
+            ordinary_assembly_month?: number;
+            /**
+             * Format: int64
+             * @description Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
+             */
+            default_term_months?: number;
+            /** @description Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`. */
+            notice_electronic_allowed?: boolean;
+            /** @description Input only. Required when a value is more permissive than the Law 634 default (lower quorum or notice time, higher proxy or per-person caps, a weaker threshold): the reason (for example the clause of the yonetim plani) is recorded in the audit trail with the list of deviations. Not stored in the settings. */
+            deviation_reason?: string;
+            /** @description Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them. */
+            decision_details_visible_to_owners?: boolean;
+            /**
+             * Format: int64
+             * @description How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
+             */
+            dissent_window_days?: number;
         };
         GovernanceSettings: {
             /** Format: uuid */
@@ -17430,6 +17514,8 @@ export interface components {
          *       "call_letter_document_id": null,
          *       "minutes_document_id": null,
          *       "called_at": null,
+         *       "held_call": null,
+         *       "first_call_failed_at": null,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z",
          *       "version": 1
@@ -17463,16 +17549,24 @@ export interface components {
              * @enum {string}
              */
             status: "draft" | "called" | "in_session" | "closed" | "cancelled";
-            /** @description Who could vote and with what weight as of the call date; fixed at `:call`. */
-            eligibility_snapshot: {
-                [key: string]: unknown;
-            } | null;
+            /** @description Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only. */
+            eligibility_snapshot: components["schemas"]["EligibilitySnapshot"] | null;
             /** Format: uuid */
             call_letter_document_id: string | null;
             /** Format: uuid */
             minutes_document_id: string | null;
             /** Format: date-time */
             called_at: string | null;
+            /**
+             * @description The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+             * @enum {string|null}
+             */
+            held_call: "first" | "second" | null;
+            /**
+             * Format: date-time
+             * @description When the first call was found without quorum and the second call opened.
+             */
+            first_call_failed_at: string | null;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -17530,6 +17624,8 @@ export interface components {
          *           "call_letter_document_id": null,
          *           "minutes_document_id": null,
          *           "called_at": null,
+         *           "held_call": null,
+         *           "first_call_failed_at": null,
          *           "created_at": "2026-03-01T09:00:00Z",
          *           "updated_at": "2026-03-01T09:00:00Z",
          *           "version": 1
@@ -17611,6 +17707,7 @@ export interface components {
          *       "tracking_no": null,
          *       "proof_file_id": null,
          *       "note": null,
+         *       "late": false,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z"
          *     }
@@ -17643,9 +17740,14 @@ export interface components {
             /** Format: date-time */
             sent_at: string | null;
             tracking_no: string | null;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A file of the organization (the scanned receipt or signature page); checked when recorded.
+             */
             proof_file_id: string | null;
             note: string | null;
+            /** @description The call reached this owner less than `call_min_days` before the meeting (computed when recorded). */
+            late?: boolean;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -17894,7 +17996,7 @@ export interface components {
             /** @description Always false: the binding vote is counted in the room. */
             binding: boolean;
         };
-        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. */
+        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open. */
         VoteCountSet: {
             /** Format: int64 */
             yes_count: number;
@@ -17943,6 +18045,7 @@ export interface components {
          *         "Ali Veli"
          *       ],
          *       "mode": "in_person",
+         *       "call": "first",
          *       "proxy_for_person_id": null,
          *       "source": "desk",
          *       "checked_in_at": "2026-03-01T09:00:00Z",
@@ -17968,6 +18071,11 @@ export interface components {
              * @enum {string}
              */
             mode: "in_person" | "proxy";
+            /**
+             * @description The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+             * @enum {string}
+             */
+            call: "first" | "second";
             /** Format: uuid */
             proxy_for_person_id: string | null;
             /**
@@ -18000,6 +18108,7 @@ export interface components {
          *             "Ali Veli"
          *           ],
          *           "mode": "in_person",
+         *           "call": "first",
          *           "proxy_for_person_id": null,
          *           "source": "desk",
          *           "checked_in_at": "2026-03-01T09:00:00Z",
@@ -18108,6 +18217,8 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_vote" | "noted";
             vote_count: components["schemas"]["VoteCount"] | null;
             dissents: components["schemas"]["Dissent"][];
+            /** @description Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited. */
+            outcome_override_reason?: string | null;
             /** @description Tenants see only decisions marked this way. */
             concerns_residents: boolean;
             /** Format: date-time */
@@ -18138,6 +18249,10 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_vote" | "noted";
             dissents?: components["schemas"]["DissentInput"][];
             concerns_residents?: boolean;
+            /** @description Required to record `accepted` or `rejected` when the item's counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited. */
+            outcome_override?: {
+                reason: string;
+            };
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         DecisionUpdate: {
@@ -18213,10 +18328,13 @@ export interface components {
             scope_id: string | null;
             /** Format: date */
             valid_from: string;
-            /** Format: date */
-            valid_to: string;
-            /** @description A new election ends the old terms (G6). */
-            end_previous?: boolean;
+            /**
+             * Format: date
+             * @description End of the term. Optional, when omitted it is `valid_from` plus the site's `default_term_months`.
+             */
+            valid_to?: string;
+            /** @description Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.) */
+            replaces_membership_ids?: string[];
         };
         DecisionApplyBudget: {
             /**
@@ -18233,7 +18351,10 @@ export interface components {
              * @enum {string}
              */
             kind: "special_assessment";
-            plan: components["schemas"]["ChargePlanCreate"];
+            /** @description A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged). */
+            plan: {
+                [key: string]: unknown;
+            };
         };
         /** @description The change a decision triggers; the manager confirms each one (G5). */
         DecisionApply: components["schemas"]["DecisionApplyDuesRate"] | components["schemas"]["DecisionApplyMembership"] | components["schemas"]["DecisionApplyBudget"] | components["schemas"]["DecisionApplySpecialAssessment"];
@@ -20688,7 +20809,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "announcements.publish" | "announcements.read" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        Permission: "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
         /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
         TicketWorkflowRestore: {
             /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
@@ -20757,6 +20878,53 @@ export interface components {
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
+        /** @description An owner of record with the weight they vote with. */
+        EligibilityOwner: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            /** @description Every unit the person owns, including co-owned units another owner votes for. */
+            unit_ids: string[];
+            /** @description Door numbers of `unit_ids`. */
+            unit_labels: string[];
+            /** @description The arsa payi the person votes for, a decimal string (exact, not a float). */
+            share: string;
+            /**
+             * Format: int64
+             * @description Number of votes the person holds (before the per-person cap).
+             */
+            vote_weight: number;
+            /** @description The units this person votes for (co-owners vote through one representative). */
+            representative_of_unit_ids: string[];
+        };
+        /** @description Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it. */
+        EligibilitySnapshot: {
+            /**
+             * Format: date-time
+             * @description When the snapshot was computed.
+             */
+            taken_at: string;
+            /**
+             * Format: date-time
+             * @description The day whose owners of record it lists.
+             */
+            as_of: string;
+            /**
+             * @description Open enum. `per_unit` or `per_owner`.
+             * @enum {string}
+             */
+            vote_weight: "per_unit" | "per_owner";
+            /** @description `arsa_payi`, or `equal` when the site has no arsa payi values. */
+            share_basis: string;
+            /** Format: int64 */
+            unit_count: number;
+            /** Format: int64 */
+            total_votes: number;
+            total_share: number;
+            owners: components["schemas"]["EligibilityOwner"][];
+            /** @description Door numbers of units without an owner of record; nobody votes for them. */
+            unrepresented_units: string[];
+        };
     };
     responses: {
         /** @description Error. RFC 9457 problem details with a stable `code`. */
@@ -20789,6 +20957,8 @@ export interface components {
         SiteIdRequired: string;
         /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
         IfMatch: string;
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none. */
+        IfMatchOptional: string;
         /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
         /** @description When true, validate and return the row-level report without saving anything. */
@@ -32252,6 +32422,72 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "governance.openFirstCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.openSecondCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "governance.closeMeeting": {
         parameters: {
             query?: never;
@@ -32355,7 +32591,7 @@ export interface operations {
     "governance.getCallLetter": {
         parameters: {
             query?: {
-                /** @description Filter by person. */
+                /** @description The owner whose personal letter (with their check-in QR) is wanted. */
                 person_id?: string;
             };
             header?: never;
@@ -32870,9 +33106,9 @@ export interface operations {
     "governance.setPoll": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none. */
+                "If-Match"?: components["parameters"]["IfMatchOptional"];
             };
             path: {
                 /** @description Organization id. */
@@ -32908,7 +33144,10 @@ export interface operations {
     "governance.answerPoll": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];

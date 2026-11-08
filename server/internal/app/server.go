@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
@@ -45,6 +46,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	go pruneIdentity(ctx, log, deps.Identity)
 	deps.Jobs = rt.jobs
 	deps.Ops = rt.ops.deps()
+	deps.Governance = rt.gov
 	router := httpapi.NewRouter(
 		deps,
 		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db)},
@@ -112,6 +114,7 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
+	gov     *governance.Service
 	idem    *idempotency.PG
 	files   *files.Service
 	ops     *opsServices
@@ -172,20 +175,23 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	gov := newGovernance(cfg, log, d, fs)
+	registerGov, periodicGov := gov.JobOptions()
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
-		Notifications: ops.notifications, Tasks: ops.tasks()})
+		Notifications: ops.notifications, Tasks: ops.tasks(), Register: registerGov, Periodic: periodicGov})
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
 	ops.late.c.Store(client)
+	gov.SetNotifier(governance.RiverNotifier{Client: client})
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, idem: idem, files: fs, ops: ops, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, idem: idem, files: fs, ops: ops, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

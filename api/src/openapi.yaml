@@ -265,6 +265,74 @@ paths:
     $ref: ./paths/dashboards/dashboard-portfolio.yaml
   /v1/orgs/{org_id}/me/dashboard:
     $ref: ./paths/dashboards/me-dashboard.yaml
+  /v1/orgs/{org_id}/sites/{site_id}/governance-settings:
+    $ref: ./paths/governance/sites-site_id-governance-settings.yaml
+  /v1/orgs/{org_id}/governance-presets:
+    $ref: ./paths/governance/governance-presets.yaml
+  /v1/orgs/{org_id}/meetings:
+    $ref: ./paths/governance/meetings.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:
+    $ref: ./paths/governance/meetings-meeting_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:call:
+    $ref: ./paths/governance/meetings-meeting_id_call.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
+    $ref: ./paths/governance/meetings-meeting_id_open-first-call.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
+    $ref: ./paths/governance/meetings-meeting_id_open-second-call.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:close:
+    $ref: ./paths/governance/meetings-meeting_id_close.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:cancel:
+    $ref: ./paths/governance/meetings-meeting_id_cancel.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/quorum:
+    $ref: ./paths/governance/meetings-meeting_id-quorum.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/call-letter:
+    $ref: ./paths/governance/meetings-meeting_id-call-letter.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet:
+    $ref: ./paths/governance/meetings-meeting_id-attendance-sheet.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/me:
+    $ref: ./paths/governance/meetings-meeting_id-me.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate:
+    $ref: ./paths/governance/meetings-meeting_id-minutes_generate.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/minutes:
+    $ref: ./paths/governance/meetings-meeting_id-minutes.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices:
+    $ref: ./paths/governance/meetings-meeting_id-notices.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}:
+    $ref: ./paths/governance/meetings-meeting_id-notices-person_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk:
+    $ref: ./paths/governance/meetings-meeting_id-notices_bulk.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions:
+    $ref: ./paths/governance/meetings-meeting_id_notify-decisions.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:
+    $ref: ./paths/governance/meetings-meeting_id-agenda-items.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}:
+    $ref: ./paths/governance/agenda-items-agenda_item_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order:
+    $ref: ./paths/governance/meetings-meeting_id-agenda-items_order.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll-answer.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll-results.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-poll-answers.yaml
+  /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts:
+    $ref: ./paths/governance/agenda-items-agenda_item_id-vote-counts.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:
+    $ref: ./paths/governance/meetings-meeting_id-attendance.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id}:
+    $ref: ./paths/governance/meetings-meeting_id-attendance-attendance_id.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin:
+    $ref: ./paths/governance/meetings-meeting_id-attendance_checkin.yaml
+  /v1/orgs/{org_id}/decisions:
+    $ref: ./paths/governance/decisions.yaml
+  /v1/orgs/{org_id}/decisions/{decision_id}:
+    $ref: ./paths/governance/decisions-decision_id.yaml
+  /v1/orgs/{org_id}/decisions/{decision_id}:apply:
+    $ref: ./paths/governance/decisions-decision_id_apply.yaml
+  /v1/orgs/{org_id}/term-reminders:
+    $ref: ./paths/governance/term-reminders.yaml
 components:
   securitySchemes:
     cookieAuth:
@@ -289,6 +357,8 @@ components:
       $ref: ./components/draft-common.yaml#/parameters/IdempotencyKeyRequired
     IfMatch:
       $ref: ./components/draft-common.yaml#/parameters/IfMatch
+    IfMatchOptional:
+      $ref: ./components/draft-common.yaml#/parameters/IfMatchOptional
     OrgId:
       $ref: ./components/draft-common.yaml#/parameters/OrgId
     SiteId:
@@ -710,3 +780,116 @@ components:
       $ref: ./components/dashboards.yaml#/schemas/MeDashboard
     StaffDashboard:
       $ref: ./components/dashboards.yaml#/schemas/StaffDashboard
+
+    QuorumRule:
+      $ref: ./components/governance.yaml#/schemas/QuorumRule
+    DecisionThreshold:
+      $ref: ./components/governance.yaml#/schemas/DecisionThreshold
+    PresetNote:
+      $ref: ./components/governance.yaml#/schemas/PresetNote
+    GovernanceSettingsSet:
+      $ref: ./components/governance.yaml#/schemas/GovernanceSettingsSet
+    GovernanceSettings:
+      $ref: ./components/governance.yaml#/schemas/GovernanceSettings
+    GovernancePreset:
+      $ref: ./components/governance.yaml#/schemas/GovernancePreset
+    GovernancePresetList:
+      $ref: ./components/governance.yaml#/schemas/GovernancePresetList
+    Meeting:
+      $ref: ./components/governance.yaml#/schemas/Meeting
+    MeetingCreate:
+      $ref: ./components/governance.yaml#/schemas/MeetingCreate
+    MeetingUpdate:
+      $ref: ./components/governance.yaml#/schemas/MeetingUpdate
+    MeetingList:
+      $ref: ./components/governance.yaml#/schemas/MeetingList
+    MeetingCall:
+      $ref: ./components/governance.yaml#/schemas/MeetingCall
+    MeetingCancel:
+      $ref: ./components/governance.yaml#/schemas/MeetingCancel
+    Quorum:
+      $ref: ./components/governance.yaml#/schemas/Quorum
+    MyPoll:
+      $ref: ./components/governance.yaml#/schemas/MyPoll
+    MyMeeting:
+      $ref: ./components/governance.yaml#/schemas/MyMeeting
+    MinutesResult:
+      $ref: ./components/governance.yaml#/schemas/MinutesResult
+    MeetingNotice:
+      $ref: ./components/governance.yaml#/schemas/MeetingNotice
+    MeetingNoticeList:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeList
+    MeetingNoticeRecord:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeRecord
+    MeetingNoticeBulk:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeBulk
+    MeetingNoticeBulkResult:
+      $ref: ./components/governance.yaml#/schemas/MeetingNoticeBulkResult
+    DecisionNotify:
+      $ref: ./components/governance.yaml#/schemas/DecisionNotify
+    DecisionNotifyResult:
+      $ref: ./components/governance.yaml#/schemas/DecisionNotifyResult
+    AgendaItem:
+      $ref: ./components/governance.yaml#/schemas/AgendaItem
+    AgendaItemCreate:
+      $ref: ./components/governance.yaml#/schemas/AgendaItemCreate
+    AgendaItemUpdate:
+      $ref: ./components/governance.yaml#/schemas/AgendaItemUpdate
+    AgendaItemList:
+      $ref: ./components/governance.yaml#/schemas/AgendaItemList
+    AgendaOrder:
+      $ref: ./components/governance.yaml#/schemas/AgendaOrder
+    Poll:
+      $ref: ./components/governance.yaml#/schemas/Poll
+    PollSet:
+      $ref: ./components/governance.yaml#/schemas/PollSet
+    PollAnswerSet:
+      $ref: ./components/governance.yaml#/schemas/PollAnswerSet
+    PollAnswer:
+      $ref: ./components/governance.yaml#/schemas/PollAnswer
+    PollAnswerList:
+      $ref: ./components/governance.yaml#/schemas/PollAnswerList
+    PollResults:
+      $ref: ./components/governance.yaml#/schemas/PollResults
+    VoteCountSet:
+      $ref: ./components/governance.yaml#/schemas/VoteCountSet
+    VoteCount:
+      $ref: ./components/governance.yaml#/schemas/VoteCount
+    Attendance:
+      $ref: ./components/governance.yaml#/schemas/Attendance
+    AttendanceList:
+      $ref: ./components/governance.yaml#/schemas/AttendanceList
+    AttendanceCreate:
+      $ref: ./components/governance.yaml#/schemas/AttendanceCreate
+    AttendanceCheckin:
+      $ref: ./components/governance.yaml#/schemas/AttendanceCheckin
+    Dissent:
+      $ref: ./components/governance.yaml#/schemas/Dissent
+    DissentInput:
+      $ref: ./components/governance.yaml#/schemas/DissentInput
+    DecisionEffect:
+      $ref: ./components/governance.yaml#/schemas/DecisionEffect
+    Decision:
+      $ref: ./components/governance.yaml#/schemas/Decision
+    DecisionCreate:
+      $ref: ./components/governance.yaml#/schemas/DecisionCreate
+    DecisionUpdate:
+      $ref: ./components/governance.yaml#/schemas/DecisionUpdate
+    DecisionList:
+      $ref: ./components/governance.yaml#/schemas/DecisionList
+    DecisionApplyDuesRate:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyDuesRate
+    DecisionApplyMembership:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyMembership
+    DecisionApplyBudget:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyBudget
+    DecisionApplySpecialAssessment:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplySpecialAssessment
+    DecisionApply:
+      $ref: ./components/governance.yaml#/schemas/DecisionApply
+    DecisionApplyResult:
+      $ref: ./components/governance.yaml#/schemas/DecisionApplyResult
+    TermReminder:
+      $ref: ./components/governance.yaml#/schemas/TermReminder
+    TermReminderList:
+      $ref: ./components/governance.yaml#/schemas/TermReminderList

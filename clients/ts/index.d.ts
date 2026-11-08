@@ -3503,6 +3503,1042 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/sites/{site_id}/governance-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the governance settings of a site
+         * @description **Release 0.2.** Get the governance settings of a site.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getGovernanceSettings"];
+        /**
+         * Replace the governance settings of a site
+         * @description **Release 0.2.** Applies from the next meeting; the eligibility snapshot of a called meeting does not change.
+         *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["governance.setGovernanceSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/governance-presets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List national governance presets
+         * @description **Release 0.2.** Presets come from packs (the generic core ships Law 634 defaults); `verify` notes are shown until confirmed.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.listGovernancePresets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List meetings
+         * @description **Release 0.2.** Cursor-paginated list of meetings.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.listMeetings"];
+        put?: never;
+        /**
+         * Create meeting
+         * @description **Release 0.2.** Creates a meeting.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.createMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get meeting
+         * @description **Release 0.2.** Get meeting.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getMeeting"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete meeting
+         * @description **Release 0.2.** Drafts only.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        delete: operations["governance.deleteMeeting"];
+        options?: never;
+        head?: never;
+        /**
+         * Update meeting
+         * @description **Release 0.2.** Update meeting.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        patch: operations["governance.updateMeeting"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Issue the call (cagri)
+         * @description **Release 0.2.** Validates the legal timing (call at least 15 days ahead, second meeting 7 to 15 days after the first, per the site settings), snapshots the eligibility, generates the call letter and creates one pending notice per owner (G3).
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409), `validation_failed` (422).
+         */
+        post: operations["governance.callMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the session at the first call
+         * @description **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openFirstCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the second call
+         * @description **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openSecondCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close the meeting and generate the minutes
+         * @description **Release 0.2.** Generates the minutes (tutanak) and files them into the site documents (O8).
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.closeMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a meeting
+         * @description **Release 0.2.** Cancel a meeting.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.cancelMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/quorum": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Live quorum
+         * @description **Release 0.2.** Polled by the attendance desk.
+         *
+         *     Permission (any one of): `meetings.manage`, `attendance.manage`.
+         */
+        get: operations["governance.getMeetingQuorum"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/call-letter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Download the call letter
+         * @description **Release 0.2.** Without `person_id` the generic call letter filed at the call. With `person_id` the per-owner letter that carries that owner's check-in QR token (the token is shown here and in `/me` and replaces the previously issued one: only its hash is stored). An owner may fetch only their own (403 otherwise); managers fetch anyone's. Check-in itself needs the session to be open.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getCallLetter"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/attendance-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Download the attendance list (hazirun cetveli)
+         * @description **Release 0.2.** Download the attendance list (hazirun cetveli).
+         *
+         *     Permission: `attendance.manage`.
+         */
+        get: operations["governance.getAttendanceSheet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * The meeting as the caller sees it
+         * @description **Release 0.2.** My call letter notice, my check-in QR, my polls. Tenants see only what concerns residents.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getMyMeeting"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate or regenerate the minutes
+         * @description **Release 0.2.** Generate or regenerate the minutes.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.generateMinutes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/minutes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * The minutes document of a meeting
+         * @description **Release 0.2.** The minutes document of a meeting.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getMinutes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Delivery checklist of a meeting
+         * @description **Release 0.2.** Delivery checklist of a meeting.
+         *
+         *     Permission: `meetings.manage`.
+         */
+        get: operations["governance.listMeetingNotices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Record how a notice reached one owner
+         * @description **Release 0.2.** Record how a notice reached one owner.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["governance.recordMeetingNotice"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record one delivery method for many owners
+         * @description **Release 0.2.** Record one delivery method for many owners.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.recordMeetingNoticesBulk"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:notify-decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the decisions to absent owners
+         * @description **Release 0.2.** Schedules the delivery of the decisions to the owners who were absent. The `decisions` notice (the legal record) is written when the delivery job runs, with the time it was delivered, not when it is scheduled; an owner whose delivery is recorded is skipped, and each notification carries a dedupe key, so sending twice never duplicates. Needs a closed meeting with at least one decision (otherwise 409). Closing a meeting does not notify anybody. `dry_run=true` returns the counts of owners still to be notified only.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["governance.notifyMeetingDecisions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * List agenda items
+         * @description **Release 0.2.** List agenda items.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.listAgendaItems"];
+        put?: never;
+        /**
+         * Add an agenda item
+         * @description **Release 0.2.** Add an agenda item.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.createAgendaItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agenda-items/{agenda_item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove an agenda item
+         * @description **Release 0.2.** Remove an agenda item.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        delete: operations["governance.deleteAgendaItem"];
+        options?: never;
+        head?: never;
+        /**
+         * Edit an agenda item
+         * @description **Release 0.2.** Edit an agenda item.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        patch: operations["governance.updateAgendaItem"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items:order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Reorder the agenda
+         * @description **Release 0.2.** Reorder the agenda.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["governance.reorderAgendaItems"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the poll of an agenda item
+         * @description **Release 0.2.** Get the poll of an agenda item.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getPoll"];
+        /**
+         * Create or change the poll
+         * @description **Release 0.2.** Create or change the poll.
+         *
+         *     The first creation of a poll needs no `If-Match`. Every later change requires it: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422). A closed poll (its `closes_at` has passed) is final: it cannot be reopened or changed (409 `conflict`).
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["governance.setPoll"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Answer the poll for my unit
+         * @description **Release 0.2.** One answer per unit; a co-owner may change the unit's answer while the poll is open. Non-binding.
+         *
+         *     Permission: `polls.answer`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["governance.answerPoll"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Aggregate poll results
+         * @description **Release 0.2.** Aggregate poll results.
+         *
+         *     Permission (any one of): `meetings.manage`, `polls.answer`.
+         */
+        get: operations["governance.getPollResults"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Poll answers per unit
+         * @description **Release 0.2.** Poll answers per unit.
+         *
+         *     Permission: `meetings.manage`.
+         */
+        get: operations["governance.listPollAnswers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/vote-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the in-room count
+         * @description **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getVoteCounts"];
+        /**
+         * Record the in-room count
+         * @description **Release 0.2.** The binding vote happens in the room; there is no online ballot (G2).
+         *
+         *     Permission: `decisions.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        put: operations["governance.recordVoteCounts"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Attendance of a meeting
+         * @description **Release 0.2.** Attendance of a meeting.
+         *
+         *     Permission: `attendance.manage`.
+         */
+        get: operations["governance.listAttendance"];
+        put?: never;
+        /**
+         * Tick an owner off
+         * @description **Release 0.2.** Proxy caps from the site settings are enforced (`validation_failed` with the field `proxy_for_person_id`).
+         *
+         *     Permission: `attendance.manage`.
+         *
+         *     Problems: `conflict` (409), `validation_failed` (422).
+         */
+        post: operations["governance.recordAttendance"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/attendance/{attendance_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+                /** @description Id of the attendance. */
+                attendance_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove an attendance record
+         * @description **Release 0.2.** Remove an attendance record.
+         *
+         *     Permission: `attendance.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["governance.removeAttendance"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Check an owner in by QR
+         * @description **Release 0.2.** Marks the same record as the tick-off screen.
+         *
+         *     Permission: `attendance.manage`.
+         *
+         *     Problems: `conflict` (409), `not_found` (404).
+         */
+        post: operations["governance.checkInAttendance"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/decisions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Search the decision history
+         * @description **Release 0.2.** Search the decision history.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.listDecisions"];
+        put?: never;
+        /**
+         * Record a decision
+         * @description **Release 0.2.** Assigns the next `sequence_no` of the site and year.
+         *
+         *     Permission: `decisions.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.createDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/decisions/{decision_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the decision. */
+                decision_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a decision
+         * @description **Release 0.2.** Get a decision.
+         *
+         *     Permission: `meetings.read`.
+         */
+        get: operations["governance.getDecision"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Edit a decision
+         * @description **Release 0.2.** Until the meeting is closed.
+         *
+         *     Permission: `decisions.manage`.
+         *
+         *     Problems: `conflict` (409), `version_conflict` (409).
+         */
+        patch: operations["governance.updateDecision"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/decisions/{decision_id}:apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the decision. */
+                decision_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Apply the effect of a decision
+         * @description **Release 0.2.** Creates the dues rate, membership with term, final budget or one-off special-assessment plan and links it to the decision; `dry_run=true` previews it.
+         *
+         *     Permission: `decisions.manage`.
+         *
+         *     Problems: `conflict` (409), `locked_period` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["governance.applyDecision"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/term-reminders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Terms nearing expiry
+         * @description **Release 0.2.** Shown on the site dashboard; also sent as a notification.
+         *
+         *     Permission: `meetings.manage`.
+         */
+        get: operations["governance.listTermReminders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3894,7 +4930,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "announcements.publish" | "announcements.read" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        Permission: "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -7488,6 +8524,1122 @@ export interface components {
              */
             waiting_deliveries: number;
         };
+        QuorumRule: {
+            /** @description Law 634 default: a majority by number of owners. */
+            first_call_by_count_pct: number;
+            /** @description ...and by arsa payi (land share). */
+            first_call_by_share_pct: number;
+            /** @description Default false: decisions by majority of those present (verify). */
+            second_call_requires_quorum: boolean;
+        };
+        DecisionThreshold: {
+            topic: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            rule: "simple_majority_present" | "majority_count_and_share" | "four_fifths" | "unanimity";
+            note: string | null;
+        };
+        PresetNote: {
+            key: string;
+            note: string;
+            /** @description The legal claim must be confirmed by a person with Turkish practice before it is relied on. */
+            verify: boolean;
+        };
+        /** @description Quorum, thresholds, vote weight and proxy caps: site settings with Law 634 defaults, editable where the yonetim plani allows. */
+        GovernanceSettingsSet: {
+            quorum: components["schemas"]["QuorumRule"];
+            thresholds: components["schemas"]["DecisionThreshold"][];
+            /** @description Default one third (verify). */
+            max_votes_per_person_pct: number;
+            /** @description Default 5 percent of total votes (verify). */
+            proxy_cap_pct: number;
+            /**
+             * Format: int64
+             * @description In buildings up to `small_building_unit_limit` units, at most this many others (default 2, verify).
+             */
+            proxy_cap_small_building_max: number;
+            /** Format: int64 */
+            small_building_unit_limit: number;
+            /**
+             * Format: int64
+             * @description Default 15 (verify).
+             */
+            call_min_days: number;
+            /** Format: int64 */
+            second_call_min_days: number;
+            /** Format: int64 */
+            second_call_max_days: number;
+            /**
+             * Format: int64
+             * @description Reminder lead time before a term ends.
+             */
+            term_reminder_days: number;
+            /**
+             * @description Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+             * @enum {string}
+             */
+            vote_weight?: "per_unit" | "per_owner";
+            /**
+             * Format: int64
+             * @description Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+             */
+            ordinary_assembly_month?: number;
+            /**
+             * Format: int64
+             * @description Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
+             */
+            default_term_months?: number;
+            /** @description Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`. */
+            notice_electronic_allowed?: boolean;
+            /** @description Input only. Required when a value is more permissive than the Law 634 default (lower quorum or notice time, higher proxy or per-person caps, a weaker threshold): the reason (for example the clause of the yonetim plani) is recorded in the audit trail with the list of deviations. Not stored in the settings. */
+            deviation_reason?: string;
+            /** @description Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them. */
+            decision_details_visible_to_owners?: boolean;
+            /**
+             * Format: int64
+             * @description How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
+             */
+            dissent_window_days?: number;
+        };
+        GovernanceSettings: {
+            /** Format: uuid */
+            site_id: string;
+            preset: string | null;
+            settings: components["schemas"]["GovernanceSettingsSet"];
+            preset_notes: components["schemas"]["PresetNote"][];
+            /** Format: int64 */
+            version: number;
+        };
+        /**
+         * @example {
+         *       "id": "id",
+         *       "country_code": "country code",
+         *       "name": "Ali Veli",
+         *       "settings": {
+         *         "quorum": {
+         *           "first_call_by_count_pct": 1.5,
+         *           "first_call_by_share_pct": 1.5,
+         *           "second_call_requires_quorum": false
+         *         },
+         *         "thresholds": [
+         *           {
+         *             "topic": "topic",
+         *             "rule": "simple_majority_present",
+         *             "note": null
+         *           }
+         *         ],
+         *         "max_votes_per_person_pct": 1.5,
+         *         "proxy_cap_pct": 1.5,
+         *         "proxy_cap_small_building_max": 1,
+         *         "small_building_unit_limit": 1,
+         *         "call_min_days": 1,
+         *         "second_call_min_days": 1,
+         *         "second_call_max_days": 1,
+         *         "term_reminder_days": 1
+         *       },
+         *       "notes": [
+         *         {
+         *           "key": "key",
+         *           "note": "note",
+         *           "verify": false
+         *         }
+         *       ]
+         *     }
+         */
+        GovernancePreset: {
+            id: string;
+            country_code: string;
+            name: string;
+            settings: components["schemas"]["GovernanceSettingsSet"];
+            notes: components["schemas"]["PresetNote"][];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "id",
+         *           "country_code": "country code",
+         *           "name": "Ali Veli",
+         *           "settings": {
+         *             "quorum": {
+         *               "first_call_by_count_pct": 1.5,
+         *               "first_call_by_share_pct": 1.5,
+         *               "second_call_requires_quorum": false
+         *             },
+         *             "thresholds": [
+         *               {
+         *                 "topic": "topic",
+         *                 "rule": "simple_majority_present",
+         *                 "note": null
+         *               }
+         *             ],
+         *             "max_votes_per_person_pct": 1.5,
+         *             "proxy_cap_pct": 1.5,
+         *             "proxy_cap_small_building_max": 1,
+         *             "small_building_unit_limit": 1,
+         *             "call_min_days": 1,
+         *             "second_call_min_days": 1,
+         *             "second_call_max_days": 1,
+         *             "term_reminder_days": 1
+         *           },
+         *           "notes": [
+         *             {
+         *               "key": "key",
+         *               "note": "note",
+         *               "verify": false
+         *             }
+         *           ]
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GovernancePresetList: {
+            items: components["schemas"]["GovernancePreset"][];
+            next_cursor: string | null;
+        };
+        /**
+         * @description An owners' assembly (kat malikleri kurulu).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "kind": "general_assembly",
+         *       "scope": "site",
+         *       "title": null,
+         *       "scheduled_at": "2026-01-18T10:00:00Z",
+         *       "second_call_at": "2026-01-28T10:00:00Z",
+         *       "location": "location",
+         *       "status": "called",
+         *       "eligibility_snapshot": null,
+         *       "call_letter_document_id": null,
+         *       "minutes_document_id": null,
+         *       "called_at": null,
+         *       "held_call": null,
+         *       "first_call_failed_at": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Meeting: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "general_assembly" | "extraordinary";
+            /**
+             * @description Only `site` is supported in 0.2; block and council are reserved (G7). Open enum.
+             * @enum {string}
+             */
+            scope: "site" | "block" | "council";
+            title: string | null;
+            /** Format: date-time */
+            scheduled_at: string;
+            /** Format: date-time */
+            second_call_at: string;
+            location: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "draft" | "called" | "in_session" | "closed" | "cancelled";
+            /** @description Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only. */
+            eligibility_snapshot: components["schemas"]["EligibilitySnapshot"] | null;
+            /** Format: uuid */
+            call_letter_document_id: string | null;
+            /** Format: uuid */
+            minutes_document_id: string | null;
+            /** Format: date-time */
+            called_at: string | null;
+            /**
+             * @description The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+             * @enum {string|null}
+             */
+            held_call: "first" | "second" | null;
+            /**
+             * Format: date-time
+             * @description When the first call was found without quorum and the second call opened.
+             */
+            first_call_failed_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        MeetingCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "general_assembly" | "extraordinary";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            scope?: "site" | "block" | "council";
+            title?: string | null;
+            /** Format: date-time */
+            scheduled_at: string;
+            /** Format: date-time */
+            second_call_at: string;
+            location: string;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        MeetingUpdate: {
+            title?: string | null;
+            /** Format: date-time */
+            scheduled_at?: string;
+            /** Format: date-time */
+            second_call_at?: string;
+            location?: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "kind": "general_assembly",
+         *           "scope": "site",
+         *           "title": null,
+         *           "scheduled_at": "2026-01-18T10:00:00Z",
+         *           "second_call_at": "2026-01-28T10:00:00Z",
+         *           "location": "location",
+         *           "status": "called",
+         *           "eligibility_snapshot": null,
+         *           "call_letter_document_id": null,
+         *           "minutes_document_id": null,
+         *           "called_at": null,
+         *           "held_call": null,
+         *           "first_call_failed_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        MeetingList: {
+            items: components["schemas"]["Meeting"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        MeetingCall: {
+            /** @description Optional announcement of the call through the notification system; the legal delivery is tracked per owner in the notices. */
+            notify_channels?: ("in_app" | "email" | "sms")[];
+        };
+        MeetingCancel: {
+            reason: string;
+        };
+        /** @description Live quorum under the site rules; polled. */
+        Quorum: {
+            /** Format: uuid */
+            meeting_id: string;
+            /**
+             * @description Which call the numbers are checked against. Open enum.
+             * @enum {string}
+             */
+            call: "first" | "second";
+            /** Format: int64 */
+            present_count: number;
+            /** Format: int64 */
+            eligible_count: number;
+            /** @description Arsa payi present. */
+            present_share: number;
+            eligible_share: number;
+            required_by_count_pct: number | null;
+            required_by_share_pct: number | null;
+            reached: boolean;
+            /** Format: date-time */
+            as_of: string;
+        };
+        MyPoll: {
+            /** Format: uuid */
+            agenda_item_id: string;
+            title: string;
+            answered_units: string[];
+        };
+        MyMeeting: {
+            meeting: components["schemas"]["Meeting"];
+            eligible_unit_ids: string[];
+            notice: components["schemas"]["MeetingNotice"] | null;
+            /** @description The per-person check-in token; the QR encodes `attendance_qr`. */
+            attendance_token: string | null;
+            attendance_qr: string | null;
+            checked_in: boolean;
+            polls: components["schemas"]["MyPoll"][];
+        };
+        MinutesResult: {
+            /** Format: uuid */
+            meeting_id: string;
+            /** Format: uuid */
+            document_id: string;
+            /** Format: uuid */
+            file_id: string;
+        };
+        /**
+         * @description Per-owner delivery record of the call or of the decisions (G3).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "person_display_name": "Ali Veli",
+         *       "phase": "call",
+         *       "method": "registered_mail",
+         *       "status": "pending",
+         *       "sent_at": null,
+         *       "tracking_no": null,
+         *       "proof_file_id": null,
+         *       "note": null,
+         *       "late": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        MeetingNotice: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            meeting_id: string;
+            /** Format: uuid */
+            person_id: string;
+            person_display_name: string;
+            /**
+             * @description `decisions`: the post-meeting notification of absent owners. Open enum.
+             * @enum {string}
+             */
+            phase: "call" | "decisions";
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            method: "registered_mail" | "signed" | "email" | "sms" | "other" | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending" | "recorded";
+            /** Format: date-time */
+            sent_at: string | null;
+            tracking_no: string | null;
+            /**
+             * Format: uuid
+             * @description A file of the organization (the scanned receipt or signature page); checked when recorded.
+             */
+            proof_file_id: string | null;
+            note: string | null;
+            /** @description The call reached this owner less than `call_min_days` before the meeting (computed when recorded). */
+            late?: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "person_display_name": "Ali Veli",
+         *           "phase": "call",
+         *           "method": "registered_mail",
+         *           "status": "pending",
+         *           "sent_at": null,
+         *           "tracking_no": null,
+         *           "proof_file_id": null,
+         *           "note": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        MeetingNoticeList: {
+            items: components["schemas"]["MeetingNotice"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        MeetingNoticeRecord: {
+            /** @enum {string} */
+            phase: "call" | "decisions";
+            /** @enum {string} */
+            method: "registered_mail" | "signed" | "email" | "sms" | "other";
+            /** Format: date-time */
+            sent_at: string;
+            tracking_no?: string;
+            /** Format: uuid */
+            proof_file_id?: string;
+            note?: string;
+        };
+        MeetingNoticeBulk: {
+            person_ids: string[];
+            /** @enum {string} */
+            phase: "call" | "decisions";
+            /** @enum {string} */
+            method: "registered_mail" | "signed" | "email" | "sms" | "other";
+            /** Format: date-time */
+            sent_at: string;
+        };
+        MeetingNoticeBulkResult: {
+            /** Format: int64 */
+            recorded: number;
+        };
+        DecisionNotify: {
+            /** @description Chosen by the sender (O5). */
+            channels: ("in_app" | "email" | "sms")[];
+        };
+        DecisionNotifyResult: {
+            dry_run: boolean;
+            /** Format: int64 */
+            recipient_count: number;
+            /** Format: int64 */
+            sms_count: number;
+        };
+        /**
+         * @description An agenda item, marked whether it will be voted on (G1).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "position": 1,
+         *       "title": "Ali Veli",
+         *       "description": null,
+         *       "will_be_voted": false,
+         *       "topic": null,
+         *       "decision_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        AgendaItem: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            meeting_id: string;
+            /** Format: int64 */
+            position: number;
+            title: string;
+            description: string | null;
+            will_be_voted: boolean;
+            /** @description Key into the threshold table. */
+            topic: string | null;
+            /** Format: uuid */
+            decision_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        AgendaItemCreate: {
+            title: string;
+            description?: string | null;
+            will_be_voted?: boolean;
+            topic?: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AgendaItemUpdate: {
+            title?: string;
+            description?: string | null;
+            will_be_voted?: boolean;
+            topic?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "position": 1,
+         *           "title": "Ali Veli",
+         *           "description": null,
+         *           "will_be_voted": false,
+         *           "topic": null,
+         *           "decision_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AgendaItemList: {
+            items: components["schemas"]["AgendaItem"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        AgendaOrder: {
+            item_ids: string[];
+        };
+        /** @description Non-binding pre-meeting poll (G2). */
+        Poll: {
+            /** Format: uuid */
+            agenda_item_id: string;
+            question: string | null;
+            /** Format: date-time */
+            opens_at: string;
+            /** Format: date-time */
+            closes_at: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "draft" | "open" | "closed";
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
+        };
+        PollSet: {
+            question?: string;
+            /** Format: date-time */
+            opens_at: string;
+            /** Format: date-time */
+            closes_at: string;
+        };
+        PollAnswerSet: {
+            /** Format: uuid */
+            unit_id: string;
+            /** @enum {string} */
+            answer: "yes" | "no" | "abstain";
+        };
+        /**
+         * @example {
+         *       "agenda_item_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "unit_door_number": "unit door number",
+         *       "answer": "yes",
+         *       "answered_by": "0192a3f0-1000-7000-8000-000000000004",
+         *       "answered_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        PollAnswer: {
+            /** Format: uuid */
+            agenda_item_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            answer: "yes" | "no" | "abstain";
+            /** Format: uuid */
+            answered_by: string;
+            /** Format: date-time */
+            answered_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "agenda_item_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "unit_door_number": "unit door number",
+         *           "answer": "yes",
+         *           "answered_by": "0192a3f0-1000-7000-8000-000000000004",
+         *           "answered_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        PollAnswerList: {
+            items: components["schemas"]["PollAnswer"][];
+            next_cursor: string | null;
+        };
+        PollResults: {
+            /** Format: uuid */
+            agenda_item_id: string;
+            /** Format: int64 */
+            yes: number;
+            /** Format: int64 */
+            no: number;
+            /** Format: int64 */
+            abstain: number;
+            /** Format: int64 */
+            units_answered: number;
+            /** Format: int64 */
+            units_total: number;
+            /** @description Always false: the binding vote is counted in the room. */
+            binding: boolean;
+        };
+        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open. */
+        VoteCountSet: {
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            abstain_count: number;
+            yes_share?: number;
+            no_share?: number;
+            abstain_share?: number;
+        };
+        VoteCount: {
+            /** Format: uuid */
+            agenda_item_id: string;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            abstain_count: number;
+            yes_share: number | null;
+            no_share: number | null;
+            abstain_share: number | null;
+            /** Format: uuid */
+            recorded_by: string | null;
+            /** Format: date-time */
+            recorded_at: string | null;
+            /**
+             * @description Computed from the threshold rule; the decision records the final outcome. Open enum.
+             * @enum {string}
+             */
+            outcome_hint: "accepted" | "rejected" | "undetermined";
+        };
+        /**
+         * @description Who is present, and for which units.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "person_display_name": "Ali Veli",
+         *       "unit_ids": [
+         *         "0192a3f0-1000-7000-8000-000000000006"
+         *       ],
+         *       "unit_labels": [
+         *         "Ali Veli"
+         *       ],
+         *       "mode": "in_person",
+         *       "call": "first",
+         *       "proxy_for_person_id": null,
+         *       "source": "desk",
+         *       "checked_in_at": "2026-03-01T09:00:00Z",
+         *       "checked_in_by": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Attendance: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            meeting_id: string;
+            /** Format: uuid */
+            person_id: string;
+            person_display_name: string;
+            unit_ids: string[];
+            unit_labels: string[];
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            mode: "in_person" | "proxy";
+            /**
+             * @description The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+             * @enum {string}
+             */
+            call: "first" | "second";
+            /** Format: uuid */
+            proxy_for_person_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            source: "desk" | "qr";
+            /** Format: date-time */
+            checked_in_at: string;
+            /** Format: uuid */
+            checked_in_by: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "person_display_name": "Ali Veli",
+         *           "unit_ids": [
+         *             "0192a3f0-1000-7000-8000-000000000006"
+         *           ],
+         *           "unit_labels": [
+         *             "Ali Veli"
+         *           ],
+         *           "mode": "in_person",
+         *           "call": "first",
+         *           "proxy_for_person_id": null,
+         *           "source": "desk",
+         *           "checked_in_at": "2026-03-01T09:00:00Z",
+         *           "checked_in_by": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AttendanceList: {
+            items: components["schemas"]["Attendance"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        AttendanceCreate: {
+            /** Format: uuid */
+            person_id: string;
+            unit_ids: string[];
+            /** @enum {string} */
+            mode: "in_person" | "proxy";
+            /** Format: uuid */
+            proxy_for_person_id?: string;
+        };
+        AttendanceCheckin: {
+            /** @description From the owner's QR (call letter or app). */
+            token: string;
+        };
+        Dissent: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string | null;
+            text: string;
+        };
+        DissentInput: {
+            /** Format: uuid */
+            person_id: string;
+            text: string;
+        };
+        DecisionEffect: {
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "dues_rate" | "membership" | "budget_final" | "special_assessment";
+            record_type: string;
+            /** Format: uuid */
+            record_id: string;
+            /** Format: date-time */
+            applied_at: string;
+            /** Format: uuid */
+            applied_by: string;
+        };
+        /**
+         * @description A recorded decision. The system produces numbered drafts; it does not claim to be the karar defteri.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "meeting_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "agenda_item_id": null,
+         *       "sequence_no": 3,
+         *       "year": 2026,
+         *       "text": "Dues become 2,000 TRY from March.",
+         *       "outcome": "accepted",
+         *       "vote_count": null,
+         *       "dissents": [
+         *         {
+         *           "person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "display_name": null,
+         *           "text": "text"
+         *         }
+         *       ],
+         *       "concerns_residents": true,
+         *       "notified_at": null,
+         *       "effect": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Decision: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            meeting_id: string;
+            /** Format: uuid */
+            agenda_item_id: string | null;
+            /**
+             * Format: int64
+             * @description Gap-free per site per year, for transcription into the notarized karar defteri.
+             */
+            sequence_no: number;
+            /** Format: int64 */
+            year: number;
+            text: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            outcome: "accepted" | "rejected" | "no_vote" | "noted";
+            vote_count: components["schemas"]["VoteCount"] | null;
+            dissents: components["schemas"]["Dissent"][];
+            /** @description Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited. */
+            outcome_override_reason?: string | null;
+            /** @description Tenants see only decisions marked this way. */
+            concerns_residents: boolean;
+            /** Format: date-time */
+            notified_at: string | null;
+            effect: components["schemas"]["DecisionEffect"] | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        DecisionCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            meeting_id: string;
+            /** Format: uuid */
+            agenda_item_id?: string | null;
+            text: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            outcome: "accepted" | "rejected" | "no_vote" | "noted";
+            dissents?: components["schemas"]["DissentInput"][];
+            concerns_residents?: boolean;
+            /** @description Required to record `accepted` or `rejected` when the item's counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited. */
+            outcome_override?: {
+                reason: string;
+            };
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        DecisionUpdate: {
+            text?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            outcome?: "accepted" | "rejected" | "no_vote" | "noted";
+            dissents?: components["schemas"]["DissentInput"][];
+            concerns_residents?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "meeting_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "agenda_item_id": null,
+         *           "sequence_no": 3,
+         *           "year": 2026,
+         *           "text": "Dues become 2,000 TRY from March.",
+         *           "outcome": "accepted",
+         *           "vote_count": null,
+         *           "dissents": [
+         *             {
+         *               "person_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "display_name": null,
+         *               "text": "text"
+         *             }
+         *           ],
+         *           "concerns_residents": true,
+         *           "notified_at": null,
+         *           "effect": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        DecisionList: {
+            items: components["schemas"]["Decision"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        DecisionApplyDuesRate: {
+            /**
+             * @description `dues_rate` (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            kind: "dues_rate";
+            /** Format: uuid */
+            plan_id: string;
+            /** Format: date */
+            from: string;
+            amount: components["schemas"]["Money"];
+        };
+        DecisionApplyMembership: {
+            /**
+             * @description `membership` (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            kind: "membership";
+            /** Format: uuid */
+            person_id: string;
+            role: string;
+            scope_type: string;
+            /** Format: uuid */
+            scope_id: string | null;
+            /** Format: date */
+            valid_from: string;
+            /**
+             * Format: date
+             * @description End of the term. Optional, when omitted it is `valid_from` plus the site's `default_term_months`.
+             */
+            valid_to?: string;
+            /** @description Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.) */
+            replaces_membership_ids?: string[];
+        };
+        DecisionApplyBudget: {
+            /**
+             * @description `budget_final` (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            kind: "budget_final";
+            /** Format: uuid */
+            budget_id: string;
+        };
+        DecisionApplySpecialAssessment: {
+            /**
+             * @description `special_assessment` (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            kind: "special_assessment";
+            /** @description A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged). */
+            plan: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description The change a decision triggers; the manager confirms each one (G5). */
+        DecisionApply: components["schemas"]["DecisionApplyDuesRate"] | components["schemas"]["DecisionApplyMembership"] | components["schemas"]["DecisionApplyBudget"] | components["schemas"]["DecisionApplySpecialAssessment"];
+        DecisionApplyResult: {
+            dry_run: boolean;
+            /** @description With `dry_run=true`: what would be created. */
+            preview: {
+                [key: string]: unknown;
+            } | null;
+            /** @description When committed: the decision with its `effect`. */
+            decision: components["schemas"]["Decision"] | null;
+        };
+        /**
+         * @description A board, auditor or manager term nearing its end (G6).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "membership_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "person_display_name": "Ali Veli",
+         *       "role": "role",
+         *       "valid_to": "2026-03-01",
+         *       "days_left": 1,
+         *       "status": "upcoming",
+         *       "notified_at": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        TermReminder: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            membership_id: string;
+            person_display_name: string;
+            role: string;
+            /** Format: date */
+            valid_to: string;
+            /** Format: int64 */
+            days_left: number;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "upcoming" | "due" | "overdue";
+            /** Format: date-time */
+            notified_at: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "membership_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "person_display_name": "Ali Veli",
+         *           "role": "role",
+         *           "valid_to": "2026-03-01",
+         *           "days_left": 1,
+         *           "status": "upcoming",
+         *           "notified_at": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        TermReminderList: {
+            items: components["schemas"]["TermReminder"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
         ReauthEmailCode: {
             /**
              * @description Always `email_code`. (enum property replaced by openapi-typescript)
@@ -7537,6 +9689,53 @@ export interface components {
             next_due_date: string | null;
             bank_details: components["schemas"]["BankDetails"] | null;
         };
+        /** @description An owner of record with the weight they vote with. */
+        EligibilityOwner: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            /** @description Every unit the person owns, including co-owned units another owner votes for. */
+            unit_ids: string[];
+            /** @description Door numbers of `unit_ids`. */
+            unit_labels: string[];
+            /** @description The arsa payi the person votes for, a decimal string (exact, not a float). */
+            share: string;
+            /**
+             * Format: int64
+             * @description Number of votes the person holds (before the per-person cap).
+             */
+            vote_weight: number;
+            /** @description The units this person votes for (co-owners vote through one representative). */
+            representative_of_unit_ids: string[];
+        };
+        /** @description Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it. */
+        EligibilitySnapshot: {
+            /**
+             * Format: date-time
+             * @description When the snapshot was computed.
+             */
+            taken_at: string;
+            /**
+             * Format: date-time
+             * @description The day whose owners of record it lists.
+             */
+            as_of: string;
+            /**
+             * @description Open enum. `per_unit` or `per_owner`.
+             * @enum {string}
+             */
+            vote_weight: "per_unit" | "per_owner";
+            /** @description `arsa_payi`, or `equal` when the site has no arsa payi values. */
+            share_basis: string;
+            /** Format: int64 */
+            unit_count: number;
+            /** Format: int64 */
+            total_votes: number;
+            total_share: number;
+            owners: components["schemas"]["EligibilityOwner"][];
+            /** @description Door numbers of units without an owner of record; nobody votes for them. */
+            unrepresented_units: string[];
+        };
     };
     responses: {
         /** @description Error. RFC 9457 problem details with a stable `code`. */
@@ -7567,6 +9766,8 @@ export interface components {
         IdempotencyKeyRequired: string;
         /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
         IfMatch: string;
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none. */
+        IfMatchOptional: string;
         /** @description Organization id. */
         OrgId: string;
         /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
@@ -13340,6 +15541,1573 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeDashboard"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getGovernanceSettings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GovernanceSettings"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.setGovernanceSettings": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GovernanceSettingsSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GovernanceSettings"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listGovernancePresets": {
+        parameters: {
+            query?: {
+                /** @description Filter by `country_code`. */
+                country_code?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GovernancePresetList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listMeetings": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.createMeeting": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getMeeting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.deleteMeeting": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.updateMeeting": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.callMeeting": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["MeetingCall"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.openFirstCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.openSecondCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.closeMeeting": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.cancelMeeting": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingCancel"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getMeetingQuorum": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Quorum"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getCallLetter": {
+        parameters: {
+            query?: {
+                /** @description The owner whose personal letter (with their check-in QR) is wanted. */
+                person_id?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getAttendanceSheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getMyMeeting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyMeeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.generateMinutes": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MinutesResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getMinutes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MinutesResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listMeetingNotices": {
+        parameters: {
+            query?: {
+                /** @description Filter by `phase`. */
+                phase?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingNoticeList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.recordMeetingNotice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+                /** @description Id of the person. */
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingNoticeRecord"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingNotice"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.recordMeetingNoticesBulk": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MeetingNoticeBulk"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeetingNoticeBulkResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.notifyMeetingDecisions": {
+        parameters: {
+            query?: {
+                /** @description When true, validate and return the row-level report without saving anything. */
+                dry_run?: components["parameters"]["DryRun"];
+            };
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionNotify"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionNotifyResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listAgendaItems": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaItemList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.createAgendaItem": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaItemCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaItem"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.deleteAgendaItem": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.updateAgendaItem": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaItemUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgendaItem"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.reorderAgendaItems": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgendaOrder"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getPoll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Poll"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.setPoll": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none. */
+                "If-Match"?: components["parameters"]["IfMatchOptional"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PollSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Poll"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.answerPoll": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PollAnswerSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollAnswer"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getPollResults": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollResults"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listPollAnswers": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PollAnswerList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getVoteCounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoteCount"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.recordVoteCounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the agenda item. */
+                agenda_item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoteCountSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoteCount"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listAttendance": {
+        parameters: {
+            query?: {
+                /** @description Filter by `mode`. */
+                mode?: string;
+                /** @description Filter by `source`. */
+                source?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttendanceList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.recordAttendance": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttendanceCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Attendance"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.removeAttendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+                /** @description Id of the attendance. */
+                attendance_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.checkInAttendance": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttendanceCheckin"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Attendance"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listDecisions": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `meeting_id`. */
+                meeting_id?: string;
+                /** @description Filter by `year`. */
+                year?: number;
+                /** @description Filter by `outcome`. */
+                outcome?: string;
+                /** @description Filter by `concerns_residents`. */
+                concerns_residents?: boolean;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.createDecision": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Decision"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.getDecision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the decision. */
+                decision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Decision"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.updateDecision": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the decision. */
+                decision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Decision"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.applyDecision": {
+        parameters: {
+            query?: {
+                /** @description When true, validate and return the row-level report without saving anything. */
+                dry_run?: components["parameters"]["DryRun"];
+            };
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the decision. */
+                decision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionApply"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DecisionApplyResult"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.listTermReminders": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TermReminderList"];
                 };
             };
             401: components["responses"]["Problem"];

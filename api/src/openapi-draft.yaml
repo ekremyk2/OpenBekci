@@ -490,6 +490,10 @@ paths:
     $ref: ./paths/governance/meetings-meeting_id_call.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:start:
     $ref: ./paths/governance/meetings-meeting_id_start.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
+    $ref: ./paths/governance/meetings-meeting_id_open-first-call.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
+    $ref: ./paths/governance/meetings-meeting_id_open-second-call.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:close:
     $ref: ./paths/governance/meetings-meeting_id_close.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:cancel:
@@ -708,6 +712,8 @@ components:
       $ref: ./components/draft-common.yaml#/parameters/SiteIdRequired
     IfMatch:
       $ref: ./components/draft-common.yaml#/parameters/IfMatch
+    IfMatchOptional:
+      $ref: ./components/draft-common.yaml#/parameters/IfMatchOptional
     IdempotencyKeyRequired:
       $ref: ./components/draft-common.yaml#/parameters/IdempotencyKeyRequired
     DryRun:
