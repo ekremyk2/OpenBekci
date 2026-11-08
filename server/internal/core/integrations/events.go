@@ -26,6 +26,7 @@ const (
 	EventPaymentRecorded     = "payment.recorded"
 	EventPaymentConfirmed    = "payment.confirmed"
 	EventChargeCreated       = "charge.created"
+	EventChargesGenerated    = "charges.generated"
 	EventTicketCreated       = "ticket.created"
 	EventTicketStatusChanged = "ticket.status_changed"
 	EventAnnouncementPublish = "announcement.published"
@@ -56,7 +57,7 @@ const (
 // EventTypes lists the subscribable event types in display order.
 func EventTypes() []string {
 	return []string{
-		EventPaymentRecorded, EventPaymentConfirmed, EventChargeCreated, EventTicketCreated, EventTicketStatusChanged,
+		EventPaymentRecorded, EventPaymentConfirmed, EventChargeCreated, EventChargesGenerated, EventTicketCreated, EventTicketStatusChanged,
 		EventAnnouncementPublish, EventMeetingCalled, EventDecisionApplied, EventVisitorApproved, EventDeliveryReceived,
 	}
 }
@@ -73,6 +74,10 @@ type Event struct {
 	OccurredAt time.Time `json:"occurred_at"`
 	// IDs names what the event is about, as <thing>_id: UUID. Ids only.
 	IDs map[string]uuid.UUID `json:"ids"`
+	// Period and ChargeIDs belong to charges.generated only: the billing period
+	// ("2026-11") and the ids of the charges the plan created for it.
+	Period    string      `json:"period,omitempty"`
+	ChargeIDs []uuid.UUID `json:"charge_ids,omitempty"`
 }
 
 // Sign returns the OpenBekci-Signature header value for body sent at time t:
@@ -134,6 +139,9 @@ func fromAudit(ctx context.Context, tx pgx.Tx, e audit.Event) (Event, bool, erro
 		typ = EventPaymentConfirmed
 	case "charge.create":
 		typ = EventChargeCreated
+	case "charge.generate":
+		typ = EventChargesGenerated
+		idKey = "plan_id"
 	case "tickets.create":
 		typ = EventTicketCreated
 	case "tickets.transition":
@@ -161,6 +169,26 @@ func fromAudit(ctx context.Context, tx pgx.Tx, e audit.Event) (Event, bool, erro
 		ev.IDs["site_id"] = *e.SiteID
 	}
 	switch typ {
+	case EventChargesGenerated:
+		if c, ok := e.Diff["period"]; ok {
+			ev.Period = strings.Trim(string(c.After), `"`)
+		}
+		rows, err := tx.Query(ctx, `SELECT id FROM charge WHERE org_id = $1 AND plan_id = $2 AND period = $3 AND kind = 'principal' ORDER BY id`, e.OrgID, e.TargetID, ev.Period)
+		if err != nil {
+			return Event{}, false, err
+		}
+		for rows.Next() {
+			var cid uuid.UUID
+			if err := rows.Scan(&cid); err != nil {
+				rows.Close()
+				return Event{}, false, err
+			}
+			ev.ChargeIDs = append(ev.ChargeIDs, cid)
+		}
+		rows.Close()
+		if err := rows.Err(); err != nil {
+			return Event{}, false, err
+		}
 	case EventVisitorApproved:
 		var entry uuid.UUID
 		err := tx.QueryRow(ctx, `SELECT entry_id FROM visitor_approval_request WHERE org_id = $1 AND id = $2`, e.OrgID, e.TargetID).Scan(&entry)

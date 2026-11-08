@@ -69,7 +69,8 @@ The body carries **ids only**, never records. Read the details through the API w
 |---|---|---|
 | `payment.recorded` | A payment is recorded (also through bank-statement matching) | `payment_id`, `site_id` |
 | `payment.confirmed` | A declared payment is confirmed | `payment_id`, `site_id` |
-| `charge.created` | A one-off charge is created (plan-generated batches are not announced one by one) | `charge_id`, `site_id` |
+| `charge.created` | A one-off charge is created (plan-generated charges are announced by `charges.generated`) | `charge_id`, `site_id` |
+| `charges.generated` | A charge plan billed a period (one event per plan and period) | `plan_id`, `site_id`; plus `period` (for example `2026-11`) and `charge_ids` (the ids of the charges created) next to `ids` |
 | `ticket.created` | A ticket is opened | `ticket_id`, `site_id` |
 | `ticket.status_changed` | A ticket moves to another status | `ticket_id`, `site_id` |
 | `announcement.published` | An announcement is published | `announcement_id`, `site_id` |

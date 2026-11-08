@@ -254,7 +254,7 @@ func TestFromAuditMapping(t *testing.T) {
 }
 
 func TestEventTypesAndValidation(t *testing.T) {
-	want := []string{"payment.recorded", "payment.confirmed", "charge.created", "ticket.created", "ticket.status_changed", "announcement.published", "meeting.called", "decision.applied", "visitor.approved", "delivery.received"}
+	want := []string{"payment.recorded", "payment.confirmed", "charge.created", "charges.generated", "ticket.created", "ticket.status_changed", "announcement.published", "meeting.called", "decision.applied", "visitor.approved", "delivery.received"}
 	if !slices.Equal(EventTypes(), want) {
 		t.Errorf("EventTypes = %v", EventTypes())
 	}

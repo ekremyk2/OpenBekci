@@ -15408,7 +15408,7 @@ export interface components {
             org_id: string;
             /** @description `https` only; the host must not resolve to a private, loopback or link-local address (unless the operator allows the range). */
             url: string;
-            /** @description Subscribed event types. Known values `payment.recorded`, `payment.confirmed`, `charge.created`, `ticket.created`, `ticket.status_changed`, `announcement.published`, `meeting.called`, `decision.applied`, `visitor.approved`, `delivery.received`. */
+            /** @description Subscribed event types. Known values `payment.recorded`, `payment.confirmed`, `charge.created`, `charges.generated`, `ticket.created`, `ticket.status_changed`, `announcement.published`, `meeting.called`, `decision.applied`, `visitor.approved`, `delivery.received`. */
             events: string[];
             active: boolean;
             description: string | null;
