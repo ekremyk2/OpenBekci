@@ -55,7 +55,7 @@ const MutationsDeclareIdempotency = () => ({
       for (const method of Object.keys(item)) {
         if (MUTATING.has(method) && !item[method]['x-idempotent']) {
           report({
-            message: `${method.toUpperCase()} operation must declare x-idempotent: optional|required`,
+            message: `${method.toUpperCase()} operation must declare x-idempotent: optional|required|none`,
             location: location.child(method).key(),
           });
         }

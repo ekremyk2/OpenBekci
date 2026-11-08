@@ -122,8 +122,8 @@ func TestDraftSpecConformance(t *testing.T) {
 			// Every mutating operation declares its idempotency mode.
 			if method != http.MethodGet && method != http.MethodHead {
 				v := extString(op.Extensions, "x-idempotent")
-				if v != "optional" && v != "required" {
-					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
+				if v != "optional" && v != "required" && v != "none" {
+					t.Errorf("%s: mutation without x-idempotent optional|required|none (got %q)", where, v)
 				}
 				if v == "required" {
 					if authModeOf(spec, op) != authRequired {

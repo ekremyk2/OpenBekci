@@ -221,8 +221,8 @@ func TestSpecConformance(t *testing.T) {
 			}
 			seen[op.OperationID] = true
 			if method != http.MethodGet && method != http.MethodHead {
-				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" {
-					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
+				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" && v != "none" {
+					t.Errorf("%s: mutation without x-idempotent optional|required|none (got %q)", where, v)
 				}
 			}
 			if extString(op.Extensions, "x-idempotent") == "required" && authModeOf(spec, op) != authRequired {

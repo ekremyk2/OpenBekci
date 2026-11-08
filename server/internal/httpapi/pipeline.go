@@ -29,6 +29,9 @@ func init() {
 const (
 	idemOptional = "optional"
 	idemRequired = "required"
+	// idemNone: the response is never stored and Idempotency-Key is ignored (it
+	// carries a secret, such as a one-time enrolment token).
+	idemNone = "none"
 )
 
 const (
@@ -111,8 +114,12 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	}
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
+			idem := extString(op.Extensions, "x-idempotent")
+			if idem == idemNone {
+				idem = ""
+			}
 			info := opInfo{
-				idempotent: extString(op.Extensions, "x-idempotent"),
+				idempotent: idem,
 				preview:    extString(op.Extensions, "x-stability") == "preview",
 				auth:       authModeOf(spec, op),
 				query:      queryParams(item, op),

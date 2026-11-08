@@ -22088,7 +22088,7 @@ paths:
           - access.manage
         site_manager:
           - access.manage
-      x-idempotent: optional
+      x-idempotent: none
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -22239,7 +22239,7 @@ paths:
           - access.manage
         site_manager:
           - access.manage
-      x-idempotent: optional
+      x-idempotent: none
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -22858,10 +22858,8 @@ paths:
       x-openbekci-roles:
         org_admin:
           - access.open
-          - access.manage
         site_manager:
           - access.open
-          - access.manage
         guard:
           - access.open
       x-stability: preview
