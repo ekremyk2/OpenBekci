@@ -110,6 +110,17 @@ func init() {
 		"access.revokeCredential": acc("DELETE", "", manage, 204, "", func(x accFix) string { return "/access/credentials/" + x.cred.String() }),
 		"access.listAccessEvents": acc("GET", "", view, 200, "", func(x accFix) string { return "/access/events" + site(x) }),
 	}
+	// release 0.3 gate control: served as a stub (404) until that module lands
+	rows["access.createCredential"] = mrow{perms: manage, status: 404, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		x := seedAccess(w, t, org)
+		return jsonReq("POST", orgPath(org, "/access/credentials"),
+			fmt.Sprintf(`{"site_id":%q,"kind":"tag","value":"tag-matrix-1","point_scope":"all_vehicle"}`, x.f.Site), "Idempotency-Key", idem())
+	}}
+	rows["access.rebuildAllowlist"] = mrow{perms: manage, status: 404, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
+		x := seedAccess(w, t, org)
+		return jsonReq("POST", orgPath(org, "/access/allowlist:rebuild"), fmt.Sprintf(`{"site_id":%q}`, x.f.Site))
+	}}
+	rows["access.listGuardEvents"] = acc("GET", "", perms("gate.operate"), 404, "", func(x accFix) string { return "/gate/events" + site(x) })
 	// the agent transport: an agent token is the only credential; a user session (every matrix actor) is not one
 	agentRow := func(method, path, body string) mrow {
 		return mrow{status: 401, build: func(*authztest.World, authztest.Org, *testing.T) mreq { return jsonReq(method, path, body) }}
