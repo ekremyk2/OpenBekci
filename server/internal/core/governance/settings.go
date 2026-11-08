@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -86,7 +87,7 @@ func (s *Service) GetSettings(ctx context.Context, orgID, siteID uuid.UUID) (Set
 // expectedVersion (If-Match). Law 634 numbers are defaults, not limits: the
 // site may deviate where its yonetim plani allows, so only sanity is checked.
 // It needs meetings.manage.
-func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expectedVersion int, in Settings) (SettingsView, error) {
+func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expectedVersion int, in Settings, deviationReason string) (SettingsView, error) {
 	if err := authz.RequireAnywhere(ctx, PermMeetingsManage); err != nil {
 		return SettingsView{}, err
 	}
@@ -104,6 +105,11 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 	}
 	if perr := in.Validate(); perr != nil {
 		return SettingsView{}, perr
+	}
+	deviations := belowLegalDefaults(in)
+	deviationReason = strings.TrimSpace(deviationReason)
+	if len(deviations) > 0 && deviationReason == "" {
+		return SettingsView{}, problem.Validation(problem.Field{Field: "deviation_reason", Code: "required", Params: map[string]any{"deviations": deviations}})
 	}
 	var out SettingsView
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
@@ -136,13 +142,49 @@ func (s *Service) PutSettings(ctx context.Context, orgID, siteID uuid.UUID, expe
 		if out, err = loadSettings(ctx, tx, orgID, siteID, false); err != nil {
 			return err
 		}
-		diff, err := audit.Diff("governance_settings", settingsAudit(before.Settings), settingsAudit(in))
+		after := settingsAudit(in)
+		if len(deviations) > 0 {
+			after["deviations_from_the_law_default"] = deviations
+			after["deviation_reason"] = deviationReason
+		}
+		diff, err := audit.Diff("governance_settings", settingsAudit(before.Settings), after)
 		if err != nil {
 			return err
 		}
 		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: sc.SiteID, Action: "governance.settings_update", TargetType: "governance_settings", TargetID: siteID, Diff: diff})
 	})
 	return out, dbErr(err, "governance settings")
+}
+
+var ruleStrength = map[string]int{RuleSimpleMajorityPresent: 1, RuleMajorityCountAndShare: 2, RuleFourFifths: 3, RuleUnanimity: 4}
+
+// belowLegalDefaults lists the settings that are more permissive than the Law
+// 634 preset: a lower quorum or notice time, higher proxy or per-person caps,
+// a weaker threshold for a topic the preset knows. The site may deviate where
+// its yonetim plani allows, but a deviation needs a reason on record.
+func belowLegalDefaults(in Settings) []string {
+	p := TurkishPreset()
+	var out []string
+	add := func(cond bool, name string) {
+		if cond {
+			out = append(out, name)
+		}
+	}
+	add(in.Quorum.FirstCallByCountPct < p.Quorum.FirstCallByCountPct, "quorum.first_call_by_count_pct")
+	add(in.Quorum.FirstCallBySharePct < p.Quorum.FirstCallBySharePct, "quorum.first_call_by_share_pct")
+	add(in.MaxVotesPerPersonPct > p.MaxVotesPerPersonPct+epsilon, "max_votes_per_person_pct")
+	add(in.ProxyCapPct > p.ProxyCapPct, "proxy_cap_pct")
+	add(in.ProxyCapSmallBuildingMax > p.ProxyCapSmallBuildingMax, "proxy_cap_small_building_max")
+	add(in.CallMinDays < p.CallMinDays, "call_min_days")
+	add(in.SecondCallMinDays < p.SecondCallMinDays, "second_call_min_days")
+	for _, pt := range p.Thresholds {
+		for _, it := range in.Thresholds {
+			if it.Topic == pt.Topic && ruleStrength[it.Rule] < ruleStrength[pt.Rule] {
+				out = append(out, "thresholds."+pt.Topic)
+			}
+		}
+	}
+	return out
 }
 
 func settingsAudit(s Settings) map[string]any {

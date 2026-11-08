@@ -145,6 +145,25 @@ func TestIntegrationGovernanceSecondCall(t *testing.T) {
 	}
 }
 
+// Check-in tokens are stored hashed: a personal call letter (and the owner's
+// /me) issues the current token, and an earlier one stops working.
+func TestIntegrationGovernanceCheckinTokenIsHashedAndRotates(t *testing.T) {
+	e := newAuthzEnv(t)
+	w := e.w
+	c := gcall{t, e}
+	mgr := w.Actor("site_manager")
+	org := w.OrgA
+	g := govSeed(t, w, org, "called")
+	base := func(s string) string { return orgPath(org, s) }
+	mpath := "/meetings/" + g.meeting.String()
+	if rec := e.as(mgr, "GET", base(mpath+"/call-letter?person_id="+g.p1.String()), ""); rec.Code != 200 || rec.Header().Get("Content-Type") != "application/pdf" {
+		t.Fatalf("personal call letter: %d", rec.Code)
+	}
+	c.must(200, mgr, "POST", base(mpath+":open-first-call"), ``)
+	c.must(404, mgr, "POST", base(mpath+"/attendance:checkin"), fmt.Sprintf(`{"token":%q}`, g.token1)) // replaced by the letter's token
+	// a QR is accepted only while the session is open: the same call before opening is a conflict (above, in the other test)
+}
+
 // Attendance and QR check-in need the session to be open.
 func TestIntegrationGovernanceAttendanceNeedsOpenSession(t *testing.T) {
 	e := newAuthzEnv(t)

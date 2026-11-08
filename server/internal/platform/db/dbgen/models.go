@@ -52,6 +52,13 @@ type AllocationKeyValue struct {
 	Version   int32
 }
 
+type AssemblyReminder struct {
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	Year       int32
+	NotifiedAt pgtype.Timestamptz
+}
+
 type Attendance struct {
 	ID               pgtype.UUID
 	OrgID            pgtype.UUID
@@ -76,7 +83,7 @@ type AttendanceToken struct {
 	SiteID    pgtype.UUID
 	MeetingID pgtype.UUID
 	PersonID  pgtype.UUID
-	Token     string
+	TokenHash string
 	CreatedAt pgtype.Timestamptz
 }
 

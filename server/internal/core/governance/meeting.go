@@ -3,7 +3,9 @@ package governance
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base32"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -387,6 +389,29 @@ func newToken() string {
 	return strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(b))
 }
 
+// HashToken is how a check-in token is stored: only its SHA-256 is kept, so a
+// database read does not give anybody a working QR. A personal call letter or
+// the owner's /me view issues the current token by replacing the stored hash
+// (an earlier printed QR then stops working), see rotateToken.
+func HashToken(token string) string {
+	h := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(h[:])
+}
+
+// rotateToken issues a fresh check-in token for an owner of a called meeting
+// and stores its hash; it returns pgx.ErrNoRows when the owner has no token.
+func rotateToken(ctx context.Context, tx pgx.Tx, orgID, meetingID, person uuid.UUID) (string, error) {
+	tok := newToken()
+	tag, err := tx.Exec(ctx, `UPDATE attendance_token SET token_hash = $4 WHERE org_id = $1 AND meeting_id = $2 AND person_id = $3`, orgID, meetingID, person, HashToken(tok))
+	if err != nil {
+		return "", err
+	}
+	if tag.RowsAffected() == 0 {
+		return "", pgx.ErrNoRows
+	}
+	return tok, nil
+}
+
 // checkinPayload is what the QR code encodes.
 func (s *Service) checkinPayload(token string) string {
 	return strings.TrimRight(s.cfg.BaseURL, "/") + "/checkin/" + token
@@ -473,7 +498,7 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 		people := make([]uuid.UUID, 0, len(snap.Owners))
 		for _, o := range snap.Owners {
 			people = append(people, o.PersonID)
-			if _, err = tx.Exec(ctx, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token) VALUES ($1, $2, $3, $4, $5)`, orgID, m.SiteID, id, o.PersonID, newToken()); err != nil {
+			if _, err = tx.Exec(ctx, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token_hash) VALUES ($1, $2, $3, $4, $5)`, orgID, m.SiteID, id, o.PersonID, HashToken(newToken())); err != nil {
 				return err
 			}
 			if _, err = tx.Exec(ctx, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase) VALUES ($1, $2, $3, $4, $5, 'call')`, newID(), orgID, m.SiteID, id, o.PersonID); err != nil {
@@ -617,8 +642,8 @@ func (s *Service) refreshSnapshot(ctx context.Context, tx pgx.Tx, m Meeting) err
 		}
 	}
 	for _, p := range added {
-		if _, err := tx.Exec(ctx, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token) VALUES ($1, $2, $3, $4, $5)
-			ON CONFLICT DO NOTHING`, m.OrgID, m.SiteID, m.ID, p, newToken()); err != nil {
+		if _, err := tx.Exec(ctx, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token_hash) VALUES ($1, $2, $3, $4, $5)
+			ON CONFLICT DO NOTHING`, m.OrgID, m.SiteID, m.ID, p, HashToken(newToken())); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase) VALUES ($1, $2, $3, $4, $5, 'call')

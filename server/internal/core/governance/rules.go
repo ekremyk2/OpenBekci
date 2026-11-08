@@ -114,7 +114,10 @@ func TurkishPresetNotes() []PresetNote {
 		{Key: "proxy_caps", Note: "A proxy holder represents at most 5 % of the votes; in buildings of 40 units or fewer at most two other owners.", Verify: true},
 		{Key: "call_timing", Note: "The call goes out at least 15 days before the meeting; the second meeting is 7 to 15 days after the first.", Verify: true},
 		{Key: "thresholds", Note: "Article mapping of the threshold table; the yonetim plani may deviate where the law allows.", Verify: true},
-		{Key: "ordinary_assembly", Note: "The ordinary assembly meets yearly, in January unless the yonetim plani says otherwise.", Verify: true},
+		{Key: "ordinary_assembly", Note: "The ordinary assembly meets yearly, in January unless the yonetim plani says otherwise; managers are reminded in the month before (ordinary_assembly_month).", Verify: true},
+		{Key: "abstentions_and_ties", Note: "An abstention counts as present but is not a yes, so it counts against every majority; a tie rejects, because every majority is strict. A simple majority of those present is measured against everybody present, so a present owner who does not vote counts against too. Unanimity and four-fifths are measured against all eligible votes, and votes above a person's cap do not count, so unanimity is unreachable when one person holds more than the cap.", Verify: true},
+		{Key: "call_held", Note: "Quorum and the vote evaluation follow the call that was actually opened (first, or second after the first failed its quorum), never the clock. Attendance does not carry from the first call to the second.", Verify: true},
+		{Key: "co_owners_check_in", Note: "Co-owners of a unit vote through one representative. A co-owner who is not the representative cannot check in on their own: the representative is recorded in_person for the unit, and only if the representative is absent can the unit be represented by a proxy, which counts against the proxy cap.", Verify: true},
 	}
 }
 

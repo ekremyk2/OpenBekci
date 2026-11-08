@@ -169,19 +169,4 @@ func (s *Service) GetMinutes(ctx context.Context, orgID, meetingID uuid.UUID) (M
 	return out, dbErr(err, "minutes")
 }
 
-// MinutesText renders the minutes as text (golden tests, previews); no permission check.
-func (s *Service) MinutesText(ctx context.Context, orgID, meetingID uuid.UUID) (string, error) {
-	var txt string
-	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		m, err := loadMeeting(ctx, tx, orgID, meetingID, false)
-		if err != nil {
-			return err
-		}
-		d, err := s.minutesData(ctx, tx, m)
-		txt = Minutes(d).Text()
-		return err
-	})
-	return txt, err
-}
-
 var _ = errors.New

@@ -58,7 +58,13 @@ func (s *apiServer) GovernanceSetGovernanceSettings(ctx context.Context, req gen
 	if err != nil {
 		return nil, err
 	}
-	v, err := g.PutSettings(ctx, req.OrgId, req.SiteId, ver, in)
+	reason, err := conv[struct {
+		DeviationReason string `json:"deviation_reason"`
+	}](req.Body)
+	if err != nil {
+		return nil, err
+	}
+	v, err := g.PutSettings(ctx, req.OrgId, req.SiteId, ver, in, reason.DeviationReason)
 	if err != nil {
 		return nil, err
 	}

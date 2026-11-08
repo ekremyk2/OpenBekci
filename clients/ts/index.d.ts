@@ -4091,6 +4091,8 @@ export interface components {
             default_term_months?: number;
             /** @description Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`. */
             notice_electronic_allowed?: boolean;
+            /** @description Input only. Required when a value is more permissive than the Law 634 default (lower quorum or notice time, higher proxy or per-person caps, a weaker threshold): the reason (for example the clause of the yonetim plani) is recorded in the audit trail with the list of deviations. Not stored in the settings. */
+            deviation_reason?: string;
             /** @description Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them. */
             decision_details_visible_to_owners?: boolean;
             /**
@@ -5027,8 +5029,11 @@ export interface components {
             scope_id: string | null;
             /** Format: date */
             valid_from: string;
-            /** Format: date */
-            valid_to: string;
+            /**
+             * Format: date
+             * @description End of the term. Optional, when omitted it is `valid_from` plus the site's `default_term_months`.
+             */
+            valid_to?: string;
             /** @description Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.) */
             replaces_membership_ids?: string[];
         };

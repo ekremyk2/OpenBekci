@@ -77,7 +77,7 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 	}
 	for i, p := range []uuid.UUID{g.p1, g.p2} {
 		tok := fmt.Sprintf("tok%d-%d", i+1, n)
-		w.Exec(t, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token) VALUES ($1, $2, $3, $4, $5)`, org.ID, f.Site, g.meeting, p, tok)
+		w.Exec(t, `INSERT INTO attendance_token (org_id, site_id, meeting_id, person_id, token_hash) VALUES ($1, $2, $3, $4, $5)`, org.ID, f.Site, g.meeting, p, governance.HashToken(tok))
 		w.Exec(t, `INSERT INTO meeting_notice (id, org_id, site_id, meeting_id, person_id, phase) VALUES ($1, $2, $3, $4, $5, 'call')`, id.New(), org.ID, f.Site, g.meeting, p)
 	}
 	if status == "open" {

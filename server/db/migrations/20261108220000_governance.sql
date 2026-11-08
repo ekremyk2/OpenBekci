@@ -207,7 +207,9 @@ CREATE TABLE attendance_token (
     site_id    uuid        NOT NULL,
     meeting_id uuid        NOT NULL,
     person_id  uuid        NOT NULL,
-    token      text        NOT NULL UNIQUE,
+    -- SHA-256 of the token: the token itself is shown once (personal call letter,
+    -- the owner's /me) and never stored
+    token_hash text        NOT NULL UNIQUE,
     created_at timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (org_id, meeting_id, person_id),
     FOREIGN KEY (org_id, site_id, meeting_id) REFERENCES meeting (org_id, site_id, id) ON DELETE CASCADE,
@@ -315,7 +317,21 @@ CREATE TABLE term_reminder (
 CREATE INDEX term_reminder_org_site ON term_reminder (org_id, site_id, valid_to);
 SELECT openbekci_enable_rls('term_reminder');
 
+-- The yearly reminder that the ordinary assembly is due (G6), once per site and
+-- year: sent in the month before ordinary_assembly_month and not at all when an
+-- assembly of that year already exists.
+CREATE TABLE assembly_reminder (
+    org_id      uuid        NOT NULL REFERENCES organization (id),
+    site_id     uuid        NOT NULL,
+    year        int         NOT NULL,
+    notified_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (org_id, site_id, year),
+    FOREIGN KEY (org_id, site_id) REFERENCES site (org_id, id)
+);
+SELECT openbekci_enable_rls('assembly_reminder');
+
 -- +goose Down
+DROP TABLE assembly_reminder;
 DROP TABLE term_reminder;
 ALTER TABLE membership DROP CONSTRAINT membership_decision_fk;
 ALTER TABLE agenda_item DROP CONSTRAINT agenda_item_decision_fk;

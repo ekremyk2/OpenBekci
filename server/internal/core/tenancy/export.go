@@ -90,6 +90,7 @@ var excludedTables = map[string]string{
 	// Governance: the legal paperwork is exported, these two are not.
 	"attendance_token": "check-in credentials of one meeting (stored hashed); useless after the hand-over",
 	"term_reminder":    "operational reminders; recomputed from the memberships by the daily job",
+	"assembly_reminder": "operational record of the yearly ordinary-assembly reminder",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/authztest"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 )
@@ -118,9 +119,22 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	set := gmap(st, "settings")
 	set["call_min_days"] = 10
 	body, _ := json.Marshal(set)
+	// below the legal default: a reason is required, and goes to the audit trail
+	if r := c.must(422, mgr, "PUT", base(site+"/governance-settings"), string(body), "If-Match", `"1"`); fmt.Sprint(r["errors"]) == "" {
+		t.Fatalf("no field errors: %v", r)
+	}
+	set["deviation_reason"] = "yonetim plani madde 12 allows ten days"
+	body, _ = json.Marshal(set)
 	st = c.must(200, mgr, "PUT", base(site+"/governance-settings"), string(body), "If-Match", `"1"`)
 	if gnum(st, "version") != 2 || st["preset"] != nil || gnum(gmap(st, "settings"), "call_min_days") != 10 {
 		t.Fatalf("edited settings = %v", st)
+	}
+	var withReason int
+	_ = e.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT count(*) FROM audit_event WHERE org_id = $1 AND action = 'governance.settings_update' AND diff::text LIKE '%madde 12%'`, org.ID).Scan(&withReason)
+	})
+	if withReason != 1 {
+		t.Fatalf("the deviation reason is not in the audit trail (%d events)", withReason)
 	}
 	c.must(409, mgr, "PUT", base(site+"/governance-settings"), string(body), "If-Match", `"1"`)
 	set["thresholds"] = []any{map[string]any{"topic": "x", "rule": "coin_toss"}}
@@ -249,11 +263,14 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	if gnum(q, "present_count") != 0 || q["reached"] != false || gstr(q, "call") != "first" || gnum(q, "eligible_count") != 5 {
 		t.Fatalf("quorum before anybody arrives = %v", q)
 	}
-	var tok string
-	if err := e.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
-		return tx.QueryRow(context.Background(), `SELECT token FROM attendance_token WHERE org_id = $1 AND meeting_id = $2 AND person_id = $3`, org.ID, uuid.MustParse(mid), p1).Scan(&tok)
-	}); err != nil {
-		t.Fatal(err)
+	tok := "scanned-qr-token-of-p1" // only the hash is stored: set a token whose QR the desk scans
+	w.Exec(t, `UPDATE attendance_token SET token_hash = $4 WHERE org_id = $1 AND meeting_id = $2 AND person_id = $3`, org.ID, uuid.MustParse(mid), p1, governance.HashToken(tok))
+	var plain int
+	_ = e.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT count(*) FROM attendance_token WHERE org_id = $1 AND token_hash = $2`, org.ID, tok).Scan(&plain)
+	})
+	if plain != 0 {
+		t.Fatal("a token is stored in the clear")
 	}
 	att := c.must(201, mgr, "POST", base(mpath+"/attendance:checkin"), fmt.Sprintf(`{"token":%q}`, tok))
 	if gstr(att, "source") != "qr" || len(att["unit_ids"].([]any)) != 2 || gstr(att, "mode") != "in_person" {
@@ -428,6 +445,12 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	// end_previous: the new manager ends the old one's term
 	oldMgr := id.New()
 	w.Exec(t, `INSERT INTO membership (id, org_id, person_id, role, scope_type, scope_id, valid_from) VALUES ($1, $2, $3, 'site_manager', 'site', $4, '2025-01-01')`, oldMgr, org.ID, p4, f.Site)
+	// no term end given: the site's default_term_months (12) applies
+	pv2 := c.must(200, mgr, "POST", base("/decisions/"+gstr(d1, "id")+":apply?dry_run=true"),
+		fmt.Sprintf(`{"kind":"membership","person_id":%q,"role":"auditor","scope_type":"site","scope_id":%q,"valid_from":"2026-12-01"}`, p3, f.Site), "Idempotency-Key", "apply-key-0009")
+	if gstr(gmap(pv2, "preview"), "valid_to") != "2027-12-01" {
+		t.Fatalf("default term = %v", pv2["preview"])
+	}
 	// a second site manager is not touched, and neither is a board member: only the named holder ends
 	otherMgr := id.New()
 	w.Exec(t, `INSERT INTO membership (id, org_id, person_id, role, scope_type, scope_id, valid_from) VALUES ($1, $2, $3, 'site_manager', 'site', $4, '2025-01-01')`, otherMgr, org.ID, p5, f.Site)
@@ -466,9 +489,12 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	if gstr(mn, "document_id") == "" || gstr(got, "document_id") != gstr(mn, "document_id") || gstr(got, "file_id") != gstr(mn, "file_id") {
 		t.Fatalf("minutes = %v / %v", mn, got)
 	}
-	txt, err := e.gov.MinutesText(context.Background(), org.ID, uuid.MustParse(mid))
-	if err != nil || !strings.Contains(txt, fmt.Sprintf("%d/1", at.Year())) || !strings.Contains(txt, "I object to the process") {
-		t.Fatalf("minutes text (%v):\n%s", err, txt)
+	var stored []byte
+	_ = e.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT content FROM meeting_document WHERE org_id = $1 AND id = $2`, org.ID, uuid.MustParse(gstr(mn, "document_id"))).Scan(&stored)
+	})
+	if !strings.HasPrefix(string(stored), "%PDF-") {
+		t.Fatalf("the stored minutes are not a PDF: %d bytes", len(stored))
 	}
 
 	// closing: the decisions go to the absent owner, recorded like the call
@@ -591,13 +617,38 @@ func TestIntegrationGovernanceTermReminders(t *testing.T) {
 	if len(items) != 3 || status[dueID.String()] != "due" || overdue != 1 || upcoming != 1 {
 		t.Fatalf("reminders = %v (want one due, one overdue, one upcoming, none for the long term)", status)
 	}
-	if n := len(rec.notifies); n != 3 {
+	ofType := func(typ string) (n int) {
+		for _, x := range rec.notifies {
+			if x.Type == typ {
+				n++
+				if len(x.Recipients) == 0 || x.Key == "" || len(x.Channels) == 0 {
+					t.Fatalf("notification = %+v", x)
+				}
+			}
+		}
+		return n
+	}
+	if n := ofType("governance.term_expiry"); n != 3 {
 		t.Fatalf("%d notifications for 3 terms (the second run must add none), want 3", n)
 	}
-	for _, n := range rec.notifies {
-		if n.Type != "governance.term_expiry" || len(n.Recipients) == 0 || n.Key == "" || len(n.Channels) == 0 {
-			t.Fatalf("notification = %+v", n)
+	// the yearly reminder that the ordinary assembly is due: in the month before ordinary_assembly_month, once
+	preset := governance.TurkishPreset()
+	preset.OrdinaryAssemblyMonth = int64(time.Now().UTC().Month())%12 + 1
+	sb, _ := json.Marshal(preset)
+	w.Exec(t, `INSERT INTO governance_settings (org_id, site_id, preset, settings, version) VALUES ($1, $2, NULL, $3::jsonb, 2)`, w.OrgA.ID, f.Site, string(sb))
+	for i := 0; i < 2; i++ {
+		if err := e.gov.RunTermReminders(context.Background()); err != nil {
+			t.Fatal(err)
 		}
+	}
+	ofSite := 0
+	for _, x := range rec.notifies {
+		if x.Type == "governance.ordinary_assembly_due" && x.SiteID != nil && *x.SiteID == f.Site {
+			ofSite++
+		}
+	}
+	if ofSite != 1 {
+		t.Fatalf("%d ordinary assembly reminders for the site, want exactly one for the year", ofSite)
 	}
 	if over := litems(c.must(200, mgr, "GET", orgPath(w.OrgA, "/term-reminders?site_id="+f.Site.String()+"&status=overdue"), "")); len(over) != 1 {
 		t.Fatalf("overdue filter = %d", len(over))

@@ -139,7 +139,12 @@ func (s *Service) RunTermReminders(ctx context.Context) error {
 	}
 	var firstErr error
 	for _, org := range orgs {
-		if err := s.db.InTenantTx(ctx, org, func(tx pgx.Tx) error { return s.termRemindersOrg(ctx, tx, org) }); err != nil {
+		if err := s.db.InTenantTx(ctx, org, func(tx pgx.Tx) error {
+			if err := s.termRemindersOrg(ctx, tx, org); err != nil {
+				return err
+			}
+			return s.assemblyRemindersOrg(ctx, tx, org)
+		}); err != nil {
 			s.log.Error("term reminders", "org", org, "error", err)
 			if firstErr == nil {
 				firstErr = err

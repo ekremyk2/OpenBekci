@@ -695,6 +695,14 @@ func (s *Service) applyMembership(ctx context.Context, tx pgx.Tx, d Decision, in
 	}
 	from, okFrom := dateField(in, "valid_from")
 	to, okTo := dateField(in, "valid_to")
+	if !okTo && okFrom && in["valid_to"] == nil {
+		// no term end given: the site's default term length (default_term_months)
+		set, err := loadSettings(ctx, tx, d.OrgID, d.SiteID, false)
+		if err != nil {
+			return EffectRecord{}, nil, err
+		}
+		to, okTo = from.AddDate(0, int(set.Settings.DefaultTermMonths), 0), true
+	}
 	if !okFrom {
 		fs = append(fs, problem.Field{Field: "valid_from", Code: "required"})
 	}

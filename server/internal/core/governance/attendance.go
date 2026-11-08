@@ -396,7 +396,7 @@ func (s *Service) CheckIn(ctx context.Context, orgID, meetingID uuid.UUID, token
 			return err
 		}
 		var person uuid.UUID
-		err = tx.QueryRow(ctx, `SELECT person_id FROM attendance_token WHERE org_id = $1 AND meeting_id = $2 AND token = $3`, orgID, meetingID, token).Scan(&person)
+		err = tx.QueryRow(ctx, `SELECT person_id FROM attendance_token WHERE org_id = $1 AND meeting_id = $2 AND token_hash = $3`, orgID, meetingID, HashToken(token)).Scan(&person)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return problem.NotFound("this check-in code does not belong to the meeting")
 		}
@@ -497,21 +497,6 @@ func (s *Service) AttendanceSheetPDF(ctx context.Context, orgID, meetingID uuid.
 	return pdf, "attendance-sheet.pdf", dbErr(err, "attendance sheet")
 }
 
-// AttendanceSheetText renders the hazirun cetveli as text (tests, previews).
-func (s *Service) AttendanceSheetText(ctx context.Context, orgID, meetingID uuid.UUID) (string, error) {
-	var txt string
-	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		m, err := loadMeeting(ctx, tx, orgID, meetingID, false)
-		if err != nil {
-			return err
-		}
-		d, err := s.sheetData(ctx, tx, m)
-		txt = AttendanceSheet(d).Text()
-		return err
-	})
-	return txt, err
-}
-
 // CallLetterPDF returns the call letter. Without a person it is the generic
 // letter filed at the call; with person_id it is that owner's letter with their
 // check-in QR (an owner may fetch their own, a manager anyone's). It needs meetings.read.
@@ -553,21 +538,6 @@ func (s *Service) CallLetterPDF(ctx context.Context, orgID, meetingID uuid.UUID,
 	return pdf, "call-letter.pdf", dbErr(err, "call letter")
 }
 
-// CallLetterText renders the call letter as text (tests, previews); no permission check.
-func (s *Service) CallLetterText(ctx context.Context, orgID, meetingID uuid.UUID, person *uuid.UUID) (string, error) {
-	var txt string
-	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
-		m, err := loadMeeting(ctx, tx, orgID, meetingID, false)
-		if err != nil {
-			return err
-		}
-		doc, err := s.callLetterDoc(ctx, tx, m, person, viewer{staff: true})
-		txt = doc.Text()
-		return err
-	})
-	return txt, err
-}
-
 func (s *Service) callLetterDoc(ctx context.Context, tx pgx.Tx, m Meeting, person *uuid.UUID, v viewer) (DocModel, error) {
 	si, err := loadSiteInfo(ctx, tx, m.OrgID, m.SiteID)
 	if err != nil {
@@ -600,12 +570,17 @@ func (s *Service) callLetterDoc(ctx context.Context, tx pgx.Tx, m Meeting, perso
 		if me, ok := callerPerson(ctx, tx, m.OrgID); !v.staff && (!ok || me != *person) {
 			return DocModel{}, problem.Forbidden("you can only fetch your own call letter")
 		}
-		var token, name string
-		err := tx.QueryRow(ctx, `SELECT t.token, p.display_name FROM attendance_token t JOIN person p ON p.org_id = t.org_id AND p.id = t.person_id
-			WHERE t.org_id = $1 AND t.meeting_id = $2 AND t.person_id = $3`, m.OrgID, m.ID, *person).Scan(&token, &name)
+		var name string
+		err := tx.QueryRow(ctx, `SELECT p.display_name FROM attendance_token t JOIN person p ON p.org_id = t.org_id AND p.id = t.person_id
+			WHERE t.org_id = $1 AND t.meeting_id = $2 AND t.person_id = $3`, m.OrgID, m.ID, *person).Scan(&name)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return DocModel{}, problem.NotFound("this person is not an owner called to the meeting")
 		}
+		if err != nil {
+			return DocModel{}, err
+		}
+		// only the hash is stored: the letter issues the owner's current token (an earlier QR stops working)
+		token, err := rotateToken(ctx, tx, m.OrgID, m.ID, *person)
 		if err != nil {
 			return DocModel{}, err
 		}
@@ -682,8 +657,8 @@ func (s *Service) GetMyMeeting(ctx context.Context, orgID, meetingID uuid.UUID) 
 			return err
 		}
 		if m.Status == StatusCalled || m.Status == StatusInSession {
-			var tok string
-			if err := tx.QueryRow(ctx, `SELECT token FROM attendance_token WHERE org_id = $1 AND meeting_id = $2 AND person_id = $3`, orgID, meetingID, me).Scan(&tok); err == nil {
+			// only the hash is stored: viewing issues the owner's current token
+			if tok, err := rotateToken(ctx, tx, orgID, meetingID, me); err == nil {
 				out.AttendanceToken, out.AttendanceQR = &tok, ptr(s.checkinPayload(tok))
 			} else if !errors.Is(err, pgx.ErrNoRows) {
 				return err
