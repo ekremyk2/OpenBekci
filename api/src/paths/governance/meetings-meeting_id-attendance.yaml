@@ -1,0 +1,115 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: meeting_id
+    in: path
+    required: true
+    description: Id of the meeting.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: governance.listAttendance
+  summary: Attendance of a meeting
+  description: |-
+    **Release 0.2.** Attendance of a meeting.
+
+    Permission: `attendance.manage`.
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - attendance.manage
+    site_manager:
+      - attendance.manage
+    board_member:
+      - attendance.manage
+  x-stability: preview
+  parameters:
+    - name: mode
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - in_person
+          - proxy
+      description: Filter by `mode`.
+    - name: source
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - desk
+          - qr
+      description: Filter by `source`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/AttendanceList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: governance.recordAttendance
+  summary: Tick an owner off
+  description: |-
+    **Release 0.2.** Proxy caps from the site settings are enforced (`validation_failed` with the field `proxy_for_person_id`).
+
+    Permission: `attendance.manage`.
+
+    Problems: `conflict` (409), `validation_failed` (422).
+  tags:
+    - governance
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - attendance.manage
+    site_manager:
+      - attendance.manage
+    board_member:
+      - attendance.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/governance.yaml#/schemas/AttendanceCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/governance.yaml#/schemas/Attendance
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

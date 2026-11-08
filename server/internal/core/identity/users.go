@@ -1,0 +1,222 @@
+package identity
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
+
+	"github.com/openbekci/openbekci/server/internal/platform/crypto"
+	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/problem"
+)
+
+const userColumns = `id, email::text, phone, locale, status, is_platform_admin, password_hash IS NOT NULL`
+
+func scanUser(row pgx.Row) (User, error) {
+	var u User
+	err := row.Scan(&u.ID, &u.Email, &u.Phone, &u.Locale, &u.Status, &u.IsPlatformAdmin, &u.HasPassword)
+	return u, err
+}
+
+// CreateUserParams describes a new account. At least one of Email and Phone
+// is required; Password is optional (SMS and magic-link users have none).
+type CreateUserParams struct {
+	Email           string
+	Phone           string
+	Password        string
+	Locale          string
+	IsPlatformAdmin bool
+}
+
+// CreateUser creates an account. It is the entry point for the admin CLI and,
+// later, invitations.
+func (s *Service) CreateUser(ctx context.Context, p CreateUserParams) (User, error) {
+	var email, phone *string
+	var fields []problem.Field
+	if strings.TrimSpace(p.Email) != "" {
+		e, ok := NormalizeEmail(p.Email)
+		if !ok {
+			fields = append(fields, problem.Field{Field: "email", Code: "invalid_format"})
+		}
+		email = &e
+	}
+	if strings.TrimSpace(p.Phone) != "" {
+		ph, ok := NormalizePhone(p.Phone, s.cfg.DefaultCountryCode)
+		if !ok {
+			fields = append(fields, problem.Field{Field: "phone", Code: "invalid_format"})
+		}
+		phone = &ph
+	}
+	if email == nil && phone == nil && len(fields) == 0 {
+		fields = append(fields, problem.Field{Field: "email", Code: "required"})
+	}
+	var hash *string
+	if p.Password != "" {
+		if pe := ValidatePassword(p.Password); pe != nil {
+			pe.Fields[0].Field = "password"
+			fields = append(fields, pe.Fields...)
+		} else {
+			h, err := crypto.HashPassword(p.Password)
+			if err != nil {
+				return User{}, problem.Internal(err)
+			}
+			hash = &h
+		}
+	}
+	if len(fields) > 0 {
+		return User{}, problem.Validation(fields...)
+	}
+	locale := p.Locale
+	if locale == "" {
+		locale = "tr"
+	}
+	var u User
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		var err error
+		u, err = scanUser(tx.QueryRow(ctx, `
+			INSERT INTO "user" (id, email, phone, password_hash, locale, is_platform_admin)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			RETURNING `+userColumns, id.New(), email, phone, hash, locale, p.IsPlatformAdmin))
+		return err
+	})
+	if err != nil {
+		if isUniqueViolation(err) {
+			return User{}, problem.Conflict("a user with this email or phone already exists")
+		}
+		return User{}, problem.Internal(fmt.Errorf("create user: %w", err))
+	}
+	return u, nil
+}
+
+// FindUser looks an account up by email or phone ("@" selects email).
+// It returns (User{}, false, nil) when there is none.
+func (s *Service) FindUser(ctx context.Context, identifier string) (User, bool, error) {
+	kind, norm, ok := s.classify(identifier)
+	if !ok {
+		return User{}, false, nil
+	}
+	var u User
+	found := false
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		var err error
+		u, found, err = findByContact(ctx, tx, kind, norm)
+		return err
+	})
+	if err != nil {
+		return User{}, false, problem.Internal(fmt.Errorf("find user: %w", err))
+	}
+	return u, found, nil
+}
+
+// GetUser loads an account by id.
+func (s *Service) GetUser(ctx context.Context, userID uuid.UUID) (User, error) {
+	var u User
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		var err error
+		u, err = s.loadUser(ctx, tx, userID)
+		return err
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return User{}, problem.NotFound("no such user")
+	}
+	if err != nil {
+		return User{}, problem.Internal(fmt.Errorf("get user: %w", err))
+	}
+	return u, nil
+}
+
+// PromotePlatformAdmin gives an existing user platform administrator rights.
+func (s *Service) PromotePlatformAdmin(ctx context.Context, userID uuid.UUID) error {
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `UPDATE "user" SET is_platform_admin = true, updated_at = $2, version = version + 1 WHERE id = $1`, userID, s.now())
+		if err == nil && tag.RowsAffected() == 0 {
+			return pgx.ErrNoRows
+		}
+		return err
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return problem.NotFound("no such user")
+	}
+	if err != nil {
+		return problem.Internal(fmt.Errorf("promote platform admin: %w", err))
+	}
+	return nil
+}
+
+// SetPasswordAdmin sets a user's password without re-authentication; for the
+// admin CLI, where the operator holds the database anyway.
+func (s *Service) SetPasswordAdmin(ctx context.Context, userID uuid.UUID, password string) error {
+	if pe := ValidatePassword(password); pe != nil {
+		pe.Fields[0].Field = "password"
+		return pe
+	}
+	hash, err := crypto.HashPassword(password)
+	if err != nil {
+		return problem.Internal(err)
+	}
+	return s.updatePassword(ctx, userID, hash, uuid.Nil)
+}
+
+// updatePassword stores the hash and revokes every session of the user except
+// the family keep (uuid.Nil keeps none).
+func (s *Service) updatePassword(ctx context.Context, userID uuid.UUID, hash string, keep uuid.UUID) error {
+	now := s.now()
+	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `UPDATE "user" SET password_hash = $2, updated_at = $3, version = version + 1 WHERE id = $1`, userID, hash, now)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() == 0 {
+			return pgx.ErrNoRows
+		}
+		_, err = tx.Exec(ctx, `UPDATE session SET revoked_at = $2 WHERE user_id = $1 AND revoked_at IS NULL AND family_id <> $3`, userID, now, keep)
+		return err
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return problem.NotFound("no such user")
+	}
+	if err != nil {
+		return problem.Internal(fmt.Errorf("update password: %w", err))
+	}
+	return nil
+}
+
+type contactKind string
+
+const (
+	byEmail contactKind = "email"
+	byPhone contactKind = "phone"
+)
+
+// classify normalizes a sign-in identifier: an address with "@" is an email,
+// anything else a phone number.
+func (s *Service) classify(identifier string) (contactKind, string, bool) {
+	if strings.Contains(identifier, "@") {
+		e, ok := NormalizeEmail(identifier)
+		return byEmail, e, ok
+	}
+	p, ok := NormalizePhone(identifier, s.cfg.DefaultCountryCode)
+	return byPhone, p, ok
+}
+
+func findByContact(ctx context.Context, tx pgx.Tx, kind contactKind, value string) (User, bool, error) {
+	col := "email"
+	if kind == byPhone {
+		col = "phone"
+	}
+	u, err := scanUser(tx.QueryRow(ctx, `SELECT `+userColumns+` FROM "user" WHERE `+col+` = $1`, value))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return User{}, false, nil
+	}
+	return u, err == nil, err
+}
+
+func isUniqueViolation(err error) bool {
+	var pg *pgconn.PgError
+	return errors.As(err, &pg) && pg.Code == "23505"
+}

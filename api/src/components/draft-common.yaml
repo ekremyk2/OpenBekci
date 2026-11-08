@@ -1,0 +1,369 @@
+parameters:
+  OrgId:
+    name: org_id
+    in: path
+    required: true
+    description: Organization id.
+    schema:
+      type: string
+      format: uuid
+  SiteId:
+    name: site_id
+    in: query
+    description: "Restrict to one site. Omitted: all sites the caller may see in the organization."
+    schema:
+      type: string
+      format: uuid
+  SiteIdRequired:
+    name: site_id
+    in: query
+    required: true
+    description: The site this resource belongs to.
+    schema:
+      type: string
+      format: uuid
+  IfMatch:
+    name: If-Match
+    in: header
+    required: true
+    description: The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+    schema:
+      type: string
+      example: '"3"'
+  IdempotencyKeyRequired:
+    name: Idempotency-Key
+    in: header
+    required: true
+    description: Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+    schema:
+      type: string
+      minLength: 8
+      maxLength: 128
+  DryRun:
+    name: dry_run
+    in: query
+    description: When true, validate and return the row-level report without saving anything.
+    schema:
+      type: boolean
+      default: false
+  Format:
+    name: format
+    in: query
+    description: "Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it."
+    schema:
+      type: string
+      enum:
+        - json
+        - csv
+        - xlsx
+        - pdf
+      default: json
+  AsOfDate:
+    name: as_of
+    in: query
+    description: Evaluate as of this date (default today in the site timezone).
+    schema:
+      type: string
+      format: date
+  Locale:
+    name: locale
+    in: query
+    description: "BCP 47 locale for labels (default: the caller locale)."
+    schema:
+      type: string
+      example: tr
+  GuardSession:
+    name: X-Guard-Session
+    in: header
+    description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+    schema:
+      type: string
+schemas:
+  Address:
+    type: object
+    description: A postal address.
+    required:
+      - line1
+      - line2
+      - district
+      - city
+      - postal_code
+      - country_code
+    properties:
+      line1:
+        type: string
+      line2:
+        type: string
+        nullable: true
+      district:
+        type: string
+        nullable: true
+      city:
+        type: string
+        nullable: true
+      postal_code:
+        type: string
+        nullable: true
+      country_code:
+        type: string
+        description: ISO 3166-1 alpha-2
+  ImportRowError:
+    type: object
+    required:
+      - field
+      - code
+      - message
+      - params
+    properties:
+      field:
+        type: string
+        nullable: true
+      code:
+        type: string
+        description: Field-level error code, as in Problem.errors.
+      message:
+        type: string
+        nullable: true
+      params:
+        type: object
+        additionalProperties: true
+        nullable: true
+  ImportRowResult:
+    type: object
+    required:
+      - row
+      - status
+      - errors
+      - data
+    properties:
+      row:
+        type: integer
+        format: int64
+        description: 1-based row number in the uploaded file (header excluded).
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - ok
+          - warning
+          - error
+        x-open-enum: true
+      errors:
+        type: array
+        items:
+          $ref: "#/schemas/ImportRowError"
+      data:
+        type: object
+        additionalProperties: true
+        description: The parsed row as the server understood it (after column mapping).
+  ImportReport:
+    type: object
+    description: Result of a bulk import. With `dry_run=true` nothing was saved.
+    required:
+      - dry_run
+      - total_rows
+      - ok_rows
+      - warning_rows
+      - error_rows
+      - rows
+      - rows_truncated
+      - job_id
+    properties:
+      dry_run:
+        type: boolean
+      total_rows:
+        type: integer
+        format: int64
+      ok_rows:
+        type: integer
+        format: int64
+      warning_rows:
+        type: integer
+        format: int64
+      error_rows:
+        type: integer
+        format: int64
+      rows:
+        type: array
+        items:
+          $ref: "#/schemas/ImportRowResult"
+        description: Row-level report; capped at 1000 rows (the error rows come first).
+      rows_truncated:
+        type: boolean
+      job_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: "Set when the import was committed (dry_run=false): the asynchronous job doing the work."
+    example:
+      dry_run: true
+      total_rows: 120
+      ok_rows: 118
+      warning_rows: 1
+      error_rows: 1
+      rows:
+        - row: 1
+          status: ok
+          errors: []
+          data: {}
+      rows_truncated: false
+      job_id: null
+  ColumnMapping:
+    type: object
+    description: Column mapping chosen in the import wizard.
+    required:
+      - columns
+      - date_format
+      - delimiter
+      - sheet
+      - remember
+    properties:
+      columns:
+        type: object
+        additionalProperties:
+          type: string
+        description: Target field name to source column header (or zero-based index as a string).
+      date_format:
+        type: string
+        nullable: true
+        description: For example `DD.MM.YYYY`.
+      delimiter:
+        type: string
+        nullable: true
+        description: CSV delimiter.
+      sheet:
+        type: string
+        nullable: true
+        description: XLSX sheet name.
+      remember:
+        type: boolean
+        nullable: true
+        description: Remember this mapping for the organization.
+  Job:
+    type: object
+    description: A background job (River).
+    required:
+      - id
+      - org_id
+      - kind
+      - status
+      - progress
+      - result_file_id
+      - result
+      - error
+      - started_at
+      - finished_at
+      - created_by
+      - created_at
+      - updated_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      kind:
+        type: string
+        description: Open enum.
+        enum:
+          - import
+          - export
+          - report
+          - statement
+          - generate_document
+          - site_export
+          - site_import
+          - other
+        x-open-enum: true
+      status:
+        type: string
+        description: Open enum.
+        enum:
+          - queued
+          - running
+          - succeeded
+          - failed
+          - cancelled
+        x-open-enum: true
+      progress:
+        type: number
+        nullable: true
+        description: 0..1
+      result_file_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: A generated file ready for download (GET /v1/orgs/{org_id}/files/{id}).
+      result:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: Kind-specific result summary.
+      error:
+        type: object
+        additionalProperties: true
+        nullable: true
+        description: Problem-like object when failed.
+      started_at:
+        type: string
+        format: date-time
+        nullable: true
+      finished_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000002
+      org_id: 0192a3f0-1000-7000-8000-000000000003
+      kind: import
+      status: queued
+      progress: null
+      result_file_id: null
+      result: null
+      error: null
+      started_at: null
+      finished_at: null
+      created_by: null
+      created_at: 2026-03-01T09:00:00Z
+      updated_at: 2026-03-01T09:00:00Z
+  JobList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/Job"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000002
+          org_id: 0192a3f0-1000-7000-8000-000000000003
+          kind: import
+          status: queued
+          progress: null
+          result_file_id: null
+          result: null
+          error: null
+          started_at: null
+          finished_at: null
+          created_by: null
+          created_at: 2026-03-01T09:00:00Z
+          updated_at: 2026-03-01T09:00:00Z
+      next_cursor: null

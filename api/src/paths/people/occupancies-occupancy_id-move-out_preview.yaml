@@ -1,0 +1,59 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: occupancy_id
+    in: path
+    required: true
+    description: Id of the occupancy.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: people.previewMoveOut
+  summary: Preview a move-out
+  description: |-
+    **Release 0.1.** Returns the balance at `as_of` without saving. No pro-rating: the whole month goes to whoever held the unit on the due date.
+
+    Permission: `people.move_out`.
+
+    Problems: `conflict` (409).
+
+    The preview lists the open charges that would be carried (`carried`) under the default `carry_to_person`.
+  tags:
+    - people
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - people.move_out
+    site_manager:
+      - people.move_out
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/people.yaml#/schemas/MoveOutCreate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/MoveOutPreview
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

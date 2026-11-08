@@ -1,0 +1,180 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: operations.listTickets
+  summary: List tickets
+  description: |-
+    **Release 0.1.** `queue=true` is the staff queue (assigned to me). No kanban in 0.1.
+
+    Staff (`tickets.read_assigned`) see the tickets assigned to them and the common tickets of the site, never other residents' private tickets. Internal notes are only visible to holders of `tickets.manage` or `tickets.work`.
+
+    Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned` (residents: own private and all common tickets of their site).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - tickets.read
+      - tickets.open
+    site_manager:
+      - tickets.read
+      - tickets.open
+    board_member:
+      - tickets.read
+      - tickets.open
+    auditor:
+      - tickets.read
+    staff:
+      - tickets.read_assigned
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: category_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `category_id`.
+    - name: status_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `status_id`.
+    - name: semantic
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - open_like
+          - closed_like
+      description: Filter by `semantic`.
+    - name: assignee_person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `assignee_person_id`.
+    - name: assignee_vendor_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `assignee_vendor_id`.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: visibility
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - private
+          - common
+      description: Filter by `visibility`.
+    - name: reporter_person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by `reporter_person_id`.
+    - name: mine
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `mine`.
+    - name: queue
+      in: query
+      schema:
+        type: boolean
+      description: Filter by `queue`.
+    - name: q
+      in: query
+      schema:
+        type: string
+      description: Free-text search.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/TicketList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: operations.createTicket
+  summary: Open a ticket
+  description: |-
+    **Release 0.1.** Management may pass `reporter_person_id` to open on a resident's behalf. Visibility defaults from the category.
+
+    Permission: `tickets.open`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - tickets.open
+    site_manager:
+      - tickets.open
+    board_member:
+      - tickets.open
+    staff:
+      - tickets.open
+    owner:
+      - tickets.open
+    tenant:
+      - tickets.open
+    household:
+      - tickets.open
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/TicketCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/operations.yaml#/schemas/Ticket
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

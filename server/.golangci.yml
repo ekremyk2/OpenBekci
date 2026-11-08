@@ -1,0 +1,58 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard
+  enable:
+    - depguard
+    - errorlint
+    - gosec
+    - misspell
+    - nolintlint
+    - unconvert
+  settings:
+    depguard:
+      rules:
+        # Business modules reach the database only through a tenant transaction.
+        # They declare a narrow consumer-side interface for InTenantTx and are
+        # handed the *db.DB in wiring, so they never import the db package (which
+        # holds the pools, Migrator() and the BYPASSRLS platform pool) or pgxpool.
+        # platformadmin is the one module allowed the platform transaction.
+        core-no-raw-db:
+          files:
+            - "**/internal/core/**"
+            - "!**/internal/core/platformadmin/**"
+          deny:
+            - pkg: github.com/openbekci/openbekci/server/internal/platform/db
+              desc: core must use a consumer-declared interface satisfied by *db.DB (InTenantTx); see backend plan section 5
+            - pkg: github.com/jackc/pgx/v5/pgxpool
+              desc: core must not hold a connection pool; use InTenantTx
+        core-platformadmin-no-pool:
+          files:
+            - "**/internal/core/platformadmin/**"
+          deny:
+            - pkg: github.com/jackc/pgx/v5/pgxpool
+              desc: use InPlatformTx, not a raw pool
+        core-no-transport:
+          files:
+            - "**/internal/core/**"
+          deny:
+            - pkg: github.com/openbekci/openbekci/server/internal/httpapi
+              desc: core never imports the HTTP layer
+            - pkg: github.com/openbekci/openbekci/server/internal/packs
+              desc: core never imports the pack runtime
+  exclusions:
+    presets:
+      - std-error-handling
+    rules:
+      - path: _test\.go
+        linters:
+          - gosec
+      # integration tests in core modules open a throwaway database through dbtest
+      - path: internal/core/.*_test\.go
+        linters:
+          - depguard
+    paths:
+      - internal/platform/db/dbgen

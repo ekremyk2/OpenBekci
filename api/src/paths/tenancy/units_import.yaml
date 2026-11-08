@@ -1,0 +1,70 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: tenancy.importUnits
+  summary: Import units from CSV or XLSX
+  description: |-
+    **Release 0.1.** Upload, column mapping, then `dry_run=true` for a row-level report; repeat without it to commit (asynchronous job). The mapping is a JSON `ColumnMapping`.
+
+    Permission: `units.import`.
+
+    Problems: `payload_too_large` (413), `conflict` (409).
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - units.import
+    site_manager:
+      - units.import
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/DryRun
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            site_id:
+              type: string
+              format: uuid
+            file:
+              type: string
+              format: binary
+            mapping:
+              type: object
+              additionalProperties: true
+          required:
+            - site_id
+            - file
+  responses:
+    "200":
+      description: The dry-run report; nothing was saved.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/ImportReport
+    "202":
+      description: Committed; follow `job_id`.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/ImportReport
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "413":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

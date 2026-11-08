@@ -1,0 +1,31 @@
+parameters:
+  - name: code
+    in: path
+    required: true
+    description: Id of the code.
+    schema:
+      type: string
+get:
+  operationId: people.getJoinInfo
+  summary: Describe the site behind a join code
+  description: |-
+    **Release 0.1.** Describe the site behind a join code.
+
+    Problems: `rate_limited` (429), `not_found` (404).
+  tags:
+    - people
+  security: []
+  x-stability: stable
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/people.yaml#/schemas/JoinInfo
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

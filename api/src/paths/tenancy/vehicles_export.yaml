@@ -1,0 +1,60 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: tenancy.exportVehicles
+  summary: Export the plate registry
+  description: |-
+    **Release 0.1.** For camera operators (D6): unit door number, plate, normalized plate.
+
+    Permission: `vehicles.read`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - vehicles.read
+    site_manager:
+      - vehicles.read
+    board_member:
+      - vehicles.read
+    auditor:
+      - vehicles.read
+    owner:
+      - vehicles.read
+    tenant:
+      - vehicles.read
+    household:
+      - vehicles.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: format
+      in: query
+      schema:
+        type: string
+        enum:
+          - csv
+          - xlsx
+      description: Response format.
+  responses:
+    "200":
+      description: The file.
+      content:
+        text/csv:
+          schema:
+            type: string
+            format: binary
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -1,0 +1,156 @@
+# Run via tools/task.ps1 or tools/task.sh (they use the pinned `go tool task`),
+# or with a global `task` binary.
+version: "3"
+
+dotenv: [".env"]
+
+tasks:
+  api:bundle:
+    desc: Bundle api/src into api/openapi.yaml
+    dir: api
+    cmds:
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly bundle src/openapi.yaml --config .redocly.yaml -o openapi.yaml
+
+  api:bundle-draft:
+    desc: Bundle the draft contract (releases 0.1 to 0.3) into api/openapi-draft.yaml
+    dir: api
+    cmds:
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly bundle src/openapi-draft.yaml --config .redocly.yaml -o openapi-draft.yaml
+
+  api:lint:
+    desc: Lint the served and the draft OpenAPI source (3.0.3, operationId pattern, snake_case, Problem responses)
+    dir: api
+    cmds:
+      # Redocly only fails on errors; scripts/lint-strict.cjs fails on warnings too.
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly lint src/openapi.yaml --config .redocly.yaml --format=json | node scripts/lint-strict.cjs
+      - pnpm --package=@redocly/cli@2.76.0 dlx redocly lint src/openapi-draft.yaml --config .redocly.yaml --format=json | node scripts/lint-strict.cjs
+
+  gen:
+    desc: "Generate code: bundle spec, lint, oapi-codegen, sqlc, openapi-typescript"
+    cmds:
+      - task: api:bundle
+      - task: api:bundle-draft
+      - task: api:lint
+      - task: gen:go
+      - task: gen:ts
+      - task: gen:ts-draft
+
+  gen:go:
+    desc: Generate the Go server (oapi-codegen) and the database code (sqlc)
+    dir: server
+    cmds:
+      - go tool oapi-codegen -config oapi-codegen.yaml ../api/openapi.yaml
+      - go tool sqlc generate -f db/sqlc.yaml
+
+  web:install:
+    desc: Install web dependencies (pnpm, lockfile enforced)
+    dir: web
+    cmds:
+      - pnpm install --frozen-lockfile
+
+  web:dev:
+    desc: Vite dev server on :5173, proxying /v1 and /.well-known to the Go server on :8484
+    dir: web
+    cmds:
+      - pnpm dev
+
+  web:build:
+    desc: Build the web app and copy it into server/internal/webassets/dist for go:embed
+    dir: web
+    cmds:
+      - pnpm install --frozen-lockfile
+      - pnpm build
+      - pnpm size
+      - node scripts/embed.mjs
+
+  web:check:
+    desc: Web lint, typecheck and unit tests
+    dir: web
+    cmds:
+      - pnpm lint
+      - pnpm typecheck
+      - pnpm test
+
+  gen:ts:
+    desc: Generate the TypeScript types
+    cmds:
+      - pnpm dlx openapi-typescript@7.13.0 api/openapi.yaml -o clients/ts/index.d.ts
+
+  gen:ts-draft:
+    desc: Generate the TypeScript types of the draft contract (web builders work against these)
+    cmds:
+      - pnpm dlx openapi-typescript@7.13.0 api/openapi-draft.yaml -o clients/ts/draft.d.ts
+
+  gen:check:
+    desc: Regenerate and fail if generated files differ from what is committed
+    cmds:
+      - task: gen
+      - git diff --exit-code -- api/openapi.yaml api/openapi-draft.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts clients/ts/draft.d.ts
+      # git diff ignores files that are new and untracked.
+      - cmd: |
+          out=$(git status --porcelain -- api/openapi.yaml api/openapi-draft.yaml server/internal/httpapi/gen server/internal/platform/db/dbgen clients/ts/index.d.ts clients/ts/draft.d.ts)
+          if [ -n "$out" ]; then echo "generated files are not committed:"; echo "$out"; exit 1; fi
+
+  lint:
+    desc: Run golangci-lint
+    dir: server
+    cmds:
+      - go vet ./...
+      - go mod tidy -diff
+      - go tool golangci-lint run ./...
+
+  test:
+    desc: Unit tests (integration tests skip in -short mode)
+    dir: server
+    cmds:
+      - go test -short ./...
+
+  test:integration:
+    desc: Integration tests against local PostgreSQL (OPENBEKCI_TEST_SUPERUSER_URL)
+    dir: server
+    cmds:
+      - go test -count=1 -run Integration ./...
+
+  run:
+    desc: Run the server with the settings from .env
+    dir: server
+    cmds:
+      - go run ./cmd/openbekci serve
+
+  migrate:
+    desc: Apply database migrations (as the migrator role)
+    dir: server
+    cmds:
+      - go run ./cmd/openbekci migrate up
+
+  db:init:
+    desc: Create the local PostgreSQL data directory
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 init
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh init
+        platforms: [linux, darwin]
+
+  db:start:
+    desc: Start the local PostgreSQL
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 start
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh start
+        platforms: [linux, darwin]
+
+  db:stop:
+    desc: Stop the local PostgreSQL
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 stop
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh stop
+        platforms: [linux, darwin]
+
+  db:roles:
+    desc: Create the three database roles and the openbekci database
+    cmds:
+      - cmd: powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev-db.ps1 roles
+        platforms: [windows]
+      - cmd: sh tools/dev-db.sh roles
+        platforms: [linux, darwin]

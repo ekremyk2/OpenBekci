@@ -1,0 +1,54 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+post:
+  operationId: operations.createExport
+  summary: Start an asynchronous export
+  description: |-
+    **Release 0.1.** For exports too large for the synchronous `format` download. The job result is a file.
+
+    Permission: `exports.create`.
+
+    Problems: `conflict` (409).
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - exports.create
+    site_manager:
+      - exports.create
+    board_member:
+      - exports.create
+    auditor:
+      - exports.create
+    accountant:
+      - exports.create
+  x-idempotent: optional
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/operations.yaml#/schemas/ExportRequest
+  responses:
+    "202":
+      description: Accepted; the work continues as a job.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/draft-common.yaml#/schemas/Job
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

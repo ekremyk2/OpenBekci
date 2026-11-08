@@ -1,0 +1,4 @@
+{$OPENBEKCI_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy openbekci:8080
+}

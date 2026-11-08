@@ -1,0 +1,6661 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-11-07 01:54+0300\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: pseudo\n"
+
+#. placeholder {0}: doc.title
+msgid "\"{0}\" will be removed. This cannot be undone."
+msgstr ""
+
+#. placeholder {0}: v.name
+msgid "{0} admitted."
+msgstr ""
+
+#. placeholder {0}: totals.unreadable
+msgid "{0} amounts could not be read, so no total is shown."
+msgstr ""
+
+#. placeholder {0}: a.person_display_name
+msgid "{0} checked in."
+msgstr ""
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "{0} days"
+msgstr ""
+
+#. placeholder {0}: report.error_rows
+msgid "{0} errors"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows
+msgid "{0} fine"
+msgstr ""
+
+#. placeholder {0}: query.data.open_common_tickets
+msgid "{0} in common areas"
+msgstr ""
+
+#. placeholder {0}: occ.person_display_name
+#. placeholder {1}: occ.unit_door_number
+msgid "{0} leaves {1}. The whole month's dues stay with whoever is in the unit on the due date; nothing is pro-rated."
+msgstr ""
+
+#. placeholder {0}: v.name
+msgid "{0} marked as left."
+msgstr ""
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "{0} min"
+msgstr ""
+
+#. placeholder {0}: occ.person_display_name
+msgid "{0} moved out"
+msgstr ""
+
+#. placeholder {0}: progress.recorded
+#. placeholder {1}: progress.total
+msgid "{0} of {1} delivered"
+msgstr ""
+
+#. placeholder {0}: first?.read_count ?? 0
+#. placeholder {1}: first?.audience_count ?? 0
+msgid "{0} of {1} have opened this announcement. A delivered SMS or email is not counted as read."
+msgstr ""
+
+#. placeholder {0}: v.presentCount
+#. placeholder {1}: v.eligibleCount
+#. placeholder {2}: fmt(v.countPct)
+msgid "{0} of {1} owners ({2}%)"
+msgstr ""
+
+#. placeholder {0}: a.read_count
+#. placeholder {1}: a.recipient_count ?? '?'
+msgid "{0} of {1} read"
+msgstr ""
+
+#. placeholder {0}: results.units_answered
+#. placeholder {1}: results.units_total
+msgid "{0} of {1} units answered"
+msgstr ""
+
+#. placeholder {0}: preview.recipient_count
+#. placeholder {1}: preview.sms_count
+msgid "{0} owners will be notified ({1} by SMS)."
+msgstr ""
+
+#. placeholder {0}: ticket.vote_count
+msgid "{0} people confirmed this"
+msgstr ""
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per month"
+msgstr ""
+
+#. placeholder {0}: rules.quota_per_unit
+msgid "{0} per week"
+msgstr ""
+
+#. placeholder {0}: preview.data.recipient_count
+#. placeholder {1}: preview.data.sms_count
+#. placeholder {2}: preview.data.skipped_frozen
+msgid "{0} recipients, {1} SMS, {2} skipped (in legal collection)."
+msgstr ""
+
+#. placeholder {0}: report.total_rows
+msgid "{0} rows"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows
+#. placeholder {1}: report.error_rows
+msgid "{0} rows are fine, {1} have errors."
+msgstr ""
+
+#. placeholder {0}: query.data.overdue_units
+#. placeholder {0}: s.overdue_units
+msgid "{0} units"
+msgstr ""
+
+#. placeholder {0}: missing.length
+msgid "{0} units have no value yet"
+msgstr ""
+
+#. placeholder {0}: cq.data.pending_approvals.length
+msgid "{0} walk-in visitors are waiting for a resident's answer."
+msgstr ""
+
+#. placeholder {0}: report.warning_rows
+msgid "{0} warnings"
+msgstr ""
+
+#. placeholder {0}: fmt(v.presentSharePct)
+msgid "{0}% present"
+msgstr ""
+
+msgid "{n} requests waiting"
+msgstr ""
+
+msgid "<0/> received, <1/> applied to charges, <2/> kept as credit."
+msgstr ""
+
+msgid "A block that still has units cannot be deleted."
+msgstr ""
+
+#. placeholder {0}: rules.max_duration_minutes
+msgid "A booking can last at most {0} minutes."
+msgstr ""
+
+msgid "A booking inside these rules is confirmed at once; there is no approval queue."
+msgstr ""
+
+msgid "A decision without an agenda item."
+msgstr ""
+
+msgid "A fixed amount per unit"
+msgstr ""
+
+msgid "A gate or door an agent can open. Driver details are configured on the agent computer."
+msgstr ""
+
+msgid "A name is required."
+msgstr ""
+
+msgid "A person"
+msgstr ""
+
+msgid "A person (carried debt)"
+msgstr ""
+
+msgid "A PIN is 4 to 8 digits."
+msgstr ""
+
+msgid "A plan creates the charges of every period. Amounts change through effective-dated rates, never by editing history."
+msgstr ""
+
+msgid "A reason is required."
+msgstr ""
+
+msgid "A site is a building or a complex you manage. Create the first one to start."
+msgstr ""
+
+msgid "A total split between units"
+msgstr ""
+
+msgid "A transfer goes into a bank account, not a cash box."
+msgstr ""
+
+msgid "A unit is named by unit_id, or by block together with door_number: door numbers repeat across blocks."
+msgstr ""
+
+msgid "A unit side"
+msgstr ""
+
+msgid "Absent"
+msgstr ""
+
+msgid "Abstain"
+msgstr ""
+
+msgid "Accept your invitation"
+msgstr ""
+
+msgid "Accepted"
+msgstr ""
+
+msgid "Access"
+msgstr ""
+
+msgid "Access point"
+msgstr ""
+
+msgid "Access points"
+msgstr ""
+
+msgid "Account"
+msgstr ""
+
+msgid "Account holder"
+msgstr ""
+
+msgid "Account status"
+msgstr ""
+
+msgid "Accountant"
+msgstr ""
+
+msgid "Accrual, monthly bookings, waivers, freezes"
+msgstr ""
+
+msgid "Accrued fee"
+msgstr ""
+
+msgid "Accrued late fees"
+msgstr ""
+
+msgid "Accrued so far: <0/>. Waivers above the site threshold ask you to confirm your password."
+msgstr ""
+
+msgid "Accrued today"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Activity"
+msgstr ""
+
+msgid "Actor (user id)"
+msgstr ""
+
+msgid "Actual"
+msgstr ""
+
+msgid "Add a note (optional)"
+msgstr ""
+
+msgid "Add a person"
+msgstr ""
+
+msgid "Add a rate"
+msgstr ""
+
+msgid "Add an exception"
+msgstr ""
+
+msgid "Add an item"
+msgstr ""
+
+msgid "Add block"
+msgstr ""
+
+msgid "Add cash box"
+msgstr ""
+
+msgid "Add category"
+msgstr ""
+
+msgid "Add dissent"
+msgstr ""
+
+msgid "Add hours"
+msgstr ""
+
+msgid "Add item"
+msgstr ""
+
+msgid "Add key"
+msgstr ""
+
+msgid "Add one for each person who collects cash."
+msgstr ""
+
+msgid "Add people one by one or import them with the import wizard."
+msgstr ""
+
+msgid "Add person"
+msgstr ""
+
+msgid "Add photos"
+msgstr ""
+
+msgid "Add rate"
+msgstr ""
+
+msgid "Add someone who visits on fixed days, such as a cleaner or a carer."
+msgstr ""
+
+msgid "Add stage"
+msgstr ""
+
+msgid "Add status"
+msgstr ""
+
+msgid "Add the first facility residents can book."
+msgstr ""
+
+msgid "Add the gates and doors of the site."
+msgstr ""
+
+msgid "Add the items to discuss and vote on."
+msgstr ""
+
+msgid "Add the lift service, the plumber, the cleaner: people you pay or assign requests to."
+msgstr ""
+
+msgid "Add the opening hours."
+msgstr ""
+
+msgid "Add to this folder"
+msgstr ""
+
+msgid "Add units one by one or import them from a spreadsheet."
+msgstr ""
+
+msgid "Add vehicle"
+msgstr ""
+
+msgid "Add vendor"
+msgstr ""
+
+msgid "Address line 2"
+msgstr ""
+
+msgid "Adjust"
+msgstr ""
+
+msgid "Adjust this charge"
+msgstr ""
+
+msgid "Adjustment"
+msgstr ""
+
+msgid "Administrator email (optional)"
+msgstr ""
+
+msgid "Admit"
+msgstr ""
+
+msgid "Agenda"
+msgstr ""
+
+msgid "Agent"
+msgstr ""
+
+msgid "Agents"
+msgstr ""
+
+msgid "Agents on the gate computers, the gates and doors they open, who may pass, and what happened."
+msgstr ""
+
+msgid "Ahead"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "All announcements"
+msgstr ""
+
+msgid "All blocks"
+msgstr ""
+
+msgid "All categories"
+msgstr ""
+
+msgid "All facilities"
+msgstr ""
+
+msgid "All folders"
+msgstr ""
+
+msgid "All funds"
+msgstr ""
+
+msgid "All gates and doors"
+msgstr ""
+
+msgid "All imports"
+msgstr ""
+
+msgid "All kinds"
+msgstr ""
+
+msgid "All points"
+msgstr ""
+
+msgid "All sites"
+msgstr ""
+
+msgid "All statuses"
+msgstr ""
+
+msgid "All tickets"
+msgstr ""
+
+msgid "All types"
+msgstr ""
+
+msgid "All units"
+msgstr ""
+
+msgid "All your sites at a glance, as of"
+msgstr ""
+
+msgid "Allocated <0/> of <1/>"
+msgstr ""
+
+msgid "Allocation keys"
+msgstr ""
+
+msgid "Allowed"
+msgstr ""
+
+msgid "Already entered"
+msgstr ""
+
+msgid "Also notify owners"
+msgstr ""
+
+msgid "Always on"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
+
+msgid "Amount (partial payments are fine)"
+msgstr ""
+
+msgid "Amount is"
+msgstr ""
+
+msgid "Amount per period"
+msgstr ""
+
+msgid "Amount per unit"
+msgstr ""
+
+msgid "Amount to waive"
+msgstr ""
+
+msgid "Amount you paid"
+msgstr ""
+
+msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
+msgstr ""
+
+msgid "Announcement published."
+msgstr ""
+
+msgid "Announcement scheduled."
+msgstr ""
+
+msgid "Announcements"
+msgstr ""
+
+msgid "Answered"
+msgstr ""
+
+msgid "Answered recently"
+msgstr ""
+
+msgid "Any"
+msgstr ""
+
+msgid "Any account status"
+msgstr ""
+
+msgid "Any category"
+msgstr ""
+
+msgid "Any decision"
+msgstr ""
+
+msgid "Any outcome"
+msgstr ""
+
+msgid "Any reason"
+msgstr ""
+
+msgid "Any status"
+msgstr ""
+
+msgid "Any unit"
+msgstr ""
+
+msgid "Any year"
+msgstr ""
+
+msgid "Anyone"
+msgstr ""
+
+msgid "App and email"
+msgstr ""
+
+msgid "App and SMS"
+msgstr ""
+
+#. placeholder {0}: labels.effect(decision.effect.kind)
+msgid "Applied: {0}"
+msgstr ""
+
+msgid "Applies to"
+msgstr ""
+
+msgid "Apply effect"
+msgstr ""
+
+msgid "Apply filters"
+msgstr ""
+
+msgid "Apply the decision"
+msgstr ""
+
+msgid "Apply the table"
+msgstr ""
+
+msgid "Approvals"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+#. placeholder {0}: claim.display_name
+msgid "Approve {0}"
+msgstr ""
+
+msgid "Approve claim"
+msgstr ""
+
+msgid "Approved"
+msgstr ""
+
+msgid "Approved by the resident."
+msgstr ""
+
+msgid "Appurtenance"
+msgstr ""
+
+msgid "Appurtenances"
+msgstr ""
+
+msgid "Archive"
+msgstr ""
+
+msgid "Archive file to import"
+msgstr ""
+
+msgid "Archived"
+msgstr ""
+
+msgid "Area"
+msgstr ""
+
+msgid "Area (m²)"
+msgstr ""
+
+msgid "As of"
+msgstr ""
+
+msgid "As of <0/>"
+msgstr ""
+
+msgid "Ask a manager to add the account residents should pay into."
+msgstr ""
+
+msgid "Ask the resident"
+msgstr ""
+
+msgid "Ask your building manager to invite you."
+msgstr ""
+
+msgid "Ask your manager if you think you should."
+msgstr ""
+
+msgid "Asked"
+msgstr ""
+
+msgid "Assemblies"
+msgstr ""
+
+msgid "Assembly"
+msgstr ""
+
+msgid "Assembly settings"
+msgstr ""
+
+msgid "Assigned to"
+msgstr ""
+
+#. placeholder {0}: ticket.assignee.display_name
+msgid "Assigned to {0}"
+msgstr ""
+
+msgid "Assigned to you"
+msgstr ""
+
+msgid "Assignee"
+msgstr ""
+
+msgid "At least this many months overdue"
+msgstr ""
+
+#. placeholder {0}: r.unit_door_number
+msgid "At the gate for {0}"
+msgstr ""
+
+msgid "Attach files"
+msgstr ""
+
+msgid "Attempts"
+msgstr ""
+
+msgid "Attendance can be recorded only while the assembly is called or in session."
+msgstr ""
+
+msgid "Attendance desk"
+msgstr ""
+
+msgid "Attendance list (PDF)"
+msgstr ""
+
+msgid "Audience"
+msgstr ""
+
+msgid "Audit events"
+msgstr ""
+
+msgid "Audit log"
+msgstr ""
+
+msgid "Auditor"
+msgstr ""
+
+msgid "Automatic allocation"
+msgstr ""
+
+msgid "Automatic messages"
+msgstr ""
+
+msgid "Awaiting confirmation"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+#. placeholder {0}: occ.person_display_name
+msgid "Back to {0}"
+msgstr ""
+
+msgid "Back to automatic"
+msgstr ""
+
+msgid "Back to columns"
+msgstr ""
+
+msgid "Back to sign in"
+msgstr ""
+
+msgid "Back to the assembly"
+msgstr ""
+
+msgid "Backups"
+msgstr ""
+
+msgid "Balance"
+msgstr ""
+
+msgid "Balance when they leave"
+msgstr ""
+
+msgid "Balances as of"
+msgstr ""
+
+msgid "Balances, open requests and announcements will appear here."
+msgstr ""
+
+msgid "Bank"
+msgstr ""
+
+msgid "Bank account"
+msgstr ""
+
+msgid "Bank balance"
+msgstr ""
+
+msgid "Bank deposit"
+msgstr ""
+
+msgid "Bank details"
+msgstr ""
+
+msgid "Bank import"
+msgstr ""
+
+msgid "Bank line it arrived as"
+msgstr ""
+
+msgid "Bank lines"
+msgstr ""
+
+msgid "Bank reconciliation"
+msgstr ""
+
+msgid "Bank statement import"
+msgstr ""
+
+msgid "Bank transfer"
+msgstr ""
+
+msgid "Becomes a charge when the booking is confirmed. Empty: free."
+msgstr ""
+
+msgid "Belongs to"
+msgstr ""
+
+msgid "Belongs to (door number)"
+msgstr ""
+
+msgid "Belongs to a flat (no dues of its own)"
+msgstr ""
+
+msgid "Belongs to flat"
+msgstr ""
+
+msgid "Binding"
+msgstr ""
+
+msgid "Block"
+msgstr ""
+
+msgid "Block dates"
+msgstr ""
+
+msgid "Blocked"
+msgstr ""
+
+msgid "Blocked periods"
+msgstr ""
+
+msgid "Blocks"
+msgstr ""
+
+msgid "Board member"
+msgstr ""
+
+msgid "Board only"
+msgstr ""
+
+msgid "Bold"
+msgstr ""
+
+msgid "bold text"
+msgstr ""
+
+msgid "Book"
+msgstr ""
+
+msgid "Book a facility"
+msgstr ""
+
+msgid "Book now"
+msgstr ""
+
+msgid "Booked"
+msgstr ""
+
+msgid "Booked by"
+msgstr ""
+
+msgid "Booked to date"
+msgstr ""
+
+msgid "Booked. Your booking is confirmed."
+msgstr ""
+
+msgid "Booking fee"
+msgstr ""
+
+msgid "Bookings"
+msgstr ""
+
+#. placeholder {0}: rules.min_notice_minutes ?? 0
+msgid "Bookings need at least {0} minutes of notice."
+msgstr ""
+
+msgid "Bookings per unit"
+msgstr ""
+
+msgid "Both"
+msgstr ""
+
+msgid "Breadcrumb"
+msgstr ""
+
+msgid "Bring units, people and opening balances in from a spreadsheet. Nothing is saved until you have seen the check and confirmed."
+msgstr ""
+
+msgid "Budget"
+msgstr ""
+
+msgid "Budget marked final"
+msgstr ""
+
+msgid "Budget saved."
+msgstr ""
+
+msgid "Budget vs actual"
+msgstr ""
+
+msgid "By"
+msgstr ""
+
+msgid "By area"
+msgstr ""
+
+msgid "By default parking and storage belong to a flat and have no dues of their own. Clear this to make it an independent unit."
+msgstr ""
+
+msgid "By land share (arsa payı)"
+msgstr ""
+
+msgid "By number of owners"
+msgstr ""
+
+msgid "By proxy: {holder}"
+msgstr ""
+
+msgid "By share"
+msgstr ""
+
+msgid "Calculating…"
+msgstr ""
+
+msgid "Calendar"
+msgstr ""
+
+msgid "Call"
+msgstr ""
+
+msgid "Call letter (PDF)"
+msgstr ""
+
+msgid "Call the assembly"
+msgstr ""
+
+msgid "Call the resident"
+msgstr ""
+
+msgid "Called"
+msgstr ""
+
+msgid "Calling the assembly freezes who may vote, generates the call letter and creates a delivery checklist with one line per owner."
+msgstr ""
+
+msgid "Calls, attendance, decisions and minutes of the owners' assembly."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel charge"
+msgstr ""
+
+msgid "Cancel pass"
+msgstr ""
+
+msgid "Cancel the assembly"
+msgstr ""
+
+msgid "Cancel the booking"
+msgstr ""
+
+msgid "Cancel this assembly?"
+msgstr ""
+
+msgid "Cancel this booking?"
+msgstr ""
+
+msgid "Cancel this charge?"
+msgstr ""
+
+#. placeholder {0}: item.name
+msgid "Cancel upload of {0}"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Card"
+msgstr ""
+
+msgid "Carried debt"
+msgstr ""
+
+msgid "carried to the person"
+msgstr ""
+
+msgid "Carry it to another person instead (optional)"
+msgstr ""
+
+msgid "Carry them to the leaving person's own account"
+msgstr ""
+
+msgid "Case opened; late fees are frozen for this unit side."
+msgstr ""
+
+msgid "Cash"
+msgstr ""
+
+msgid "Cash balance"
+msgstr ""
+
+msgid "Cash box added."
+msgstr ""
+
+msgid "Cash boxes"
+msgstr ""
+
+msgid "Cash goes into a cash box, not a bank account."
+msgstr ""
+
+msgid "Cash or a transfer you received. It is applied to the oldest debt first, principal before fee, unless you choose otherwise."
+msgstr ""
+
+msgid "Cash receipts, cash boxes, declared transfers"
+msgstr ""
+
+msgid "Cash you collected. It goes into your own cash box and is applied to the oldest debt first."
+msgstr ""
+
+msgid "Cash-basis income and expense, debtors, budget, and the accountant's views. Every report exports to CSV and Excel."
+msgstr ""
+
+msgid "Categories"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Category budget"
+msgstr ""
+
+msgid "Category default"
+msgstr ""
+
+msgid "Category default (common)"
+msgstr ""
+
+msgid "Category default (private)"
+msgstr ""
+
+msgid "Category name"
+msgstr ""
+
+msgid "Category saved."
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Change of use"
+msgstr ""
+
+msgid "Change status"
+msgstr ""
+
+msgid "Change the filters, or create a dues plan to generate charges."
+msgstr ""
+
+msgid "Change to common areas"
+msgstr ""
+
+msgid "Changed (private data, hashed)"
+msgstr ""
+
+msgid "Changes"
+msgstr ""
+
+msgid "Changes apply from the next assembly; an assembly that was already called keeps the rules it was called under."
+msgstr ""
+
+msgid "Channel"
+msgstr ""
+
+msgid "Channels"
+msgstr ""
+
+msgid "Charge"
+msgstr ""
+
+msgid "Charge adjusted; the difference is posted as a correction."
+msgstr ""
+
+msgid "Charge cancelled; a reversal was created."
+msgstr ""
+
+msgid "Charge to"
+msgstr ""
+
+msgid "Charge type"
+msgstr ""
+
+msgid "Charges"
+msgstr ""
+
+msgid "Charges created."
+msgstr ""
+
+msgid "Charges go to the default payer (the tenant for regular dues, the owner for special assessments). Add a line only where this unit differs."
+msgstr ""
+
+msgid "Charges, payments and fees with a running balance, for one side of a unit or for one person across units."
+msgstr ""
+
+msgid "Check"
+msgstr ""
+
+msgid "Check (dry run)"
+msgstr ""
+
+msgid "Check recipients"
+msgstr ""
+
+msgid "Check the file"
+msgstr ""
+
+msgid "Check the table"
+msgstr ""
+
+msgid "Check who will be reached before it goes out."
+msgstr ""
+
+msgid "Check-in QR code"
+msgstr ""
+
+msgid "Checked in"
+msgstr ""
+
+msgid "Choose a block"
+msgstr ""
+
+msgid "Choose a budget"
+msgstr ""
+
+msgid "Choose a category"
+msgstr ""
+
+msgid "Choose a channel"
+msgstr ""
+
+msgid "Choose a CSV or XLSX file"
+msgstr ""
+
+msgid "Choose a date and time."
+msgstr ""
+
+msgid "Choose a key"
+msgstr ""
+
+msgid "Choose a person"
+msgstr ""
+
+msgid "Choose a person."
+msgstr ""
+
+msgid "Choose a plan"
+msgstr ""
+
+msgid "Choose a preset"
+msgstr ""
+
+msgid "Choose a start date."
+msgstr ""
+
+msgid "Choose a status"
+msgstr ""
+
+msgid "Choose a ticket"
+msgstr ""
+
+msgid "Choose a unit"
+msgstr ""
+
+msgid "Choose a unit and an amount."
+msgstr ""
+
+msgid "Choose a unit to see what was sent to it."
+msgstr ""
+
+msgid "Choose a unit."
+msgstr ""
+
+msgid "Choose a valid time zone, for example Europe/Istanbul"
+msgstr ""
+
+msgid "Choose an audience and at least one channel to see who will be reached."
+msgstr ""
+
+msgid "Choose an organization"
+msgstr ""
+
+msgid "Choose another file"
+msgstr ""
+
+msgid "Choose at least one day."
+msgstr ""
+
+msgid "Choose at least one unit"
+msgstr ""
+
+msgid "Choose at least one unit."
+msgstr ""
+
+msgid "Choose charges myself"
+msgstr ""
+
+msgid "Choose files"
+msgstr ""
+
+msgid "Choose one."
+msgstr ""
+
+msgid "Choose the file, the importer and the bank account."
+msgstr ""
+
+msgid "Choose the start date"
+msgstr ""
+
+msgid "Choose the unit"
+msgstr ""
+
+msgid "Choose the unit and the debtor."
+msgstr ""
+
+msgid "Choose the unit the visitor is for."
+msgstr ""
+
+msgid "Choose when the visit ends."
+msgstr ""
+
+msgid "Choose when the visit starts."
+msgstr ""
+
+#. placeholder {0}: missing.name
+msgid "Choose where the tickets of \"{0}\" move to."
+msgstr ""
+
+msgid "Choose who may book."
+msgstr ""
+
+msgid "Choose who may open this folder and the documents in it."
+msgstr ""
+
+msgid "Choose who the statement is for."
+msgstr ""
+
+msgid "Choose who to invite"
+msgstr ""
+
+msgid "Chosen units"
+msgstr ""
+
+msgid "City"
+msgstr ""
+
+#. placeholder {0}: occupancyKindLabel(claim.claimed_role, i18n)
+#. placeholder {1}: claim.unit_door_number
+msgid "Claims {0} of {1}."
+msgstr ""
+
+msgid "Claims to be"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Clear selection"
+msgstr ""
+
+msgid "Clock suspect"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Close case"
+msgstr ""
+
+msgid "Close now"
+msgstr ""
+
+msgid "Close the assembly"
+msgstr ""
+
+msgid "Closed"
+msgstr ""
+
+msgid "Closed-like"
+msgstr ""
+
+msgid "Closes"
+msgstr ""
+
+msgid "Closing balance"
+msgstr ""
+
+msgid "Closing must be after opening."
+msgstr ""
+
+msgid "Closing statement"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Code from the SMS"
+msgstr ""
+
+msgid "Code sent."
+msgstr ""
+
+msgid "Codes"
+msgstr ""
+
+msgid "Collected"
+msgstr ""
+
+msgid "Collected by"
+msgstr ""
+
+#. placeholder {0}: d.unit_door_number
+msgid "Collected by {0}"
+msgstr ""
+
+msgid "Collection cases"
+msgstr ""
+
+msgid "Collection rate"
+msgstr ""
+
+msgid "Collection rate this month"
+msgstr ""
+
+msgid "Collections"
+msgstr ""
+
+msgid "Collector"
+msgstr ""
+
+msgid "Collector reconciliation"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Comment visibility"
+msgstr ""
+
+msgid "Common"
+msgstr ""
+
+msgid "Common area"
+msgstr ""
+
+msgid "Common areas"
+msgstr ""
+
+msgid "Common by default"
+msgstr ""
+
+msgid "Common: the whole site"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+msgid "Concerns residents"
+msgstr ""
+
+msgid "Concerns residents (tenants can see it)"
+msgstr ""
+
+msgid "configured"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Confirm and apply"
+msgstr ""
+
+msgid "Confirm it is you"
+msgstr ""
+
+msgid "Confirm move-out"
+msgstr ""
+
+msgid "Confirm payment"
+msgstr ""
+
+msgid "Confirm this transfer"
+msgstr ""
+
+msgid "Confirmations"
+msgstr ""
+
+msgid "Confirmed"
+msgstr ""
+
+msgid "Confirmed. Please repeat the action."
+msgstr ""
+
+#. placeholder {0}: p.receipt_no ?? ''
+msgid "Confirmed. Receipt {0}"
+msgstr ""
+
+msgid "Copied"
+msgstr ""
+
+msgid "Copy the message"
+msgstr ""
+
+msgid "Copy the token"
+msgstr ""
+
+msgid "Correspondent"
+msgstr ""
+
+msgid "Cost groups"
+msgstr ""
+
+msgid "Costs can be split among one block's units or across the whole site."
+msgstr ""
+
+msgid "Costs charged"
+msgstr ""
+
+msgid "Could not add the cash box."
+msgstr ""
+
+msgid "Could not add the files. Please try again."
+msgstr ""
+
+msgid "Could not add the rate."
+msgstr ""
+
+msgid "Could not add the stage."
+msgstr ""
+
+msgid "Could not adjust the charge."
+msgstr ""
+
+msgid "Could not apply the decision. You can try again; nothing is created twice."
+msgstr ""
+
+msgid "Could not assign the ticket. Please try again."
+msgstr ""
+
+msgid "Could not block these dates. Existing bookings may overlap."
+msgstr ""
+
+msgid "Could not book. Please try again."
+msgstr ""
+
+msgid "Could not cancel the booking."
+msgstr ""
+
+msgid "Could not cancel the charge."
+msgstr ""
+
+msgid "Could not change the organization."
+msgstr ""
+
+msgid "Could not change the status. Please try again."
+msgstr ""
+
+msgid "Could not change the visibility. Please try again."
+msgstr ""
+
+msgid "Could not check the code. Try again."
+msgstr ""
+
+msgid "Could not check the recipients."
+msgstr ""
+
+msgid "Could not check this change. Review the values."
+msgstr ""
+
+msgid "Could not close the assembly."
+msgstr ""
+
+msgid "Could not close the case."
+msgstr ""
+
+msgid "Could not confirm the payment."
+msgstr ""
+
+msgid "Could not count the recipients."
+msgstr ""
+
+msgid "Could not create the agent."
+msgstr ""
+
+msgid "Could not create the assembly."
+msgstr ""
+
+msgid "Could not create the charges."
+msgstr ""
+
+msgid "Could not create the credential."
+msgstr ""
+
+msgid "Could not delete the document."
+msgstr ""
+
+msgid "Could not freeze the fees."
+msgstr ""
+
+msgid "Could not generate the minutes."
+msgstr ""
+
+msgid "Could not load the decisions."
+msgstr ""
+
+msgid "Could not log the parcel."
+msgstr ""
+
+msgid "Could not mark everything as read."
+msgstr ""
+
+msgid "Could not mark the parcel as collected."
+msgstr ""
+
+msgid "Could not match the line."
+msgstr ""
+
+msgid "Could not merge the tickets. Please try again."
+msgstr ""
+
+msgid "Could not open the case."
+msgstr ""
+
+msgid "Could not open."
+msgstr ""
+
+msgid "Could not post the comment. Please try again."
+msgstr ""
+
+msgid "Could not publish. Please try again."
+msgstr ""
+
+msgid "Could not re-enrol the agent."
+msgstr ""
+
+msgid "Could not record the attendance."
+msgstr ""
+
+msgid "Could not record the decision."
+msgstr ""
+
+msgid "Could not record the deliveries."
+msgstr ""
+
+msgid "Could not record the delivery."
+msgstr ""
+
+msgid "Could not record the expense."
+msgstr ""
+
+msgid "Could not record the payment."
+msgstr ""
+
+msgid "Could not record the proxy."
+msgstr ""
+
+msgid "Could not record the refund."
+msgstr ""
+
+msgid "Could not record the transfer."
+msgstr ""
+
+msgid "Could not register the visitor."
+msgstr ""
+
+msgid "Could not reject the payment."
+msgstr ""
+
+msgid "Could not revoke the agent."
+msgstr ""
+
+msgid "Could not rotate the token."
+msgstr ""
+
+msgid "Could not save the access point."
+msgstr ""
+
+msgid "Could not save the agenda."
+msgstr ""
+
+msgid "Could not save the bill."
+msgstr ""
+
+msgid "Could not save the budget."
+msgstr ""
+
+msgid "Could not save the counts."
+msgstr ""
+
+msgid "Could not save the facility."
+msgstr ""
+
+msgid "Could not save the opening balances."
+msgstr ""
+
+msgid "Could not save the plan."
+msgstr ""
+
+msgid "Could not save the policy."
+msgstr ""
+
+msgid "Could not save the poll."
+msgstr ""
+
+msgid "Could not save the recurring visitor."
+msgstr ""
+
+msgid "Could not save the settings."
+msgstr ""
+
+msgid "Could not save your +1. Please try again."
+msgstr ""
+
+msgid "Could not save your answer."
+msgstr ""
+
+msgid "Could not save your preferences."
+msgstr ""
+
+msgid "Could not send the call."
+msgstr ""
+
+msgid "Could not send the decisions."
+msgstr ""
+
+msgid "Could not send the receipt."
+msgstr ""
+
+msgid "Could not send the reminders."
+msgstr ""
+
+msgid "Could not send the request."
+msgstr ""
+
+msgid "Could not send the statement."
+msgstr ""
+
+msgid "Could not send your answer. It may already have been answered or expired."
+msgstr ""
+
+msgid "Could not send your declaration."
+msgstr ""
+
+msgid "Could not sign out. Please try again."
+msgstr ""
+
+msgid "Could not start the assembly."
+msgstr ""
+
+msgid "Could not start the rebuild."
+msgstr ""
+
+msgid "Could not update the document."
+msgstr ""
+
+msgid "Could not void the entry."
+msgstr ""
+
+msgid "Could not void the expense."
+msgstr ""
+
+msgid "Could not void the payment."
+msgstr ""
+
+msgid "Could not waive the fee."
+msgstr ""
+
+msgid "Counterparty"
+msgstr ""
+
+msgid "Counting recipients"
+msgstr ""
+
+msgid "Country"
+msgstr ""
+
+msgid "Counts and decisions"
+msgstr ""
+
+msgid "Counts and decisions are recorded once the assembly is in session."
+msgstr ""
+
+msgid "Counts saved."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create a folder to start filing documents."
+msgstr ""
+
+msgid "Create a site"
+msgstr ""
+
+msgid "Create an agent to connect a gate or door."
+msgstr ""
+
+msgid "Create assembly"
+msgstr ""
+
+msgid "Create budget"
+msgstr ""
+
+msgid "Create charges"
+msgstr ""
+
+msgid "Create folder"
+msgstr ""
+
+msgid "Create site"
+msgstr ""
+
+msgid "Create the first assembly to start the call."
+msgstr ""
+
+msgid "Create the monthly dues plan; you will see what every unit pays before saving."
+msgstr ""
+
+msgid "Create the pass"
+msgstr ""
+
+msgid "Create unit"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Creates a legal-cost charge on the debtor's side."
+msgstr ""
+
+msgid "Creating a new code stops the old poster from working."
+msgstr ""
+
+msgid "Credential created."
+msgstr ""
+
+msgid "Credentials"
+msgstr ""
+
+msgid "Credit"
+msgstr ""
+
+msgid "Credits (prepayments)"
+msgstr ""
+
+msgid "Currency"
+msgstr ""
+
+msgid "Current lock date:"
+msgstr ""
+
+msgid "Current rate"
+msgstr ""
+
+msgid "Custom table"
+msgstr ""
+
+msgid "Dark"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Date and place"
+msgstr ""
+
+msgid "Date you paid"
+msgstr ""
+
+msgid "day"
+msgstr ""
+
+#. placeholder {0}: r.day_of_month
+msgid "Day {0}"
+msgstr ""
+
+msgid "days"
+msgstr ""
+
+msgid "Days"
+msgstr ""
+
+msgid "Days after due"
+msgstr ""
+
+#. placeholder {0}: a.dead_letters
+msgid "Dead letters: {0}"
+msgstr ""
+
+msgid "Debit"
+msgstr ""
+
+msgid "Debt status certificate"
+msgstr ""
+
+msgid "Debtor person"
+msgstr ""
+
+msgid "Debtors"
+msgstr ""
+
+msgid "Debts per unit side"
+msgstr ""
+
+#. placeholder {0}: query.data.locale
+msgid "Debug view of /codes for locale {0}."
+msgstr ""
+
+msgid "Decision"
+msgstr ""
+
+#. placeholder {0}: decisionNo(d)
+msgid "Decision {0} recorded."
+msgstr ""
+
+#. placeholder {0}: decision.year
+#. placeholder {1}: decision.sequence_no
+msgid "Decision {0}/{1} can create the change it describes. You confirm each one; the link to the decision is kept for the audit trail."
+msgstr ""
+
+msgid "Decision history"
+msgstr ""
+
+msgid "Decision reference (optional)"
+msgstr ""
+
+msgid "Decision text"
+msgstr ""
+
+msgid "Decision thresholds by topic"
+msgstr ""
+
+msgid "Decisions"
+msgstr ""
+
+msgid "Decisions appear here when they are recorded at an assembly."
+msgstr ""
+
+msgid "Decisions are sent to absent owners after the assembly."
+msgstr ""
+
+msgid "Declared by residents, awaiting confirmation"
+msgstr ""
+
+#. placeholder {0}: query.data.pending_declared_payments
+msgid "Declared payments to confirm: {0}"
+msgstr ""
+
+msgid "Declared transfer"
+msgstr ""
+
+msgid "Declared transfers"
+msgstr ""
+
+msgid "default"
+msgstr ""
+
+#. placeholder {0}: category.name
+msgid "Default assignee role of {0}"
+msgstr ""
+
+msgid "Default language"
+msgstr ""
+
+#. placeholder {0}: category.name
+msgid "Default visibility of {0}"
+msgstr ""
+
+msgid "Default visibility of the new category"
+msgstr ""
+
+msgid "Default: no quorum on the second call; decisions by majority of those present."
+msgstr ""
+
+msgid "Defaults saved."
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+#. placeholder {0}: doc.title
+#. placeholder {0}: k.name
+msgid "Delete {0}"
+msgstr ""
+
+msgid "Delete a digit"
+msgstr ""
+
+msgid "Delete rate"
+msgstr ""
+
+msgid "Delete this access point?"
+msgstr ""
+
+msgid "Delete this announcement?"
+msgstr ""
+
+msgid "Delete this document?"
+msgstr ""
+
+msgid "Delete this facility?"
+msgstr ""
+
+msgid "Delete unit"
+msgstr ""
+
+msgid "Deliveries recorded."
+msgstr ""
+
+msgid "Delivery of the call"
+msgstr ""
+
+msgid "Delivery of the decisions"
+msgstr ""
+
+msgid "Delivery preview"
+msgstr ""
+
+msgid "Delivery progress"
+msgstr ""
+
+msgid "Delivery recorded."
+msgstr ""
+
+#. placeholder {0}: notice.person_display_name
+msgid "Delivery to {0}"
+msgstr ""
+
+msgid "Delta"
+msgstr ""
+
+msgid "Denied"
+msgstr ""
+
+msgid "Deny"
+msgstr ""
+
+msgid "Deposit"
+msgstr ""
+
+msgid "Deposit cash to the bank"
+msgstr ""
+
+msgid "Deposit to bank"
+msgstr ""
+
+msgid "Describe the problem"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Description (optional)"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Difference"
+msgstr ""
+
+msgid "Direction"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "Disabled"
+msgstr ""
+
+msgid "Dismiss"
+msgstr ""
+
+msgid "Dissent text"
+msgstr ""
+
+msgid "Dissenting opinions (muhalefet şerhi)"
+msgstr ""
+
+msgid "Dissenting owner"
+msgstr ""
+
+msgid "District"
+msgstr ""
+
+msgid "Document"
+msgstr ""
+
+msgid "Document number (optional)"
+msgstr ""
+
+msgid "Document preview"
+msgstr ""
+
+msgid "Document title"
+msgstr ""
+
+msgid "Documents"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Door"
+msgstr ""
+
+msgid "Door number"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Download ihtarname"
+msgstr ""
+
+msgid "Download original"
+msgstr ""
+
+msgid "Download receipt (PDF)"
+msgstr ""
+
+msgid "Download the report"
+msgstr ""
+
+msgid "Draft"
+msgstr ""
+
+msgid "Draft saved."
+msgstr ""
+
+msgid "Drafts"
+msgstr ""
+
+msgid "Driver instance"
+msgstr ""
+
+msgid "Drop files here or choose files"
+msgstr ""
+
+msgid "Dry run result"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows
+#. placeholder {1}: report.total_rows
+#. placeholder {2}: report.error_rows
+msgid "Dry run: {0} of {1} rows are fine, {2} have errors. Nothing was saved."
+msgstr ""
+
+msgid "Due"
+msgstr ""
+
+msgid "Due date"
+msgstr ""
+
+msgid "Due day"
+msgstr ""
+
+msgid "Due from"
+msgstr ""
+
+msgid "Dues (aidat)"
+msgstr ""
+
+msgid "Dues and charges"
+msgstr ""
+
+msgid "Dues are the tenant's when a unit has one; special assessments are the owner's. Override per plan here."
+msgstr ""
+
+msgid "Dues plan"
+msgstr ""
+
+msgid "Dues plans"
+msgstr ""
+
+msgid "Dues rate"
+msgstr ""
+
+msgid "Dues reminders"
+msgstr ""
+
+msgid "Dunning stages"
+msgstr ""
+
+msgid "Each person who collects cash has a box. Handing cash over or depositing it at the bank is a transfer between accounts."
+msgstr ""
+
+msgid "Each unit counts by its floor area. Change areas on the unit pages."
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Edit access point"
+msgstr ""
+
+msgid "Edit announcement"
+msgstr ""
+
+msgid "Edit bank details"
+msgstr ""
+
+msgid "Edit facility"
+msgstr ""
+
+msgid "Edit item"
+msgstr ""
+
+msgid "Edit rules"
+msgstr ""
+
+msgid "Edit the plan, or change the amount by adding a rate that starts on a date."
+msgstr ""
+
+msgid "Edit vendor"
+msgstr ""
+
+msgid "Editor mode"
+msgstr ""
+
+msgid "Effective from"
+msgstr ""
+
+msgid "Elected person"
+msgstr ""
+
+msgid "Elected role with a term"
+msgstr ""
+
+msgid "Election of the auditor"
+msgstr ""
+
+msgid "Election of the board"
+msgstr ""
+
+msgid "Election of the manager"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "Email link"
+msgstr ""
+
+msgid "Email me a link"
+msgstr ""
+
+msgid "Email or phone"
+msgstr ""
+
+#. placeholder {0}: query.data.email_count
+msgid "Emails: {0}"
+msgstr ""
+
+msgid "Empty: no limit"
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "End membership"
+msgstr ""
+
+msgid "End the previous holder's term"
+msgstr ""
+
+msgid "Ended"
+msgstr ""
+
+#. placeholder {0}: enrolment.agent.name
+msgid "Enrolment token for {0}"
+msgstr ""
+
+msgid "Enter a block name"
+msgstr ""
+
+msgid "Enter a date"
+msgstr ""
+
+msgid "Enter a date."
+msgstr ""
+
+msgid "Enter a name"
+msgstr ""
+
+msgid "Enter a name and the days after the due date."
+msgstr ""
+
+msgid "Enter a name."
+msgstr ""
+
+msgid "Enter a number."
+msgstr ""
+
+msgid "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
+msgstr ""
+
+msgid "Enter a plate like 34 ABC 123."
+msgstr ""
+
+msgid "Enter a rate."
+msgstr ""
+
+msgid "Enter a share between 1 and 100"
+msgstr ""
+
+msgid "Enter a short title"
+msgstr ""
+
+msgid "Enter a time."
+msgstr ""
+
+msgid "Enter a title"
+msgstr ""
+
+msgid "Enter a valid email address"
+msgstr ""
+
+msgid "Enter a valid IBAN, for example TR33 0006 1005 1978 6457 8413 26"
+msgstr ""
+
+msgid "Enter a valid phone number"
+msgstr ""
+
+msgid "Enter a valid phone number, for example +90 555 111 22 33"
+msgstr ""
+
+msgid "Enter a value from {min} to {max}."
+msgstr ""
+
+msgid "Enter a weight for each unit, or upload a table with one row per unit."
+msgstr ""
+
+msgid "Enter a whole number from {min} to {max}."
+msgstr ""
+
+msgid "Enter a whole number."
+msgstr ""
+
+msgid "Enter an amount greater than zero."
+msgstr ""
+
+msgid "Enter an amount up to the accrued fee."
+msgstr ""
+
+msgid "Enter an amount up to the open balance and the account."
+msgstr ""
+
+msgid "Enter an amount."
+msgstr ""
+
+msgid "Enter each unit's land share (arsa payı) from the title deed. Only the proportions matter: 100 of 1000 or 10 of 100 are the same."
+msgstr ""
+
+msgid "Enter how much goes to each charge."
+msgstr ""
+
+msgid "Enter opening balances"
+msgstr ""
+
+msgid "Enter the account holder"
+msgstr ""
+
+msgid "Enter the area in square metres"
+msgstr ""
+
+msgid "Enter the code from the SMS"
+msgstr ""
+
+msgid "Enter the date it was sent."
+msgstr ""
+
+msgid "Enter the door number, for example A-12"
+msgstr ""
+
+msgid "Enter the grace days."
+msgstr ""
+
+msgid "enter the land share to finish the check"
+msgstr ""
+
+msgid "Enter the number"
+msgstr ""
+
+msgid "Enter the organization name"
+msgstr ""
+
+msgid "Enter the person's name"
+msgstr ""
+
+msgid "Enter the person's name."
+msgstr ""
+
+msgid "Enter the place of the assembly."
+msgstr ""
+
+msgid "Enter the plate, for example 34 ABC 123"
+msgstr ""
+
+msgid "Enter the site name"
+msgstr ""
+
+msgid "Enter the street address"
+msgstr ""
+
+msgid "Enter the value."
+msgstr ""
+
+msgid "Enter the vendor name"
+msgstr ""
+
+msgid "Enter the visitor's name."
+msgstr ""
+
+msgid "Enter their name"
+msgstr ""
+
+msgid "Enter their phone number or email address"
+msgstr ""
+
+msgid "Enter this token once when you install the agent on the gate computer. It expires <0/>."
+msgstr ""
+
+msgid "Enter what every unit owes on the go-live date and what the bank and cash hold. A dry run shows problems before anything is saved."
+msgstr ""
+
+msgid "Enter your email"
+msgstr ""
+
+msgid "Enter your email or phone number"
+msgstr ""
+
+msgid "Enter your password"
+msgstr ""
+
+msgid "Enter your phone number"
+msgstr ""
+
+#. placeholder {0}: guard.displayName
+msgid "Enter your PIN to leave. {0} is on the gate."
+msgstr ""
+
+msgid "Enter zero or a positive number"
+msgstr ""
+
+msgid "Entered opening balances"
+msgstr ""
+
+msgid "Equal"
+msgstr ""
+
+msgid "Equal per unit"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Every receipt gets the next number in the site's gap-free sequence. A mistake is voided with a reason, never deleted."
+msgstr ""
+
+msgid "Every receivable by period, unit and side"
+msgstr ""
+
+msgid "Every receivable of a unit side. Charges are never edited: cancel or adjust with a reason and a reversal is posted."
+msgstr ""
+
+msgid "Every status needs a name."
+msgstr ""
+
+msgid "Every unit counts the same. There is nothing to enter."
+msgstr ""
+
+msgid "Everyone"
+msgstr ""
+
+msgid "Everything is matched"
+msgstr ""
+
+msgid "Existing bookings stay in the history."
+msgstr ""
+
+msgid "Exit"
+msgstr ""
+
+msgid "Expected"
+msgstr ""
+
+msgid "Expected to date"
+msgstr ""
+
+msgid "Expected today"
+msgstr ""
+
+msgid "Expected visitors today"
+msgstr ""
+
+msgid "Expense"
+msgstr ""
+
+msgid "Expense recorded."
+msgstr ""
+
+msgid "Expenses"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+msgid "Expires"
+msgstr ""
+
+msgid "Expires at (optional)"
+msgstr ""
+
+msgid "Export and offboard"
+msgstr ""
+
+msgid "Export plates (CSV)"
+msgstr ""
+
+msgid "Export site"
+msgstr ""
+
+msgid "Export this site"
+msgstr ""
+
+msgid "Extraordinary assembly"
+msgstr ""
+
+msgid "Facilities"
+msgstr ""
+
+msgid "Facilities and rules"
+msgstr ""
+
+msgid "Facility"
+msgstr ""
+
+msgid "Facility saved."
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid "Fee"
+msgstr ""
+
+msgid "Fee per booking"
+msgstr ""
+
+msgid "Fee refunded if cancelled this many hours before"
+msgstr ""
+
+#. placeholder {0}: facility.rules.cancel_refund_cutoff_hours !== null ? ` Refunded if you cancel at least ${facility.rules.cancel_refund_cutoff_hours} hours ahead.` : ''
+msgid "Fee: <0/>, charged to the unit's account when the booking is confirmed.{0}"
+msgstr ""
+
+msgid "Fees are computed continuously on overdue principal, booked once a month, and can be waived or frozen with a reason."
+msgstr ""
+
+msgid "Fees frozen"
+msgstr ""
+
+msgid "File (CSV or XLSX)"
+msgstr ""
+
+msgid "File layout for a spreadsheet upload"
+msgstr ""
+
+msgid "File no."
+msgstr ""
+
+msgid "File number"
+msgstr ""
+
+msgid "Fill in the amount and split rule to see what each unit pays."
+msgstr ""
+
+msgid "Fill in the vendor, category and amount."
+msgstr ""
+
+msgid "Fill the form with this preset"
+msgstr ""
+
+msgid "Final"
+msgstr ""
+
+msgid "Finished."
+msgstr ""
+
+msgid "First call"
+msgstr ""
+
+msgid "First call: more than this share of owners"
+msgstr ""
+
+msgid "First call: more than this share of the land"
+msgstr ""
+
+msgid "First meeting"
+msgstr ""
+
+msgid "First rows of the file"
+msgstr ""
+
+msgid "Fiscal year"
+msgstr ""
+
+msgid "Fiscal year starts in"
+msgstr ""
+
+msgid "Fix the errors in your file and upload it again."
+msgstr ""
+
+msgid "Fixed"
+msgstr ""
+
+msgid "Fixed table"
+msgstr ""
+
+msgid "Flat"
+msgstr ""
+
+msgid "Folder path"
+msgstr ""
+
+msgid "Folder saved."
+msgstr ""
+
+msgid "Folder settings"
+msgstr ""
+
+msgid "Folders"
+msgstr ""
+
+msgid "For"
+msgstr ""
+
+msgid "For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR code."
+msgstr ""
+
+msgid "For discussion"
+msgstr ""
+
+msgid "For information"
+msgstr ""
+
+msgid "Four fifths"
+msgstr ""
+
+msgid "free"
+msgstr ""
+
+msgid "Freeze"
+msgstr ""
+
+msgid "Freeze late fees"
+msgstr ""
+
+msgid "Frequency"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "From a vehicle"
+msgstr ""
+
+msgid "From a visitor"
+msgstr ""
+
+msgid "Frozen"
+msgstr ""
+
+msgid "Full name"
+msgstr ""
+
+msgid "Fund"
+msgstr ""
+
+msgid "Fund balances"
+msgstr ""
+
+msgid "Gate"
+msgstr ""
+
+msgid "Gate contact phone"
+msgstr ""
+
+msgid "Gate control"
+msgstr ""
+
+msgid "Gates"
+msgstr ""
+
+msgid "Gelir-gider, debtors, budget, aging"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "General decision"
+msgstr ""
+
+msgid "Generate again"
+msgstr ""
+
+msgid "Generate the minutes"
+msgstr ""
+
+msgid "Generated"
+msgstr ""
+
+msgid "Generated: certificate"
+msgstr ""
+
+msgid "Generated: receipt"
+msgstr ""
+
+msgid "Generated: statement"
+msgstr ""
+
+msgid "Give a role"
+msgstr ""
+
+msgid "Give role"
+msgstr ""
+
+msgid "Give the person a reason"
+msgstr ""
+
+msgid "Go home"
+msgstr ""
+
+msgid "Governance sections"
+msgstr ""
+
+msgid "Grace days"
+msgstr ""
+
+msgid "Guard"
+msgstr ""
+
+msgid "Halls, courts and barbecue areas, each with its own booking rules."
+msgstr ""
+
+msgid "Hand cash over"
+msgstr ""
+
+msgid "Hand over"
+msgstr ""
+
+msgid "Hand over to"
+msgstr ""
+
+msgid "Handed over"
+msgstr ""
+
+msgid "Handover"
+msgstr ""
+
+msgid "Hands the site over and removes this organization's access to it. Export it first."
+msgstr ""
+
+msgid "Hash before and after"
+msgstr ""
+
+msgid "Heading"
+msgstr ""
+
+msgid "Health"
+msgstr ""
+
+msgid "Hide"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Hours"
+msgstr ""
+
+msgid "Household member"
+msgstr ""
+
+msgid "Household members"
+msgstr ""
+
+#. placeholder {0}: unit.unit_label
+msgid "Household of {0}"
+msgstr ""
+
+msgid "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
+msgstr ""
+
+msgid "How far ahead (days)"
+msgstr ""
+
+msgid "How it will be applied"
+msgstr ""
+
+msgid "I have saved it"
+msgstr ""
+
+msgid "I've paid"
+msgstr ""
+
+msgid "I've paid by transfer"
+msgstr ""
+
+msgid "IBAN"
+msgstr ""
+
+msgid "If that address is registered, a sign-in link is on its way. It works once."
+msgstr ""
+
+msgid "Ignore"
+msgstr ""
+
+msgid "Ignored"
+msgstr ""
+
+msgid "Ihtarname"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+#. placeholder {0}: report.ok_rows + report.warning_rows
+msgid "Import {0} rows"
+msgstr ""
+
+msgid "Import another file"
+msgstr ""
+
+msgid "Import failed"
+msgstr ""
+
+msgid "Import finished"
+msgstr ""
+
+msgid "Import progress"
+msgstr ""
+
+msgid "Import units"
+msgstr ""
+
+msgid "Importer"
+msgstr ""
+
+msgid "Importing…"
+msgstr ""
+
+msgid "In"
+msgstr ""
+
+msgid "In and out"
+msgstr ""
+
+msgid "In app"
+msgstr ""
+
+msgid "In collection"
+msgstr ""
+
+msgid "In progress"
+msgstr ""
+
+msgid "In session"
+msgstr ""
+
+msgid "In the app"
+msgstr ""
+
+msgid "In the app only"
+msgstr ""
+
+msgid "In-app"
+msgstr ""
+
+#. placeholder {0}: query.data.in_app_count
+msgid "In-app notifications: {0}"
+msgstr ""
+
+msgid "Inbox"
+msgstr ""
+
+msgid "Include documents"
+msgstr ""
+
+msgid "Include money history"
+msgstr ""
+
+msgid "Income"
+msgstr ""
+
+msgid "Income and expense"
+msgstr ""
+
+msgid "Independent section number from the title deed (tapu)."
+msgstr ""
+
+msgid "Independent unit (own owner and charges)"
+msgstr ""
+
+msgid "Inside the rules, your booking is confirmed immediately."
+msgstr ""
+
+msgid "Instance name"
+msgstr ""
+
+msgid "Instance settings"
+msgstr ""
+
+msgid "Internal note"
+msgstr ""
+
+msgid "Invitations"
+msgstr ""
+
+msgid "Invitations I sent"
+msgstr ""
+
+msgid "Invite"
+msgstr ""
+
+#. placeholder {0}: unit.unit_label
+msgid "Invite a household member to {0}"
+msgstr ""
+
+msgid "Invite a person"
+msgstr ""
+
+msgid "Invite a person by SMS or email. They set a password and are linked to their unit."
+msgstr ""
+
+#. placeholder {0}: unit.unit_label
+msgid "Invite family or flatmates to {0}. They can use requests, announcements and bookings but cannot see money unless you allow it."
+msgstr ""
+
+msgid "Invited"
+msgstr ""
+
+msgid "Issued"
+msgstr ""
+
+msgid "It is too late for a refund: the fee of <0/> is kept."
+msgstr ""
+
+msgid "It starts with the visibility of the folder it is in. You can change it after."
+msgstr ""
+
+msgid "It stops opening gates at once."
+msgstr ""
+
+msgid "Italic"
+msgstr ""
+
+msgid "italic text"
+msgstr ""
+
+msgid "Its gates stop opening from the app and it can no longer connect."
+msgstr ""
+
+msgid "J and K move between lines, Enter confirms the suggested unit, I ignores a line. Lines without a suggestion need a manual match."
+msgstr ""
+
+msgid "Job"
+msgstr ""
+
+msgid "Jobs"
+msgstr ""
+
+msgid "Join your building"
+msgstr ""
+
+msgid "Joined"
+msgstr ""
+
+msgid "Joined?"
+msgstr ""
+
+msgid "Keep at least one closed-like status."
+msgstr ""
+
+msgid "Keep at least one open-like status."
+msgstr ""
+
+msgid "Keep editing"
+msgstr ""
+
+msgid "Keep the booking"
+msgstr ""
+
+msgid "Keep the proof: this record is what counts if a decision is challenged."
+msgstr ""
+
+msgid "Keep the title short"
+msgstr ""
+
+msgid "Keep them on the unit for the next owner or tenant"
+msgstr ""
+
+msgid "Keep this ticket"
+msgstr ""
+
+msgid "Kept as credit"
+msgstr ""
+
+msgid "kept on the unit"
+msgstr ""
+
+msgid "Kind"
+msgstr ""
+
+msgid "kind: <0>unit_receivable</0>, <1>bank</1> or <2>cash</2>."
+msgstr ""
+
+msgid "Land share (arsa payı)"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Largest balances"
+msgstr ""
+
+msgid "Last backup"
+msgstr ""
+
+msgid "Last seen"
+msgstr ""
+
+msgid "late fee"
+msgstr ""
+
+msgid "Late fee"
+msgstr ""
+
+msgid "Late fee accrued so far (not yet booked)"
+msgstr ""
+
+msgid "Late fee waived."
+msgstr ""
+
+msgid "Late fees"
+msgstr ""
+
+msgid "Late fees accrued"
+msgstr ""
+
+msgid "Late fees frozen."
+msgstr ""
+
+msgid "Late-fee policy"
+msgstr ""
+
+msgid "Law 634 default: one third."
+msgstr ""
+
+msgid "Lawyer"
+msgstr ""
+
+msgid "Leave"
+msgstr ""
+
+msgid "Leave empty for problems in shared areas."
+msgstr ""
+
+msgid "Leave empty to open it as yourself."
+msgstr ""
+
+msgid "Leave empty to use the number or address on the person's record."
+msgstr ""
+
+msgid "Leave the guard console"
+msgstr ""
+
+msgid "Ledger balance"
+msgstr ""
+
+msgid "Ledger closing"
+msgstr ""
+
+msgid "Ledger opening"
+msgstr ""
+
+msgid "Left"
+msgstr ""
+
+msgid "Legal cost"
+msgstr ""
+
+msgid "Legal costs to charge back to the debtor (optional)"
+msgstr ""
+
+msgid "Letter"
+msgstr ""
+
+msgid "Light"
+msgstr ""
+
+#. placeholder {0}: proxyLimit(settings, totalUnits)
+msgid "Limit: {0} proxies per person (site settings)."
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Link"
+msgstr ""
+
+msgid "link text"
+msgstr ""
+
+msgid "Link this person to a unit as owner, tenant or household member."
+msgstr ""
+
+msgid "Link to a unit"
+msgstr ""
+
+msgid "Link to declared payment"
+msgstr ""
+
+msgid "Link to unit"
+msgstr ""
+
+msgid "Linked to the declared payment."
+msgstr ""
+
+msgid "Linking the line marks it reconciled, so it cannot be matched a second time."
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Listed"
+msgstr ""
+
+msgid "Listed with phone"
+msgstr ""
+
+msgid "Load a preset"
+msgstr ""
+
+msgid "Load more"
+msgstr ""
+
+msgid "Load more lines"
+msgstr ""
+
+msgid "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
+msgstr ""
+
+msgid "Loading charges…"
+msgstr ""
+
+msgid "Lock date"
+msgstr ""
+
+msgid "Lock date: <0/>"
+msgstr ""
+
+msgid "Lock everything up to and including"
+msgstr ""
+
+msgid "Locked"
+msgstr ""
+
+msgid "Log parcel"
+msgstr ""
+
+msgid "Longest"
+msgstr ""
+
+msgid "Longest booking (minutes)"
+msgstr ""
+
+msgid "Looking up the number…"
+msgstr ""
+
+#. placeholder {0}: a.lost_events
+msgid "Lost events: {0}"
+msgstr ""
+
+#. placeholder {0}: s.mail_configured ? t`configured` : t`not configured`
+#. placeholder {1}: s.sms_configured ? t`configured` : t`not configured`
+msgid "Mail: {0}. SMS: {1}."
+msgstr ""
+
+msgid "Main"
+msgstr ""
+
+msgid "Majority by number and by share"
+msgstr ""
+
+msgid "Majority of those present"
+msgstr ""
+
+msgid "Manual"
+msgstr ""
+
+msgid "Manual allocation"
+msgstr ""
+
+#. placeholder {0}: o.name
+msgid "Mark {0} present"
+msgstr ""
+
+msgid "Mark all as read"
+msgstr ""
+
+msgid "Match"
+msgstr ""
+
+msgid "Match bank lines"
+msgstr ""
+
+msgid "Match columns"
+msgstr ""
+
+msgid "Match each field to a column of your file. Your choices are remembered for next time."
+msgstr ""
+
+msgid "Match manually"
+msgstr ""
+
+msgid "Matched"
+msgstr ""
+
+#. placeholder {0}: s.unit_door_number
+msgid "Matched to {0}."
+msgstr ""
+
+msgid "May see money"
+msgstr ""
+
+msgid "Me too"
+msgstr ""
+
+#. placeholder {0}: i + 1
+msgid "Meaning of status {0}"
+msgstr ""
+
+msgid "Meeting notices"
+msgstr ""
+
+msgid "Meetings"
+msgstr ""
+
+msgid "Merge"
+msgstr ""
+
+msgid "Merge duplicate"
+msgstr ""
+
+msgid "Merge into another ticket"
+msgstr ""
+
+msgid "Merged"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Message (Markdown)"
+msgstr ""
+
+msgid "Messages nobody sends by hand use these channels. Sign-in codes and invitations always go by SMS or email. People can still mute non-essential types themselves."
+msgstr ""
+
+msgid "met"
+msgstr ""
+
+msgid "Method"
+msgstr ""
+
+msgid "Method for the selected owners"
+msgstr ""
+
+msgid "Minutes"
+msgstr ""
+
+msgid "Minutes (PDF)"
+msgstr ""
+
+msgid "Minutes (tutanak)"
+msgstr ""
+
+msgid "mock"
+msgstr ""
+
+msgid "Money"
+msgstr ""
+
+msgid "Money overview"
+msgstr ""
+
+msgid "Money sections"
+msgstr ""
+
+msgid "month"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Monthly"
+msgstr ""
+
+msgid "Monthly bookings"
+msgstr ""
+
+msgid "Monthly recurring expenses"
+msgstr ""
+
+msgid "Months overdue"
+msgstr ""
+
+#. placeholder {0}: v.requiredCountPct
+#. placeholder {1}: v.moreOwnersNeeded
+msgid "More than {0}% needed; {1} more owners."
+msgstr ""
+
+#. placeholder {0}: v.requiredCountPct
+msgid "More than {0}% needed: met."
+msgstr ""
+
+#. placeholder {0}: v.requiredSharePct
+msgid "More than {0}% needed."
+msgstr ""
+
+msgid "More yes than no among those present"
+msgstr ""
+
+msgid "Most uses (optional)"
+msgstr ""
+
+msgid "Most votes one person may hold"
+msgstr ""
+
+msgid "Most votes one person may represent by proxy"
+msgstr ""
+
+#. placeholder {0}: row.name
+msgid "Move {0} down"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Move {0} to"
+msgstr ""
+
+#. placeholder {0}: row.name
+msgid "Move {0} up"
+msgstr ""
+
+msgid "Move down"
+msgstr ""
+
+msgid "Move out"
+msgstr ""
+
+msgid "Move out or sale"
+msgstr ""
+
+msgid "Move out…"
+msgstr ""
+
+msgid "Move to…"
+msgstr ""
+
+msgid "Move up"
+msgstr ""
+
+msgid "Moves out on"
+msgstr ""
+
+msgid "Mute notifications"
+msgstr ""
+
+msgid "Muted types stop reaching you. Sign-in codes and invitations always arrive."
+msgstr ""
+
+msgid "My account"
+msgstr ""
+
+msgid "My balance"
+msgstr ""
+
+msgid "My call letter"
+msgstr ""
+
+msgid "My check-in code"
+msgstr ""
+
+msgid "My statement"
+msgstr ""
+
+msgid "My tickets"
+msgstr ""
+
+msgid "My unit"
+msgstr ""
+
+msgid "My units"
+msgstr ""
+
+msgid "My vehicles"
+msgstr ""
+
+msgid "Myself"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Name of the plan"
+msgstr ""
+
+msgid "Name or plate"
+msgstr ""
+
+msgid "National id"
+msgstr ""
+
+msgid "Navigation"
+msgstr ""
+
+#. placeholder {0}: evaln.neededYes
+#. placeholder {1}: evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''
+msgid "Needed: at least {0} yes votes{1}"
+msgstr ""
+
+msgid "Needs"
+msgstr ""
+
+msgid "Needs attention"
+msgstr ""
+
+msgid "Net: <0/>"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "New access point"
+msgstr ""
+
+msgid "New agent"
+msgstr ""
+
+msgid "New amount"
+msgstr ""
+
+msgid "New amount per unit"
+msgstr ""
+
+msgid "New announcement"
+msgstr ""
+
+msgid "New announcements"
+msgstr ""
+
+msgid "New assembly"
+msgstr ""
+
+msgid "New bill"
+msgstr ""
+
+msgid "New block"
+msgstr ""
+
+msgid "New cash box"
+msgstr ""
+
+msgid "New category"
+msgstr ""
+
+msgid "New code"
+msgstr ""
+
+msgid "New custom key"
+msgstr ""
+
+msgid "New dues plan"
+msgstr ""
+
+msgid "New dues rate"
+msgstr ""
+
+msgid "New expense"
+msgstr ""
+
+msgid "New facility"
+msgstr ""
+
+msgid "New folder"
+msgstr ""
+
+msgid "New gate agent"
+msgstr ""
+
+msgid "New manual credential"
+msgstr ""
+
+msgid "New notifications will appear here."
+msgstr ""
+
+msgid "New organization"
+msgstr ""
+
+msgid "New plan"
+msgstr ""
+
+msgid "New recurring visitor"
+msgstr ""
+
+msgid "New site"
+msgstr ""
+
+msgid "New stage"
+msgstr ""
+
+msgid "New tag or PIN"
+msgstr ""
+
+msgid "New ticket"
+msgstr ""
+
+msgid "New unit"
+msgstr ""
+
+msgid "New vendor bill"
+msgstr ""
+
+msgid "New visitor"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Next backup"
+msgstr ""
+
+msgid "Next due: <0/>"
+msgstr ""
+
+msgid "Next photo"
+msgstr ""
+
+msgid "Next: choose the split"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "No access points yet"
+msgstr ""
+
+msgid "No account"
+msgstr ""
+
+msgid "No activity yet."
+msgstr ""
+
+msgid "No agenda item is marked \"will be voted\"."
+msgstr ""
+
+msgid "No agenda items yet"
+msgstr ""
+
+msgid "No agenda items yet."
+msgstr ""
+
+msgid "No agent"
+msgstr ""
+
+msgid "No announcements"
+msgstr ""
+
+msgid "No answer in time. Call the resident."
+msgstr ""
+
+msgid "No assemblies yet"
+msgstr ""
+
+msgid "No bank details yet"
+msgstr ""
+
+msgid "No bills"
+msgstr ""
+
+msgid "No bookings in this period."
+msgstr ""
+
+msgid "No budget lines yet"
+msgstr ""
+
+msgid "No cases"
+msgstr ""
+
+msgid "No cash boxes yet"
+msgstr ""
+
+msgid "No charges match"
+msgstr ""
+
+msgid "No claims waiting"
+msgstr ""
+
+msgid "No collectors"
+msgstr ""
+
+msgid "No credentials found"
+msgstr ""
+
+msgid "No credits"
+msgstr ""
+
+msgid "No debtors"
+msgstr ""
+
+msgid "No decisions found"
+msgstr ""
+
+msgid "No decisions recorded yet."
+msgstr ""
+
+msgid "No decisions yet"
+msgstr ""
+
+msgid "No default assignee"
+msgstr ""
+
+msgid "No deliveries to record"
+msgstr ""
+
+msgid "No details recorded."
+msgstr ""
+
+msgid "No dues plans yet"
+msgstr ""
+
+msgid "No events match"
+msgstr ""
+
+msgid "No expenses"
+msgstr ""
+
+msgid "No facilities yet"
+msgstr ""
+
+#. placeholder {0}: accrual.unit_door_number
+msgid "No fee accrues for {0} while it is frozen, for example during legal collection."
+msgstr ""
+
+msgid "No folders yet"
+msgstr ""
+
+msgid "No funds"
+msgstr ""
+
+msgid "No gate agents yet"
+msgstr ""
+
+msgid "No gate is connected to this console."
+msgstr ""
+
+msgid "No guard has a PIN yet. A manager sets guard PINs in the people settings."
+msgstr ""
+
+msgid "No imports yet"
+msgstr ""
+
+msgid "No income or expense in this period"
+msgstr ""
+
+msgid "No invitations yet"
+msgstr ""
+
+msgid "No jobs"
+msgstr ""
+
+msgid "No late fees are accruing"
+msgstr ""
+
+msgid "No lines are waiting for you."
+msgstr ""
+
+msgid "No match. Use \"Walk-in visitor\" to ask the resident."
+msgstr ""
+
+msgid "No matches"
+msgstr ""
+
+msgid "No meeting is scheduled."
+msgstr ""
+
+msgid "No minimum number on this call."
+msgstr ""
+
+msgid "No minimum share on this call."
+msgstr ""
+
+msgid "No open receivables"
+msgstr ""
+
+msgid "No openings match"
+msgstr ""
+
+msgid "No organizations yet"
+msgstr ""
+
+msgid "No owners found"
+msgstr ""
+
+msgid "No parcels are waiting."
+msgstr ""
+
+msgid "No parking or storage belongs to this unit."
+msgstr ""
+
+msgid "No payments match."
+msgstr ""
+
+msgid "No payments yet"
+msgstr ""
+
+msgid "No people yet"
+msgstr ""
+
+msgid "No poll"
+msgstr ""
+
+msgid "No postings yet"
+msgstr ""
+
+msgid "No preference"
+msgstr ""
+
+msgid "No problems found."
+msgstr ""
+
+msgid "No rates yet"
+msgstr ""
+
+msgid "No recurring visitors"
+msgstr ""
+
+msgid "No refunds"
+msgstr ""
+
+msgid "No results"
+msgstr ""
+
+msgid "No roles"
+msgstr ""
+
+msgid "No site yet"
+msgstr ""
+
+msgid "No sites to show"
+msgstr ""
+
+msgid "No sites yet"
+msgstr ""
+
+msgid "No stages"
+msgstr ""
+
+msgid "No suggestion"
+msgstr ""
+
+msgid "No terms end soon."
+msgstr ""
+
+msgid "No threshold is set for this topic."
+msgstr ""
+
+msgid "No tickets here"
+msgstr ""
+
+msgid "No topic"
+msgstr ""
+
+msgid "No transfers yet"
+msgstr ""
+
+msgid "No unit"
+msgstr ""
+
+msgid "No units yet"
+msgstr ""
+
+msgid "No units yet."
+msgstr ""
+
+msgid "No vehicles registered"
+msgstr ""
+
+msgid "No vendors yet"
+msgstr ""
+
+msgid "No visitor is waiting"
+msgstr ""
+
+msgid "No visitors yet"
+msgstr ""
+
+msgid "No vote"
+msgstr ""
+
+msgid "No waivers"
+msgstr ""
+
+msgid "No, match to a unit instead"
+msgstr ""
+
+msgid "Nobody has overdue principal beyond the grace period."
+msgstr ""
+
+msgid "Nobody is expected right now."
+msgstr ""
+
+msgid "Nobody is linked to this unit."
+msgstr ""
+
+msgid "Nobody is listed yet. The directory must be switched on in the site settings and people choose to appear in it."
+msgstr ""
+
+msgid "Nobody owes anything right now."
+msgstr ""
+
+msgid "Nobody yet."
+msgstr ""
+
+msgid "Non-binding"
+msgstr ""
+
+msgid "none"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Not available"
+msgstr ""
+
+msgid "not configured"
+msgstr ""
+
+msgid "Not determined"
+msgstr ""
+
+msgid "Not in my file"
+msgstr ""
+
+msgid "Not linked"
+msgstr ""
+
+msgid "Not linked to any unit"
+msgstr ""
+
+msgid "Not listed"
+msgstr ""
+
+msgid "not met"
+msgstr ""
+
+msgid "Not read"
+msgstr ""
+
+msgid "Not set"
+msgstr ""
+
+msgid "Not voted"
+msgstr ""
+
+msgid "Not yet booked; shown continuously"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Note (optional)"
+msgstr ""
+
+msgid "Note visibility"
+msgstr ""
+
+msgid "Note with the status change"
+msgstr ""
+
+msgid "Noted"
+msgstr ""
+
+msgid "Notes (managers only)"
+msgstr ""
+
+msgid "Nothing booked yet"
+msgstr ""
+
+msgid "Nothing dated on or before the lock date can be posted or changed. Moving the date back asks you to confirm it is you."
+msgstr ""
+
+msgid "Nothing has been scheduled."
+msgstr ""
+
+msgid "Nothing here yet"
+msgstr ""
+
+msgid "Nothing is waiting for you."
+msgstr ""
+
+msgid "Nothing matches these filters. Try removing some."
+msgstr ""
+
+msgid "Nothing sent yet"
+msgstr ""
+
+msgid "Nothing to pay"
+msgstr ""
+
+msgid "Nothing to preview yet."
+msgstr ""
+
+msgid "Nothing to show"
+msgstr ""
+
+msgid "Nothing to show for this period"
+msgstr ""
+
+msgid "Nothing yet."
+msgstr ""
+
+msgid "Notices from your management will appear here."
+msgstr ""
+
+msgid "Notification defaults"
+msgstr ""
+
+msgid "Notification views"
+msgstr ""
+
+msgid "Notifications"
+msgstr ""
+
+msgid "Notifications, {unread} unread"
+msgstr ""
+
+msgid "Number"
+msgstr ""
+
+msgid "Numbered drafts to copy into the notarized decision book (karar defteri); this list is not the book itself."
+msgstr ""
+
+msgid "Occupancy"
+msgstr ""
+
+msgid "Occupancy timeline"
+msgstr ""
+
+msgid "Occupied"
+msgstr ""
+
+msgid "Occupied only"
+msgstr ""
+
+msgid "Off: expenses are recorded as paid when they happen."
+msgstr ""
+
+#. placeholder {0}: site.name
+msgid "Offboard {0}?"
+msgstr ""
+
+msgid "Offboard site"
+msgstr ""
+
+msgid "Offboard site…"
+msgstr ""
+
+msgid "Offboard this site"
+msgstr ""
+
+msgid "Office"
+msgstr ""
+
+msgid "Offline"
+msgstr ""
+
+msgid "On site"
+msgstr ""
+
+msgid "on the chosen days until you revoke it"
+msgstr ""
+
+msgid "Once"
+msgstr ""
+
+msgid "One archive with people, occupancies, money history, documents and decisions. You will be asked to confirm it is you."
+msgstr ""
+
+msgid "one block"
+msgstr ""
+
+msgid "One block"
+msgstr ""
+
+msgid "One currency per site."
+msgstr ""
+
+msgid "One row per unit side or account, with these columns in the first row:"
+msgstr ""
+
+msgid "One-off"
+msgstr ""
+
+msgid "Online"
+msgstr ""
+
+msgid "Only owners attend and answer polls. You can read the decisions below."
+msgstr ""
+
+msgid "Only the first 1000 rows are listed, errors first."
+msgstr ""
+
+msgid "open"
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+#. placeholder {0}: point.name
+msgid "Open {0}"
+msgstr ""
+
+msgid "Open a case"
+msgstr ""
+
+msgid "Open a case when a debt goes to a lawyer; fee accrual is frozen for that unit side."
+msgstr ""
+
+msgid "Open a collection case"
+msgstr ""
+
+msgid "Open case"
+msgstr ""
+
+msgid "Open charges"
+msgstr ""
+
+msgid "Open command sent."
+msgstr ""
+
+msgid "Open common tickets"
+msgstr ""
+
+msgid "Open for booking"
+msgstr ""
+
+msgid "Open menu"
+msgstr ""
+
+msgid "Open now"
+msgstr ""
+
+#. placeholder {0}: i + 1
+#. placeholder {1}: images.length
+msgid "Open photo {0} of {1}"
+msgstr ""
+
+msgid "Open registration"
+msgstr ""
+
+msgid "Open requests"
+msgstr ""
+
+msgid "Open the assembly"
+msgstr ""
+
+msgid "Open ticket"
+msgstr ""
+
+msgid "Open tickets"
+msgstr ""
+
+msgid "open-ended"
+msgstr ""
+
+msgid "Open-like"
+msgstr ""
+
+msgid "Open-like statuses count as open tickets in reports; closed-like statuses count as closed."
+msgstr ""
+
+msgid "Opened"
+msgstr ""
+
+#. placeholder {0}: names.get(e.change.to_status_id) ?? '?'
+msgid "Opened as {0}"
+msgstr ""
+
+#. placeholder {0}: t.reporter_display_name
+#. placeholder {1}: t.unit_door_number ? ` (${t.unit_door_number})` : ''
+msgid "Opened by {0}{1}"
+msgstr ""
+
+msgid "Opened by hand"
+msgstr ""
+
+msgid "Opened on behalf of"
+msgstr ""
+
+msgid "Opening balance"
+msgstr ""
+
+msgid "Opening balances"
+msgstr ""
+
+msgid "Opening balances saved."
+msgstr ""
+
+msgid "Opening hours"
+msgstr ""
+
+msgid "Opening log"
+msgstr ""
+
+msgid "Opening…"
+msgstr ""
+
+msgid "Opens"
+msgstr ""
+
+msgid "Operating"
+msgstr ""
+
+msgid "Operations"
+msgstr ""
+
+msgid "Optional. Stored encrypted and shown to managers only, for legal follow-up and formal notices."
+msgstr ""
+
+msgid "or go to"
+msgstr ""
+
+msgid "or type the code"
+msgstr ""
+
+msgid "Or upload a spreadsheet instead (CSV or XLSX)"
+msgstr ""
+
+msgid "Ordinary assembly"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Organization admin"
+msgstr ""
+
+msgid "Organization created."
+msgstr ""
+
+msgid "Organization saved."
+msgstr ""
+
+msgid "Organizations"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Out"
+msgstr ""
+
+msgid "Outcome"
+msgstr ""
+
+msgid "Overdue"
+msgstr ""
+
+msgid "Overdue (all sites)"
+msgstr ""
+
+msgid "Overdue principal"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "Owed by owners"
+msgstr ""
+
+msgid "Owed by tenants"
+msgstr ""
+
+msgid "Owned by the site"
+msgstr ""
+
+msgid "Owner"
+msgstr ""
+
+msgid "Owner or tenant"
+msgstr ""
+
+msgid "Owner side"
+msgstr ""
+
+msgid "Owner: debt"
+msgstr ""
+
+msgid "Owner: known late fee"
+msgstr ""
+
+msgid "Owner: principal"
+msgstr ""
+
+msgid "Owners"
+msgstr ""
+
+msgid "Owners come from the occupancies of the site."
+msgstr ""
+
+msgid "Owners only"
+msgstr ""
+
+msgid "Owners see the aggregate income and expense report and the budget. The debtor list stays private."
+msgstr ""
+
+msgid "Owners who were called are not notified automatically; record the cancellation with a reason."
+msgstr ""
+
+msgid "Ownership share (%)"
+msgstr ""
+
+#. placeholder {0}: pager.page
+msgid "Page {0}"
+msgstr ""
+
+msgid "Page not found"
+msgstr ""
+
+msgid "Pagination"
+msgstr ""
+
+msgid "Paid"
+msgstr ""
+
+msgid "Paid by"
+msgstr ""
+
+msgid "Paid by (optional)"
+msgstr ""
+
+msgid "Paid from"
+msgstr ""
+
+msgid "Paid on"
+msgstr ""
+
+msgid "Parcel"
+msgstr ""
+
+msgid "Parcel logged. The resident is notified."
+msgstr ""
+
+msgid "Parcels"
+msgstr ""
+
+msgid "Parking"
+msgstr ""
+
+msgid "Parking and storage default"
+msgstr ""
+
+msgid "Parsing"
+msgstr ""
+
+msgid "Partial"
+msgstr ""
+
+msgid "Partially paid"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+#. placeholder {0}: unmatched.length
+msgid "Pasted {count} values. {0} rows did not match a unit and were skipped: {shown}. Check them, then save."
+msgstr ""
+
+msgid "Pasted {count} values. Check them, then save."
+msgstr ""
+
+msgid "Paused"
+msgstr ""
+
+msgid "Pay"
+msgstr ""
+
+msgid "Pay bill"
+msgstr ""
+
+msgid "Payer"
+msgstr ""
+
+msgid "Payers should write"
+msgstr ""
+
+msgid "Paying for"
+msgstr ""
+
+msgid "Payment"
+msgstr ""
+
+msgid "Payment confirmed"
+msgstr ""
+
+msgid "Payment receipts"
+msgstr ""
+
+msgid "Payment recorded"
+msgstr ""
+
+msgid "Payment rejected"
+msgstr ""
+
+msgid "Payments"
+msgstr ""
+
+msgid "Pays"
+msgstr ""
+
+msgid "PDF, images and office documents."
+msgstr ""
+
+msgid "Pedestrian door"
+msgstr ""
+
+msgid "Pedestrian doors"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "People"
+msgstr ""
+
+msgid "People in my household"
+msgstr ""
+
+msgid "per"
+msgstr ""
+
+msgid "per unit"
+msgstr ""
+
+msgid "Per unit side or per person, PDF"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Person"
+msgstr ""
+
+msgid "Persons"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
+
+msgid "Phone or email"
+msgstr ""
+
+msgid "Photo"
+msgstr ""
+
+#. placeholder {0}: index + 1
+#. placeholder {1}: images.length
+msgid "Photo {0} of {1}"
+msgstr ""
+
+msgid "PIN"
+msgstr ""
+
+msgid "Pin to the top"
+msgstr ""
+
+msgid "Pinned"
+msgstr ""
+
+msgid "Place"
+msgstr ""
+
+msgid "Plan an assembly"
+msgstr ""
+
+msgid "Plan saved."
+msgstr ""
+
+msgid "Plan settings"
+msgstr ""
+
+msgid "Plate"
+msgstr ""
+
+msgid "Plate (optional)"
+msgstr ""
+
+msgid "Plates and visitor codes are created from vehicles and visitors. Add a tag or a PIN here."
+msgstr ""
+
+msgid "Plates for the camera operator (CSV)"
+msgstr ""
+
+msgid "Platform administration"
+msgstr ""
+
+msgid "Platform sections"
+msgstr ""
+
+msgid "Point"
+msgstr ""
+
+msgid "Policy"
+msgstr ""
+
+msgid "Policy saved."
+msgstr ""
+
+msgid "Poll saved."
+msgstr ""
+
+msgid "Polls"
+msgstr ""
+
+msgid "Polls are not votes. Owners answer once per unit before the assembly so you can see the mood; the binding count is recorded in the room."
+msgstr ""
+
+msgid "Portfolio"
+msgstr ""
+
+msgid "Post comment"
+msgstr ""
+
+msgid "Postal code"
+msgstr ""
+
+msgid "Posted"
+msgstr ""
+
+msgid "Poster"
+msgstr ""
+
+msgid "Pre-register a guest to get a QR code for the gate."
+msgstr ""
+
+msgid "Pre-register a visitor"
+msgstr ""
+
+msgid "Pre-register guests, share their QR code, and answer the guard's requests."
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Preferred channel"
+msgstr ""
+
+msgid "Prepayment credit"
+msgstr ""
+
+msgid "Prepayment credit: <0/>"
+msgstr ""
+
+msgid "Present"
+msgstr ""
+
+msgid "Preview"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Preview of {0}"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Previous photo"
+msgstr ""
+
+msgid "principal"
+msgstr ""
+
+msgid "Principal"
+msgstr ""
+
+msgid "Principal <0/> plus late fee <1/>"
+msgstr ""
+
+msgid "principal and late_fee are plain decimals such as 1234.50. A cell with a comma goes in double quotes."
+msgstr ""
+
+msgid "Print poster"
+msgstr ""
+
+msgid "Print this poster for the notice board or share the link in the residents' group. People who scan it sign up and ask for their unit; you approve each claim."
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
+msgid "Private and common"
+msgstr ""
+
+msgid "Private by default"
+msgstr ""
+
+msgid "Private to the unit"
+msgstr ""
+
+msgid "Private: that unit and management"
+msgstr ""
+
+msgid "Profile"
+msgstr ""
+
+msgid "Progress"
+msgstr ""
+
+msgid "Proof"
+msgstr ""
+
+msgid "Proof (photo or PDF)"
+msgstr ""
+
+msgid "Proof attached"
+msgstr ""
+
+msgid "Proxy"
+msgstr ""
+
+msgid "Publish"
+msgstr ""
+
+msgid "Publish at (optional)"
+msgstr ""
+
+msgid "Publish now"
+msgstr ""
+
+msgid "Publish this announcement?"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
+msgid "QR"
+msgstr ""
+
+msgid "QR check-in"
+msgstr ""
+
+msgid "QR code"
+msgstr ""
+
+msgid "QR code to join {siteName}"
+msgstr ""
+
+msgid "Quarterly"
+msgstr ""
+
+msgid "Question (optional)"
+msgstr ""
+
+#. placeholder {0}: a.queue_depth
+msgid "Queue: {0}"
+msgstr ""
+
+msgid "Quorum"
+msgstr ""
+
+msgid "Quorum not reached"
+msgstr ""
+
+msgid "Quorum reached"
+msgstr ""
+
+msgid "Quorum, thresholds, proxy limits and timing. Law 634 values are the defaults; change them only where your yönetim planı allows it."
+msgstr ""
+
+msgid "Quota"
+msgstr ""
+
+msgid "Rate added."
+msgstr ""
+
+msgid "Rate history"
+msgstr ""
+
+msgid "Rate per month (%)"
+msgstr ""
+
+msgid "Rates"
+msgstr ""
+
+msgid "Rates, split rules and live previews"
+msgstr ""
+
+msgid "Re-enrol"
+msgstr ""
+
+msgid "Reactivate"
+msgstr ""
+
+msgid "Read receipts"
+msgstr ""
+
+msgid "Readers"
+msgstr ""
+
+msgid "Ready"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgid "Reason (audited)"
+msgstr ""
+
+msgid "Reason (optional)"
+msgstr ""
+
+msgid "Rebuild the allow-list"
+msgstr ""
+
+msgid "Receipt"
+msgstr ""
+
+msgid "Receipt number"
+msgstr ""
+
+msgid "Receipt photo (optional)"
+msgstr ""
+
+msgid "Receipt sent."
+msgstr ""
+
+msgid "Receivables aging"
+msgstr ""
+
+msgid "Receivables in this file: <0/>. Bank and cash balances: <1/>."
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+msgid "Received in"
+msgstr ""
+
+msgid "Received into"
+msgstr ""
+
+msgid "Received on"
+msgstr ""
+
+msgid "Receives the unit's correspondence"
+msgstr ""
+
+msgid "Recent openings"
+msgstr ""
+
+msgid "Recent transfers"
+msgstr ""
+
+#. placeholder {0}: query.data.recipient_count
+msgid "Recipients: {0}"
+msgstr ""
+
+msgid "Reconciled"
+msgstr ""
+
+msgid "Reconciliation balances"
+msgstr ""
+
+msgid "Record"
+msgstr ""
+
+msgid "Record a note"
+msgstr ""
+
+msgid "Record a payment"
+msgstr ""
+
+#. placeholder {0}: o.name
+msgid "Record a proxy for {0}"
+msgstr ""
+
+msgid "Record another"
+msgstr ""
+
+msgid "Record anyway"
+msgstr ""
+
+msgid "Record cash"
+msgstr ""
+
+msgid "Record decision"
+msgstr ""
+
+msgid "Record for selected today"
+msgstr ""
+
+msgid "Record payment"
+msgstr ""
+
+msgid "Record proxy"
+msgstr ""
+
+msgid "Record the first cash receipt, or import a bank statement."
+msgstr ""
+
+msgid "Record transfer"
+msgstr ""
+
+msgid "Record what the site spends: electricity, cleaning, repairs."
+msgstr ""
+
+msgid "Recurring"
+msgstr ""
+
+msgid "Reference (optional)"
+msgstr ""
+
+msgid "Reference to write"
+msgstr ""
+
+msgid "Reference you wrote (optional)"
+msgstr ""
+
+#. placeholder {0}: app.requestId
+msgid "Reference: {0}"
+msgstr ""
+
+msgid "Refund"
+msgstr ""
+
+msgid "Refund a credit"
+msgstr ""
+
+msgid "Refund recorded."
+msgstr ""
+
+msgid "Refunded"
+msgstr ""
+
+msgid "Refunds"
+msgstr ""
+
+msgid "Refused"
+msgstr ""
+
+msgid "Registered mail"
+msgstr ""
+
+msgid "Registered mail needs the tracking number."
+msgstr ""
+
+msgid "Registered plates open the gate for this unit."
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+#. placeholder {0}: claim.display_name
+msgid "Reject {0}"
+msgstr ""
+
+msgid "Reject claim"
+msgstr ""
+
+msgid "Reject this declared transfer?"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Relationship"
+msgstr ""
+
+msgid "Reload"
+msgstr ""
+
+msgid "Remind before a term ends"
+msgstr ""
+
+msgid "Reminder"
+msgstr ""
+
+msgid "Reminder history of a unit side"
+msgstr ""
+
+msgid "Reminder stages, the history of what was sent to a debtor, and legal cases."
+msgstr ""
+
+#. placeholder {0}: r.event_count
+msgid "Reminders sent: {0}."
+msgstr ""
+
+msgid "Reminders, ihtarname and legal cases"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+#. placeholder {0}: item.name
+#. placeholder {0}: row.name
+msgid "Remove {0}"
+msgstr ""
+
+msgid "Remove dissent"
+msgstr ""
+
+msgid "Remove hours"
+msgstr ""
+
+msgid "Remove item"
+msgstr ""
+
+msgid "Remove role"
+msgstr ""
+
+msgid "Remove this role?"
+msgstr ""
+
+#. placeholder {0}: doc.title
+msgid "Rename {0}"
+msgstr ""
+
+msgid "Repeat every month"
+msgstr ""
+
+#. placeholder {0}: s.name
+msgid "Replacement for {0}"
+msgstr ""
+
+msgid "Reports"
+msgstr ""
+
+msgid "Represented by"
+msgstr ""
+
+#. placeholder {0}: event.request_id
+#. placeholder {1}: event.ip ? ` from ${event.ip}` : ''
+msgid "Request {0}{1}"
+msgstr ""
+
+msgid "Requests waiting"
+msgstr ""
+
+msgid "Resend"
+msgstr ""
+
+msgid "Reserve"
+msgstr ""
+
+msgid "Reserve contribution"
+msgstr ""
+
+msgid "Reserve halls, courts and barbecue areas. Bookings inside the rules are confirmed at once."
+msgstr ""
+
+msgid "Reset your password"
+msgstr ""
+
+msgid "Resident directory"
+msgstr ""
+
+#. placeholder {0}: p.unit_door_number
+msgid "resident vehicle, unit {0}"
+msgstr ""
+
+msgid "Resident vehicles"
+msgstr ""
+
+msgid "Residents can join with this code"
+msgstr ""
+
+msgid "Residents cannot book a blocked period (maintenance, private events)."
+msgstr ""
+
+msgid "Residents see these details when they pay by bank transfer."
+msgstr ""
+
+msgid "Residents who joined with the site QR code and say they live in a unit. A claim takes effect only when you approve it."
+msgstr ""
+
+msgid "Residents who opt in appear in a directory. Managers and the board always see everyone."
+msgstr ""
+
+msgid "Restore"
+msgstr ""
+
+msgid "Restore and save"
+msgstr ""
+
+msgid "Restore default workflow"
+msgstr ""
+
+msgid "Restore the default workflow?"
+msgstr ""
+
+msgid "Result"
+msgstr ""
+
+#. placeholder {0}: item.name
+msgid "Retry {0}"
+msgstr ""
+
+msgid "Reversal"
+msgstr ""
+
+msgid "Review"
+msgstr ""
+
+msgid "Revoke"
+msgstr ""
+
+msgid "Revoke this agent?"
+msgstr ""
+
+msgid "Revoke this credential?"
+msgstr ""
+
+msgid "Revoke this permission?"
+msgstr ""
+
+msgid "Revoked"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Roles"
+msgstr ""
+
+msgid "Rotate QR"
+msgstr ""
+
+#. placeholder {0}: e.name
+msgid "Rotate the QR code of {0}"
+msgstr ""
+
+msgid "Rotate token"
+msgstr ""
+
+msgid "Rounding remainder was distributed to the largest shares."
+msgstr ""
+
+msgid "Row"
+msgstr ""
+
+#. placeholder {0}: r.row
+msgid "Row {0}"
+msgstr ""
+
+msgid "Row-level report"
+msgstr ""
+
+msgid "Rule"
+msgstr ""
+
+#. placeholder {0}: labels.topic(th.topic)
+msgid "Rule for {0}"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save and show the code"
+msgstr ""
+
+msgid "Save bank details"
+msgstr ""
+
+msgid "Save bill"
+msgstr ""
+
+msgid "Save budget"
+msgstr ""
+
+msgid "Save changes"
+msgstr ""
+
+msgid "Save counts"
+msgstr ""
+
+msgid "Save dates"
+msgstr ""
+
+msgid "Save defaults"
+msgstr ""
+
+msgid "Save draft"
+msgstr ""
+
+msgid "Save expense"
+msgstr ""
+
+msgid "Save number"
+msgstr ""
+
+msgid "Save opening balances"
+msgstr ""
+
+msgid "Save plan"
+msgstr ""
+
+msgid "Save policy"
+msgstr ""
+
+msgid "Save settings"
+msgstr ""
+
+msgid "Save values"
+msgstr ""
+
+msgid "Save vendor"
+msgstr ""
+
+msgid "Save workflow"
+msgstr ""
+
+msgid "Saved."
+msgstr ""
+
+msgid "Say why the debt is handled differently"
+msgstr ""
+
+msgid "Scan a pass"
+msgstr ""
+
+msgid "Scan the code from the owner's phone or from the printed call letter."
+msgstr ""
+
+msgid "Scan to join your building's app"
+msgstr ""
+
+msgid "Scan with camera"
+msgstr ""
+
+msgid "Schedule"
+msgstr ""
+
+msgid "Scheduled"
+msgstr ""
+
+msgid "Scope"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Search by name"
+msgstr ""
+
+msgid "Search by name or plate"
+msgstr ""
+
+msgid "Search credentials"
+msgstr ""
+
+msgid "Search decisions"
+msgstr ""
+
+msgid "Search door or title deed no."
+msgstr ""
+
+msgid "Search name or plate"
+msgstr ""
+
+msgid "Search name, phone or email"
+msgstr ""
+
+msgid "Search owner or unit"
+msgstr ""
+
+msgid "Search owners or units"
+msgstr ""
+
+msgid "Search people"
+msgstr ""
+
+msgid "Search results"
+msgstr ""
+
+msgid "Search sites"
+msgstr ""
+
+msgid "Search the directory"
+msgstr ""
+
+msgid "Search the text"
+msgstr ""
+
+msgid "Search tickets"
+msgstr ""
+
+msgid "Search units"
+msgstr ""
+
+msgid "Search vendors"
+msgstr ""
+
+msgid "Search visitors"
+msgstr ""
+
+msgid "Search…"
+msgstr ""
+
+msgid "Searching…"
+msgstr ""
+
+msgid "Second call"
+msgstr ""
+
+msgid "Second meeting"
+msgstr ""
+
+msgid "Second meeting:"
+msgstr ""
+
+msgid "Second meeting: earliest, days after the first"
+msgstr ""
+
+msgid "Second meeting: latest, days after the first"
+msgstr ""
+
+msgid "Section"
+msgstr ""
+
+msgid "See statement"
+msgstr ""
+
+msgid "Select"
+msgstr ""
+
+#. placeholder {0}: n.person_display_name
+msgid "Select {0}"
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "Send by"
+msgstr ""
+
+msgid "Send invitation"
+msgstr ""
+
+msgid "Send me a code"
+msgstr ""
+
+msgid "Send me a code instead"
+msgstr ""
+
+msgid "Send receipt"
+msgstr ""
+
+msgid "Send reminders"
+msgstr ""
+
+msgid "Send the call"
+msgstr ""
+
+msgid "Send the call at least this many days before"
+msgstr ""
+
+msgid "Send the code again"
+msgstr ""
+
+msgid "Send the code again in {cooldown} s"
+msgstr ""
+
+msgid "Send the decisions"
+msgstr ""
+
+msgid "Send the receipt by SMS"
+msgstr ""
+
+msgid "Send to (optional)"
+msgstr ""
+
+msgid "Send to resident"
+msgstr ""
+
+msgid "Sent"
+msgstr ""
+
+msgid "Sent on"
+msgstr ""
+
+msgid "Sent to"
+msgstr ""
+
+#. placeholder {0}: x.recipient_count ?? 0
+#. placeholder {1}: x.sms_count ?? 0
+msgid "Sent to {0} people, {1} SMS messages."
+msgstr ""
+
+#. placeholder {0}: health.data.server_version
+#. placeholder {1}: health.data.jobs_queued
+#. placeholder {2}: health.data.jobs_failed
+msgid "Server {0}. Jobs queued: {1}, failed: {2}."
+msgstr ""
+
+msgid "Server evaluation:"
+msgstr ""
+
+msgid "Set a category budget below to compare it with what was spent."
+msgstr ""
+
+msgid "Set lock date"
+msgstr ""
+
+msgid "Set the date, build the agenda, then send the call from the assembly page."
+msgstr ""
+
+msgid "Set up a site first; assemblies are held per site."
+msgstr ""
+
+msgid "Set up a site first; money is kept per site."
+msgstr ""
+
+msgid "Set up a site first; this area works per site."
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Settings saved."
+msgstr ""
+
+msgid "Settings sections"
+msgstr ""
+
+msgid "Settlement"
+msgstr ""
+
+msgid "Setup"
+msgstr ""
+
+msgid "Share"
+msgstr ""
+
+msgid "Share %"
+msgstr ""
+
+msgid "Share an expense"
+msgstr ""
+
+msgid "Share of land present"
+msgstr ""
+
+msgid "Share of owners present"
+msgstr ""
+
+msgid "Shop"
+msgstr ""
+
+msgid "Short name (slug)"
+msgstr ""
+
+msgid "Shortest notice (minutes)"
+msgstr ""
+
+msgid "Show"
+msgstr ""
+
+msgid "Show archived"
+msgstr ""
+
+msgid "Show income and expenses to owners"
+msgstr ""
+
+msgid "Show matched and ignored lines too"
+msgstr ""
+
+msgid "Show only rows with problems"
+msgstr ""
+
+msgid "Show this code at the door. It works once per assembly."
+msgstr ""
+
+#. placeholder {0}: (results.data ?? []).length
+msgid "Showing the first {0}: type to refine the search."
+msgstr ""
+
+msgid "Showing the first 200 charges. Narrow the filters to see the rest."
+msgstr ""
+
+msgid "Showing the first 200 payments. Filter by status to narrow the list."
+msgstr ""
+
+msgid "Side"
+msgstr ""
+
+msgid "side: owner or tenant. Accounts use account_id instead of a unit."
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "Sign in to manage your building."
+msgstr ""
+
+msgid "Sign out"
+msgstr ""
+
+msgid "Sign-in codes"
+msgstr ""
+
+msgid "Signed by hand"
+msgstr ""
+
+msgid "Signing you in"
+msgstr ""
+
+msgid "Site"
+msgstr ""
+
+msgid "Site manager"
+msgstr ""
+
+msgid "Site name"
+msgstr ""
+
+msgid "Site QR code"
+msgstr ""
+
+msgid "Site settings"
+msgstr ""
+
+msgid "Sites"
+msgstr ""
+
+msgid "Sites you manage appear here with their overdue amounts, cash and open requests."
+msgstr ""
+
+msgid "Size"
+msgstr ""
+
+msgid "Skip to content"
+msgstr ""
+
+msgid "Slots booked by others are shown only as \"taken\"."
+msgstr ""
+
+msgid "Slug"
+msgstr ""
+
+msgid "Small building: most proxies per person"
+msgstr ""
+
+msgid "Small building: up to this many units"
+msgstr ""
+
+msgid "SMS"
+msgstr ""
+
+msgid "SMS code"
+msgstr ""
+
+#. placeholder {0}: query.data.sms_count
+msgid "SMS messages: {0} (billed to the site)"
+msgstr ""
+
+#. placeholder {0}: usage.data.sent
+#. placeholder {1}: usage.data.delivered
+#. placeholder {2}: usage.data.failed
+#. placeholder {3}: usage.data.monthly_limit ? ` (limit ${usage.data.monthly_limit})` : ''
+msgid "SMS this month: {0} sent, {1} delivered, {2} failed{3}"
+msgstr ""
+
+msgid "Some periods are still being generated."
+msgstr ""
+
+msgid "Someone else changed this record. Reload to see the latest version."
+msgstr ""
+
+msgid "Someone else updated it while you were editing. Reload to see the latest version; your unsaved changes will be lost."
+msgstr ""
+
+msgid "Something went wrong"
+msgstr ""
+
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Special assessment"
+msgstr ""
+
+msgid "Special assessment plan"
+msgstr ""
+
+msgid "Split by"
+msgstr ""
+
+msgid "split in total"
+msgstr ""
+
+msgid "Split rule"
+msgstr ""
+
+msgid "Spreadsheet file"
+msgstr ""
+
+msgid "Staff"
+msgstr ""
+
+msgid "Staff queue"
+msgstr ""
+
+msgid "Stage"
+msgstr ""
+
+msgid "Start the assembly"
+msgstr ""
+
+msgid "Start the shift"
+msgstr ""
+
+msgid "Starts"
+msgstr ""
+
+msgid "Starts on"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Statement"
+msgstr ""
+
+msgid "Statement balance"
+msgstr ""
+
+msgid "Statement closing"
+msgstr ""
+
+msgid "Statement opening"
+msgstr ""
+
+#. placeholder {0}: r.recipient_count
+msgid "Statement sent to {0} recipient(s)."
+msgstr ""
+
+msgid "Statements"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+#. placeholder {0}: names.get(e.change.from_status_id) ?? '?'
+#. placeholder {1}: names.get(e.change.to_status_id) ?? '?'
+msgid "Status changed from {0} to {1}"
+msgstr ""
+
+#. placeholder {0}: i + 1
+msgid "Status name {0}"
+msgstr ""
+
+msgid "Status names must be different."
+msgstr ""
+
+msgid "Status updated."
+msgstr ""
+
+#. placeholder {0}: policy.max_rate_pct_per_month
+msgid "Statutory cap: {0}% per month."
+msgstr ""
+
+msgid "Steps"
+msgstr ""
+
+msgid "Still in the box"
+msgstr ""
+
+msgid "Stop camera"
+msgstr ""
+
+msgid "Stop repeating"
+msgstr ""
+
+msgid "Storage"
+msgstr ""
+
+msgid "Store error"
+msgstr ""
+
+msgid "Street address"
+msgstr ""
+
+msgid "Suggested"
+msgstr ""
+
+msgid "Suggestion"
+msgstr ""
+
+msgid "Suspend"
+msgstr ""
+
+msgid "Suspended"
+msgstr ""
+
+msgid "Switch guard"
+msgstr ""
+
+msgid "Switch organization"
+msgstr ""
+
+msgid "System"
+msgstr ""
+
+msgid "Table file"
+msgstr ""
+
+msgid "Tag"
+msgstr ""
+
+msgid "Tag number"
+msgstr ""
+
+msgid "Tag or card"
+msgstr ""
+
+msgid "tagged units"
+msgstr ""
+
+msgid "Taken"
+msgstr ""
+
+msgid "Target type"
+msgstr ""
+
+msgid "Tax id"
+msgstr ""
+
+msgid "Tell the absent owners"
+msgstr ""
+
+msgid "Tell us about another payment"
+msgstr ""
+
+msgid "Tenant"
+msgstr ""
+
+msgid "Tenant side"
+msgstr ""
+
+msgid "Tenant: debt"
+msgstr ""
+
+msgid "Tenant: known late fee"
+msgstr ""
+
+msgid "Tenant: principal"
+msgstr ""
+
+msgid "Tenants"
+msgstr ""
+
+msgid "Tenants get their own login"
+msgstr ""
+
+msgid "Tenants only"
+msgstr ""
+
+msgid "Term ends"
+msgstr ""
+
+msgid "Term starts"
+msgstr ""
+
+msgid "Terms ending soon"
+msgstr ""
+
+msgid "Thank you. Your manager will confirm the payment when it shows up in the bank."
+msgstr ""
+
+msgid "That did not work. Check it and try again."
+msgstr ""
+
+msgid "That did not work. Check the visitor's status."
+msgstr ""
+
+msgid "That did not work. Check your details and try again."
+msgstr ""
+
+msgid "That entry changed since the last try. Please check it and save again."
+msgstr ""
+
+msgid "That owner is already checked in."
+msgstr ""
+
+msgid "That time is already taken or blocked. Choose another slot."
+msgstr ""
+
+msgid "The accounting period of this change is locked."
+msgstr ""
+
+msgid "The agent is offline."
+msgstr ""
+
+msgid "The agent runs on a computer at the gate and opens it. You get a one-time token to enrol it."
+msgstr ""
+
+msgid "The agent's clock is wrong."
+msgstr ""
+
+msgid "The allow-list is being rebuilt."
+msgstr ""
+
+msgid "The amount is more than the accrued fee."
+msgstr ""
+
+msgid "The amounts are more than the payment or a charge's balance."
+msgstr ""
+
+msgid "The assembly or board decision this amount comes from."
+msgstr ""
+
+msgid "The binding vote happens in the room; this is only a temperature check."
+msgstr ""
+
+msgid "The booking breaks a rule of this facility."
+msgstr ""
+
+msgid "The booking was cancelled."
+msgstr ""
+
+msgid "The box does not hold that much."
+msgstr ""
+
+msgid "The call has been sent."
+msgstr ""
+
+msgid "The call has gone out, so the agenda is fixed."
+msgstr ""
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The call must go out at least {0} days before the meeting. Move the date or send the call later only if the rules allow it."
+msgstr ""
+
+msgid "The camera is not available ({error}). Type the code instead."
+msgstr ""
+
+msgid "The change has been created."
+msgstr ""
+
+msgid "The charge of <0/> stays in the books. A reversal entry with your reason is created, so nothing is lost."
+msgstr ""
+
+msgid "The checklist appears when the assembly has been called."
+msgstr ""
+
+msgid "The code also works for 30 minutes before and after this window, once."
+msgstr ""
+
+msgid "The code is switched off, so there is no poster to print."
+msgstr ""
+
+msgid "The data is in. You can review it on the units and people pages."
+msgstr ""
+
+msgid "The decisions go to the owners who were not present. Each delivery is recorded like the call."
+msgstr ""
+
+msgid "The decisions were sent."
+msgstr ""
+
+msgid "The default visibility and assignee role apply when a ticket is opened in the category."
+msgstr ""
+
+msgid "The directory is empty"
+msgstr ""
+
+msgid "The download failed. Please try again."
+msgstr ""
+
+msgid "The dry run failed."
+msgstr ""
+
+msgid "The end must be after the start."
+msgstr ""
+
+msgid "The entry stays visible as voided. You will be asked to confirm your password."
+msgstr ""
+
+msgid "The expiry must be after the publish time"
+msgstr ""
+
+msgid "The facility is closed at that time."
+msgstr ""
+
+msgid "The fee of <0/> is refunded automatically."
+msgstr ""
+
+msgid "The file could not be checked. Please try again."
+msgstr ""
+
+msgid "The file could not be imported."
+msgstr ""
+
+msgid "The file is empty."
+msgstr ""
+
+#. placeholder {0}: formatBytes(UPLOAD_LIMITS[profile].maxBytes)
+msgid "The file is larger than {0}."
+msgstr ""
+
+msgid "The first administrator is invited by email."
+msgstr ""
+
+#. placeholder {0}: settings.data.settings.call_min_days
+msgid "The first meeting is less than {0} days away. The server will refuse a call that is too late; move the date first."
+msgstr ""
+
+msgid "The gate agent is offline."
+msgstr ""
+
+msgid "The gate agent's clock is wrong; it will not act."
+msgstr ""
+
+msgid "The gate did not confirm. Try again or check the gate."
+msgstr ""
+
+msgid "The import could not be started. Please try again; a retry never applies it twice."
+msgstr ""
+
+msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
+msgstr ""
+
+msgid "The import did not finish. Nothing was posted; check the file and try again."
+msgstr ""
+
+msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
+msgstr ""
+
+msgid "The last day must not be before the first."
+msgstr ""
+
+msgid "The latest day must not be before the earliest day."
+msgstr ""
+
+msgid "The legal timing is not met."
+msgstr ""
+
+msgid "The lines do not add up to the total. Do not save this plan."
+msgstr ""
+
+msgid "The list is derived from vehicles and visitors. Only tags and PINs are created and revoked here."
+msgstr ""
+
+msgid "The list of units is not available to this account."
+msgstr ""
+
+msgid "The minutes can be generated once the assembly is closed."
+msgstr ""
+
+msgid "The minutes were generated and filed in the documents."
+msgstr ""
+
+msgid "The money arrived in the bank: <0/>. It is applied to the oldest debt first and gets a receipt number."
+msgstr ""
+
+msgid "The move-out is recorded. The documents were also filed with the unit."
+msgstr ""
+
+msgid "The number guards may call when a visitor arrives. Leave empty to use the phone above."
+msgstr ""
+
+msgid "The opening balances were imported."
+msgstr ""
+
+msgid "The opening log is not available."
+msgstr ""
+
+msgid "The page you are looking for does not exist or has moved."
+msgstr ""
+
+msgid "The pass was cancelled."
+msgstr ""
+
+msgid "The permission was revoked."
+msgstr ""
+
+msgid "The person loses the access this role gave them."
+msgstr ""
+
+msgid "The person on the lease sees the tenant side of the unit in the portal."
+msgstr ""
+
+msgid "The PIN could not be checked. Check the connection and try again."
+msgstr ""
+
+msgid "The poll is closed."
+msgstr ""
+
+msgid "The poll is open."
+msgstr ""
+
+msgid "The preview is not available for these settings yet."
+msgstr ""
+
+msgid "The QR code could not be rotated."
+msgstr ""
+
+msgid "The QR code stops working at once."
+msgstr ""
+
+msgid "The QR code was rotated."
+msgstr ""
+
+#. placeholder {0}: policy.max_rate_pct_per_month
+msgid "The rate cannot be above the statutory cap of {0}% per month."
+msgstr ""
+
+msgid "The receipt number stays in the sequence, marked as voided. The charges it paid become open again."
+msgstr ""
+
+msgid "The request could not be sent by SMS. Call the resident instead."
+msgstr ""
+
+msgid "The request failed. Please try again."
+msgstr ""
+
+msgid "The resident denied this visitor. Do not admit."
+msgstr ""
+
+msgid "The role could not be removed. Please try again."
+msgstr ""
+
+msgid "The search failed."
+msgstr ""
+
+msgid "The second call also needs a quorum"
+msgstr ""
+
+msgid "The second meeting must come after the first."
+msgstr ""
+
+#. placeholder {0}: settings.data.settings.second_call_min_days
+#. placeholder {1}: settings.data.settings.second_call_max_days
+msgid "The second meeting should be {0} to {1} days after the first."
+msgstr ""
+
+msgid "The side's person"
+msgstr ""
+
+msgid "The site has not published bank details yet. Ask your manager how to pay."
+msgstr ""
+
+msgid "The statuses a ticket moves through at this site, in order."
+msgstr ""
+
+msgid "The statuses below replace the current ones and are saved right away. Nothing changes if you cancel."
+msgstr ""
+
+msgid "The table could not be read. Check the columns and try again."
+msgstr ""
+
+msgid "The table on the right updates as you change the amount or split rule."
+msgstr ""
+
+#. placeholder {0}: r.person_display_name
+#. placeholder {1}: labels.role(r.role)
+#. placeholder {2}: r.days_left
+msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
+msgstr ""
+
+msgid "The transfer could not be started. Please try again."
+msgstr ""
+
+msgid "The values changed after the last attempt. Review them and confirm again."
+msgstr ""
+
+msgid "The values could not be saved. Check them and try again."
+msgstr ""
+
+msgid "The visit must end after it starts."
+msgstr ""
+
+msgid "Theme"
+msgstr ""
+
+msgid "There is no budget for this year yet. It does not drive dues; it is only compared with spending."
+msgstr ""
+
+#. placeholder {0}: badMoney.join(', ')
+msgid "These columns have values that are not whole numbers: {0}. Write amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}."
+msgstr ""
+
+msgid "These neighbours chose to be listed."
+msgstr ""
+
+msgid "They receive a link to set a password and join the site."
+msgstr ""
+
+msgid "This accounting period is closed and can no longer be changed."
+msgstr ""
+
+msgid "This action is sensitive. Enter your password or a code to continue."
+msgstr ""
+
+msgid "This assembly was cancelled."
+msgstr ""
+
+msgid "This cannot be undone from here. Type the site name to continue."
+msgstr ""
+
+msgid "This cannot be undone."
+msgstr ""
+
+msgid "This code is not known."
+msgstr ""
+
+msgid "This code is not valid for this assembly."
+msgstr ""
+
+msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
+msgstr ""
+
+msgid "This date is on or before the lock date; the period is closed."
+msgstr ""
+
+msgid "This decision already has an applied change."
+msgstr ""
+
+msgid "This facility is not open to your kind of occupant."
+msgstr ""
+
+msgid "This field is required."
+msgstr ""
+
+msgid "This file could not be read. Use a CSV or XLSX file with a header row."
+msgstr ""
+
+msgid "This file is too large."
+msgstr ""
+
+msgid "This file type cannot be previewed."
+msgstr ""
+
+msgid "This file type is not allowed."
+msgstr ""
+
+msgid "This folder is empty"
+msgstr ""
+
+msgid "This gate is switched off."
+msgstr ""
+
+msgid "This number is not valid. Check the digits."
+msgstr ""
+
+msgid "This pass is for another site."
+msgstr ""
+
+msgid "This pass is not valid at this time."
+msgstr ""
+
+msgid "This pass was already used."
+msgstr ""
+
+msgid "This pass was cancelled or revoked."
+msgstr ""
+
+msgid "This period is locked."
+msgstr ""
+
+msgid "This person has no management or staff role."
+msgstr ""
+
+msgid "This person would hold more proxies than the limit of {limit} for this site."
+msgstr ""
+
+msgid "This person would hold more than the maximum share of all votes."
+msgstr ""
+
+msgid "This point is switched off."
+msgstr ""
+
+msgid "This record changed"
+msgstr ""
+
+msgid "This request was already sent with different details. Reload the form and try again."
+msgstr ""
+
+msgid "This resident did not share a number for the gate."
+msgstr ""
+
+msgid "This role belongs to the site, so you will be asked to confirm it is you."
+msgstr ""
+
+msgid "This server offers no sign-in method this app can use."
+msgstr ""
+
+msgid "This side has no open charges; the payment becomes credit."
+msgstr ""
+
+msgid "This site has its own workflow."
+msgstr ""
+
+msgid "This site is a single building, so its one block is hidden everywhere. Add a block to turn it into a multi-block site."
+msgstr ""
+
+msgid "This site treats parking and storage as independent units. Choose a flat only if this one is an appurtenance."
+msgstr ""
+
+msgid "This site uses the default workflow. Edit it to add your own statuses."
+msgstr ""
+
+msgid "This step is not available in this build yet."
+msgstr ""
+
+msgid "This ticket is closed as a duplicate of the one you choose. Its +1 votes carry over."
+msgstr ""
+
+msgid "This ticket is private: only your unit and management see it."
+msgstr ""
+
+msgid "This ticket was merged into another one."
+msgstr ""
+
+msgid "This token is shown only now. If you lose it, re-enrol the agent to get a new one."
+msgstr ""
+
+msgid "This value is not valid"
+msgstr ""
+
+msgid "This will be a common ticket, visible to the whole site."
+msgstr ""
+
+#. placeholder {0}: labels.effect(kind)
+msgid "This will create a {0} linked to this decision. It can be corrected later but not silently undone."
+msgstr ""
+
+msgid "Tick “Repeat every month” on a new expense to add one."
+msgstr ""
+
+msgid "Ticket settings"
+msgstr ""
+
+msgid "Ticket updates"
+msgstr ""
+
+msgid "Ticket views"
+msgstr ""
+
+msgid "Ticket workflow"
+msgstr ""
+
+msgid "Ticket workflow and categories"
+msgstr ""
+
+msgid "Tickets"
+msgstr ""
+
+msgid "Tickets matching these filters will appear here."
+msgstr ""
+
+msgid "Tickets merged."
+msgstr ""
+
+#. placeholder {0}: m.from
+#. placeholder {1}: m.to
+msgid "Tickets of \"{0}\" move to \"{1}\"."
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Time zone"
+msgstr ""
+
+msgid "Timeline"
+msgstr ""
+
+#. placeholder {0}: ctx.timeZone
+msgid "Times are in the site's time zone ({0})."
+msgstr ""
+
+msgid "Times are in the site's timezone ({tz}). Empty publishes now."
+msgstr ""
+
+#. placeholder {0}: query.data.timezone
+#. placeholder {1}: query.data.country_code
+msgid "Timezone {0}, country {1}. Site settings live under <0>Site</0>."
+msgstr ""
+
+msgid "Timezone, currency, fiscal year, bank details and late-fee policy."
+msgstr ""
+
+msgid "Timing"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Title (optional)"
+msgstr ""
+
+msgid "Title deed no."
+msgstr ""
+
+msgid "Title deed no. (optional)"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "To every unit side with an overdue balance. Select rows first to narrow it down."
+msgstr ""
+
+msgid "To match"
+msgstr ""
+
+#. placeholder {0}: selection.length
+msgid "To the {0} selected unit sides with an overdue balance."
+msgstr ""
+
+msgid "today"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Token rotation started."
+msgstr ""
+
+msgid "Too many attempts. Please wait and try again."
+msgstr ""
+
+msgid "Too many files."
+msgstr ""
+
+msgid "Too many requests. Please wait a moment and try again."
+msgstr ""
+
+#. placeholder {0}: Math.ceil(wait)
+msgid "Too many requests. Try again in {0} seconds."
+msgstr ""
+
+msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
+msgstr ""
+
+msgid "Too many wrong PINs. Try again later."
+msgstr ""
+
+msgid "Topic"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+#. placeholder {0}: preview.unit_count
+msgid "Total <0/> across {0} units"
+msgstr ""
+
+msgid "Total amount"
+msgstr ""
+
+msgid "Totals"
+msgstr ""
+
+msgid "Totals (without cancelled)"
+msgstr ""
+
+msgid "Totals of the lines shown (without cancelled)"
+msgstr ""
+
+msgid "Track vendor bills with due dates and partial payments"
+msgstr ""
+
+msgid "Tracking no."
+msgstr ""
+
+msgid "Tracking number"
+msgstr ""
+
+msgid "Tracking number (optional)"
+msgstr ""
+
+msgid "Transfer recorded."
+msgstr ""
+
+msgid "Transfer the amount to the account below, then tell us you paid. Your manager confirms it when the money arrives."
+msgstr ""
+
+msgid "Transfers"
+msgstr ""
+
+msgid "Trial balance"
+msgstr ""
+
+msgid "Try again"
+msgstr ""
+
+msgid "Try widening the filters."
+msgstr ""
+
+msgid "Turn one cost into charges on units with the same split rules as dues. Step {step} of 3."
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Type the site name exactly to confirm"
+msgstr ""
+
+msgid "Unanimity"
+msgstr ""
+
+msgid "Unassigned"
+msgstr ""
+
+msgid "Undo"
+msgstr ""
+
+#. placeholder {0}: o.name
+msgid "Undo attendance of {0}"
+msgstr ""
+
+msgid "Unfreeze"
+msgstr ""
+
+msgid "Unit"
+msgstr ""
+
+msgid "Unit (optional)"
+msgstr ""
+
+msgid "Unit claims"
+msgstr ""
+
+#. placeholder {0}: query.data.pending_unit_claims
+msgid "Unit claims to approve: {0}"
+msgstr ""
+
+msgid "Unit column"
+msgstr ""
+
+msgid "Unit receivable"
+msgstr ""
+
+msgid "Units"
+msgstr ""
+
+msgid "Units with a tag"
+msgstr ""
+
+msgid "Unmatch"
+msgstr ""
+
+msgid "Unmatched"
+msgstr ""
+
+msgid "Unmatched money in"
+msgstr ""
+
+msgid "Unmatched money out"
+msgstr ""
+
+msgid "Unread"
+msgstr ""
+
+msgid "Unread only"
+msgstr ""
+
+msgid "Until"
+msgstr ""
+
+msgid "Until (optional)"
+msgstr ""
+
+msgid "Up to 10 photos. Large photos are reduced and location data is removed."
+msgstr ""
+
+msgid "Up to 10 photos. Location data is removed."
+msgstr ""
+
+msgid "Upcoming and recent"
+msgstr ""
+
+msgid "Upcoming meeting"
+msgstr ""
+
+msgid "Update status"
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Upload a file below."
+msgstr ""
+
+msgid "Upload a per-unit table"
+msgstr ""
+
+msgid "Upload a statement"
+msgstr ""
+
+msgid "Upload a statement above to start matching."
+msgstr ""
+
+msgid "Upload a statement and match lines to units"
+msgstr ""
+
+msgid "Upload failed."
+msgstr ""
+
+#. placeholder {0}: item.name
+msgid "Upload progress for {0}"
+msgstr ""
+
+msgid "Upload the bank's CSV or Excel export, then confirm which unit each line belongs to. Nothing is matched without you."
+msgstr ""
+
+msgid "Uploaded"
+msgstr ""
+
+msgid "Use 2 to 40 lowercase letters, digits or dashes"
+msgstr ""
+
+msgid "Use a day from 1 to 28."
+msgstr ""
+
+msgid "Use a three-letter currency code, for example TRY"
+msgstr ""
+
+msgid "Use a two-letter country code, for example TR"
+msgstr ""
+
+msgid "Use lowercase letters, digits and underscores, for example heating"
+msgstr ""
+
+msgid "Use my password"
+msgstr ""
+
+msgid "Utility"
+msgstr ""
+
+msgid "Vacant"
+msgstr ""
+
+msgid "Vacant and occupied"
+msgstr ""
+
+msgid "Vacant only"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Valid from"
+msgstr ""
+
+msgid "Valid pass"
+msgstr ""
+
+msgid "Valid until"
+msgstr ""
+
+msgid "Valid until (optional)"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "Value column"
+msgstr ""
+
+#. placeholder {0}: p.unit.door_number
+msgid "Value for {0}"
+msgstr ""
+
+#. placeholder {0}: allocationKey.name
+msgid "Values for {0}"
+msgstr ""
+
+msgid "Values saved."
+msgstr ""
+
+msgid "Variance"
+msgstr ""
+
+msgid "Vehicle gate"
+msgstr ""
+
+msgid "Vehicle gates"
+msgstr ""
+
+msgid "Vehicles"
+msgstr ""
+
+msgid "Vendor"
+msgstr ""
+
+msgid "Vendor (optional)"
+msgstr ""
+
+msgid "Vendor bills"
+msgstr ""
+
+msgid "Vendor payable"
+msgstr ""
+
+msgid "Vendors"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "Visibility"
+msgstr ""
+
+msgid "Visible to"
+msgstr ""
+
+msgid "Visible to the manager and the board only. Never share it publicly."
+msgstr ""
+
+msgid "Visible to the reporter"
+msgstr ""
+
+msgid "Visiting unit"
+msgstr ""
+
+msgid "Visitor"
+msgstr ""
+
+#. placeholder {0}: query.data.pending_visitor_approvals
+msgid "Visitor approvals: {0}"
+msgstr ""
+
+msgid "Visitor approved."
+msgstr ""
+
+msgid "Visitor code"
+msgstr ""
+
+msgid "Visitor denied."
+msgstr ""
+
+msgid "Visitor pass"
+msgstr ""
+
+msgid "Visitor pass for {name}"
+msgstr ""
+
+msgid "Visitor pass for {name}, valid {validity}. Show this QR code at the gate, or give the guard this code: {value}"
+msgstr ""
+
+msgid "Visitor QR code"
+msgstr ""
+
+msgid "Visitor's name"
+msgstr ""
+
+msgid "Visitors"
+msgstr ""
+
+msgid "Void"
+msgstr ""
+
+msgid "Void entry"
+msgstr ""
+
+msgid "Void expense"
+msgstr ""
+
+msgid "Void payment"
+msgstr ""
+
+#. placeholder {0}: payment.receipt_no ?? ''
+msgid "Void receipt {0}?"
+msgstr ""
+
+msgid "Void this expense?"
+msgstr ""
+
+msgid "Void this opening entry?"
+msgstr ""
+
+msgid "Voided"
+msgstr ""
+
+msgid "Voted"
+msgstr ""
+
+msgid "Votes and proxies"
+msgstr ""
+
+msgid "Waiting"
+msgstr ""
+
+msgid "Waiting deliveries"
+msgstr ""
+
+#. placeholder {0}: query.data.waiting_deliveries
+msgid "Waiting deliveries: {0}"
+msgstr ""
+
+#. placeholder {0}: entry.data?.unit_door_number ?? ''
+msgid "Waiting for {0} to answer. This checks every few seconds."
+msgstr ""
+
+msgid "Waiting for a decision"
+msgstr ""
+
+msgid "Waiting for approval"
+msgstr ""
+
+msgid "Waiting for enrolment"
+msgstr ""
+
+msgid "Waiting for the resident"
+msgstr ""
+
+msgid "Waive"
+msgstr ""
+
+msgid "Waive fee"
+msgstr ""
+
+msgid "Waive late fee"
+msgstr ""
+
+msgid "Waived"
+msgstr ""
+
+msgid "Waivers"
+msgstr ""
+
+msgid "Waivers above this ask for re-authentication"
+msgstr ""
+
+msgid "Walk-in visitor"
+msgstr ""
+
+msgid "We could not find that."
+msgstr ""
+
+msgid "We could not send the code. Please try again."
+msgstr ""
+
+msgid "week"
+msgstr ""
+
+msgid "Week"
+msgstr ""
+
+msgid "Weight"
+msgstr ""
+
+msgid "What each unit side would pay"
+msgstr ""
+
+msgid "What each unit would pay"
+msgstr ""
+
+msgid "What happens to open charges"
+msgstr ""
+
+msgid "What is it for?"
+msgstr ""
+
+msgid "What is it? (optional)"
+msgstr ""
+
+msgid "What is owed today"
+msgstr ""
+
+msgid "What payers should write in the description"
+msgstr ""
+
+msgid "What people say, for example A-12."
+msgstr ""
+
+msgid "What should be created"
+msgstr ""
+
+msgid "What to fix"
+msgstr ""
+
+msgid "What to import"
+msgstr ""
+
+msgid "What was it for?"
+msgstr ""
+
+msgid "What was spent, from which account"
+msgstr ""
+
+msgid "What was spent, who was paid and from which account. Approval happens in your meetings; this records the result."
+msgstr ""
+
+msgid "What will be created"
+msgstr ""
+
+msgid "What you owe today, including the late fee accrued so far."
+msgstr ""
+
+msgid "WhatsApp"
+msgstr ""
+
+msgid "When"
+msgstr ""
+
+msgid "When a resident joins with the site QR code, their claim appears here."
+msgstr ""
+
+msgid "When the guard asks about an unexpected visitor, the request shows up here and by SMS. This page checks every few seconds."
+msgstr ""
+
+msgid "When you confirm, a closing statement for the leaving person and a debt status certificate are created and filed with the unit."
+msgstr ""
+
+msgid "Where do tickets of removed statuses go?"
+msgstr ""
+
+msgid "Where the defaults come from"
+msgstr ""
+
+msgid "Where the site stands today: what residents owe, what is in the bank and in cash."
+msgstr ""
+
+msgid "Whether this person appears in a site's resident directory. They choose this themselves under My account."
+msgstr ""
+
+msgid "Who"
+msgstr ""
+
+msgid "Who is on the gate?"
+msgstr ""
+
+msgid "Who may book"
+msgstr ""
+
+msgid "Who pays what on this unit"
+msgstr ""
+
+msgid "Who was invited and who has joined."
+msgstr ""
+
+msgid "Whole organization"
+msgstr ""
+
+msgid "whole site"
+msgstr ""
+
+msgid "Whole site"
+msgstr ""
+
+msgid "Will be voted"
+msgstr ""
+
+msgid "Will be voted on"
+msgstr ""
+
+msgid "Window"
+msgstr ""
+
+msgid "Workflow"
+msgstr ""
+
+msgid "Workflow and categories"
+msgstr ""
+
+msgid "Workflow saved."
+msgstr ""
+
+msgid "Working… {pct}%"
+msgstr ""
+
+msgid "Write"
+msgstr ""
+
+msgid "Write a comment"
+msgstr ""
+
+msgid "Write the announcement"
+msgstr ""
+
+msgid "Write the decision."
+msgstr ""
+
+msgid "Write the dissent."
+msgstr ""
+
+msgid "Write the first announcement for this site."
+msgstr ""
+
+msgid "Write them off"
+msgstr ""
+
+msgid "written off"
+msgstr ""
+
+msgid "Wrong PIN. Try again."
+msgstr ""
+
+msgid "Year"
+msgstr ""
+
+msgid "Yearly"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "Yes share of land (%)"
+msgstr ""
+
+msgid "You are all caught up"
+msgstr ""
+
+msgid "You are checked in"
+msgstr ""
+
+msgid "You are not linked to a unit in this organization."
+msgstr ""
+
+msgid "You are not linked to a unit with a balance."
+msgstr ""
+
+msgid "You are not part of any organization yet"
+msgstr ""
+
+#. placeholder {0}: rules.max_days_ahead
+msgid "You can book at most {0} days ahead."
+msgstr ""
+
+msgid "You do not have access to announcements"
+msgstr ""
+
+msgid "You do not have access to documents"
+msgstr ""
+
+msgid "You do not have access to notifications"
+msgstr ""
+
+msgid "You do not have access to the audit log"
+msgstr ""
+
+msgid "You do not have access to this"
+msgstr ""
+
+msgid "You do not have access to this page"
+msgstr ""
+
+msgid "You do not have access to tickets"
+msgstr ""
+
+msgid "You do not have permission to do this."
+msgstr ""
+
+msgid "You do not have permission to import this."
+msgstr ""
+
+msgid "You get a QR code to send to your guest. The guard scans it at the gate."
+msgstr ""
+
+msgid "You may not open gates."
+msgstr ""
+
+msgid "You see everyone as a manager. Residents only see the people who chose to be listed."
+msgstr ""
+
+msgid "You will be able to choose a new password here."
+msgstr ""
+
+msgid "You will be able to claim your unit here. Your manager approves the request."
+msgstr ""
+
+msgid "You will be able to create or link your account here."
+msgstr ""
+
+msgid "Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in the room. One answer per unit; you can change it until the poll closes."
+msgstr ""
+
+msgid "Your answer was saved."
+msgstr ""
+
+msgid "Your dashboard is on its way"
+msgstr ""
+
+msgid "Your sign-in link will be completed here."
+msgstr ""
+
+msgid "Your unit has used its bookings for this period."
+msgstr ""

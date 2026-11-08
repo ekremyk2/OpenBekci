@@ -1,0 +1,63 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: community.listDeliveries
+  summary: List parcels of my unit (or of the site)
+  description: |-
+    **Release 0.3.** List parcels of my unit (or of the site).
+
+    Permission (any one of): `deliveries.read`, `visitors.read`.
+  tags:
+    - community
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - visitors.read
+    site_manager:
+      - visitors.read
+    board_member:
+      - visitors.read
+    auditor:
+      - visitors.read
+    owner:
+      - deliveries.read
+    tenant:
+      - deliveries.read
+    household:
+      - deliveries.read
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter by unit.
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - waiting
+          - collected
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/community.yaml#/schemas/DeliveryList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

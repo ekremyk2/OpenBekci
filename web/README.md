@@ -1,0 +1,96 @@
+# OpenBekci web
+
+Single-page app for managers, boards, guards and residents. Vite + React 19 + TypeScript (strict), TanStack Router/Query, Tailwind v4 with shadcn/ui primitives, Lingui. It is built to static files and embedded into the Go binary; there is no Node server in production. Design: [docs/plans/02-web.md](../docs/plans/02-web.md).
+
+Requires Node 24 and pnpm 10 (`corepack enable`; the version is pinned in `packageManager`; on Windows `corepack enable` may need an elevated shell, or run `npm i -g pnpm@10`).
+
+## Develop
+
+```sh
+pnpm install
+pnpm dev            # http://localhost:5173
+```
+
+`/v1` and `/.well-known` are proxied to the Go server on `http://localhost:8484` (override with `OPENBEKCI_DEV_BACKEND`). Start the backend from the repo root with `tools/task.ps1 run` (Windows) or `tools/task.sh run` (see [server/README.md](../server/README.md)); both run the Go-pinned go-task, so `go tool task run` from `server/` works too. Tests never need the backend.
+
+From the repo root: `tools/task.ps1 web:dev` and `tools/task.ps1 web:check` (lint, typecheck, unit tests), or `go tool task ...` / `tools/task.sh ...`.
+
+| Command          | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`      | ESLint flat config: `typescript-eslint`, `react-hooks`, `jsx-a11y`, no `dangerouslySetInnerHTML`, and `openbekci/logical-properties`                                                                                                                                                                                                                                                                                                                                        |
+| `pnpm typecheck` | `tsc -b --noEmit`                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `pnpm test`      | Vitest + Testing Library + MSW                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `pnpm dev:mock`  | Vite in mock mode on :5175: an MSW service worker answers the draft contract from in-memory models (`src/test/handlers`: setup, people, operations, money, governance, community, access); no backend. Signed in as an organization admin; add `?mockRole=resident` for the resident view or `?mockRole=guard` for the gate console; `localStorage['ob.mockRole']` (`manager`, `staff`, `resident`, `platform`) or `window.__obMock.setRole(...)` picks the operations user |
+| `pnpm e2e`       | Playwright smoke tests (needs `pnpm exec playwright install chromium` once; starts its own Vite server on :5174 and mocks the API)                                                                                                                                                                                                                                                                                                                                          |
+| `pnpm build`     | typecheck, then Vite build to `web/dist`                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `pnpm size`      | `size-limit`: initial route JS (entry, modulepreloads, login route chunk, largest locale catalog) must stay at or below 250 kB gzipped                                                                                                                                                                                                                                                                                                                                      |
+| `pnpm format`    | Prettier                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+
+### Rules worth knowing
+
+- **Logical CSS only.** `ml-`, `mr-`, `pl-`, `pr-`, `left-`, `right-`, `text-left/right`, `border-l/r`, `rounded-l/r`, `float-left/right` fail lint; use `ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `text-start/end`, `border-s/e`, `rounded-s/e`. The rule is `eslint-rules/logical-properties.js` (eslint-plugin-tailwindcss does not support Tailwind v4).
+- **No fetch outside `src/api`.** Everything goes through the typed client in `src/api/client.ts`.
+- **Money and dates** are displayed only through `Money` / `SiteDate` (integer minor units; site timezone passed in) and edited through `MoneyInput`.
+- Direction-sensitive icons get the `rtl-flip` class so they mirror in RTL.
+
+## Mock mode (no backend)
+
+```sh
+pnpm dev:mock      # http://localhost:5175, API answered in the browser by MSW
+```
+
+The setup and people screens are built against the **draft** contract (`api/openapi-draft.yaml`, types in `clients/ts/draft.d.ts`, re-exported by `src/api/draft.ts` with the `draftApi` client). The backend for those endpoints does not exist yet, so `src/test/handlers/{tenancy,people}.ts` implement them in memory from the spec (`src/test/handlers/db.ts` is the seed). Mock mode signs you in as an organization admin with every permission; data resets on reload. The same handlers back the Vitest screen tests (`src/test/render.tsx` mounts the real router) and the Playwright flow in `e2e/mock/` (`pnpm e2e` starts both dev servers).
+
+## API types
+
+`src/api/schema.ts` is the single switch for API types. Until `clients/ts/index.d.ts` (generated by openapi-typescript from `api/openapi.yaml`) exists it re-exports the hand-written `src/api/schema.placeholder.d.ts`. When the generated file lands: change the re-export in `schema.ts`, delete `schema.placeholder.d.ts`, fix what the compiler reports, replace `src/test/handlers.ts` with generated MSW handlers, and regenerate `src/api/idempotent.gen.ts` (the set of `x-idempotent` operations, currently an empty stub).
+
+The client middleware (web plan §6) adds `Accept-Language`, `X-Requested-With: openbekci-web`, and requires an `Idempotency-Key` on `x-idempotent` POSTs. The key belongs to one form submission, not one request: call `useIdempotencyKey()` (`src/lib/idempotency.ts`) once per form instance and pass `withIdempotencyKey(key)`, so retries, double clicks and the replay after a re-authentication challenge reuse it. A missing key on an idempotent operation throws, and `If-Match` from `withVersion(entity.version)`. Problem responses become `AppError { code, status, fieldErrors }`; 401 (everywhere except exactly `/v1/me` and `/v1/auth/*`; a 401 on a `/v1/me` refetch also signs the shell out), 412, 429 and `reauth_required` are published as events and handled once in `src/app/ErrorEffects.tsx`.
+
+## Internationalization (Lingui)
+
+English is the source. Strings use the macros: `<Trans>` and `` t`...` `` from `@lingui/react/macro`, `msg` from `@lingui/core/macro` for descriptors defined outside components. Catalogs are `.po` files in `src/locales/{en,tr,pseudo}/`, compiled by the Vite plugin (no generated files are committed).
+
+```sh
+pnpm i18n:extract   # update the .po files from the source; add Turkish for new entries in tr/messages.po
+```
+
+- `tr` must be complete before a release; `pseudo` is generated from English and needs no editing.
+- `pseudo-rtl` reuses the `pseudo` catalog and flips `<html dir="rtl">`.
+- Try a locale without changing settings: `/login?locale=pseudo`, `?locale=pseudo-rtl`, `?locale=tr`.
+- Locale resolution: user setting (profile, or the saved toggle) → browser languages → organization default → `en`; `tr-TR` falls back to `tr`. `<html lang dir>` follows the active locale.
+
+## Build and embed
+
+```sh
+tools/task.ps1 web:build   # (tools/task.sh, or `go tool task web:build`) pnpm build + size budget + copy web/dist/* into server/internal/webassets/dist/
+cd server && go build ./cmd/openbekci   # the binary now serves the app
+```
+
+`go:embed` cannot reach outside its package, so `scripts/embed.mjs` copies the build into `server/internal/webassets/dist/` (git-ignored except `.gitkeep`). Without `index.html` there the server serves its placeholder page; `-tags nowebassets` skips embedding entirely.
+
+`index.html` carries the nonce placeholder `__CSP_NONCE__` (Vite `html.cspNonce`) on every script, link and a `csp-nonce` meta tag. The Go server must replace it per response when it sets the strict CSP; until it does, the placeholder is an inert attribute value. The theme is applied before first paint by the static `/theme-init.js`, so no inline script is needed.
+
+### Notes for the Go side (`webassets`)
+
+- Replace **every** `__CSP_NONCE__` in `index.html` with a fresh per-response nonce: the theme-init script, the `csp-nonce` meta tag, the entry script, each modulepreload link and the stylesheet link (ten occurrences in the current build). Do not cache the substituted body.
+- Serve `index.html` with `Cache-Control: no-store`; `/assets/*` is content-hashed and can be `immutable`.
+- A missing `/assets/*` file must return **404**, not the SPA fallback `index.html`; otherwise a stale chunk request gets HTML and the failure is confusing. `chunk-recovery` relies on a clean failed import.
+- The app needs no inline styles or scripts: the toast is a Radix component styled from the stylesheet and the brand colour is set through the CSSOM (`style.setProperty`), so `style-src 'self' 'nonce-...'` is enough.
+
+After a server upgrade a cached page may request chunks that no longer exist; `src/lib/chunk-recovery.ts` reloads once on `vite:preloadError` or a failed dynamic import.
+
+## Layout
+
+```
+src/app/          providers, router, guards, instance (discovery), session (/v1/me, can()), theme, locale, nav manifest
+src/api/          typed client, AppError, event bus, schema placeholder
+src/components/   ui (shadcn primitives), data (Money, SiteDate, EmptyState, ErrorState, skeletons), forms, layout (AppShell)
+src/features/     one folder per module (auth so far)
+src/routes/       TanStack Router file routes; routeTree.gen.ts is generated and committed
+src/lib/          money, dates, i18n, permissions, utils
+src/locales/      Lingui catalogs
+e2e/              Playwright
+```
+
+`src/routeTree.gen.ts` is regenerated by the Vite plugin on `pnpm dev`/`build`.
