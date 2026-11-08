@@ -193,7 +193,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	mny := newMoney(d, ops.late, fs, ops.documents)
 	ops.dashboards.SetMoney(moneyFigures{reports: mny.Reports})
-	gov.SetEffects(govMoney{budgets: mny.Treasury})
+	gov.SetEffects(newDecisionEffects(mny))
 	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {

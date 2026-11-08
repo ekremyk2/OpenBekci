@@ -8,20 +8,27 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/dashboards"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/httpapi"
 )
 
 // govMoney implements governance.DecisionEffects with the money module: adopting
-// a budget finalizes it under the decision (treasury.Service.FinalizeBudget, in
-// the apply transaction). The dues-rate and special-assessment effects stay
-// unavailable (409 with the module's reason) until billing offers transaction
-// scoped plan operations.
+// a budget finalizes it under the decision (treasury.Service.FinalizeBudget), a
+// dues-rate decision appends a rate period to the dues plan and a special
+// assessment bills the units by its allocation key (billing.GovernanceEffects),
+// all in the apply transaction.
 type govMoney struct {
-	governance.DecisionEffectsUnavailable
+	billing.GovernanceEffects
 	budgets money.BudgetFinalizer
+}
+
+// newDecisionEffects is the decision effects the server installs: the money module's.
+func newDecisionEffects(mny httpapi.MoneyDeps) governance.DecisionEffects {
+	return govMoney{GovernanceEffects: billing.GovernanceEffects{Billing: mny.Billing}, budgets: mny.Treasury}
 }
 
 // FinalizeBudget implements governance.DecisionEffects.

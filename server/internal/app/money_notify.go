@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -121,6 +122,12 @@ func (n moneyNotifier) Enqueue(ctx context.Context, tx pgx.Tx, e ledger.Notifica
 		}
 	}
 	for _, k := range []string{"amount", "amount_due"} {
+		if n, ok := p[k].(float64); ok && n == math.Trunc(n) { // a bare whole number of minor units: it is in the site's currency
+			var cur string
+			if err := tx.QueryRow(ctx, `SELECT currency FROM site WHERE org_id = $1 AND id = $2`, e.OrgID, e.SiteID).Scan(&cur); err == nil {
+				p[k] = map[string]any{"amount": int64(n), "currency": cur}
+			}
+		}
 		if s := formatMoney(p[k], locale); s != "" {
 			p[k] = s
 		}
