@@ -234,7 +234,7 @@ func (s *Service) ExportVehiclesCSV(ctx context.Context, orgID, siteID uuid.UUID
 			if err := rows.Scan(&plate, &door, &block, &label); err != nil {
 				return err
 			}
-			_ = w.Write([]string{FormatPlate(plate), door, block, label})
+			_ = w.Write([]string{FormatPlate(plate), CSVSafe(door), CSVSafe(block), CSVSafe(label)})
 		}
 		w.Flush()
 		return rows.Err()

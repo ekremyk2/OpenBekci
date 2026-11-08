@@ -268,6 +268,8 @@ func (s *Service) parseImportRow(no int, rec []string, idx map[string]int, today
 		r.err("door_number", "required", nil)
 	} else if len([]rune(r.door)) > 40 {
 		r.err("door_number", "too_long", map[string]any{"max": 40})
+	} else if tenancy.HasFormulaPrefix(r.door) {
+		r.err("door_number", "invalid_value", map[string]any{"reason": "formula_prefix"})
 	}
 	r.typSet = r.typ != ""
 	if r.typ == "" {

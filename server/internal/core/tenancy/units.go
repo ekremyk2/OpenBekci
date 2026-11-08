@@ -267,7 +267,7 @@ func applyUnit(base Unit, d Doc, create bool) (Unit, error) {
 			return u, err
 		}
 		v = strings.TrimSpace(v)
-		if n := len([]rune(v)); n < 1 || n > 40 {
+		if n := len([]rune(v)); n < 1 || n > 40 || HasFormulaPrefix(v) {
 			fields = append(fields, problem.Field{Field: "door_number", Code: "invalid_value"})
 		}
 		u.DoorNumber = v
