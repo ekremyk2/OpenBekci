@@ -6,6 +6,7 @@ on:
     paths:
       - "server/**"
       - "sdk/**"
+      - "packs/**"
       - "api/**"
       - "clients/**"
       - "go.work"
@@ -18,6 +19,7 @@ on:
     paths:
       - "server/**"
       - "sdk/**"
+      - "packs/**"
       - "api/**"
       - "clients/**"
       - "go.work"
@@ -62,6 +64,7 @@ jobs:
           cache-dependency-path: |
             server/go.sum
             sdk/go.sum
+            packs/example/go.mod
       # gen:check and api:lint run Redocly and openapi-typescript through `pnpm dlx`.
       - uses: pnpm/action-setup@v4
         with:
@@ -71,13 +74,26 @@ jobs:
           node-version-file: web/.nvmrc
       - name: Build
         working-directory: server
-        run: go build ./...
+        run: |
+          go build ./...
+          go build -tags nopacks ./...
+          go build -tags examplepack ./...
+      - name: SDK and example pack (need only the SDK)
+        run: |
+          (cd sdk && go vet ./... && go test ./...)
+          (cd packs/example && go vet ./... && go test ./...)
       - name: Lint (go vet, go mod tidy -diff, golangci-lint)
         run: sh tools/task.sh lint
       - name: API lint
         run: sh tools/task.sh api:lint
       - name: Generated files are up to date
         run: sh tools/task.sh gen:check
+      # The example pack passes sdktest and both conformance suites here (server/internal/sdktest).
       - name: Tests
         working-directory: server
         run: go test -p 1 -count=1 -timeout 60m ./...
+      - name: Pack build variants (nopacks boots, examplepack lists the example pack)
+        working-directory: server
+        run: |
+          go test -count=1 -tags nopacks ./cmd/...
+          go test -count=1 -tags examplepack ./cmd/...

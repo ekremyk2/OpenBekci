@@ -134,7 +134,7 @@ func (s *apiServer) PacksUpdateSettings(ctx context.Context, req gen.PacksUpdate
 		if req.Body.SiteId == nil {
 			return nil, problem.Validation(problem.Field{Field: "site_id", Code: "required"})
 		}
-		scope = sdk.SiteScope(sdk.ID(uuid.UUID(*req.Body.SiteId).String()))
+		scope = sdk.SiteScope(sdk.ID(req.Body.SiteId.String()))
 	default:
 		return nil, problem.Validation(problem.Field{Field: "scope", Code: "invalid_value"})
 	}
@@ -147,7 +147,7 @@ func (s *apiServer) PacksUpdateSettings(ctx context.Context, req gen.PacksUpdate
 		out.SecretsSet = []string{}
 	}
 	if isSite {
-		out.SiteId = nullable.NewNullableWithValue(openapi_types.UUID(res.SiteID))
+		out.SiteId = nullable.NewNullableWithValue(res.SiteID)
 	}
 	return gen.PacksUpdateSettings200JSONResponse(out), nil
 }

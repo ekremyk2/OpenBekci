@@ -3,6 +3,7 @@ package packs
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -313,7 +314,11 @@ func (r *registry) RegisterSettingsSchema(s sdk.SettingsSchema) {
 		}
 		info, err := compileSchema(r.pack, raw)
 		if err != nil {
-			r.fail(ErrInvalid, "settings schema (%s scope): %v", scope, err)
+			kind := ErrInvalid
+			if errors.Is(err, ErrNamespace) {
+				kind = ErrNamespace
+			}
+			r.fail(kind, "settings schema (%s scope): %v", scope, err)
 			continue
 		}
 		r.schemas[scope] = info

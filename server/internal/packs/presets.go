@@ -133,7 +133,7 @@ func (h *Host) applyPresets(ctx context.Context, tx pgx.Tx, org, site uuid.UUID,
 	for _, k := range keys {
 		cur, has := settings[k]
 		m, marked := marks[k]
-		if has && !(marked && m.pack == p.Manifest.ID && jsonEqual(cur, m.value)) {
+		if has && (!marked || m.pack != p.Manifest.ID || !jsonEqual(cur, m.value)) {
 			continue
 		}
 		if has && jsonEqual(cur, values[k]) && marked {

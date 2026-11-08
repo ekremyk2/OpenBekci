@@ -41,7 +41,11 @@ type Manifest struct {
 type Pack interface {
 	Manifest() Manifest
 	// Register hands the pack's contributions to r. Everything is registered
-	// here; nothing is discovered later by reflection or name.
+	// here; nothing is discovered later by reflection or name. A process may
+	// call Register more than once on the same pack value (migrate with
+	// auto-migration and then serve each build their own registry), so it must
+	// not keep state that a second call would corrupt; keep r.Services() and
+	// nothing else that is order-dependent.
 	Register(ctx context.Context, r Registry) error
 }
 

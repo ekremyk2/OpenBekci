@@ -42,6 +42,24 @@
 // [Services] never take an organization argument, so a pack cannot reach into
 // another tenant.
 //
+// # Wiring status (milestone P0)
+//
+// The registry validates, namespaces and freezes every contribution below, and
+// the host exposes each one for the organizations that enabled the pack. These
+// core call sites are wired and tested in P0: payment providers (checkout,
+// status, webhook route, refund and settlement entry points of the payments
+// module), SMS providers (organization setting sms_provider, selected by the SMS
+// gateway for messages sent for an organization), statement importers (the bank
+// import module), the six presets and the chart of accounts (site creation and
+// enablement), settings and their secrets, migrations, routes, jobs and event
+// subscribers. Allocation policies, payment orders, document templates, address
+// formats, validators, reference data, consent texts and label catalogs are
+// registered and selectable (Host.Template, Host.Validators, Host.Labels, ...)
+// but their consuming core modules (billing generation, the documents render
+// job, the privacy and reference-data endpoints, the codes endpoint) call them
+// as the Turkish pack (P1) needs them; the call sites documented on each
+// interface are the intended ones.
+//
 // # Evolution
 //
 // Add behaviour only through new optional interfaces checked by type
