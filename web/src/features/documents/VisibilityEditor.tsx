@@ -1,6 +1,7 @@
 import { Trans, useLingui } from '@lingui/react/macro'
 import type { DocumentVisibility } from '@/api/draft'
-import { Checkbox, Select } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Select } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { useUnits } from '@/features/dashboard/reference'
 
