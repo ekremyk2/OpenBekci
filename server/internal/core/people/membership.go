@@ -262,6 +262,10 @@ func (s *Service) EndMembership(ctx context.Context, orgID, membershipID uuid.UU
 			}
 		}
 		if m.Role == string(authz.RoleOrgAdmin) && m.ScopeType == "org" {
+			// serialize concurrent removals of administrators of this organization (M5)
+			if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('org_admin:' || $1::text, 0))`, orgID); err != nil {
+				return err
+			}
 			var others int
 			if err := tx.QueryRow(ctx, `SELECT count(*) FROM membership WHERE org_id = $1 AND role = 'org_admin' AND scope_type = 'org' AND id <> $2
 				AND valid_from <= now() AND (valid_to IS NULL OR valid_to > now())`, orgID, membershipID).Scan(&others); err != nil {
