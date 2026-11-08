@@ -45,26 +45,26 @@ type Effect struct {
 
 // Decision is a numbered decision of a meeting.
 type Decision struct {
-	ID                uuid.UUID  `json:"id"`
-	OrgID             uuid.UUID  `json:"org_id"`
-	SiteID            uuid.UUID  `json:"site_id"`
-	MeetingID         uuid.UUID  `json:"meeting_id"`
-	AgendaItemID      *uuid.UUID `json:"agenda_item_id"`
-	SequenceNo        int        `json:"sequence_no"`
-	Year              int        `json:"year"`
-	Text              string     `json:"text"`
-	Outcome           string     `json:"outcome"`
+	ID           uuid.UUID  `json:"id"`
+	OrgID        uuid.UUID  `json:"org_id"`
+	SiteID       uuid.UUID  `json:"site_id"`
+	MeetingID    uuid.UUID  `json:"meeting_id"`
+	AgendaItemID *uuid.UUID `json:"agenda_item_id"`
+	SequenceNo   int        `json:"sequence_no"`
+	Year         int        `json:"year"`
+	Text         string     `json:"text"`
+	Outcome      string     `json:"outcome"`
 	// OutcomeOverrideReason is set when the outcome was recorded against, or
 	// without, the threshold evaluation of the counts (an explicit override).
 	OutcomeOverrideReason *string    `json:"outcome_override_reason"`
 	VoteCount             *VoteCount `json:"vote_count"`
-	Dissents          []Dissent  `json:"dissents"`
-	ConcernsResidents bool       `json:"concerns_residents"`
-	NotifiedAt        *time.Time `json:"notified_at"`
-	Effect            *Effect    `json:"effect"`
-	CreatedAt         time.Time  `json:"created_at"`
-	UpdatedAt         time.Time  `json:"updated_at"`
-	Version           int        `json:"version"`
+	Dissents              []Dissent  `json:"dissents"`
+	ConcernsResidents     bool       `json:"concerns_residents"`
+	NotifiedAt            *time.Time `json:"notified_at"`
+	Effect                *Effect    `json:"effect"`
+	CreatedAt             time.Time  `json:"created_at"`
+	UpdatedAt             time.Time  `json:"updated_at"`
+	Version               int        `json:"version"`
 
 	inputHash string
 }

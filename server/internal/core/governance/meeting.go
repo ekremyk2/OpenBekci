@@ -51,9 +51,9 @@ type Meeting struct {
 	// HeldCall is the sitting that actually took place (first or second); nil until the session is opened.
 	HeldCall          *string    `json:"held_call"`
 	FirstCallFailedAt *time.Time `json:"first_call_failed_at"`
-	CreatedAt            time.Time       `json:"created_at"`
-	UpdatedAt            time.Time       `json:"updated_at"`
-	Version              int             `json:"version"`
+	CreatedAt         time.Time  `json:"created_at"`
+	UpdatedAt         time.Time  `json:"updated_at"`
+	Version           int        `json:"version"`
 
 	settings      json.RawMessage
 	minutesFileID *uuid.UUID

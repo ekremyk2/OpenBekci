@@ -35,9 +35,9 @@ func TestIntegrationGovernanceNoticeValidation(t *testing.T) {
 		return fmt.Sprintf(`{"phase":"call","method":%q,"sent_at":%q%s}`, method, sent.UTC().Format(time.RFC3339), extra)
 	}
 	now := time.Now().UTC()
-	c.must(422, mgr, "PUT", path, body("registered_mail", now.Add(72*time.Hour), ""))      // in the future
-	c.must(422, mgr, "PUT", path, body("registered_mail", now.Add(-72*time.Hour), ""))     // before the call
-	c.must(422, mgr, "PUT", path, body("email", now, ""))                                  // electronic notice is off by default
+	c.must(422, mgr, "PUT", path, body("registered_mail", now.Add(72*time.Hour), ""))  // in the future
+	c.must(422, mgr, "PUT", path, body("registered_mail", now.Add(-72*time.Hour), "")) // before the call
+	c.must(422, mgr, "PUT", path, body("email", now, ""))                              // electronic notice is off by default
 	c.must(422, mgr, "PUT", path, body("sms", now, ""))
 	c.must(422, mgr, "PUT", path, body("registered_mail", now, fmt.Sprintf(`,"proof_file_id":%q`, uuid.New()))) // not a file
 	ok := c.must(200, mgr, "PUT", path, body("registered_mail", now, fmt.Sprintf(`,"proof_file_id":%q,"tracking_no":"PTT1"`, proof)))

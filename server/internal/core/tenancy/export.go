@@ -80,7 +80,7 @@ var exportTables = []exportTable{
 }
 
 // excludedTables are tenant tables a site archive does not carry, with the reason.
-var excludedTables = map[string]string{
+var excludedTables = map[string]string{ //nolint:gosec // table names, not credentials
 	"organization": "the tenant root; the target organization already exists",
 	"audit_event":  "the audit trail stays with the organization that made the changes",
 	"site_export":  "the record of the hand-over itself",
@@ -88,8 +88,8 @@ var excludedTables = map[string]string{
 	"import_row":   "operational record of spreadsheet imports",
 	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
 	// Governance: the legal paperwork is exported, these two are not.
-	"attendance_token": "check-in credentials of one meeting (stored hashed); useless after the hand-over",
-	"term_reminder":    "operational reminders; recomputed from the memberships by the daily job",
+	"attendance_token":  "check-in credentials of one meeting (stored hashed); useless after the hand-over",
+	"term_reminder":     "operational reminders; recomputed from the memberships by the daily job",
 	"assembly_reminder": "operational record of the yearly ordinary-assembly reminder",
 }
 

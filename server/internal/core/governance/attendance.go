@@ -31,7 +31,7 @@ type Attendance struct {
 	Call             string      `json:"call"`
 	ProxyForPersonID *uuid.UUID  `json:"proxy_for_person_id"`
 	Source           string      `json:"source"`
-	CheckedInAt     time.Time   `json:"checked_in_at"`
+	CheckedInAt      time.Time   `json:"checked_in_at"`
 	CheckedInBy      *uuid.UUID  `json:"checked_in_by"`
 	CreatedAt        time.Time   `json:"created_at"`
 	UpdatedAt        time.Time   `json:"updated_at"`

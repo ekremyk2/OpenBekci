@@ -44,8 +44,8 @@ type SnapOwner struct {
 // opened (G1); at the call it is a preview.
 type Snapshot struct {
 	// TakenAt is when the snapshot was computed.
-	TakenAt time.Time `json:"taken_at"`
-	AsOf    time.Time `json:"as_of"`
+	TakenAt    time.Time `json:"taken_at"`
+	AsOf       time.Time `json:"as_of"`
 	VoteWeight string    `json:"vote_weight"`
 	// ShareBasis is arsa_payi, or equal when the site has no arsa payi values.
 	ShareBasis string      `json:"share_basis"`

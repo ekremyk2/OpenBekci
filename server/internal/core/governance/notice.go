@@ -32,9 +32,9 @@ type Notice struct {
 	ProofFileID *uuid.UUID `json:"proof_file_id"`
 	Note        *string    `json:"note"`
 	// Late says the call reached the owner less than call_min_days before the meeting.
-	Late bool `json:"late"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	Late      bool      `json:"late"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 const noticeSelect = `SELECT n.id, n.org_id, n.meeting_id, n.person_id, p.display_name, n.phase, n.method, n.status, n.sent_at, n.tracking_no, n.proof_file_id, n.note, n.late, n.created_at, n.updated_at
@@ -351,4 +351,3 @@ func absentees(ctx context.Context, tx pgx.Tx, m Meeting) ([]SnapOwner, Snapshot
 	}
 	return out, snap, nil
 }
-
