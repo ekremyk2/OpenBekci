@@ -195,6 +195,21 @@ func TestIntegrationDecisionEffectDuesRateBookedPeriod(t *testing.T) {
 	if rs := x.ratesOf(plan); len(rs) != 1 {
 		t.Fatalf("rates = %v", rs)
 	}
+	// a rate starting the day after the last billed due date is allowed: the rate in
+	// force on a period's due date prices it, so billed periods keep their charges
+	// and the new rate prices the next period on
+	var lastDue string
+	err = x.db.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT (max(due_date) + 1)::text FROM charge WHERE org_id = $1 AND plan_id = $2`, x.org.ID, uuid.MustParse(plan)).Scan(&lastDue)
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d2 := x.decision("Dues change from the next period")
+	x.apply(d2, fmt.Sprintf(`{"kind":"dues_rate","plan_id":%q,"from":%q,"amount":{"amount":200000,"currency":"TRY"}}`, plan, lastDue), "dues-booked-0002", 200, false)
+	if n, maxAmount := x.query(`SELECT count(*), COALESCE(max(amount), 0)::bigint FROM charge WHERE org_id = $1 AND plan_id = $2`, x.org.ID, uuid.MustParse(plan)); n == 0 || maxAmount != 100000 {
+		t.Fatalf("billed charges after the rate change: %d, largest %d, want the old 100000", n, maxAmount)
+	}
 }
 
 // A special assessment decision bills every unit a share of the total by the
