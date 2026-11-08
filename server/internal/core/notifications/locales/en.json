@@ -1,5 +1,5 @@
 {
-  "announcement.published": {"title": "{{.title}}", "body": "{{.snippet}}", "subject": "{{.site}}: {{.title}}", "sms": "{{.site}}: {{.title}}"},
+  "announcement.published": {"title": "{{.title}}", "body": "{{.snippet}}", "subject": "{{.site}}: {{.title}}", "sms": "{{.site}}: {{or .sms_title .title}}"},
   "charge.due_soon": {"title": "Payment due soon", "body": "{{.amount}} for {{.unit}} is due on {{.due_on}}.", "subject": "Payment due on {{.due_on}}", "sms": "{{.site}}: {{.amount}} for {{.unit}} is due on {{.due_on}}."},
   "charge.overdue": {"title": "Payment overdue", "body": "{{.amount}} for {{.unit}} was due on {{.due_on}}.", "subject": "Overdue payment", "sms": "{{.site}}: {{.amount}} for {{.unit}} was due on {{.due_on}} and is overdue."},
   "payment.receipt": {"title": "Payment received", "body": "We received {{.amount}} for {{.unit}}. Receipt {{.receipt_no}}.", "subject": "Receipt {{.receipt_no}}", "sms": "{{.site}}: received {{.amount}} for {{.unit}}. Receipt {{.receipt_no}}."},

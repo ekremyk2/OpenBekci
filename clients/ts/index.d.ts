@@ -6731,6 +6731,11 @@ export interface components {
             sms_count: number | null;
             /**
              * Format: int64
+             * @description Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.
+             */
+            sms_segments?: number | null;
+            /**
+             * Format: int64
              * @description Opened in web or app; a delivered SMS or email is not a read.
              */
             read_count: number;
@@ -6834,13 +6839,26 @@ export interface components {
             site_id: string;
             audience: components["schemas"]["AnnouncementAudience"];
             channels: ("in_app" | "email" | "sms" | "push")[];
+            /** @description The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed. */
+            title?: string;
         };
         /** @description What publishing would cost, before the sender presses publish (O5). */
         AnnouncementPreview: {
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
+             */
             recipient_count: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Text messages (recipients with a phone who did not mute).
+             */
             sms_count: number;
+            /**
+             * Format: int64
+             * @description Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
+             */
+            sms_segments: number;
             /** Format: int64 */
             email_count: number;
             /** Format: int64 */

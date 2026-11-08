@@ -995,6 +995,11 @@ schemas:
         type: integer
         format: int64
         nullable: true
+      sms_segments:
+        type: integer
+        format: int64
+        nullable: true
+        description: "Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message."
       read_count:
         type: integer
         format: int64
@@ -1201,21 +1206,32 @@ schemas:
             - email
             - sms
             - push
+      title:
+        type: string
+        maxLength: 200
+        description: "The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed."
   AnnouncementPreview:
     type: object
     description: What publishing would cost, before the sender presses publish (O5).
     required:
       - recipient_count
       - sms_count
+      - sms_segments
       - email_count
       - in_app_count
     properties:
       recipient_count:
         type: integer
         format: int64
+        description: People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
       sms_count:
         type: integer
         format: int64
+        description: Text messages (recipients with a phone who did not mute).
+      sms_segments:
+        type: integer
+        format: int64
+        description: Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
       email_count:
         type: integer
         format: int64

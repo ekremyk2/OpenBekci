@@ -50,6 +50,7 @@ type Announcement struct {
 	Channels       []string
 	RecipientCount pgtype.Int4
 	SmsCount       pgtype.Int4
+	SmsSegments    pgtype.Int4
 	PublishedAt    pgtype.Timestamptz
 	CreatedBy      pgtype.UUID
 	CreatedAt      pgtype.Timestamptz
@@ -351,6 +352,7 @@ type NotificationDelivery struct {
 	NotificationID pgtype.UUID
 	Channel        string
 	Status         string
+	ClaimedAt      pgtype.Timestamptz
 	Attempts       int32
 	LastError      pgtype.Text
 	ProviderID     pgtype.Text

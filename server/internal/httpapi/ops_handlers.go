@@ -705,7 +705,7 @@ func (s *apiServer) OperationsPreviewAnnouncement(ctx context.Context, req gen.O
 	if err != nil {
 		return nil, err
 	}
-	v, err := a.PreviewAnnouncement(ctx, req.OrgId, b.SiteId, aud, channelStrings(b.Channels))
+	v, err := a.PreviewAnnouncement(ctx, req.OrgId, b.SiteId, aud, channelStrings(b.Channels), deref(b.Title))
 	if err != nil {
 		return nil, err
 	}

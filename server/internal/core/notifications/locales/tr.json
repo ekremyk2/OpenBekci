@@ -1,5 +1,5 @@
 {
-  "announcement.published": {"title": "{{.title}}", "body": "{{.snippet}}", "subject": "{{.site}}: {{.title}}", "sms": "{{.site}}: {{.title}}"},
+  "announcement.published": {"title": "{{.title}}", "body": "{{.snippet}}", "subject": "{{.site}}: {{.title}}", "sms": "{{.site}}: {{or .sms_title .title}}"},
   "charge.due_soon": {"title": "Ödeme tarihi yaklaşıyor", "body": "{{.unit}} için {{.amount}} tutarı {{.due_on}} tarihinde ödenmeli.", "subject": "{{.due_on}} tarihinde ödeme günü", "sms": "{{.site}}: {{.unit}} için {{.amount}} {{.due_on}} tarihinde ödenmeli."},
   "charge.overdue": {"title": "Ödeme gecikti", "body": "{{.unit}} için {{.amount}} tutarının son ödeme tarihi {{.due_on}} idi.", "subject": "Geciken ödeme", "sms": "{{.site}}: {{.unit}} için {{.amount}} tutarının son ödeme tarihi {{.due_on}} geçti."},
   "payment.receipt": {"title": "Ödemeniz alındı", "body": "{{.unit}} için {{.amount}} tahsil edildi. Makbuz {{.receipt_no}}.", "subject": "Makbuz {{.receipt_no}}", "sms": "{{.site}}: {{.unit}} için {{.amount}} alındı. Makbuz {{.receipt_no}}."},

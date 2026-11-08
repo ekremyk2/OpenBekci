@@ -19,6 +19,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/notifications"
 	"github.com/openbekci/openbekci/server/internal/core/opsx"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
@@ -124,6 +125,7 @@ type Announcement struct {
 	Channels       []string     `json:"channels"`
 	RecipientCount *int         `json:"recipient_count"`
 	SMSCount       *int         `json:"sms_count"`
+	SMSSegments    *int         `json:"sms_segments"`
 	ReadCount      int          `json:"read_count"`
 	ReadAt         *time.Time   `json:"read_at"`
 	Attachments    []Attachment `json:"attachments"`
@@ -136,7 +138,7 @@ type Announcement struct {
 
 // $1 org, $2 me (person, may be the nil uuid), $3 shows read counts
 const selectSQL = `SELECT a.id, a.org_id, a.site_id, a.title, a.body_md, a.status, a.audience, a.publish_at, a.expires_at, a.pinned, a.channels,
-	a.recipient_count, a.sms_count,
+	a.recipient_count, a.sms_count, a.sms_segments,
 	CASE WHEN $3 THEN (SELECT count(*) FROM announcement_read r WHERE r.org_id = a.org_id AND r.announcement_id = a.id) ELSE 0 END,
 	(SELECT r.read_at FROM announcement_read r WHERE r.org_id = a.org_id AND r.announcement_id = a.id AND r.person_id = $2),
 	a.published_at, a.created_by, a.created_at, a.updated_at, a.version
@@ -146,7 +148,7 @@ func scanAnn(row pgx.Row) (Announcement, error) {
 	var a Announcement
 	var aud []byte
 	err := row.Scan(&a.ID, &a.OrgID, &a.SiteID, &a.Title, &a.BodyMD, &a.Status, &aud, &a.PublishAt, &a.ExpiresAt, &a.Pinned, &a.Channels,
-		&a.RecipientCount, &a.SMSCount, &a.ReadCount, &a.ReadAt, &a.PublishedAt, &a.CreatedBy, &a.CreatedAt, &a.UpdatedAt, &a.Version)
+		&a.RecipientCount, &a.SMSCount, &a.SMSSegments, &a.ReadCount, &a.ReadAt, &a.PublishedAt, &a.CreatedBy, &a.CreatedAt, &a.UpdatedAt, &a.Version)
 	if err != nil {
 		return a, err
 	}
@@ -193,9 +195,19 @@ func (s *Service) viewerOf(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UU
 	return v, nil
 }
 
-// visibleSQL restricts non-publishers to published announcements addressed to them.
+// visibleSQL restricts non-publishers to published, unexpired announcements:
+// the ones addressed to them when it was published, and pinned ones whose
+// audience they belong to today (a resident who moves in later still sees the
+// house rules). The frozen recipient list is also the delivery list; it does
+// not limit what a pinned notice shows to.
 const visibleSQL = `($4 OR (a.status = 'published' AND (a.expires_at IS NULL OR a.expires_at > now())
-	AND EXISTS (SELECT 1 FROM announcement_recipient rc WHERE rc.org_id = a.org_id AND rc.announcement_id = a.id AND rc.person_id = $2)))`
+	AND (EXISTS (SELECT 1 FROM announcement_recipient rc WHERE rc.org_id = a.org_id AND rc.announcement_id = a.id AND rc.person_id = $2)
+	  OR (a.pinned AND EXISTS (SELECT 1 FROM occupancy o JOIN unit un ON un.org_id = o.org_id AND un.id = o.unit_id JOIN site st ON st.org_id = o.org_id AND st.id = o.site_id
+	      WHERE o.org_id = a.org_id AND o.site_id = a.site_id AND o.person_id = $2
+	        AND o.valid_from <= (now() AT TIME ZONE st.timezone)::date AND (o.valid_to IS NULL OR o.valid_to > (now() AT TIME ZONE st.timezone)::date)
+	        AND (CASE a.audience->>'kind' WHEN 'site' THEN true WHEN 'owners' THEN o.kind = 'owner' WHEN 'tenants' THEN o.kind = 'tenant'
+	             WHEN 'block' THEN un.block_id = (a.audience->>'block_id')::uuid
+	             WHEN 'units' THEN o.unit_id::text IN (SELECT jsonb_array_elements_text(a.audience->'unit_ids')) ELSE false END))))))`
 
 func (s *Service) loadOne(ctx context.Context, tx pgx.Tx, orgID, annID uuid.UUID, forUpdate bool) (Announcement, viewer, error) {
 	var site uuid.UUID
@@ -771,6 +783,9 @@ func (s *Service) Archive(ctx context.Context, orgID, annID uuid.UUID) (Announce
 type Preview struct {
 	RecipientCount int `json:"recipient_count"`
 	SMSCount       int `json:"sms_count"`
+	// SMSSegments is what the SMS bill counts: a long text or a Turkish glyph
+	// (UCS-2, 70 characters a segment) makes several per message.
+	SMSSegments    int `json:"sms_segments"`
 	MailCount      int `json:"email_count"`
 	InAppCount     int `json:"in_app_count"`
 }
@@ -778,11 +793,25 @@ type Preview struct {
 type recipient struct {
 	person           uuid.UUID
 	phone, mail, app bool
+	locale           string
+	muted            bool // muted announcement.published: addressed, but nothing is sent
+}
+
+// smsTitleMax caps the title in a text message.
+const smsTitleMax = 100
+
+func smsTitle(t string) string {
+	r := []rune(strings.TrimSpace(t))
+	if len(r) > smsTitleMax {
+		return string(r[:smsTitleMax-1]) + "…"
+	}
+	return string(r)
 }
 
 // recipients resolves an audience to the people currently in the site's units.
 func recipients(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, a Audience) ([]recipient, error) {
-	rows, err := tx.Query(ctx, `SELECT p.id, coalesce(p.contact->>'phone', u.phone, '') <> '', coalesce(p.contact->>'email', u.email::text, '') <> '', p.user_id IS NOT NULL
+	rows, err := tx.Query(ctx, `SELECT p.id, coalesce(p.contact->>'phone', u.phone, '') <> '', coalesce(p.contact->>'email', u.email::text, '') <> '', p.user_id IS NOT NULL,
+			coalesce(u.locale, ''), EXISTS (SELECT 1 FROM notification_mute m WHERE m.org_id = p.org_id AND m.person_id = p.id AND m.type = 'announcement.published')
 		FROM person p LEFT JOIN "user" u ON u.id = p.user_id
 		WHERE p.org_id = $1 AND p.id IN (
 			SELECT o.person_id FROM occupancy o
@@ -800,7 +829,7 @@ func recipients(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, a Audie
 	var out []recipient
 	for rows.Next() {
 		var r recipient
-		if err := rows.Scan(&r.person, &r.phone, &r.mail, &r.app); err != nil {
+		if err := rows.Scan(&r.person, &r.phone, &r.mail, &r.app, &r.locale, &r.muted); err != nil {
 			return nil, err
 		}
 		out = append(out, r)
@@ -808,11 +837,26 @@ func recipients(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, a Audie
 	return out, rows.Err()
 }
 
-func countFor(rs []recipient, channels []string) Preview {
+// countFor counts what the channels would send. People who muted the type are
+// addressed (RecipientCount) but get nothing, so they are left out of the
+// channel counts. The SMS segments come from the text rendered in each
+// recipient's language, siteName and title being what the template fills in.
+func countFor(rs []recipient, channels []string, siteName, title string) Preview {
 	p := Preview{RecipientCount: len(rs)}
+	segs := map[string]int{}
 	for _, r := range rs {
+		if r.muted {
+			continue
+		}
 		if slices.Contains(channels, jobs.ChannelSMS) && r.phone {
 			p.SMSCount++
+			loc := notifications.NormalizeLocale(r.locale)
+			n, ok := segs[loc]
+			if !ok {
+				n = notifications.SMSSegments(notifications.Render("announcement.published", loc, map[string]any{"site": siteName, "title": title, "sms_title": smsTitle(title)}).SMS)
+				segs[loc] = n
+			}
+			p.SMSSegments += n
 		}
 		if slices.Contains(channels, jobs.ChannelEmail) && r.mail {
 			p.MailCount++
@@ -826,7 +870,7 @@ func countFor(rs []recipient, channels []string) Preview {
 
 // PreviewAnnouncement counts the recipients of an audience and what the chosen
 // channels would send, without saving anything.
-func (s *Service) PreviewAnnouncement(ctx context.Context, orgID, siteID uuid.UUID, a Audience, channels []string) (Preview, error) {
+func (s *Service) PreviewAnnouncement(ctx context.Context, orgID, siteID uuid.UUID, a Audience, channels []string, title string) (Preview, error) {
 	if bad := checkChannels(channels, "channels"); len(bad) > 0 {
 		return Preview{}, problem.Validation(bad...)
 	}
@@ -846,7 +890,14 @@ func (s *Service) PreviewAnnouncement(ctx context.Context, orgID, siteID uuid.UU
 		if err != nil {
 			return err
 		}
-		out = countFor(rs, channels)
+		var siteName string
+		if err := tx.QueryRow(ctx, `SELECT name FROM site WHERE org_id = $1 AND id = $2`, orgID, siteID).Scan(&siteName); err != nil {
+			return err
+		}
+		if strings.TrimSpace(title) == "" {
+			title = strings.Repeat("ş", smsTitleMax) // no title yet: the longest a text takes, in the widest alphabet
+		}
+		out = countFor(rs, channels, siteName, title)
 		return nil
 	})
 	return out, tenancy.DBProblem(err, "announcement")
@@ -906,13 +957,17 @@ func (s *Service) publishLocked(ctx context.Context, tx pgx.Tx, before Announcem
 	if err != nil {
 		return Announcement{}, err
 	}
-	pv := countFor(rs, channels)
+	var siteName string
+	if err := tx.QueryRow(ctx, `SELECT name FROM site WHERE org_id = $1 AND id = $2`, before.OrgID, before.SiteID).Scan(&siteName); err != nil {
+		return Announcement{}, err
+	}
+	pv := countFor(rs, channels, siteName, before.Title)
 	if _, err := tx.Exec(ctx, `INSERT INTO announcement_recipient (org_id, announcement_id, person_id) SELECT $1, $2, unnest($3::uuid[]) ON CONFLICT DO NOTHING`,
 		before.OrgID, before.ID, personIDs(rs)); err != nil {
 		return Announcement{}, err
 	}
-	if _, err := tx.Exec(ctx, `UPDATE announcement SET status = 'published', published_at = now(), channels = $3, recipient_count = $4, sms_count = $5,
-		updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`, before.OrgID, before.ID, channels, pv.RecipientCount, pv.SMSCount); err != nil {
+	if _, err := tx.Exec(ctx, `UPDATE announcement SET status = 'published', published_at = now(), channels = $3, recipient_count = $4, sms_count = $5, sms_segments = $6,
+		updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`, before.OrgID, before.ID, channels, pv.RecipientCount, pv.SMSCount, pv.SMSSegments); err != nil {
 		return Announcement{}, err
 	}
 	var out Announcement
@@ -923,7 +978,7 @@ func (s *Service) publishLocked(ctx context.Context, tx pgx.Tx, before Announcem
 	}
 	site := before.SiteID
 	if err := s.notify.Notify(ctx, tx, jobs.NotifyArgs{OrgID: before.OrgID, SiteID: &site, Type: "announcement.published", Recipients: rec, Channels: channels,
-		Payload: map[string]any{"announcement_id": before.ID, "title": before.Title, "snippet": snippet(before.BodyMD)}, Link: "/announcements/" + before.ID.String(),
+		Payload: map[string]any{"announcement_id": before.ID, "title": before.Title, "sms_title": smsTitle(before.Title), "snippet": snippet(before.BodyMD)}, Link: "/announcements/" + before.ID.String(),
 		Key: "announcement:" + before.ID.String()}); err != nil {
 		return out, err
 	}
@@ -952,7 +1007,12 @@ func (s *Service) PublishDue(ctx context.Context) error {
 	type due struct{ org, id uuid.UUID }
 	var list []due
 	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `SELECT org_id, id FROM announcement WHERE status = 'scheduled' AND publish_at <= now() ORDER BY publish_at LIMIT 200`)
+		// a notice whose end passed while it waited is never published
+		if _, err := tx.Exec(ctx, `UPDATE announcement SET status = 'archived', pinned = false, updated_at = now(), version = version + 1
+			WHERE status = 'scheduled' AND publish_at <= now() AND expires_at IS NOT NULL AND expires_at <= now()`); err != nil {
+			return err
+		}
+		rows, err := tx.Query(ctx, `SELECT org_id, id FROM announcement WHERE status = 'scheduled' AND publish_at <= now() AND (expires_at IS NULL OR expires_at > now()) ORDER BY publish_at LIMIT 200`)
 		if err != nil {
 			return err
 		}
@@ -979,7 +1039,10 @@ func (s *Service) PublishDue(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			_, err = s.publishLocked(ctx, tx, a, nil, false)
+			// the same gateway check as a manual publish: a scheduled SMS with no
+			// provider stays scheduled (and the error is reported) instead of
+			// publishing a count that is never sent
+			_, err = s.publishLocked(ctx, tx, a, nil, true)
 			return err
 		})
 		if err != nil {

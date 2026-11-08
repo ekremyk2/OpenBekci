@@ -2,9 +2,10 @@
 
 -- Announcements (backend plan 4.10, decisions O4 and O5): one-way notices with
 -- a sender-chosen set of channels. The people an announcement reaches are
--- fixed when it is published (announcement_recipient), so a person who moves
--- in later does not receive old notices and the read receipts have a
--- denominator.
+-- fixed when it is published (announcement_recipient): that list is who the
+-- message is delivered to and the denominator of the read receipts. Who can
+-- read a pinned notice is decided when they read it (a person who moves in
+-- later still sees the house rules).
 
 CREATE TABLE announcement (
     id               uuid        NOT NULL,
@@ -21,6 +22,8 @@ CREATE TABLE announcement (
     channels         text[]      NOT NULL DEFAULT ARRAY['in_app']::text[] CHECK (channels <@ ARRAY['in_app', 'email', 'sms', 'push']::text[]),
     recipient_count  int,
     sms_count        int,
+    -- billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters)
+    sms_segments     int,
     published_at     timestamptz,
     created_by       uuid        REFERENCES "user" (id),
     created_at       timestamptz NOT NULL DEFAULT now(),
