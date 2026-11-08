@@ -86,5 +86,5 @@ test('pre-register a visitor, the guard scans the code and admits them', async (
     .filter({ hasText: 'Valid pass' })
     .getByRole('button', { name: 'Admit' })
     .click()
-  await expect(page.getByText('Deniz Acar admitted.')).toBeVisible()
+  await expect(page.getByText('Deniz Acar admitted.', { exact: true })).toBeVisible()
 })

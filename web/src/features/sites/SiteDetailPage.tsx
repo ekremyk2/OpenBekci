@@ -10,11 +10,9 @@ import { buttonVariants } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { siteQueries } from './queries'
 import { SiteForm } from './SiteForm'
+import type { SiteTab } from './tabs'
 import { SiteBankTab, SiteBlocksTab, SiteLockTab, SiteSettingsTab } from './SiteTabs'
 import { TransferPanel } from './TransferPanel'
-
-export const SITE_TABS = ['general', 'settings', 'bank', 'lock', 'blocks', 'transfer'] as const
-export type SiteTab = (typeof SITE_TABS)[number]
 
 export function SiteDetailPage({ siteId, tab }: { siteId: string; tab: SiteTab }) {
   const { org, can } = useSession()

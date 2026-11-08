@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { parseTicketSearch, TicketsPage } from '@/features/tickets/TicketsPage'
+import { TicketsPage } from '@/features/tickets/TicketsPage'
+import { parseTicketSearch } from '@/features/tickets/search'
 
 export const Route = createFileRoute('/orgs/$orgId/tickets/')({
   validateSearch: parseTicketSearch,

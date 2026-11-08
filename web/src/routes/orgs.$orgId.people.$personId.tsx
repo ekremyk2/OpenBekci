@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { PERSON_TABS, PersonDetailPage, type PersonTab } from '@/features/people/PersonDetailPage'
+import { PersonDetailPage } from '@/features/people/PersonDetailPage'
+import { PERSON_TABS, type PersonTab } from '@/features/people/tabs'
 
 export const Route = createFileRoute('/orgs/$orgId/people/$personId')({
   validateSearch: (s: Record<string, unknown>): { tab?: PersonTab } => ({

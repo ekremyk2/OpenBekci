@@ -16,36 +16,8 @@ import { LoadMore, must, useCursorQuery } from '@/lib/pagination'
 import { SitePicker, useSite } from '@/features/dashboard/site'
 import { useStaff, useUnits, useVendors } from '@/features/dashboard/reference'
 import { StatusBadge, VisibilityBadge } from './badges'
+import type { TicketSearch, TicketView } from './search'
 import { useCategories, useWorkflow } from './queries'
-
-export type TicketView = 'all' | 'mine' | 'common' | 'queue'
-
-export interface TicketSearch {
-  view?: TicketView
-  status?: string
-  category?: string
-  /** `p:<person id>` or `v:<vendor id>` */
-  assignee?: string
-  unit?: string
-  visibility?: 'private' | 'common'
-  q?: string
-}
-
-export function parseTicketSearch(raw: Record<string, unknown>): TicketSearch {
-  const str = (v: unknown) => (typeof v === 'string' && v ? v : undefined)
-  const view = str(raw.view)
-  const visibility = str(raw.visibility)
-  return {
-    view:
-      view === 'all' || view === 'mine' || view === 'common' || view === 'queue' ? view : undefined,
-    status: str(raw.status),
-    category: str(raw.category),
-    assignee: str(raw.assignee),
-    unit: str(raw.unit),
-    visibility: visibility === 'private' || visibility === 'common' ? visibility : undefined,
-    q: str(raw.q),
-  }
-}
 
 function useDebounced<T>(value: T, ms: number): T {
   const [v, setV] = useState(value)

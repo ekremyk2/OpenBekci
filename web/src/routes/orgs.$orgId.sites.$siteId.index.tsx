@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { SITE_TABS, SiteDetailPage, type SiteTab } from '@/features/sites/SiteDetailPage'
+import { SiteDetailPage } from '@/features/sites/SiteDetailPage'
+import { SITE_TABS, type SiteTab } from '@/features/sites/tabs'
 
 export const Route = createFileRoute('/orgs/$orgId/sites/$siteId/')({
   validateSearch: (s: Record<string, unknown>): { tab?: SiteTab } => ({

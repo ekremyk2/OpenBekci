@@ -1,8 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
-// Runs against `vite --mode mock` (port 5175, see playwright.config.ts): the app talks to the
+// Runs in the `mock` project (`vite --mode mock`, see playwright.config.ts): the app talks to the
 // in-memory model of the draft operations contract through an MSW service worker.
-test.use({ baseURL: 'http://localhost:5175' })
 
 const PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',

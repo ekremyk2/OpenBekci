@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AuditPage, parseAuditSearch } from '@/features/audit/AuditPage'
+import { AuditPage } from '@/features/audit/AuditPage'
+import { parseAuditSearch } from '@/features/audit/search'
 
 export const Route = createFileRoute('/orgs/$orgId/settings/audit')({
   validateSearch: parseAuditSearch,

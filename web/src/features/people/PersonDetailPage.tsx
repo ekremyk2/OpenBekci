@@ -12,11 +12,9 @@ import { joinStatusLabel, joinStatusVariant } from './labels'
 import { MembershipsTab } from './MembershipsTab'
 import { NationalIdPanel } from './NationalIdPanel'
 import { OccupanciesTab } from './OccupanciesTab'
+import type { PersonTab } from './tabs'
 import { PersonForm } from './PersonForm'
 import { personQueries } from './queries'
-
-export const PERSON_TABS = ['profile', 'units', 'roles', 'invitations'] as const
-export type PersonTab = (typeof PERSON_TABS)[number]
 
 export function PersonDetailPage({ personId, tab }: { personId: string; tab: PersonTab }) {
   const { org, can } = useSession()

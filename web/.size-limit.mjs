@@ -4,7 +4,10 @@
 //   - the /login route chunk and everything it statically imports (not dynamic imports),
 //   - the largest locale catalog chunk (one catalog is loaded per visitor; worst case counted).
 // A second budget covers the heaviest lazy route: the largest non-initial chunk (route screens,
-// qrcode, the XLSX reader) plus the non-initial chunks it imports statically, gzipped, <= 40 kB (measured 18.6 kB: the qrcode chunk).
+// qrcode, the XLSX reader) plus the non-initial chunks it imports statically, gzipped, <= 40 kB.
+// The camera QR scanner (html5-qrcode, loaded only when someone starts scanning at the desk or the
+// gate) is a vendor library of its own, 107 kB gzipped: it has a third budget of 115 kB and is left
+// out of the 40 kB one, so a regression in any screen chunk still shows.
 // Run `pnpm build && pnpm size`.
 import { readdirSync, readFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
@@ -49,11 +52,14 @@ if (catalogs[0]) counted.add(catalogs[0])
 
 // Largest lazy chunk (by gzip size) that is not part of the initial route or a locale catalog.
 const gz = (f) => gzipSync(readFileSync(new URL(`./assets/${f}`, dist))).length
+const scanner = [...files].find((f) => /^QrScannerCore-.*\.js$/.test(f))
 const lazy = [...files]
-  .filter((f) => f.endsWith('.js') && !counted.has(f) && !/^messages-/.test(f))
+  .filter((f) => f.endsWith('.js') && !counted.has(f) && !/^messages-/.test(f) && f !== scanner)
   .sort((a, b) => gz(b) - gz(a))
 const heavy = lazy[0]
 const heavySet = new Set(heavy ? [...closure(heavy)].filter((f) => !counted.has(f)) : [])
+
+const scannerSet = new Set(scanner ? [...closure(scanner)].filter((f) => !counted.has(f)) : [])
 
 export default [
   {
@@ -66,6 +72,12 @@ export default [
     name: `largest lazy route chunk (${heavy ?? 'none'} + its own imports, gzip)`,
     path: [...heavySet].sort().map((f) => `dist/assets/${f}`),
     limit: '40 kB',
+    gzip: true,
+  },
+  {
+    name: `camera QR scanner (${scanner ?? 'none'} + its own imports, gzip)`,
+    path: [...scannerSet].sort().map((f) => `dist/assets/${f}`),
+    limit: '115 kB',
     gzip: true,
   },
 ]
