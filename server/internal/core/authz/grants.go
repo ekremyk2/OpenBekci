@@ -627,7 +627,7 @@ func (r *Resolver) ResolveOrg(ctx context.Context, p *Principal, orgID uuid.UUID
 	}
 	g = Grants{OrgID: orgID, Items: GrantsFromMemberships(r.reg, ms), Occupancies: occs, Today: today}
 	g.Items = append(g.Items, r.occupantGrants(g.Current())...)
-	g.Items = append(g.Items, r.formerGrants(g.Occupancies, g.Current())...)
+	g.Items = append(g.Items, r.formerGrants(g.Occupancies, g.Current(), today)...)
 	return g, true, nil
 }
 

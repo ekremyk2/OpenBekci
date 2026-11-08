@@ -2,6 +2,7 @@ package authz
 
 import (
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -9,7 +10,7 @@ import (
 // formerGrants derives the permissions that list Former for the sites where all
 // of the caller's occupancies have ended (a current occupancy there already
 // carries the portal permissions).
-func (r *Resolver) formerGrants(all, current []OccupancyAccess) []Grant {
+func (r *Resolver) formerGrants(all, current []OccupancyAccess, today time.Time) []Grant {
 	cur := map[uuid.UUID]bool{}
 	for _, o := range current {
 		cur[o.SiteID] = true
@@ -23,7 +24,7 @@ func (r *Resolver) formerGrants(all, current []OccupancyAccess) []Grant {
 	seen := map[uuid.UUID]bool{}
 	var out []Grant
 	for _, o := range all {
-		if cur[o.SiteID] || seen[o.SiteID] {
+		if cur[o.SiteID] || seen[o.SiteID] || o.ValidFrom.After(today) { // not started yet: not a former occupant
 			continue
 		}
 		seen[o.SiteID] = true
