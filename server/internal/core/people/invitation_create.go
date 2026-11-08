@@ -181,6 +181,9 @@ func (s *Service) CreateHouseholdInvitation(ctx context.Context, orgID, unitID u
 	if err := authz.RequireAnywhere(ctx, PermInvitationHouse); err != nil {
 		return Invitation{}, err
 	}
+	if err := allowIPAndActor(ctx, s.lim.householdIP, s.lim.householdU); err != nil {
+		return Invitation{}, err
+	}
 	in, err := s.parseInvite(d, true)
 	if err != nil {
 		return Invitation{}, err
@@ -216,6 +219,13 @@ func (s *Service) CreateHouseholdInvitation(ctx context.Context, orgID, unitID u
 		}
 		if site, err = tenancy.LoadSite(ctx, tx, orgID, unit.SiteID, false, false); err != nil {
 			return err
+		}
+		var pending int
+		if err := tx.QueryRow(ctx, `SELECT count(*) FROM invitation WHERE org_id = $1 AND unit_id = $2 AND kind = 'household' AND status = 'pending'`, orgID, unit.ID).Scan(&pending); err != nil {
+			return err
+		}
+		if pending >= maxPendingHousehold {
+			return problem.Conflict("this unit has too many unanswered household invitations; revoke some first")
 		}
 		in.unitID = &unit.ID
 		in.sharePct, in.correspondent = nil, false

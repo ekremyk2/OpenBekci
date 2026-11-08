@@ -72,6 +72,12 @@ func WithRequestMeta(ctx context.Context, m RequestMeta) context.Context {
 	return context.WithValue(ctx, metaKey{}, m)
 }
 
+// RequestMetaFrom returns the request metadata carried in ctx (zero when none).
+func RequestMetaFrom(ctx context.Context) RequestMeta {
+	m, _ := ctx.Value(metaKey{}).(RequestMeta)
+	return m
+}
+
 // Record appends e inside tx. Call it from the service, in the same
 // transaction as the change it describes.
 func Record(ctx context.Context, tx pgx.Tx, e Event) error {

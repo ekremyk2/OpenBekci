@@ -77,6 +77,9 @@ func (s *Service) findInvitation(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 // PreviewInvitation describes a pending invitation to its link's holder. It
 // needs no sign-in; the token is the secret.
 func (s *Service) PreviewInvitation(ctx context.Context, token string) (InvitationPreview, error) {
+	if err := allow(s.lim.previewIP, clientIP(ctx)); err != nil {
+		return InvitationPreview{}, err
+	}
 	orgID, ok := parseScopedToken(token)
 	if !ok {
 		return InvitationPreview{}, errInviteInvalid()
@@ -134,6 +137,9 @@ type AcceptInput struct {
 // creates the occupancy. The caller then signs in with any method. The
 // invitation is single use.
 func (s *Service) AcceptInvitation(ctx context.Context, token string, in AcceptInput) (AcceptResult, error) {
+	if err := allow(s.lim.acceptIP, clientIP(ctx)); err != nil {
+		return AcceptResult{}, err
+	}
 	orgID, ok := parseScopedToken(token)
 	if !ok {
 		return AcceptResult{}, errInviteInvalid()
@@ -256,7 +262,8 @@ type JoinPreview struct {
 
 func (s *Service) findJoinCode(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, code string) (siteID uuid.UUID, invID uuid.UUID, err error) {
 	err = tx.QueryRow(ctx, `SELECT i.site_id, i.id FROM invitation i JOIN site s ON s.org_id = i.org_id AND s.id = i.site_id AND s.status = 'active'
-		WHERE i.org_id = $1 AND i.code = $2 AND i.kind = 'site_code' AND i.status = 'pending'`, orgID, code).Scan(&siteID, &invID)
+		WHERE i.org_id = $1 AND i.code = $2 AND i.kind = 'site_code' AND i.status = 'pending'
+		AND (i.max_uses IS NULL OR i.uses < i.max_uses)`, orgID, code).Scan(&siteID, &invID)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return uuid.Nil, uuid.Nil, problem.NotFound("this join code is not valid")
 	}
@@ -277,6 +284,9 @@ func (s *Service) PreviewJoinUnits(ctx context.Context, code string) (JoinPrevie
 }
 
 func (s *Service) previewJoin(ctx context.Context, code string, withUnits bool) (JoinPreview, error) {
+	if err := allow(s.lim.previewIP, clientIP(ctx)); err != nil {
+		return JoinPreview{}, err
+	}
 	orgID, ok := parseScopedToken(code)
 	if !ok {
 		return JoinPreview{}, problem.NotFound("this join code is not valid")
@@ -353,6 +363,9 @@ func (s *Service) CreateClaim(ctx context.Context, code string, d Doc) (UnitClai
 	if !ok {
 		return UnitClaim{}, problem.NotFound("this join code is not valid")
 	}
+	if err := allowIPAndActor(ctx, s.lim.claimIP, s.lim.claimUser); err != nil {
+		return UnitClaim{}, err
+	}
 	fields := d.Unknown("unit_id", "kind", "display_name", "message")
 	var unitID uuid.UUID
 	var kind string
@@ -374,6 +387,9 @@ func (s *Service) CreateClaim(ctx context.Context, code string, d Doc) (UnitClai
 	message, err := d.String("message")
 	if err != nil {
 		return UnitClaim{}, err
+	}
+	if name != nil && (len([]rune(*name)) > 200 || strings.ContainsAny(*name, "\x00\r\n\t")) {
+		fields = append(fields, problem.Field{Field: "display_name", Code: "invalid_value", Params: map[string]any{"max": 200}})
 	}
 	if message != nil && len(*message) > 1000 {
 		fields = append(fields, problem.Field{Field: "message", Code: "too_long", Params: map[string]any{"max": 1000}})

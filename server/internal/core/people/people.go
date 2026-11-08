@@ -53,6 +53,7 @@ type Service struct {
 	db     TxRunner
 	ident  *identity.Service
 	cipher *crypto.FieldCipher
+	lim    limits
 	cfg    Config
 	log    *slog.Logger
 	now    func() time.Time
@@ -60,7 +61,7 @@ type Service struct {
 
 // NewService returns a Service. ident creates and finds sign-in accounts for invitations.
 func NewService(db TxRunner, ident *identity.Service, cfg Config) (*Service, error) {
-	s := &Service{db: db, ident: ident, cfg: cfg, log: cfg.Log, now: cfg.Now}
+	s := &Service{db: db, ident: ident, cfg: cfg, log: cfg.Log, now: cfg.Now, lim: newLimits()}
 	if len(cfg.EncryptionKey) > 0 {
 		c, err := crypto.NewFieldCipher(cfg.EncryptionKey, "person.national_id")
 		if err != nil {
