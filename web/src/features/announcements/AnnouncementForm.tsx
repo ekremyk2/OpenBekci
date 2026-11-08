@@ -200,7 +200,10 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
 
   const save = useMutation({
     mutationFn: async (v: Values): Promise<Announcement> => {
-      const fileIds = [...(existing?.file_ids ?? []), ...uploads.files.map((f) => f.id)]
+      const fileIds = [
+        ...(existing?.attachments.map((a) => a.id) ?? []),
+        ...uploads.files.map((f) => f.id),
+      ]
       const payload = {
         title: v.title.trim(),
         body_md: v.body_md,

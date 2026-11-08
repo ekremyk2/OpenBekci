@@ -12,8 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { moneyApi, unwrap, useMoneyCtx, useMoneyQuery, type MoneyCtx } from './api'
-import { Gate, PageHeader, QueryBoundary, SideBadge, Stat } from './ui'
+import { moneyApi, unwrap, useMoneyCtx, useMoneyQuery } from './api'
+import { PageHeader, QueryBoundary, SideBadge, Stat } from './ui'
 import { PortalHome } from './PortalPages'
 import { NewPaymentPage } from './PaymentsPages'
 import { moneyAccess } from '@/lib/money-access'
@@ -30,7 +30,7 @@ export function OverviewPage() {
 function ManagerOverview() {
   const ctx = useMoneyCtx()!
   const { t } = useLingui()
-  const { can, org } = useSession()
+  const { org } = useSession()
   const q = useMoneyQuery(['overview', ctx.siteId], () =>
     unwrap(
       moneyApi.GET('/v1/orgs/{org_id}/money/overview', {
@@ -39,6 +39,7 @@ function ManagerOverview() {
     ),
   )
   const cur = ctx.currency
+  const kind: Record<string, string> = { operating: t`Operating`, reserve: t`Reserve` }
   const links = [
     { to: 'plans', label: t`Dues plans`, text: t`Rates, split rules and live previews` },
     { to: 'charges', label: t`Charges`, text: t`Every receivable by period, unit and side` },
@@ -58,7 +59,7 @@ function ManagerOverview() {
       />
       <QueryBoundary query={q} skeleton="page">
         {(o) => {
-          const top = [...o.aging.rows].sort((a, b) => b.total.amount - a.total.amount).slice(0, 5)
+          const top = o.top_debtors
           return (
             <>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -81,7 +82,17 @@ function ManagerOverview() {
                   <Money minor={o.cash.amount} currency={cur} />
                 </Stat>
               </div>
-              {can('reports.read') ? <FundBalances ctx={ctx} /> : null}
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {o.funds.map((f) => (
+                  <Stat
+                    key={f.fund_id}
+                    label={kind[f.kind] ? `${t`Fund`}: ${kind[f.kind]}` : f.name}
+                    hint={f.name}
+                  >
+                    <Money minor={f.balance.amount} currency={cur} />
+                  </Stat>
+                ))}
+              </div>
               <Card>
                 <CardHeader>
                   <CardTitle>
@@ -157,36 +168,5 @@ function ManagerOverview() {
         }}
       </QueryBoundary>
     </div>
-  )
-}
-
-function FundBalances({ ctx }: { ctx: MoneyCtx }) {
-  const { t } = useLingui()
-  const q = useMoneyQuery(['fund-balances', ctx.siteId], () =>
-    unwrap(
-      moneyApi.GET('/v1/orgs/{org_id}/reports/fund-balances', {
-        params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId } },
-      }),
-    ),
-  )
-  const kind: Record<string, string> = { operating: t`Operating`, reserve: t`Reserve` }
-  return (
-    <Gate permission="reports.read" fallback={null}>
-      <QueryBoundary query={q} skeleton="page">
-        {(r) => (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {r.rows.map((f) => (
-              <Stat
-                key={f.fund_id}
-                label={kind[f.kind] ? `${t`Fund`}: ${kind[f.kind]}` : f.name}
-                hint={f.name}
-              >
-                <Money minor={f.balance.amount} currency={ctx.currency} />
-              </Stat>
-            ))}
-          </div>
-        )}
-      </QueryBoundary>
-    </Gate>
   )
 }

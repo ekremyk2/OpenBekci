@@ -579,8 +579,18 @@ function preview(audience: { kind: string; unit_ids?: string[] }, channels: stri
 
 function announcementView(a: Json): Json {
   const reads = db.reads.get(a.id as string) ?? new Set()
+  const { file_ids: fileIds, ...rest } = a
   return {
-    ...a,
+    ...rest,
+    attachments: ((fileIds as string[] | undefined) ?? []).map((fid) => {
+      const f = db.files.get(fid)
+      return {
+        id: fid,
+        name: (f?.meta.name as string) ?? 'file',
+        mime: (f?.meta.mime as string) ?? 'image/png',
+        size: (f?.meta.size as number) ?? 1,
+      }
+    }),
     read_count: (a.read_count as number) + reads.size,
     read_at: reads.has(personId()) ? NOW() : null,
   }
@@ -681,7 +691,10 @@ route('PUT', `${O}/ticket-workflow`, async ({ request, url }) => {
 })
 route('GET', `${O}/ticket-categories`, ({ url }) =>
   page(
-    db.categories.filter((c) => c.archived === (url.searchParams.get('archived') === 'true')),
+    db.categories.filter((c) => {
+      const which = url.searchParams.get('archived') ?? 'active'
+      return which === 'all' || c.archived === (which === 'archived')
+    }),
     url,
   ),
 )

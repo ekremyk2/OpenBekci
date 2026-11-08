@@ -189,6 +189,7 @@ export function seed(): Db {
     ],
     settings: {
       [SITE]: {
+        version: 1,
         tenants_are_portal_users: true,
         directory_enabled: false,
         owner_financial_transparency: true,
@@ -209,6 +210,7 @@ export function seed(): Db {
     },
     bank: {
       [SITE]: {
+        version: 1,
         iban: 'TR330006100519786457841326',
         holder: 'Güneş Sitesi Yönetimi',
         bank_name: 'Örnek Bank',

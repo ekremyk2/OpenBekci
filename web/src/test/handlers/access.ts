@@ -398,7 +398,7 @@ export const accessHandlers = [
   }),
 
   // credentials
-  http.get(`${BASE}/credentials`, ({ request }) => {
+  http.get(`${BASE}/access/credentials`, ({ request }) => {
     const p = qs(request)
     const q = p.get('q')?.toLowerCase()
     return list(
@@ -411,7 +411,7 @@ export const accessHandlers = [
       ),
     )
   }),
-  http.post(`${BASE}/credentials`, async ({ request }) => {
+  http.post(`${BASE}/access/credentials`, async ({ request }) => {
     const b = (await request.json()) as S['CredentialCreate']
     const t = nowIso()
     const c: S['Credential'] = {
@@ -440,11 +440,11 @@ export const accessHandlers = [
     db.credentials.push(c)
     return HttpResponse.json(c, { status: 201 })
   }),
-  http.get(`${BASE}/credentials/:credentialId`, ({ params }) => {
+  http.get(`${BASE}/access/credentials/:credentialId`, ({ params }) => {
     const c = db.credentials.find((x) => x.id === params.credentialId)
     return c ? HttpResponse.json(c) : problem(404, 'not_found')
   }),
-  http.delete(`${BASE}/credentials/:credentialId`, ({ params }) => {
+  http.delete(`${BASE}/access/credentials/:credentialId`, ({ params }) => {
     const c = db.credentials.find((x) => x.id === params.credentialId)
     if (c) {
       c.status = 'revoked'

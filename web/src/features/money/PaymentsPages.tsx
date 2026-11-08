@@ -217,7 +217,7 @@ export function PaymentsPage() {
                             </TableCell>
                             <TableCell>{p.payer_display_name ?? '–'}</TableCell>
                             <TableCell>
-                              <SiteDate value={p.received_at} timeZone={ctx.timeZone} />
+                              <SiteDate value={p.received_on} timeZone={ctx.timeZone} />
                             </TableCell>
                             <TableCell className="text-end">
                               <Money minor={p.gross.amount} currency={ctx.currency} />
@@ -302,7 +302,7 @@ export function PaymentsPage() {
                       <TableRow key={p.id}>
                         <TableCell className="tabular-nums">{p.receipt_no ?? '–'}</TableCell>
                         <TableCell>
-                          <SiteDate value={p.received_at} timeZone={ctx.timeZone} />
+                          <SiteDate value={p.received_on} timeZone={ctx.timeZone} />
                         </TableCell>
                         <TableCell>{door(p.unit_id)}</TableCell>
                         <TableCell>
@@ -705,7 +705,7 @@ function RecordPaymentForm({ ctx }: { ctx: MoneyCtx }) {
         payer_person_id: values.payer_person_id || undefined,
         method: values.method,
         amount: minorMoney(values.amount, ctx.currency),
-        ...toContractDate('received', values.received_at, ctx.timeZone),
+        ...toContractDate('received', values.received_at),
         asset_account_id: values.asset_account_id || account,
         reference: values.reference || undefined,
         note: values.note || undefined,
@@ -1116,7 +1116,7 @@ export function CashBoxesPage() {
                   {items.map((tr) => (
                     <TableRow key={tr.id}>
                       <TableCell>
-                        <SiteDate value={tr.transferred_at} timeZone={ctx.timeZone} />
+                        <SiteDate value={tr.transferred_on} timeZone={ctx.timeZone} />
                       </TableCell>
                       <TableCell>
                         {acctName(tr.from_account_id)} → {acctName(tr.to_account_id)}
@@ -1188,7 +1188,7 @@ export function CashBoxesPage() {
                   {items.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell>
-                        <SiteDate value={r.refunded_at} timeZone={ctx.timeZone} />
+                        <SiteDate value={r.refunded_on} timeZone={ctx.timeZone} />
                       </TableCell>
                       <TableCell>{door(r.unit_id)}</TableCell>
                       <TableCell>{r.reason}</TableCell>
@@ -1290,7 +1290,7 @@ function TransferDialog({
         from_account_id: from,
         to_account_id: target,
         amount: minorMoney(amount!, ctx.currency),
-        ...toContractDate('transferred', date, ctx.timeZone),
+        ...toContractDate('transferred', date),
         kind,
       },
     })
@@ -1402,7 +1402,7 @@ function RefundDialog({
         reason,
         kind: 'overpayment',
         paid_from_account_id: from,
-        ...toContractDate('refunded', todayIn(ctx.timeZone), ctx.timeZone),
+        ...toContractDate('refunded', todayIn(ctx.timeZone)),
         credit_id: credit.id,
       },
     })

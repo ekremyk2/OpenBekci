@@ -78,7 +78,7 @@ function NewCredentialDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => vo
   const create = useOrgMutation(async (v: Values) =>
     run(() =>
       unwrap(
-        gApi.POST('/v1/orgs/{org_id}/credentials', {
+        gApi.POST('/v1/orgs/{org_id}/access/credentials', {
           params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
           body: {
             site_id: ctx.siteId,
@@ -184,7 +184,7 @@ export function CredentialsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: bo
   const [revoking, setRevoking] = useState<S['Credential'] | null>(null)
   const list = useOrgQuery(['credentials', ctx.siteId, kind, status, q], () =>
     unwrap(
-      gApi.GET('/v1/orgs/{org_id}/credentials', {
+      gApi.GET('/v1/orgs/{org_id}/access/credentials', {
         params: {
           path: { org_id: ctx.orgId },
           query: {
@@ -199,7 +199,7 @@ export function CredentialsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: bo
     ).then((r) => r.items),
   )
   const revoke = useOrgMutation(async (c: S['Credential']) => {
-    await gApi.DELETE('/v1/orgs/{org_id}/credentials/{credential_id}', {
+    await gApi.DELETE('/v1/orgs/{org_id}/access/credentials/{credential_id}', {
       params: {
         path: { org_id: ctx.orgId, credential_id: c.id },
         header: idemHeader(keys.get(c.id)),

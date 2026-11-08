@@ -124,6 +124,8 @@ function fresh(): State {
     call_letter_document_id: 'doc-1',
     minutes_document_id: 'doc-2',
     called_at: daysFromNow(-110),
+    held_call: 'first',
+    first_call_failed_at: null,
     created_at: t,
     updated_at: t,
     version: 4,
@@ -275,12 +277,37 @@ function bump<T extends { version: number; updated_at: string }>(o: T): T {
 
 const tokenOf = (meetingId: string, personId: string) => `obk1.att.${meetingId}.${personId}`
 
+/** Who could vote, with the weight each owner votes with (one unit, one vote, arsa payi as share). */
+function snapshotOf(): S['EligibilitySnapshot'] {
+  const at = nowIso()
+  return {
+    taken_at: at,
+    as_of: at.slice(0, 10),
+    vote_weight: 'per_unit',
+    share_basis: 'arsa_payi',
+    unit_count: TOTAL_UNITS,
+    total_votes: TOTAL_UNITS,
+    total_share: TOTAL_SHARE,
+    owners: OWNERS.map((o) => ({
+      person_id: o.personId,
+      display_name: o.name,
+      unit_ids: [o.unitId],
+      unit_labels: [o.door],
+      share: String(o.share),
+      vote_weight: 1,
+      representative_of_unit_ids: [o.unitId],
+    })),
+    unrepresented_units: [],
+  }
+}
+
 function quorumOf(meeting: S['Meeting']): S['Quorum'] {
   const rows = db.attendance.filter((a) => a.meeting_id === meeting.id)
   const units = new Set(rows.flatMap((a) => a.unit_ids))
   const present_count = units.size
   const present_share = OWNERS.filter((o) => units.has(o.unitId)).reduce((a, o) => a + o.share, 0)
-  const call = Date.now() < Date.parse(meeting.second_call_at) ? 'first' : 'second'
+  // the call held is recorded by the server when the session opens, never read off the clock
+  const call = meeting.held_call ?? 'first'
   const q = db.settings.settings.quorum
   const first = call === 'first'
   const reached = first
@@ -378,6 +405,8 @@ export const governanceHandlers = [
       call_letter_document_id: null,
       minutes_document_id: null,
       called_at: null,
+      held_call: null,
+      first_call_failed_at: null,
       created_at: t,
       updated_at: t,
       version: 1,
@@ -426,19 +455,24 @@ export const governanceHandlers = [
       m.status = 'called'
       m.called_at = nowIso()
       m.call_letter_document_id = uid('doc')
-      m.eligibility_snapshot = {
-        owners: OWNERS.map((o) => ({
-          person_id: o.personId,
-          unit_ids: [o.unitId],
-          share: o.share,
-        })),
-      }
+      m.eligibility_snapshot = snapshotOf()
       db.notices = db.notices.filter((n) => n.meeting_id !== m.id).concat(noticesFor(m.id))
       return HttpResponse.json(bump(m))
     }
-    if (action === 'start') {
+    if (action === 'open-first-call') {
       if (m.status !== 'called') return problem(409, 'conflict')
       m.status = 'in_session'
+      m.held_call = 'first'
+      m.eligibility_snapshot = snapshotOf()
+      return HttpResponse.json(bump(m))
+    }
+    if (action === 'open-second-call') {
+      if (m.status !== 'in_session' || m.held_call !== 'first') return problem(409, 'conflict')
+      if (quorumOf(m).reached) return problem(409, 'conflict')
+      m.held_call = 'second'
+      m.first_call_failed_at = nowIso()
+      // attendance of the first call does not carry over: everybody checks in again
+      db.attendance = db.attendance.filter((a) => a.meeting_id !== m.id)
       return HttpResponse.json(bump(m))
     }
     if (action === 'close') {
@@ -743,6 +777,7 @@ export const governanceHandlers = [
       unit_ids: b.unit_ids,
       unit_labels: b.unit_ids.map(unitDoor),
       mode: b.mode,
+      call: m.held_call ?? 'first',
       proxy_for_person_id: b.proxy_for_person_id ?? null,
       source: 'desk',
       checked_in_at: nowIso(),
@@ -775,6 +810,7 @@ export const governanceHandlers = [
       unit_ids: [match.unitId],
       unit_labels: [match.door],
       mode: 'in_person',
+      call: m.held_call ?? 'first',
       proxy_for_person_id: null,
       source: 'qr',
       checked_in_at: nowIso(),
@@ -887,14 +923,18 @@ export const governanceHandlers = [
       id: uid('file'),
       org_id: ORG,
       site_id: SITE,
+      name: 'proof.pdf',
       size: 1024,
       mime: 'application/pdf',
       sha256: 'x'.repeat(64),
       uploaded_by: null,
       scope: 'meeting_notice_proof',
       status: 'ready',
+      source: 'uploaded',
       has_variants: false,
       retention_until: null,
+      variants: {},
+      links: { original: null, variants: {}, expires_at: nowIso() },
       created_at: nowIso(),
       updated_at: nowIso(),
     }

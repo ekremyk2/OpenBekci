@@ -8,6 +8,9 @@ import { matches, newId, nowIso, notFound, paginate, problem, versionConflict } 
 
 const o = (path: string) => `*/v1/orgs/:orgId/${path}`
 
+/** Settings and bank details carry the site's own version (one counter), as the server does. */
+const siteVersion = (siteId: string) => db.sites.find((x) => x.id === siteId)?.version ?? 1
+
 export function requireReauth() {
   return Date.now() < db.reauthUntil
     ? null
@@ -391,20 +394,31 @@ export const tenancyHandlers = [
     Object.assign(s, body, { version: s.version + 1, updated_at: nowIso() })
     return HttpResponse.json(s)
   }),
-  http.get(o('sites/:siteId/settings'), ({ params }) =>
-    HttpResponse.json(db.settings[String(params.siteId)] ?? notFound()),
-  ),
-  http.patch(o('sites/:siteId/settings'), async ({ params, request }) => {
+  http.get(o('sites/:siteId/settings'), ({ params }) => {
     const s = db.settings[String(params.siteId)]
-    if (!s) return notFound()
+    return s ? HttpResponse.json({ ...s, version: siteVersion(String(params.siteId)) }) : notFound()
+  }),
+  http.patch(o('sites/:siteId/settings'), async ({ params, request }) => {
+    const site = db.sites.find((x) => x.id === params.siteId)
+    const s = db.settings[String(params.siteId)]
+    if (!site || !s) return notFound()
+    const conflict = versionConflict(request, site.version)
+    if (conflict) return conflict
     Object.assign(s, await request.json())
-    return HttpResponse.json(s)
+    site.version += 1
+    return HttpResponse.json({ ...s, version: site.version })
   }),
   http.get(o('sites/:siteId/bank-details'), ({ params }) => {
     const b = db.bank[String(params.siteId)]
-    return b ? HttpResponse.json(b) : problem(404, 'not_found', 'No bank details yet')
+    return b
+      ? HttpResponse.json({ ...b, version: siteVersion(String(params.siteId)) })
+      : problem(404, 'not_found', 'No bank details yet')
   }),
   http.put(o('sites/:siteId/bank-details'), async ({ params, request }) => {
+    const site = db.sites.find((x) => x.id === params.siteId)
+    if (!site) return notFound()
+    const conflict = versionConflict(request, site.version)
+    if (conflict) return conflict
     const body = (await request.json()) as {
       iban: string
       holder: string
@@ -416,7 +430,9 @@ export const tenancyHandlers = [
       return problem(422, 'validation_failed', undefined, [
         { field: 'iban', code: 'invalid_iban', message: 'This IBAN is not valid' },
       ])
+    site.version += 1
     const saved = {
+      version: site.version,
       iban,
       holder: body.holder,
       bank_name: body.bank_name ?? null,

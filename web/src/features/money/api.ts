@@ -22,6 +22,16 @@ export type S = components['schemas']
 export type MoneyAmount = S['Money']
 export type Side = 'owner' | 'tenant'
 
+/** `DebtorRef` of one side of a unit. The contract tells the modes apart by `mode`, so it is never left out. */
+export const unitSideRef = (unit_id: string, debtor_kind: Side): S['DebtorRef'] => ({
+  mode: 'unit_side',
+  unit_id,
+  debtor_kind,
+})
+
+/** `DebtorRef` of a person (carried debt follows the person). */
+export const personRef = (person_id: string): S['DebtorRef'] => ({ mode: 'person', person_id })
+
 export const idemHeader = (key: string) => ({ 'Idempotency-Key': key })
 export const ifMatch = (version: number) => ({ 'If-Match': `"${version}"` })
 

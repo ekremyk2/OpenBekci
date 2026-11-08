@@ -29,6 +29,8 @@ import {
   useMoneyQuery,
   type MoneyCtx,
   type S,
+  personRef,
+  unitSideRef,
 } from './api'
 import { useLabels } from './labels'
 import { PortalStatement } from './PortalPages'
@@ -348,8 +350,8 @@ function SendStatement({
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body:
         mode === 'unit'
-          ? { debtor: { unit_id: unit, debtor_kind: side }, from, to, channels }
-          : { debtor: { person_id: person }, from, to, channels },
+          ? { debtor: unitSideRef(unit, side), from, to, channels }
+          : { debtor: personRef(person), from, to, channels },
     })
     return res.data!
   })

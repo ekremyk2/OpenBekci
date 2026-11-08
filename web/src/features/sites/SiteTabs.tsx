@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { draftApi, ifMatchAny, ifMatchOf, type Schema } from '@/api/draft'
+import { draftApi, ifMatchOf, type Schema } from '@/api/draft'
 import { AppError } from '@/api/errors'
 import { runWithReauth } from '@/app/reauth'
 import { useSession } from '@/app/session'
@@ -73,13 +73,21 @@ function SettingsForm({
     mutationFn: (v: z.infer<typeof settingsSchema>) =>
       runWithReauth(() =>
         draftApi.PATCH('/v1/orgs/{org_id}/sites/{site_id}/settings', {
-          params: { path: { org_id: orgId, site_id: siteId }, header: ifMatchAny() },
+          params: {
+            path: { org_id: orgId, site_id: siteId },
+            header: ifMatchOf(settings.version),
+          },
           body: v as Schema<'SiteSettingsUpdate'>,
         }),
       ),
     onSuccess: async () => {
       setSaved(true)
-      await queryClient.invalidateQueries({ queryKey: ['tenancy.getSiteSettings', orgId, siteId] })
+      // settings and bank details carry the site's version: every save moves it for both
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['tenancy.getSiteSettings', orgId, siteId] }),
+        queryClient.invalidateQueries({ queryKey: ['tenancy.getBankDetails', orgId, siteId] }),
+        queryClient.invalidateQueries({ queryKey: ['tenancy.getSite', orgId] }),
+      ])
     },
     onError: (e) => applyError(form, e),
   })
@@ -182,6 +190,8 @@ export function SiteBankTab({
   const applyError = useApplyFormError()
   const idem = useIdempotencyKey()
   const query = useQuery(siteQueries.bank(orgId, siteId))
+  // With no bank details yet, the site's own version is the one the server compares against.
+  const site = useQuery(siteQueries.one(orgId, siteId))
   const [reveal, setReveal] = useState(false)
   const [editing, setEditing] = useState(false)
   const schema = useMemo(
@@ -218,7 +228,10 @@ export function SiteBankTab({
     mutationFn: (v: z.output<typeof schema>) =>
       runWithReauth(() =>
         draftApi.PUT('/v1/orgs/{org_id}/sites/{site_id}/bank-details', {
-          params: { path: { org_id: orgId, site_id: siteId }, header: ifMatchAny() },
+          params: {
+            path: { org_id: orgId, site_id: siteId },
+            header: ifMatchOf(bank?.version ?? site.data?.version),
+          },
           body: {
             iban: v.iban,
             holder: v.holder,
@@ -231,7 +244,11 @@ export function SiteBankTab({
     onSuccess: async () => {
       idem.renew()
       setEditing(false)
-      await queryClient.invalidateQueries({ queryKey: ['tenancy.getBankDetails', orgId, siteId] })
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['tenancy.getBankDetails', orgId, siteId] }),
+        queryClient.invalidateQueries({ queryKey: ['tenancy.getSiteSettings', orgId, siteId] }),
+        queryClient.invalidateQueries({ queryKey: ['tenancy.getSite', orgId] }),
+      ])
     },
     onError: (e) => applyError(form, e),
   })

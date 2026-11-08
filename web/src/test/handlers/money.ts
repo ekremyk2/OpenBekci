@@ -136,6 +136,42 @@ function reply(r: Reply) {
   })
 }
 
+/** `DebtorRef`: a body that does not match its `mode` is 422, as on the server. */
+type DebtorRef = S['DebtorRef']
+function parseDebtorRef(v: unknown): DebtorRef | null {
+  if (typeof v !== 'object' || v === null) return null
+  const r = v as Record<string, unknown>
+  const keys = Object.keys(r).sort().join(',')
+  if (r.mode === 'unit_side') {
+    const kind = r.debtor_kind
+    if (
+      typeof r.unit_id === 'string' &&
+      r.unit_id !== '' &&
+      (kind === 'owner' || kind === 'tenant') &&
+      keys === 'debtor_kind,mode,unit_id'
+    )
+      return { mode: 'unit_side', unit_id: r.unit_id, debtor_kind: kind }
+    return null
+  }
+  if (r.mode === 'person') {
+    if (typeof r.person_id === 'string' && r.person_id !== '' && keys === 'mode,person_id')
+      return { mode: 'person', person_id: r.person_id }
+  }
+  return null
+}
+const invalidDebtor = (field: string) =>
+  fail(422, 'validation_failed', [{ field, code: 'invalid' }])
+
+/** The flat fields the handlers read: a unit side as it is, a person through their charges. */
+function flatDebtor(d: DebtorRef): Record<string, unknown> {
+  if (d.mode === 'unit_side') return { unit_id: d.unit_id, debtor_kind: d.debtor_kind }
+  const c = db.charges.find((ch) => ch.debtor_person_id === d.person_id)
+  return {
+    target_person_id: d.person_id,
+    ...(c ? { unit_id: c.unit_id, debtor_kind: c.debtor_kind } : {}),
+  }
+}
+
 type Method = 'get' | 'post' | 'patch' | 'put' | 'delete'
 
 function route(method: Method, path: string, fn: Handler, scoped = false) {
@@ -148,19 +184,14 @@ function route(method: Method, path: string, fn: Handler, scoped = false) {
     if (ct.includes('application/json')) body = await request.json().catch(() => null)
     else if (ct.includes('multipart/form-data')) form = await request.formData().catch(() => null)
     if (body && typeof body === 'object' && 'debtor' in body && body.debtor) {
-      // DebtorRef: exactly one of {unit_id + debtor_kind} or {person_id}
-      const d = (body as any).debtor // eslint-disable-line @typescript-eslint/no-explicit-any
-      const b = body as any // eslint-disable-line @typescript-eslint/no-explicit-any
-      b.unit_id = d.unit_id
-      b.debtor_kind = d.debtor_kind
-      if (d.person_id) {
-        b.target_person_id = d.person_id
-        const c = db.charges.find((ch) => ch.debtor_person_id === d.person_id)
-        if (c) {
-          b.unit_id = c.unit_id
-          b.debtor_kind = c.debtor_kind
-        }
-      }
+      // The handlers below read the flat fields; the wire carries a `DebtorRef`.
+      const parsed = parseDebtorRef(body.debtor)
+      if (parsed === null) return reply(invalidDebtor('debtor'))
+      Object.assign(body, flatDebtor(parsed))
+    }
+    if (body && typeof body === 'object' && 'debtors' in body && Array.isArray(body.debtors)) {
+      const refs = body.debtors.map(parseDebtorRef)
+      if (refs.some((r) => r === null)) return reply(invalidDebtor('debtors'))
     }
     const invalid = validateRequest(url.searchParams, body)
     if (invalid) return reply(invalid)
@@ -245,7 +276,7 @@ function toPayment(c: Ctx, status: S['Payment']['status']): S['Payment'] {
     gross: m(amount),
     fee: m(0),
     net: m(amount),
-    received_at: b.received_at,
+    received_on: b.received_on,
     recorded_by: 'u1',
     asset_account_id: b.asset_account_id,
     reference: b.reference ?? null,
@@ -361,7 +392,7 @@ function statementFor(
     if (p.status !== 'confirmed' || !p.unit_id || !p.debtor_kind) continue
     if (!matches(p.unit_id, p.debtor_kind, p.payer_person_id)) continue
     rows.push({
-      date: p.received_at.slice(0, 10),
+      date: p.received_on,
       kind: 'payment',
       description: `Payment ${p.receipt_no ?? ''}`.trim(),
       principal: -p.allocated.amount,
@@ -539,6 +570,41 @@ function withPayments(b: S['Bill']): S['Bill'] {
   return { ...b, payments: db.billPayments.filter((p) => p.bill_id === b.id) }
 }
 
+/** A dunning run goes to everybody overdue, or only to the listed debtors (`DebtorRef[]`). */
+function inSelection(debtors: unknown, unitId: string, side: Side) {
+  if (!Array.isArray(debtors) || debtors.length === 0) return true
+  return (debtors as DebtorRef[]).some(
+    (d) => d.mode === 'unit_side' && d.unit_id === unitId && d.debtor_kind === side,
+  )
+}
+
+function fundRows(): S['FundBalanceRow'][] {
+  const op = bankBalance() + db.cashBoxes.reduce((a, c) => a + c.balance.amount, 0)
+  return [
+    { fund_id: 'f-op', name: 'Operating', kind: 'operating', balance: m(op) },
+    { fund_id: 'f-res', name: 'Reserve (demirbaş)', kind: 'reserve', balance: m(0) },
+  ]
+}
+
+function debtorRows(minMonths: number): S['DebtorRow'][] {
+  return overdueUnits()
+    .filter((r) => r.months >= minMonths)
+    .map((r) => ({
+      unit_id: r.unit.id,
+      unit_door_number: r.unit.door_number,
+      debtor_kind: r.sd,
+      debtor_person_id: debtorFor(db, r.unit.id, r.sd).id,
+      debtor_display_name: debtorFor(db, r.unit.id, r.sd).name,
+      principal: m(r.principal),
+      late_fee: m(r.fee),
+      total: m(r.principal + r.fee),
+      months_overdue: r.months,
+      in_collection: db.cases.some(
+        (c) => c.unit_id === r.unit.id && c.debtor_kind === r.sd && c.status === 'open',
+      ),
+    }))
+}
+
 function bankBalance() {
   return (
     1_000_000 +
@@ -610,14 +676,18 @@ export const moneyScopedHandlers = [
       id: nextId(db, 'file'),
       org_id: db.orgId,
       site_id: db.siteId,
+      name: isFile(file) ? file.name : 'upload',
       size: isFile(file) ? file.size : 0,
       mime: isFile(file) ? file.type : 'application/octet-stream',
       sha256: 'x',
       uploaded_by: 'u1',
       scope: 'expense_receipt',
       status: 'ready',
+      source: 'uploaded',
       has_variants: false,
       retention_until: null,
+      variants: {},
+      links: { original: null, variants: {}, expires_at: stamp() },
       ...{ created_at: stamp(), updated_at: stamp() },
     }
     db.files.push(f)
@@ -1266,13 +1336,13 @@ export const moneyHandlers = [
     const e = validate(
       need(b.unit_id, 'unit_id'),
       need(b.amount?.amount, 'amount'),
-      need(b.received_at, 'received_at'),
+      need(b.received_on, 'received_on'),
       need(b.asset_account_id, 'asset_account_id'),
     )
     if (e) return e
     if (b.amount.amount <= 0)
       return fail(422, 'validation_failed', [{ field: 'amount', code: 'must_be_positive' }])
-    if (db.lockDate && b.received_at.slice(0, 10) <= db.lockDate) return fail(409, 'locked_period')
+    if (db.lockDate && b.received_on <= db.lockDate) return fail(409, 'locked_period')
     const p = toPayment(c, 'confirmed')
     postPayment(p)
     db.payments.push(p)
@@ -1355,7 +1425,7 @@ export const moneyHandlers = [
       gross: body.amount,
       fee: m(0),
       net: body.amount,
-      received_at: `${body.paid_on}T00:00:00+03:00`,
+      received_on: body.paid_on,
       recorded_by: null,
       asset_account_id: 'a-bank',
       reference: body.reference ?? null,
@@ -1431,7 +1501,7 @@ export const moneyHandlers = [
       from_account_id: body.from_account_id,
       to_account_id: body.to_account_id,
       amount: body.amount,
-      transferred_at: body.transferred_at,
+      transferred_on: body.transferred_on,
       memo: body.memo ?? null,
       kind: body.kind ?? 'other',
       journal_entry_id: 'je-tr',
@@ -1463,7 +1533,7 @@ export const moneyHandlers = [
       reason: body.reason,
       kind: body.kind,
       paid_from_account_id: body.paid_from_account_id,
-      refunded_at: body.refunded_at,
+      refunded_on: body.refunded_on,
       credit_id: body.credit_id ?? null,
       payment_id: body.payment_id ?? null,
       journal_entry_id: 'je-rf',
@@ -1504,11 +1574,19 @@ export const moneyHandlers = [
   route('get', 'bank-statement-imports/:id/reconciliation', ({ params }) => {
     const i = db.imports.find((x) => x.id === params.id)
     if (!i) return fail(404, 'not_found')
-    const matched = db.bankTx
-      .filter((t) => t.import_id === i.id && t.match_status === 'matched')
-      .reduce((a, t) => a + t.amount.amount, 0)
+    const lines = db.bankTx.filter((t) => t.import_id === i.id)
+    const total = (status: S['BankTransaction']['match_status'][]) =>
+      lines.filter((t) => status.includes(t.match_status)).reduce((a, t) => a + t.amount.amount, 0)
+    const count = (status: S['BankTransaction']['match_status'][]) =>
+      lines.filter((t) => status.includes(t.match_status)).length
+    const matched = total(['matched'])
     const ledgerOpening = i.opening_balance?.amount ?? 0
     const ledgerClosing = ledgerOpening + matched
+    const statementMovement =
+      i.opening_balance && i.closing_balance
+        ? i.closing_balance.amount - i.opening_balance.amount
+        : null
+    const linesTotal = total(['matched', 'unmatched', 'suggested', 'ignored'])
     return ok({
       import_id: i.id,
       statement_opening: i.opening_balance,
@@ -1516,6 +1594,16 @@ export const moneyHandlers = [
       ledger_opening: m(ledgerOpening),
       ledger_closing: m(ledgerClosing),
       difference: m((i.closing_balance?.amount ?? 0) - ledgerClosing),
+      statement_movement: m(statementMovement ?? 0),
+      ledger_movement: m(matched),
+      lines_total: m(linesTotal),
+      statement_check: statementMovement === null ? null : m(statementMovement - linesTotal),
+      matched_total: m(matched),
+      unmatched_total: m(total(['unmatched', 'suggested'])),
+      ignored_total: m(total(['ignored'])),
+      matched_count: count(['matched']),
+      unmatched_count: count(['unmatched', 'suggested']),
+      ignored_count: count(['ignored']),
     } satisfies S['ImportReconciliation'])
   }),
   route('get', 'bank-transactions', ({ query }) => {
@@ -1556,7 +1644,7 @@ export const moneyHandlers = [
         debtor_kind: s,
         method: 'bank_transfer',
         amount: t.amount,
-        received_at: `${t.booked_on}T00:00:00+03:00`,
+        received_on: t.booked_on,
         asset_account_id: 'a-bank',
         payer_person_id: body.payer_person_id ?? d.id,
         allocations: body.allocations,
@@ -1788,7 +1876,7 @@ export const moneyHandlers = [
   }),
   route('post', 'dunning-runs\\:preview', ({ body }) => {
     const rows = overdueUnits()
-      .filter((r) => !body.debtor_kind || r.sd === body.debtor_kind)
+      .filter((r) => inSelection(body.debtors, r.unit.id, r.sd))
       .filter((r) => !body.min_balance || r.principal >= body.min_balance.amount)
     const frozen = rows.filter((r) => isFrozen(db, r.unit.id, r.sd)).length
     const n = rows.length - frozen
@@ -1800,7 +1888,7 @@ export const moneyHandlers = [
   }),
   route('post', 'dunning-runs', ({ body }) => {
     const rows = overdueUnits()
-      .filter((r) => !body.debtor_kind || r.sd === body.debtor_kind)
+      .filter((r) => inSelection(body.debtors, r.unit.id, r.sd))
       .filter((r) => !isFrozen(db, r.unit.id, r.sd))
     const runId = nextId(db, 'run')
     for (const r of rows) {
@@ -1814,6 +1902,9 @@ export const moneyHandlers = [
           debtor_kind: r.sd,
           person_id: debtorFor(db, r.unit.id, r.sd).id,
           stage_id: body.stage_id,
+          period: db.today.slice(0, 7),
+          amount_due: m(r.principal + r.fee),
+          has_letter: ch === 'letter',
           sent_at: stamp(),
           channel: ch,
           document_file_id: null,
@@ -1843,16 +1934,22 @@ export const moneyHandlers = [
     list(db.cases.filter((c) => !query.get('status') || c.status === query.get('status'))),
   ),
   route('post', 'collection-cases', ({ body }) => {
-    const e = validate(need(body.unit_id, 'unit_id'), need(body.opened_on, 'opened_on'))
+    const e = validate(need(body.debtor, 'debtor'), need(body.opened_on, 'opened_on'))
     if (e) return e
+    // a unit side (starts a late fee freeze) or a person (carried debt: no unit, no freeze)
+    const ref = parseDebtorRef(body.debtor)!
+    const unitSide = ref.mode === 'unit_side' ? ref : null
     const c: S['CollectionCase'] = {
       id: nextId(db, 'case'),
       org_id: db.orgId,
       site_id: db.siteId,
-      unit_id: body.unit_id,
-      debtor_kind: side(body.debtor_kind),
+      unit_id: unitSide?.unit_id ?? null,
+      debtor_kind: unitSide?.debtor_kind ?? null,
       debtor_person_id:
-        body.debtor_person_id ?? debtorFor(db, body.unit_id, side(body.debtor_kind)).id ?? '',
+        ref.mode === 'person'
+          ? ref.person_id
+          : debtorFor(db, ref.unit_id, side(ref.debtor_kind)).id,
+      debtor: ref.mode === 'person' ? { person_id: ref.person_id } : unitSide!,
       opened_on: body.opened_on,
       lawyer: body.lawyer ?? null,
       file_no: body.file_no ?? null,
@@ -1866,20 +1963,21 @@ export const moneyHandlers = [
     }
     db.cases.push(c)
     // legal collection stops fee accrual (M4)
-    db.freezes.push({
-      id: nextId(db, 'fz'),
-      org_id: db.orgId,
-      site_id: db.siteId,
-      unit_id: c.unit_id,
-      debtor_kind: c.debtor_kind,
-      from: c.opened_on,
-      to: null,
-      reason: 'Legal collection',
-      case_id: c.id,
-      created_at: stamp(),
-      updated_at: stamp(),
-      version: 1,
-    })
+    if (unitSide)
+      db.freezes.push({
+        id: nextId(db, 'fz'),
+        org_id: db.orgId,
+        site_id: db.siteId,
+        unit_id: unitSide.unit_id,
+        debtor_kind: unitSide.debtor_kind,
+        from: c.opened_on,
+        to: null,
+        reason: 'Legal collection',
+        case_id: c.id,
+        created_at: stamp(),
+        updated_at: stamp(),
+        version: 1,
+      })
     return created(c)
   }),
   route('get', 'collection-cases/:id', ({ params }) => {
@@ -1897,8 +1995,8 @@ export const moneyHandlers = [
     if (!c) return fail(404, 'not_found')
     c.status = 'closed'
     c.closed_on = db.today
-    if (body.costs) {
-      c.costs_charged = body.costs
+    if (body.costs) c.costs_charged = body.costs
+    if (body.costs && c.unit_id && c.debtor_kind) {
       const id = nextId(db, 'ch')
       const d = debtorFor(db, c.unit_id, c.debtor_kind)
       db.charges.push({
@@ -1981,7 +2079,11 @@ export const moneyHandlers = [
     ),
   ),
   route('post', 'statements\\:send', ({ body }) => {
-    db.sent.push({ kind: 'statement', id: body.unit_id ?? body.person_id, channels: body.channels })
+    db.sent.push({
+      kind: 'statement',
+      id: body.unit_id ?? body.target_person_id,
+      channels: body.channels,
+    })
     return ok({
       document_id: 'doc-1',
       file_id: 'file-1',
@@ -2008,6 +2110,7 @@ export const moneyHandlers = [
         credit: m(credit),
         next_due_date: addMonths(db.today.slice(0, 7) + '-05', 1),
         bank_details: {
+          version: 1,
           iban: 'TR33 0006 1005 1978 6457 8413 26',
           holder: 'Güneş Sitesi Yönetimi',
           bank_name: 'Garanti BBVA',
@@ -2109,12 +2212,7 @@ export const moneyHandlers = [
     const from = query.get('from') ?? '2026-01-01'
     const to = query.get('to') ?? db.today
     const dues = db.payments
-      .filter(
-        (p) =>
-          p.status === 'confirmed' &&
-          p.received_at.slice(0, 10) >= from &&
-          p.received_at.slice(0, 10) <= to,
-      )
+      .filter((p) => p.status === 'confirmed' && p.received_on >= from && p.received_on <= to)
       .reduce((a, p) => a + p.allocated.amount, 0)
     const byCat = new Map<string, number>()
     for (const e of db.expenses.filter(
@@ -2142,23 +2240,7 @@ export const moneyHandlers = [
     } satisfies S['IncomeExpenseReport'])
   }),
   reportRoute('reports/debtors', 'debtors', ({ query }) => {
-    const min = Number(query.get('min_months') ?? 0)
-    const rows: S['DebtorRow'][] = overdueUnits()
-      .filter((r) => r.months >= min)
-      .map((r) => ({
-        unit_id: r.unit.id,
-        unit_door_number: r.unit.door_number,
-        debtor_kind: r.sd,
-        debtor_person_id: debtorFor(db, r.unit.id, r.sd).id,
-        debtor_display_name: debtorFor(db, r.unit.id, r.sd).name,
-        principal: m(r.principal),
-        late_fee: m(r.fee),
-        total: m(r.principal + r.fee),
-        months_overdue: r.months,
-        in_collection: db.cases.some(
-          (c) => c.unit_id === r.unit.id && c.debtor_kind === r.sd && c.status === 'open',
-        ),
-      }))
+    const rows = debtorRows(Number(query.get('min_months') ?? 0))
     const p = rows.reduce((a, r) => a + r.principal.amount, 0)
     const f = rows.reduce((a, r) => a + r.late_fee.amount, 0)
     return ok({
@@ -2243,16 +2325,16 @@ export const moneyHandlers = [
           (p) =>
             p.asset_account_id === cb.account_id &&
             p.status === 'confirmed' &&
-            p.received_at.slice(0, 10) >= from &&
-            p.received_at.slice(0, 10) <= to,
+            p.received_on >= from &&
+            p.received_on <= to,
         )
         .reduce((a, p) => a + p.gross.amount, 0)
       const handed = db.transfers
         .filter(
           (t) =>
             t.from_account_id === cb.account_id &&
-            t.transferred_at.slice(0, 10) >= from &&
-            t.transferred_at.slice(0, 10) <= to,
+            t.transferred_on >= from &&
+            t.transferred_on <= to,
         )
         .reduce((a, t) => a + t.amount.amount, 0)
       return {
@@ -2289,12 +2371,9 @@ export const moneyHandlers = [
     } satisfies S['BankReconciliationReport'])
   }),
   reportRoute('reports/fund-balances', 'fund-balances', () => {
-    const op = bankBalance() + db.cashBoxes.reduce((a, c) => a + c.balance.amount, 0)
-    const rows: S['FundBalanceRow'][] = [
-      { fund_id: 'f-op', name: 'Operating', kind: 'operating', balance: m(op) },
-      { fund_id: 'f-res', name: 'Reserve (demirbaş)', kind: 'reserve', balance: m(0) },
-    ]
-    return ok({ as_of: db.today, rows, total: m(op) } satisfies S['FundBalancesReport'])
+    const rows = fundRows()
+    const total = rows.reduce((a, r) => a + r.balance.amount, 0)
+    return ok({ as_of: db.today, rows, total: m(total) } satisfies S['FundBalancesReport'])
   }),
   route('get', 'money/overview', () => {
     const sum = (s: Side) =>
@@ -2310,6 +2389,10 @@ export const moneyHandlers = [
       .reduce((a, c) => a + c.paid.amount, 0)
     return ok({
       as_of: db.today,
+      funds: fundRows(),
+      top_debtors: debtorRows(0)
+        .sort((a, b) => b.total.amount - a.total.amount)
+        .slice(0, 5),
       receivable_owner: m(sum('owner')),
       receivable_tenant: m(sum('tenant')),
       cash: m(db.cashBoxes.reduce((a, c) => a + c.balance.amount, 0)),

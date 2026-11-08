@@ -21,6 +21,7 @@ import {
   useMoneyQuery,
   type MoneyCtx,
   type S,
+  unitSideRef,
 } from './api'
 import { isoDate, MoneyFormField, positiveMinor, useZodMessages, minorToMoney } from './forms'
 import { StatementView } from './StatementsPage'
@@ -247,7 +248,7 @@ function PayContent({ ctx, sides }: { ctx: MoneyCtx; sides: S['MySide'][] }) {
       params: { path: { org_id: ctx.orgId }, header: idemHeader(idem.key) },
       body: {
         site_id: ctx.siteId,
-        debtor: { unit_id, debtor_kind: kind },
+        debtor: unitSideRef(unit_id, kind),
         amount: minorToMoney(v.amount, ctx.currency),
         paid_on: v.paid_on,
         reference: v.reference || undefined,

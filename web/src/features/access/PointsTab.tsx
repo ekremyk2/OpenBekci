@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
-import { manualOpenState } from '@/features/gate/openState'
+import { agentOnline, manualOpenState } from '@/features/gate/openState'
 import {
   gApi,
   idemHeader,
@@ -225,9 +225,7 @@ function AdminOpenButton({
   const state = manualOpenState({
     canOpen,
     point,
-    agent: agent ? { connected: agent.connected, last_seen_at: agent.last_seen } : null,
-    serverTime: new Date().toISOString(),
-    clockSuspect: agent?.clock_suspect,
+    agent: agent ? { online: agentOnline(agent), clock_suspect: agent.clock_suspect } : null,
   })
   const open = useOrgMutation(
     async () =>
@@ -243,6 +241,7 @@ function AdminOpenButton({
     no_permission: t`You may not open gates.`,
     point_disabled: t`This point is switched off.`,
     agent_offline: t`The agent is offline.`,
+    point_offline: t`The agent cannot reach this point.`,
     clock_suspect: t`The agent's clock is wrong.`,
   }
   return (

@@ -680,6 +680,7 @@ function useBlockText() {
       no_permission: t`You may not open gates.`,
       point_disabled: t`This gate is switched off.`,
       agent_offline: t`The gate agent is offline.`,
+      point_offline: t`This gate cannot be reached through the agent.`,
       clock_suspect: t`The gate agent's clock is wrong; it will not act.`,
     })[r]
 }
@@ -721,7 +722,6 @@ export function OpenButton({
     canOpen,
     point,
     agent: c.agent,
-    serverTime: c.server_time,
     clockSuspect,
   })
   const reason = state.reason ?? learned

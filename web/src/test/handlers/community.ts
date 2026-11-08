@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw'
 import type { components } from '@/api/draft'
 import { registerReset } from '../reset'
 import { accessDb } from './access'
+import { agentOnline } from '@/features/gate/openState'
 import {
   ORG,
   OWNERS,
@@ -604,6 +605,8 @@ export const communityHandlers = [
         })),
       agent: {
         connected: a.connected,
+        online: agentOnline(a),
+        clock_suspect: a.clock_suspect,
         last_seen_at: a.last_seen,
         points: accessDb().points.map((p) => ({
           id: p.id,
@@ -611,6 +614,8 @@ export const communityHandlers = [
           kind: p.kind,
           direction: p.direction,
           enabled: p.enabled,
+          online: agentOnline(a),
+          clock_suspect: a.clock_suspect,
         })),
       },
     }
