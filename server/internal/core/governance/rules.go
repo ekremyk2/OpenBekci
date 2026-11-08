@@ -61,6 +61,10 @@ type Settings struct {
 	// NoticeElectronicAllowed says the site's yonetim plani allows email and SMS
 	// as a legal way to give notice (default off, verify).
 	NoticeElectronicAllowed bool `json:"notice_electronic_allowed"`
+	// DecisionDetailsVisibleToOwners is the site's transparency setting: owners
+	// who are not staff see the dissents (names and text) and the vote counts of
+	// decisions only when it is on (default off). Tenants never see them.
+	DecisionDetailsVisibleToOwners bool `json:"decision_details_visible_to_owners"`
 }
 
 // PresetNote is a legal remark attached to a preset; Verify says a person

@@ -318,7 +318,7 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	}
 	c.must(409, mgr, "PUT", base("/agenda-items/"+list[2]["id"].(string)+"/vote-counts"), `{"yes_count":1,"no_count":0,"abstain_count":0}`) // not a voted item
 	c.must(403, owner2, "PUT", base("/agenda-items/"+item1+"/vote-counts"), `{"yes_count":1,"no_count":0,"abstain_count":0}`)
-	c.must(200, owner2, "GET", base("/agenda-items/"+item1+"/vote-counts"), "")
+	c.must(403, owner2, "GET", base("/agenda-items/"+item1+"/vote-counts"), "") // owners see counts only where the site allows it
 
 	// decisions: numbered, tied to the counts
 	dec := func(item, text, outcome, extra string) string {
@@ -509,6 +509,22 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 		t.Fatalf("a tenant must not see who owns what: %v", tm)
 	}
 	c.must(403, tenant, "GET", base(mpath+"/notices"), "")
+	// a tenant never sees the counts, and an owner sees dissents and counts only where the site allows it
+	if tl[0]["vote_count"] != nil {
+		t.Fatalf("a tenant must not see vote counts: %v", tl[0])
+	}
+	if od := c.must(200, owner2, "GET", base("/decisions/"+gstr(d2, "id")), ""); len(od["dissents"].([]any)) != 0 || od["vote_count"] != nil {
+		t.Fatalf("an owner sees dissents and counts only where the site allows it: %v", od)
+	}
+	if md := c.must(200, mgr, "GET", base("/decisions/"+gstr(d2, "id")), ""); len(md["dissents"].([]any)) != 1 || md["vote_count"] == nil {
+		t.Fatalf("staff see dissents and counts: %v", md)
+	}
+	w.Exec(t, `UPDATE governance_settings SET settings = jsonb_set(settings, '{decision_details_visible_to_owners}', 'true') WHERE org_id = $1 AND site_id = $2`, org.ID, f.Site)
+	if od := c.must(200, owner2, "GET", base("/decisions/"+gstr(d2, "id")), ""); len(od["dissents"].([]any)) != 1 || od["vote_count"] == nil {
+		t.Fatalf("with the setting on, owners see them: %v", od)
+	}
+	c.must(200, owner2, "GET", base("/agenda-items/"+item1+"/vote-counts"), "")
+	c.must(404, tenant, "GET", base("/decisions/"+gstr(d2, "id")), "")
 }
 
 // Term reminders: 90/30/7 days before an elected term ends and once after,

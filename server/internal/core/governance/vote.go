@@ -109,8 +109,15 @@ func (s *Service) GetVoteCounts(ctx context.Context, orgID, itemID uuid.UUID) (V
 		if err != nil {
 			return err
 		}
-		if v := viewerOf(ctx, sc); !v.staff && !v.owner {
-			return problem.Forbidden("vote counts are shown to owners")
+		v := viewerOf(ctx, sc)
+		if !v.staff {
+			set, err := loadSettings(ctx, tx, orgID, a.siteID, false)
+			if err != nil {
+				return err
+			}
+			if !v.owner || !set.Settings.DecisionDetailsVisibleToOwners {
+				return problem.Forbidden("vote counts are shown to staff, and to owners where the site allows it")
+			}
 		}
 		out, err = s.voteCountOf(ctx, tx, m, a)
 		return err

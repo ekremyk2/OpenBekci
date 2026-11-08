@@ -11,7 +11,7 @@ get:
   operationId: governance.getVoteCounts
   summary: Get the in-room count
   description: |-
-    **Release 0.2.** Get the in-room count.
+    **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
 
     Permission: `meetings.read`.
   tags:

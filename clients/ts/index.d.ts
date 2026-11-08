@@ -2354,7 +2354,7 @@ export interface paths {
         };
         /**
          * Get the in-room count
-         * @description **Release 0.2.** Get the in-room count.
+         * @description **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
          *
          *     Permission: `meetings.read`.
          */
@@ -4091,6 +4091,8 @@ export interface components {
             default_term_months?: number;
             /** @description Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`. */
             notice_electronic_allowed?: boolean;
+            /** @description Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them. */
+            decision_details_visible_to_owners?: boolean;
             /**
              * Format: int64
              * @description How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.

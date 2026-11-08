@@ -5090,7 +5090,7 @@ paths:
       operationId: governance.getVoteCounts
       summary: Get the in-room count
       description: |-
-        **Release 0.2.** Get the in-room count.
+        **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
 
         Permission: `meetings.read`.
       tags:
@@ -8985,6 +8985,9 @@ components:
         notice_electronic_allowed:
           type: boolean
           description: Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`.
+        decision_details_visible_to_owners:
+          type: boolean
+          description: Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them.
         dissent_window_days:
           type: integer
           format: int64

@@ -134,6 +134,18 @@ func (s *Service) decisionAt(ctx context.Context, tx pgx.Tx, perm authz.Permissi
 // see all; tenants and household only decisions that concern residents.
 func (d Decision) visible(v viewer) bool { return v.staff || v.owner || d.ConcernsResidents }
 
+// redact hides what only staff (and, where the site allows it, owners) see:
+// the dissents with the dissenters' names and text, and the vote counts.
+// Tenants never see them.
+func (d Decision) redact(v viewer, ownersMay bool) Decision {
+	if v.staff || (v.owner && ownersMay) {
+		return d
+	}
+	d.Dissents = []Dissent{}
+	d.VoteCount = nil
+	return d
+}
+
 // DecisionFilter narrows ListDecisions.
 type DecisionFilter struct {
 	MeetingID         *uuid.UUID
@@ -155,12 +167,18 @@ func (s *Service) ListDecisions(ctx context.Context, orgID, siteID uuid.UUID, f 
 		return nil, "", err
 	}
 	var out []Decision
+	var ownersMay bool
 	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		sc, err := requireSite(ctx, tx, PermMeetingsRead, siteID)
 		if err != nil {
 			return err
 		}
 		v := viewerOf(ctx, sc)
+		set, err := loadSettings(ctx, tx, orgID, siteID, false)
+		if err != nil {
+			return err
+		}
+		ownersMay = set.Settings.DecisionDetailsVisibleToOwners
 		rows, err := tx.Query(ctx, `SELECT `+decisionColumns+` FROM decision WHERE org_id = $1 AND site_id = $2 AND id > $3
 			AND ($4::uuid IS NULL OR meeting_id = $4) AND ($5::int IS NULL OR year = $5) AND ($6 = '' OR outcome = $6)
 			AND ($7::boolean IS NULL OR concerns_residents = $7) AND ($8 = '' OR text ILIKE '%' || $8 || '%')
@@ -175,7 +193,7 @@ func (s *Service) ListDecisions(ctx context.Context, orgID, siteID uuid.UUID, f 
 			if err != nil {
 				return err
 			}
-			out = append(out, d)
+			out = append(out, d.redact(v, ownersMay))
 		}
 		return rows.Err()
 	})
@@ -197,10 +215,15 @@ func (s *Service) GetDecision(ctx context.Context, orgID, id uuid.UUID) (Decisio
 		if err != nil {
 			return err
 		}
-		if !d.visible(viewerOf(ctx, sc)) {
+		v := viewerOf(ctx, sc)
+		if !d.visible(v) {
 			return problem.NotFound("no such decision")
 		}
-		out = d
+		set, err := loadSettings(ctx, tx, orgID, d.SiteID, false)
+		if err != nil {
+			return err
+		}
+		out = d.redact(v, set.Settings.DecisionDetailsVisibleToOwners)
 		return nil
 	})
 	return out, dbErr(err, "decision")
