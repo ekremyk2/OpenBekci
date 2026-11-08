@@ -49,7 +49,7 @@ func (n moneyNotifier) Enqueue(ctx context.Context, tx pgx.Tx, e ledger.Notifica
 		// events that only name the payment (a rejected declaration): the debtor is on the payment
 		var k *string
 		var u, pr *uuid.UUID
-		err := tx.QueryRow(ctx, `SELECT unit_id, debtor_kind, person_id FROM payment WHERE org_id = $1 AND id = $2`, e.OrgID, pay).Scan(&u, &k, &pr)
+		err := tx.QueryRow(ctx, `SELECT unit_id, debtor_kind, debtor_person_id FROM payment WHERE org_id = $1 AND id = $2`, e.OrgID, pay).Scan(&u, &k, &pr)
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 			return err
 		}
