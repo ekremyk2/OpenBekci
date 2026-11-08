@@ -41,6 +41,8 @@ const (
 	CodeReauthRequired         Code = "reauth_required"
 	CodeMFARequired            Code = "mfa_required"
 	CodeInvalidGrant           Code = "invalid_grant"
+	CodeGuardSessionRequired   Code = "guard_session_required"
+	CodeGuardSessionExpired    Code = "guard_session_expired"
 	CodeRateLimited            Code = "rate_limited"
 	CodePackError              Code = "pack_error"
 	CodeSiteOffboarded         Code = "site_offboarded"
@@ -52,6 +54,11 @@ const (
 	CodeMethodNotAllowed       Code = "method_not_allowed"
 	CodeUnsupportedMediaType   Code = "unsupported_media_type"
 	CodeTimeout                Code = "timeout"
+	CodeScanUnavailable        Code = "scan_unavailable"
+	// CodeAgentOffline: the on-site agent of an access point is not connected (409).
+	CodeAgentOffline Code = "agent_offline"
+	// CodeAgentSessionExpired: the agent's long-poll session ended; start a new one with hello (410).
+	CodeAgentSessionExpired Code = "agent_session_expired"
 )
 
 // Field is one entry of the errors[] array.

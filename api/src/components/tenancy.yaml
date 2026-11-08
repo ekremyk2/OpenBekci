@@ -109,7 +109,12 @@ schemas:
       - legal_preset
       - access
       - extra
+      - version
     properties:
+      version:
+        type: integer
+        format: int64
+        description: The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
       tenants_are_portal_users:
         type: boolean
         description: Tenants get a portal login (S3).
@@ -361,7 +366,12 @@ schemas:
       - bank_name
       - reference_hint
       - suggested_reference
+      - version
     properties:
+      version:
+        type: integer
+        format: int64
+        description: The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
       iban:
         type: string
       holder:
@@ -1299,3 +1309,16 @@ schemas:
         items:
           type: string
           format: uuid
+  UnitTags:
+    type: object
+    description: The tag codes of one unit (cost groups such as `lift` or `pool`); replaces the whole set.
+    required:
+      - tags
+    properties:
+      tags:
+        type: array
+        maxItems: 20
+        items:
+          type: string
+          minLength: 1
+          maxLength: 40

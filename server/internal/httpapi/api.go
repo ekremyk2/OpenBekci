@@ -10,8 +10,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/nullable"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/people"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -47,7 +55,11 @@ func MountAPI(r chi.Router, deps Deps) {
 		}
 	}
 
-	srv := &apiServer{instance: deps.Instance, identity: deps.Identity, insecureCookies: deps.InsecureCookies}
+	p.resolver = deps.Authz
+	if deps.DB != nil {
+		p.tenantDB = deps.DB
+	}
+	srv := &apiServer{mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -62,10 +74,20 @@ func MountAPI(r chi.Router, deps Deps) {
 	})
 	r.NotFound(notFound)
 	r.MethodNotAllowed(methodNotAllowed(r))
+	if deps.Access != nil {
+		// the agent transport: documented in the spec, served outside the user pipeline
+		deps.Access.Mount(r)
+	}
 	gen.HandlerWithOptions(strict, gen.ChiServerOptions{
-		BaseRouter:       r,
-		Middlewares:      genMiddlewares(p.Middlewares()),
-		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) { problem.Write(w, r, requestBindError(err)) },
+		BaseRouter:  r,
+		Middlewares: genMiddlewares(p.Middlewares()),
+		ErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			if aerr := p.preAuth(r); aerr != nil {
+				problem.Write(w, r, aerr)
+				return
+			}
+			problem.Write(w, r, requestBindError(err))
+		},
 	})
 	// No catch-all route for /v1/* or /.well-known/*: a catch-all matches every
 	// method and would hide chi's 405. Unknown paths reach NotFound instead
@@ -79,8 +101,18 @@ func isAPIPath(path string) bool {
 
 // apiServer implements gen.StrictServerInterface by delegating to the modules.
 type apiServer struct {
-	instance        *instance.Service
-	identity        *identity.Service
+	instance   *instance.Service
+	identity   *identity.Service
+	tenancy    *tenancy.Service
+	people     *people.Service
+	governance *governance.Service
+	community  *community.Service
+	access     *access.Service
+	mny        MoneyDeps
+	audit      *audit.Service
+	files      *files.Service
+	OpsDeps
+	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie
 }
 

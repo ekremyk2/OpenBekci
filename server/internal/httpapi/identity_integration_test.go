@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -11,32 +12,71 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
+	"github.com/openbekci/openbekci/server/internal/core/audit"
+	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/collections"
+	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
+	"github.com/openbekci/openbekci/server/internal/core/payments"
+	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
+	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/core/treasury"
+	"github.com/openbekci/openbekci/server/internal/permissions"
+	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/db/dbtest"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
 	"github.com/openbekci/openbekci/server/internal/platform/sms"
+	"github.com/openbekci/openbekci/server/internal/platform/storage"
 )
 
 const testBase = "https://bekci.example.org"
+
+// testScope is a files scope type any member may read and attach to.
+const testScope = "test.members"
 
 type idEnv struct {
 	t      *testing.T
 	h      http.Handler
 	svc    *identity.Service
+	db     *db.DB
 	admin  *platformadmin.Service
 	sms    *sms.Recorder
 	mail   *mail.Recorder
+	people *people.Service
+	tenSvc *tenancy.Service
+	gov    *governance.Service
+	comm   *community.Service
+	notes  *recNotifier
+	charge *recCharger
+	hooks  *recHooks
+	acc    *access.Service
 	cookie *http.Cookie
+	files  *files.Service
+	ops    *opsTest
+	deps   Deps
 }
 
 func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	t.Helper()
 	d := dbtest.New(t)
-	e := &idEnv{t: t, sms: &sms.Recorder{}, mail: &mail.Recorder{}, admin: platformadmin.NewService(d)}
+	e := &idEnv{t: t, db: d, sms: &sms.Recorder{}, mail: &mail.Recorder{}, admin: platformadmin.NewService(d)}
+	reg, err := permissions.NewRegistry()
+	if err != nil {
+		t.Fatal(err)
+	}
 	cfg := identity.Config{InstanceName: "Test", BaseURL: testBase, SecretKey: []byte("0123456789abcdef0123456789abcdef"),
 		Log: slog.New(slog.NewTextHandler(io.Discard, nil))}
 	if withSMS {
@@ -46,14 +86,42 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		cfg.Mail = e.mail
 	}
 	e.svc = identity.NewService(d, cfg)
+	authz.SetScopeLoader(tenancy.ScopeLoader{})
+	t.Cleanup(func() { authz.SetScopeLoader(nil) })
+	var perr error
+	e.people, perr = people.NewService(d, e.svc, people.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, InstanceName: "Test", SMS: e.sms, Mail: e.mail, Log: cfg.Log,
+		Hooks: people.Hooks{OnOccupancyEnded: func(ctx context.Context, tx pgx.Tx, ev people.OccupancyEnded) error {
+			return e.comm.OnOccupancyEnded(ctx, tx, ev.OrgID, ev.UnitID, ev.PersonID)
+		}}})
+	if perr != nil {
+		t.Fatal(perr)
+	}
+	e.tenSvc = tenancy.NewService(d).WithArchiveKey([]byte("test-secret-key-for-archives-0123456789"))
+	signer := storage.NewSigner(cfg.SecretKey)
+	e.files = files.NewService(d, storage.NewLocal(t.TempDir(), signer), files.Config{Signer: signer, Log: cfg.Log})
+	// a scope type any member may read and attach to, for the files tests
+	allowAll := func(context.Context, pgx.Tx, files.ScopeRef) (bool, error) { return true, nil }
+	e.files.RegisterResolver(testScope, files.ResolverFuncs{Read: allowAll, Attach: allowAll}, files.WithMaxFiles(3))
+	e.ops = newOpsTest(d, e.files)
+	e.gov = governance.NewService(d, d, governance.Config{BaseURL: testBase, InstanceName: "Test", Log: cfg.Log})
+	e.notes, e.charge, e.hooks = &recNotifier{}, &recCharger{}, &recHooks{}
+	e.comm, perr = community.NewService(d, community.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, Platform: d, Log: cfg.Log,
+		Notifier: e.notes, Charger: e.charge, Hooks: e.hooks.hooks()})
+	if perr != nil {
+		t.Fatal(perr)
+	}
+	e.acc = newTestAccess(t, d, cfg.Log)
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
-	e.h = NewRouter(Deps{
+	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc,
+		Money:         e.moneyDeps(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
-	}, Options{})
+	}
+	e.h = NewRouter(e.deps, Options{})
 	return e
 }
 
@@ -87,6 +155,10 @@ func (e *idEnv) do(method, path, body string, withCookie bool, headers ...string
 	}
 	rec := httptest.NewRecorder()
 	e.h.ServeHTTP(rec, r)
+	// code and link requests send in the background; let them finish
+	if err := e.svc.Drain(e.t.Context()); err != nil {
+		e.t.Fatal(err)
+	}
 	return rec
 }
 
@@ -276,6 +348,18 @@ func TestIntegrationHTTPBearerTokens(t *testing.T) {
 		t.Errorf("rotation = %+v", tok2)
 	}
 	e.mustJSON(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 200, nil)
+	// a retry inside the 30 s grace window (the response was lost) gets the same pair, once ...
+	var again struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+		SessionID    string `json:"session_id"`
+	}
+	e.mustJSON(e.do("POST", "/v1/auth/token/refresh", `{"refresh_token":"`+tok.RefreshToken+`"}`, false), 200, &again)
+	if again != tok2 {
+		t.Errorf("grace replay = %+v, want the same pair %+v", again, tok2)
+	}
+	e.mustJSON(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 200, nil)
+	// ... the next reuse is a leak: the family dies
 	e.problem(e.do("POST", "/v1/auth/token/refresh", `{"refresh_token":"`+tok.RefreshToken+`"}`, false), 401, "invalid_grant")
 	e.problem(e.do("GET", "/v1/me", "", false, bearer(tok2.AccessToken)...), 401, "unauthenticated")
 
@@ -455,7 +539,19 @@ func TestIntegrationHTTPMeWithOrganization(t *testing.T) {
 	}
 	o := me.Organizations[0]
 	if o.ID != org.ID.String() || o.Slug != "gul-sitesi" || o.DefaultLocale != "tr" || len(o.Roles) != 1 || o.Roles[0].Role != "org_admin" ||
-		o.Roles[0].ScopeType != "org" || o.Roles[0].ScopeID != nil || o.Permissions == nil || len(o.Permissions) != 0 || o.Sites == nil {
+		o.Roles[0].ScopeType != "org" || o.Roles[0].ScopeID != nil || len(o.Permissions) == 0 || o.Sites == nil {
 		t.Errorf("org = %+v", o)
 	}
+}
+
+// moneyDeps builds the money services of the test environment, with the file scopes of their documents registered.
+func (e *idEnv) moneyDeps(d *db.DB) MoneyDeps {
+	bill := billing.NewService(d, e.tenSvc, nil)
+	pay := payments.NewService(d, nil, nil)
+	rep := reports.NewService(d, nil)
+	e.files.RegisterResolver(treasury.FileScope, treasury.FileResolver(), files.WithMaxFiles(5))
+	e.files.RegisterResolver(moneydocs.ScopePayment, moneydocs.PaymentFileResolver())
+	return MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: bill, Payments: pay, Reports: rep,
+		Treasury: treasury.NewService(d, e.files, nil), Docs: moneydocs.NewService(d, e.files, pay, rep, nil, nil),
+		BankImport: bankimport.NewService(d, pay, nil), Collections: collections.NewService(d, bill, nil, nil)}
 }

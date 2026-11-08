@@ -30,6 +30,13 @@ parameters:
     schema:
       type: string
       example: '"3"'
+  IfMatchOptional:
+    name: If-Match
+    in: header
+    description: The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none.
+    schema:
+      type: string
+      example: '"3"'
   IdempotencyKeyRequired:
     name: Idempotency-Key
     in: header
@@ -75,7 +82,8 @@ parameters:
   GuardSession:
     name: X-Guard-Session
     in: header
-    description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+    x-go-name: GuardSessionHeader
+    description: Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it.
     schema:
       type: string
 schemas:
@@ -222,7 +230,13 @@ schemas:
         type: object
         additionalProperties:
           type: string
-        description: Target field name to source column header (or zero-based index as a string).
+        description: |-
+          Target field name to source column header (or zero-based index as a string). The target names per import kind:
+          `importUnits`: `block`, `door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi`, `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+          `importPeople`: the owner and tenant columns of `importUnits` plus `door_number`;
+          `importAllocationKeyValues`: `door_number` (required), `value`;
+          `importOpeningBalances`: `kind`, `unit`, `side`, `principal`, `late_fee`, `account_id`.
+          The multipart `mapping` part is this object (or just its `columns`) as JSON text.
       date_format:
         type: string
         nullable: true

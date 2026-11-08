@@ -29,7 +29,7 @@ get:
       - vehicles.read
   x-stability: stable
   parameters:
-    - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/SiteId
     - name: unit_id
       in: query
       schema:

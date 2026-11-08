@@ -3,8 +3,8 @@ package httpapi
 import (
 	"bytes"
 	"context"
-	"errors"
 	"encoding/json"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"

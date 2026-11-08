@@ -263,6 +263,12 @@ func (s *apiServer) AuthReauth(ctx context.Context, req gen.AuthReauthRequestObj
 			return nil, problem.BadRequest("malformed request")
 		}
 		rm, secret = identity.ReauthSMSOTP, b.Code
+	case "email_code":
+		b, err := req.Body.AsReauthEmailCode()
+		if err != nil {
+			return nil, problem.BadRequest("malformed request")
+		}
+		rm, secret = identity.ReauthEmailCode, b.Code
 	default:
 		return nil, problem.Validation(problem.Field{Field: "method", Code: "invalid_value"})
 	}
@@ -271,6 +277,21 @@ func (s *apiServer) AuthReauth(ctx context.Context, req gen.AuthReauthRequestObj
 		return nil, err
 	}
 	return gen.AuthReauth200JSONResponse(gen.ReauthResponse{ReauthUntil: until}), nil
+}
+
+func (s *apiServer) AuthRequestReauthEmailCode(ctx context.Context, _ gen.AuthRequestReauthEmailCodeRequestObject) (gen.AuthRequestReauthEmailCodeResponseObject, error) {
+	svc, err := s.ident()
+	if err != nil {
+		return nil, err
+	}
+	p, err := principal(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := svc.RequestReauthEmailCode(ctx, p, metaFrom(ctx, nil)); err != nil {
+		return nil, err
+	}
+	return gen.AuthRequestReauthEmailCode202Response{}, nil
 }
 
 func (s *apiServer) AuthChangePassword(ctx context.Context, req gen.AuthChangePasswordRequestObject) (gen.AuthChangePasswordResponseObject, error) {
@@ -288,6 +309,45 @@ func (s *apiServer) AuthChangePassword(ctx context.Context, req gen.AuthChangePa
 	return gen.AuthChangePassword204Response{}, nil
 }
 
+// permissionGrants derives the effective permissions of an organization from
+// the caller's active memberships (the same derivation the Resolver applies
+// per request); absent site_ids and block_ids mean organization-wide.
+func (s *apiServer) permissionGrants(o identity.OrgAccess) []gen.PermissionGrant {
+	out := []gen.PermissionGrant{}
+	if s.resolver == nil {
+		return out
+	}
+	ms := make([]authz.Membership, 0, len(o.Roles))
+	for _, r := range o.Roles {
+		ms = append(ms, authz.Membership{Role: authz.Role(r.Role), ScopeType: authz.ScopeType(r.ScopeType), ScopeID: r.ScopeID})
+	}
+	for _, ps := range authz.Summarize(authz.GrantsFromMemberships(s.resolver.Registry(), ms)) {
+		g := gen.PermissionGrant{Permission: gen.Permission(ps.Permission)}
+		if len(ps.SiteIDs) > 0 {
+			ids := ps.SiteIDs
+			g.SiteIds = &ids
+		}
+		if len(ps.BlockIDs) > 0 {
+			ids := ps.BlockIDs
+			g.BlockIds = &ids
+		}
+		out = append(out, g)
+	}
+	return out
+}
+
+// requireAccount checks an account permission (me.read, sessions.manage_own):
+// held by every authenticated caller as an instance grant, so it answers 401
+// for an anonymous one and 403 only if the grant is missing. Without a
+// resolver (unit tests that wire no authorization) it only requires a principal.
+func (s *apiServer) requireAccount(ctx context.Context, perm authz.Permission) error {
+	if s.resolver == nil {
+		_, err := principal(ctx)
+		return err
+	}
+	return authz.Require(ctx, perm, authz.Scope{})
+}
+
 func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.MeGetResponseObject, error) {
 	svc, err := s.ident()
 	if err != nil {
@@ -295,6 +355,9 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 	}
 	p, err := principal(ctx)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.requireAccount(ctx, identity.PermMeRead); err != nil {
 		return nil, err
 	}
 	me, err := svc.Me(ctx, p.UserID)
@@ -314,8 +377,9 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 		orgs = append(orgs, gen.OrgAccess{
 			Id: o.ID, Slug: o.Slug, Name: o.Name, Roles: roles,
 			DefaultLocale: o.DefaultLocale,
-			Permissions:   []gen.PermissionGrant{}, // A4: effective permissions from the role matrix and scopes
-			Sites:         []gen.MeSite{},          // phase B: sites the caller can see
+			Permissions:   s.permissionGrants(o),
+			Sites:         meSites(o.Sites),
+			PersonId:      nullUUID(o.PersonID),
 		})
 	}
 	return gen.MeGet200JSONResponse(gen.Me{
@@ -324,7 +388,7 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			Locale: me.User.Locale, IsPlatformAdmin: me.User.IsPlatformAdmin,
 		},
 		Organizations: orgs,
-		Occupancies:   []gen.MeOccupancy{}, // phase B: occupancies
+		Occupancies:   meOccupancies(me.Occupancies),
 		Policies: gen.MePolicies{
 			AppLockRequired:     false,
 			ReauthWindowMinutes: int64(svc.ReauthWindow() / time.Minute),
@@ -339,6 +403,9 @@ func (s *apiServer) MeListSessions(ctx context.Context, _ gen.MeListSessionsRequ
 	}
 	p, err := principal(ctx)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
 		return nil, err
 	}
 	list, err := svc.ListSessions(ctx, p.UserID, p.FamilyID)
@@ -373,6 +440,9 @@ func (s *apiServer) MeRevokeSession(ctx context.Context, req gen.MeRevokeSession
 	if err != nil {
 		return nil, err
 	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
+		return nil, err
+	}
 	family := p.FamilyID
 	current := req.Id == "current"
 	if !current {
@@ -400,6 +470,9 @@ func (s *apiServer) MeRevokeAllSessions(ctx context.Context, _ gen.MeRevokeAllSe
 	}
 	p, err := principal(ctx)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.requireAccount(ctx, identity.PermSessionsManageOwn); err != nil {
 		return nil, err
 	}
 	if err := svc.RevokeAllSessions(ctx, p.UserID); err != nil {

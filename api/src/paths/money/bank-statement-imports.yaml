@@ -58,7 +58,7 @@ post:
   operationId: money.createBankStatementImport
   summary: Upload a bank statement
   description: |-
-    **Release 0.1.** Parsing runs as a job; poll the import `status`. Manual matching only in 0.1.
+    **Release 0.1.** Upload a CSV or XLSX statement (up to 10 MiB). The `core_csv` importer reads the columns `booked_on,amount,counterparty,description,reference` (Turkish numbers such as `1.234,50` and dates such as `05.03.2026` are understood); a typed `mapping` (a JSON `ColumnMapping`, targets `booked_on`, `amount`, `counterparty`, `description`, `reference`, `balance`) maps other layouts. Parsing happens within the request: a file that cannot be read is 422, rows that fail make the import `partial` and are listed in `error`. The same file cannot be imported twice into one account (409). Opening and closing balances are read from the `balance` column or sent as `opening_balance` and `closing_balance`. Each incoming line gets ranked suggestions (reference scheme `<door>-<period>`, payer name, amount); matching is always manual.
 
     Permission: `money.post`.
 
@@ -102,6 +102,13 @@ post:
             mapping:
               type: object
               additionalProperties: true
+              description: "A JSON `ColumnMapping` (or just its `columns`) as text."
+            opening_balance:
+              type: string
+              description: "Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional."
+            closing_balance:
+              type: string
+              description: "Statement closing balance as a decimal amount; optional."
           required:
             - site_id
             - file

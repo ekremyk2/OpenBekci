@@ -1,0 +1,79 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: money.getDunningLetter
+  summary: Download the ihtarname (warning letter) of an event or a debtor
+  description: |-
+    **Release 0.1.** A generic Turkish warning letter as a PDF (embedded font, with the debt breakdown). Two ways to ask:
+
+    - `event_id`: the letter of a dunning event; it is generated on first request and stored with the event.
+    - `site_id` plus a debtor (`unit_id` and `debtor_kind` together, or `person_id`): a letter generated on the spot as of `as_of` (default today); nothing is stored.
+
+    The PDF is kept with the event until the files module can file it into documents.
+
+    Permission: `collections.manage`.
+  tags:
+    - money
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - collections.manage
+    site_manager:
+      - collections.manage
+    board_member:
+      - collections.manage
+  x-stability: stable
+  parameters:
+    - name: event_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: The dunning event whose letter to return.
+    - name: site_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Debtor mode - the site.
+    - name: unit_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "Debtor mode, unit side: send with `debtor_kind`."
+    - name: debtor_kind
+      in: query
+      schema:
+        type: string
+        enum:
+          - owner
+          - tenant
+      description: "Debtor mode, unit side: owner or tenant."
+    - name: person_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: "Debtor mode, person: the person whose carried debt the letter is about."
+    - $ref: ../../components/draft-common.yaml#/parameters/AsOfDate
+  responses:
+    "200":
+      description: The letter.
+      content:
+        application/pdf:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

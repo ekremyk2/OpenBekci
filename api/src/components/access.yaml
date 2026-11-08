@@ -1108,7 +1108,7 @@ schemas:
         description: 0 to 30 seconds to hold the request open when the server has nothing to send.
       session:
         type: string
-        description: The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`.
+        description: "Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`."
     example:
       session: sess_0192a3f0100070008000000000000001
       messages: []
@@ -1128,7 +1128,7 @@ schemas:
         type: integer
         format: int64
         minimum: 1
-        description: Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+        description: "Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds."
       messages:
         type: array
         items:

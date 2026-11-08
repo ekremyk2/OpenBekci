@@ -39,6 +39,11 @@ type CreateOrgParams struct {
 	Timezone      string // default Europe/Istanbul
 	// AdminUserID is the user who becomes org_admin.
 	AdminUserID uuid.UUID
+	// ResolveAdmin, when set (and AdminUserID is zero), finds or creates the
+	// administrator's user inside the organization's transaction, so that a
+	// failure leaves neither an organization nor a user behind. It reports
+	// whether it created the user.
+	ResolveAdmin func(ctx context.Context, tx pgx.Tx) (userID uuid.UUID, created bool, err error)
 	// AdminName is the display name of the administrator's person.
 	AdminName string
 }
@@ -48,6 +53,10 @@ type Org struct {
 	ID       uuid.UUID
 	Slug     string
 	PersonID uuid.UUID
+	// AdminUserID is the user who became org_admin; AdminCreated reports that
+	// ResolveAdmin created that user.
+	AdminUserID  uuid.UUID
+	AdminCreated bool
 }
 
 // CreateOrganization creates an organization, a person linked to the admin
@@ -71,8 +80,16 @@ func (s *Service) CreateOrganization(ctx context.Context, p CreateOrgParams) (Or
 	if p.AdminName == "" {
 		p.AdminName = "Administrator"
 	}
-	org := Org{ID: id.New(), Slug: p.Slug, PersonID: id.New()}
+	org := Org{ID: id.New(), Slug: p.Slug, PersonID: id.New(), AdminUserID: p.AdminUserID}
 	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		org.AdminUserID, org.AdminCreated = p.AdminUserID, false
+		if p.AdminUserID == uuid.Nil && p.ResolveAdmin != nil {
+			uid, created, err := p.ResolveAdmin(ctx, tx)
+			if err != nil {
+				return err
+			}
+			org.AdminUserID, org.AdminCreated = uid, created
+		}
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO organization (id, org_id, slug, name, country_code, default_locale, timezone)
 			VALUES ($1, $1, $2, $3, $4, $5, $6)`, org.ID, p.Slug, p.Name, p.CountryCode, p.DefaultLocale, p.Timezone); err != nil {
@@ -80,7 +97,7 @@ func (s *Service) CreateOrganization(ctx context.Context, p CreateOrgParams) (Or
 		}
 		if _, err := tx.Exec(ctx, `
 			INSERT INTO person (id, org_id, user_id, display_name) VALUES ($1, $2, $3, $4)`,
-			org.PersonID, org.ID, p.AdminUserID, p.AdminName); err != nil {
+			org.PersonID, org.ID, org.AdminUserID, p.AdminName); err != nil {
 			return err
 		}
 		_, err := tx.Exec(ctx, `
@@ -89,6 +106,10 @@ func (s *Service) CreateOrganization(ctx context.Context, p CreateOrgParams) (Or
 		return err
 	})
 	if err != nil {
+		var pe *problem.Error
+		if errors.As(err, &pe) {
+			return Org{}, pe // from ResolveAdmin
+		}
 		var pg *pgconn.PgError
 		if errors.As(err, &pg) && pg.Code == "23505" {
 			return Org{}, problem.Conflict("an organization with this slug already exists")

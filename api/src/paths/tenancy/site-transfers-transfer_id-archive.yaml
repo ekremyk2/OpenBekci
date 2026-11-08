@@ -1,0 +1,43 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: transfer_id
+    in: path
+    required: true
+    description: Id of the site transfer.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: tenancy.downloadSiteTransferArchive
+  summary: Download the archive of a site export
+  description: |-
+    **Release 0.1.** Not part of the original draft; phase B keeps the archive with the transfer record until the file store exists (`SiteTransfer.archive_file_id` stays null until then). Only exports have an archive; national ids inside stay sealed with the source instance's key.
+
+    Permission: `sites.export`.
+  tags:
+    - tenancy
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - sites.export
+  x-stability: stable
+  responses:
+    "200":
+      description: The archive, a JSON document.
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

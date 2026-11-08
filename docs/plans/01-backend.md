@@ -377,8 +377,9 @@ Until 0.4, everything Turkish is **core**: `tr` locale, Law 634 presets as defau
 
 - Channels in 0.1: `in_app`, `email`, `sms`. `push` in 0.4 via the relay (infra plan §4) with a content-free payload `{instance_id, org_id, notification_id, type, collapse_key, badge}`; UnifiedPush endpoints are posted to directly.
 - **Authored messages** (announcements, manual reminders): the sender picks channels; the API returns `recipient_count` and `sms_count` for preview before publish (O5).
-- **Automatic messages** use `site_channel_default` with the O5 defaults; sign-in codes and invitations always go by SMS when a phone exists and cannot be muted; residents can mute non-essential types.
+- **Automatic messages** use `site_channel_default` with the O5 defaults; sign-in codes and invitations always go by SMS when a phone exists and by email otherwise (never both), and cannot be muted; statements, payment confirmations and rejections go in-app plus email, dues reminders and receipts in-app plus SMS (the site pays), SMS stays off for everything else unless the site turns it on; residents can mute non-essential types.
 - `sms.Gateway` interface in `platform/sms` with a Netgsm driver (D5): send, delivery status callback, sender id, per-site credentials, per-site monthly counter visible to the manager. Packs add providers in 0.4 through the same interface.
+- **Shipped in 0.1 versus deferred:** the gateway is instance-wide (`SMS_PROVIDER`, `SMS_NETGSM_*`); **per-site SMS credentials and the delivery status callback are deferred**, so `Delivered` in the SMS counter equals the messages the gateway accepted, and failures are the sends it refused. The counter month is the site's calendar month in its time zone. Dispatch is at-least-once: a delivery row is claimed atomically before sending (two workers never send the same row), but a crash between the send and the record can repeat one message. Notification keys (`<type>:<ref>`) are unique per person and type.
 - Templates per type and locale in `locales/`; per-org overrides later.
 - Notification `type` vocabulary is enumerated in the spec (`announcement.published`, `charge.due_soon`, `charge.overdue`, `payment.receipt`, `ticket.updated`, `visitor.approval_requested` (0.3), `meeting.called` (0.2) …) and shared by push titles and Android channels.
 
@@ -440,8 +441,9 @@ All variables carry the `OPENBEKCI_` prefix (`OPENBEKCI_DATABASE_URL`, …); the
 | `STORAGE_*` | no | S3 driver |
 | `SMTP_*` | no | email channel disabled without it |
 | `SMS_PROVIDER`, `SMS_NETGSM_*` | no (yes for phone-first sites) | core gateway; per-site credentials may override |
+| `SEND_DAILY_BUDGET`, `SMS_HOURLY_BUDGET`, `MAIL_HOURLY_BUDGET` | no | sign-in message budgets: per identifier per day (default 10), per instance per hour for SMS (120) and mail (300); negative removes the limit |
 | `PUSH_RELAYS` (0.4) | no | list of `relay_id=url;server_id;secret_file;app_id` |
-| `TRUSTED_PROXIES` | yes behind a proxy | CIDRs |
+| `TRUSTED_PROXIES` | yes behind a proxy | CIDRs; also what lets the agent enrol rate limit (10/min) count per real client IP: without it behind a proxy every enrolment shares one budget |
 | `OTEL_*`, `METRICS_TOKEN`, `SENTRY_DSN` | no | |
 | `WORKER` | no | `embedded` (default) / `off` |
 | `AUTO_MIGRATE` | no | `true` for simple compose setups |

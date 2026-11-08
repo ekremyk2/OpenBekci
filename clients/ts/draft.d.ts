@@ -197,11 +197,38 @@ export interface paths {
         put?: never;
         /**
          * Re-authenticate the current session for sensitive operations
-         * @description Proves the caller is still the user with the password or a fresh SMS code,
-         *     and marks the current session as re-authenticated for 10 minutes. Sensitive
-         *     operations answer 403 `reauth_required` outside that window.
+         * @description Proves the caller is still the user with the password, a fresh SMS code
+         *     (`auth.requestOtp`) or a fresh email code (`auth.requestReauthEmailCode`),
+         *     and marks the current session as re-authenticated for 10 minutes. A user
+         *     with only an email address and no password re-authenticates by email code.
+         *     Sensitive operations answer 403 `reauth_required` outside that window.
          */
         post: operations["auth.reauth"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/reauth/email-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email a re-authentication code to the signed-in user
+         * @description Sends a six-digit code (valid 5 minutes, 5 attempts) to the email address of
+         *     the signed-in account, to be passed to `auth.reauth` with `method: email_code`.
+         *     This is the re-authentication route of users who have neither a password nor
+         *     a phone number. 422 `validation_failed` when the account has no email
+         *     address, 503 `mail_unavailable` when the instance has no email
+         *     configuration. Limited per address, per client address and per day.
+         */
+        post: operations["auth.requestReauthEmailCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -237,7 +264,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** The signed-in user, organizations, roles and permissions */
+        /**
+         * The signed-in user, organizations, roles and permissions
+         * @description Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+         *     `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+         *     administrator needs a membership of that organization like anybody else.
+         */
         get: operations["me.get"];
         put?: never;
         post?: never;
@@ -611,6 +643,35 @@ export interface paths {
          *     Problems: `version_conflict` (409), `conflict` (409).
          */
         patch: operations["tenancy.updateUnit"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace a unit's tags
+         * @description **Release 0.1.** Not part of the original draft; phase B keeps it because the tag codes of a unit are stored with the unit (cost-group memberships such as `lift` or `pool`). It is superseded by the `unit-tags` resources once those are served; both write the same membership.
+         *
+         *     Permission: `units.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        put: operations["tenancy.setUnitTags"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/orgs/{org_id}/units:import": {
@@ -1063,6 +1124,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/site-transfers/{transfer_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site transfer. */
+                transfer_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Download the archive of a site export
+         * @description **Release 0.1.** Not part of the original draft; phase B keeps the archive with the transfer record until the file store exists (`SiteTransfer.archive_file_id` stays null until then). Only exports have an archive; national ids inside stay sealed with the source instance's key.
+         *
+         *     Permission: `sites.export`.
+         */
+        get: operations["tenancy.downloadSiteTransferArchive"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/vehicles": {
         parameters: {
             query?: never;
@@ -1280,6 +1368,10 @@ export interface paths {
          * @description **Release 0.1.** Always masked; the full value is never readable through the API.
          *
          *     Permission: `people.national_id`.
+         *
+         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`); every read is audited.
+         *
+         *     Problems: `reauth_required` (403).
          */
         get: operations["people.getNationalId"];
         /**
@@ -2127,7 +2219,15 @@ export interface paths {
         get: operations["people.getVendor"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete vendor
+         * @description **Release 0.1.** Not part of the original draft; phase B keeps it (a vendor never used can be removed instead of archived).
+         *
+         *     Permission: `vendors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["people.deleteVendor"];
         options?: never;
         head?: never;
         /**
@@ -2243,6 +2343,31 @@ export interface paths {
          *     Permission: `me.manage`.
          */
         get: operations["people.listMyOccupancies"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/me/household-members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Members of my own unit side
+         * @description **Release 0.1.** The current owners, tenants and household members of the unit side the caller owns or rents, so owners and tenants need no `occupancies.read`. The same fields as an occupancy; a household member sees none of this.
+         *
+         *     Permission: `invitations.household`.
+         */
+        get: operations["me.listHouseholdMembers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4099,7 +4224,7 @@ export interface paths {
         put?: never;
         /**
          * Upload a bank statement
-         * @description **Release 0.1.** Parsing runs as a job; poll the import `status`. Manual matching only in 0.1.
+         * @description **Release 0.1.** Upload a CSV or XLSX statement (up to 10 MiB). The `core_csv` importer reads the columns `booked_on,amount,counterparty,description,reference` (Turkish numbers such as `1.234,50` and dates such as `05.03.2026` are understood); a typed `mapping` (a JSON `ColumnMapping`, targets `booked_on`, `amount`, `counterparty`, `description`, `reference`, `balance`) maps other layouts. Parsing happens within the request: a file that cannot be read is 422, rows that fail make the import `partial` and are listed in `error`. The same file cannot be imported twice into one account (409). Opening and closing balances are read from the `balance` column or sent as `opening_balance` and `closing_balance`. Each incoming line gets ranked suggestions (reference scheme `<door>-<period>`, payer name, amount); matching is always manual.
          *
          *     Permission: `money.post`.
          *
@@ -4730,6 +4855,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/dunning-letter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Download the ihtarname (warning letter) of an event or a debtor
+         * @description **Release 0.1.** A generic Turkish warning letter as a PDF (embedded font, with the debt breakdown). Two ways to ask:
+         *
+         *     - `event_id`: the letter of a dunning event; it is generated on first request and stored with the event.
+         *     - `site_id` plus a debtor (`unit_id` and `debtor_kind` together, or `person_id`): a letter generated on the spot as of `as_of` (default today); nothing is stored.
+         *
+         *     The PDF is kept with the event until the files module can file it into documents.
+         *
+         *     Permission: `collections.manage`.
+         */
+        get: operations["money.getDunningLetter"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/collection-cases": {
         parameters: {
             query?: never;
@@ -4976,7 +5131,7 @@ export interface paths {
         };
         /**
          * Cash-basis income and expense (gelir-gider)
-         * @description **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv` downloads it.
          *
          *     Permission (any one of): `reports.read`, `reports.aggregate`.
          */
@@ -5026,7 +5181,7 @@ export interface paths {
         };
         /**
          * Budget versus actual
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission (any one of): `reports.read`, `reports.aggregate`.
          */
@@ -5051,7 +5206,7 @@ export interface paths {
         };
         /**
          * Trial balance
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5076,7 +5231,7 @@ export interface paths {
         };
         /**
          * Receivables aging
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5151,7 +5306,7 @@ export interface paths {
         };
         /**
          * Fund balances
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5201,14 +5356,14 @@ export interface paths {
         };
         /**
          * Get the ticket workflow of a site
-         * @description **Release 0.1.** Get the ticket workflow of a site.
+         * @description Get the ticket workflow of a site.
          *
          *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
         get: operations["operations.getTicketWorkflow"];
         /**
          * Replace the ticket workflow of a site
-         * @description **Release 0.1.** Reopen is just a transition back to an open-like status. A removed status in use needs a replacement.
+         * @description Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
          *
          *     Permission: `tickets.manage`.
          *
@@ -5216,6 +5371,33 @@ export interface paths {
          */
         put: operations["operations.updateTicketWorkflow"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/ticket-workflow:restore-default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restore the default ticket workflow of a site
+         * @description Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+         *
+         *     Permission: `tickets.manage`.
+         *
+         *     Problems: `version_conflict` (409), `validation_failed` (422).
+         */
+        post: operations["operations.restoreTicketWorkflow"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5234,7 +5416,7 @@ export interface paths {
         };
         /**
          * List ticket categories
-         * @description **Release 0.1.** Cursor-paginated list of ticket categorys.
+         * @description Cursor-paginated list of ticket categorys.
          *
          *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
          */
@@ -5242,7 +5424,7 @@ export interface paths {
         put?: never;
         /**
          * Create ticket category
-         * @description **Release 0.1.** Creates a ticket category.
+         * @description Creates a ticket category.
          *
          *     Permission: `tickets.manage`.
          *
@@ -5339,7 +5521,7 @@ export interface paths {
         };
         /**
          * Get a ticket
-         * @description **Release 0.1.** Get a ticket.
+         * @description Get a ticket.
          *
          *     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
          *
@@ -5353,7 +5535,7 @@ export interface paths {
         head?: never;
         /**
          * Edit, reassign or change visibility of a ticket
-         * @description **Release 0.1.** The assignee is a staff person or a vendor label (O2).
+         * @description The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
          *
          *     Permission: `tickets.manage`.
          *
@@ -5481,9 +5663,9 @@ export interface paths {
         put?: never;
         /**
          * Comment on a ticket
-         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+         *     Permission (any one of): `tickets.open`, `tickets.work`.
          *
          *     Problems: `conflict` (409).
          */
@@ -5673,11 +5855,9 @@ export interface paths {
         put?: never;
         /**
          * Preview recipient and SMS counts
-         * @description **Release 0.1.** Preview recipient and SMS counts.
+         * @description Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
          *
          *     Permission: `announcements.publish`.
-         *
-         *     Problems: `conflict` (409).
          */
         post: operations["operations.previewAnnouncement"];
         delete?: never;
@@ -5758,7 +5938,7 @@ export interface paths {
         };
         /**
          * Who has read an announcement
-         * @description **Release 0.1.** Who has read an announcement.
+         * @description Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
          *
          *     Permission: `announcements.publish`.
          */
@@ -5993,7 +6173,7 @@ export interface paths {
         };
         /**
          * Unread notification count
-         * @description **Release 0.1.** Cheap enough to poll.
+         * @description Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
          *
          *     Permission: `notifications.read`.
          */
@@ -6109,14 +6289,14 @@ export interface paths {
         };
         /**
          * My muted notification types
-         * @description **Release 0.1.** My muted notification types.
+         * @description My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
          *
          *     Permission: `notifications.read`.
          */
         get: operations["operations.getNotificationMutes"];
         /**
          * Set my muted notification types
-         * @description **Release 0.1.** Set my muted notification types.
+         * @description Set my muted notification types.
          *
          *     Permission: `notifications.read`.
          *
@@ -6142,7 +6322,7 @@ export interface paths {
         };
         /**
          * Monthly SMS counter of a site
-         * @description **Release 0.1.** Monthly SMS counter of a site.
+         * @description **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
          *
          *     Permission: `notifications.manage`.
          */
@@ -6165,15 +6345,47 @@ export interface paths {
             };
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List files
+         * @description **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+         *     access to it (the module that owns the resource decides; administrators with `files.manage` always have
+         *     it). Without a scope, an administrator sees every file of the organization and anyone else the files
+         *     they uploaded. Needs `files.read`.
+         *
+         *     Not in the first draft of the contract: added with the module, because the web app needs the files of a
+         *     resource and an administrator needs to see what is stored.
+         */
+        get: operations["operations.listFiles"];
         put?: never;
         /**
          * Upload a file
-         * @description **Release 0.1.** Streams through the server: type sniffed, EXIF location stripped, `thumb` and `medium` generated for images.
+         * @description **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+         *     sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+         *     the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+         *     `multipart_order`, and so is a field this operation does not know.
          *
-         *     Permission: `files.upload`.
+         *     Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+         *     `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+         *     the caller to add files there; without it the file is a draft that expires after 7 days and that
+         *     only its uploader can see, read and discard.
          *
-         *     Problems: `payload_too_large` (413), `validation_failed` (422), `conflict` (409).
+         *     The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+         *     plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+         *     Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+         *     metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+         *     `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+         *
+         *     Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+         *     is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+         *     decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+         *     `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+         *     has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+         *     then 429 `rate_limited`.
+         *
+         *     `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+         *     the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+         *     encoding) replays the first response, and a different file under the same key is 422
+         *     `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
          */
         post: operations["operations.uploadFile"];
         delete?: never;
@@ -6189,16 +6401,16 @@ export interface paths {
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         /**
          * Get file metadata
-         * @description **Release 0.1.** Get file metadata.
-         *
-         *     Permission: `files.read`.
+         * @description **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+         *     anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+         *     `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
          */
         get: operations["operations.getFileMeta"];
         put?: never;
@@ -6216,27 +6428,37 @@ export interface paths {
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         /**
          * Download a file
-         * @description **Release 0.1.** Visibility is decided by the resource the file is attached to. `variant` applies to images.
+         * @description **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+         *     everything else is sent with `Content-Disposition: attachment`. All responses carry
+         *     `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+         *     `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+         *     answer is a 302 to a short-lived presigned URL instead of the bytes.
          *
-         *     Permission: `files.read`.
+         *     Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+         *     a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+         *     resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+         *     a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+         *     storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+         *     or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+         *     quarantined file has no downloadable content (404).
          */
         get: operations["operations.downloadFile"];
         put?: never;
         post?: never;
         /**
          * Delete an unattached file
-         * @description **Release 0.1.** Delete an unattached file.
-         *
-         *     Permission: `files.upload`.
-         *
-         *     Problems: `conflict` (409).
+         * @description **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+         *     and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+         *     file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+         *     who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+         *     `maintenance.prune_files` job. Recorded in the audit trail.
          */
         delete: operations["operations.deleteFile"];
         options?: never;
@@ -6317,6 +6539,56 @@ export interface paths {
          *     Problems: `conflict` (409).
          */
         post: operations["operations.createExport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the organization's audit events
+         * @description Newest first. Needs `audit.read`. Cursor pagination over `(at, id)`.
+         *     Personal data in a `diff` appears only as hashes.
+         */
+        get: operations["audit.list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the instance-level audit events
+         * @description Events that belong to no organization: password changes, session revocation,
+         *     platform-administrator promotion. Newest first. Needs the `platform.manage`
+         *     permission (platform administrators only). Cursor pagination over `(at, id)`.
+         *
+         *     Personal data in a `diff` appears only as hashes, and `ip` is truncated to
+         *     its /24 (IPv4) or /48 (IPv6) network. Erasing a person does not change these
+         *     events: they hold ids and hashes, no personal values. `site_id` is always null.
+         */
+        get: operations["platform.listAudit"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6604,6 +6876,64 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the session at the first call
+         * @description **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openFirstCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open the second call
+         * @description **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
+         *
+         *     Permission: `meetings.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["governance.openSecondCall"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/meetings/{meeting_id}:close": {
         parameters: {
             query?: never;
@@ -6703,7 +7033,7 @@ export interface paths {
         };
         /**
          * Download the call letter
-         * @description **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+         * @description **Release 0.2.** Without `person_id` the generic call letter filed at the call. With `person_id` the per-owner letter that carries that owner's check-in QR token (the token is shown here and in `/me` and replaces the previously issued one: only its hash is stored). An owner may fetch only their own (403 otherwise); managers fetch anyone's. Check-in itself needs the session to be open.
          *
          *     Permission: `meetings.read`.
          */
@@ -6929,7 +7259,7 @@ export interface paths {
         put?: never;
         /**
          * Send the decisions to absent owners
-         * @description **Release 0.2.** Creates `decisions` notices and records the delivery like the call; `dry_run=true` returns the counts only.
+         * @description **Release 0.2.** Schedules the delivery of the decisions to the owners who were absent. The `decisions` notice (the legal record) is written when the delivery job runs, with the time it was delivered, not when it is scheduled; an owner whose delivery is recorded is skipped, and each notification carries a dedupe key, so sending twice never duplicates. Needs a closed meeting with at least one decision (otherwise 409). Closing a meeting does not notify anybody. `dry_run=true` returns the counts of owners still to be notified only.
          *
          *     Permission: `meetings.manage`.
          *
@@ -7066,7 +7396,7 @@ export interface paths {
          * Create or change the poll
          * @description **Release 0.2.** Create or change the poll.
          *
-         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *     The first creation of a poll needs no `If-Match`. Every later change requires it: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422). A closed poll (its `closes_at` has passed) is final: it cannot be reopened or changed (409 `conflict`).
          *
          *     Permission: `meetings.manage`.
          *
@@ -7177,7 +7507,7 @@ export interface paths {
         };
         /**
          * Get the in-room count
-         * @description **Release 0.2.** Get the in-room count.
+         * @description **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
          *
          *     Permission: `meetings.read`.
          */
@@ -8101,9 +8431,11 @@ export interface paths {
          *
          *     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
          *
+         *     **Rate limit.** 30 scans a minute per guard session: the next one is 429 `rate_limited` with `Retry-After`. Every scan that matches nothing (unknown, unparseable or another site's QR) is audited with the console and guard session, never the scanned text.
+         *
          *     Permission: `gate.operate`.
          *
-         *     Problems: `conflict` (409).
+         *     Problems: `conflict` (409), `rate_limited` (429), `guard_session_required` and `guard_session_expired` (401).
          */
         post: operations["community.scanGateVisitor"];
         delete?: never;
@@ -8668,74 +9000,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/orgs/{org_id}/credentials": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        /**
-         * List credentials (derived, read-only)
-         * @description **Release 0.3.** List credentials (derived, read-only).
-         *
-         *     Permission: `access.read`.
-         */
-        get: operations["access.listCredentials"];
-        put?: never;
-        /**
-         * Create a tag or PIN credential
-         * @description **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
-         *
-         *     Permission: `access.manage`.
-         *
-         *     Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
-         */
-        post: operations["access.createCredential"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/orgs/{org_id}/credentials/{credential_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the credential. */
-                credential_id: string;
-            };
-            cookie?: never;
-        };
-        /**
-         * Get a credential
-         * @description **Release 0.3.** Get a credential.
-         *
-         *     Permission: `access.read`.
-         */
-        get: operations["access.getCredential"];
-        put?: never;
-        post?: never;
-        /**
-         * Revoke a manual credential
-         * @description **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
-         *
-         *     Permission: `access.manage`.
-         *
-         *     Problems: `conflict` (409).
-         */
-        delete: operations["access.revokeCredential"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/orgs/{org_id}/access/events": {
         parameters: {
             query?: never;
@@ -9050,7 +9314,7 @@ export interface paths {
         };
         /**
          * Labels for enums, error codes and site statuses
-         * @description **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+         * @description Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
          *
          *     Permission: `codes.read`.
          */
@@ -9337,6 +9601,159 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/gate/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Find a unit by door number or block
+         * @description **Release 0.3.** The booth's unit picker for walk-ins and parcels: guards hold no `units.read`, so this is their way to find a unit. It matches the door number or the block name and returns the id, door number and block name only; no occupants, areas, shares or other unit data. Needs a guard session.
+         *
+         *     Problems: `guard_session_required` and `guard_session_expired` (401).
+         *
+         *     Permission: `gate.operate`.
+         */
+        get: operations["gate.searchUnits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate the QR of a recurring visitor
+         * @description **Release 0.3.** Issue a new QR token for a recurring visitor; the old QR stops working at once, also at the gate. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.rotateRecurringVisitorQr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate the QR of a visitor entry
+         * @description **Release 0.3.** Issue a new QR token for a pre-registration that has not been used; the old QR stops working at once. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+         *
+         *     Permission: `visitors.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["community.rotateVisitorEntryQr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List credentials (derived, read-only)
+         * @description **Release 0.3.** List credentials (derived, read-only).
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.listCredentials"];
+        put?: never;
+        /**
+         * Create a tag or PIN credential
+         * @description **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
+         */
+        post: operations["access.createCredential"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/access/credentials/{credential_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a credential
+         * @description **Release 0.3.** Get a credential.
+         *
+         *     Permission: `access.read`.
+         */
+        get: operations["access.getCredential"];
+        put?: never;
+        post?: never;
+        /**
+         * Revoke a manual credential
+         * @description **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+         *
+         *     Permission: `access.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        delete: operations["access.revokeCredential"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -9358,7 +9775,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "guard_session_required" | "guard_session_expired" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable" | "agent_offline" | "agent_session_expired";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -9585,7 +10002,7 @@ export interface components {
             /** @description A code sent to the account's own phone by `auth.requestOtp`. */
             code: string;
         };
-        ReauthRequest: components["schemas"]["ReauthPassword"] | components["schemas"]["ReauthSmsOtp"];
+        ReauthRequest: components["schemas"]["ReauthPassword"] | components["schemas"]["ReauthSmsOtp"] | components["schemas"]["ReauthEmailCode"];
         ReauthResponse: {
             /**
              * Format: date-time
@@ -9622,10 +10039,15 @@ export interface components {
             slug: string;
             name: string;
             roles: components["schemas"]["RoleGrant"][];
-            /** @description Effective permissions in this organization (filled by the authorization module; empty until then). */
+            /** @description Effective permissions in this organization, from the caller's active memberships and the role to permission matrix. */
             permissions: components["schemas"]["PermissionGrant"][];
-            /** @description Sites of the organization the caller can see (empty until the tenancy module lands). */
+            /** @description Sites of the organization the caller can see through a membership or an occupancy. */
             sites: components["schemas"]["MeSite"][];
+            /**
+             * Format: uuid
+             * @description The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
+             */
+            person_id: string | null;
         };
         Me: {
             user: components["schemas"]["MeUser"];
@@ -9703,9 +10125,12 @@ export interface components {
             locale: string;
             is_platform_admin: boolean;
         };
-        /** @description An effective permission, optionally limited to sites or blocks. */
+        /**
+         * @description An effective permission. Without `site_ids` and `block_ids` it holds
+         *     organization-wide; otherwise only for the listed sites and blocks.
+         */
         PermissionGrant: {
-            permission: string;
+            permission: components["schemas"]["Permission"];
             site_ids?: string[];
             block_ids?: string[];
         };
@@ -9793,7 +10218,14 @@ export interface components {
         };
         /** @description Column mapping chosen in the import wizard. */
         ColumnMapping: {
-            /** @description Target field name to source column header (or zero-based index as a string). */
+            /**
+             * @description Target field name to source column header (or zero-based index as a string). The target names per import kind:
+             *     `importUnits`: `block`, `door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi`, `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+             *     `importPeople`: the owner and tenant columns of `importUnits` plus `door_number`;
+             *     `importAllocationKeyValues`: `door_number` (required), `value`;
+             *     `importOpeningBalances`: `kind`, `unit`, `side`, `principal`, `late_fee`, `account_id`.
+             *     The multipart `mapping` part is this object (or just its `columns`) as JSON text.
+             */
             columns: {
                 [key: string]: string;
             };
@@ -9951,6 +10383,11 @@ export interface components {
         };
         /** @description Site settings. Late-fee policy, lock date and bank details have their own resources; governance thresholds are `governance.getGovernanceSettings`. */
         SiteSettings: {
+            /**
+             * Format: int64
+             * @description The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
+             */
+            version: number;
             /** @description Tenants get a portal login (S3). */
             tenants_are_portal_users: boolean;
             /** @description Opt-in resident directory is on (S8). */
@@ -10137,6 +10574,11 @@ export interface components {
         };
         /** @description Shown to payers (M5). */
         BankDetails: {
+            /**
+             * Format: int64
+             * @description The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
+             */
+            version: number;
             iban: string;
             holder: string;
             bank_name: string | null;
@@ -10886,6 +11328,8 @@ export interface components {
             next_cursor: string | null;
         };
         NationalId: {
+            /** @description The full number. Reading the national id needs a recent re-authentication (403 `reauth_required` otherwise) and is audited; null when none is set. */
+            value: string | null;
             set: boolean;
             country_code: string | null;
             masked: string | null;
@@ -12825,7 +13269,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            status: "active" | "paused" | "ended";
+            status: "active" | "paused" | "archived";
             /** Format: uuid */
             decision_id: string | null;
             current_rate: components["schemas"]["ChargePlanRate"] | null;
@@ -12915,7 +13359,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            status?: "active" | "paused" | "ended";
+            status?: "active" | "paused" | "archived";
             /** Format: uuid */
             decision_id?: string | null;
             /** Format: uuid */
@@ -13418,6 +13862,11 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             unit_id: string;
+            /** @description Door number of the unit, for display next to the debtor. */
+            unit_door_number?: string;
+            /** @description Block and door number ("A Blok / 12"). */
+            unit_label?: string;
+            block_name?: string | null;
             /**
              * @description Open enum.
              * @enum {string}
@@ -13526,7 +13975,7 @@ export interface components {
             amount: components["schemas"]["Money"];
             reason: string;
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         /**
          * @example {
@@ -13613,7 +14062,7 @@ export interface components {
             to?: string | null;
             reason: string;
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         LateFeeFreezeUpdate: {
@@ -13676,7 +14125,7 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "received_at": "2026-03-01T09:00:00Z",
+         *       "received_on": "2026-03-01",
          *       "recorded_by": null,
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *       "reference": null,
@@ -13733,8 +14182,8 @@ export interface components {
             gross: components["schemas"]["Money"];
             fee: components["schemas"]["Money"];
             net: components["schemas"]["Money"];
-            /** Format: date-time */
-            received_at: string;
+            /** Format: date */
+            received_on: string;
             /** Format: uuid */
             recorded_by: string | null;
             /** Format: uuid */
@@ -13786,7 +14235,7 @@ export interface components {
          *             "amount": 200000,
          *             "currency": "TRY"
          *           },
-         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "received_on": "2026-03-01",
          *           "recorded_by": null,
          *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *           "reference": null,
@@ -13837,9 +14286,10 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "received_at": "2026-03-05T10:15:00Z",
+         *       "received_on": "2026-03-05",
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *       "debtor": {
+         *         "mode": "unit_side",
          *         "unit_id": "0192a3f0-1000-7000-8000-000000000001",
          *         "debtor_kind": "tenant"
          *       }
@@ -13854,8 +14304,8 @@ export interface components {
             method: "cash" | "bank_transfer";
             /** @description Gross amount. */
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            received_at: string;
+            /** Format: date */
+            received_on: string;
             /**
              * Format: uuid
              * @description Bank account or the collector cash box account.
@@ -13863,11 +14313,10 @@ export interface components {
             asset_account_id: string;
             reference?: string;
             note?: string;
-            /** @description Manual override; omitted: automatic oldest-first. */
             allocations?: components["schemas"]["AllocationInput"][];
             send_receipt?: components["schemas"]["ReceiptDelivery"];
             /** @description Who the payment settles: a unit side or a person (carried debt). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         PaymentVoid: {
             reason: string;
@@ -13880,7 +14329,7 @@ export interface components {
             site_id: string;
             amount: components["schemas"]["Money"];
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         AllocationPreview: {
             allocations: components["schemas"]["PaymentAllocation"][];
@@ -13896,13 +14345,13 @@ export interface components {
             reference?: string;
             note?: string;
             /** @description Who the declared transfer is for. Residents declare for their own side; a former occupant never declares. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         PaymentConfirm: {
             /** Format: uuid */
             asset_account_id: string;
-            /** Format: date-time */
-            received_at?: string;
+            /** Format: date */
+            received_on?: string;
             allocations?: components["schemas"]["AllocationInput"][];
             /** Format: uuid */
             bank_transaction_id?: string;
@@ -13994,7 +14443,7 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "transferred_at": "2026-03-01T09:00:00Z",
+         *       "transferred_on": "2026-03-01",
          *       "memo": null,
          *       "kind": "cash_handover",
          *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
@@ -14015,8 +14464,8 @@ export interface components {
             /** Format: uuid */
             to_account_id: string;
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at: string;
+            /** Format: date */
+            transferred_on: string;
             memo: string | null;
             /**
              * @description Open enum.
@@ -14040,8 +14489,8 @@ export interface components {
             /** Format: uuid */
             to_account_id: string;
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at: string;
+            /** Format: date */
+            transferred_on: string;
             memo?: string | null;
             /**
              * @description Open enum.
@@ -14062,7 +14511,7 @@ export interface components {
          *             "amount": 200000,
          *             "currency": "TRY"
          *           },
-         *           "transferred_at": "2026-03-01T09:00:00Z",
+         *           "transferred_on": "2026-03-01",
          *           "memo": null,
          *           "kind": "cash_handover",
          *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
@@ -14095,7 +14544,7 @@ export interface components {
          *       "reason": "reason",
          *       "kind": "overpayment",
          *       "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
-         *       "refunded_at": "2026-03-01T09:00:00Z",
+         *       "refunded_on": "2026-03-01",
          *       "credit_id": null,
          *       "payment_id": null,
          *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
@@ -14128,8 +14577,8 @@ export interface components {
             kind: "overpayment" | "deposit_return" | "other";
             /** Format: uuid */
             paid_from_account_id: string;
-            /** Format: date-time */
-            refunded_at: string;
+            /** Format: date */
+            refunded_on: string;
             /** Format: uuid */
             credit_id: string | null;
             /** Format: uuid */
@@ -14162,8 +14611,8 @@ export interface components {
             kind: "overpayment" | "deposit_return" | "other";
             /** Format: uuid */
             paid_from_account_id: string;
-            /** Format: date-time */
-            refunded_at: string;
+            /** Format: date */
+            refunded_on: string;
             /** Format: uuid */
             credit_id?: string | null;
             /** Format: uuid */
@@ -14186,7 +14635,7 @@ export interface components {
          *           "reason": "reason",
          *           "kind": "overpayment",
          *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
-         *           "refunded_at": "2026-03-01T09:00:00Z",
+         *           "refunded_on": "2026-03-01",
          *           "credit_id": null,
          *           "payment_id": null,
          *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
@@ -14257,6 +14706,7 @@ export interface components {
          *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
          *       "importer": "importer",
+         *       "filename": "statement.csv",
          *       "file_id": "0192a3f0-1000-7000-8000-000000000005",
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000006",
          *       "status": "parsing",
@@ -14285,8 +14735,13 @@ export interface components {
             /** Format: uuid */
             site_id: string;
             importer: string;
-            /** Format: uuid */
-            file_id: string;
+            /** @description The uploaded file name. */
+            filename: string;
+            /**
+             * Format: uuid
+             * @description The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB).
+             */
+            file_id: string | null;
             /** Format: uuid */
             asset_account_id: string;
             /**
@@ -14318,6 +14773,7 @@ export interface components {
          *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
          *           "importer": "importer",
+         *           "filename": "statement.csv",
          *           "file_id": "0192a3f0-1000-7000-8000-000000000005",
          *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000006",
          *           "status": "parsing",
@@ -14355,6 +14811,25 @@ export interface components {
             ledger_closing: components["schemas"]["Money"];
             /** @description Statement movement minus ledger movement. */
             difference: components["schemas"]["Money"];
+            /** @description Closing minus opening when the statement has both balances, else the sum of its lines. */
+            statement_movement: components["schemas"]["Money"];
+            /** @description Movement of the bank account in the ledger over the statement period (all postings, not only matched lines). */
+            ledger_movement: components["schemas"]["Money"];
+            /** @description Sum of all statement lines. */
+            lines_total: components["schemas"]["Money"];
+            /** @description Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances. */
+            statement_check: components["schemas"]["Money"] | null;
+            /** @description Lines matched to a payment. */
+            matched_total: components["schemas"]["Money"];
+            /** @description Unmatched and suggested lines; with only matched payments posting to the account the difference equals this. */
+            unmatched_total: components["schemas"]["Money"];
+            ignored_total: components["schemas"]["Money"];
+            /** Format: int64 */
+            matched_count: number;
+            /** Format: int64 */
+            unmatched_count: number;
+            /** Format: int64 */
+            ignored_count: number;
         };
         MatchSuggestion: {
             /** Format: uuid */
@@ -14385,6 +14860,7 @@ export interface components {
          *       },
          *       "counterparty": null,
          *       "description": null,
+         *       "reference": null,
          *       "match_status": "unmatched",
          *       "payment_id": null,
          *       "expense_id": null,
@@ -14417,6 +14893,8 @@ export interface components {
             amount: components["schemas"]["Money"];
             counterparty: string | null;
             description: string | null;
+            /** @description The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it. */
+            reference: string | null;
             /**
              * @description Open enum.
              * @enum {string}
@@ -14447,6 +14925,7 @@ export interface components {
          *           },
          *           "counterparty": null,
          *           "description": null,
+         *           "reference": null,
          *           "match_status": "unmatched",
          *           "payment_id": null,
          *           "expense_id": null,
@@ -14475,19 +14954,20 @@ export interface components {
         BankTransactionMatch: {
             /** Format: uuid */
             payer_person_id?: string;
+            /** @description Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee. */
             allocations?: components["schemas"]["AllocationInput"][];
             /**
              * Format: uuid
-             * @description Confirm this declared payment with the line.
+             * @description Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
              */
             payment_id?: string;
             /**
              * Format: uuid
-             * @description For an outgoing line: link an expense.
+             * @description For an outgoing line: link a posted expense of the same site and amount (no payment is created). A line that is not outgoing, an expense that is not posted or of another amount, or one already linked to another line is refused.
              */
             expense_id?: string;
             /** @description Who the line pays; omitted when matching to `payment_id` or `expense_id`. */
-            debtor?: components["schemas"]["DebtorRef"];
+            debtor?: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         BankTransactionReason: {
             reason?: string;
@@ -14575,6 +15055,13 @@ export interface components {
             document_no?: string | null;
             /** Format: uuid */
             file_id?: string | null;
+            /** @description Makes this a monthly recurring expense in one atomic call (the first occurrence is posted now). */
+            recurring?: {
+                /** @enum {string} */
+                frequency: "monthly";
+                /** @description Day of the month; defaults to the day of `paid_on`. */
+                day?: number;
+            } | null;
         };
         /**
          * @example {
@@ -14982,7 +15469,7 @@ export interface components {
             kind: "reminder" | "ihtarname";
             /** Format: int64 */
             days_after_due: number;
-            channels: ("in_app" | "email" | "sms")[];
+            channels: ("in_app" | "email" | "sms" | "letter")[];
             template_key: string | null;
             /** Format: int64 */
             position: number;
@@ -15008,7 +15495,7 @@ export interface components {
             kind: "reminder" | "ihtarname";
             /** Format: int64 */
             days_after_due: number;
-            channels?: ("in_app" | "email" | "sms")[];
+            channels?: ("in_app" | "email" | "sms" | "letter")[];
             template_key?: string | null;
             /** Format: int64 */
             position?: number;
@@ -15024,7 +15511,7 @@ export interface components {
             kind?: "reminder" | "ihtarname";
             /** Format: int64 */
             days_after_due?: number;
-            channels?: ("in_app" | "email" | "sms")[];
+            channels?: ("in_app" | "email" | "sms" | "letter")[];
             template_key?: string | null;
             /** Format: int64 */
             position?: number;
@@ -15068,7 +15555,7 @@ export interface components {
             debtors?: components["schemas"]["DebtorRef"][];
             min_balance?: components["schemas"]["Money"];
             /** @description Chosen by the sender (O5). */
-            channels: ("in_app" | "email" | "sms")[];
+            channels: ("in_app" | "email" | "sms" | "letter")[];
         };
         DunningRunPreview: {
             /** Format: int64 */
@@ -15106,6 +15593,12 @@ export interface components {
          *       "debtor_kind": "owner",
          *       "person_id": null,
          *       "stage_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "period": "2026-03",
+         *       "amount_due": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "has_letter": false,
          *       "sent_at": "2026-03-01T09:00:00Z",
          *       "channel": "in_app",
          *       "document_file_id": null,
@@ -15122,17 +15615,26 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             run_id: string | null;
-            /** Format: uuid */
-            unit_id: string;
             /**
-             * @description Open enum.
-             * @enum {string}
+             * Format: uuid
+             * @description Null for a person debtor (carried debt).
              */
-            debtor_kind: "owner" | "tenant";
+            unit_id: string | null;
+            /**
+             * @description Open enum. Null for a person debtor.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
             /** Format: uuid */
             person_id: string | null;
             /** Format: uuid */
             stage_id: string;
+            /** @description The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel. */
+            period: string;
+            /** @description The overdue balance when the event was created. */
+            amount_due: components["schemas"]["Money"];
+            /** @description A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`. */
+            has_letter: boolean;
             /** Format: date-time */
             sent_at: string;
             /**
@@ -15159,6 +15661,12 @@ export interface components {
          *           "debtor_kind": "owner",
          *           "person_id": null,
          *           "stage_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "period": "2026-03",
+         *           "amount_due": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "has_letter": false,
          *           "sent_at": "2026-03-01T09:00:00Z",
          *           "channel": "in_app",
          *           "document_file_id": null,
@@ -15183,6 +15691,11 @@ export interface components {
          *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
          *       "debtor_kind": "owner",
          *       "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "debtor": {
+         *         "mode": "unit_side",
+         *         "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *         "debtor_kind": "owner"
+         *       },
          *       "opened_on": "2026-03-01",
          *       "lawyer": null,
          *       "file_no": null,
@@ -15205,15 +15718,23 @@ export interface components {
             org_id: string;
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
             /**
-             * @description Open enum.
-             * @enum {string}
+             * Format: uuid
+             * @description Null for a person debtor.
              */
-            debtor_kind: "owner" | "tenant";
-            /** Format: uuid */
-            debtor_person_id: string;
+            unit_id: string | null;
+            /**
+             * @description Open enum. Null for a person debtor.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
+            /**
+             * Format: uuid
+             * @description The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself.
+             */
+            debtor_person_id: string | null;
+            /** @description Whose debt this case is about, as it was opened. */
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             opened_on: string;
             lawyer: string | null;
@@ -15240,15 +15761,8 @@ export interface components {
         CollectionCaseCreate: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind: "owner" | "tenant";
-            /** Format: uuid */
-            debtor_person_id: string;
+            /** @description Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes. */
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             opened_on: string;
             lawyer?: string | null;
@@ -15271,6 +15785,11 @@ export interface components {
          *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
          *           "debtor_kind": "owner",
          *           "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "debtor": {
+         *             "mode": "unit_side",
+         *             "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *             "debtor_kind": "owner"
+         *           },
          *           "opened_on": "2026-03-01",
          *           "lawyer": null,
          *           "file_no": null,
@@ -15311,7 +15830,7 @@ export interface components {
         };
         DebtBreakdown: {
             /** @description Whose debt this is. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             as_of: string;
             lines: components["schemas"]["DebtBreakdownLine"][];
@@ -15346,7 +15865,7 @@ export interface components {
         /** @description Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`. */
         Statement: {
             /** @description Whose statement this is: a unit side or a person. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -15361,7 +15880,7 @@ export interface components {
         };
         StatementSend: {
             /** @description Whose statement to send. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -15550,6 +16069,10 @@ export interface components {
         MoneyOverview: {
             /** Format: date */
             as_of: string;
+            /** @description The balance of every fund. */
+            funds: components["schemas"]["FundBalanceRow"][];
+            /** @description The five largest overdue debtors. */
+            top_debtors: components["schemas"]["DebtorRow"][];
             receivable_owner: components["schemas"]["Money"];
             receivable_tenant: components["schemas"]["Money"];
             cash: components["schemas"]["Money"];
@@ -15560,6 +16083,117 @@ export interface components {
         };
         /** @description Notification type vocabulary (backend section 12), shared by push titles and Android channels. Open: clients tolerate unknown values. */
         NotificationType: string;
+        /** @description A rendition of an image, generated on upload. */
+        FileVariant: {
+            width: number;
+            height: number;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+            mime: string;
+        };
+        /**
+         * @description Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+         *     Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+         *     fetch the file's metadata again for fresh ones.
+         */
+        FileLinks: {
+            /** @description URL of the original; null while the file is not ready. */
+            original: string | null;
+            /** @description URLs of the image variants (`thumb`, `medium`) by name; empty for other files. */
+            variants: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expires_at: string;
+        };
+        File: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            /** @description The file name. A re-encoded image gets the extension of its stored type. */
+            name: string;
+            /**
+             * Format: int64
+             * @description Bytes of the stored original (for images, after metadata stripping and downscaling).
+             */
+            size: number;
+            /** @description The stored type, from sniffing the content. */
+            mime: string;
+            /** @description Hex SHA-256 of the stored original. */
+            sha256: string;
+            /**
+             * @description Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+             *     administrators see it). `pending` and `deleted` files are never returned.
+             * @enum {string}
+             */
+            status: "ready" | "quarantined";
+            /**
+             * @description Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).
+             * @enum {string}
+             */
+            source: "uploaded" | "generated";
+            /**
+             * Format: uuid
+             * @description The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+             */
+            uploaded_by: string | null;
+            /** @description The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft. */
+            scope: string | null;
+            /** @description Images: `thumb` and `medium` exist. */
+            has_variants: boolean;
+            /**
+             * Format: date-time
+             * @description When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+             */
+            retention_until: string | null;
+            /** @description Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side). */
+            variants: {
+                [key: string]: components["schemas"]["FileVariant"];
+            };
+            links: components["schemas"]["FileLinks"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        FileList: {
+            items: components["schemas"]["File"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+         *     it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+         *     `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
+         *     (the body is not buffered); the server checks the fields itself.
+         */
+        FileUpload: {
+            /**
+             * @description Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+             *     (`ticket`) and the id a UUID. Without it the file is a draft.
+             */
+            scope?: string;
+            /**
+             * Format: uuid
+             * @description The site the file belongs to; limits who can read it to site-scoped grants.
+             */
+            site_id?: string;
+            /** @description File name when the `file` part carries none. */
+            name?: string;
+            /** Format: binary */
+            file: string;
+        };
+        /**
+         * @description Whether a status counts as open work or as finished. Open enum.
+         * @enum {string}
+         */
+        TicketSemantic: "open_like" | "closed_like";
         TicketStatus: {
             /** Format: uuid */
             id: string;
@@ -15597,7 +16231,7 @@ export interface components {
         TicketWorkflowUpdate: {
             /** @description The complete ordered list. */
             statuses: components["schemas"]["TicketStatusInput"][];
-            /** @description For a removed status: the status its tickets move to. Required when a removed status is in use. */
+            /** @description Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`. */
             replacements?: {
                 [key: string]: string;
             };
@@ -15808,11 +16442,7 @@ export interface components {
             /** Format: uuid */
             status_id: string;
             status_name: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            status_semantic: "open_like" | "closed_like";
+            status_semantic: components["schemas"]["TicketSemantic"];
             /**
              * @description Private: that unit and management. Common: the whole site or block. Open enum.
              * @enum {string}
@@ -15873,9 +16503,15 @@ export interface components {
              * @enum {string}
              */
             visibility?: "private" | "common";
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.
+             */
             assignee_person_id?: string | null;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
+             */
             assignee_vendor_id?: string | null;
         };
         /**
@@ -16047,8 +16683,13 @@ export interface components {
          *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *       "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
          *       "from_status_id": null,
+         *       "from_status_name": null,
          *       "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
-         *       "changed_by": null,
+         *       "to_status_name": "Open",
+         *       "changed_by": {
+         *         "id": "0192a3f0-1000-7000-8000-000000000006",
+         *         "display_name": "Ayse Yilmaz"
+         *       },
          *       "comment": null,
          *       "at": "2026-03-01T09:00:00Z",
          *       "created_at": "2026-03-01T09:00:00Z",
@@ -16064,10 +16705,21 @@ export interface components {
             ticket_id: string;
             /** Format: uuid */
             from_status_id: string | null;
+            /** @description Name of the status at the time of reading; statuses removed from the workflow keep their name. */
+            from_status_name: string | null;
             /** Format: uuid */
             to_status_id: string;
-            /** Format: uuid */
-            changed_by: string | null;
+            to_status_name: string;
+            /** @description Who made the change, with the name they had then. Null for changes made by the system. */
+            changed_by: {
+                /**
+                 * Format: uuid
+                 * @description The user id.
+                 */
+                id: string;
+                display_name: string;
+            } | null;
+            /** @description The comment given with a transition; an internal one is null for people who may not read internal notes. */
             comment: string | null;
             /** Format: date-time */
             at: string;
@@ -16084,8 +16736,13 @@ export interface components {
          *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *           "ticket_id": "0192a3f0-1000-7000-8000-000000000004",
          *           "from_status_id": null,
+         *           "from_status_name": null,
          *           "to_status_id": "0192a3f0-1000-7000-8000-000000000005",
-         *           "changed_by": null,
+         *           "to_status_name": "Open",
+         *           "changed_by": {
+         *             "id": "0192a3f0-1000-7000-8000-000000000006",
+         *             "display_name": "Ayse Yilmaz"
+         *           },
          *           "comment": null,
          *           "at": "2026-03-01T09:00:00Z",
          *           "created_at": "2026-03-01T09:00:00Z",
@@ -16130,8 +16787,13 @@ export interface components {
          *       "sms_count": 80,
          *       "read_count": 1,
          *       "read_at": null,
-         *       "file_ids": [
-         *         "0192a3f0-1000-7000-8000-000000000003"
+         *       "attachments": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "name": "schedule.pdf",
+         *           "mime": "application/pdf",
+         *           "size": 48211
+         *         }
          *       ],
          *       "published_at": null,
          *       "created_by": null,
@@ -16171,6 +16833,11 @@ export interface components {
             sms_count: number | null;
             /**
              * Format: int64
+             * @description Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.
+             */
+            sms_segments?: number | null;
+            /**
+             * Format: int64
              * @description Opened in web or app; a delivered SMS or email is not a read.
              */
             read_count: number;
@@ -16179,7 +16846,8 @@ export interface components {
              * @description When the caller read it.
              */
             read_at: string | null;
-            file_ids: string[];
+            /** @description The attached files with what a client needs to show them; download through `files.download` with the `id`. */
+            attachments: components["schemas"]["AnnouncementAttachment"][];
             /** Format: date-time */
             published_at: string | null;
             /** Format: uuid */
@@ -16245,8 +16913,13 @@ export interface components {
          *           "sms_count": 80,
          *           "read_count": 1,
          *           "read_at": null,
-         *           "file_ids": [
-         *             "0192a3f0-1000-7000-8000-000000000003"
+         *           "attachments": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000003",
+         *               "name": "schedule.pdf",
+         *               "mime": "application/pdf",
+         *               "size": 48211
+         *             }
          *           ],
          *           "published_at": null,
          *           "created_by": null,
@@ -16268,13 +16941,26 @@ export interface components {
             site_id: string;
             audience: components["schemas"]["AnnouncementAudience"];
             channels: ("in_app" | "email" | "sms" | "push")[];
+            /** @description The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed. */
+            title?: string;
         };
         /** @description What publishing would cost, before the sender presses publish (O5). */
         AnnouncementPreview: {
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
+             */
             recipient_count: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Text messages (recipients with a phone who did not mute).
+             */
             sms_count: number;
+            /**
+             * Format: int64
+             * @description Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
+             */
+            sms_segments: number;
             /** Format: int64 */
             email_count: number;
             /** Format: int64 */
@@ -16660,6 +17346,8 @@ export interface components {
             muted_types: string[];
             /** @description Sign-in codes and invitations. */
             unmutable_types: string[];
+            /** @description The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own. */
+            available_types: string[];
         };
         NotificationMutesSet: {
             muted_types: string[];
@@ -16677,35 +17365,6 @@ export interface components {
             failed: number;
             /** Format: int64 */
             monthly_limit: number | null;
-        };
-        /** @description An uploaded or generated file. */
-        File: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            org_id: string;
-            /** Format: uuid */
-            site_id: string | null;
-            /** Format: int64 */
-            size: number;
-            mime: string;
-            sha256: string;
-            /** Format: uuid */
-            uploaded_by: string | null;
-            scope: string | null;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            status: "ready" | "quarantined";
-            /** @description Images: `thumb` and `medium` exist. */
-            has_variants: boolean;
-            /** Format: date-time */
-            retention_until: string | null;
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
         };
         ExportRequest: {
             /** Format: uuid */
@@ -16910,6 +17569,32 @@ export interface components {
              * @description Reminder lead time before a term ends.
              */
             term_reminder_days: number;
+            /**
+             * @description Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+             * @enum {string}
+             */
+            vote_weight?: "per_unit" | "per_owner";
+            /**
+             * Format: int64
+             * @description Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+             */
+            ordinary_assembly_month?: number;
+            /**
+             * Format: int64
+             * @description Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
+             */
+            default_term_months?: number;
+            /** @description Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`. */
+            notice_electronic_allowed?: boolean;
+            /** @description Input only. Required when a value is more permissive than the Law 634 default (lower quorum or notice time, higher proxy or per-person caps, a weaker threshold): the reason (for example the clause of the yonetim plani) is recorded in the audit trail with the list of deviations. Not stored in the settings. */
+            deviation_reason?: string;
+            /** @description Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them. */
+            decision_details_visible_to_owners?: boolean;
+            /**
+             * Format: int64
+             * @description How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
+             */
+            dissent_window_days?: number;
         };
         GovernanceSettings: {
             /** Format: uuid */
@@ -17025,6 +17710,8 @@ export interface components {
          *       "call_letter_document_id": null,
          *       "minutes_document_id": null,
          *       "called_at": null,
+         *       "held_call": null,
+         *       "first_call_failed_at": null,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z",
          *       "version": 1
@@ -17058,16 +17745,24 @@ export interface components {
              * @enum {string}
              */
             status: "draft" | "called" | "in_session" | "closed" | "cancelled";
-            /** @description Who could vote and with what weight as of the call date; fixed at `:call`. */
-            eligibility_snapshot: {
-                [key: string]: unknown;
-            } | null;
+            /** @description Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only. */
+            eligibility_snapshot: components["schemas"]["EligibilitySnapshot"] | null;
             /** Format: uuid */
             call_letter_document_id: string | null;
             /** Format: uuid */
             minutes_document_id: string | null;
             /** Format: date-time */
             called_at: string | null;
+            /**
+             * @description The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+             * @enum {string|null}
+             */
+            held_call: "first" | "second" | null;
+            /**
+             * Format: date-time
+             * @description When the first call was found without quorum and the second call opened.
+             */
+            first_call_failed_at: string | null;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -17125,6 +17820,8 @@ export interface components {
          *           "call_letter_document_id": null,
          *           "minutes_document_id": null,
          *           "called_at": null,
+         *           "held_call": null,
+         *           "first_call_failed_at": null,
          *           "created_at": "2026-03-01T09:00:00Z",
          *           "updated_at": "2026-03-01T09:00:00Z",
          *           "version": 1
@@ -17206,6 +17903,7 @@ export interface components {
          *       "tracking_no": null,
          *       "proof_file_id": null,
          *       "note": null,
+         *       "late": false,
          *       "created_at": "2026-03-01T09:00:00Z",
          *       "updated_at": "2026-03-01T09:00:00Z"
          *     }
@@ -17238,9 +17936,14 @@ export interface components {
             /** Format: date-time */
             sent_at: string | null;
             tracking_no: string | null;
-            /** Format: uuid */
+            /**
+             * Format: uuid
+             * @description A file of the organization (the scanned receipt or signature page); checked when recorded.
+             */
             proof_file_id: string | null;
             note: string | null;
+            /** @description The call reached this owner less than `call_min_days` before the meeting (computed when recorded). */
+            late?: boolean;
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -17489,7 +18192,7 @@ export interface components {
             /** @description Always false: the binding vote is counted in the room. */
             binding: boolean;
         };
-        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. */
+        /** @description The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open. */
         VoteCountSet: {
             /** Format: int64 */
             yes_count: number;
@@ -17538,6 +18241,7 @@ export interface components {
          *         "Ali Veli"
          *       ],
          *       "mode": "in_person",
+         *       "call": "first",
          *       "proxy_for_person_id": null,
          *       "source": "desk",
          *       "checked_in_at": "2026-03-01T09:00:00Z",
@@ -17563,6 +18267,11 @@ export interface components {
              * @enum {string}
              */
             mode: "in_person" | "proxy";
+            /**
+             * @description The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+             * @enum {string}
+             */
+            call: "first" | "second";
             /** Format: uuid */
             proxy_for_person_id: string | null;
             /**
@@ -17595,6 +18304,7 @@ export interface components {
          *             "Ali Veli"
          *           ],
          *           "mode": "in_person",
+         *           "call": "first",
          *           "proxy_for_person_id": null,
          *           "source": "desk",
          *           "checked_in_at": "2026-03-01T09:00:00Z",
@@ -17703,6 +18413,8 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_vote" | "noted";
             vote_count: components["schemas"]["VoteCount"] | null;
             dissents: components["schemas"]["Dissent"][];
+            /** @description Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited. */
+            outcome_override_reason?: string | null;
             /** @description Tenants see only decisions marked this way. */
             concerns_residents: boolean;
             /** Format: date-time */
@@ -17733,6 +18445,10 @@ export interface components {
             outcome: "accepted" | "rejected" | "no_vote" | "noted";
             dissents?: components["schemas"]["DissentInput"][];
             concerns_residents?: boolean;
+            /** @description Required to record `accepted` or `rejected` when the item's counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited. */
+            outcome_override?: {
+                reason: string;
+            };
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         DecisionUpdate: {
@@ -17808,10 +18524,13 @@ export interface components {
             scope_id: string | null;
             /** Format: date */
             valid_from: string;
-            /** Format: date */
-            valid_to: string;
-            /** @description A new election ends the old terms (G6). */
-            end_previous?: boolean;
+            /**
+             * Format: date
+             * @description End of the term. Optional, when omitted it is `valid_from` plus the site's `default_term_months`.
+             */
+            valid_to?: string;
+            /** @description Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.) */
+            replaces_membership_ids?: string[];
         };
         DecisionApplyBudget: {
             /**
@@ -17828,7 +18547,10 @@ export interface components {
              * @enum {string}
              */
             kind: "special_assessment";
-            plan: components["schemas"]["ChargePlanCreate"];
+            /** @description A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged). */
+            plan: {
+                [key: string]: unknown;
+            };
         };
         /** @description The change a decision triggers; the manager confirms each one (G5). */
         DecisionApply: components["schemas"]["DecisionApplyDuesRate"] | components["schemas"]["DecisionApplyMembership"] | components["schemas"]["DecisionApplyBudget"] | components["schemas"]["DecisionApplySpecialAssessment"];
@@ -18307,7 +19029,7 @@ export interface components {
              * @enum {string}
              */
             source: "pre_registered" | "walk_in" | "recurring";
-            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
+            /** @description The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: uuid */
             decided_by: string | null;
@@ -18435,7 +19157,7 @@ export interface components {
              * @enum {string}
              */
             status: "active" | "revoked" | "expired";
-            /** @description The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations. */
+            /** @description The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations. */
             qr_token: string | null;
             /** Format: date-time */
             created_at: string;
@@ -18736,6 +19458,10 @@ export interface components {
         };
         GateAgentStatus: {
             connected: boolean;
+            /** @description Whether the agent has reported recently enough to be trusted with opening a gate. */
+            online: boolean;
+            /** @description Whether the agent's clock disagrees with the server's, so time windows judged on the gate cannot be trusted. */
+            clock_suspect: boolean;
             /** Format: date-time */
             last_seen_at: string | null;
             points: components["schemas"]["GatePoint"][];
@@ -18747,6 +19473,10 @@ export interface components {
             kind: string;
             direction: string;
             enabled: boolean;
+            /** @description Whether the access point's controller is reachable through the agent. */
+            online: boolean;
+            /** @description Whether the access point's clock is suspect; opening it is refused with 409 `clock_suspect`. */
+            clock_suspect: boolean;
         };
         /** @description Everything the booth page shows at once; auto-refreshed. */
         GateConsole: {
@@ -19608,7 +20338,7 @@ export interface components {
              * @description 0 to 30 seconds to hold the request open when the server has nothing to send.
              */
             wait_seconds: number;
-            /** @description The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`. */
+            /** @description Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`. */
             session?: string;
         };
         /**
@@ -19624,7 +20354,7 @@ export interface components {
             session: string;
             /**
              * Format: int64
-             * @description Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+             * @description Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
              */
             seq: number;
             messages: components["schemas"]["AgentEnvelope"][];
@@ -19958,30 +20688,8 @@ export interface components {
             items: components["schemas"]["PlatformJob"][];
             next_cursor: string | null;
         };
-        /**
-         * @description Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.
-         * @example {
-         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
-         *       "debtor_kind": "tenant"
-         *     }
-         */
-        DebtorRef: {
-            /**
-             * Format: uuid
-             * @description Unit mode: the unit.
-             */
-            unit_id?: string;
-            /**
-             * @description Unit mode: the side of the unit that owes.
-             * @enum {string}
-             */
-            debtor_kind?: "owner" | "tenant";
-            /**
-             * Format: uuid
-             * @description Person mode: the person who owes; covers charges carried to them and charges keyed on them.
-             */
-            person_id?: string;
-        } & (unknown | unknown);
+        /** @description Who owes: a debtor key, one of two modes told apart by `mode`. `unit_side` addresses the open charges of one side of a unit; `person` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). A body that does not match its mode is 422 `validation_failed`. */
+        DebtorRef: components["schemas"]["DebtorRefUnitSide"] | components["schemas"]["DebtorRefPerson"];
         /**
          * @description Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.
          * @example {
@@ -19996,7 +20704,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            debtor_kind: "owner" | "tenant";
+            debtor_kind: "owner" | "tenant" | "person";
             /**
              * Format: uuid
              * @description The person on the due date; null when the side is vacant.
@@ -20145,6 +20853,10 @@ export interface components {
         UnitTagMembersSet: {
             unit_ids: string[];
         };
+        /** @description The tag codes of one unit (cost groups such as `lift` or `pool`); replaces the whole set. */
+        UnitTags: {
+            tags: string[];
+        };
         /**
          * @description A manual credential: an RFID/BLE tag or a keypad PIN. Plates and QR codes are not created here.
          * @example {
@@ -20266,6 +20978,208 @@ export interface components {
              */
             reauth_window_minutes: number;
         };
+        ReauthEmailCode: {
+            /**
+             * @description Always `email_code`. (enum property replaced by openapi-typescript)
+             * @enum {string}
+             */
+            method: "email_code";
+            /** @description A code sent to the account's own email address by `auth.requestReauthEmailCode`. */
+            code: string;
+        };
+        /**
+         * @description Open enum: every permission a role can hold (backend plan section 7).
+         * @enum {string}
+         */
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        /**
+         * @example {
+         *       "mode": "unit_side",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "debtor_kind": "tenant"
+         *     }
+         */
+        DebtorRefUnitSide: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "unit_side";
+            /**
+             * Format: uuid
+             * @description The unit.
+             */
+            unit_id: string;
+            /**
+             * @description The side of the unit that owes.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+        };
+        /**
+         * @example {
+         *       "mode": "person",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002"
+         *     }
+         */
+        DebtorRefPerson: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "person";
+            /**
+             * Format: uuid
+             * @description The person who owes; covers charges carried to them and charges keyed on them.
+             */
+            person_id: string;
+        };
+        /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
+        TicketWorkflowRestore: {
+            /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
+            replacements?: {
+                [key: string]: string;
+            };
+        };
+        /** @description A file attached to an announcement. */
+        AnnouncementAttachment: {
+            /**
+             * Format: uuid
+             * @description The file id; download it with `files.download`.
+             */
+            id: string;
+            name: string;
+            mime: string;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+        };
+        /**
+         * @description One changed field. Personal data carries only `hash_before` and
+         *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+         *     is comparable within one instance and field only). Other fields carry `before` and
+         *     `after` (absent when the field did not exist on that side). The change of a field of an
+         *     entity without a personal data registration is an empty object: only the key changed.
+         */
+        AuditChange: {
+            /** @description Previous value (any JSON). */
+            before?: unknown;
+            /** @description New value (any JSON). */
+            after?: unknown;
+            hash_before?: string;
+            hash_after?: string;
+        };
+        "AuditEvent-2": {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            at: string;
+            /** Format: uuid */
+            actor_user_id: string | null;
+            /**
+             * @description Open enum: user, system, job.
+             * @enum {string}
+             */
+            actor_kind: "user" | "system" | "job";
+            /** @description `<area>.<verb>`, for example `org.update`. */
+            action: string;
+            target_type: string;
+            /** Format: uuid */
+            target_id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            /** @description Changed fields by (dotted) path. */
+            diff: {
+                [key: string]: components["schemas"]["AuditChange"];
+            };
+            ip: string | null;
+            request_id: string | null;
+        };
+        "AuditEventList-2": {
+            items: components["schemas"]["AuditEvent-2"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description An owner of record with the weight they vote with. */
+        EligibilityOwner: {
+            /** Format: uuid */
+            person_id: string;
+            display_name: string;
+            /** @description Every unit the person owns, including co-owned units another owner votes for. */
+            unit_ids: string[];
+            /** @description Door numbers of `unit_ids`. */
+            unit_labels: string[];
+            /** @description The arsa payi the person votes for, a decimal string (exact, not a float). */
+            share: string;
+            /**
+             * Format: int64
+             * @description Number of votes the person holds (before the per-person cap).
+             */
+            vote_weight: number;
+            /** @description The units this person votes for (co-owners vote through one representative). */
+            representative_of_unit_ids: string[];
+        };
+        /** @description Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it. */
+        EligibilitySnapshot: {
+            /**
+             * Format: date-time
+             * @description When the snapshot was computed.
+             */
+            taken_at: string;
+            /**
+             * Format: date-time
+             * @description The day whose owners of record it lists.
+             */
+            as_of: string;
+            /**
+             * @description Open enum. `per_unit` or `per_owner`.
+             * @enum {string}
+             */
+            vote_weight: "per_unit" | "per_owner";
+            /** @description `arsa_payi`, or `equal` when the site has no arsa payi values. */
+            share_basis: string;
+            /** Format: int64 */
+            unit_count: number;
+            /** Format: int64 */
+            total_votes: number;
+            total_share: number;
+            owners: components["schemas"]["EligibilityOwner"][];
+            /** @description Door numbers of units without an owner of record; nobody votes for them. */
+            unrepresented_units: string[];
+        };
+        /**
+         * @description A unit as the booth's picker shows it; nothing about who lives there.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "door_number": "A-12",
+         *       "block_name": "A Block"
+         *     }
+         */
+        GateUnit: {
+            /** Format: uuid */
+            id: string;
+            door_number: string;
+            /** @description The block's name; `null` for the hidden block of a single-building site. */
+            block_name: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "door_number": "A-12",
+         *           "block_name": "A Block"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        GateUnitList: {
+            items: components["schemas"]["GateUnit"][];
+            next_cursor: string | null;
+        };
     };
     responses: {
         /** @description Error. RFC 9457 problem details with a stable `code`. */
@@ -20298,6 +21212,8 @@ export interface components {
         SiteIdRequired: string;
         /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
         IfMatch: string;
+        /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none. */
+        IfMatchOptional: string;
         /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
         IdempotencyKeyRequired: string;
         /** @description When true, validate and return the row-level report without saving anything. */
@@ -20308,8 +21224,10 @@ export interface components {
         AsOfDate: string;
         /** @description BCP 47 locale for labels (default: the caller locale). */
         Locale: string;
-        /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+        /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
         GuardSession: string;
+        /** @description The file id. */
+        FileId: string;
     };
     requestBodies: never;
     headers: never;
@@ -20577,6 +21495,29 @@ export interface operations {
             403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "auth.requestReauthEmailCode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted; the code was sent. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -21365,6 +22306,44 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["UnitUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Unit"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "tenancy.setUnitTags": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitTags"];
             };
         };
         responses: {
@@ -22213,11 +23192,41 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "tenancy.downloadSiteTransferArchive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site transfer. */
+                transfer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The archive, a JSON document. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "tenancy.listVehicles": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
                 /** @description Filter by unit. */
                 unit_id?: string;
                 /** @description Free-text search. */
@@ -22425,8 +23434,12 @@ export interface operations {
             query?: {
                 /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
                 site_id?: components["parameters"]["SiteId"];
-                /** @description Free-text search. */
+                /** @description Free-text search: display name, phone (any part, so the last digits work) or email. */
                 q?: string;
+                /** @description Only people holding this role membership now. */
+                role?: string;
+                /** @description Only people with a current occupancy of this kind. */
+                occupancy_kind?: string;
                 /** @description Filter by unit. */
                 unit_id?: string;
                 /** @description Filter by `join_status`. */
@@ -23874,9 +24887,9 @@ export interface operations {
     };
     "people.listDirectory": {
         parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
+            query?: {
+                /** @description Restrict to one site. Omitted: all sites the caller may see in the organization. */
+                site_id?: components["parameters"]["SiteId"];
                 /** @description Free-text search. */
                 q?: string;
                 /** @description Filter by unit. */
@@ -24007,6 +25020,34 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "people.deleteVendor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the vendor. */
+                vendor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -24172,6 +25213,40 @@ export interface operations {
             query?: {
                 /** @description Filter by `active`. */
                 active?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OccupancyList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "me.listHouseholdMembers": {
+        parameters: {
+            query?: {
+                /** @description Only this unit (one of the caller's own). */
+                unit_id?: string;
                 /** @description Page size. */
                 limit?: components["parameters"]["Limit"];
                 /** @description Opaque cursor from a previous page `next_cursor`. */
@@ -25117,7 +26192,10 @@ export interface operations {
     };
     "money.createOpeningBalance": {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description When true, validate and return the row-level report without saving anything. */
+                dry_run?: components["parameters"]["DryRun"];
+            };
             header: {
                 /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
                 "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
@@ -25958,6 +27036,10 @@ export interface operations {
                 due_from?: string;
                 /** @description Filter by `due_to`. */
                 due_to?: string;
+                /** @description Only charges past their due date that are still open or partially paid. */
+                overdue?: boolean;
+                /** @description Debtor side of the unit (alias of `debtor_kind`). */
+                side?: string;
                 /** @description Page size. */
                 limit?: components["parameters"]["Limit"];
                 /** @description Opaque cursor from a previous page `next_cursor`. */
@@ -27282,9 +28364,14 @@ export interface operations {
                     importer: string;
                     /** Format: uuid */
                     asset_account_id: string;
+                    /** @description A JSON `ColumnMapping` (or just its `columns`) as text. */
                     mapping?: {
                         [key: string]: unknown;
                     };
+                    /** @description Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional. */
+                    opening_balance?: string;
+                    /** @description Statement closing balance as a decimal amount; optional. */
+                    closing_balance?: string;
                 };
             };
         };
@@ -28326,6 +29413,47 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "money.getDunningLetter": {
+        parameters: {
+            query?: {
+                /** @description The dunning event whose letter to return. */
+                event_id?: string;
+                /** @description Debtor mode - the site. */
+                site_id?: string;
+                /** @description Debtor mode, unit side: send with `debtor_kind`. */
+                unit_id?: string;
+                /** @description Debtor mode, unit side: owner or tenant. */
+                debtor_kind?: "owner" | "tenant";
+                /** @description Debtor mode, person: the person whose carried debt the letter is about. */
+                person_id?: string;
+                /** @description Evaluate as of this date (default today in the site timezone). */
+                as_of?: components["parameters"]["AsOfDate"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The letter. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "money.listCollectionCases": {
         parameters: {
             query: {
@@ -28718,7 +29846,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -28726,8 +29854,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["IncomeExpenseReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -28796,7 +29922,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -28804,8 +29930,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BudgetVsActualReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -28835,7 +29959,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -28843,8 +29967,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TrialBalanceReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -28874,7 +29996,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -28882,8 +30004,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReceivablesAgingReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -28991,7 +30111,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -28999,8 +30119,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FundBalancesReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29107,13 +30225,52 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "operations.restoreTicketWorkflow": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["TicketWorkflowRestore"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketWorkflow"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "operations.listTicketCategories": {
         parameters: {
             query: {
                 /** @description The site this resource belongs to. */
                 site_id: components["parameters"]["SiteIdRequired"];
-                /** @description Filter by `archived`. */
-                archived?: boolean;
+                /** @description `active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`. */
+                archived?: "active" | "archived" | "all";
                 /** @description Page size. */
                 limit?: components["parameters"]["Limit"];
                 /** @description Opaque cursor from a previous page `next_cursor`. */
@@ -29894,10 +31051,7 @@ export interface operations {
     "operations.previewAnnouncement": {
         parameters: {
             query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
+            header?: never;
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -30703,6 +31857,41 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "operations.listFiles": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of files. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "operations.uploadFile": {
         parameters: {
             query?: never;
@@ -30718,30 +31907,31 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    file: string;
-                    /** Format: uuid */
-                    site_id?: string;
-                    scope?: string;
-                };
+                "multipart/form-data": components["schemas"]["FileUpload"];
             };
         };
         responses: {
-            /** @description Created */
+            /** @description The stored file. */
             201: {
                 headers: {
+                    /** @description The file's metadata URL. */
+                    Location?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["File"];
                 };
             };
+            400: components["responses"]["Problem"];
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             413: components["responses"]["Problem"];
+            415: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -30752,14 +31942,14 @@ export interface operations {
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description OK */
+            /** @description The file. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -30777,27 +31967,35 @@ export interface operations {
     "operations.downloadFile": {
         parameters: {
             query?: {
-                /** @description Filter by `variant`. */
+                /** @description Image variant, `thumb` or `medium`. Absent for the original. */
                 variant?: "thumb" | "medium";
+                /** @description Expiry of a signed URL, Unix seconds. Sent with `sig`. */
+                exp?: number;
+                /** @description Signature of a signed URL. Sent with `exp`. */
+                sig?: string;
             };
             header?: never;
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description The file. */
+            /** @description The file's bytes, with the stored type as `Content-Type`. */
             200: {
                 headers: {
+                    "Content-Disposition"?: string;
+                    "Content-Security-Policy"?: string;
+                    "Cache-Control"?: string;
+                    "X-Content-Type-Options"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/octet-stream": string;
+                    "*/*": string;
                 };
             };
             /** @description Short-lived signed URL (S3 driver). */
@@ -30818,18 +32016,21 @@ export interface operations {
     "operations.deleteFile": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description No content */
+            /** @description Deleted. */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -30939,6 +32140,86 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "audit.list": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only events with this action, such as `org.update`. */
+                action?: string;
+                /** @description Only events about this kind of target, such as `organization`. */
+                target_type?: string;
+                /** @description Only events caused by this user id. */
+                actor?: string;
+                /** @description Only events at or after this time. */
+                from?: string;
+                /** @description Only events before this time. */
+                to?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of events. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEventList-2"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "platform.listAudit": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only events with this action, such as `session.revoke`. */
+                action?: string;
+                /** @description Only events caused by this user id. */
+                actor?: string;
+                /** @description Only events at or after this time. */
+                from?: string;
+                /** @description Only events before this time. */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of events. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEventList-2"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
@@ -31439,6 +32720,72 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "governance.openFirstCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "governance.openSecondCall": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the meeting. */
+                meeting_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Meeting"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "governance.closeMeeting": {
         parameters: {
             query?: never;
@@ -31542,7 +32889,7 @@ export interface operations {
     "governance.getCallLetter": {
         parameters: {
             query?: {
-                /** @description Filter by person. */
+                /** @description The owner whose personal letter (with their check-in QR) is wanted. */
                 person_id?: string;
             };
             header?: never;
@@ -32057,9 +33404,9 @@ export interface operations {
     "governance.setPoll": {
         parameters: {
             query?: never;
-            header: {
-                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
-                "If-Match": components["parameters"]["IfMatch"];
+            header?: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none. */
+                "If-Match"?: components["parameters"]["IfMatchOptional"];
             };
             path: {
                 /** @description Organization id. */
@@ -32095,7 +33442,10 @@ export interface operations {
     "governance.answerPoll": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
@@ -33615,7 +34965,7 @@ export interface operations {
                 site_id: components["parameters"]["SiteIdRequired"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -33662,7 +35012,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -33692,7 +35042,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -33724,7 +35074,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -33754,6 +35104,7 @@ export interface operations {
             403: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -33761,7 +35112,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -33799,7 +35150,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -33839,7 +35190,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -33874,7 +35225,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -33916,7 +35267,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -33957,7 +35308,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -33987,7 +35338,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -34024,7 +35375,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key; replays within 7 days return the stored response. */
                 "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
@@ -34607,147 +35958,6 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
-    "access.listCredentials": {
-        parameters: {
-            query: {
-                /** @description The site this resource belongs to. */
-                site_id: components["parameters"]["SiteIdRequired"];
-                /** @description Filter by `kind`. */
-                kind?: string;
-                /** @description Filter by `status`. */
-                status?: string;
-                /** @description Filter by `source_type`. */
-                source_type?: string;
-                /** @description Filter by unit. */
-                unit_id?: string;
-                /** @description Filter by `point_id`. */
-                point_id?: string;
-                /** @description Free-text search. */
-                q?: string;
-                /** @description Page size. */
-                limit?: components["parameters"]["Limit"];
-                /** @description Opaque cursor from a previous page `next_cursor`. */
-                cursor?: components["parameters"]["Cursor"];
-            };
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CredentialList"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "access.createCredential": {
-        parameters: {
-            query?: never;
-            header: {
-                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
-                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CredentialCreate"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Credential"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            422: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "access.getCredential": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the credential. */
-                credential_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Credential"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "access.revokeCredential": {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description Client-generated unique key; replays within 7 days return the stored response. */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the credential. */
-                credential_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            409: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
     "access.listAccessEvents": {
         parameters: {
             query: {
@@ -34811,7 +36021,7 @@ export interface operations {
                 cursor?: components["parameters"]["Cursor"];
             };
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -34841,7 +36051,7 @@ export interface operations {
         parameters: {
             query?: never;
             header: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
                 /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
                 "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
@@ -34882,7 +36092,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
                 "X-Guard-Session"?: components["parameters"]["GuardSession"];
             };
             path: {
@@ -35581,6 +36791,252 @@ export interface operations {
             409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "gate.searchUnits": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Part of a door number or block name. */
+                q: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: {
+                /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
+                "X-Guard-Session"?: components["parameters"]["GuardSession"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GateUnitList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.rotateRecurringVisitorQr": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the recurring visitor. */
+                recurring_visitor_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringVisitor"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "community.rotateVisitorEntryQr": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VisitorEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.listCredentials": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `source_type`. */
+                source_type?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `point_id`. */
+                point_id?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CredentialList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.createCredential": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CredentialCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Credential"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.getCredential": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Credential"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "access.revokeCredential": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the credential. */
+                credential_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

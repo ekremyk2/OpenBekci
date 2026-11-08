@@ -1,5 +1,6 @@
 get:
   operationId: me.listSessions
+  x-openbekci-roles: [sessions.manage_own]
   summary: List the caller's open sessions
   tags: [me]
   security:
@@ -18,6 +19,7 @@ get:
       $ref: '../components/problem.yaml#/responses/Problem'
 delete:
   operationId: me.revokeAllSessions
+  x-openbekci-roles: [sessions.manage_own]
   summary: Sign out everywhere
   description: Revokes every session of the caller, the current one included.
   tags: [me]

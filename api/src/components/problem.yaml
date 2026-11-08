@@ -37,6 +37,8 @@ schemas:
           - reauth_required
           - mfa_required
           - invalid_grant
+          - guard_session_required
+          - guard_session_expired
           - rate_limited
           - pack_error
           - site_offboarded
@@ -48,6 +50,9 @@ schemas:
           - method_not_allowed
           - unsupported_media_type
           - timeout
+          - scan_unavailable
+          - agent_offline
+          - agent_session_expired
       detail:
         type: string
         description: Human-readable explanation, not for machine parsing.

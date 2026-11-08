@@ -3,21 +3,43 @@ parameters:
 post:
   operationId: operations.uploadFile
   summary: Upload a file
-  description: |-
-    **Release 0.1.** Streams through the server: type sniffed, EXIF location stripped, `thumb` and `medium` generated for images.
+  description: |
+    **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+    sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+    the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+    `multipart_order`, and so is a field this operation does not know.
 
-    Permission: `files.upload`.
+    Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+    `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+    the caller to add files there; without it the file is a draft that expires after 7 days and that
+    only its uploader can see, read and discard.
 
-    Problems: `payload_too_large` (413), `validation_failed` (422), `conflict` (409).
+    The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+    plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+    Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+    metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+    `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+
+    Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+    is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+    decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+    `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+    has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+    then 429 `rate_limited`.
+
+    `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+    the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+    encoding) replays the first response, and a different file under the same key is 422
+    `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
   tags:
     - operations
   security:
     - cookieAuth: []
     - bearerAuth: []
   x-openbekci-roles:
-    member:
-      - files.upload
+    - files.upload
   x-idempotent: optional
+  x-openbekci-stream: true
   x-stability: stable
   parameters:
     - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
@@ -26,34 +48,82 @@ post:
     content:
       multipart/form-data:
         schema:
-          type: object
-          properties:
-            file:
-              type: string
-              format: binary
-            site_id:
-              type: string
-              format: uuid
-            scope:
-              type: string
-          required:
-            - file
+          $ref: ../../components/files.yaml#/schemas/FileUpload
   responses:
-    "201":
-      description: Created
+    '201':
+      description: The stored file.
+      headers:
+        Location:
+          description: The file's metadata URL.
+          schema:
+            type: string
       content:
         application/json:
           schema:
-            $ref: ../../components/operations.yaml#/schemas/File
-    "401":
+            $ref: ../../components/files.yaml#/schemas/File
+    '400':
       $ref: ../../components/problem.yaml#/responses/Problem
-    "403":
+    '401':
       $ref: ../../components/problem.yaml#/responses/Problem
-    "409":
+    '403':
       $ref: ../../components/problem.yaml#/responses/Problem
-    "413":
+    '404':
       $ref: ../../components/problem.yaml#/responses/Problem
-    "422":
+    '409':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '413':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '415':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '422':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '429':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '503':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+get:
+  operationId: operations.listFiles
+  summary: List files
+  description: |
+    **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+    access to it (the module that owns the resource decides; administrators with `files.manage` always have
+    it). Without a scope, an administrator sees every file of the organization and anyone else the files
+    they uploaded. Needs `files.read`.
+
+    Not in the first draft of the contract: added with the module, because the web app needs the files of a
+    resource and an administrator needs to see what is stored.
+  tags:
+    - operations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    - files.read
+  x-stability: stable
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+    - name: scope
+      in: query
+      description: Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`.
+      schema:
+        type: string
+  responses:
+    '200':
+      description: One page of files.
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/files.yaml#/schemas/FileList
+    '401':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '403':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '404':
+      $ref: ../../components/problem.yaml#/responses/Problem
+    '422':
       $ref: ../../components/problem.yaml#/responses/Problem
     default:
       $ref: ../../components/problem.yaml#/responses/Problem

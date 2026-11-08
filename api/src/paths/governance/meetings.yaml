@@ -12,19 +12,7 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.read
-    site_manager:
-      - meetings.read
-    board_member:
-      - meetings.read
-    auditor:
-      - meetings.read
-    owner:
-      - meetings.read
-    tenant:
-      - meetings.read
+  x-openbekci-roles: [meetings.read]
   x-stability: preview
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/SiteIdRequired
@@ -90,13 +78,7 @@ post:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.manage
-    site_manager:
-      - meetings.manage
-    board_member:
-      - meetings.manage
+  x-openbekci-roles: [meetings.manage]
   x-idempotent: optional
   x-stability: preview
   parameters:

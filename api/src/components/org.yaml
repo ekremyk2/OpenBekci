@@ -1,0 +1,72 @@
+schemas:
+  AuditChange:
+    type: object
+    description: |
+      One changed field. Personal data carries only `hash_before` and
+      `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+      is comparable within one instance and field only). Other fields carry `before` and
+      `after` (absent when the field did not exist on that side). The change of a field of an
+      entity without a personal data registration is an empty object: only the key changed.
+    properties:
+      before:
+        description: Previous value (any JSON).
+      after:
+        description: New value (any JSON).
+      hash_before:
+        type: string
+      hash_after:
+        type: string
+  AuditEvent:
+    type: object
+    required: [id, at, actor_user_id, actor_kind, action, target_type, target_id, site_id, diff, ip, request_id]
+    properties:
+      id:
+        type: string
+        format: uuid
+      at:
+        type: string
+        format: date-time
+      actor_user_id:
+        type: string
+        format: uuid
+        nullable: true
+      actor_kind:
+        type: string
+        x-open-enum: true
+        description: 'Open enum: user, system, job.'
+        enum: [user, system, job]
+      action:
+        type: string
+        description: '`<area>.<verb>`, for example `org.update`.'
+      target_type:
+        type: string
+      target_id:
+        type: string
+        format: uuid
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+      diff:
+        type: object
+        description: Changed fields by (dotted) path.
+        additionalProperties:
+          $ref: '#/schemas/AuditChange'
+      ip:
+        type: string
+        nullable: true
+      request_id:
+        type: string
+        nullable: true
+  AuditEventList:
+    type: object
+    required: [items, next_cursor]
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/schemas/AuditEvent'
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.

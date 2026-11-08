@@ -58,6 +58,8 @@ paths:
     $ref: ./paths/auth-magic-link-consume.yaml
   /v1/auth/reauth:
     $ref: ./paths/auth-reauth.yaml
+  /v1/auth/reauth/email-code:
+    $ref: ./paths/auth-reauth-email-code.yaml
   /v1/auth/password:
     $ref: ./paths/auth-password.yaml
   /v1/me:
@@ -84,6 +86,8 @@ paths:
     $ref: ./paths/tenancy/units.yaml
   /v1/orgs/{org_id}/units/{unit_id}:
     $ref: ./paths/tenancy/units-unit_id.yaml
+  /v1/orgs/{org_id}/units/{unit_id}/tags:
+    $ref: ./paths/tenancy/units-unit_id-tags.yaml
   /v1/orgs/{org_id}/units:import:
     $ref: ./paths/tenancy/units_import.yaml
   /v1/orgs/{org_id}/persons:import:
@@ -112,6 +116,8 @@ paths:
     $ref: ./paths/tenancy/site-transfers.yaml
   /v1/orgs/{org_id}/site-transfers/{transfer_id}:
     $ref: ./paths/tenancy/site-transfers-transfer_id.yaml
+  /v1/orgs/{org_id}/site-transfers/{transfer_id}/archive:
+    $ref: ./paths/tenancy/site-transfers-transfer_id-archive.yaml
   /v1/orgs/{org_id}/vehicles:
     $ref: ./paths/tenancy/vehicles.yaml
   /v1/orgs/{org_id}/vehicles/{vehicle_id}:
@@ -190,6 +196,8 @@ paths:
     $ref: ./paths/people/me-directory-consent.yaml
   /v1/orgs/{org_id}/me/occupancies:
     $ref: ./paths/people/me-occupancies.yaml
+  /v1/orgs/{org_id}/me/household-members:
+    $ref: ./paths/people/me-household-members.yaml
   /v1/orgs/{org_id}/me/household-invitations:
     $ref: ./paths/people/me-household-invitations.yaml
   /v1/orgs/{org_id}/me/household-invitations/{invitation_id}:
@@ -352,6 +360,8 @@ paths:
     $ref: ./paths/money/dunning-runs.yaml
   /v1/orgs/{org_id}/dunning-events:
     $ref: ./paths/money/dunning-events.yaml
+  /v1/orgs/{org_id}/dunning-letter:
+    $ref: ./paths/money/dunning-letter.yaml
   /v1/orgs/{org_id}/collection-cases:
     $ref: ./paths/money/collection-cases.yaml
   /v1/orgs/{org_id}/collection-cases/{case_id}:
@@ -388,6 +398,8 @@ paths:
     $ref: ./paths/money/money-overview.yaml
   /v1/orgs/{org_id}/ticket-workflow:
     $ref: ./paths/operations/ticket-workflow.yaml
+  /v1/orgs/{org_id}/ticket-workflow:restore-default:
+    $ref: ./paths/operations/ticket-workflow_restore-default.yaml
   /v1/orgs/{org_id}/ticket-categories:
     $ref: ./paths/operations/ticket-categories.yaml
   /v1/orgs/{org_id}/ticket-categories/{category_id}:
@@ -458,6 +470,10 @@ paths:
     $ref: ./paths/operations/jobs-job_id.yaml
   /v1/orgs/{org_id}/exports:
     $ref: ./paths/operations/exports.yaml
+  /v1/orgs/{org_id}/audit:
+    $ref: ./paths/orgs-org-id-audit.yaml
+  /v1/platform/audit:
+    $ref: ./paths/platform-audit.yaml
   /v1/orgs/{org_id}/audit-events:
     $ref: ./paths/audit/audit-events.yaml
   /v1/orgs/{org_id}/audit-events/{event_id}:
@@ -476,6 +492,10 @@ paths:
     $ref: ./paths/governance/meetings-meeting_id_call.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:start:
     $ref: ./paths/governance/meetings-meeting_id_start.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
+    $ref: ./paths/governance/meetings-meeting_id_open-first-call.yaml
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
+    $ref: ./paths/governance/meetings-meeting_id_open-second-call.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:close:
     $ref: ./paths/governance/meetings-meeting_id_close.yaml
   /v1/orgs/{org_id}/meetings/{meeting_id}:cancel:
@@ -612,10 +632,6 @@ paths:
     $ref: ./paths/access/agents-agent_id_rotate-token.yaml
   /v1/orgs/{org_id}/access/allowlist:rebuild:
     $ref: ./paths/access/access-allowlist_rebuild.yaml
-  /v1/orgs/{org_id}/credentials:
-    $ref: ./paths/access/credentials.yaml
-  /v1/orgs/{org_id}/credentials/{credential_id}:
-    $ref: ./paths/access/credentials-credential_id.yaml
   /v1/orgs/{org_id}/access/events:
     $ref: ./paths/access/access-events.yaml
   /v1/orgs/{org_id}/gate/events:
@@ -664,6 +680,17 @@ paths:
     $ref: ./paths/auth/auth-password-reset.yaml
   /v1/auth/password-reset/consume:
     $ref: ./paths/auth/auth-password-reset-consume.yaml
+  /v1/orgs/{org_id}/gate/units:
+    $ref: './paths/community/gate-units.yaml'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
+    $ref: './paths/community/recurring-visitors-recurring_visitor_id_rotate-qr.yaml'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
+    $ref: './paths/community/visitor-entries-entry_id_rotate-qr.yaml'
+  /v1/orgs/{org_id}/access/credentials:
+    $ref: ./paths/access/credentials.yaml
+  /v1/orgs/{org_id}/access/credentials/{credential_id}:
+    $ref: ./paths/access/credentials-credential_id.yaml
+
 components:
   securitySchemes:
     cookieAuth:
@@ -694,6 +721,8 @@ components:
       $ref: ./components/draft-common.yaml#/parameters/SiteIdRequired
     IfMatch:
       $ref: ./components/draft-common.yaml#/parameters/IfMatch
+    IfMatchOptional:
+      $ref: ./components/draft-common.yaml#/parameters/IfMatchOptional
     IdempotencyKeyRequired:
       $ref: ./components/draft-common.yaml#/parameters/IdempotencyKeyRequired
     DryRun:
@@ -1282,6 +1311,18 @@ components:
       $ref: ./components/money.yaml#/schemas/MoneyOverview
     NotificationType:
       $ref: ./components/operations.yaml#/schemas/NotificationType
+    FileVariant:
+      $ref: ./components/files.yaml#/schemas/FileVariant
+    FileLinks:
+      $ref: ./components/files.yaml#/schemas/FileLinks
+    File:
+      $ref: ./components/files.yaml#/schemas/File
+    FileList:
+      $ref: ./components/files.yaml#/schemas/FileList
+    FileUpload:
+      $ref: ./components/files.yaml#/schemas/FileUpload
+    TicketSemantic:
+      $ref: ./components/operations.yaml#/schemas/TicketSemantic
     TicketStatus:
       $ref: ./components/operations.yaml#/schemas/TicketStatus
     TicketWorkflow:
@@ -1392,8 +1433,6 @@ components:
       $ref: ./components/operations.yaml#/schemas/NotificationMutesSet
     SmsUsage:
       $ref: ./components/operations.yaml#/schemas/SmsUsage
-    File:
-      $ref: ./components/operations.yaml#/schemas/File
     ExportRequest:
       $ref: ./components/operations.yaml#/schemas/ExportRequest
     AuditEvent:
@@ -1730,6 +1769,8 @@ components:
       $ref: ./components/people.yaml#/schemas/PersonErase
     UnitTagMembersSet:
       $ref: ./components/tenancy.yaml#/schemas/UnitTagMembersSet
+    UnitTags:
+      $ref: ./components/tenancy.yaml#/schemas/UnitTags
     CredentialCreate:
       $ref: ./components/access.yaml#/schemas/CredentialCreate
     AgingBucketAmount:

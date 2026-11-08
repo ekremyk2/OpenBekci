@@ -6,16 +6,21 @@ schemas:
       - announcement.published
       - charge.due_soon
       - charge.overdue
+      - dunning.reminder
       - payment.receipt
       - payment.declared
       - payment.confirmed
       - payment.rejected
+      - statement.sent
       - ticket.updated
       - ticket.commented
       - claim.requested
       - claim.decided
       - meeting.called
       - meeting.decisions
+      - meeting.assembly_due
+      - delivery.waiting
+      - visitor.qr_rotated
       - term.expiring
       - visitor.approval_requested
       - visitor.arrived
@@ -25,6 +30,13 @@ schemas:
       - access.agent_silent
       - access.agent_clock_skew
       - access.agent_stopped
+  TicketSemantic:
+    type: string
+    description: Whether a status counts as open work or as finished. Open enum.
+    enum:
+      - open_like
+      - closed_like
+    x-open-enum: true
   TicketStatus:
     type: object
     required:
@@ -92,6 +104,16 @@ schemas:
         enum:
           - open_like
           - closed_like
+  TicketWorkflowRestore:
+    type: object
+    description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
+    properties:
+      replacements:
+        type: object
+        additionalProperties:
+          type: string
+          format: uuid
+        description: "For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`."
   TicketWorkflowUpdate:
     type: object
     required:
@@ -107,7 +129,7 @@ schemas:
         additionalProperties:
           type: string
           format: uuid
-        description: "For a removed status: the status its tickets move to. Required when a removed status is in use."
+        description: "Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`."
   TicketCategory:
     type: object
     description: "Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other."
@@ -405,12 +427,7 @@ schemas:
       status_name:
         type: string
       status_semantic:
-        type: string
-        description: Open enum.
-        enum:
-          - open_like
-          - closed_like
-        x-open-enum: true
+        $ref: "#/schemas/TicketSemantic"
       visibility:
         type: string
         description: "Private: that unit and management. Common: the whole site or block. Open enum."
@@ -551,10 +568,12 @@ schemas:
         type: string
         format: uuid
         nullable: true
+        description: "A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor."
       assignee_vendor_id:
         type: string
         format: uuid
         nullable: true
+        description: "A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns."
   TicketList:
     type: object
     required:
@@ -774,7 +793,9 @@ schemas:
       - org_id
       - ticket_id
       - from_status_id
+      - from_status_name
       - to_status_id
+      - to_status_name
       - changed_by
       - comment
       - at
@@ -794,16 +815,33 @@ schemas:
         type: string
         format: uuid
         nullable: true
+      from_status_name:
+        type: string
+        nullable: true
+        description: Name of the status at the time of reading; statuses removed from the workflow keep their name.
       to_status_id:
         type: string
         format: uuid
-      changed_by:
+      to_status_name:
         type: string
-        format: uuid
+      changed_by:
+        type: object
         nullable: true
+        description: Who made the change, with the name they had then. Null for changes made by the system.
+        required:
+          - id
+          - display_name
+        properties:
+          id:
+            type: string
+            format: uuid
+            description: The user id.
+          display_name:
+            type: string
       comment:
         type: string
         nullable: true
+        description: The comment given with a transition; an internal one is null for people who may not read internal notes.
       at:
         type: string
         format: date-time
@@ -818,8 +856,12 @@ schemas:
       org_id: 0192a3f0-1000-7000-8000-000000000003
       ticket_id: 0192a3f0-1000-7000-8000-000000000004
       from_status_id: null
+      from_status_name: null
       to_status_id: 0192a3f0-1000-7000-8000-000000000005
-      changed_by: null
+      to_status_name: Open
+      changed_by:
+        id: 0192a3f0-1000-7000-8000-000000000006
+        display_name: Ayse Yilmaz
       comment: null
       at: 2026-03-01T09:00:00Z
       created_at: 2026-03-01T09:00:00Z
@@ -844,8 +886,12 @@ schemas:
           org_id: 0192a3f0-1000-7000-8000-000000000003
           ticket_id: 0192a3f0-1000-7000-8000-000000000004
           from_status_id: null
+          from_status_name: null
           to_status_id: 0192a3f0-1000-7000-8000-000000000005
-          changed_by: null
+          to_status_name: Open
+          changed_by:
+            id: 0192a3f0-1000-7000-8000-000000000006
+            display_name: Ayse Yilmaz
           comment: null
           at: 2026-03-01T09:00:00Z
           created_at: 2026-03-01T09:00:00Z
@@ -891,7 +937,7 @@ schemas:
       - sms_count
       - read_count
       - read_at
-      - file_ids
+      - attachments
       - published_at
       - created_by
       - created_at
@@ -953,6 +999,11 @@ schemas:
         type: integer
         format: int64
         nullable: true
+      sms_segments:
+        type: integer
+        format: int64
+        nullable: true
+        description: "Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message."
       read_count:
         type: integer
         format: int64
@@ -962,11 +1013,11 @@ schemas:
         format: date-time
         nullable: true
         description: When the caller read it.
-      file_ids:
+      attachments:
         type: array
+        description: The attached files with what a client needs to show them; download through `files.download` with the `id`.
         items:
-          type: string
-          format: uuid
+          $ref: "#/schemas/AnnouncementAttachment"
       published_at:
         type: string
         format: date-time
@@ -1004,8 +1055,11 @@ schemas:
       sms_count: 80
       read_count: 1
       read_at: null
-      file_ids:
-        - 0192a3f0-1000-7000-8000-000000000003
+      attachments:
+        - id: 0192a3f0-1000-7000-8000-000000000003
+          name: schedule.pdf
+          mime: application/pdf
+          size: 48211
       published_at: null
       created_by: null
       created_at: 2026-03-01T09:00:00Z
@@ -1124,8 +1178,11 @@ schemas:
           sms_count: 80
           read_count: 1
           read_at: null
-          file_ids:
-            - 0192a3f0-1000-7000-8000-000000000003
+          attachments:
+            - id: 0192a3f0-1000-7000-8000-000000000003
+              name: schedule.pdf
+              mime: application/pdf
+              size: 48211
           published_at: null
           created_by: null
           created_at: 2026-03-01T09:00:00Z
@@ -1153,21 +1210,32 @@ schemas:
             - email
             - sms
             - push
+      title:
+        type: string
+        maxLength: 200
+        description: "The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed."
   AnnouncementPreview:
     type: object
     description: What publishing would cost, before the sender presses publish (O5).
     required:
       - recipient_count
       - sms_count
+      - sms_segments
       - email_count
       - in_app_count
     properties:
       recipient_count:
         type: integer
         format: int64
+        description: People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
       sms_count:
         type: integer
         format: int64
+        description: Text messages (recipients with a phone who did not mute).
+      sms_segments:
+        type: integer
+        format: int64
+        description: Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
       email_count:
         type: integer
         format: int64
@@ -1760,6 +1828,7 @@ schemas:
     required:
       - muted_types
       - unmutable_types
+      - available_types
     properties:
       muted_types:
         type: array
@@ -1770,6 +1839,11 @@ schemas:
         items:
           type: string
         description: Sign-in codes and invitations.
+      available_types:
+        type: array
+        items:
+          type: string
+        description: The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own.
   NotificationMutesSet:
     type: object
     required:
@@ -1809,68 +1883,6 @@ schemas:
         type: integer
         format: int64
         nullable: true
-  File:
-    type: object
-    description: An uploaded or generated file.
-    required:
-      - id
-      - org_id
-      - site_id
-      - size
-      - mime
-      - sha256
-      - uploaded_by
-      - scope
-      - status
-      - has_variants
-      - retention_until
-      - created_at
-      - updated_at
-    properties:
-      id:
-        type: string
-        format: uuid
-      org_id:
-        type: string
-        format: uuid
-      site_id:
-        type: string
-        format: uuid
-        nullable: true
-      size:
-        type: integer
-        format: int64
-      mime:
-        type: string
-      sha256:
-        type: string
-      uploaded_by:
-        type: string
-        format: uuid
-        nullable: true
-      scope:
-        type: string
-        nullable: true
-      status:
-        type: string
-        description: Open enum.
-        enum:
-          - ready
-          - quarantined
-        x-open-enum: true
-      has_variants:
-        type: boolean
-        description: "Images: `thumb` and `medium` exist."
-      retention_until:
-        type: string
-        format: date-time
-        nullable: true
-      created_at:
-        type: string
-        format: date-time
-      updated_at:
-        type: string
-        format: date-time
   ExportRequest:
     type: object
     required:
@@ -2117,3 +2129,24 @@ schemas:
           created_at: 2026-03-01T09:00:00Z
           updated_at: 2026-03-01T09:00:00Z
       next_cursor: null
+  AnnouncementAttachment:
+    type: object
+    description: A file attached to an announcement.
+    required:
+      - id
+      - name
+      - mime
+      - size
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: The file id; download it with `files.download`.
+      name:
+        type: string
+      mime:
+        type: string
+      size:
+        type: integer
+        format: int64
+        description: Bytes.

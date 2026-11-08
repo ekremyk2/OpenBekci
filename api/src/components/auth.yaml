@@ -227,15 +227,28 @@ schemas:
         type: string
         pattern: ^[0-9]{6}$
         description: A code sent to the account's own phone by `auth.requestOtp`.
+  ReauthEmailCode:
+    type: object
+    required: [method, code]
+    properties:
+      method:
+        type: string
+        description: Always `email_code`.
+      code:
+        type: string
+        pattern: '^[0-9]{6}$'
+        description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
   ReauthRequest:
     oneOf:
-      - $ref: "#/schemas/ReauthPassword"
-      - $ref: "#/schemas/ReauthSmsOtp"
+      - $ref: '#/schemas/ReauthPassword'
+      - $ref: '#/schemas/ReauthSmsOtp'
+      - $ref: '#/schemas/ReauthEmailCode'
     discriminator:
       propertyName: method
       mapping:
-        password: "#/schemas/ReauthPassword"
-        sms_otp: "#/schemas/ReauthSmsOtp"
+        password: '#/schemas/ReauthPassword'
+        sms_otp: '#/schemas/ReauthSmsOtp'
+        email_code: '#/schemas/ReauthEmailCode'
   ReauthResponse:
     type: object
     required:
@@ -319,12 +332,13 @@ schemas:
         type: boolean
   PermissionGrant:
     type: object
-    description: An effective permission, optionally limited to sites or blocks.
-    required:
-      - permission
+    description: |
+      An effective permission. Without `site_ids` and `block_ids` it holds
+      organization-wide; otherwise only for the listed sites and blocks.
+    required: [permission]
     properties:
       permission:
-        type: string
+        $ref: './permissions.yaml#/schemas/Permission'
       site_ids:
         type: array
         items:
@@ -362,6 +376,7 @@ schemas:
       - roles
       - permissions
       - sites
+      - person_id
     properties:
       default_locale:
         type: string
@@ -378,14 +393,19 @@ schemas:
           $ref: "#/schemas/RoleGrant"
       permissions:
         type: array
-        description: Effective permissions in this organization (filled by the authorization module; empty until then).
+        description: Effective permissions in this organization, from the caller's active memberships and the role to permission matrix.
         items:
           $ref: "#/schemas/PermissionGrant"
       sites:
         type: array
-        description: Sites of the organization the caller can see (empty until the tenancy module lands).
+        description: Sites of the organization the caller can see through a membership or an occupancy.
         items:
           $ref: "#/schemas/MeSite"
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
   MeOccupancy:
     type: object
     description: One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.

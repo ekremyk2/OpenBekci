@@ -2,10 +2,12 @@ package httpapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
@@ -24,11 +26,22 @@ func init() {
 		`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`))
 }
 
-// Idempotency modes of the x-idempotent extension.
+// Idempotency modes of the x-idempotent extension. "none" marks a read-only
+// POST (a preview or dry run): it takes no Idempotency-Key.
 const (
 	idemOptional = "optional"
 	idemRequired = "required"
+	idemNone     = "none"
 )
+
+// idemMode turns the extension value into the mode the middleware acts on:
+// none behaves like an operation without the extension.
+func idemMode(v string) string {
+	if v == idemNone {
+		return ""
+	}
+	return v
+}
 
 const (
 	headerIdempotencyKey = "Idempotency-Key"
@@ -77,7 +90,15 @@ type opInfo struct {
 	idempotent string // "", optional or required
 	preview    bool   // x-stability: preview
 	auth       authMode
-	query      map[string]bool // declared query parameter names
+	orgScoped  bool               // path under /v1/orgs/{org_id}: membership is resolved first
+	perms      []authz.Permission // x-openbekci-roles: checked against the grants before the handler or an idempotent replay
+	query      map[string]bool    // declared query parameter names
+	// stream is x-openbekci-stream: the operation streams a request body
+	// (multipart upload) or a binary response (download). Its request body is
+	// not buffered for validation or hashed for idempotency, and a binary
+	// response is not buffered by the response validator.
+	stream  bool
+	hasBody bool // the operation declares a request body
 }
 
 // pipeline holds the per-operation middleware that is driven by the spec:
@@ -91,6 +112,10 @@ type pipeline struct {
 	auth              Authenticator
 	idem              idempotency.Store
 	validateResponses bool
+	// resolver and tenantDB are set by MountAPI; nil (unit tests) skips the
+	// authorization context.
+	resolver *authz.Resolver
+	tenantDB tenantRunner
 }
 
 func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem idempotency.Store, validateResponses bool) (*pipeline, error) {
@@ -105,10 +130,14 @@ func newPipeline(spec *openapi3.T, log *slog.Logger, auth Authenticator, idem id
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
 			info := opInfo{
-				idempotent: extString(op.Extensions, "x-idempotent"),
+				idempotent: idemMode(extString(op.Extensions, "x-idempotent")),
 				preview:    extString(op.Extensions, "x-stability") == "preview",
 				auth:       authModeOf(spec, op),
 				query:      queryParams(item, op),
+				orgScoped:  isOrgPath(path),
+				stream:     extBool(op.Extensions, "x-openbekci-stream"),
+				hasBody:    op.RequestBody != nil,
+				perms:      extPermissions(op.Extensions),
 			}
 			p.ops[method+" "+path] = info
 		}
@@ -153,6 +182,56 @@ func authModeOf(spec *openapi3.T, op *openapi3.Operation) authMode {
 	return authRequired
 }
 
+// extPermissions reads the x-openbekci-roles list of an operation.
+func extPermissions(ext map[string]any) []authz.Permission {
+	var raw []byte
+	switch v := ext["x-openbekci-roles"].(type) {
+	case nil:
+		return nil
+	case json.RawMessage:
+		raw = v
+	case []byte:
+		raw = v
+	default:
+		raw, _ = json.Marshal(v)
+	}
+	return PermissionsOfRoles(raw)
+}
+
+// PermissionsOfRoles reads an operation's x-openbekci-roles value: either the
+// list of required permission names, or the draft contract's map from role to
+// the permissions that role holds for the operation (every operation names one
+// permission, so the distinct values are the requirement).
+func PermissionsOfRoles(raw []byte) []authz.Permission {
+	var names []string
+	if json.Unmarshal(raw, &names) != nil {
+		var byRole map[string][]string
+		if json.Unmarshal(raw, &byRole) != nil {
+			return nil
+		}
+		seen := map[string]bool{}
+		for _, ps := range byRole {
+			for _, p := range ps {
+				if !seen[p] {
+					seen[p] = true
+					names = append(names, p)
+				}
+			}
+		}
+		sort.Strings(names)
+		if len(names) > 1 {
+			// An operation that lists several permissions across roles accepts any
+			// one of them (tickets.read, tickets.open, ...): a single alternatives group.
+			names = []string{strings.Join(names, "|")}
+		}
+	}
+	out := make([]authz.Permission, len(names))
+	for i, n := range names {
+		out[i] = authz.Permission(n)
+	}
+	return out
+}
+
 // extString reads a string extension that arrives as json.RawMessage or a decoded value.
 func extString(ext map[string]any, name string) string {
 	switch v := ext[name].(type) {
@@ -170,6 +249,18 @@ func extString(ext map[string]any, name string) string {
 		}
 	}
 	return ""
+}
+
+// extBool reads a boolean extension.
+func extBool(ext map[string]any, name string) bool {
+	switch v := ext[name].(type) {
+	case bool:
+		return v
+	case json.RawMessage:
+		var b bool
+		return json.Unmarshal(v, &b) == nil && b
+	}
+	return false
 }
 
 // op finds the operation being served from the chi route pattern. It is only
@@ -193,8 +284,9 @@ func (p *pipeline) Middlewares() []func(http.Handler) http.Handler {
 	chain = append(chain,
 		p.stability,
 		p.authenticate,
+		p.authzContext,
 		p.rejectUnknownQuery,
-		requestValidator(p.spec),
+		p.validation,
 		p.idempotency,
 	)
 	return chain
@@ -243,8 +335,19 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		if mode == authOptional && r.URL.Query().Has("sig") && p.op(r).query["sig"] && p.op(r).query["exp"] {
+			// A signed URL (a download link) stands on its signature: a session
+			// that comes along, from a cookie, a token or another organization,
+			// must not change the outcome, so it is not even looked at.
+			next.ServeHTTP(w, r)
+			return
+		}
 		pr, err := p.auth.Authenticate(r)
 		if mode == authOptional {
+			if isCSRFProblem(err) {
+				problem.Write(w, r, err)
+				return
+			}
 			if err == nil && pr != nil {
 				r = r.WithContext(authz.WithPrincipal(r.Context(), pr))
 			}
@@ -261,6 +364,36 @@ func (p *pipeline) authenticate(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r.WithContext(authz.WithPrincipal(r.Context(), pr)))
 	})
+}
+
+func isCSRFProblem(err error) bool {
+	var pe *problem.Error
+	return errors.As(err, &pe) && pe.Code == problem.CodeCSRFFailed
+}
+
+// preAuth is the authentication step for a request whose parameters could not
+// be bound: the generated wrapper binds required headers and query parameters
+// before any middleware runs, so a caller who is not allowed in would learn
+// about them from the binding error. It returns the problem to answer with
+// (401, or 403 csrf_failed), or nil when binding errors may be reported.
+func (p *pipeline) preAuth(r *http.Request) error {
+	mode := p.op(r).auth
+	if mode == authNone {
+		return nil
+	}
+	pr, err := p.auth.Authenticate(r)
+	switch {
+	case mode == authOptional:
+		if isCSRFProblem(err) {
+			return err
+		}
+		return nil
+	case err != nil:
+		return err
+	case pr == nil:
+		return problem.Unauthenticated("authentication is required")
+	}
+	return nil
 }
 
 // notFound renders unknown API paths as problem+json.

@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -39,6 +40,40 @@ type Config struct {
 	// MaxBodyBytes caps JSON API request bodies (OPENBEKCI_MAX_BODY_BYTES);
 	// zero means the httpapi default (1 MiB). File uploads get their own limit.
 	MaxBodyBytes int64
+
+	// MaxUploadBytes limits one uploaded file (OPENBEKCI_MAX_UPLOAD_BYTES);
+	// zero means 25 MiB. It bypasses the JSON cap above for the multipart
+	// upload route only.
+	MaxUploadBytes int64
+	// FilesAllowedExtensions narrows the built-in file type allowlist
+	// (OPENBEKCI_FILES_ALLOWED_EXTENSIONS, comma separated); empty keeps it all.
+	FilesAllowedExtensions []string
+	// StorageDriver is "local" (default, under DATA_DIR/files) or "s3".
+	StorageDriver string
+	// S3 driver settings (OPENBEKCI_STORAGE_S3_*).
+	StorageS3Bucket    string
+	StorageS3Region    string
+	StorageS3Endpoint  string
+	StorageS3AccessKey string
+	StorageS3SecretKey string
+	StorageS3PathStyle bool
+	StorageS3Prefix    string
+	// ClamAVAddr is a clamd address (host:port or unix:/path); empty skips
+	// virus scanning (OPENBEKCI_CLAMAV_ADDR).
+	ClamAVAddr string
+	// ClamAVTimeout bounds one virus scan (OPENBEKCI_CLAMAV_TIMEOUT, default 60s).
+	ClamAVTimeout time.Duration
+	// MaxImagePixels refuses uploaded images with more pixels than this
+	// (OPENBEKCI_MAX_IMAGE_PIXELS, default 25 million).
+	MaxImagePixels int
+	// ImageWorkers is how many images the process decodes at once
+	// (OPENBEKCI_IMAGE_WORKERS, default max(1, NumCPU/2)).
+	ImageWorkers int
+	// Access control: the largest allow-list of one site that is sent as a snapshot
+	// (OPENBEKCI_ACCESS_MAX_SNAPSHOT_ENTRIES, default 20000), and the size of one
+	// snapshot part (OPENBEKCI_ACCESS_SNAPSHOT_PART_ENTRIES, at most 2000, the protocol
+	// limit; OPENBEKCI_ACCESS_SNAPSHOT_PART_BYTES, default 900000). Zero means the default.
+	AccessMaxSnapshotEntries, AccessSnapshotPartEntries, AccessSnapshotPartBytes int
 
 	// Worker runs the job worker inside serve.
 	Worker      bool
@@ -74,6 +109,14 @@ type Config struct {
 	// SMTPTLS is starttls (default), tls or none.
 	SMTPTLS string
 
+	// Send budgets of the sign-in messages (OPENBEKCI_SEND_DAILY_BUDGET,
+	// SMS_HOURLY_BUDGET, MAIL_HOURLY_BUDGET): per identifier per day, and per
+	// instance per hour for SMS and for mail. Zero takes the default (10, 120, 300);
+	// a negative value removes the limit.
+	SendDailyBudget  int
+	SMSHourlyBudget  int
+	MailHourlyBudget int
+
 	// ServerVersion is the build version; set by the command, not by the environment.
 	ServerVersion string
 }
@@ -82,6 +125,7 @@ type Config struct {
 var secretNames = map[string]bool{
 	"DATABASE_URL": true, "MIGRATOR_DATABASE_URL": true, "PLATFORM_DATABASE_URL": true,
 	"SECRET_KEY": true, "ENCRYPTION_KEY": true, "SMS_NETGSM_PASSWORD": true, "SMTP_PASSWORD": true,
+	"STORAGE_S3_SECRET_KEY": true,
 }
 
 // devKeys are the throwaway keys shipped in the repository's .env.example. They
@@ -163,6 +207,27 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 		c.MaxBodyBytes = n
 	}
 
+	if err = c.loadFiles(l); err != nil {
+		return Config{}, err
+	}
+
+	for _, o := range []struct {
+		name string
+		dst  *int
+	}{
+		{"ACCESS_MAX_SNAPSHOT_ENTRIES", &c.AccessMaxSnapshotEntries},
+		{"ACCESS_SNAPSHOT_PART_ENTRIES", &c.AccessSnapshotPartEntries},
+		{"ACCESS_SNAPSHOT_PART_BYTES", &c.AccessSnapshotPartBytes},
+	} {
+		if v := l.must(o.name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil || n < 1 {
+				return Config{}, fmt.Errorf("%s%s: %q is not a positive integer", envPrefix, o.name, v)
+			}
+			*o.dst = n
+		}
+	}
+
 	switch w := strings.ToLower(l.must("WORKER")); w {
 	case "", "embedded":
 		c.Worker = true
@@ -192,6 +257,60 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	}
 	c.SecretKey, c.EncryptionKey = []byte(secret), []byte(enc)
 	return c, nil
+}
+
+// loadFiles reads the file storage and upload settings.
+func (c *Config) loadFiles(l lookup) error {
+	var err error
+	if v := l.must("MAX_UPLOAD_BYTES"); v != "" {
+		n, perr := strconv.ParseInt(v, 10, 64)
+		if perr != nil || n < 1 {
+			return fmt.Errorf("%sMAX_UPLOAD_BYTES: %q is not a positive integer", envPrefix, v)
+		}
+		c.MaxUploadBytes = n
+	}
+	c.FilesAllowedExtensions = splitList(l.must("FILES_ALLOWED_EXTENSIONS"))
+	c.StorageDriver = strings.ToLower(l.must("STORAGE_DRIVER"))
+	switch c.StorageDriver {
+	case "", "local", "s3":
+	default:
+		return fmt.Errorf("%sSTORAGE_DRIVER: %q is not one of local, s3", envPrefix, c.StorageDriver)
+	}
+	c.StorageS3Bucket = l.must("STORAGE_S3_BUCKET")
+	c.StorageS3Region = l.must("STORAGE_S3_REGION")
+	c.StorageS3Endpoint = l.must("STORAGE_S3_ENDPOINT")
+	c.StorageS3AccessKey = l.must("STORAGE_S3_ACCESS_KEY")
+	if c.StorageS3SecretKey, err = l.get("STORAGE_S3_SECRET_KEY"); err != nil {
+		return err
+	}
+	c.StorageS3Prefix = l.must("STORAGE_S3_PREFIX")
+	if c.StorageS3PathStyle, err = parseBool(l.must("STORAGE_S3_PATH_STYLE")); err != nil {
+		return fmt.Errorf("%sSTORAGE_S3_PATH_STYLE: %w", envPrefix, err)
+	}
+	if c.StorageDriver == "s3" && c.StorageS3Bucket == "" {
+		return fmt.Errorf("%sSTORAGE_DRIVER=s3 needs STORAGE_S3_BUCKET", envPrefix)
+	}
+	c.ClamAVAddr = l.must("CLAMAV_ADDR")
+	if v := l.must("CLAMAV_TIMEOUT"); v != "" {
+		d, derr := time.ParseDuration(v)
+		if derr != nil || d <= 0 {
+			return fmt.Errorf("%sCLAMAV_TIMEOUT: %q is not a positive duration such as 60s", envPrefix, v)
+		}
+		c.ClamAVTimeout = d
+	}
+	for _, s := range []struct {
+		name string
+		dst  *int
+	}{{"MAX_IMAGE_PIXELS", &c.MaxImagePixels}, {"IMAGE_WORKERS", &c.ImageWorkers}} {
+		if v := l.must(s.name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil || n < 1 {
+				return fmt.Errorf("%s%s: %q is not a positive integer", envPrefix, s.name, v)
+			}
+			*s.dst = n
+		}
+	}
+	return nil
 }
 
 // loadMessaging reads the SMS and email settings.
@@ -233,6 +352,17 @@ func (c *Config) loadMessaging(l lookup) error {
 	}
 	c.SMTPFrom = l.must("SMTP_FROM")
 	c.SMTPTLS = strings.ToLower(l.must("SMTP_TLS"))
+	for name, dst := range map[string]*int{
+		"SEND_DAILY_BUDGET": &c.SendDailyBudget, "SMS_HOURLY_BUDGET": &c.SMSHourlyBudget, "MAIL_HOURLY_BUDGET": &c.MailHourlyBudget,
+	} {
+		if v := l.must(name); v != "" {
+			n, perr := strconv.Atoi(v)
+			if perr != nil {
+				return fmt.Errorf("%s%s: %q is not an integer (negative removes the limit)", envPrefix, name, v)
+			}
+			*dst = n
+		}
+	}
 	if c.MailProvider == "smtp" && (c.SMTPHost == "" || c.SMTPFrom == "") {
 		return fmt.Errorf("%sMAIL_PROVIDER=smtp needs SMTP_HOST and SMTP_FROM", envPrefix)
 	}
@@ -273,19 +403,29 @@ func (c Config) ValidateServe() error {
 	return errors.Join(errs...)
 }
 
+// isLocalHost reports whether host (without port or brackets) is the loopback
+// name or address a development instance is served on.
+func isLocalHost(host string) bool {
+	return host == "localhost" || host == "127.0.0.1" || host == "::1"
+}
+
 func (c Config) validateBaseURL() error {
 	u, err := url.Parse(c.BaseURL)
 	if err != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") {
 		return fmt.Errorf("%sBASE_URL %q is not an http(s) URL", envPrefix, c.BaseURL)
 	}
+	local := isLocalHost(u.Hostname())
+	// INSECURE_DEV relaxes cookies, key checks and the log drivers; it must
+	// not be possible to leave it on behind a real address.
+	if c.InsecureDev && !local {
+		return fmt.Errorf("%sINSECURE_DEV=true is accepted only when %sBASE_URL is localhost, 127.0.0.1 or [::1] (it is %q); unset it for any other host", envPrefix, envPrefix, u.Hostname())
+	}
 	if u.Scheme == "http" {
-		switch u.Hostname() {
-		case "localhost", "127.0.0.1", "::1":
-			if !c.InsecureDev {
-				return fmt.Errorf("%sBASE_URL uses http; set %sINSECURE_DEV=true for local development", envPrefix, envPrefix)
-			}
-		default:
+		switch {
+		case !local:
 			return fmt.Errorf("%sBASE_URL must be https (http is allowed only for localhost with INSECURE_DEV)", envPrefix)
+		case !c.InsecureDev:
+			return fmt.Errorf("%sBASE_URL uses http; set %sINSECURE_DEV=true for local development", envPrefix, envPrefix)
 		}
 	}
 	return nil

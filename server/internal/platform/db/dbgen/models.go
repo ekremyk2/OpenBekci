@@ -5,8 +5,832 @@
 package dbgen
 
 import (
+	"net/netip"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type AccessDirty struct {
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	SourceType string
+	SourceID   pgtype.UUID
+	QueuedAt   pgtype.Timestamptz
+}
+
+type AccessEvent struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	PointID        pgtype.UUID
+	AgentID        pgtype.UUID
+	CredentialID   pgtype.UUID
+	Decision       string
+	Reason         string
+	PresentedKind  pgtype.Text
+	ObservedPlate  pgtype.Text
+	ActorUserID    pgtype.UUID
+	ActorDisplay   pgtype.Text
+	CommandID      pgtype.UUID
+	VisitorEntryID pgtype.UUID
+	OccurredAt     pgtype.Timestamptz
+	SyncedAt       pgtype.Timestamptz
+	SyncSeq        pgtype.Int8
+	RawRef         pgtype.Text
+	RawPayload     []byte
+}
+
+type AccessEventCounter struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Seq    int64
+}
+
+type AccessPoint struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Kind      string
+	Direction string
+	AgentID   pgtype.UUID
+	DriverRef []byte
+	Enabled   bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type AccessSiteState struct {
+	OrgID         pgtype.UUID
+	SiteID        pgtype.UUID
+	Version       int64
+	ConfigVersion int64
+	ConfigHash    pgtype.Text
+	VisitorSince  pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+type Account struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Type      string
+	Subtype   pgtype.Text
+	FundID    pgtype.UUID
+	IsSystem  bool
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type AgendaItem struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	MeetingID   pgtype.UUID
+	Position    int32
+	Title       string
+	Description pgtype.Text
+	WillBeVoted bool
+	Topic       pgtype.Text
+	DecisionID  pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+}
+
+type Agent struct {
+	ID                 pgtype.UUID
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	Name               string
+	Status             string
+	EnrolTokenHash     []byte
+	EnrolExpiresAt     pgtype.Timestamptz
+	EnrolUsedAt        pgtype.Timestamptz
+	TokenHash          []byte
+	PreviousTokenHash  []byte
+	PreviousValidUntil pgtype.Timestamptz
+	RotationSealed     []byte
+	RotateBy           pgtype.Timestamptz
+	RotateNow          bool
+	Hostname           pgtype.Text
+	Platform           pgtype.Text
+	AgentVersion       pgtype.Text
+	ProtocolVersion    pgtype.Int4
+	LastSeen           pgtype.Timestamptz
+	SnapshotVersion    pgtype.Int8
+	ConfigVersion      pgtype.Int8
+	QueueDepth         pgtype.Int8
+	DriversStatus      []byte
+	ClockOffsetMs      pgtype.Int8
+	ClockSuspect       bool
+	LostEvents         pgtype.Int8
+	StoreError         pgtype.Text
+	DeadLetters        pgtype.Int8
+	EnrolledAt         pgtype.Timestamptz
+	RevokedAt          pgtype.Timestamptz
+	RevokedBy          pgtype.UUID
+	CreatedBy          pgtype.UUID
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
+	Version            int32
+}
+
+type AgentCommand struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgentID      pgtype.UUID
+	PointID      pgtype.UUID
+	Command      string
+	Payload      []byte
+	ActorUserID  pgtype.UUID
+	ActorDisplay pgtype.Text
+	Status       string
+	Result       []byte
+	IssuedAt     pgtype.Timestamptz
+	ExpiresAt    pgtype.Timestamptz
+	DeliveredAt  pgtype.Timestamptz
+	CompletedAt  pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
+type AllocationKey struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Kind      string
+	IsDefault bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type AllocationKeyValue struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	KeyID     pgtype.UUID
+	UnitID    pgtype.UUID
+	Value     pgtype.Numeric
+	Raw       string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type AllowlistChange struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	Version      int64
+	Op           string
+	CredentialID pgtype.UUID
+	Entry        []byte
+	At           pgtype.Timestamptz
+}
+
+type Announcement struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Title          string
+	BodyMd         string
+	Status         string
+	Audience       []byte
+	PublishAt      pgtype.Timestamptz
+	ExpiresAt      pgtype.Timestamptz
+	Pinned         bool
+	Channels       []string
+	RecipientCount pgtype.Int4
+	SmsCount       pgtype.Int4
+	SmsSegments    pgtype.Int4
+	PublishedAt    pgtype.Timestamptz
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	Version        int32
+}
+
+type AnnouncementFile struct {
+	OrgID          pgtype.UUID
+	AnnouncementID pgtype.UUID
+	FileID         pgtype.UUID
+	Position       int32
+}
+
+type AnnouncementRead struct {
+	OrgID          pgtype.UUID
+	AnnouncementID pgtype.UUID
+	PersonID       pgtype.UUID
+	ReadAt         pgtype.Timestamptz
+}
+
+type AnnouncementRecipient struct {
+	OrgID          pgtype.UUID
+	AnnouncementID pgtype.UUID
+	PersonID       pgtype.UUID
+}
+
+type AssemblyReminder struct {
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	Year       int32
+	NotifiedAt pgtype.Timestamptz
+}
+
+type Attendance struct {
+	ID               pgtype.UUID
+	OrgID            pgtype.UUID
+	SiteID           pgtype.UUID
+	MeetingID        pgtype.UUID
+	PersonID         pgtype.UUID
+	UnitIds          []pgtype.UUID
+	Call             string
+	Mode             string
+	ProxyForPersonID pgtype.UUID
+	Source           string
+	Votes            int32
+	Share            pgtype.Numeric
+	CheckedInAt      pgtype.Timestamptz
+	CheckedInBy      pgtype.UUID
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+}
+
+type AttendanceToken struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	MeetingID pgtype.UUID
+	PersonID  pgtype.UUID
+	TokenHash string
+	CreatedAt pgtype.Timestamptz
+}
+
+type AuditEvent struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	ActorUserID pgtype.UUID
+	ActorKind   string
+	Action      string
+	TargetType  string
+	TargetID    pgtype.UUID
+	Diff        []byte
+	Ip          *netip.Addr
+	RequestID   pgtype.Text
+	At          pgtype.Timestamptz
+}
+
+type BankStatementImport struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Importer       string
+	AssetAccountID pgtype.UUID
+	Filename       string
+	Content        []byte
+	ContentSha256  []byte
+	Mapping        []byte
+	Status         string
+	OpeningBalance pgtype.Int8
+	ClosingBalance pgtype.Int8
+	PeriodFrom     pgtype.Date
+	PeriodTo       pgtype.Date
+	Error          pgtype.Text
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type BankTransaction struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	ImportID     pgtype.UUID
+	LineNo       int32
+	BookedOn     pgtype.Date
+	Amount       int64
+	Counterparty pgtype.Text
+	Description  pgtype.Text
+	Reference    pgtype.Text
+	Raw          []byte
+	MatchStatus  string
+	Suggestions  []byte
+	PaymentID    pgtype.UUID
+	ExpenseID    pgtype.UUID
+	Note         pgtype.Text
+	MatchedBy    pgtype.UUID
+	MatchedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
+type Bill struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	VendorID          pgtype.UUID
+	DocumentNo        pgtype.Text
+	IssueDate         pgtype.Date
+	DueDate           pgtype.Date
+	Amount            int64
+	CategoryAccountID pgtype.UUID
+	FundID            pgtype.UUID
+	FileID            pgtype.UUID
+	Description       pgtype.Text
+	Status            string
+	JournalEntryID    pgtype.UUID
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type BillPayment struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	BillID            pgtype.UUID
+	Amount            int64
+	PaidOn            pgtype.Date
+	PaidFromAccountID pgtype.UUID
+	Reference         pgtype.Text
+	JournalEntryID    pgtype.UUID
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+}
+
+type Block struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Hidden    bool
+	SortOrder int32
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type Booking struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	FacilityID      pgtype.UUID
+	UnitID          pgtype.UUID
+	PersonID        pgtype.UUID
+	StartAt         pgtype.Timestamptz
+	EndAt           pgtype.Timestamptz
+	Status          string
+	DebtorKind      pgtype.Text
+	ChargeID        pgtype.UUID
+	FeeAmount       pgtype.Int8
+	FeeCurrency     pgtype.Text
+	RefundAmount    pgtype.Int8
+	CancelledReason pgtype.Text
+	CancelledBy     pgtype.UUID
+	CreatedBy       pgtype.UUID
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
+}
+
+type Budget struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	FiscalYearID pgtype.UUID
+	Status       string
+	DecisionID   pgtype.UUID
+	CreatedBy    pgtype.UUID
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type BudgetLine struct {
+	OrgID                    pgtype.UUID
+	SiteID                   pgtype.UUID
+	BudgetID                 pgtype.UUID
+	ExpenseCategoryAccountID pgtype.UUID
+	FundID                   pgtype.UUID
+	Amount                   int64
+}
+
+type CashBox struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	Name              string
+	AccountID         pgtype.UUID
+	CollectorPersonID pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type Charge struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	PlanID          pgtype.UUID
+	UnitID          pgtype.UUID
+	Period          string
+	Kind            string
+	ChargeType      string
+	DebtorKind      string
+	DebtorPersonID  pgtype.UUID
+	Amount          int64
+	DueDate         pgtype.Date
+	Description     string
+	AllocationBasis []byte
+	FundID          pgtype.UUID
+	JournalEntryID  pgtype.UUID
+	CancelEntryID   pgtype.UUID
+	Status          string
+	CreatedAt       pgtype.Timestamptz
+}
+
+type ChargePlan struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	Name            string
+	Kind            string
+	ChargeType      string
+	DefaultDebtor   string
+	Frequency       string
+	DueDay          int32
+	StartOn         pgtype.Date
+	EndOn           pgtype.Date
+	AmountMode      string
+	AllocationKey   pgtype.Text
+	Scope           string
+	FundID          pgtype.UUID
+	IncomeAccountID pgtype.UUID
+	Status          string
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
+}
+
+type ChargePlanRate struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	PlanID     pgtype.UUID
+	FromOn     pgtype.Date
+	ToOn       pgtype.Date
+	Amount     int64
+	DecisionID pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+}
+
+type CollectionCase struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	DebtorPersonID pgtype.UUID
+	OpenedOn       pgtype.Date
+	Lawyer         pgtype.Text
+	FileNo         pgtype.Text
+	Status         string
+	ClosedOn       pgtype.Date
+	CostsCharged   int64
+	CostChargeID   pgtype.UUID
+	FreezeID       pgtype.UUID
+	Notes          pgtype.Text
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	Version        int32
+}
+
+type Credential struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	Kind         string
+	Value        string
+	SourceType   string
+	SourceID     pgtype.UUID
+	UnitID       pgtype.UUID
+	PersonID     pgtype.UUID
+	Label        pgtype.Text
+	PointScope   string
+	PointIds     []pgtype.UUID
+	ValidFrom    pgtype.Timestamptz
+	ValidTo      pgtype.Timestamptz
+	Recurring    []byte
+	MaxUses      pgtype.Int4
+	Uses         int32
+	Status       string
+	StatusReason pgtype.Text
+	Published    []byte
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
+type Decision struct {
+	ID                    pgtype.UUID
+	OrgID                 pgtype.UUID
+	SiteID                pgtype.UUID
+	MeetingID             pgtype.UUID
+	AgendaItemID          pgtype.UUID
+	SequenceNo            int32
+	Year                  int32
+	Text                  string
+	Outcome               string
+	OutcomeOverrideReason pgtype.Text
+	VoteCount             []byte
+	Dissents              []byte
+	ConcernsResidents     bool
+	NotifiedAt            pgtype.Timestamptz
+	Effect                []byte
+	CreatedBy             pgtype.UUID
+	CreatedAt             pgtype.Timestamptz
+	UpdatedAt             pgtype.Timestamptz
+	Version               int32
+}
+
+type DecisionCounter struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Year   int32
+	LastNo int32
+}
+
+type Delivery struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	UnitID          pgtype.UUID
+	ReceivedAt      pgtype.Timestamptz
+	ReceivedBy      pgtype.UUID
+	Description     pgtype.Text
+	CollectedAt     pgtype.Timestamptz
+	CollectedByName pgtype.Text
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
+type DeliveryLog struct {
+	ID      pgtype.UUID
+	At      pgtype.Timestamptz
+	Channel string
+	Purpose string
+	Target  string
+	UserID  pgtype.UUID
+	Status  string
+	Detail  pgtype.Text
+}
+
+type DirectoryConsent struct {
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	PersonID   pgtype.UUID
+	ID         pgtype.UUID
+	ShareName  bool
+	SharePhone bool
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
+	Version    int32
+}
+
+type Document struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	FolderID          pgtype.UUID
+	Title             string
+	FileID            pgtype.UUID
+	VisibilityLevel   pgtype.Text
+	VisibilityUnitIds []pgtype.UUID
+	Source            string
+	GeneratedType     pgtype.Text
+	GeneratedID       pgtype.UUID
+	AddressedPersonID pgtype.UUID
+	UploadedBy        pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type DunningEvent struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	RunID          pgtype.UUID
+	StageID        pgtype.UUID
+	Source         string
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	PersonID       pgtype.UUID
+	DebtorKey      string
+	Period         string
+	Channel        string
+	AmountDue      int64
+	SentAt         pgtype.Timestamptz
+	Letter         []byte
+	DocumentFileID pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type DunningRun struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	StageID    pgtype.UUID
+	EventCount int32
+	SmsCount   int32
+	CreatedBy  pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+}
+
+type DunningStage struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	Name         string
+	Kind         string
+	DaysAfterDue int32
+	Channels     []string
+	TemplateKey  pgtype.Text
+	Position     int32
+	Enabled      bool
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type Expense struct {
+	ID                 pgtype.UUID
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	CategoryAccountID  pgtype.UUID
+	FundID             pgtype.UUID
+	Amount             int64
+	PaidOn             pgtype.Date
+	PaidFromAccountID  pgtype.UUID
+	VendorID           pgtype.UUID
+	Description        string
+	DocumentNo         pgtype.Text
+	FileID             pgtype.UUID
+	RecurringExpenseID pgtype.UUID
+	Status             string
+	JournalEntryID     pgtype.UUID
+	VoidEntryID        pgtype.UUID
+	VoidedReason       pgtype.Text
+	VoidedAt           pgtype.Timestamptz
+	CreatedBy          pgtype.UUID
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
+}
+
+type Facility struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	Name        string
+	Rules       []byte
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+	Description pgtype.Text
+	Enabled     bool
+}
+
+type FacilityBlock struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	FacilityID pgtype.UUID
+	StartAt    pgtype.Timestamptz
+	EndAt      pgtype.Timestamptz
+	Reason     pgtype.Text
+	CreatedBy  pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
+}
+
+type File struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Key            string
+	Name           string
+	Size           int64
+	Mime           string
+	Sha256         pgtype.Text
+	UploadedBy     pgtype.UUID
+	ScopeType      pgtype.Text
+	ScopeID        pgtype.UUID
+	Status         string
+	Source         string
+	RetentionUntil pgtype.Timestamptz
+	Variants       []byte
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	DeletedAt      pgtype.Timestamptz
+	PurgedAt       pgtype.Timestamptz
+}
+
+type FiscalYear struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	StartOn              pgtype.Date
+	EndOn                pgtype.Date
+	Status               string
+	ApprovedByDecisionID pgtype.UUID
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type Folder struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	ParentID          pgtype.UUID
+	Name              string
+	Kind              string
+	UnitID            pgtype.UUID
+	VisibilityLevel   string
+	VisibilityUnitIds []pgtype.UUID
+	IsSystem          bool
+	SystemKey         pgtype.Text
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type Fund struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Kind      string
+	IsDefault bool
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type GatePin struct {
+	OrgID        pgtype.UUID
+	PersonID     pgtype.UUID
+	PinHash      string
+	AttemptsFrom pgtype.Timestamptz
+	SetBy        pgtype.UUID
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
+type GatePinAttempt struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PersonID  pgtype.UUID
+	ConsoleID pgtype.UUID
+	Ok        bool
+	At        pgtype.Timestamptz
+}
+
+type GovernanceSetting struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Preset    pgtype.Text
+	Settings  []byte
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type GuardSession struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PersonID  pgtype.UUID
+	ConsoleID pgtype.UUID
+	TokenHash []byte
+	ExpiresAt pgtype.Timestamptz
+	EndedAt   pgtype.Timestamptz
+	CreatedAt pgtype.Timestamptz
+}
 
 type IdempotencyKey struct {
 	OrgID               pgtype.UUID
@@ -21,11 +845,163 @@ type IdempotencyKey struct {
 	ExpiresAt           pgtype.Timestamptz
 	Owner               pgtype.UUID
 	ResponseHeaders     []byte
+	ContentDigest       pgtype.Text
+}
+
+type ImportBatch struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Kind      string
+	Filename  string
+	Mapping   []byte
+	DryRun    bool
+	Status    string
+	Summary   []byte
+	Report    []byte
+	CreatedBy pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type ImportRow struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	BatchID   pgtype.UUID
+	RowNo     int32
+	Status    string
+	Data      []byte
+	Opening   []byte
+	UnitID    pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
 }
 
 type InstanceSetting struct {
 	ID         bool
 	InstanceID pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+}
+
+type Invitation struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	Kind            string
+	UnitID          pgtype.UUID
+	PersonID        pgtype.UUID
+	OccupancyKind   pgtype.Text
+	OccupancySide   pgtype.Text
+	SharePct        pgtype.Numeric
+	IsCorrespondent bool
+	Resides         bool
+	ValidFrom       pgtype.Date
+	Channel         string
+	Email           pgtype.Text
+	Phone           pgtype.Text
+	Locale          string
+	TokenHash       []byte
+	Code            pgtype.Text
+	Status          string
+	ExpiresAt       pgtype.Timestamptz
+	MaxUses         pgtype.Int4
+	Uses            int32
+	SendCount       int32
+	LastSentAt      pgtype.Timestamptz
+	InvitedBy       pgtype.UUID
+	AcceptedBy      pgtype.UUID
+	AcceptedAt      pgtype.Timestamptz
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
+}
+
+type JournalEntry struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	EntryDate       pgtype.Date
+	DocumentDate    pgtype.Date
+	FiscalYearID    pgtype.UUID
+	Memo            string
+	SourceType      string
+	SourceID        pgtype.UUID
+	PostedBy        pgtype.UUID
+	PostedAt        pgtype.Timestamptz
+	ReversesEntryID pgtype.UUID
+}
+
+type JournalLine struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	EntryID    pgtype.UUID
+	EntryDate  pgtype.Date
+	AccountID  pgtype.UUID
+	FundID     pgtype.UUID
+	Debit      int64
+	Credit     int64
+	UnitID     pgtype.UUID
+	DebtorKind pgtype.Text
+	PersonID   pgtype.UUID
+	BlockID    pgtype.UUID
+	VendorID   pgtype.UUID
+}
+
+type LateFeeBooking struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	UnitID     pgtype.UUID
+	DebtorKind string
+	Period     string
+	Kind       string
+	Amount     int64
+	ChargeID   pgtype.UUID
+	EntryID    pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+	PersonID   pgtype.UUID
+}
+
+type LateFeeFreeze struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	UnitID     pgtype.UUID
+	DebtorKind string
+	FromOn     pgtype.Date
+	ToOn       pgtype.Date
+	Reason     string
+	CreatedAt  pgtype.Timestamptz
+	Version    int32
+	UpdatedAt  pgtype.Timestamptz
+	CaseID     pgtype.UUID
+}
+
+type LateFeePolicy struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	FromOn          pgtype.Date
+	RateBpsPerMonth int32
+	GraceDays       int32
+	CreatedAt       pgtype.Timestamptz
+	IsDefault       bool
+}
+
+type LateFeeWaiver struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	UnitID     pgtype.UUID
+	DebtorKind string
+	Amount     int64
+	Reason     string
+	ByUserID   pgtype.UUID
+	EntryID    pgtype.UUID
 	CreatedAt  pgtype.Timestamptz
 }
 
@@ -37,6 +1013,67 @@ type LoginAttempt struct {
 	Success    bool
 	UserID     pgtype.UUID
 	At         pgtype.Timestamptz
+}
+
+type Meeting struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	Kind                 string
+	Scope                string
+	Title                pgtype.Text
+	ScheduledAt          pgtype.Timestamptz
+	SecondCallAt         pgtype.Timestamptz
+	Location             string
+	Status               string
+	EligibilitySnapshot  []byte
+	CallSnapshot         []byte
+	SettingsSnapshot     []byte
+	CallLetterDocumentID pgtype.UUID
+	MinutesDocumentID    pgtype.UUID
+	MinutesFileID        pgtype.UUID
+	CalledAt             pgtype.Timestamptz
+	HeldCall             pgtype.Text
+	FirstCallFailedAt    pgtype.Timestamptz
+	StartedAt            pgtype.Timestamptz
+	ClosedAt             pgtype.Timestamptz
+	CancelReason         pgtype.Text
+	CreatedBy            pgtype.UUID
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type MeetingDocument struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	MeetingID pgtype.UUID
+	Kind      string
+	FileName  string
+	Mime      string
+	Content   []byte
+	CreatedBy pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+}
+
+type MeetingNotice struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	MeetingID   pgtype.UUID
+	PersonID    pgtype.UUID
+	Phase       string
+	Method      pgtype.Text
+	Status      string
+	SentAt      pgtype.Timestamptz
+	TrackingNo  pgtype.Text
+	ProofFileID pgtype.UUID
+	Note        pgtype.Text
+	Late        bool
+	RecordedBy  pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
 }
 
 type Membership struct {
@@ -53,6 +1090,111 @@ type Membership struct {
 	CreatedAt  pgtype.Timestamptz
 	UpdatedAt  pgtype.Timestamptz
 	Version    int32
+}
+
+type MoveOut struct {
+	ID                     pgtype.UUID
+	OrgID                  pgtype.UUID
+	SiteID                 pgtype.UUID
+	OccupancyID            pgtype.UUID
+	UnitID                 pgtype.UUID
+	PersonID               pgtype.UUID
+	AsOf                   pgtype.Date
+	OpenCharges            string
+	CarriedAmountMinor     pgtype.Int8
+	CarriedCurrency        pgtype.Text
+	ClosingStatementFileID pgtype.UUID
+	CertificateFileID      pgtype.UUID
+	ClosingStatementStatus string
+	CertificateStatus      string
+	SuccessorOccupancyID   pgtype.UUID
+	DecidedBy              pgtype.UUID
+	Notes                  pgtype.Text
+	CreatedAt              pgtype.Timestamptz
+	UpdatedAt              pgtype.Timestamptz
+	Version                int32
+}
+
+type Notification struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PersonID  pgtype.UUID
+	Type      string
+	Payload   []byte
+	Link      pgtype.Text
+	DedupeKey pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	ReadAt    pgtype.Timestamptz
+}
+
+type NotificationDelivery struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	NotificationID pgtype.UUID
+	Channel        string
+	Status         string
+	ClaimedAt      pgtype.Timestamptz
+	Attempts       int32
+	LastError      pgtype.Text
+	ProviderID     pgtype.Text
+	SmsSegments    int32
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type NotificationMute struct {
+	OrgID     pgtype.UUID
+	PersonID  pgtype.UUID
+	Type      string
+	CreatedAt pgtype.Timestamptz
+}
+
+type Occupancy struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	UnitID          pgtype.UUID
+	PersonID        pgtype.UUID
+	Kind            string
+	Side            string
+	SharePct        pgtype.Numeric
+	IsCorrespondent bool
+	MaySeeMoney     bool
+	Resides         bool
+	ValidFrom       pgtype.Date
+	ValidTo         pgtype.Date
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
+}
+
+type OpeningBalance struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	AsOf           pgtype.Date
+	Kind           string
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	AccountID      pgtype.UUID
+	Principal      int64
+	LateFee        int64
+	JournalEntryID pgtype.UUID
+	EntryIds       []pgtype.UUID
+	ImportRowID    pgtype.UUID
+	VoidedAt       pgtype.Timestamptz
+	VoidEntryID    pgtype.UUID
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	VoidReason     pgtype.Text
+}
+
+type OrgStorageUsage struct {
+	OrgID     pgtype.UUID
+	Bytes     int64
+	Files     int32
+	UpdatedAt pgtype.Timestamptz
 }
 
 type Organization struct {
@@ -83,15 +1225,157 @@ type OtpCode struct {
 	ConsumedAt pgtype.Timestamptz
 }
 
+type Payment struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	DebtorPersonID pgtype.UUID
+	PayerPersonID  pgtype.UUID
+	Method         string
+	Gross          int64
+	Fee            int64
+	Net            int64
+	ReceivedOn     pgtype.Date
+	RecordedBy     pgtype.UUID
+	AssetAccountID pgtype.UUID
+	Reference      pgtype.Text
+	Status         string
+	ReceiptNo      pgtype.Text
+	JournalEntryID pgtype.UUID
+	VoidEntryID    pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+}
+
+type PaymentAllocation struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PaymentID pgtype.UUID
+	ChargeID  pgtype.UUID
+	Amount    int64
+	AppliedOn pgtype.Date
+	Voided    bool
+	CreatedAt pgtype.Timestamptz
+}
+
 type Person struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	UserID            pgtype.UUID
+	DisplayName       string
+	Contact           []byte
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+	NationalIDEnc     []byte
+	NationalIDCountry pgtype.Text
+	GateContactPhone  pgtype.Text
+	Notes             pgtype.Text
+	SiteID            pgtype.UUID
+}
+
+type PlatformAuditEvent struct {
 	ID          pgtype.UUID
-	OrgID       pgtype.UUID
-	UserID      pgtype.UUID
-	DisplayName string
-	Contact     []byte
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
-	Version     int32
+	ActorUserID pgtype.UUID
+	ActorKind   string
+	Action      string
+	TargetType  string
+	TargetID    pgtype.UUID
+	Diff        []byte
+	Ip          *netip.Addr
+	RequestID   pgtype.Text
+	At          pgtype.Timestamptz
+}
+
+type Poll struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	Question     pgtype.Text
+	OpensAt      pgtype.Timestamptz
+	ClosesAt     pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type PollAnswer struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	UnitID       pgtype.UUID
+	Answer       string
+	AnsweredBy   pgtype.UUID
+	AnsweredAt   pgtype.Timestamptz
+}
+
+type RecurringExpense struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	CategoryAccountID pgtype.UUID
+	FundID            pgtype.UUID
+	Amount            int64
+	PaidFromAccountID pgtype.UUID
+	VendorID          pgtype.UUID
+	Description       string
+	DocumentNo        pgtype.Text
+	Frequency         string
+	DayOfMonth        int32
+	NextOn            pgtype.Date
+	Active            bool
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+}
+
+type RecurringVisitor struct {
+	ID            pgtype.UUID
+	OrgID         pgtype.UUID
+	SiteID        pgtype.UUID
+	UnitID        pgtype.UUID
+	Name          string
+	Plate         pgtype.Text
+	Days          []int16
+	StartTime     string
+	EndTime       string
+	ValidFrom     pgtype.Date
+	ValidTo       pgtype.Date
+	Status        string
+	QrTokenHash   []byte
+	QrTokenSealed []byte
+	RegisteredBy  pgtype.UUID
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+	Version       int32
+}
+
+type Refund struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	PersonID          pgtype.UUID
+	UnitID            pgtype.UUID
+	DebtorKind        pgtype.Text
+	Amount            int64
+	Reason            string
+	Kind              string
+	PaidFromAccountID pgtype.UUID
+	RefundedOn        pgtype.Date
+	CreditID          pgtype.UUID
+	PaymentID         pgtype.UUID
+	JournalEntryID    pgtype.UUID
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+}
+
+type Sequence struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Kind   string
+	Year   int32
+	Last   int32
 }
 
 type Session struct {
@@ -109,6 +1393,244 @@ type Session struct {
 	RevokedAt   pgtype.Timestamptz
 	LastUsedAt  pgtype.Timestamptz
 	ReauthUntil pgtype.Timestamptz
+	GraceBlob   []byte
+	GraceUntil  pgtype.Timestamptz
+}
+
+type Site struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	Name                 string
+	Address              []byte
+	Timezone             string
+	Currency             string
+	FiscalYearStartMonth int32
+	LockDate             pgtype.Date
+	Settings             []byte
+	BankDetails          []byte
+	Status               string
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type SiteChannelDefault struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Type      string
+	Channels  []string
+	UpdatedAt pgtype.Timestamptz
+}
+
+type SiteExport struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	Direction   string
+	SiteID      pgtype.UUID
+	SiteName    pgtype.Text
+	SourceOrgID pgtype.UUID
+	TargetOrgID pgtype.UUID
+	Status      string
+	Summary     []byte
+	Archive     []byte
+	CreatedBy   pgtype.UUID
+	At          pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+}
+
+type SiteNotificationConfig struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Version   int32
+	UpdatedAt pgtype.Timestamptz
+}
+
+type SmsUsage struct {
+	OrgID    pgtype.UUID
+	SiteID   pgtype.UUID
+	Month    pgtype.Date
+	Messages int32
+	Segments int32
+}
+
+type TermReminder struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	MembershipID pgtype.UUID
+	PersonID     pgtype.UUID
+	Role         string
+	ValidTo      pgtype.Date
+	LeadDays     int32
+	NotifiedAt   pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
+type Ticket struct {
+	ID               pgtype.UUID
+	OrgID            pgtype.UUID
+	SiteID           pgtype.UUID
+	UnitID           pgtype.UUID
+	ReporterPersonID pgtype.UUID
+	CategoryID       pgtype.UUID
+	Title            string
+	Description      string
+	StatusID         pgtype.UUID
+	Visibility       string
+	AssigneePersonID pgtype.UUID
+	AssigneeVendorID pgtype.UUID
+	MergedIntoID     pgtype.UUID
+	ClosedAt         pgtype.Timestamptz
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+	Version          int32
+}
+
+type TicketAttachment struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	TicketID  pgtype.UUID
+	CommentID pgtype.UUID
+	FileID    pgtype.UUID
+	Mime      string
+	Size      int64
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
+type TicketCategory struct {
+	ID                  pgtype.UUID
+	OrgID               pgtype.UUID
+	SiteID              pgtype.UUID
+	Name                string
+	DefaultVisibility   string
+	DefaultAssigneeRole pgtype.Text
+	Position            int32
+	Archived            bool
+	CreatedAt           pgtype.Timestamptz
+	UpdatedAt           pgtype.Timestamptz
+	Version             int32
+}
+
+type TicketComment struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	TicketID       pgtype.UUID
+	AuthorPersonID pgtype.UUID
+	Body           string
+	Visibility     string
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type TicketStatus struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Name      string
+	Semantic  string
+	Position  int32
+	Key       pgtype.Text
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+}
+
+type TicketStatusHistory struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	TicketID        pgtype.UUID
+	FromStatusID    pgtype.UUID
+	ToStatusID      pgtype.UUID
+	ChangedBy       pgtype.UUID
+	ChangedByName   pgtype.Text
+	Comment         pgtype.Text
+	CommentInternal bool
+	At              pgtype.Timestamptz
+}
+
+type TicketVote struct {
+	OrgID     pgtype.UUID
+	TicketID  pgtype.UUID
+	PersonID  pgtype.UUID
+	CreatedAt pgtype.Timestamptz
+}
+
+type TicketWorkflow struct {
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	IsDefault bool
+	Version   int32
+	UpdatedAt pgtype.Timestamptz
+}
+
+type Transfer struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	FromAccountID  pgtype.UUID
+	ToAccountID    pgtype.UUID
+	Amount         int64
+	TransferredOn  pgtype.Date
+	Memo           pgtype.Text
+	Kind           string
+	JournalEntryID pgtype.UUID
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+}
+
+type Unit struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	BlockID              pgtype.UUID
+	DoorNumber           string
+	LegalRef             pgtype.Text
+	Type                 string
+	AreaM2               pgtype.Numeric
+	ParentUnitID         pgtype.UUID
+	AppurtenanceOverride pgtype.Text
+	PayerOverrides       []byte
+	Status               string
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
+type UnitClaim struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	UnitID       pgtype.UUID
+	PersonID     pgtype.UUID
+	UserID       pgtype.UUID
+	InvitationID pgtype.UUID
+	Kind         string
+	Status       string
+	Message      pgtype.Text
+	DecidedBy    pgtype.UUID
+	DecidedAt    pgtype.Timestamptz
+	DecisionNote pgtype.Text
+	OccupancyID  pgtype.UUID
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type UnitTag struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	UnitID    pgtype.UUID
+	Tag       string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
 }
 
 type User struct {
@@ -122,4 +1644,85 @@ type User struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type Vehicle struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	UnitID    pgtype.UUID
+	Plate     string
+	Label     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
+type Vendor struct {
+	ID                       pgtype.UUID
+	OrgID                    pgtype.UUID
+	SiteID                   pgtype.UUID
+	Name                     string
+	TaxID                    pgtype.Text
+	Contact                  []byte
+	DefaultExpenseCategoryID pgtype.UUID
+	CreatedAt                pgtype.Timestamptz
+	UpdatedAt                pgtype.Timestamptz
+	Version                  int32
+}
+
+type VisitorApprovalRequest struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	EntryID     pgtype.UUID
+	UnitID      pgtype.UUID
+	RequestedBy pgtype.UUID
+	RequestedAt pgtype.Timestamptz
+	ExpiresAt   pgtype.Timestamptz
+	Status      string
+	DecidedBy   pgtype.UUID
+	DecidedAt   pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
+type VisitorEntry struct {
+	ID                 pgtype.UUID
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	UnitID             pgtype.UUID
+	Name               string
+	Plate              pgtype.Text
+	WindowFrom         pgtype.Timestamptz
+	WindowTo           pgtype.Timestamptz
+	ApprovalStatus     string
+	Source             string
+	QrTokenHash        []byte
+	QrTokenSealed      []byte
+	RecurringVisitorID pgtype.UUID
+	DecidedBy          pgtype.UUID
+	DecidedAt          pgtype.Timestamptz
+	ArrivedAt          pgtype.Timestamptz
+	ArrivedBy          pgtype.UUID
+	LeftAt             pgtype.Timestamptz
+	Cancelled          bool
+	RegisteredBy       pgtype.UUID
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
+	Version            int32
+}
+
+type VoteCount struct {
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	AgendaItemID pgtype.UUID
+	YesCount     int32
+	NoCount      int32
+	AbstainCount int32
+	YesShare     pgtype.Numeric
+	NoShare      pgtype.Numeric
+	AbstainShare pgtype.Numeric
+	RecordedBy   pgtype.UUID
+	RecordedAt   pgtype.Timestamptz
 }

@@ -196,7 +196,12 @@ schemas:
       - set
       - country_code
       - masked
+      - value
     properties:
+      value:
+        type: string
+        nullable: true
+        description: The full number. Reading the national id needs a recent re-authentication (403 `reauth_required` otherwise) and is audited; null when none is set.
       set:
         type: boolean
       country_code:

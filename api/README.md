@@ -61,7 +61,7 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
 
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
-  `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
+  `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`, `guard_session_required` and `guard_session_expired` (401, guard console operations: no or an expired `X-Guard-Session`; the console login stays valid),
   `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403, cookie-session mutations without the right `Origin` and `X-Requested-With`), `sms_unavailable` and `mail_unavailable` (503), `method_not_allowed` (405, with `Allow`), `unsupported_media_type` (415), `timeout` (504), `payload_too_large` (413; JSON request
   bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `invalid_grant` is a 401, and 401 responses carry
   `WWW-Authenticate`. `instance` (also `request_id`) is the request id,
@@ -83,8 +83,9 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 
 | Extension | On | Values | Effect |
 |---|---|---|---|
-| `x-openbekci-roles` | operation | map role to a list of permission strings | the authorization matrix (wired with the first business modules) |
-| `x-idempotent` | operation | `optional` or `required` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal). A replay sets `Idempotent-Replayed: true` and restores only `Content-Type`, `Location` and `X-OpenBekci-Stability`. Keys need a signed-in caller: a `required` operation must require authentication (conformance test), and an anonymous call to an `optional` one ignores the header |
+| `x-openbekci-roles` | root | map role (the seven built-in roles and `platform_admin`) to its permission names | the role to permission matrix; **generated** from the Go permission registry into `components/permissions.yaml` by `task gen:permissions`, never edited by hand |
+| `x-openbekci-roles` | operation | list of permission names, or the draft's map role to permission names | the permission(s) the operation requires, all of them (in the map form, the distinct permission names of all roles; each draft operation names exactly one). Mandatory under `/v1/orgs/{org_id}`; optional documentation elsewhere. The authz matrix test fails when it is missing or does not match what the handler requires |
+| `x-idempotent` | operation | `optional`, `required` or `none` | `Idempotency-Key` is honoured or mandatory (422 `validation_failed` without it). Same key and request replays the stored response; same key, different request is 422 `idempotency_mismatch`; a request still running is 409 `conflict`; keys live 7 days, scoped by (org, principal). A replay sets `Idempotent-Replayed: true` and restores only `Content-Type`, `Location` and `X-OpenBekci-Stability`. Keys need a signed-in caller: a `required` operation must require authentication (conformance test), and an anonymous call to an `optional` one ignores the header. `none` (operations whose response carries a one-time secret, such as an enrolment token) never stores the response and ignores the header |
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |

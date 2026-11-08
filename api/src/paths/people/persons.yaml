@@ -28,7 +28,29 @@ get:
       in: query
       schema:
         type: string
-      description: Free-text search.
+      description: "Free-text search: display name, phone (any part, so the last digits work) or email."
+    - name: role
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - org_admin
+          - site_manager
+          - board_member
+          - auditor
+          - accountant
+          - staff
+          - guard
+      description: Only people holding this role membership now.
+    - name: occupancy_kind
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+          - household
+      description: Only people with a current occupancy of this kind.
     - name: unit_id
       in: query
       schema:

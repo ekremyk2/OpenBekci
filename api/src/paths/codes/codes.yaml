@@ -4,7 +4,7 @@ get:
   operationId: codes.listCodes
   summary: Labels for enums, error codes and site statuses
   description: |-
-    **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+    Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
 
     Permission: `codes.read`.
   tags:
@@ -15,7 +15,6 @@ get:
   x-openbekci-roles:
     member:
       - codes.read
-  x-stability: stable
   parameters:
     - name: locale
       in: query

@@ -95,6 +95,7 @@ func TestLoadConfigBadValues(t *testing.T) {
 		{"OPENBEKCI_WORKER", "sometimes"},
 		{"OPENBEKCI_DEBUG", "maybe"},
 		{"OPENBEKCI_TRUSTED_PROXIES", "not-an-ip"},
+		{"OPENBEKCI_SEND_DAILY_BUDGET", "lots"},
 	} {
 		e := baseEnv()
 		e[tc.k] = tc.v
@@ -138,6 +139,12 @@ func TestValidateServeBaseURL(t *testing.T) {
 		ok  bool
 	}{
 		{"https://x.example.org", false, true},
+		{"https://x.example.org", true, false}, // INSECURE_DEV behind a real address
+		{"https://bekci.example.org:8443", true, false},
+		{"http://127.0.0.1:8484", true, true},
+		{"http://[::1]:8484", true, true},
+		{"https://localhost:8484", true, true},
+		{"http://localhost.example.org", true, false},
 		{"http://x.example.org", true, false},
 		{"http://localhost:8484", false, false},
 		{"http://localhost:8484", true, true},

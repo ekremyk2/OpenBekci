@@ -8,12 +8,19 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"slices"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/access"
+	"github.com/openbekci/openbekci/server/internal/core/community"
+	"github.com/openbekci/openbekci/server/internal/core/files"
+	"github.com/openbekci/openbekci/server/internal/core/governance"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/riverqueue/river"
 )
 
 const shutdownTimeout = 20 * time.Second
@@ -34,17 +41,21 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem)
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.money)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
 		return err
 	}
 	go pruneIdentity(ctx, log, deps.Identity)
+	go rt.access.Run(ctx) // idle long-poll sessions
 	deps.Jobs = rt.jobs
+	deps.Ops = rt.ops.deps()
+	deps.Governance = rt.gov
+	deps.Access = rt.access
 	router := httpapi.NewRouter(
 		deps,
-		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, Ready: readiness(cfg, rt.db)},
+		httpapi.Options{TrustedProxies: cfg.TrustedProxies, MaxBodyBytes: cfg.MaxBodyBytes, MaxUploadBytes: uploadBodyLimit(cfg), Ready: readiness(cfg, rt.db)},
 	)
 	srv := &http.Server{
 		Addr:              cfg.ListenAddr,
@@ -72,10 +83,22 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 	if err := srv.Shutdown(sctx); err != nil {
 		errs = append(errs, fmt.Errorf("http shutdown: %w", err))
 	}
+	if err := deps.Identity.Drain(sctx); err != nil { // code and link sends still in flight
+		errs = append(errs, err)
+	}
 	if err := rt.stopJobsCtx(sctx); err != nil {
 		errs = append(errs, err)
 	}
 	return errors.Join(errs...)
+}
+
+// uploadBodyLimit is the request body cap of the upload route: the file limit
+// plus multipart framing. Zero (limit unset) lets the HTTP layer use its default.
+func uploadBodyLimit(cfg Config) int64 {
+	if cfg.MaxUploadBytes <= 0 {
+		return 0
+	}
+	return httpapi.UploadBodyLimit(cfg.MaxUploadBytes)
 }
 
 // RunWorker runs only the job worker until ctx is cancelled.
@@ -97,7 +120,13 @@ func RunWorker(ctx context.Context, cfg Config, log *slog.Logger) error {
 type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
+	gov     *governance.Service
+	money   httpapi.MoneyDeps
+	comm    *community.Service
 	idem    *idempotency.PG
+	files   *files.Service
+	ops     *opsServices
+	access  *access.Service
 	working bool
 }
 
@@ -145,18 +174,48 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	d.WarnIfPlatformSuperuser(ctx, log)
 
 	idem := idempotency.NewPG(d)
-	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem})
+	fs, err := newFiles(ctx, cfg, log, d)
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
+	ops, err := newOps(cfg, log, d, fs)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	gov := newGovernance(cfg, log, d, fs)
+	registerGov, periodicGov := gov.JobOptions()
+	comm, err := newCommunity(cfg, log, d, ops.late)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	mny := newMoney(d, ops.late, fs, ops.documents)
+	ops.dashboards.SetMoney(moneyFigures{reports: mny.Reports})
+	gov.SetEffects(govMoney{budgets: mny.Treasury})
+	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
+	acc, err := newAccess(cfg, log, d, comm)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
+		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) { registerGov(w); comm.RegisterWorkers(w); acc.Workers(w); registerMoney(w) },
+		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), periodicMoney)})
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
+	ops.late.c.Store(client)
+	gov.SetNotifier(governance.RiverNotifier{Client: client})
 	if withWorker {
 		if err := client.Start(context.WithoutCancel(ctx)); err != nil {
 			d.Close()
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, idem: idem, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

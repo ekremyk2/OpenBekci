@@ -42,12 +42,18 @@
       ],
       "properties": {
         "accepted": {
-          "type": "integer",
-          "minimum": 0
+          "type": "array",
+          "description": "Ids of the events stored by this batch. The agent removes exactly these from its queue.",
+          "items": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          }
         },
         "duplicates": {
-          "type": "integer",
-          "minimum": 0
+          "type": "array",
+          "description": "Ids of the events the server already had; the agent removes them too.",
+          "items": {
+            "$ref": "defs.schema.json#/$defs/uuid"
+          }
         },
         "rejected": {
           "type": "array",

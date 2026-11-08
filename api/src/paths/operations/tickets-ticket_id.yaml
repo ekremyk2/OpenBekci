@@ -11,7 +11,7 @@ get:
   operationId: operations.getTicket
   summary: Get a ticket
   description: |-
-    **Release 0.1.** Get a ticket.
+    Get a ticket.
 
     Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
 
@@ -42,7 +42,6 @@ get:
       - tickets.open
     household:
       - tickets.open
-  x-stability: stable
   responses:
     "200":
       description: OK
@@ -62,7 +61,7 @@ patch:
   operationId: operations.updateTicket
   summary: Edit, reassign or change visibility of a ticket
   description: |-
-    **Release 0.1.** The assignee is a staff person or a vendor label (O2).
+    The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
 
     Permission: `tickets.manage`.
 
@@ -80,7 +79,6 @@ patch:
     board_member:
       - tickets.manage
   x-idempotent: optional
-  x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
   requestBody:

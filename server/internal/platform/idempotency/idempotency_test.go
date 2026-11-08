@@ -77,7 +77,7 @@ func TestIntegrationScopeAndHeaders(t *testing.T) {
 	}
 	resp := idempotency.Response{
 		Status: 201, ContentType: "application/json",
-		Headers: map[string][]string{"Location": {"/v1/things/1"}}, Body: []byte(`{}`),
+		Headers: map[string][]string{"Location": {"/v1/things/1"}}, Body: []byte(`{}`), Digest: "abc123",
 	}
 	if err := store.Complete(ctx, alice, "shared-key", r.Owner, resp); err != nil {
 		t.Fatal(err)
@@ -96,5 +96,8 @@ func TestIntegrationScopeAndHeaders(t *testing.T) {
 	}
 	if got.Response.Headers["Location"][0] != "/v1/things/1" || got.Response.ContentType != "application/json" {
 		t.Errorf("stored headers lost: %+v", got.Response)
+	}
+	if got.Response.Digest != "abc123" {
+		t.Errorf("content digest lost: %q", got.Response.Digest)
 	}
 }

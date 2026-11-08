@@ -8,9 +8,11 @@ post:
 
     Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
 
+    **Rate limit.** 30 scans a minute per guard session: the next one is 429 `rate_limited` with `Retry-After`. Every scan that matches nothing (unknown, unparseable or another site's QR) is audited with the console and guard session, never the scanned text.
+
     Permission: `gate.operate`.
 
-    Problems: `conflict` (409).
+    Problems: `conflict` (409), `rate_limited` (429), `guard_session_required` and `guard_session_expired` (401).
   tags:
     - community
   security:
@@ -46,6 +48,8 @@ post:
     "403":
       $ref: ../../components/problem.yaml#/responses/Problem
     "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "429":
       $ref: ../../components/problem.yaml#/responses/Problem
     "422":
       $ref: ../../components/problem.yaml#/responses/Problem

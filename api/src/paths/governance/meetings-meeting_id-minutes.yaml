@@ -19,19 +19,7 @@ get:
   security:
     - cookieAuth: []
     - bearerAuth: []
-  x-openbekci-roles:
-    org_admin:
-      - meetings.read
-    site_manager:
-      - meetings.read
-    board_member:
-      - meetings.read
-    auditor:
-      - meetings.read
-    owner:
-      - meetings.read
-    tenant:
-      - meetings.read
+  x-openbekci-roles: [meetings.read]
   x-stability: preview
   responses:
     "200":

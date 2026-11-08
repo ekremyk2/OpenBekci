@@ -14,6 +14,10 @@ get:
     **Release 0.1.** Always masked; the full value is never readable through the API.
 
     Permission: `people.national_id`.
+
+    Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`); every read is audited.
+
+    Problems: `reauth_required` (403).
   tags:
     - people
   security:

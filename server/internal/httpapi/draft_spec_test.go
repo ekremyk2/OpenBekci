@@ -48,9 +48,29 @@ func rolesOf(op *openapi3.Operation) map[string][]string {
 	}
 	var out map[string][]string
 	if err := json.Unmarshal(b, &out); err != nil {
-		return nil
+		// served files operations list the permissions every member holds
+		var flat []string
+		if json.Unmarshal(b, &flat) != nil || len(flat) == 0 || !strings.HasPrefix(flat[0], "files.") {
+			return nil
+		}
+		return map[string][]string{"member": flat}
 	}
 	return out
+}
+
+// listedPermsOf reads the other form of x-openbekci-roles: a served operation lists the
+// permissions it needs (the draft maps roles to them).
+func listedPermsOf(op *openapi3.Operation) []string {
+	raw, ok := op.Extensions["x-openbekci-roles"]
+	if !ok {
+		return nil
+	}
+	b, _ := json.Marshal(raw)
+	var list []string
+	if json.Unmarshal(b, &list) != nil {
+		return nil
+	}
+	return list
 }
 
 func paramNames(item *openapi3.PathItem, op *openapi3.Operation, in string) map[string]*openapi3.Parameter {
@@ -122,8 +142,8 @@ func TestDraftSpecConformance(t *testing.T) {
 			// Every mutating operation declares its idempotency mode.
 			if method != http.MethodGet && method != http.MethodHead {
 				v := extString(op.Extensions, "x-idempotent")
-				if v != "optional" && v != "required" {
-					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
+				if v != "optional" && v != "required" && v != "none" { // none: a read-only POST (preview)
+					t.Errorf("%s: mutation without x-idempotent optional|required|none (got %q)", where, v)
 				}
 				if v == "required" {
 					if authModeOf(spec, op) != authRequired {
@@ -219,6 +239,9 @@ func TestDraftPermissionsDocumented(t *testing.T) {
 	permName := regexp.MustCompile(`^[a-z_]+\.[a-z_]+$`)
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
+			for _, p := range listedPermsOf(op) {
+				used[p] = true
+			}
 			for role, perms := range rolesOf(op) {
 				if role == "" {
 					t.Errorf("%s %s: empty role key", method, path)

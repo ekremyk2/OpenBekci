@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -160,7 +161,7 @@ func TestNoopAuthenticatorRejectsEverySecuredOperation(t *testing.T) {
 	n := 0
 	for path, item := range spec.Paths.Map() {
 		for method, op := range item.Operations() {
-			if authModeOf(spec, op) != authRequired {
+			if authModeOf(spec, op) != authRequired || slices.Contains(op.Tags, "agent") { // the agent transport is mounted by access.Service, not by the pipeline
 				continue
 			}
 			n++
@@ -220,7 +221,7 @@ func TestSpecConformance(t *testing.T) {
 			}
 			seen[op.OperationID] = true
 			if method != http.MethodGet && method != http.MethodHead {
-				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" {
+				if v := extString(op.Extensions, "x-idempotent"); v != "optional" && v != "required" && v != "none" {
 					t.Errorf("%s: mutation without x-idempotent optional|required (got %q)", where, v)
 				}
 			}
@@ -259,9 +260,11 @@ func TestProblemCodesMatchSpec(t *testing.T) {
 	for _, c := range []problem.Code{
 		problem.CodeValidationFailed, problem.CodeBadRequest, problem.CodeUnauthenticated, problem.CodeNotFound,
 		problem.CodeConflict, problem.CodeVersionConflict, problem.CodeIdempotencyMismatch, problem.CodeLockedPeriod,
-		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant,
+		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant, problem.CodeGuardSessionRequired, problem.CodeGuardSessionExpired,
 		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError, problem.CodePayloadTooLarge, problem.CodeMethodNotAllowed, problem.CodeUnsupportedMediaType, problem.CodeTimeout,
 		problem.CodeCSRFFailed, problem.CodeSMSUnavailable, problem.CodeMailUnavailable,
+		problem.CodeScanUnavailable,
+		problem.CodeAgentOffline, problem.CodeAgentSessionExpired,
 	} {
 		if !inSpec[string(c)] {
 			t.Errorf("code %q is not in the spec enum", c)

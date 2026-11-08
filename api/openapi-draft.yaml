@@ -68,8 +68,6 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-stability: stable
-      x-openbekci-roles:
-        any_authenticated: []
       responses:
         '200':
           description: The discovery document plus policies.
@@ -304,9 +302,11 @@ paths:
       operationId: auth.reauth
       summary: Re-authenticate the current session for sensitive operations
       description: |
-        Proves the caller is still the user with the password or a fresh SMS code,
-        and marks the current session as re-authenticated for 10 minutes. Sensitive
-        operations answer 403 `reauth_required` outside that window.
+        Proves the caller is still the user with the password, a fresh SMS code
+        (`auth.requestOtp`) or a fresh email code (`auth.requestReauthEmailCode`),
+        and marks the current session as re-authenticated for 10 minutes. A user
+        with only an email address and no password re-authenticates by email code.
+        Sensitive operations answer 403 `reauth_required` outside that window.
       tags:
         - auth
       security:
@@ -333,6 +333,36 @@ paths:
         '422':
           $ref: '#/components/responses/Problem'
         '429':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/auth/reauth/email-code:
+    post:
+      operationId: auth.requestReauthEmailCode
+      summary: Email a re-authentication code to the signed-in user
+      description: |
+        Sends a six-digit code (valid 5 minutes, 5 attempts) to the email address of
+        the signed-in account, to be passed to `auth.reauth` with `method: email_code`.
+        This is the re-authentication route of users who have neither a password nor
+        a phone number. 422 `validation_failed` when the account has no email
+        address, 503 `mail_unavailable` when the instance has no email
+        configuration. Limited per address, per client address and per day.
+      tags:
+        - auth
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-idempotent: optional
+      responses:
+        '202':
+          description: Accepted; the code was sent.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        '503':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -370,7 +400,13 @@ paths:
   /v1/me:
     get:
       operationId: me.get
+      x-openbekci-roles:
+        - me.read
       summary: The signed-in user, organizations, roles and permissions
+      description: |
+        Instance-level rights are not listed per organization: `is_platform_admin: true` implies `platform.read` and
+        `platform.manage` (the platform operations), and nothing inside an organization; to act there a platform
+        administrator needs a membership of that organization like anybody else.
       tags:
         - me
       security:
@@ -390,6 +426,8 @@ paths:
   /v1/me/sessions:
     get:
       operationId: me.listSessions
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: List the caller's open sessions
       tags:
         - me
@@ -409,6 +447,8 @@ paths:
           $ref: '#/components/responses/Problem'
     delete:
       operationId: me.revokeAllSessions
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: Sign out everywhere
       description: Revokes every session of the caller, the current one included.
       tags:
@@ -429,6 +469,8 @@ paths:
   /v1/me/sessions/{id}:
     delete:
       operationId: me.revokeSession
+      x-openbekci-roles:
+        - sessions.manage_own
       summary: Sign out one session
       description: |
         Revokes the session with this id (from `me.listSessions`), or the current
@@ -1439,6 +1481,66 @@ paths:
       responses:
         '204':
           description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/units/{unit_id}/tags:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: unit_id
+        in: path
+        required: true
+        description: Id of the unit.
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: tenancy.setUnitTags
+      summary: Replace a unit's tags
+      description: |-
+        **Release 0.1.** Not part of the original draft; phase B keeps it because the tag codes of a unit are stored with the unit (cost-group memberships such as `lift` or `pool`). It is superseded by the `unit-tags` resources once those are served; both write the same membership.
+
+        Permission: `units.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - units.manage
+        site_manager:
+          - units.manage
+        board_member:
+          - units.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitTags'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
         '401':
           $ref: '#/components/responses/Problem'
         '403':
@@ -2668,6 +2770,50 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/site-transfers/{transfer_id}/archive:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: transfer_id
+        in: path
+        required: true
+        description: Id of the site transfer.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: tenancy.downloadSiteTransferArchive
+      summary: Download the archive of a site export
+      description: |-
+        **Release 0.1.** Not part of the original draft; phase B keeps the archive with the transfer record until the file store exists (`SiteTransfer.archive_file_id` stays null until then). Only exports have an archive; national ids inside stay sealed with the source instance's key.
+
+        Permission: `sites.export`.
+      tags:
+        - tenancy
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - sites.export
+      x-stability: stable
+      responses:
+        '200':
+          description: The archive, a JSON document.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/vehicles:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -2700,7 +2846,7 @@ paths:
           - vehicles.read
       x-stability: stable
       parameters:
-        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/SiteId'
         - name: unit_id
           in: query
           schema:
@@ -3035,7 +3181,29 @@ paths:
           in: query
           schema:
             type: string
-          description: Free-text search.
+          description: 'Free-text search: display name, phone (any part, so the last digits work) or email.'
+        - name: role
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - org_admin
+              - site_manager
+              - board_member
+              - auditor
+              - accountant
+              - staff
+              - guard
+          description: Only people holding this role membership now.
+        - name: occupancy_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+              - household
+          description: Only people with a current occupancy of this kind.
         - name: unit_id
           in: query
           schema:
@@ -3284,6 +3452,10 @@ paths:
         **Release 0.1.** Always masked; the full value is never readable through the API.
 
         Permission: `people.national_id`.
+
+        Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`); every read is audited.
+
+        Problems: `reauth_required` (403).
       tags:
         - people
       security:
@@ -5180,7 +5352,7 @@ paths:
           - directory.read
       x-stability: stable
       parameters:
-        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/SiteId'
         - name: q
           in: query
           schema:
@@ -5419,6 +5591,44 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+    delete:
+      operationId: people.deleteVendor
+      summary: Delete vendor
+      description: |-
+        **Release 0.1.** Not part of the original draft; phase B keeps it (a vendor never used can be removed instead of archived).
+
+        Permission: `vendors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - people
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - vendors.manage
+        site_manager:
+          - vendors.manage
+        board_member:
+          - vendors.manage
+        accountant:
+          - vendors.manage
+      x-idempotent: optional
+      x-stability: stable
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/roles:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -5603,6 +5813,55 @@ paths:
           schema:
             type: boolean
           description: Filter by `active`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/me/household-members:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: me.listHouseholdMembers
+      summary: Members of my own unit side
+      description: |-
+        **Release 0.1.** The current owners, tenants and household members of the unit side the caller owns or rents, so owners and tenants need no `occupancies.read`. The same fields as an occupancy; a household member sees none of this.
+
+        Permission: `invitations.household`.
+      tags:
+        - me
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - invitations.household
+        site_manager:
+          - invitations.household
+        owner:
+          - invitations.household
+        tenant:
+          - invitations.household
+      x-stability: stable
+      parameters:
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Only this unit (one of the caller's own).
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
       responses:
@@ -7048,6 +7307,7 @@ paths:
       x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
+        - $ref: '#/components/parameters/DryRun'
       requestBody:
         required: true
         content:
@@ -8366,6 +8626,19 @@ paths:
             type: string
             format: date
           description: Filter by `due_to`.
+        - name: overdue
+          in: query
+          schema:
+            type: boolean
+          description: Only charges past their due date that are still open or partially paid.
+        - name: side
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: Debtor side of the unit (alias of `debtor_kind`).
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
       responses:
@@ -10456,7 +10729,7 @@ paths:
       operationId: money.createBankStatementImport
       summary: Upload a bank statement
       description: |-
-        **Release 0.1.** Parsing runs as a job; poll the import `status`. Manual matching only in 0.1.
+        **Release 0.1.** Upload a CSV or XLSX statement (up to 10 MiB). The `core_csv` importer reads the columns `booked_on,amount,counterparty,description,reference` (Turkish numbers such as `1.234,50` and dates such as `05.03.2026` are understood); a typed `mapping` (a JSON `ColumnMapping`, targets `booked_on`, `amount`, `counterparty`, `description`, `reference`, `balance`) maps other layouts. Parsing happens within the request: a file that cannot be read is 422, rows that fail make the import `partial` and are listed in `error`. The same file cannot be imported twice into one account (409). Opening and closing balances are read from the `balance` column or sent as `opening_balance` and `closing_balance`. Each incoming line gets ranked suggestions (reference scheme `<door>-<period>`, payer name, amount); matching is always manual.
 
         Permission: `money.post`.
 
@@ -10500,6 +10773,13 @@ paths:
                 mapping:
                   type: object
                   additionalProperties: true
+                  description: A JSON `ColumnMapping` (or just its `columns`) as text.
+                opening_balance:
+                  type: string
+                  description: Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional.
+                closing_balance:
+                  type: string
+                  description: Statement closing balance as a decimal amount; optional.
               required:
                 - site_id
                 - file
@@ -12133,6 +12413,86 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-letter:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getDunningLetter
+      summary: Download the ihtarname (warning letter) of an event or a debtor
+      description: |-
+        **Release 0.1.** A generic Turkish warning letter as a PDF (embedded font, with the debt breakdown). Two ways to ask:
+
+        - `event_id`: the letter of a dunning event; it is generated on first request and stored with the event.
+        - `site_id` plus a debtor (`unit_id` and `debtor_kind` together, or `person_id`): a letter generated on the spot as of `as_of` (default today); nothing is stored.
+
+        The PDF is kept with the event until the files module can file it into documents.
+
+        Permission: `collections.manage`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-stability: stable
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: The dunning event whose letter to return.
+        - name: site_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Debtor mode - the site.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Debtor mode, unit side: send with `debtor_kind`.'
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            enum:
+              - owner
+              - tenant
+          description: 'Debtor mode, unit side: owner or tenant.'
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Debtor mode, person: the person whose carried debt the letter is about.'
+        - $ref: '#/components/parameters/AsOfDate'
+      responses:
+        '200':
+          description: The letter.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/collection-cases:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -12768,7 +13128,7 @@ paths:
       operationId: money.getIncomeExpenseReport
       summary: Cash-basis income and expense (gelir-gider)
       description: |-
-        **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv` downloads it.
 
         Permission (any one of): `reports.read`, `reports.aggregate`.
       tags:
@@ -12815,20 +13175,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncomeExpenseReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -12922,7 +13274,7 @@ paths:
       operationId: money.getBudgetVsActualReport
       summary: Budget versus actual
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission (any one of): `reports.read`, `reports.aggregate`.
       tags:
@@ -12956,20 +13308,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BudgetVsActualReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -12988,7 +13332,7 @@ paths:
       operationId: money.getTrialBalanceReport
       summary: Trial balance
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission: `reports.read`.
       tags:
@@ -13025,20 +13369,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TrialBalanceReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13057,7 +13393,7 @@ paths:
       operationId: money.getReceivablesAgingReport
       summary: Receivables aging
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission: `reports.read`.
       tags:
@@ -13094,20 +13430,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReceivablesAgingReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13273,7 +13601,7 @@ paths:
       operationId: money.getFundBalancesReport
       summary: Fund balances
       description: |-
-        **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+        **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
         Permission: `reports.read`.
       tags:
@@ -13304,20 +13632,12 @@ paths:
         - $ref: '#/components/parameters/Format'
       responses:
         '200':
-          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          description: The report. JSON by default; `format=csv` selects a CSV download.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FundBalancesReport'
             text/csv:
-              schema:
-                type: string
-                format: binary
-            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-              schema:
-                type: string
-                format: binary
-            application/pdf:
               schema:
                 type: string
                 format: binary
@@ -13380,7 +13700,7 @@ paths:
       operationId: operations.getTicketWorkflow
       summary: Get the ticket workflow of a site
       description: |-
-        **Release 0.1.** Get the ticket workflow of a site.
+        Get the ticket workflow of a site.
 
         Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
       tags:
@@ -13409,7 +13729,6 @@ paths:
           - tickets.open
         household:
           - tickets.open
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
       responses:
@@ -13431,7 +13750,7 @@ paths:
       operationId: operations.updateTicketWorkflow
       summary: Replace the ticket workflow of a site
       description: |-
-        **Release 0.1.** Reopen is just a transition back to an open-like status. A removed status in use needs a replacement.
+        Reopen is just a transition back to an open-like status. The body is the complete ordered list: entries with an `id` keep that status (renamed, reordered, `semantic` changed), entries without one are new, statuses left out are removed. At least one open-like and one closed-like status are needed. A removed status that tickets use needs an entry in `replacements` naming the kept status its tickets move to (422 `required`); an entry for a status that is kept, or removed but unused, is refused (422 `unexpected`). Removed statuses are archived: history keeps their names. `site_id` and `If-Match` (the `version` of `TicketWorkflow`) are required. `PUT ...:restore-default` puts the built-in flow back.
 
         Permission: `tickets.manage`.
 
@@ -13449,7 +13768,6 @@ paths:
         board_member:
           - tickets.manage
       x-idempotent: optional
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - $ref: '#/components/parameters/IfMatch'
@@ -13476,6 +13794,60 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/ticket-workflow:restore-default:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.restoreTicketWorkflow
+      summary: Restore the default ticket workflow of a site
+      description: |-
+        Puts the built-in open, in progress, done flow back (O1). Custom statuses are removed: tickets in a custom status need an entry in `replacements` naming the built-in status they move to, under the same rules as `operations.updateTicketWorkflow`. `If-Match` is the `version` of the workflow.
+
+        Permission: `tickets.manage`.
+
+        Problems: `version_conflict` (409), `validation_failed` (422).
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - tickets.manage
+        site_manager:
+          - tickets.manage
+        board_member:
+          - tickets.manage
+      x-stability: stable
+      x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketWorkflowRestore'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketWorkflow'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/ticket-categories:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -13483,7 +13855,7 @@ paths:
       operationId: operations.listTicketCategories
       summary: List ticket categories
       description: |-
-        **Release 0.1.** Cursor-paginated list of ticket categorys.
+        Cursor-paginated list of ticket categorys.
 
         Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`.
       tags:
@@ -13512,14 +13884,18 @@ paths:
           - tickets.open
         household:
           - tickets.open
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
         - name: archived
           in: query
           schema:
-            type: boolean
-          description: Filter by `archived`.
+            type: string
+            enum:
+              - active
+              - archived
+              - all
+            default: active
+          description: '`active` (default) lists the categories in use, `archived` the retired ones, `all` both (management and auditors only; everybody else always gets `active`). Ordered by `position`.'
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
       responses:
@@ -13541,7 +13917,7 @@ paths:
       operationId: operations.createTicketCategory
       summary: Create ticket category
       description: |-
-        **Release 0.1.** Creates a ticket category.
+        Creates a ticket category.
 
         Permission: `tickets.manage`.
 
@@ -13559,7 +13935,6 @@ paths:
         board_member:
           - tickets.manage
       x-idempotent: optional
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
@@ -13889,7 +14264,7 @@ paths:
       operationId: operations.getTicket
       summary: Get a ticket
       description: |-
-        **Release 0.1.** Get a ticket.
+        Get a ticket.
 
         Staff (`tickets.read_assigned`) can open tickets assigned to them and common tickets only (404 otherwise).
 
@@ -13920,7 +14295,6 @@ paths:
           - tickets.open
         household:
           - tickets.open
-      x-stability: stable
       responses:
         '200':
           description: OK
@@ -13940,7 +14314,7 @@ paths:
       operationId: operations.updateTicket
       summary: Edit, reassign or change visibility of a ticket
       description: |-
-        **Release 0.1.** The assignee is a staff person or a vendor label (O2).
+        The assignee is a staff person or a vendor label (O2). Only the fields sent change. `assignee_person_id: null` clears the person, `assignee_vendor_id: null` the vendor, a value assigns it and clears the other (unless both are sent: 422 `conflicts_with_assignee_person_id`); absent means unchanged. A stale `If-Match` is 409 `version_conflict`.
 
         Permission: `tickets.manage`.
 
@@ -13958,7 +14332,6 @@ paths:
         board_member:
           - tickets.manage
       x-idempotent: optional
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IfMatch'
       requestBody:
@@ -14282,9 +14655,9 @@ paths:
       operationId: operations.createTicketComment
       summary: Comment on a ticket
       description: |-
-        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
 
-        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+        Permission (any one of): `tickets.open`, `tickets.work`.
 
         Problems: `conflict` (409).
       tags:
@@ -14294,18 +14667,12 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         org_admin:
-          - tickets.read
           - tickets.open
         site_manager:
-          - tickets.read
           - tickets.open
         board_member:
-          - tickets.read
           - tickets.open
-        auditor:
-          - tickets.read
         staff:
-          - tickets.read_assigned
           - tickets.open
           - tickets.work
         owner:
@@ -14804,11 +15171,9 @@ paths:
       operationId: operations.previewAnnouncement
       summary: Preview recipient and SMS counts
       description: |-
-        **Release 0.1.** Preview recipient and SMS counts.
+        Counts the people the audience reaches and what the chosen channels would send, so the sender sees the SMS bill before publishing (O5). Read-only: nothing is saved, so it takes no `Idempotency-Key` (`x-idempotent: none`). Counts are 0 for channels that were not chosen; `in_app_count` counts recipients with an account.
 
         Permission: `announcements.publish`.
-
-        Problems: `conflict` (409).
       tags:
         - operations
       security:
@@ -14821,10 +15186,7 @@ paths:
           - announcements.publish
         board_member:
           - announcements.publish
-      x-idempotent: optional
-      x-stability: stable
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
+      x-idempotent: none
       requestBody:
         required: true
         content:
@@ -14976,7 +15338,7 @@ paths:
       operationId: operations.listAnnouncementReads
       summary: Who has read an announcement
       description: |-
-        **Release 0.1.** Who has read an announcement.
+        Who has read an announcement: every person it was addressed to when it was published, with `read_at` null for those who have not opened it. Sorted by `display_name`, then `person_id`; `cursor` is opaque. `audience_count` and `read_count` count the whole audience, regardless of the `read` filter and the page.
 
         Permission: `announcements.publish`.
       tags:
@@ -14991,7 +15353,6 @@ paths:
           - announcements.publish
         board_member:
           - announcements.publish
-      x-stability: stable
       parameters:
         - name: read
           in: query
@@ -15655,7 +16016,7 @@ paths:
       operationId: operations.getUnreadCount
       summary: Unread notification count
       description: |-
-        **Release 0.1.** Cheap enough to poll.
+        Cheap enough to poll. `visitor_approvals_pending` is polled together with the badge and stays 0 until release 0.3 (gate control).
 
         Permission: `notifications.read`.
       tags:
@@ -15666,7 +16027,6 @@ paths:
       x-openbekci-roles:
         member:
           - notifications.read
-      x-stability: stable
       parameters:
         - $ref: '#/components/parameters/SiteId'
       responses:
@@ -15869,7 +16229,7 @@ paths:
       operationId: operations.getNotificationMutes
       summary: My muted notification types
       description: |-
-        **Release 0.1.** My muted notification types.
+        My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
 
         Permission: `notifications.read`.
       tags:
@@ -15880,7 +16240,6 @@ paths:
       x-openbekci-roles:
         member:
           - notifications.read
-      x-stability: stable
       responses:
         '200':
           description: OK
@@ -15898,7 +16257,7 @@ paths:
       operationId: operations.setNotificationMutes
       summary: Set my muted notification types
       description: |-
-        **Release 0.1.** Set my muted notification types.
+        Set my muted notification types.
 
         Permission: `notifications.read`.
 
@@ -15912,7 +16271,6 @@ paths:
         member:
           - notifications.read
       x-idempotent: optional
-      x-stability: stable
       requestBody:
         required: true
         content:
@@ -15943,7 +16301,7 @@ paths:
       operationId: operations.getSmsUsage
       summary: Monthly SMS counter of a site
       description: |-
-        **Release 0.1.** Monthly SMS counter of a site.
+        **Release 0.1.** Monthly SMS counter of a site; the month is the site's calendar month in its time zone. `delivered` equals `sent` for now: per-site SMS credentials and the gateway's delivery callbacks are deferred, so only acceptance by the gateway is known; `failed` counts refused sends.
 
         Permission: `notifications.manage`.
       tags:
@@ -15986,21 +16344,43 @@ paths:
     post:
       operationId: operations.uploadFile
       summary: Upload a file
-      description: |-
-        **Release 0.1.** Streams through the server: type sniffed, EXIF location stripped, `thumb` and `medium` generated for images.
+      description: |
+        **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+        sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+        the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+        `multipart_order`, and so is a field this operation does not know.
 
-        Permission: `files.upload`.
+        Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+        `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+        the caller to add files there; without it the file is a draft that expires after 7 days and that
+        only its uploader can see, read and discard.
 
-        Problems: `payload_too_large` (413), `validation_failed` (422), `conflict` (409).
+        The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+        plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+        Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+        metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+        `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+
+        Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+        is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+        decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+        `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+        has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+        then 429 `rate_limited`.
+
+        `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+        the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+        encoding) replays the first response, and a different file under the same key is 422
+        `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
       tags:
         - operations
       security:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        member:
-          - files.upload
+        - files.upload
       x-idempotent: optional
+      x-openbekci-stream: true
       x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -16009,32 +16389,80 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                site_id:
-                  type: string
-                  format: uuid
-                scope:
-                  type: string
-              required:
-                - file
+              $ref: '#/components/schemas/FileUpload'
       responses:
         '201':
-          description: Created
+          description: The stored file.
+          headers:
+            Location:
+              description: The file's metadata URL.
+              schema:
+                type: string
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/File'
+        '400':
+          $ref: '#/components/responses/Problem'
         '401':
           $ref: '#/components/responses/Problem'
         '403':
           $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
         '409':
           $ref: '#/components/responses/Problem'
         '413':
+          $ref: '#/components/responses/Problem'
+        '415':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      operationId: operations.listFiles
+      summary: List files
+      description: |
+        **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+        access to it (the module that owns the resource decides; administrators with `files.manage` always have
+        it). Without a scope, an administrator sees every file of the organization and anyone else the files
+        they uploaded. Needs `files.read`.
+
+        Not in the first draft of the contract: added with the module, because the web app needs the files of a
+        resource and an administrator needs to see what is stored.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: scope
+          in: query
+          description: Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: One page of files.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
@@ -16043,32 +16471,25 @@ paths:
   /v1/orgs/{org_id}/files/{file_id}/meta:
     parameters:
       - $ref: '#/components/parameters/OrgId'
-      - name: file_id
-        in: path
-        required: true
-        description: Id of the file.
-        schema:
-          type: string
-          format: uuid
+      - $ref: '#/components/parameters/FileId'
     get:
       operationId: operations.getFileMeta
       summary: Get file metadata
-      description: |-
-        **Release 0.1.** Get file metadata.
-
-        Permission: `files.read`.
+      description: |
+        **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+        anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+        `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
       tags:
         - operations
       security:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        member:
-          - files.read
+        - files.read
       x-stability: stable
       responses:
         '200':
-          description: OK
+          description: The file.
           content:
             application/json:
               schema:
@@ -16084,43 +16505,73 @@ paths:
   /v1/orgs/{org_id}/files/{file_id}:
     parameters:
       - $ref: '#/components/parameters/OrgId'
-      - name: file_id
-        in: path
-        required: true
-        description: Id of the file.
-        schema:
-          type: string
-          format: uuid
+      - $ref: '#/components/parameters/FileId'
     get:
       operationId: operations.downloadFile
       summary: Download a file
-      description: |-
-        **Release 0.1.** Visibility is decided by the resource the file is attached to. `variant` applies to images.
+      description: |
+        **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+        everything else is sent with `Content-Disposition: attachment`. All responses carry
+        `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+        `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+        answer is a 302 to a short-lived presigned URL instead of the bytes.
 
-        Permission: `files.read`.
+        Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+        a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+        resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+        a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+        storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+        or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+        quarantined file has no downloadable content (404).
       tags:
         - operations
       security:
+        - {}
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        member:
-          - files.read
+        - files.read
+      x-openbekci-stream: true
       x-stability: stable
       parameters:
         - name: variant
           in: query
+          description: Image variant, `thumb` or `medium`. Absent for the original.
           schema:
             type: string
             enum:
               - thumb
               - medium
-          description: Filter by `variant`.
+        - name: exp
+          in: query
+          description: Expiry of a signed URL, Unix seconds. Sent with `sig`.
+          schema:
+            type: integer
+            format: int64
+        - name: sig
+          in: query
+          description: Signature of a signed URL. Sent with `exp`.
+          schema:
+            type: string
+            maxLength: 128
       responses:
         '200':
-          description: The file.
+          description: The file's bytes, with the stored type as `Content-Type`.
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Security-Policy:
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                type: string
+            X-Content-Type-Options:
+              schema:
+                type: string
           content:
-            application/octet-stream:
+            '*/*':
               schema:
                 type: string
                 format: binary
@@ -16143,25 +16594,26 @@ paths:
     delete:
       operationId: operations.deleteFile
       summary: Delete an unattached file
-      description: |-
-        **Release 0.1.** Delete an unattached file.
-
-        Permission: `files.upload`.
-
-        Problems: `conflict` (409).
+      description: |
+        **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+        and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+        file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+        who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+        `maintenance.prune_files` job. Recorded in the audit trail.
       tags:
         - operations
       security:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        member:
-          - files.upload
+        - files.upload
       x-idempotent: optional
       x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       responses:
         '204':
-          description: No content
+          description: Deleted.
         '401':
           $ref: '#/components/responses/Problem'
         '403':
@@ -16316,6 +16768,130 @@ paths:
         '403':
           $ref: '#/components/responses/Problem'
         '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/audit:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: audit.list
+      summary: List the organization's audit events
+      description: |
+        Newest first. Needs `audit.read`. Cursor pagination over `(at, id)`.
+        Personal data in a `diff` appears only as hashes.
+      tags:
+        - audit
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - audit.read
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: action
+          in: query
+          description: Only events with this action, such as `org.update`.
+          schema:
+            type: string
+        - name: target_type
+          in: query
+          description: Only events about this kind of target, such as `organization`.
+          schema:
+            type: string
+        - name: actor
+          in: query
+          description: Only events caused by this user id.
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          description: Only events at or after this time.
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Only events before this time.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: One page of events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventList-2'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/platform/audit:
+    get:
+      operationId: platform.listAudit
+      summary: List the instance-level audit events
+      description: |
+        Events that belong to no organization: password changes, session revocation,
+        platform-administrator promotion. Newest first. Needs the `platform.manage`
+        permission (platform administrators only). Cursor pagination over `(at, id)`.
+
+        Personal data in a `diff` appears only as hashes, and `ip` is truncated to
+        its /24 (IPv4) or /48 (IPv6) network. Erasing a person does not change these
+        events: they hold ids and hashes, no personal values. `site_id` is always null.
+      tags:
+        - platform
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - platform.manage
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: action
+          in: query
+          description: Only events with this action, such as `session.revoke`.
+          schema:
+            type: string
+        - name: actor
+          in: query
+          description: Only events caused by this user id.
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          description: Only events at or after this time.
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Only events before this time.
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: One page of events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventList-2'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
@@ -16568,18 +17144,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -16613,12 +17178,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -16664,18 +17224,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - name: country_code
@@ -16716,18 +17265,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
@@ -16794,12 +17332,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -16850,18 +17383,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -16893,12 +17415,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -16943,12 +17460,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -16993,12 +17505,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17080,6 +17587,100 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-first-call:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.openFirstCall
+      summary: Open the session at the first call
+      description: |-
+        **Release 0.2.** Open the session at the first call: the call held is recorded (`held_call: first`) and attendance, quorum and the vote evaluation read it, never the clock. Allowed once, on a `called` meeting.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/meetings/{meeting_id}:open-second-call:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: meeting_id
+        in: path
+        required: true
+        description: Id of the meeting.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: governance.openSecondCall
+      summary: Open the second call
+      description: |-
+        **Release 0.2.** Open the second call of a session whose first call failed its quorum (recorded as `first_call_failed_at`; `held_call` becomes `second`). Refused while the first call has its quorum. Attendance of the first call does not carry over: everybody checks in again.
+
+        Permission: `meetings.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - governance
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - meetings.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
   /v1/orgs/{org_id}/meetings/{meeting_id}:close:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -17105,12 +17706,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17157,12 +17753,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17215,15 +17806,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-          - attendance.manage
-        site_manager:
-          - meetings.manage
-          - attendance.manage
-        board_member:
-          - meetings.manage
-          - attendance.manage
+        - attendance.manage
       x-stability: preview
       responses:
         '200':
@@ -17254,7 +17837,7 @@ paths:
       operationId: governance.getCallLetter
       summary: Download the call letter
       description: |-
-        **Release 0.2.** Includes the owner's check-in QR when requested with `person_id`.
+        **Release 0.2.** Without `person_id` the generic call letter filed at the call. With `person_id` the per-owner letter that carries that owner's check-in QR token (the token is shown here and in `/me` and replaces the previously issued one: only its hash is stored). An owner may fetch only their own (403 otherwise); managers fetch anyone's. Check-in itself needs the session to be open.
 
         Permission: `meetings.read`.
       tags:
@@ -17263,18 +17846,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - name: person_id
@@ -17282,7 +17854,7 @@ paths:
           schema:
             type: string
             format: uuid
-          description: Filter by person.
+          description: The owner whose personal letter (with their check-in QR) is wanted.
       responses:
         '200':
           description: The file.
@@ -17324,12 +17896,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-stability: preview
       responses:
         '200':
@@ -17370,18 +17937,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -17423,12 +17979,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17473,18 +18024,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -17524,12 +18064,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-stability: preview
       parameters:
         - name: phase
@@ -17605,12 +18140,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -17663,12 +18193,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17712,7 +18237,7 @@ paths:
       operationId: governance.notifyMeetingDecisions
       summary: Send the decisions to absent owners
       description: |-
-        **Release 0.2.** Creates `decisions` notices and records the delivery like the call; `dry_run=true` returns the counts only.
+        **Release 0.2.** Schedules the delivery of the decisions to the owners who were absent. The `decisions` notice (the legal record) is written when the delivery job runs, with the time it was delivered, not when it is scheduled; an owner whose delivery is recorded is skipped, and each notification carries a dedupe key, so sending twice never duplicates. Needs a closed meeting with at least one decision (otherwise 409). Closing a meeting does not notify anybody. `dry_run=true` returns the counts of owners still to be notified only.
 
         Permission: `meetings.manage`.
 
@@ -17723,12 +18248,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: required
       x-stability: preview
       parameters:
@@ -17784,18 +18304,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/Limit'
@@ -17830,12 +18339,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17890,12 +18394,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17940,12 +18439,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -17990,12 +18484,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18042,18 +18531,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -18076,7 +18554,7 @@ paths:
       description: |-
         **Release 0.2.** Create or change the poll.
 
-        `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+        The first creation of a poll needs no `If-Match`. Every later change requires it: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422). A closed poll (its `closes_at` has passed) is final: it cannot be reopened or changed (409 `conflict`).
 
         Permission: `meetings.manage`.
 
@@ -18087,12 +18565,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18121,7 +18594,7 @@ paths:
         default:
           $ref: '#/components/responses/Problem'
       parameters:
-        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IfMatchOptional'
   /v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer:
     parameters:
       - $ref: '#/components/parameters/OrgId'
@@ -18147,9 +18620,10 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        owner:
-          - polls.answer
+        - polls.answer
       x-idempotent: optional
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       x-stability: preview
       requestBody:
         required: true
@@ -18199,14 +18673,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
-        owner:
-          - polls.answer
+        - polls.answer
       x-stability: preview
       responses:
         '200':
@@ -18246,12 +18713,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/Limit'
@@ -18285,7 +18747,7 @@ paths:
       operationId: governance.getVoteCounts
       summary: Get the in-room count
       description: |-
-        **Release 0.2.** Get the in-room count.
+        **Release 0.2.** Get the in-room count. Staff see it; owners only where the site setting `decision_details_visible_to_owners` is on, tenants never (403).
 
         Permission: `meetings.read`.
       tags:
@@ -18294,18 +18756,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -18337,12 +18788,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: optional
       x-stability: preview
       requestBody:
@@ -18393,12 +18839,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-stability: preview
       parameters:
         - name: mode
@@ -18451,12 +18892,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18518,12 +18954,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-idempotent: optional
       x-stability: preview
       responses:
@@ -18564,12 +18995,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - attendance.manage
-        site_manager:
-          - attendance.manage
-        board_member:
-          - attendance.manage
+        - attendance.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18615,18 +19041,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
@@ -18694,12 +19109,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18750,18 +19160,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.read
-        site_manager:
-          - meetings.read
-        board_member:
-          - meetings.read
-        auditor:
-          - meetings.read
-        owner:
-          - meetings.read
-        tenant:
-          - meetings.read
+        - meetings.read
       x-stability: preview
       responses:
         '200':
@@ -18793,12 +19192,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: optional
       x-stability: preview
       parameters:
@@ -18853,12 +19247,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - decisions.manage
-        site_manager:
-          - decisions.manage
-        board_member:
-          - decisions.manage
+        - decisions.manage
       x-idempotent: required
       x-stability: preview
       parameters:
@@ -18905,12 +19294,7 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       x-openbekci-roles:
-        org_admin:
-          - meetings.manage
-        site_manager:
-          - meetings.manage
-        board_member:
-          - meetings.manage
+        - meetings.manage
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/SiteIdRequired'
@@ -20763,9 +21147,11 @@ paths:
 
         Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
 
+        **Rate limit.** 30 scans a minute per guard session: the next one is 429 `rate_limited` with `Retry-After`. Every scan that matches nothing (unknown, unparseable or another site's QR) is audited with the console and guard session, never the scanned text.
+
         Permission: `gate.operate`.
 
-        Problems: `conflict` (409).
+        Problems: `conflict` (409), `rate_limited` (429), `guard_session_required` and `guard_session_expired` (401).
       tags:
         - community
       security:
@@ -20803,6 +21189,8 @@ paths:
         '409':
           $ref: '#/components/responses/Problem'
         '422':
+          $ref: '#/components/responses/Problem'
+        '429':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -21709,7 +22097,7 @@ paths:
           - access.manage
         site_manager:
           - access.manage
-      x-idempotent: optional
+      x-idempotent: none
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -21860,7 +22248,7 @@ paths:
           - access.manage
         site_manager:
           - access.manage
-      x-idempotent: optional
+      x-idempotent: none
       x-stability: preview
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
@@ -22027,225 +22415,6 @@ paths:
         '409':
           $ref: '#/components/responses/Problem'
         '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/credentials:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-    get:
-      operationId: access.listCredentials
-      summary: List credentials (derived, read-only)
-      description: |-
-        **Release 0.3.** List credentials (derived, read-only).
-
-        Permission: `access.read`.
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.read
-        site_manager:
-          - access.read
-        board_member:
-          - access.read
-        auditor:
-          - access.read
-      x-stability: preview
-      parameters:
-        - $ref: '#/components/parameters/SiteIdRequired'
-        - name: kind
-          in: query
-          schema:
-            type: string
-            x-known-values:
-              - plate
-              - visitor_qr
-              - tag
-              - pin
-          description: Filter by `kind`.
-        - name: status
-          in: query
-          schema:
-            type: string
-            x-known-values:
-              - active
-              - suspended
-              - revoked
-              - expired
-          description: Filter by `status`.
-        - name: source_type
-          in: query
-          schema:
-            type: string
-            x-known-values:
-              - vehicle
-              - visitor_entry
-              - manual
-          description: Filter by `source_type`.
-        - name: unit_id
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter by unit.
-        - name: point_id
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter by `point_id`.
-        - name: q
-          in: query
-          schema:
-            type: string
-          description: Free-text search.
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Cursor'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CredentialList'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-    post:
-      operationId: access.createCredential
-      summary: Create a tag or PIN credential
-      description: |-
-        **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
-
-        Permission: `access.manage`.
-
-        Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.manage
-        site_manager:
-          - access.manage
-      x-idempotent: required
-      x-stability: preview
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKeyRequired'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CredentialCreate'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Credential'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '409':
-          $ref: '#/components/responses/Problem'
-        '422':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-  /v1/orgs/{org_id}/credentials/{credential_id}:
-    parameters:
-      - $ref: '#/components/parameters/OrgId'
-      - name: credential_id
-        in: path
-        required: true
-        description: Id of the credential.
-        schema:
-          type: string
-          format: uuid
-    get:
-      operationId: access.getCredential
-      summary: Get a credential
-      description: |-
-        **Release 0.3.** Get a credential.
-
-        Permission: `access.read`.
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.read
-        site_manager:
-          - access.read
-        board_member:
-          - access.read
-        auditor:
-          - access.read
-      x-stability: preview
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Credential'
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        default:
-          $ref: '#/components/responses/Problem'
-    delete:
-      operationId: access.revokeCredential
-      summary: Revoke a manual credential
-      description: |-
-        **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
-
-        Permission: `access.manage`.
-
-        Problems: `conflict` (409).
-      tags:
-        - access
-      security:
-        - cookieAuth: []
-        - bearerAuth: []
-      x-openbekci-roles:
-        org_admin:
-          - access.manage
-        site_manager:
-          - access.manage
-      x-idempotent: optional
-      x-stability: preview
-      parameters:
-        - $ref: '#/components/parameters/IdempotencyKey'
-      responses:
-        '204':
-          description: No content
-        '401':
-          $ref: '#/components/responses/Problem'
-        '403':
-          $ref: '#/components/responses/Problem'
-        '404':
-          $ref: '#/components/responses/Problem'
-        '409':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -22479,10 +22648,8 @@ paths:
       x-openbekci-roles:
         org_admin:
           - access.open
-          - access.manage
         site_manager:
           - access.open
-          - access.manage
         guard:
           - access.open
       x-stability: preview
@@ -22828,7 +22995,7 @@ paths:
       operationId: codes.listCodes
       summary: Labels for enums, error codes and site statuses
       description: |-
-        **Release 0.1.** Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
+        Clients translate open enums and problem codes with this; unknown codes fall back to the raw value.
 
         Permission: `codes.read`.
       tags:
@@ -22839,7 +23006,6 @@ paths:
       x-openbekci-roles:
         member:
           - codes.read
-      x-stability: stable
       parameters:
         - name: locale
           in: query
@@ -23420,6 +23586,392 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/units:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: gate.searchUnits
+      summary: Find a unit by door number or block
+      description: |-
+        **Release 0.3.** The booth's unit picker for walk-ins and parcels: guards hold no `units.read`, so this is their way to find a unit. It matches the door number or the block name and returns the id, door number and block name only; no occupants, areas, shares or other unit data. Needs a guard session.
+
+        Problems: `guard_session_required` and `guard_session_expired` (401).
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Part of a door number or block name.
+          required: true
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateUnitList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: recurring_visitor_id
+        in: path
+        required: true
+        description: Id of the recurring visitor.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.rotateRecurringVisitorQr
+      summary: Rotate the QR of a recurring visitor
+      description: |-
+        **Release 0.3.** Issue a new QR token for a recurring visitor; the old QR stops working at once, also at the gate. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.rotateVisitorEntryQr
+      summary: Rotate the QR of a visitor entry
+      description: |-
+        **Release 0.3.** Issue a new QR token for a pre-registration that has not been used; the old QR stops working at once. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/credentials:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: access.listCredentials
+      summary: List credentials (derived, read-only)
+      description: |-
+        **Release 0.3.** List credentials (derived, read-only).
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - plate
+              - visitor_qr
+              - tag
+              - pin
+          description: Filter by `kind`.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - active
+              - suspended
+              - revoked
+              - expired
+          description: Filter by `status`.
+        - name: source_type
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - vehicle
+              - visitor_entry
+              - manual
+          description: Filter by `source_type`.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: point_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `point_id`.
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CredentialList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: access.createCredential
+      summary: Create a tag or PIN credential
+      description: |-
+        **Release 0.3.** Adds a manual `tag` or `pin` credential and pushes it to the agent with the next snapshot delta. The secret `value` is write-only. Plates and visitor QR codes come from vehicles and visitor entries, not from here.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409, the same value already exists on the site), `idempotency_mismatch` (422).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: required
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/access/credentials/{credential_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: credential_id
+        in: path
+        required: true
+        description: Id of the credential.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: access.getCredential
+      summary: Get a credential
+      description: |-
+        **Release 0.3.** Get a credential.
+
+        Permission: `access.read`.
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.read
+        site_manager:
+          - access.read
+        board_member:
+          - access.read
+        auditor:
+          - access.read
+      x-stability: preview
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: access.revokeCredential
+      summary: Revoke a manual credential
+      description: |-
+        **Release 0.3.** Revokes a `tag` or `pin` credential (`source_type: manual`) and sends `revoke_credential` to the agent. Derived credentials end with their vehicle or visitor entry and answer 409 `conflict` here.
+
+        Permission: `access.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - access
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - access.manage
+        site_manager:
+          - access.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     cookieAuth:
@@ -23490,6 +24042,13 @@ components:
       schema:
         type: string
         example: '"3"'
+    IfMatchOptional:
+      name: If-Match
+      in: header
+      description: The `version` of the resource the client last read, as a quoted integer (`"3"`). Needed to replace an existing resource (a missing one is 422 `validation_failed`, a stale one 409 `version_conflict`); the first creation of the resource needs none.
+      schema:
+        type: string
+        example: '"3"'
     IdempotencyKeyRequired:
       name: Idempotency-Key
       in: header
@@ -23535,9 +24094,18 @@ components:
     GuardSession:
       name: X-Guard-Session
       in: header
-      description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+      x-go-name: GuardSessionHeader
+      description: Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it.
       schema:
         type: string
+    FileId:
+      name: file_id
+      in: path
+      required: true
+      description: The file id.
+      schema:
+        type: string
+        format: uuid
   responses:
     Problem:
       description: Error. RFC 9457 problem details with a stable `code`.
@@ -23596,6 +24164,8 @@ components:
             - reauth_required
             - mfa_required
             - invalid_grant
+            - guard_session_required
+            - guard_session_expired
             - rate_limited
             - pack_error
             - site_offboarded
@@ -23607,6 +24177,9 @@ components:
             - method_not_allowed
             - unsupported_media_type
             - timeout
+            - scan_unavailable
+            - agent_offline
+            - agent_session_expired
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.
@@ -24022,11 +24595,13 @@ components:
       oneOf:
         - $ref: '#/components/schemas/ReauthPassword'
         - $ref: '#/components/schemas/ReauthSmsOtp'
+        - $ref: '#/components/schemas/ReauthEmailCode'
       discriminator:
         propertyName: method
         mapping:
           password: '#/components/schemas/ReauthPassword'
           sms_otp: '#/components/schemas/ReauthSmsOtp'
+          email_code: '#/components/schemas/ReauthEmailCode'
     ReauthResponse:
       type: object
       required:
@@ -24091,6 +24666,7 @@ components:
         - roles
         - permissions
         - sites
+        - person_id
       properties:
         default_locale:
           type: string
@@ -24107,14 +24683,19 @@ components:
             $ref: '#/components/schemas/RoleGrant'
         permissions:
           type: array
-          description: Effective permissions in this organization (filled by the authorization module; empty until then).
+          description: Effective permissions in this organization, from the caller's active memberships and the role to permission matrix.
           items:
             $ref: '#/components/schemas/PermissionGrant'
         sites:
           type: array
-          description: Sites of the organization the caller can see (empty until the tenancy module lands).
+          description: Sites of the organization the caller can see through a membership or an occupancy.
           items:
             $ref: '#/components/schemas/MeSite'
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
     Me:
       type: object
       required:
@@ -24248,12 +24829,14 @@ components:
           type: boolean
     PermissionGrant:
       type: object
-      description: An effective permission, optionally limited to sites or blocks.
+      description: |
+        An effective permission. Without `site_ids` and `block_ids` it holds
+        organization-wide; otherwise only for the listed sites and blocks.
       required:
         - permission
       properties:
         permission:
-          type: string
+          $ref: '#/components/schemas/Permission'
         site_ids:
           type: array
           items:
@@ -24424,7 +25007,13 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: Target field name to source column header (or zero-based index as a string).
+          description: |-
+            Target field name to source column header (or zero-based index as a string). The target names per import kind:
+            `importUnits`: `block`, `door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi`, `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+            `importPeople`: the owner and tenant columns of `importUnits` plus `door_number`;
+            `importAllocationKeyValues`: `door_number` (required), `value`;
+            `importOpeningBalances`: `kind`, `unit`, `side`, `principal`, `late_fee`, `account_id`.
+            The multipart `mapping` part is this object (or just its `columns`) as JSON text.
         date_format:
           type: string
           nullable: true
@@ -24679,7 +25268,12 @@ components:
         - legal_preset
         - access
         - extra
+        - version
       properties:
+        version:
+          type: integer
+          format: int64
+          description: The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
         tenants_are_portal_users:
           type: boolean
           description: Tenants get a portal login (S3).
@@ -24931,7 +25525,12 @@ components:
         - bank_name
         - reference_hint
         - suggested_reference
+        - version
       properties:
+        version:
+          type: integer
+          format: int64
+          description: The site `version`; send it back as `If-Match` on the next update (the settings and the bank details are written with the site).
         iban:
           type: string
         holder:
@@ -26068,7 +26667,12 @@ components:
         - set
         - country_code
         - masked
+        - value
       properties:
+        value:
+          type: string
+          nullable: true
+          description: The full number. Reading the national id needs a recent re-authentication (403 `reauth_required` otherwise) and is audited; null when none is set.
         set:
           type: boolean
         country_code:
@@ -28947,7 +29551,7 @@ components:
           enum:
             - active
             - paused
-            - ended
+            - archived
           x-open-enum: true
         decision_id:
           type: string
@@ -29128,7 +29732,7 @@ components:
           enum:
             - active
             - paused
-            - ended
+            - archived
           x-open-enum: true
         decision_id:
           type: string
@@ -29867,6 +30471,15 @@ components:
         unit_id:
           type: string
           format: uuid
+        unit_door_number:
+          type: string
+          description: Door number of the unit, for display next to the debtor.
+        unit_label:
+          type: string
+          description: Block and door number ("A Blok / 12").
+        block_name:
+          type: string
+          nullable: true
         debtor_kind:
           type: string
           description: Open enum.
@@ -30237,7 +30850,7 @@ components:
         - gross
         - fee
         - net
-        - received_at
+        - received_on
         - recorded_by
         - asset_account_id
         - reference
@@ -30295,9 +30908,9 @@ components:
           $ref: '#/components/schemas/Money'
         net:
           $ref: '#/components/schemas/Money'
-        received_at:
+        received_on:
           type: string
-          format: date-time
+          format: date
         recorded_by:
           type: string
           format: uuid
@@ -30369,7 +30982,7 @@ components:
         net:
           amount: 200000
           currency: TRY
-        received_at: '2026-03-01T09:00:00Z'
+        received_on: '2026-03-01'
         recorded_by: null
         asset_account_id: 0192a3f0-1000-7000-8000-000000000002
         reference: null
@@ -30426,7 +31039,7 @@ components:
             net:
               amount: 200000
               currency: TRY
-            received_at: '2026-03-01T09:00:00Z'
+            received_on: '2026-03-01'
             recorded_by: null
             asset_account_id: 0192a3f0-1000-7000-8000-000000000002
             reference: null
@@ -30469,7 +31082,7 @@ components:
         - site_id
         - method
         - amount
-        - received_at
+        - received_on
         - asset_account_id
         - debtor
       properties:
@@ -30488,9 +31101,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Gross amount.
-        received_at:
+        received_on:
           type: string
-          format: date-time
+          format: date
         asset_account_id:
           type: string
           format: uuid
@@ -30503,7 +31116,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AllocationInput'
-          description: 'Manual override; omitted: automatic oldest-first.'
         send_receipt:
           $ref: '#/components/schemas/ReceiptDelivery'
         debtor:
@@ -30516,9 +31128,10 @@ components:
         amount:
           amount: 200000
           currency: TRY
-        received_at: '2026-03-05T10:15:00Z'
+        received_on: '2026-03-05'
         asset_account_id: 0192a3f0-1000-7000-8000-000000000002
         debtor:
+          mode: unit_side
           unit_id: 0192a3f0-1000-7000-8000-000000000001
           debtor_kind: tenant
     PaymentVoid:
@@ -30599,9 +31212,9 @@ components:
         asset_account_id:
           type: string
           format: uuid
-        received_at:
+        received_on:
           type: string
-          format: date-time
+          format: date
         allocations:
           type: array
           items:
@@ -30729,7 +31342,7 @@ components:
         - from_account_id
         - to_account_id
         - amount
-        - transferred_at
+        - transferred_on
         - memo
         - kind
         - journal_entry_id
@@ -30754,9 +31367,9 @@ components:
           format: uuid
         amount:
           $ref: '#/components/schemas/Money'
-        transferred_at:
+        transferred_on:
           type: string
-          format: date-time
+          format: date
         memo:
           type: string
           nullable: true
@@ -30789,7 +31402,7 @@ components:
         amount:
           amount: 200000
           currency: TRY
-        transferred_at: '2026-03-01T09:00:00Z'
+        transferred_on: '2026-03-01'
         memo: null
         kind: cash_handover
         journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
@@ -30803,7 +31416,7 @@ components:
         - from_account_id
         - to_account_id
         - amount
-        - transferred_at
+        - transferred_on
       properties:
         site_id:
           type: string
@@ -30816,9 +31429,9 @@ components:
           format: uuid
         amount:
           $ref: '#/components/schemas/Money'
-        transferred_at:
+        transferred_on:
           type: string
-          format: date-time
+          format: date
         memo:
           type: string
           nullable: true
@@ -30854,7 +31467,7 @@ components:
             amount:
               amount: 200000
               currency: TRY
-            transferred_at: '2026-03-01T09:00:00Z'
+            transferred_on: '2026-03-01'
             memo: null
             kind: cash_handover
             journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
@@ -30876,7 +31489,7 @@ components:
         - reason
         - kind
         - paid_from_account_id
-        - refunded_at
+        - refunded_on
         - credit_id
         - payment_id
         - journal_entry_id
@@ -30923,9 +31536,9 @@ components:
         paid_from_account_id:
           type: string
           format: uuid
-        refunded_at:
+        refunded_on:
           type: string
-          format: date-time
+          format: date
         credit_id:
           type: string
           format: uuid
@@ -30956,7 +31569,7 @@ components:
         reason: reason
         kind: overpayment
         paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
-        refunded_at: '2026-03-01T09:00:00Z'
+        refunded_on: '2026-03-01'
         credit_id: null
         payment_id: null
         journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
@@ -30970,7 +31583,7 @@ components:
         - reason
         - kind
         - paid_from_account_id
-        - refunded_at
+        - refunded_on
       properties:
         site_id:
           type: string
@@ -31006,9 +31619,9 @@ components:
         paid_from_account_id:
           type: string
           format: uuid
-        refunded_at:
+        refunded_on:
           type: string
-          format: date-time
+          format: date
         credit_id:
           type: string
           format: uuid
@@ -31045,7 +31658,7 @@ components:
             reason: reason
             kind: overpayment
             paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
-            refunded_at: '2026-03-01T09:00:00Z'
+            refunded_on: '2026-03-01'
             credit_id: null
             payment_id: null
             journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
@@ -31118,6 +31731,7 @@ components:
         - org_id
         - site_id
         - importer
+        - filename
         - file_id
         - asset_account_id
         - status
@@ -31142,9 +31756,14 @@ components:
           format: uuid
         importer:
           type: string
+        filename:
+          type: string
+          description: The uploaded file name.
         file_id:
           type: string
           format: uuid
+          nullable: true
+          description: The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB).
         asset_account_id:
           type: string
           format: uuid
@@ -31195,6 +31814,7 @@ components:
         org_id: 0192a3f0-1000-7000-8000-000000000003
         site_id: 0192a3f0-1000-7000-8000-000000000004
         importer: importer
+        filename: statement.csv
         file_id: 0192a3f0-1000-7000-8000-000000000005
         asset_account_id: 0192a3f0-1000-7000-8000-000000000006
         status: parsing
@@ -31231,6 +31851,7 @@ components:
             org_id: 0192a3f0-1000-7000-8000-000000000003
             site_id: 0192a3f0-1000-7000-8000-000000000004
             importer: importer
+            filename: statement.csv
             file_id: 0192a3f0-1000-7000-8000-000000000005
             asset_account_id: 0192a3f0-1000-7000-8000-000000000006
             status: parsing
@@ -31257,6 +31878,16 @@ components:
         - ledger_opening
         - ledger_closing
         - difference
+        - statement_movement
+        - ledger_movement
+        - lines_total
+        - statement_check
+        - matched_total
+        - unmatched_total
+        - ignored_total
+        - matched_count
+        - unmatched_count
+        - ignored_count
       properties:
         import_id:
           type: string
@@ -31279,6 +31910,44 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Statement movement minus ledger movement.
+        statement_movement:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Closing minus opening when the statement has both balances, else the sum of its lines.
+        ledger_movement:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Movement of the bank account in the ledger over the statement period (all postings, not only matched lines).
+        lines_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Sum of all statement lines.
+        statement_check:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: 'Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances.'
+        matched_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Lines matched to a payment.
+        unmatched_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Unmatched and suggested lines; with only matched payments posting to the account the difference equals this.
+        ignored_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+        matched_count:
+          type: integer
+          format: int64
+        unmatched_count:
+          type: integer
+          format: int64
+        ignored_count:
+          type: integer
+          format: int64
     MatchSuggestion:
       type: object
       required:
@@ -31322,6 +31991,7 @@ components:
         - amount
         - counterparty
         - description
+        - reference
         - match_status
         - payment_id
         - expense_id
@@ -31354,6 +32024,10 @@ components:
         description:
           type: string
           nullable: true
+        reference:
+          type: string
+          nullable: true
+          description: The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it.
         match_status:
           type: string
           description: Open enum.
@@ -31392,6 +32066,7 @@ components:
           currency: TRY
         counterparty: null
         description: null
+        reference: null
         match_status: unmatched
         payment_id: null
         expense_id: null
@@ -31430,6 +32105,7 @@ components:
               currency: TRY
             counterparty: null
             description: null
+            reference: null
             match_status: unmatched
             payment_id: null
             expense_id: null
@@ -31453,14 +32129,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AllocationInput'
+          description: 'Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee.'
         payment_id:
           type: string
           format: uuid
-          description: Confirm this declared payment with the line.
+          description: Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
         expense_id:
           type: string
           format: uuid
-          description: 'For an outgoing line: link an expense.'
+          description: 'For an outgoing line: link a posted expense of the same site and amount (no payment is created). A line that is not outgoing, an expense that is not posted or of another amount, or one already linked to another line is refused.'
         debtor:
           allOf:
             - $ref: '#/components/schemas/DebtorRef'
@@ -31619,6 +32296,22 @@ components:
           type: string
           format: uuid
           nullable: true
+        recurring:
+          type: object
+          nullable: true
+          description: Makes this a monthly recurring expense in one atomic call (the first occurrence is posted now).
+          required:
+            - frequency
+          properties:
+            frequency:
+              type: string
+              enum:
+                - monthly
+            day:
+              type: integer
+              minimum: 1
+              maximum: 31
+              description: Day of the month; defaults to the day of `paid_on`.
     ExpenseList:
       type: object
       required:
@@ -32200,6 +32893,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
             x-open-enum: true
         template_key:
           type: string
@@ -32266,6 +32960,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
             x-open-enum: true
         template_key:
           type: string
@@ -32300,6 +32995,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
             x-open-enum: true
         template_key:
           type: string
@@ -32368,6 +33064,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
           description: Chosen by the sender (O5).
     DunningRunPreview:
       type: object
@@ -32426,6 +33123,9 @@ components:
         - debtor_kind
         - person_id
         - stage_id
+        - period
+        - amount_due
+        - has_letter
         - sent_at
         - channel
         - document_file_id
@@ -32448,9 +33148,12 @@ components:
         unit_id:
           type: string
           format: uuid
+          nullable: true
+          description: Null for a person debtor (carried debt).
         debtor_kind:
           type: string
-          description: Open enum.
+          nullable: true
+          description: Open enum. Null for a person debtor.
           enum:
             - owner
             - tenant
@@ -32462,6 +33165,16 @@ components:
         stage_id:
           type: string
           format: uuid
+        period:
+          type: string
+          description: 'The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel.'
+        amount_due:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: The overdue balance when the event was created.
+        has_letter:
+          type: boolean
+          description: A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`.
         sent_at:
           type: string
           format: date-time
@@ -32493,6 +33206,11 @@ components:
         debtor_kind: owner
         person_id: null
         stage_id: 0192a3f0-1000-7000-8000-000000000006
+        period: 2026-03
+        amount_due:
+          amount: 200000
+          currency: TRY
+        has_letter: false
         sent_at: '2026-03-01T09:00:00Z'
         channel: in_app
         document_file_id: null
@@ -32522,6 +33240,11 @@ components:
             debtor_kind: owner
             person_id: null
             stage_id: 0192a3f0-1000-7000-8000-000000000006
+            period: 2026-03
+            amount_due:
+              amount: 200000
+              currency: TRY
+            has_letter: false
             sent_at: '2026-03-01T09:00:00Z'
             channel: in_app
             document_file_id: null
@@ -32538,6 +33261,7 @@ components:
         - unit_id
         - debtor_kind
         - debtor_person_id
+        - debtor
         - opened_on
         - lawyer
         - file_no
@@ -32561,9 +33285,12 @@ components:
         unit_id:
           type: string
           format: uuid
+          nullable: true
+          description: Null for a person debtor.
         debtor_kind:
           type: string
-          description: Open enum.
+          nullable: true
+          description: Open enum. Null for a person debtor.
           enum:
             - owner
             - tenant
@@ -32571,6 +33298,12 @@ components:
         debtor_person_id:
           type: string
           format: uuid
+          nullable: true
+          description: 'The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself.'
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Whose debt this case is about, as it was opened.
         opened_on:
           type: string
           format: date
@@ -32613,6 +33346,10 @@ components:
         unit_id: 0192a3f0-1000-7000-8000-000000000005
         debtor_kind: owner
         debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+        debtor:
+          mode: unit_side
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
         opened_on: '2026-03-01'
         lawyer: null
         file_no: null
@@ -32629,27 +33366,16 @@ components:
       type: object
       required:
         - site_id
-        - unit_id
-        - debtor_kind
-        - debtor_person_id
+        - debtor
         - opened_on
       properties:
         site_id:
           type: string
           format: uuid
-        unit_id:
-          type: string
-          format: uuid
-        debtor_kind:
-          type: string
-          description: Open enum.
-          enum:
-            - owner
-            - tenant
-          x-open-enum: true
-        debtor_person_id:
-          type: string
-          format: uuid
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes.'
         opened_on:
           type: string
           format: date
@@ -32697,6 +33423,10 @@ components:
             unit_id: 0192a3f0-1000-7000-8000-000000000005
             debtor_kind: owner
             debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+            debtor:
+              mode: unit_side
+              unit_id: 0192a3f0-1000-7000-8000-000000000005
+              debtor_kind: owner
             opened_on: '2026-03-01'
             lawyer: null
             file_no: null
@@ -33352,10 +34082,23 @@ components:
         - accrued_late_fees
         - collection_rate_pct
         - aging
+        - funds
+        - top_debtors
       properties:
         as_of:
           type: string
           format: date
+        funds:
+          type: array
+          description: The balance of every fund.
+          items:
+            $ref: '#/components/schemas/FundBalanceRow'
+        top_debtors:
+          type: array
+          maxItems: 5
+          description: The five largest overdue debtors.
+          items:
+            $ref: '#/components/schemas/DebtorRow'
         receivable_owner:
           $ref: '#/components/schemas/Money'
         receivable_tenant:
@@ -33377,16 +34120,21 @@ components:
         - announcement.published
         - charge.due_soon
         - charge.overdue
+        - dunning.reminder
         - payment.receipt
         - payment.declared
         - payment.confirmed
         - payment.rejected
+        - statement.sent
         - ticket.updated
         - ticket.commented
         - claim.requested
         - claim.decided
         - meeting.called
         - meeting.decisions
+        - meeting.assembly_due
+        - delivery.waiting
+        - visitor.qr_rotated
         - term.expiring
         - visitor.approval_requested
         - visitor.arrived
@@ -33396,6 +34144,184 @@ components:
         - access.agent_silent
         - access.agent_clock_skew
         - access.agent_stopped
+    FileVariant:
+      type: object
+      description: A rendition of an image, generated on upload.
+      required:
+        - width
+        - height
+        - size
+        - mime
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+        size:
+          type: integer
+          format: int64
+          description: Bytes.
+        mime:
+          type: string
+    FileLinks:
+      type: object
+      description: |
+        Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+        Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+        fetch the file's metadata again for fresh ones.
+      required:
+        - original
+        - variants
+        - expires_at
+      properties:
+        original:
+          type: string
+          nullable: true
+          description: URL of the original; null while the file is not ready.
+        variants:
+          type: object
+          description: URLs of the image variants (`thumb`, `medium`) by name; empty for other files.
+          additionalProperties:
+            type: string
+        expires_at:
+          type: string
+          format: date-time
+    File:
+      type: object
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - size
+        - mime
+        - sha256
+        - status
+        - source
+        - uploaded_by
+        - scope
+        - has_variants
+        - retention_until
+        - variants
+        - links
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          description: The file name. A re-encoded image gets the extension of its stored type.
+        size:
+          type: integer
+          format: int64
+          description: Bytes of the stored original (for images, after metadata stripping and downscaling).
+        mime:
+          type: string
+          description: The stored type, from sniffing the content.
+        sha256:
+          type: string
+          description: Hex SHA-256 of the stored original.
+        status:
+          type: string
+          x-open-enum: true
+          description: |
+            Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+            administrators see it). `pending` and `deleted` files are never returned.
+          enum:
+            - ready
+            - quarantined
+        source:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).'
+          enum:
+            - uploaded
+            - generated
+        uploaded_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+        scope:
+          type: string
+          nullable: true
+          description: The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft.
+        has_variants:
+          type: boolean
+          description: 'Images: `thumb` and `medium` exist.'
+        retention_until:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+        variants:
+          type: object
+          description: Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side).
+          additionalProperties:
+            $ref: '#/components/schemas/FileVariant'
+        links:
+          $ref: '#/components/schemas/FileLinks'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    FileList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+    FileUpload:
+      type: object
+      description: |
+        The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+        it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+        `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
+        (the body is not buffered); the server checks the fields itself.
+      required:
+        - file
+      properties:
+        scope:
+          type: string
+          description: |
+            Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+            (`ticket`) and the id a UUID. Without it the file is a draft.
+        site_id:
+          type: string
+          format: uuid
+          description: The site the file belongs to; limits who can read it to site-scoped grants.
+        name:
+          type: string
+          description: File name when the `file` part carries none.
+        file:
+          type: string
+          format: binary
+    TicketSemantic:
+      type: string
+      description: Whether a status counts as open work or as finished. Open enum.
+      enum:
+        - open_like
+        - closed_like
+      x-open-enum: true
     TicketStatus:
       type: object
       required:
@@ -33478,7 +34404,7 @@ components:
           additionalProperties:
             type: string
             format: uuid
-          description: 'For a removed status: the status its tickets move to. Required when a removed status is in use.'
+          description: 'Keyed by a removed status that tickets use: the kept status (by id) its tickets move to. Required for every such status (422 `required`); an entry for any other status, one that is kept or removed but unused, is 422 `unexpected`; a target that is not kept is 422 `invalid_value`.'
     TicketCategory:
       type: object
       description: 'Starter list: plumbing, electrical, elevator, cleaning, security, noise/neighbor, other.'
@@ -33776,12 +34702,7 @@ components:
         status_name:
           type: string
         status_semantic:
-          type: string
-          description: Open enum.
-          enum:
-            - open_like
-            - closed_like
-          x-open-enum: true
+          $ref: '#/components/schemas/TicketSemantic'
         visibility:
           type: string
           description: 'Private: that unit and management. Common: the whole site or block. Open enum.'
@@ -33922,10 +34843,12 @@ components:
           type: string
           format: uuid
           nullable: true
+          description: 'A staff person. Absent: unchanged. `null`: clears the person assignee. A value: assigns the person and, unless `assignee_vendor_id` is sent too, clears the vendor.'
         assignee_vendor_id:
           type: string
           format: uuid
           nullable: true
+          description: A vendor label. Same rules as `assignee_person_id`. Sending both with values is 422 `conflicts_with_assignee_person_id`; `null` for both unassigns.
     TicketList:
       type: object
       required:
@@ -34145,7 +35068,9 @@ components:
         - org_id
         - ticket_id
         - from_status_id
+        - from_status_name
         - to_status_id
+        - to_status_name
         - changed_by
         - comment
         - at
@@ -34165,16 +35090,33 @@ components:
           type: string
           format: uuid
           nullable: true
+        from_status_name:
+          type: string
+          nullable: true
+          description: Name of the status at the time of reading; statuses removed from the workflow keep their name.
         to_status_id:
           type: string
           format: uuid
-        changed_by:
+        to_status_name:
           type: string
-          format: uuid
+        changed_by:
+          type: object
           nullable: true
+          description: Who made the change, with the name they had then. Null for changes made by the system.
+          required:
+            - id
+            - display_name
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: The user id.
+            display_name:
+              type: string
         comment:
           type: string
           nullable: true
+          description: The comment given with a transition; an internal one is null for people who may not read internal notes.
         at:
           type: string
           format: date-time
@@ -34189,8 +35131,12 @@ components:
         org_id: 0192a3f0-1000-7000-8000-000000000003
         ticket_id: 0192a3f0-1000-7000-8000-000000000004
         from_status_id: null
+        from_status_name: null
         to_status_id: 0192a3f0-1000-7000-8000-000000000005
-        changed_by: null
+        to_status_name: Open
+        changed_by:
+          id: 0192a3f0-1000-7000-8000-000000000006
+          display_name: Ayse Yilmaz
         comment: null
         at: '2026-03-01T09:00:00Z'
         created_at: '2026-03-01T09:00:00Z'
@@ -34215,8 +35161,12 @@ components:
             org_id: 0192a3f0-1000-7000-8000-000000000003
             ticket_id: 0192a3f0-1000-7000-8000-000000000004
             from_status_id: null
+            from_status_name: null
             to_status_id: 0192a3f0-1000-7000-8000-000000000005
-            changed_by: null
+            to_status_name: Open
+            changed_by:
+              id: 0192a3f0-1000-7000-8000-000000000006
+              display_name: Ayse Yilmaz
             comment: null
             at: '2026-03-01T09:00:00Z'
             created_at: '2026-03-01T09:00:00Z'
@@ -34262,7 +35212,7 @@ components:
         - sms_count
         - read_count
         - read_at
-        - file_ids
+        - attachments
         - published_at
         - created_by
         - created_at
@@ -34324,6 +35274,11 @@ components:
           type: integer
           format: int64
           nullable: true
+        sms_segments:
+          type: integer
+          format: int64
+          nullable: true
+          description: 'Billed SMS segments of those messages, set at publish: a long text or a Turkish glyph (UCS-2, 70 characters a segment) takes several per message.'
         read_count:
           type: integer
           format: int64
@@ -34333,11 +35288,11 @@ components:
           format: date-time
           nullable: true
           description: When the caller read it.
-        file_ids:
+        attachments:
           type: array
+          description: The attached files with what a client needs to show them; download through `files.download` with the `id`.
           items:
-            type: string
-            format: uuid
+            $ref: '#/components/schemas/AnnouncementAttachment'
         published_at:
           type: string
           format: date-time
@@ -34375,8 +35330,11 @@ components:
         sms_count: 80
         read_count: 1
         read_at: null
-        file_ids:
-          - 0192a3f0-1000-7000-8000-000000000003
+        attachments:
+          - id: 0192a3f0-1000-7000-8000-000000000003
+            name: schedule.pdf
+            mime: application/pdf
+            size: 48211
         published_at: null
         created_by: null
         created_at: '2026-03-01T09:00:00Z'
@@ -34495,8 +35453,11 @@ components:
             sms_count: 80
             read_count: 1
             read_at: null
-            file_ids:
-              - 0192a3f0-1000-7000-8000-000000000003
+            attachments:
+              - id: 0192a3f0-1000-7000-8000-000000000003
+                name: schedule.pdf
+                mime: application/pdf
+                size: 48211
             published_at: null
             created_by: null
             created_at: '2026-03-01T09:00:00Z'
@@ -34524,21 +35485,32 @@ components:
               - email
               - sms
               - push
+        title:
+          type: string
+          maxLength: 200
+          description: 'The title to be sent, for the SMS segment count (the text message carries at most its first 100 characters). Absent: the longest case is assumed.'
     AnnouncementPreview:
       type: object
       description: What publishing would cost, before the sender presses publish (O5).
       required:
         - recipient_count
         - sms_count
+        - sms_segments
         - email_count
         - in_app_count
       properties:
         recipient_count:
           type: integer
           format: int64
+          description: People addressed; those who muted announcements are addressed but receive no message, so they are not in the channel counts.
         sms_count:
           type: integer
           format: int64
+          description: Text messages (recipients with a phone who did not mute).
+        sms_segments:
+          type: integer
+          format: int64
+          description: Billed segments of those messages (GSM 7-bit 160/153, UCS-2 70/67 characters per segment).
         email_count:
           type: integer
           format: int64
@@ -35131,6 +36103,7 @@ components:
       required:
         - muted_types
         - unmutable_types
+        - available_types
       properties:
         muted_types:
           type: array
@@ -35141,6 +36114,11 @@ components:
           items:
             type: string
           description: Sign-in codes and invitations.
+        available_types:
+          type: array
+          items:
+            type: string
+          description: The types the caller can mute (every type except the unmutable ones), in display order; clients need no list of their own.
     NotificationMutesSet:
       type: object
       required:
@@ -35180,68 +36158,6 @@ components:
           type: integer
           format: int64
           nullable: true
-    File:
-      type: object
-      description: An uploaded or generated file.
-      required:
-        - id
-        - org_id
-        - site_id
-        - size
-        - mime
-        - sha256
-        - uploaded_by
-        - scope
-        - status
-        - has_variants
-        - retention_until
-        - created_at
-        - updated_at
-      properties:
-        id:
-          type: string
-          format: uuid
-        org_id:
-          type: string
-          format: uuid
-        site_id:
-          type: string
-          format: uuid
-          nullable: true
-        size:
-          type: integer
-          format: int64
-        mime:
-          type: string
-        sha256:
-          type: string
-        uploaded_by:
-          type: string
-          format: uuid
-          nullable: true
-        scope:
-          type: string
-          nullable: true
-        status:
-          type: string
-          description: Open enum.
-          enum:
-            - ready
-            - quarantined
-          x-open-enum: true
-        has_variants:
-          type: boolean
-          description: 'Images: `thumb` and `medium` exist.'
-        retention_until:
-          type: string
-          format: date-time
-          nullable: true
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     ExportRequest:
       type: object
       required:
@@ -35587,6 +36503,39 @@ components:
           type: integer
           format: int64
           description: Reminder lead time before a term ends.
+        vote_weight:
+          type: string
+          enum:
+            - per_unit
+            - per_owner
+          description: Additive to the draft. One vote per unit (Law 634 default, verify) or one per owner. Optional on input, always returned.
+        ordinary_assembly_month:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 12
+          description: Additive to the draft. Month of the yearly ordinary assembly (default 1, January; verify).
+        default_term_months:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Additive to the draft. Default length of an elected term in months (default 12); used as the default `valid_to` of an elected role applied from a decision.
+        notice_electronic_allowed:
+          type: boolean
+          description: Whether the site's yonetim plani allows email and SMS as a legal way to give notice (default false, verify). When false a notice cannot be recorded with method `email` or `sms`; the notification may still go out, but the legal record says `other`.
+        deviation_reason:
+          type: string
+          maxLength: 2000
+          description: 'Input only. Required when a value is more permissive than the Law 634 default (lower quorum or notice time, higher proxy or per-person caps, a weaker threshold): the reason (for example the clause of the yonetim plani) is recorded in the audit trail with the list of deviations. Not stored in the settings.'
+        decision_details_visible_to_owners:
+          type: boolean
+          description: Transparency setting (default false). Staff always see the dissents (names and text) and the vote counts of decisions; owners who are not staff see them, and the vote counts of an item, only when this is on. Tenants never see them.
+        dissent_window_days:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 365
+          description: How long after the meeting closed a dissent (muhalefet serhi) can still be added to a decision (default 30, verify). Decisions are otherwise final once the meeting is closed.
     GovernanceSettings:
       type: object
       required:
@@ -35715,6 +36664,8 @@ components:
         - call_letter_document_id
         - minutes_document_id
         - called_at
+        - held_call
+        - first_call_failed_at
         - created_at
         - updated_at
         - version
@@ -35766,9 +36717,10 @@ components:
           x-open-enum: true
         eligibility_snapshot:
           type: object
-          additionalProperties: true
           nullable: true
-          description: Who could vote and with what weight as of the call date; fixed at `:call`.
+          allOf:
+            - $ref: '#/components/schemas/EligibilitySnapshot'
+          description: Who could vote and with what weight (G1). A preview taken at `:call`, retaken as of the day the session opens (`:open-first-call`) and fixed from then on. Staff only.
         call_letter_document_id:
           type: string
           format: uuid
@@ -35781,6 +36733,19 @@ components:
           type: string
           format: date-time
           nullable: true
+        held_call:
+          type: string
+          nullable: true
+          description: The sitting that actually took place, set by `:open-first-call` and `:open-second-call` (never inferred from the clock); null until the session opens. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
+        first_call_failed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the first call was found without quorum and the second call opened.
         created_at:
           type: string
           format: date-time
@@ -35806,6 +36771,8 @@ components:
         call_letter_document_id: null
         minutes_document_id: null
         called_at: null
+        held_call: null
+        first_call_failed_at: null
         created_at: '2026-03-01T09:00:00Z'
         updated_at: '2026-03-01T09:00:00Z'
         version: 1
@@ -35838,6 +36805,7 @@ components:
           x-open-enum: true
         title:
           type: string
+          maxLength: 200
           nullable: true
         scheduled_at:
           type: string
@@ -35847,12 +36815,14 @@ components:
           format: date-time
         location:
           type: string
+          maxLength: 300
     MeetingUpdate:
       type: object
       description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
       properties:
         title:
           type: string
+          maxLength: 200
           nullable: true
         scheduled_at:
           type: string
@@ -35862,6 +36832,7 @@ components:
           format: date-time
         location:
           type: string
+          maxLength: 300
     MeetingList:
       type: object
       required:
@@ -35892,6 +36863,8 @@ components:
             call_letter_document_id: null
             minutes_document_id: null
             called_at: null
+            held_call: null
+            first_call_failed_at: null
             created_at: '2026-03-01T09:00:00Z'
             updated_at: '2026-03-01T09:00:00Z'
             version: 1
@@ -35915,6 +36888,7 @@ components:
       properties:
         reason:
           type: string
+          maxLength: 1000
     Quorum:
       type: object
       description: Live quorum under the site rules; polled.
@@ -36100,9 +37074,13 @@ components:
           type: string
           format: uuid
           nullable: true
+          description: A file of the organization (the scanned receipt or signature page); checked when recorded.
         note:
           type: string
           nullable: true
+        late:
+          type: boolean
+          description: The call reached this owner less than `call_min_days` before the meeting (computed when recorded).
         created_at:
           type: string
           format: date-time
@@ -36122,6 +37100,7 @@ components:
         tracking_no: null
         proof_file_id: null
         note: null
+        late: false
         created_at: '2026-03-01T09:00:00Z'
         updated_at: '2026-03-01T09:00:00Z'
     MeetingNoticeList:
@@ -36180,11 +37159,13 @@ components:
           format: date-time
         tracking_no:
           type: string
+          maxLength: 100
         proof_file_id:
           type: string
           format: uuid
         note:
           type: string
+          maxLength: 1000
     MeetingNoticeBulk:
       type: object
       required:
@@ -36325,8 +37306,10 @@ components:
       properties:
         title:
           type: string
+          maxLength: 300
         description:
           type: string
+          maxLength: 4000
           nullable: true
         will_be_voted:
           type: boolean
@@ -36339,8 +37322,10 @@ components:
       properties:
         title:
           type: string
+          maxLength: 300
         description:
           type: string
+          maxLength: 4000
           nullable: true
         will_be_voted:
           type: boolean
@@ -36429,6 +37414,7 @@ components:
       properties:
         question:
           type: string
+          maxLength: 500
         opens_at:
           type: string
           format: date-time
@@ -36545,7 +37531,7 @@ components:
           description: 'Always false: the binding vote is counted in the room.'
     VoteCountSet:
       type: object
-      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi.'
+      description: 'The in-room count recorded by the manager: by number of owners and, where the rule needs it, by arsa payi. Shares are never estimated: when `yes_share` is omitted the rules that need shares evaluate to `undetermined` and the counts cannot support an accepted decision. Counts are final once the item has a decision (409); recorded only while the session is open.'
       required:
         - yes_count
         - no_count
@@ -36629,6 +37615,7 @@ components:
         - unit_ids
         - unit_labels
         - mode
+        - call
         - proxy_for_person_id
         - source
         - checked_in_at
@@ -36666,6 +37653,13 @@ components:
             - in_person
             - proxy
           x-open-enum: true
+        call:
+          type: string
+          description: The sitting this record belongs to; attendance of the first call does not carry into the second. Open enum.
+          enum:
+            - first
+            - second
+          x-open-enum: true
         proxy_for_person_id:
           type: string
           format: uuid
@@ -36701,6 +37695,7 @@ components:
         unit_labels:
           - Ali Veli
         mode: in_person
+        call: first
         proxy_for_person_id: null
         source: desk
         checked_in_at: '2026-03-01T09:00:00Z'
@@ -36733,6 +37728,7 @@ components:
             unit_labels:
               - Ali Veli
             mode: in_person
+            call: first
             proxy_for_person_id: null
             source: desk
             checked_in_at: '2026-03-01T09:00:00Z'
@@ -36797,6 +37793,7 @@ components:
           format: uuid
         text:
           type: string
+          maxLength: 4000
     DecisionEffect:
       type: object
       required:
@@ -36891,6 +37888,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Dissent'
+        outcome_override_reason:
+          type: string
+          nullable: true
+          description: Set when the outcome was recorded against, or without, the threshold evaluation of the counts (`outcome_override` on create); audited.
         concerns_residents:
           type: boolean
           description: Tenants see only decisions marked this way.
@@ -36954,6 +37955,7 @@ components:
           nullable: true
         text:
           type: string
+          maxLength: 10000
         outcome:
           type: string
           description: Open enum.
@@ -36969,12 +37971,22 @@ components:
             $ref: '#/components/schemas/DissentInput'
         concerns_residents:
           type: boolean
+        outcome_override:
+          type: object
+          description: 'Required to record `accepted` or `rejected` when the item''s counts do not support it: no counts, undetermined shares, or a contradicting threshold. Without it, the outcome must equal the threshold evaluation of recorded, non-empty counts. Audited.'
+          required:
+            - reason
+          properties:
+            reason:
+              type: string
+              maxLength: 2000
     DecisionUpdate:
       type: object
       description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
       properties:
         text:
           type: string
+          maxLength: 10000
         outcome:
           type: string
           description: Open enum.
@@ -37055,7 +38067,6 @@ components:
         - scope_type
         - scope_id
         - valid_from
-        - valid_to
       properties:
         kind:
           type: string
@@ -37077,9 +38088,13 @@ components:
         valid_to:
           type: string
           format: date
-        end_previous:
-          type: boolean
-          description: A new election ends the old terms (G6).
+          description: End of the term. Optional, when omitted it is `valid_from` plus the site's `default_term_months`.
+        replaces_membership_ids:
+          type: array
+          description: 'Memberships this election replaces: only these end, on `valid_from` (G6). Each must be a current holder of the same role at the site. Default none: electing one board member never ends the others. (`end_previous` is gone: it ended every holder of the role.)'
+          items:
+            type: string
+            format: uuid
     DecisionApplyBudget:
       type: object
       required:
@@ -37102,7 +38117,9 @@ components:
           type: string
           description: '`special_assessment`'
         plan:
-          $ref: '#/components/schemas/ChargePlanCreate'
+          type: object
+          additionalProperties: true
+          description: A charge plan to create for the special assessment (the money module's ChargePlanCreate; free-form until the money module is merged).
     DecisionApply:
       description: The change a decision triggers; the manager confirms each one (G5).
       oneOf:
@@ -37833,7 +38850,7 @@ components:
         qr_token:
           type: string
           nullable: true
-          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+          description: The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
         decided_by:
           type: string
           format: uuid
@@ -38037,7 +39054,7 @@ components:
         qr_token:
           type: string
           nullable: true
-          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+          description: The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
         created_at:
           type: string
           format: date-time
@@ -38517,11 +39534,19 @@ components:
       type: object
       required:
         - connected
+        - online
+        - clock_suspect
         - last_seen_at
         - points
       properties:
         connected:
           type: boolean
+        online:
+          type: boolean
+          description: Whether the agent has reported recently enough to be trusted with opening a gate.
+        clock_suspect:
+          type: boolean
+          description: Whether the agent's clock disagrees with the server's, so time windows judged on the gate cannot be trusted.
         last_seen_at:
           type: string
           format: date-time
@@ -38538,6 +39563,8 @@ components:
         - kind
         - direction
         - enabled
+        - online
+        - clock_suspect
       properties:
         id:
           type: string
@@ -38550,6 +39577,12 @@ components:
           type: string
         enabled:
           type: boolean
+        online:
+          type: boolean
+          description: Whether the access point's controller is reachable through the agent.
+        clock_suspect:
+          type: boolean
+          description: Whether the access point's clock is suspect; opening it is refused with 409 `clock_suspect`.
     GateConsole:
       type: object
       description: Everything the booth page shows at once; auto-refreshed.
@@ -39904,7 +40937,7 @@ components:
           description: 0 to 30 seconds to hold the request open when the server has nothing to send.
         session:
           type: string
-          description: The `session` from the server hello. Omitted on the first call of a session (its first message must be `hello`); required on every later call. An unknown or expired handle is 410 `agent_session_expired`.
+          description: Optional handle from the server hello. A call whose first message is `hello` always starts a new session (it replaces the agent's previous one). Any other call belongs to the agent's current session; when the agent has none, or the handle sent here is not the current one, the answer is 410 `agent_session_expired` and the agent starts over with `hello`.
       example:
         session: sess_0192a3f0100070008000000000000001
         messages: []
@@ -39924,7 +40957,7 @@ components:
           type: integer
           format: int64
           minimum: 1
-          description: Per-session response counter, starting at 1 and incremented by one for every response, empty ones included. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.
+          description: 'Per-session counter of the responses that carry messages, starting at 1 and incremented by one for each of them. An empty response (200, `messages: []`) does not consume a number and repeats the last one issued, so it never opens a hole in the sequence. Two polls may be in flight, so the agent delivers responses in `seq` order and restarts the session (new `hello`) when a `seq` is missing for 10 seconds.'
         messages:
           type: array
           items:
@@ -40550,32 +41583,15 @@ components:
             error: null
         next_cursor: null
     DebtorRef:
-      type: object
-      description: 'Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.'
+      description: 'Who owes: a debtor key, one of two modes told apart by `mode`. `unit_side` addresses the open charges of one side of a unit; `person` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). A body that does not match its mode is 422 `validation_failed`.'
       oneOf:
-        - required:
-            - unit_id
-            - debtor_kind
-        - required:
-            - person_id
-      properties:
-        unit_id:
-          type: string
-          format: uuid
-          description: 'Unit mode: the unit.'
-        debtor_kind:
-          type: string
-          enum:
-            - owner
-            - tenant
-          description: 'Unit mode: the side of the unit that owes.'
-        person_id:
-          type: string
-          format: uuid
-          description: 'Person mode: the person who owes; covers charges carried to them and charges keyed on them.'
-      example:
-        unit_id: 0192a3f0-1000-7000-8000-000000000001
-        debtor_kind: tenant
+        - $ref: '#/components/schemas/DebtorRefUnitSide'
+        - $ref: '#/components/schemas/DebtorRefPerson'
+      discriminator:
+        propertyName: mode
+        mapping:
+          unit_side: '#/components/schemas/DebtorRefUnitSide'
+          person: '#/components/schemas/DebtorRefPerson'
     EffectiveDebtor:
       type: object
       description: 'Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.'
@@ -40590,6 +41606,7 @@ components:
           enum:
             - owner
             - tenant
+            - person
           description: Open enum.
           x-open-enum: true
         person_id:
@@ -40790,6 +41807,19 @@ components:
           items:
             type: string
             format: uuid
+    UnitTags:
+      type: object
+      description: The tag codes of one unit (cost groups such as `lift` or `pool`); replaces the whole set.
+      required:
+        - tags
+      properties:
+        tags:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
     CredentialCreate:
       type: object
       description: 'A manual credential: an RFID/BLE tag or a keypad PIN. Plates and QR codes are not created here.'
@@ -40966,3 +41996,401 @@ components:
       example:
         app_lock_required: false
         reauth_window_minutes: 10
+    ReauthEmailCode:
+      type: object
+      required:
+        - method
+        - code
+      properties:
+        method:
+          type: string
+          description: Always `email_code`.
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+          description: A code sent to the account's own email address by `auth.requestReauthEmailCode`.
+    Permission:
+      type: string
+      x-open-enum: true
+      description: 'Open enum: every permission a role can hold (backend plan section 7).'
+      enum:
+        - access.manage
+        - access.open
+        - access.read
+        - access.view_events
+        - announcements.publish
+        - announcements.read
+        - attendance.manage
+        - audit.read
+        - audit.report
+        - bookings.create
+        - bookings.manage
+        - bookings.read
+        - claims.decide
+        - codes.read
+        - collections.manage
+        - dashboard.portfolio
+        - dashboard.site
+        - dashboard.staff
+        - decisions.manage
+        - deliveries.read
+        - directory.read
+        - documents.manage
+        - documents.read
+        - documents.read_addressed
+        - documents.upload_own
+        - exports.create
+        - facilities.manage
+        - files.manage
+        - files.read
+        - files.upload
+        - gate.manage
+        - gate.operate
+        - invitations.household
+        - invitations.manage
+        - jobs.read
+        - me.dashboard
+        - me.manage
+        - me.read
+        - meetings.manage
+        - meetings.read
+        - memberships.manage
+        - memberships.read
+        - money.lock
+        - money.manage
+        - money.post
+        - money.read
+        - notifications.manage
+        - notifications.read
+        - occupancies.grant_money
+        - occupancies.household
+        - occupancies.manage
+        - occupancies.read
+        - org.manage
+        - org.read
+        - payments.declare
+        - payments.record
+        - people.erase
+        - people.manage
+        - people.move_out
+        - people.national_id
+        - people.read
+        - platform.manage
+        - polls.answer
+        - reports.aggregate
+        - reports.debtors
+        - reports.read
+        - roles.read
+        - sessions.manage_own
+        - sites.bank_details
+        - sites.export
+        - sites.manage
+        - sites.offboard
+        - sites.read
+        - statements.read
+        - statements.read_own
+        - tickets.manage
+        - tickets.open
+        - tickets.read
+        - tickets.read_assigned
+        - tickets.work
+        - units.import
+        - units.manage
+        - units.read
+        - vehicles.manage
+        - vehicles.read
+        - vendors.manage
+        - vendors.read
+        - visitors.decide
+        - visitors.manage
+        - visitors.read
+    DebtorRefUnitSide:
+      type: object
+      required:
+        - mode
+        - unit_id
+        - debtor_kind
+      properties:
+        mode:
+          type: string
+          enum:
+            - unit_side
+        unit_id:
+          type: string
+          format: uuid
+          description: The unit.
+        debtor_kind:
+          type: string
+          enum:
+            - owner
+            - tenant
+          description: The side of the unit that owes.
+      example:
+        mode: unit_side
+        unit_id: 0192a3f0-1000-7000-8000-000000000001
+        debtor_kind: tenant
+    DebtorRefPerson:
+      type: object
+      required:
+        - mode
+        - person_id
+      properties:
+        mode:
+          type: string
+          enum:
+            - person
+        person_id:
+          type: string
+          format: uuid
+          description: The person who owes; covers charges carried to them and charges keyed on them.
+      example:
+        mode: person
+        person_id: 0192a3f0-1000-7000-8000-000000000002
+    TicketWorkflowRestore:
+      type: object
+      description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
+      properties:
+        replacements:
+          type: object
+          additionalProperties:
+            type: string
+            format: uuid
+          description: 'For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`.'
+    AnnouncementAttachment:
+      type: object
+      description: A file attached to an announcement.
+      required:
+        - id
+        - name
+        - mime
+        - size
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The file id; download it with `files.download`.
+        name:
+          type: string
+        mime:
+          type: string
+        size:
+          type: integer
+          format: int64
+          description: Bytes.
+    AuditChange:
+      type: object
+      description: |
+        One changed field. Personal data carries only `hash_before` and
+        `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
+        is comparable within one instance and field only). Other fields carry `before` and
+        `after` (absent when the field did not exist on that side). The change of a field of an
+        entity without a personal data registration is an empty object: only the key changed.
+      properties:
+        before:
+          description: Previous value (any JSON).
+        after:
+          description: New value (any JSON).
+        hash_before:
+          type: string
+        hash_after:
+          type: string
+    AuditEvent-2:
+      type: object
+      required:
+        - id
+        - at
+        - actor_user_id
+        - actor_kind
+        - action
+        - target_type
+        - target_id
+        - site_id
+        - diff
+        - ip
+        - request_id
+      properties:
+        id:
+          type: string
+          format: uuid
+        at:
+          type: string
+          format: date-time
+        actor_user_id:
+          type: string
+          format: uuid
+          nullable: true
+        actor_kind:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: user, system, job.'
+          enum:
+            - user
+            - system
+            - job
+        action:
+          type: string
+          description: '`<area>.<verb>`, for example `org.update`.'
+        target_type:
+          type: string
+        target_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        diff:
+          type: object
+          description: Changed fields by (dotted) path.
+          additionalProperties:
+            $ref: '#/components/schemas/AuditChange'
+        ip:
+          type: string
+          nullable: true
+        request_id:
+          type: string
+          nullable: true
+    AuditEventList-2:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent-2'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+    EligibilityOwner:
+      type: object
+      description: An owner of record with the weight they vote with.
+      required:
+        - person_id
+        - display_name
+        - unit_ids
+        - unit_labels
+        - share
+        - vote_weight
+        - representative_of_unit_ids
+      properties:
+        person_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        unit_ids:
+          type: array
+          description: Every unit the person owns, including co-owned units another owner votes for.
+          items:
+            type: string
+            format: uuid
+        unit_labels:
+          type: array
+          description: Door numbers of `unit_ids`.
+          items:
+            type: string
+        share:
+          type: string
+          description: The arsa payi the person votes for, a decimal string (exact, not a float).
+        vote_weight:
+          type: integer
+          format: int64
+          description: Number of votes the person holds (before the per-person cap).
+        representative_of_unit_ids:
+          type: array
+          description: The units this person votes for (co-owners vote through one representative).
+          items:
+            type: string
+            format: uuid
+    EligibilitySnapshot:
+      type: object
+      description: Who could vote and with what weight; the attendance desk shows each owner's arsa payi from it.
+      required:
+        - taken_at
+        - as_of
+        - vote_weight
+        - share_basis
+        - unit_count
+        - total_votes
+        - total_share
+        - owners
+        - unrepresented_units
+      properties:
+        taken_at:
+          type: string
+          format: date-time
+          description: When the snapshot was computed.
+        as_of:
+          type: string
+          format: date-time
+          description: The day whose owners of record it lists.
+        vote_weight:
+          type: string
+          description: Open enum. `per_unit` or `per_owner`.
+          x-open-enum: true
+          enum:
+            - per_unit
+            - per_owner
+        share_basis:
+          type: string
+          description: '`arsa_payi`, or `equal` when the site has no arsa payi values.'
+        unit_count:
+          type: integer
+          format: int64
+        total_votes:
+          type: integer
+          format: int64
+        total_share:
+          type: number
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/EligibilityOwner'
+        unrepresented_units:
+          type: array
+          description: Door numbers of units without an owner of record; nobody votes for them.
+          items:
+            type: string
+    GateUnit:
+      type: object
+      description: A unit as the booth's picker shows it; nothing about who lives there.
+      required:
+        - id
+        - door_number
+        - block_name
+      properties:
+        id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        block_name:
+          type: string
+          nullable: true
+          description: The block's name; `null` for the hidden block of a single-building site.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000001
+        door_number: A-12
+        block_name: A Block
+    GateUnitList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateUnit'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000001
+            door_number: A-12
+            block_name: A Block
+        next_cursor: null

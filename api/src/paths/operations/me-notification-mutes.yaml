@@ -4,7 +4,7 @@ get:
   operationId: operations.getNotificationMutes
   summary: My muted notification types
   description: |-
-    **Release 0.1.** My muted notification types.
+    My muted notification types, the types that cannot be muted (sign-in codes, invitations) and `available_types`, the ones that can.
 
     Permission: `notifications.read`.
   tags:
@@ -15,7 +15,6 @@ get:
   x-openbekci-roles:
     member:
       - notifications.read
-  x-stability: stable
   responses:
     "200":
       description: OK
@@ -33,7 +32,7 @@ put:
   operationId: operations.setNotificationMutes
   summary: Set my muted notification types
   description: |-
-    **Release 0.1.** Set my muted notification types.
+    Set my muted notification types.
 
     Permission: `notifications.read`.
 
@@ -47,7 +46,6 @@ put:
     member:
       - notifications.read
   x-idempotent: optional
-  x-stability: stable
   requestBody:
     required: true
     content:

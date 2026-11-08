@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
@@ -27,6 +28,10 @@ type OrgAccess struct {
 	// DefaultLocale is the organization's default locale.
 	DefaultLocale string
 	Roles         []RoleGrant
+	// Sites the person can see here through a membership or an occupancy.
+	Sites []MeSite
+	// PersonID is the caller's person in this organization (nil when none is linked).
+	PersonID *uuid.UUID
 }
 
 // Me is the caller's identity: the account and its organizations.
@@ -36,6 +41,8 @@ type Me struct {
 	// organization's), else the email or phone.
 	DisplayName   string
 	Organizations []OrgAccess
+	// Occupancies are the caller's occupancies in every organization, current and former.
+	Occupancies []MeOccupancy
 }
 
 // Me loads the account and, through the platform (cross-organization) pool,
@@ -50,48 +57,52 @@ func (s *Service) Me(ctx context.Context, userID uuid.UUID) (Me, error) {
 		if me.User, err = s.loadUser(ctx, tx, userID); err != nil {
 			return err
 		}
-		rows, err := tx.Query(ctx, `
-			SELECT o.id, o.slug, o.name, o.default_locale, p.display_name, m.role, m.scope_type, m.scope_id, m.site_owned
-			FROM person p
-			JOIN organization o ON o.id = p.org_id AND o.status = 'active'
-			LEFT JOIN membership m ON m.org_id = p.org_id AND m.person_id = p.id
-			     AND m.valid_from <= $2 AND (m.valid_to IS NULL OR m.valid_to > $2)
-			WHERE p.user_id = $1
-			ORDER BY o.name, o.id, p.created_at, m.role, m.scope_type, m.scope_id NULLS FIRST`, userID, now)
+		// The same query the authorization Resolver uses, so what /v1/me shows
+		// and what is enforced cannot drift apart.
+		rows, err := authz.ListUserMemberships(ctx, tx, userID, now, nil)
 		if err != nil {
 			return err
 		}
-		defer rows.Close()
 		idx := map[uuid.UUID]int{}
-		for rows.Next() {
-			var oa OrgAccess
-			var person string
-			var role, scope *string
-			var scopeID *uuid.UUID
-			var siteOwned *bool
-			if err := rows.Scan(&oa.ID, &oa.Slug, &oa.Name, &oa.DefaultLocale, &person, &role, &scope, &scopeID, &siteOwned); err != nil {
-				return err
-			}
+		for _, r := range rows {
 			if me.DisplayName == "" {
-				me.DisplayName = person
+				me.DisplayName = r.DisplayName
 			}
-			i, seen := idx[oa.ID]
+			i, seen := idx[r.OrgID]
 			if !seen {
-				oa.Roles = []RoleGrant{}
-				me.Organizations = append(me.Organizations, oa)
+				me.Organizations = append(me.Organizations, OrgAccess{
+					ID: r.OrgID, Slug: r.Slug, Name: r.Name, DefaultLocale: r.DefaultLocale, Roles: []RoleGrant{},
+				})
 				i = len(me.Organizations) - 1
-				idx[oa.ID] = i
+				idx[r.OrgID] = i
 			}
-			if role != nil {
-				g := RoleGrant{Role: *role, ScopeID: scopeID}
-				if scope != nil {
-					g.ScopeType = *scope
-				}
-				g.SiteOwned = siteOwned != nil && *siteOwned
-				me.Organizations[i].Roles = append(me.Organizations[i].Roles, g)
+			if r.HasRole {
+				me.Organizations[i].Roles = append(me.Organizations[i].Roles, RoleGrant{
+					Role: string(r.Membership.Role), ScopeType: string(r.Membership.ScopeType),
+					ScopeID: r.Membership.ScopeID, SiteOwned: r.SiteOwned,
+				})
 			}
 		}
-		return rows.Err()
+		prows, err := tx.Query(ctx, `SELECT org_id, id FROM person WHERE user_id = $1`, userID)
+		if err != nil {
+			return err
+		}
+		defer prows.Close()
+		for prows.Next() {
+			var org, pid uuid.UUID
+			if err := prows.Scan(&org, &pid); err != nil {
+				return err
+			}
+			if i, ok := idx[org]; ok {
+				p := pid
+				me.Organizations[i].PersonID = &p
+			}
+		}
+		prows.Close()
+		if err := prows.Err(); err != nil {
+			return err
+		}
+		return s.loadSitesAndOccupancies(ctx, tx, userID, now, &me)
 	})
 	if err != nil {
 		return Me{}, problem.Internal(fmt.Errorf("load me: %w", err))
