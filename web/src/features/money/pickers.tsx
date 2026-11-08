@@ -1,7 +1,11 @@
+import { useState } from 'react'
 import { useLingui } from '@lingui/react/macro'
+import { useSession } from '@/app/session'
 import { Input } from '@/components/ui/input'
 import { moneyApi, REFERENCE_STALE, unwrap, useMoneyQuery, type MoneyCtx, type S } from './api'
 import { Select } from './ui'
+import { EntityPicker, type PickerItem } from './EntityPicker'
+import { useDebounced } from './forms'
 
 /* Reference data for pickers. Five minutes of staleness is fine (web plan §6); one page of 200. */
 
@@ -14,6 +18,35 @@ export function useUnits(ctx: MoneyCtx) {
           params: { path: { org_id: ctx.orgId }, query: { site_id: ctx.siteId, limit: 200 } },
         }),
       ).then((r) => r.items),
+    { staleTime: REFERENCE_STALE },
+  )
+}
+
+/**
+ * EVERY unit of the site, following the cursor (the contract caps a page at 200). For screens that
+ * must show or fill each unit, such as opening balances; pickers use server-side search instead.
+ */
+export function useAllUnits(ctx: MoneyCtx) {
+  return useMoneyQuery(
+    ['units-all', ctx.siteId],
+    async () => {
+      const all: S['Unit'][] = []
+      let cursor: string | undefined
+      for (let page = 0; page < 50; page++) {
+        const r = await unwrap(
+          moneyApi.GET('/v1/orgs/{org_id}/units', {
+            params: {
+              path: { org_id: ctx.orgId },
+              query: { site_id: ctx.siteId, limit: 200, cursor },
+            },
+          }),
+        )
+        all.push(...r.items)
+        if (!r.next_cursor) break
+        cursor = r.next_cursor
+      }
+      return all
+    },
     { staleTime: REFERENCE_STALE },
   )
 }
@@ -83,6 +116,48 @@ export function useCashBoxes(ctx: MoneyCtx) {
   )
 }
 
+/**
+ * The signed-in user's person in this site. `/v1/me` carries no person id, so the person is found
+ * by `user_id` among the persons matching the user's name (server-side `q`).
+ * CONTRACT GAP: a cash collector without `person.read` cannot list persons; `/v1/me` should carry
+ * `person_id` (reported on the PR).
+ */
+export function useMyPersonId(ctx: MoneyCtx) {
+  const { me } = useSession()
+  const userId = me?.user.id
+  const name = me?.user.display_name ?? ''
+  return useMoneyQuery(
+    ['my-person', ctx.siteId, userId],
+    async () => {
+      const fromMe = (me?.user as { person_id?: string } | undefined)?.person_id
+      if (fromMe) return fromMe
+      const r = await unwrap(
+        moneyApi.GET('/v1/orgs/{org_id}/persons', {
+          params: {
+            path: { org_id: ctx.orgId },
+            query: { site_id: ctx.siteId, q: name || undefined, limit: 50 },
+          },
+        }),
+      )
+      return r.items.find((p) => p.user_id === userId)?.id ?? null
+    },
+    { staleTime: REFERENCE_STALE, enabled: !!userId },
+  )
+}
+
+/** The cash box whose collector is the signed-in person (M5): where their cash receipts go. */
+export function useMyCashBox(ctx: MoneyCtx) {
+  const person = useMyPersonId(ctx)
+  const boxes = useCashBoxes(ctx)
+  const box = person.data
+    ? boxes.data?.find((b) => b.collector_person_id === person.data)
+    : undefined
+  return {
+    box: box ?? null,
+    isPending: person.isPending || boxes.isPending,
+  }
+}
+
 export function useAllocationKeys(ctx: MoneyCtx) {
   return useMoneyQuery(
     ['allocation-keys', ctx.siteId],
@@ -122,78 +197,120 @@ export function useUnitTags(ctx: MoneyCtx) {
   )
 }
 
-type PickerProps = Omit<React.ComponentProps<typeof Select>, 'onChange' | 'value'> & {
+type PickerProps = {
+  id?: string
   value: string
   onChange: (id: string) => void
   placeholder?: string
+  disabled?: boolean
+  className?: string
+  'aria-label'?: string
+  'aria-invalid'?: boolean | 'true' | 'false'
 }
 
+/** Client-side searchable picker over a small, fully loaded list (blocks, tags, keys, funds). */
 function Picker({
   items,
-  value,
-  onChange,
-  placeholder,
+  loading,
+  truncated,
   ...rest
-}: PickerProps & { items: { id: string; label: string }[] }) {
-  const { t } = useLingui()
-  return (
-    <Select {...rest} value={value} onChange={(e) => onChange(e.target.value)}>
-      <option value="">{placeholder ?? t`Select…`}</option>
-      {items.map((i) => (
-        <option key={i.id} value={i.id}>
-          {i.label}
-        </option>
-      ))}
-    </Select>
-  )
+}: PickerProps & { items: PickerItem[]; loading?: boolean; truncated?: boolean }) {
+  return <EntityPicker {...rest} items={items} loading={loading} truncated={truncated} />
+}
+
+/**
+ * Server-side search over a long list: the typed text becomes the contract's `q`, a page is at most
+ * 200 and the picker says when there is more ("showing the first 200: refine").
+ */
+function useSearchItems(
+  key: string[],
+  fetchPage: (q: string) => Promise<{ items: PickerItem[]; next_cursor: string | null }>,
+) {
+  const [q, setQ] = useState('')
+  const debounced = useDebounced(q, 250)
+  const query = useMoneyQuery([...key, 'search', debounced], () => fetchPage(debounced), {
+    staleTime: REFERENCE_STALE,
+    placeholderData: (prev) => prev,
+  })
+  return {
+    onQuery: setQ,
+    items: query.data?.items ?? [],
+    loading: query.isPending,
+    truncated: !!query.data?.next_cursor,
+  }
 }
 
 export function UnitPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx }) {
-  const q = useUnits(ctx)
-  return (
-    <Picker
-      {...p}
-      disabled={p.disabled || q.isPending}
-      items={(q.data ?? []).map((u) => ({ id: u.id, label: u.door_number }))}
-    />
-  )
+  const s = useSearchItems(['unit-picker', ctx.siteId], async (q) => {
+    const r = await unwrap(
+      moneyApi.GET('/v1/orgs/{org_id}/units', {
+        params: {
+          path: { org_id: ctx.orgId },
+          query: { site_id: ctx.siteId, q: q || undefined, limit: 200 },
+        },
+      }),
+    )
+    return {
+      items: r.items.map((u) => ({ id: u.id, label: u.door_number })),
+      next_cursor: r.next_cursor,
+    }
+  })
+  return <EntityPicker {...p} {...s} disabled={p.disabled} />
 }
 
 export function PersonPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx }) {
-  const q = usePersons(ctx)
-  return (
-    <Picker
-      {...p}
-      disabled={p.disabled || q.isPending}
-      items={(q.data ?? []).map((u) => ({ id: u.id, label: u.display_name }))}
-    />
-  )
+  const s = useSearchItems(['person-picker', ctx.siteId], async (q) => {
+    const r = await unwrap(
+      moneyApi.GET('/v1/orgs/{org_id}/persons', {
+        params: {
+          path: { org_id: ctx.orgId },
+          query: { site_id: ctx.siteId, q: q || undefined, limit: 200 },
+        },
+      }),
+    )
+    return {
+      items: r.items.map((u) => ({ id: u.id, label: u.display_name })),
+      next_cursor: r.next_cursor,
+    }
+  })
+  return <EntityPicker {...p} {...s} />
 }
 
 export function VendorPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx }) {
-  const q = useVendors(ctx)
-  return (
-    <Picker
-      {...p}
-      disabled={p.disabled || q.isPending}
-      items={(q.data ?? []).map((u) => ({ id: u.id, label: u.name }))}
-    />
-  )
+  const s = useSearchItems(['vendor-picker'], async (q) => {
+    const r = await unwrap(
+      moneyApi.GET('/v1/orgs/{org_id}/vendors', {
+        params: { path: { org_id: ctx.orgId }, query: { q: q || undefined, limit: 200 } },
+      }),
+    )
+    return { items: r.items.map((u) => ({ id: u.id, label: u.name })), next_cursor: r.next_cursor }
+  })
+  return <EntityPicker {...p} {...s} />
 }
 
+/** Accounts of a subtype (or all), optionally narrowed to the ids in `only`. */
 export function AccountPicker({
   ctx,
   subtype,
+  only,
   ...p
-}: PickerProps & { ctx: MoneyCtx; subtype?: string }) {
-  const q = useAccounts(ctx, subtype)
-  return (
-    <Picker
-      {...p}
-      disabled={p.disabled || q.isPending}
-      items={(q.data ?? []).map((a) => ({ id: a.id, label: `${a.code} ${a.name}` }))}
-    />
-  )
+}: PickerProps & { ctx: MoneyCtx; subtype?: string; only?: string[] }) {
+  const s = useSearchItems(['account-picker', ctx.siteId, subtype ?? 'all'], async (q) => {
+    const r = await unwrap(
+      moneyApi.GET('/v1/orgs/{org_id}/accounts', {
+        params: {
+          path: { org_id: ctx.orgId },
+          query: { site_id: ctx.siteId, subtype, q: q || undefined, archived: false, limit: 200 },
+        },
+      }),
+    )
+    return {
+      items: r.items.map((a) => ({ id: a.id, label: `${a.code} ${a.name}` })),
+      next_cursor: r.next_cursor,
+    }
+  })
+  const items = only ? s.items.filter((i) => only.includes(i.id)) : s.items
+  return <EntityPicker {...p} {...s} items={items} />
 }
 
 /** Cash boxes and bank accounts: everything money can be paid into or out of. */
@@ -204,7 +321,7 @@ export function CashOrBankPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx })
     id: a.id,
     label: `${a.code} ${a.name}`,
   }))
-  return <Picker {...p} disabled={p.disabled || cash.isPending || bank.isPending} items={items} />
+  return <Picker {...p} loading={cash.isPending || bank.isPending} items={items} />
 }
 
 export function FundPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx }) {
@@ -212,7 +329,7 @@ export function FundPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx }) {
   return (
     <Picker
       {...p}
-      disabled={p.disabled || q.isPending}
+      loading={q.isPending}
       items={(q.data ?? []).map((f) => ({ id: f.id, label: f.name }))}
     />
   )
@@ -223,7 +340,7 @@ export function AllocationKeyPicker({ ctx, ...p }: PickerProps & { ctx: MoneyCtx
   return (
     <Picker
       {...p}
-      disabled={p.disabled || q.isPending}
+      loading={q.isPending}
       items={(q.data ?? []).map((k) => ({ id: k.id, label: k.name }))}
     />
   )
