@@ -166,6 +166,13 @@ func (in Input) validate(site tenancy.Site) error {
 func (s *Service) settle(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site tenancy.Site, ch ledger.Chart, p *Payment, d billing.Debtor, manual []uuid.UUID) ([]paymentalloc.Allocation, error) {
 	tz := ledger.Location(site.Timezone)
 	cur := ledger.Currency(site)
+	// one posting at a time per debtor, and credit the debtor already holds goes against the open charges first
+	if err := billing.LockOpenCharges(ctx, tx, orgID, site.ID, d); err != nil {
+		return nil, err
+	}
+	if _, err := billing.ApplyCredit(ctx, tx, orgID, site, ch, d, ledger.Today(site.Timezone, s.Now())); err != nil {
+		return nil, err
+	}
 	charges, err := billing.LoadCharges(ctx, tx, orgID, site.ID, d)
 	if err != nil {
 		return nil, err
@@ -302,6 +309,9 @@ func (s *Service) Record(ctx context.Context, orgID uuid.UUID, in Input) (Paymen
 		}
 		if err := in.validate(site); err != nil {
 			return err
+		}
+		if in.ReceivedOn > ledger.Today(site.Timezone, s.Now()) {
+			return bad("received_on", "in_the_future")
 		}
 		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
 		if err != nil {

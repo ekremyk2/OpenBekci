@@ -50,7 +50,7 @@ func rolesOf(op *openapi3.Operation) map[string][]string {
 	if err := json.Unmarshal(b, &out); err != nil {
 		// served files operations list the permissions every member holds
 		var flat []string
-		if json.Unmarshal(b, &flat) != nil {
+		if json.Unmarshal(b, &flat) != nil || len(flat) == 0 || !strings.HasPrefix(flat[0], "files.") {
 			return nil
 		}
 		return map[string][]string{"member": flat}

@@ -460,7 +460,7 @@ func (s *Service) planShares(ctx context.Context, tx pgx.Tx, site tenancy.Site, 
 				ws = append(ws, allocate.Weight{UnitID: u.id, Exempt: true})
 			}
 		}
-		res, err := allocate.Allocate(amount, ws, allocate.ByID(), allocate.WithRotation(p.Name+"/"+per.Key))
+		res, err := allocate.Allocate(amount, ws, allocate.ByID(), allocate.WithRotation(p.ID.String()+"/"+per.Key))
 		if err != nil {
 			return nil, problem.Wrap(422, problem.CodeValidationFailed, "the plan cannot be allocated", err)
 		}
@@ -528,10 +528,10 @@ func periodsOf(p Plan, upTo string, tz *time.Location) ([]rates.Period, error) {
 
 // PreviewItem is one unit of a plan preview.
 type PreviewItem struct {
-	UnitID          uuid.UUID   `json:"unit_id"`
-	DoorNumber      string      `json:"door_number"`
-	Amount          money.Money `json:"amount"`
-	EffectiveDebtor Debtor      `json:"effective_debtor"`
+	UnitID          uuid.UUID       `json:"unit_id"`
+	DoorNumber      string          `json:"door_number"`
+	Amount          money.Money     `json:"amount"`
+	EffectiveDebtor EffectiveDebtor `json:"effective_debtor"`
 }
 
 // Preview is what a plan would bill for one period.
@@ -592,8 +592,19 @@ func (s *Service) PreviewPlan(ctx context.Context, orgID, planID uuid.UUID, day 
 		pv = Preview{Period: target.Key, DueDate: due, Total: money.Zero(ledger.Currency(site)), Items: []PreviewItem{}}
 		for _, sh := range shares {
 			pv.Total.Amount += sh.Amount
-			uid, side := sh.UnitID, sh.Side
-			pv.Items = append(pv.Items, PreviewItem{UnitID: sh.UnitID, DoorNumber: sh.Door, Amount: money.New(sh.Amount, ledger.Currency(site)), EffectiveDebtor: Debtor{UnitID: &uid, Kind: side, PersonID: sh.PersonID}})
+			src := "plan_default"
+			if sh.Side != p.DefaultDebtor {
+				src = "unit_override"
+			}
+			var name *string
+			if sh.PersonID != nil {
+				var n string
+				if err := tx.QueryRow(ctx, `SELECT display_name FROM person WHERE org_id=$1 AND id=$2`, orgID, *sh.PersonID).Scan(&n); err == nil {
+					name = &n
+				}
+			}
+			pv.Items = append(pv.Items, PreviewItem{UnitID: sh.UnitID, DoorNumber: sh.Door, Amount: money.New(sh.Amount, ledger.Currency(site)),
+				EffectiveDebtor: EffectiveDebtor{DebtorKind: sh.Side, PersonID: sh.PersonID, DisplayName: name, Source: src}})
 		}
 		return nil
 	})

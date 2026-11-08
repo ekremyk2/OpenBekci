@@ -48,7 +48,7 @@ type Deps struct {
 	People  *people.Service
 	// Money are the money services (ledger, billing, payments, ...).
 	Money MoneyDeps
-	Audit   *audit.Service
+	Audit *audit.Service
 	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
 	// with an internal error (unit tests only).
 	Files *files.Service

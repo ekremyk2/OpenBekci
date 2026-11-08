@@ -85,10 +85,9 @@ func TestIntegrationGoldenYear(t *testing.T) {
 				t.Fatal(err)
 			}
 		case ds == "2026-06-20" && !waived:
-			if acc, _ := w.bill.AccrueLateFee(ctx, e.OrgID, e.SiteID, a1, ""); acc.Booked.Amount > 10 {
-				if _, err := w.bill.WaiveLateFee(ctx, e.OrgID, billing.WaiveInput{SiteID: e.SiteID, UnitID: w.a1, DebtorKind: "owner", Amount: 10, Reason: "goodwill"}); err != nil {
-					t.Fatal(err)
-				}
+			// the booked fee may already be paid: only a refused waiver (409) is acceptable then
+			if _, err := w.bill.WaiveLateFee(ctx, e.OrgID, billing.WaiveInput{SiteID: e.SiteID, UnitID: w.a1, DebtorKind: "owner", Amount: 10, Reason: "goodwill"}); err != nil && problem.From(err).Status != 409 {
+				t.Fatal(err)
 			}
 			waived = true
 		case ds == "2026-08-01" && !moved: // the tenant of A-2 never existed here; the owner of A-3 sells: carry to the person

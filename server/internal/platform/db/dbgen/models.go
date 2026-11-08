@@ -362,6 +362,7 @@ type LateFeeBooking struct {
 	ChargeID   pgtype.UUID
 	EntryID    pgtype.UUID
 	CreatedAt  pgtype.Timestamptz
+	PersonID   pgtype.UUID
 }
 
 type LateFeeFreeze struct {
@@ -384,6 +385,7 @@ type LateFeePolicy struct {
 	RateBpsPerMonth int32
 	GraceDays       int32
 	CreatedAt       pgtype.Timestamptz
+	IsDefault       bool
 }
 
 type LateFeeWaiver struct {

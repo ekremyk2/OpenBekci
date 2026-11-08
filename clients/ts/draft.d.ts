@@ -16924,7 +16924,6 @@ export interface components {
             /** Format: int64 */
             monthly_limit: number | null;
         };
-        /** @description An uploaded or generated file. */
         File: {
             /** Format: uuid */
             id: string;
@@ -16932,22 +16931,47 @@ export interface components {
             org_id: string;
             /** Format: uuid */
             site_id: string | null;
-            /** Format: int64 */
-            size: number;
-            mime: string;
-            sha256: string;
-            /** Format: uuid */
-            uploaded_by: string | null;
-            scope: string | null;
+            /** @description The file name. A re-encoded image gets the extension of its stored type. */
+            name: string;
             /**
-             * @description Open enum.
+             * Format: int64
+             * @description Bytes of the stored original (for images, after metadata stripping and downscaling).
+             */
+            size: number;
+            /** @description The stored type, from sniffing the content. */
+            mime: string;
+            /** @description Hex SHA-256 of the stored original. */
+            sha256: string;
+            /**
+             * @description Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+             *     administrators see it). `pending` and `deleted` files are never returned.
              * @enum {string}
              */
             status: "ready" | "quarantined";
+            /**
+             * @description Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).
+             * @enum {string}
+             */
+            source: "uploaded" | "generated";
+            /**
+             * Format: uuid
+             * @description The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+             */
+            uploaded_by: string | null;
+            /** @description The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft. */
+            scope: string | null;
             /** @description Images: `thumb` and `medium` exist. */
             has_variants: boolean;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+             */
             retention_until: string | null;
+            /** @description Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side). */
+            variants: {
+                [key: string]: components["schemas"]["FileVariant"];
+            };
+            links: components["schemas"]["FileLinks"];
             /** Format: date-time */
             created_at: string;
             /** Format: date-time */
@@ -20242,7 +20266,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            debtor_kind: "owner" | "tenant";
+            debtor_kind: "owner" | "tenant" | "person";
             /**
              * Format: uuid
              * @description The person on the due date; null when the side is vacant.
@@ -20556,61 +20580,8 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
         };
-        "File-2": {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            org_id: string;
-            /** Format: uuid */
-            site_id: string | null;
-            /** @description The file name. A re-encoded image gets the extension of its stored type. */
-            name: string;
-            /**
-             * Format: int64
-             * @description Bytes of the stored original (for images, after metadata stripping and downscaling).
-             */
-            size: number;
-            /** @description The stored type, from sniffing the content. */
-            mime: string;
-            /** @description Hex SHA-256 of the stored original. */
-            sha256: string;
-            /**
-             * @description Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
-             *     administrators see it). `pending` and `deleted` files are never returned.
-             * @enum {string}
-             */
-            status: "ready" | "quarantined";
-            /**
-             * @description Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).
-             * @enum {string}
-             */
-            source: "uploaded" | "generated";
-            /**
-             * Format: uuid
-             * @description The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
-             */
-            uploaded_by: string | null;
-            /** @description The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft. */
-            scope: string | null;
-            /** @description Images: `thumb` and `medium` exist. */
-            has_variants: boolean;
-            /**
-             * Format: date-time
-             * @description When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
-             */
-            retention_until: string | null;
-            /** @description Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side). */
-            variants: {
-                [key: string]: components["schemas"]["FileVariant"];
-            };
-            links: components["schemas"]["FileLinks"];
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-        };
         FileList: {
-            items: components["schemas"]["File-2"][];
+            items: components["schemas"]["File"][];
             /** @description Pass as `cursor` for the next page; null on the last page. */
             next_cursor: string | null;
         };
@@ -31347,7 +31318,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["File-2"];
+                    "application/json": components["schemas"]["File"];
                 };
             };
             400: components["responses"]["Problem"];
@@ -31383,7 +31354,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["File-2"];
+                    "application/json": components["schemas"]["File"];
                 };
             };
             401: components["responses"]["Problem"];

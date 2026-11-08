@@ -33,15 +33,6 @@ type chargeIn struct {
 	SourceType                    string
 }
 
-// entryDateFor returns the entry date for a posting: the wanted day, or today
-// when the wanted day is on or before the lock date.
-func entryDateFor(site tenancy.Site, want, today string) string {
-	if site.LockDate != nil && want <= *site.LockDate {
-		return today
-	}
-	return want
-}
-
 // postCharge posts debit receivable / credit CreditAccount and inserts the charge.
 func postCharge(ctx context.Context, tx pgx.Tx, ch ledger.Chart, c chargeIn) (uuid.UUID, error) {
 	chargeID := id.New()
@@ -144,6 +135,7 @@ func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.U
 		if p.IncomeAccountID != nil {
 			credit = *p.IncomeAccountID
 		}
+		touched := map[string]Debtor{}
 		for _, per := range pers {
 			var have int
 			if err := tx.QueryRow(ctx, `SELECT count(*) FROM charge WHERE org_id=$1 AND plan_id=$2 AND period=$3 AND kind='principal'`, orgID, planID, per.Key).Scan(&have); err != nil {
@@ -164,11 +156,18 @@ func (s *Service) generatePlan(ctx context.Context, orgID, siteID, planID uuid.U
 			for _, sh := range shares {
 				_, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: siteID, UnitID: sh.UnitID, FundID: p.FundID, PlanID: &planID, Period: per.Key,
 					Kind: "principal", ChargeType: p.ChargeType, DebtorKind: sh.Side, PersonID: sh.PersonID, Amount: sh.Amount, DueDate: due,
-					EntryDate: entryDateFor(site, due, today), Description: p.Name + " " + per.Key, Basis: sh.Basis, CreditAccount: credit, SourceType: "charge"})
+					EntryDate: due, Description: p.Name + " " + per.Key, Basis: sh.Basis, CreditAccount: credit, SourceType: "charge"})
 				if err != nil {
 					return err
 				}
 				created++
+				uid := sh.UnitID
+				touched[uid.String()+sh.Side] = Debtor{UnitID: &uid, Kind: sh.Side}
+			}
+		}
+		for _, d := range touched {
+			if _, err := ApplyCredit(ctx, tx, orgID, site, ch, d, today); err != nil {
+				return err
 			}
 		}
 		if created > 0 {
@@ -299,10 +298,13 @@ func (s *Service) CreateCharge(ctx context.Context, orgID uuid.UUID, in ChargeIn
 		if in.IncomeAccountID != nil {
 			credit = *in.IncomeAccountID
 		}
-		cid, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: in.SiteID, UnitID: in.UnitID, FundID: fund, Period: "", Kind: "principal", ChargeType: in.ChargeType,
-			DebtorKind: side, PersonID: person, Amount: in.Amount.Amount, DueDate: in.DueDate, EntryDate: entryDateFor(site, in.DueDate, ledger.Today(site.Timezone, s.Now())),
+		cid, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: in.SiteID, UnitID: in.UnitID, FundID: fund, Period: in.DueDate[:7], Kind: "principal", ChargeType: in.ChargeType,
+			DebtorKind: side, PersonID: person, Amount: in.Amount.Amount, DueDate: in.DueDate, EntryDate: in.DueDate,
 			Description: in.Description, CreditAccount: credit, SourceType: "charge"})
 		if err != nil {
+			return err
+		}
+		if _, err := ApplyCredit(ctx, tx, orgID, site, ch, Debtor{UnitID: &in.UnitID, Kind: side}, ledger.Today(site.Timezone, s.Now())); err != nil {
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, in.SiteID, "charge.create", "charge", cid, nil, map[string]any{"unit_id": in.UnitID, "amount": in.Amount.Amount, "due_date": in.DueDate}); err != nil {
@@ -316,31 +318,39 @@ func (s *Service) CreateCharge(ctx context.Context, orgID uuid.UUID, in ChargeIn
 
 // Charge is a charge as the API shows it.
 type Charge struct {
-	ID              uuid.UUID   `json:"id"`
-	OrgID           uuid.UUID   `json:"org_id"`
-	SiteID          uuid.UUID   `json:"site_id"`
-	PlanID          *uuid.UUID  `json:"plan_id"`
-	UnitID          uuid.UUID   `json:"unit_id"`
-	DoorNumber      string      `json:"unit_door_number"`
-	Period          string      `json:"period"`
-	Kind            string      `json:"kind"`
-	ChargeType      string      `json:"charge_type"`
-	DebtorKind      string      `json:"debtor_kind"`
-	DebtorPersonID  *uuid.UUID  `json:"debtor_person_id"`
-	Amount          money.Money `json:"amount"`
-	Paid            money.Money `json:"paid"`
-	Balance         money.Money `json:"balance"`
-	EffectiveDebtor Debtor      `json:"effective_debtor"`
-	DueDate         string      `json:"due_date"`
-	Description     string      `json:"description"`
-	AllocationBasis any         `json:"allocation_basis"`
-	JournalEntryID  uuid.UUID   `json:"journal_entry_id"`
-	Status          string      `json:"status"`
-	CreatedAt       time.Time   `json:"created_at"`
-	UpdatedAt       time.Time   `json:"updated_at"`
+	ID              uuid.UUID       `json:"id"`
+	OrgID           uuid.UUID       `json:"org_id"`
+	SiteID          uuid.UUID       `json:"site_id"`
+	PlanID          *uuid.UUID      `json:"plan_id"`
+	UnitID          uuid.UUID       `json:"unit_id"`
+	DoorNumber      string          `json:"unit_door_number"`
+	Period          string          `json:"period"`
+	Kind            string          `json:"kind"`
+	ChargeType      string          `json:"charge_type"`
+	DebtorKind      string          `json:"debtor_kind"`
+	DebtorPersonID  *uuid.UUID      `json:"debtor_person_id"`
+	Amount          money.Money     `json:"amount"`
+	Paid            money.Money     `json:"paid"`
+	Balance         money.Money     `json:"balance"`
+	EffectiveDebtor EffectiveDebtor `json:"effective_debtor"`
+	DueDate         string          `json:"due_date"`
+	Description     string          `json:"description"`
+	AllocationBasis any             `json:"allocation_basis"`
+	JournalEntryID  uuid.UUID       `json:"journal_entry_id"`
+	Status          string          `json:"status"`
+	CreatedAt       time.Time       `json:"created_at"`
+	UpdatedAt       time.Time       `json:"updated_at"`
 }
 
-const chargeSel = `SELECT c.id, c.org_id, c.site_id, c.plan_id, c.unit_id, u.door_number, c.period, c.kind, c.charge_type, c.debtor_kind, c.debtor_person_id, c.amount, c.due_date::text, c.description, c.allocation_basis, c.journal_entry_id, c.status, c.created_at, s.currency,
+// EffectiveDebtor is who is (or was) charged and why (M1).
+type EffectiveDebtor struct {
+	DebtorKind  string     `json:"debtor_kind"`
+	PersonID    *uuid.UUID `json:"person_id"`
+	DisplayName *string    `json:"display_name"`
+	Source      string     `json:"source"`
+}
+
+const chargeSel = `SELECT (u.payer_overrides ? c.charge_type), (SELECT pp.display_name FROM person pp WHERE pp.org_id = c.org_id AND pp.id = c.debtor_person_id), c.id, c.org_id, c.site_id, c.plan_id, c.unit_id, u.door_number, c.period, c.kind, c.charge_type, c.debtor_kind, c.debtor_person_id, c.amount, c.due_date::text, c.description, c.allocation_basis, c.journal_entry_id, c.status, c.created_at, s.currency,
 	COALESCE((SELECT SUM(a.amount) FROM payment_allocation a WHERE a.org_id = c.org_id AND a.charge_id = c.id AND NOT a.voided), 0)::bigint
 	FROM charge c JOIN unit u ON u.org_id = c.org_id AND u.id = c.unit_id JOIN site s ON s.org_id = c.org_id AND s.id = c.site_id`
 
@@ -348,11 +358,21 @@ func scanCharge(r pgx.Row) (c Charge, err error) {
 	var basis []byte
 	var amt, paid int64
 	var cur string
-	err = r.Scan(&c.ID, &c.OrgID, &c.SiteID, &c.PlanID, &c.UnitID, &c.DoorNumber, &c.Period, &c.Kind, &c.ChargeType, &c.DebtorKind, &c.DebtorPersonID, &amt, &c.DueDate, &c.Description, &basis, &c.JournalEntryID, &c.Status, &c.CreatedAt, &cur, &paid)
+	var override bool
+	var name *string
+	err = r.Scan(&override, &name, &c.ID, &c.OrgID, &c.SiteID, &c.PlanID, &c.UnitID, &c.DoorNumber, &c.Period, &c.Kind, &c.ChargeType, &c.DebtorKind, &c.DebtorPersonID, &amt, &c.DueDate, &c.Description, &basis, &c.JournalEntryID, &c.Status, &c.CreatedAt, &cur, &paid)
 	cc := money.Code(cur)
 	c.Amount, c.Paid, c.Balance = money.New(amt, cc), money.New(paid, cc), money.New(amt-paid, cc)
-	uid := c.UnitID
-	c.EffectiveDebtor = Debtor{UnitID: &uid, Kind: c.DebtorKind, PersonID: c.DebtorPersonID}
+	src := "charge"
+	switch {
+	case c.DebtorKind == "person":
+		src = "carried"
+	case override:
+		src = "unit_override"
+	case c.PlanID != nil:
+		src = "plan_default"
+	}
+	c.EffectiveDebtor = EffectiveDebtor{DebtorKind: c.DebtorKind, PersonID: c.DebtorPersonID, DisplayName: name, Source: src}
 	c.UpdatedAt = c.CreatedAt
 	if len(basis) > 0 {
 		_ = json.Unmarshal(basis, &c.AllocationBasis)
@@ -439,8 +459,8 @@ func (s *Service) GetCharge(ctx context.Context, orgID, chargeID uuid.UUID) (Cha
 	return c, err
 }
 
-// CancelCharge cancels an unpaid charge by reversing its entry dated today
-// (money.post). A charge with applied payments cannot be cancelled (409).
+// CancelCharge cancels a charge by reversing its entry dated today (money.post).
+// Payments applied to it stay valid: their amount becomes prepayment credit of the debtor.
 func (s *Service) CancelCharge(ctx context.Context, orgID, chargeID uuid.UUID, reason string) (Charge, error) {
 	var out Charge
 	err := s.run(ctx, orgID, "charge", func(tx pgx.Tx) error {
@@ -459,10 +479,29 @@ func (s *Service) CancelCharge(ctx context.Context, orgID, chargeID uuid.UUID, r
 		if err := tx.QueryRow(ctx, `SELECT COALESCE(SUM(amount),0) FROM payment_allocation WHERE org_id=$1 AND charge_id=$2 AND NOT voided`, orgID, chargeID).Scan(&paid); err != nil {
 			return err
 		}
+		today := ledger.Today(site.Timezone, s.Now())
 		if paid > 0 {
-			return problem.Conflict("payments are applied to this charge; void them first")
+			// what was applied to the charge goes back to the debtor as credit; the payments stay valid
+			var fund uuid.UUID
+			if err := tx.QueryRow(ctx, `SELECT fund_id FROM charge WHERE org_id=$1 AND id=$2`, orgID, chargeID).Scan(&fund); err != nil {
+				return err
+			}
+			ch, err := ledger.EnsureChart(ctx, tx, orgID, c.SiteID)
+			if err != nil {
+				return err
+			}
+			d := Debtor{UnitID: &c.UnitID, Kind: c.DebtorKind}
+			if c.DebtorKind == "person" {
+				d = Debtor{PersonID: c.DebtorPersonID}
+			}
+			if err := MoveReceivableToCredit(ctx, tx, orgID, c.SiteID, ch, d, fund, paid, today, "Charge cancelled: payments kept as credit"); err != nil {
+				return err
+			}
+			if _, err := tx.Exec(ctx, `UPDATE payment_allocation SET voided = true WHERE org_id=$1 AND charge_id=$2 AND NOT voided`, orgID, chargeID); err != nil {
+				return err
+			}
 		}
-		rid, err := ledger.Reverse(ctx, tx, orgID, c.SiteID, c.JournalEntryID, ledger.Today(site.Timezone, s.Now()), "Cancelled: "+reason)
+		rid, err := ledger.Reverse(ctx, tx, orgID, c.SiteID, c.JournalEntryID, today, "Cancelled: "+reason)
 		if err != nil {
 			return err
 		}

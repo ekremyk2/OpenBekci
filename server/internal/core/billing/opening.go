@@ -107,15 +107,10 @@ func (s *Service) postOpening(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, i
 	if site.LockDate != nil && in.AsOf <= *site.LockDate {
 		return OpeningBalance{}, ledger.Locked(in.AsOf, *site.LockDate)
 	}
-	ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
-	if err != nil {
-		return OpeningBalance{}, err
-	}
 	ob := OpeningBalance{ID: id.New(), SiteID: in.SiteID, AsOf: in.AsOf, Kind: in.Kind, UnitID: in.UnitID, AccountID: in.AccountID, Principal: in.Principal, LateFee: in.LateFee, CreatedAt: s.Now().UTC()}
 	if in.DebtorKind != "" {
 		ob.DebtorKind = &in.DebtorKind
 	}
-	equity := ch.Account(ledger.SubOpeningEquity)
 	var entries []uuid.UUID
 	if in.Kind == "unit_receivable" {
 		var n int
@@ -126,11 +121,11 @@ func (s *Service) postOpening(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, i
 			return ob, bad("unit_id", "invalid_value")
 		}
 	} else {
-		var typ string
-		if err := tx.QueryRow(ctx, `SELECT type FROM account WHERE org_id=$1 AND site_id=$2 AND id=$3`, orgID, in.SiteID, *in.AccountID).Scan(&typ); err != nil {
+		var typ, sub string
+		if err := tx.QueryRow(ctx, `SELECT type, COALESCE(subtype, '') FROM account WHERE org_id=$1 AND site_id=$2 AND id=$3`, orgID, in.SiteID, *in.AccountID).Scan(&typ, &sub); err != nil {
 			return ob, bad("account_id", "invalid_value")
 		}
-		if typ != "asset" {
+		if typ != "asset" || (in.Kind == "bank" && sub != ledger.SubBank) || (in.Kind == "cash" && sub != ledger.SubCashBox) {
 			return ob, bad("account_id", "invalid_value")
 		}
 	}
@@ -138,6 +133,11 @@ func (s *Service) postOpening(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, i
 		ob.JournalEntryID = uuid.Nil
 		return ob, nil
 	}
+	ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
+	if err != nil {
+		return ob, err
+	}
+	equity := ch.Account(ledger.SubOpeningEquity)
 	today := ledger.Today(site.Timezone, s.Now())
 	switch in.Kind {
 	case "unit_receivable":

@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -361,12 +362,16 @@ func (s *apiServer) lateFeePolicyOut(ctx context.Context, orgID, siteID uuid.UUI
 	if err != nil {
 		return gen.LateFeePolicy{}, err
 	}
+	ver, err := b.PolicyVersion(ctx, orgID, siteID)
+	if err != nil {
+		return gen.LateFeePolicy{}, err
+	}
 	rate, grace := 0.0, 0
 	if n := len(rows); n > 0 {
 		rate, grace = float64(rows[n-1].RateBPSPerMonth)/100, rows[n-1].GraceDays
 	}
 	return conv[gen.LateFeePolicy](map[string]any{"site_id": siteID, "rate_pct_per_month": rate, "max_rate_pct_per_month": 5, "grace_days": grace, "simple": true,
-		"version": len(rows), "waiver_reauth_threshold": money.New(thr, cur)})
+		"version": ver, "waiver_reauth_threshold": money.New(thr, cur)})
 }
 
 func (s *apiServer) MoneyGetLateFeePolicy(ctx context.Context, req gen.MoneyGetLateFeePolicyRequestObject) (gen.MoneyGetLateFeePolicyResponseObject, error) {
@@ -383,6 +388,17 @@ func (s *apiServer) MoneySetLateFeePolicy(ctx context.Context, req gen.MoneySetL
 		return nil, hasBody(true)
 	}
 	site := siteOf(req.Params.SiteId)
+	want, err := ifMatchVersion(&req.Params.IfMatch)
+	if err != nil {
+		return nil, err
+	}
+	have, err := b.PolicyVersion(ctx, req.OrgId, site)
+	if err != nil {
+		return nil, err
+	}
+	if have != want {
+		return nil, tenancy.ErrVersion
+	}
 	st, err := s.siteToday(ctx, req.OrgId, site)
 	if err != nil {
 		return nil, err

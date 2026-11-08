@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -712,6 +713,9 @@ func (s *Service) SetLockDate(ctx context.Context, orgID, siteID uuid.UUID, vers
 		if site.Version != version {
 			return tenancy.ErrVersion
 		}
+		if to != nil && *to >= Today(site.Timezone, s.Now()) {
+			return bad("lock_date", "must_be_before_today")
+		}
 		if site.LockDate != nil && (to == nil || *to < *site.LockDate) {
 			if err := authz.PrincipalFromContext(ctx).RequireReauth(s.Now()); err != nil {
 				return err
@@ -887,6 +891,13 @@ func (s *Service) ReverseJournalEntry(ctx context.Context, orgID, entryID uuid.U
 		if err != nil {
 			return err
 		}
+		var src string
+		if err := tx.QueryRow(ctx, `SELECT source_type FROM journal_entry WHERE org_id = $1 AND id = $2`, orgID, entryID).Scan(&src); err != nil {
+			return err
+		}
+		if slices.Contains(TypedSources, src) {
+			return problem.Conflict("this entry belongs to a " + src + "; cancel or void that record instead of reversing its entry")
+		}
 		rid, err := Reverse(ctx, tx, orgID, siteID, entryID, Today(site.Timezone, s.Now()), memo)
 		if err != nil {
 			return err
@@ -918,10 +929,32 @@ func (s *Service) PostManual(ctx context.Context, orgID uuid.UUID, in ManualEntr
 		if _, err = SiteFor(ctx, tx, PermMoneyPost, orgID, in.SiteID); err != nil {
 			return err
 		}
+		if err = refuseSystemAccounts(ctx, tx, orgID, in); err != nil {
+			return err
+		}
 		if eid, err = PostEntry(ctx, tx, Entry{OrgID: orgID, SiteID: in.SiteID, EntryDate: in.EntryDate, Memo: in.Memo, SourceType: "manual", Lines: in.Lines}); err != nil {
 			return err
 		}
 		return Audit(ctx, tx, orgID, in.SiteID, "journal_entry.post", "journal_entry", eid, nil, map[string]any{"memo": in.Memo, "entry_date": in.EntryDate})
 	})
 	return eid, err
+}
+
+// refuseSystemAccounts keeps manual entries off the subledger accounts: the
+// receivables, prepayments and deposits move only through charges, payments and
+// their typed operations.
+func refuseSystemAccounts(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, in ManualEntryInput) error {
+	ids := make([]uuid.UUID, 0, len(in.Lines))
+	for _, l := range in.Lines {
+		ids = append(ids, l.AccountID)
+	}
+	var n int
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM account WHERE org_id = $1 AND site_id = $2 AND id = ANY($3)
+		AND subtype IN ('receivable_owner','receivable_tenant','person_receivable','prepayment_liability','deposit_liability','opening_equity')`, orgID, in.SiteID, ids).Scan(&n); err != nil {
+		return err
+	}
+	if n > 0 {
+		return problem.Validation(problem.Field{Field: "lines", Code: "system_account"})
+	}
+	return nil
 }

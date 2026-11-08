@@ -5878,6 +5878,7 @@ schemas:
         enum:
           - owner
           - tenant
+          - person
         description: Open enum.
         x-open-enum: true
       person_id:

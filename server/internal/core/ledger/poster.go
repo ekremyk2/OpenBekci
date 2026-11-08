@@ -68,6 +68,9 @@ func PostEntry(ctx context.Context, tx pgx.Tx, e Entry) (uuid.UUID, error) {
 			return uuid.Nil, problem.Validation(problem.Field{Field: "lines", Code: "unbalanced_within_fund"})
 		}
 	}
+	if err := checkLineFunds(ctx, tx, e); err != nil {
+		return uuid.Nil, err
+	}
 	var lock *string
 	if err := tx.QueryRow(ctx, `SELECT lock_date::text FROM site WHERE org_id = $1 AND id = $2 FOR SHARE`, e.OrgID, e.SiteID).Scan(&lock); err != nil {
 		return uuid.Nil, err
@@ -78,6 +81,13 @@ func PostEntry(ctx context.Context, tx pgx.Tx, e Entry) (uuid.UUID, error) {
 	fy, err := ensureFiscalYear(ctx, tx, e.OrgID, e.SiteID, e.EntryDate)
 	if err != nil {
 		return uuid.Nil, err
+	}
+	var fyStatus string
+	if err := tx.QueryRow(ctx, `SELECT status FROM fiscal_year WHERE org_id = $1 AND id = $2`, e.OrgID, fy).Scan(&fyStatus); err != nil {
+		return uuid.Nil, err
+	}
+	if fyStatus != "open" {
+		return uuid.Nil, problem.Conflict("the fiscal year of " + e.EntryDate + " is " + fyStatus + "; nothing can be posted in it")
 	}
 	entryID := id.New()
 	if _, err := tx.Exec(ctx, `
@@ -223,4 +233,43 @@ func Balance(ctx context.Context, tx pgx.Tx, orgID, siteID, accountID uuid.UUID,
 		  AND ($7::uuid IS NULL OR fund_id = $7) AND ($8 = '' OR entry_date >= $8::date) AND ($9 = '' OR entry_date <= $9::date)`,
 		orgID, siteID, accountID, f.UnitID, f.DebtorKind, f.PersonID, f.FundID, f.From, f.To).Scan(&debit, &credit)
 	return
+}
+
+// checkLineFunds refuses a line whose fund differs from the fund its account is
+// bound to (an account without a fund takes any fund).
+func checkLineFunds(ctx context.Context, tx pgx.Tx, e Entry) error {
+	ids := make([]uuid.UUID, 0, len(e.Lines))
+	for _, l := range e.Lines {
+		ids = append(ids, l.AccountID)
+	}
+	rows, err := tx.Query(ctx, `SELECT id, fund_id FROM account WHERE org_id = $1 AND site_id = $2 AND id = ANY($3)`, e.OrgID, e.SiteID, ids)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	bound := map[uuid.UUID]uuid.UUID{}
+	found := map[uuid.UUID]bool{}
+	for rows.Next() {
+		var aid uuid.UUID
+		var f *uuid.UUID
+		if err := rows.Scan(&aid, &f); err != nil {
+			return err
+		}
+		found[aid] = true
+		if f != nil {
+			bound[aid] = *f
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	for i, l := range e.Lines {
+		if !found[l.AccountID] {
+			return problem.Validation(problem.Field{Field: fmt.Sprintf("lines[%d].account_id", i), Code: "invalid_value"})
+		}
+		if f, ok := bound[l.AccountID]; ok && f != l.FundID {
+			return problem.Validation(problem.Field{Field: fmt.Sprintf("lines[%d].fund_id", i), Code: "account_fund_mismatch"})
+		}
+	}
+	return nil
 }

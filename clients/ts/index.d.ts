@@ -6317,7 +6317,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            debtor_kind: "owner" | "tenant";
+            debtor_kind: "owner" | "tenant" | "person";
             /**
              * Format: uuid
              * @description The person on the due date; null when the side is vacant.
