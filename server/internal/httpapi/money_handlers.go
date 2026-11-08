@@ -391,7 +391,7 @@ func (s *apiServer) MoneySetLateFeePolicy(ctx context.Context, req gen.MoneySetL
 		return nil, err
 	}
 	if have != want {
-		return nil, tenancy.ErrVersion
+		return nil, tenancy.VersionConflict("late fee policy")
 	}
 	st, err := s.siteToday(ctx, req.OrgId, site)
 	if err != nil {
