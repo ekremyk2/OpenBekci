@@ -147,7 +147,7 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `apikeys.read` | List the organization's API keys (prefix and metadata, never a secret). | `org_admin` |
 | `apikeys.manage` | Create, rotate and revoke API keys (re-authentication required; a key can never manage keys). | `org_admin` |
 | `webhooks.read` | Read webhook endpoints and their delivery log. | `org_admin` |
-| `webhooks.manage` | Create, change, delete and test webhook endpoints. | `org_admin` |
+| `webhooks.manage` | Create, change, delete, test and rotate the secret of webhook endpoints (never through an API key). | `org_admin` |
 
 ## platform
 

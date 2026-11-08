@@ -1764,17 +1764,20 @@ type WebhookDelivery struct {
 }
 
 type WebhookEndpoint struct {
-	ID                  pgtype.UUID
-	OrgID               pgtype.UUID
-	Url                 string
-	SecretSealed        []byte
-	Events              []string
-	Active              bool
-	Description         pgtype.Text
-	FailingSince        pgtype.Timestamptz
-	ConsecutiveFailures int32
-	CreatedBy           pgtype.UUID
-	CreatedAt           pgtype.Timestamptz
-	UpdatedAt           pgtype.Timestamptz
-	Version             int32
+	ID                      pgtype.UUID
+	OrgID                   pgtype.UUID
+	Url                     string
+	SecretSealed            []byte
+	Events                  []string
+	Active                  bool
+	Description             pgtype.Text
+	FailingSince            pgtype.Timestamptz
+	ConsecutiveFailures     int32
+	CreatedBy               pgtype.UUID
+	CreatedAt               pgtype.Timestamptz
+	UpdatedAt               pgtype.Timestamptz
+	Version                 int32
+	SecretPreviousSealed    []byte
+	SecretPreviousExpiresAt pgtype.Timestamptz
+	SecretRotatedAt         pgtype.Timestamptz
 }

@@ -114,9 +114,10 @@ func init() {
 		"integrations.getWebhookEndpoint": rowOf(hooksRead, 200, "GET", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() }, ""),
 		"integrations.updateWebhookEndpoint": rowOf(hooksManage, 200, "PATCH", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() },
 			`{"active":false}`, ifm, `"1"`),
-		"integrations.deleteWebhookEndpoint": rowOf(hooksManage, 204, "DELETE", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() }, ""),
-		"integrations.testWebhookEndpoint":   rowOf(hooksManage, 202, "POST", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() + ":test" }, ""),
-		"integrations.listWebhookDeliveries": rowOf(hooksRead, 200, "GET", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() + "/deliveries" }, ""),
+		"integrations.deleteWebhookEndpoint":       rowOf(hooksManage, 204, "DELETE", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() }, ""),
+		"integrations.testWebhookEndpoint":         rowOf(hooksManage, 202, "POST", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() + ":test" }, ""),
+		"integrations.rotateWebhookEndpointSecret": rowOf(hooksManage, 200, "POST", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() + ":rotate-secret" }, ""),
+		"integrations.listWebhookDeliveries":       rowOf(hooksRead, 200, "GET", func(x integFix) string { return "/webhook-endpoints/" + x.endpoint.String() + "/deliveries" }, ""),
 	}
 	for k, v := range rows {
 		authzMatrixRows[k] = v

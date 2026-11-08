@@ -191,6 +191,19 @@ func (s *apiServer) IntegrationsTestWebhookEndpoint(ctx context.Context, req gen
 	return gen.IntegrationsTestWebhookEndpoint202JSONResponse(out), err
 }
 
+func (s *apiServer) IntegrationsRotateWebhookEndpointSecret(ctx context.Context, req gen.IntegrationsRotateWebhookEndpointSecretRequestObject) (gen.IntegrationsRotateWebhookEndpointSecretResponseObject, error) {
+	svc, err := s.integ()
+	if err != nil {
+		return nil, err
+	}
+	created, err := svc.RotateEndpointSecret(ctx, req.OrgId, req.EndpointId)
+	if err != nil {
+		return nil, err
+	}
+	out, err := conv[gen.WebhookEndpointCreated](created)
+	return gen.IntegrationsRotateWebhookEndpointSecret200JSONResponse(out), err
+}
+
 func (s *apiServer) IntegrationsListWebhookDeliveries(ctx context.Context, req gen.IntegrationsListWebhookDeliveriesRequestObject) (gen.IntegrationsListWebhookDeliveriesResponseObject, error) {
 	svc, err := s.integ()
 	if err != nil {

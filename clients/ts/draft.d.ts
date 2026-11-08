@@ -9181,6 +9181,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:rotate-secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate a webhook endpoint's signing secret
+         * @description **Release 0.4.** Replaces the endpoint's signing secret and returns the new one exactly once.
+         *     The replaced secret keeps signing for 24 hours (`previous_secret_expires_at`): every delivery
+         *     in that time carries both signatures (`OpenBekci-Signature: t=...,v1=<new>,v1=<old>`), so a
+         *     receiver that accepts any matching `v1` can switch without a gap. Rotating again inside the
+         *     window replaces the overlap with the secret that was current a moment ago; the oldest secret
+         *     stops signing at once.
+         *
+         *     Permission: `webhooks.manage` (a person; an API key cannot manage webhook endpoints).
+         */
+        post: operations["integrations.rotateWebhookEndpointSecret"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}/deliveries": {
         parameters: {
             query?: never;
@@ -20279,6 +20311,11 @@ export interface components {
             endpoint: components["schemas"]["WebhookEndpoint"];
             /** @description The signing secret `whsec_...`. Shown exactly once; verify `OpenBekci-Signature` with it. */
             secret: string;
+            /**
+             * Format: date-time
+             * @description Only when the secret was rotated. Until then the replaced secret signs as well (a second `v1` entry in `OpenBekci-Signature`).
+             */
+            previous_secret_expires_at?: string;
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. Changing the `url` or re-activating the endpoint clears its failing mark. */
         WebhookEndpointUpdate: {
@@ -36646,6 +36683,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WebhookDelivery"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "integrations.rotateWebhookEndpointSecret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the webhook endpoint. */
+                endpoint_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The new secret, shown once. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookEndpointCreated"];
                 };
             };
             401: components["responses"]["Problem"];

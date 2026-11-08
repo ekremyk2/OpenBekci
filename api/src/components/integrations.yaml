@@ -241,6 +241,10 @@ schemas:
       secret:
         type: string
         description: "The signing secret `whsec_...`. Shown exactly once; verify `OpenBekci-Signature` with it."
+      previous_secret_expires_at:
+        type: string
+        format: date-time
+        description: Only when the secret was rotated. Until then the replaced secret signs as well (a second `v1` entry in `OpenBekci-Signature`).
   WebhookEndpointUpdate:
     type: object
     description: "Partial update: send only the fields to change. The resource `version` goes in If-Match. Changing the `url` or re-activating the endpoint clears its failing mark."

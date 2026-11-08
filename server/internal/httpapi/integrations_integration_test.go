@@ -89,7 +89,7 @@ func TestIntegrationAPIKeyLifecycle(t *testing.T) {
 	p.must(p.call("GET", auditURL, "", secret), 200)
 	hook := `{"url":"https://93.184.216.34/h","events":["ticket.created"]}`
 	p.problemCode(p.call("POST", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", hook, secret), 403, "insufficient_permission") // webhooks.manage cannot be a scope
-	p.problemCode(p.call("GET", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", "", secret), 403, "insufficient_permission")  // webhooks.read was not granted
+	p.problemCode(p.call("GET", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", "", secret), 403, "insufficient_permission")    // webhooks.read was not granted
 	orgURL := "/v1/orgs/" + p.org.ID.String()
 	p.must(p.call("PATCH", orgURL, `{"name":"Renamed by a key"}`, secret, "If-Match", `"`+strconv.Itoa(p.w.OrgVersion(t, p.org))+`"`), 200)
 	p.problemCode(p.call("GET", "/v1/me", "", secret), 403, "insufficient_permission")                                           // no account permissions

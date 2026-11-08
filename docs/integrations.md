@@ -17,8 +17,8 @@ The answer contains `secret`, for example `obk_k3x9q7ab_Zr0...`. **It is shown e
 curl -H "Authorization: Bearer obk_k3x9q7ab_Zr0..." https://bekci.example.org/v1/orgs/$ORG/payments
 ```
 
-- **Scopes** are permission names (the `Permission` enum of the API; the permission table is in `api/PERMISSIONS.md`). A key can only be given permissions its creator holds through a role in the organization, and never `apikeys.*` or permissions that belong to residents.
-- **A key never exceeds its creator.** On every request its rights are the *intersection* of its scopes and the grants its creator holds at that moment. If the administrator loses the role, is removed or disabled, the key loses the rights with them, at once. A key holds no account rights (`/v1/me`, sessions), works in its own organization only, and can be restricted to a single site with `site_id`.
+- **Scopes** are permission names (the `Permission` enum of the API; the permission table is in `api/PERMISSIONS.md`). A key can only be given permissions its creator holds through a role in the organization, and never `apikeys.*`, `webhooks.manage` or permissions that belong to residents. A key can read webhook endpoints (`webhooks.read`) but never create, change, test or rotate them.
+- **A key never exceeds its creator.** On every request its rights are the *intersection* of its scopes and the grants its creator holds at that moment. If the administrator loses the role, is removed or disabled, the key loses the rights with them, at once. A key holds no account rights, works in its own organization only, and can be restricted to a single site with `site_id`. It never gains more than its scopes: a role the creator receives later does not widen it. A key can call only operations that list a permission in the API reference: the ones that need nothing but a signed-in person (`/v1/me`, sessions, password, re-authentication, `GET /v1/instance`, accepting an invitation, unit claims) answer `403`. Idempotency keys (`Idempotency-Key`) belong to the key, not to the person who created it.
 - **Re-authentication.** Creating, rotating and revoking keys needs a recent re-authentication of the administrator's session (`POST /v1/auth/reauth`, valid 10 minutes), otherwise `403 reauth_required`. A key itself can never manage keys, and cannot do anything else that asks for re-authentication.
 - **Listing** (`GET /v1/orgs/{org_id}/api-keys`) shows the public prefix (`k3x9q7ab`), scopes, status, `last_used_at` (updated at most every five minutes) and expiry, never a secret.
 - **Rotating** (`POST .../api-keys/{key_id}:rotate`) issues a new prefix and secret for the same key; the old token stops working immediately, so plan the swap. **Revoking** (`POST .../:revoke`) ends the key.
@@ -34,7 +34,7 @@ POST /v1/orgs/{org_id}/webhook-endpoints
 {"url": "https://hooks.example.org/openbekci", "events": ["payment.confirmed", "ticket.created"], "description": "Accounting"}
 ```
 
-The answer contains `secret` (`whsec_...`), **shown once**: store it where your receiver can read it. It is kept sealed on the server and cannot be read back; to change it, create a new endpoint and delete the old one. `PATCH` changes the URL, events, description and `active` (with `If-Match`), `DELETE` removes the endpoint and its log. At most 20 endpoints per organization.
+The answer contains `secret` (`whsec_...`), **shown once**: store it where your receiver can read it. It is kept sealed on the server and cannot be read back; to change it, [rotate it](#rotating-the-secret). `PATCH` changes the URL, events, description and `active` (with `If-Match`), `DELETE` removes the endpoint and its log. At most 20 endpoints per organization.
 
 `POST .../webhook-endpoints/{endpoint_id}:test` queues a `ping` event (also to an inactive endpoint) so you can see your receiver work; `GET .../webhook-endpoints/{endpoint_id}/deliveries` is the delivery log, newest first: status (`pending`, `succeeded`, `failed`), attempts, the last HTTP status and error, and `next_retry_at` while a retry is waiting.
 
@@ -81,6 +81,16 @@ The body carries **ids only**, never records. Read the details through the API w
 | `ping` | You asked for a test | `endpoint_id` |
 
 Events are emitted in the transaction of the action that causes them: an event exists if and only if the change was saved. Only active endpoints that subscribe to the type receive it, once per event.
+
+### Rotating the secret
+
+`POST .../webhook-endpoints/{endpoint_id}:rotate-secret` issues a new secret and returns it **once**, like creation. The replaced secret does not stop at once: for **24 hours** (`previous_secret_expires_at` in the answer) every delivery is signed with both, as two `v1` entries, newest first:
+
+```
+OpenBekci-Signature: t=1731144612,v1=<hmac with the new secret>,v1=<hmac with the old secret>
+```
+
+A receiver that accepts any matching `v1` (the verifiers below do) keeps working while you deploy the new secret; when the window ends only the new `v1` is sent. Rotating again inside the window keeps just the secret that was current a moment ago as the overlap: the oldest one stops signing immediately. If a secret leaked, rotate twice to end the overlap at once. Rotation needs a signed-in administrator (`webhooks.manage`), not an API key, and is recorded in the audit trail as `webhook.rotate_secret` (never the secret).
 
 ### Verifying the signature
 
@@ -189,7 +199,7 @@ function verify(secret, header, rawBody, nowSeconds = Date.now() / 1000) {
 - **Backoff.** Failed attempts are retried after 30 seconds, then 1, 2, 4, 8, 16 and 32 minutes (doubling, capped at 4 hours): eight attempts by default, about an hour in all (`OPENBEKCI_WEBHOOK_MAX_ATTEMPTS`, 1 to 20). The log shows `next_retry_at`.
 - **When the attempts are used up** the delivery is `failed`, the endpoint is marked `failing` (`failing`, `failing_since` in the API) and the organization's administrators get a `webhook.endpoint_failing` notification, once per streak. Events keep being delivered to a failing endpoint; the first success clears the mark. Deactivating (`active: false`) stops new events; changing the URL or re-activating clears the mark.
 - **Order is not guaranteed**, and a retried delivery can arrive after a newer event. Use `occurred_at` and the ids, then read current state from the API.
-- **What we send to**: only `https` URLs whose host resolves to public addresses. Loopback, private (RFC 1918, unique-local), link-local (including cloud metadata addresses), carrier-grade NAT, multicast and documentation ranges are refused when you create the endpoint **and** again when each request connects. Self-hosted instances with a receiver on their own network list the ranges in `OPENBEKCI_WEBHOOK_ALLOWED_CIDRS` (operator setting; for example `192.168.1.0/24`). At most 1 MiB of your response is read, and it is discarded.
+- **What we send to**: only `https` URLs whose host resolves to public addresses. Loopback, private (RFC 1918, unique-local), link-local (including cloud metadata addresses), carrier-grade NAT, multicast and documentation ranges are refused when you create the endpoint **and** again when each request connects (the IPv6 forms that carry an IPv4 address, such as 6to4, Teredo, NAT64 and IPv4-mapped, are covered). Self-hosted instances with a receiver on their own network list the ranges in `OPENBEKCI_WEBHOOK_ALLOWED_CIDRS` (operator setting; for example `192.168.1.0/24`). At most 1 MiB of your response is read, and it is discarded.
 - The delivery log keeps the last status and error only (`http_status: 500`, `request_failed: ...`, `forbidden_target`, `redirect_not_followed`), never response bodies.
 
 Why the signature is built this way: [ADR-0002](adr/0002-webhook-signing.md).
@@ -203,3 +213,7 @@ Why the signature is built this way: [ADR-0002](adr/0002-webhook-signing.md).
 | `OPENBEKCI_WEBHOOK_ALLOWED_CIDRS` | empty | Comma separated CIDRs or IPs that webhooks may reach although they are private, loopback or link-local. |
 
 Webhook secrets are sealed with `OPENBEKCI_ENCRYPTION_KEY`; it is part of the backup set like the other keys.
+
+## Data handling
+
+API keys, webhook endpoints and the delivery log belong to the organization, not to a site: the **site export archive excludes them** (a key is a credential of the old organization and is bound to its administrators; the new organization creates its own). They hold no personal data of residents (delivery bodies are ids only), so person erasure (`privacy_erase`) does not touch them; a key whose creator is erased or removed stops working at once because it never exceeds its creator's grants, and can be revoked in the list.

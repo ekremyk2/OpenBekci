@@ -33,6 +33,6 @@ func Permissions() []authz.PermissionDef {
 		{Name: PermAPIKeysRead, Description: "List the organization's API keys", Roles: admin, Scopes: org},
 		{Name: PermAPIKeysManage, Description: "Create, rotate and revoke API keys (re-authentication required)", Roles: admin, Scopes: org},
 		{Name: PermWebhooksRead, Description: "Read webhook endpoints and their delivery log", Roles: admin, Scopes: org},
-		{Name: PermWebhooksManage, Description: "Create, change, delete and test webhook endpoints", Roles: admin, Scopes: org},
+		{Name: PermWebhooksManage, Description: "Create, change, delete, test and rotate the secret of webhook endpoints (never through an API key)", Roles: admin, Scopes: org},
 	}
 }

@@ -91,15 +91,17 @@ func (s *Service) Deliver(ctx context.Context, a DeliverArgs, attempt, maxAttemp
 		event    string
 		url      string
 		sealed   []byte
+		prev     []byte // the rotated-out secret while its overlap lasts
 		active   bool
 		status   string
 		proceed  bool
 		endpoint uuid.UUID
 	)
 	err := s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
-		err := tx.QueryRow(ctx, `SELECT d.status, d.event_type, d.body, e.url, e.secret_sealed, e.active, e.id
+		err := tx.QueryRow(ctx, `SELECT d.status, d.event_type, d.body, e.url, e.secret_sealed,
+				CASE WHEN e.secret_previous_expires_at > now() THEN e.secret_previous_sealed END, e.active, e.id
 			FROM webhook_delivery d JOIN webhook_endpoint e ON e.org_id = d.org_id AND e.id = d.endpoint_id
-			WHERE d.org_id = $1 AND d.id = $2`, a.OrgID, a.DeliveryID).Scan(&status, &event, &body, &url, &sealed, &active, &endpoint)
+			WHERE d.org_id = $1 AND d.id = $2`, a.OrgID, a.DeliveryID).Scan(&status, &event, &body, &url, &sealed, &prev, &active, &endpoint)
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil // the endpoint (and with it the delivery) was deleted
 		}
@@ -128,7 +130,15 @@ func (s *Service) Deliver(ctx context.Context, a DeliverArgs, attempt, maxAttemp
 	if err != nil {
 		return fmt.Errorf("open webhook secret: %w", err)
 	}
-	res := s.post(ctx, url, string(secret), a.DeliveryID, event, body)
+	secrets := []string{string(secret)}
+	if prev != nil {
+		old, err := s.cipher.Open(prev, secretAAD(a.OrgID, endpoint))
+		if err != nil {
+			return fmt.Errorf("open previous webhook secret: %w", err)
+		}
+		secrets = append(secrets, string(old))
+	}
+	res := s.post(ctx, url, secrets, a.DeliveryID, event, body)
 
 	var failErr error
 	err = s.db.InTenantTx(ctx, a.OrgID, func(tx pgx.Tx) error {
@@ -216,7 +226,7 @@ func (s *Service) markFailing(ctx context.Context, tx pgx.Tx, a DeliverArgs, url
 
 // post sends one signed request and classifies the outcome. It never returns
 // the response body: at most MaxResponseBytes are read and dropped.
-func (s *Service) post(ctx context.Context, url, secret string, deliveryID uuid.UUID, event string, body []byte) attemptResult {
+func (s *Service) post(ctx context.Context, url string, secrets []string, deliveryID uuid.UUID, event string, body []byte) attemptResult {
 	ctx, cancel := context.WithTimeout(ctx, DeliveryTimeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
@@ -225,7 +235,7 @@ func (s *Service) post(ctx context.Context, url, secret string, deliveryID uuid.
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "OpenBekci-Webhooks/1")
-	req.Header.Set(HeaderSignature, Sign(secret, s.now(), body))
+	req.Header.Set(HeaderSignature, SignAll(secrets, s.now(), body))
 	req.Header.Set(HeaderDeliveryID, deliveryID.String())
 	req.Header.Set(HeaderEvent, event)
 	resp, err := s.client.Do(req)

@@ -437,6 +437,8 @@ paths:
     $ref: ./paths/integrations/webhook-endpoints-endpoint_id.yaml
   /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:test:
     $ref: ./paths/integrations/webhook-endpoints-endpoint_id_test.yaml
+  /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}:rotate-secret:
+    $ref: ./paths/integrations/webhook-endpoints-endpoint_id_rotate-secret.yaml
   /v1/orgs/{org_id}/webhook-endpoints/{endpoint_id}/deliveries:
     $ref: ./paths/integrations/webhook-endpoints-endpoint_id-deliveries.yaml
   /v1/orgs/{org_id}/access/credentials:

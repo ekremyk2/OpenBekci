@@ -45,6 +45,9 @@ type WebhookEndpoint struct {
 type WebhookEndpointCreated struct {
 	Endpoint WebhookEndpoint `json:"endpoint"`
 	Secret   string          `json:"secret"`
+	// PreviousSecretExpiresAt is set when the secret was rotated: until then the
+	// replaced secret signs as well.
+	PreviousSecretExpiresAt *time.Time `json:"previous_secret_expires_at,omitempty"`
 }
 
 // WebhookDelivery is one delivery of an event to an endpoint, as logged.
@@ -219,6 +222,59 @@ func (s *Service) CreateEndpoint(ctx context.Context, orgID uuid.UUID, in Endpoi
 			return err
 		}
 		out = WebhookEndpointCreated{Endpoint: e, Secret: secret}
+		return nil
+	})
+	if err != nil {
+		return WebhookEndpointCreated{}, tenancy.DBProblem(err, "webhook endpoint")
+	}
+	return out, nil
+}
+
+// RotateEndpointSecret replaces the endpoint's signing secret and returns the
+// new one, shown once. The replaced secret keeps signing for SecretOverlap
+// (deliveries carry both signatures), so receivers can switch without a gap; a
+// second rotation inside the window drops the older secret at once.
+func (s *Service) RotateEndpointSecret(ctx context.Context, orgID, endpointID uuid.UUID) (WebhookEndpointCreated, error) {
+	if err := s.requireWebhooks(ctx, PermWebhooksManage, orgID); err != nil {
+		return WebhookEndpointCreated{}, err
+	}
+	if s.cipher == nil {
+		return WebhookEndpointCreated{}, problem.Internal(errors.New("webhooks: no encryption key configured"))
+	}
+	secretBody, _, err := crypto.NewToken()
+	if err != nil {
+		return WebhookEndpointCreated{}, problem.Internal(err)
+	}
+	secret := secretPrefix + secretBody
+	sealed, err := s.cipher.Seal([]byte(secret), secretAAD(orgID, endpointID))
+	if err != nil {
+		return WebhookEndpointCreated{}, problem.Internal(err)
+	}
+	now := s.now()
+	until := now.Add(SecretOverlap)
+	var out WebhookEndpointCreated
+	err = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		tag, err := tx.Exec(ctx, `UPDATE webhook_endpoint SET secret_previous_sealed = secret_sealed, secret_previous_expires_at = $3,
+				secret_sealed = $4, secret_rotated_at = $5, updated_at = $5, version = version + 1
+			WHERE org_id = $1 AND id = $2`, orgID, endpointID, until, sealed, now)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() == 0 {
+			return problem.NotFound("no such webhook endpoint")
+		}
+		e, err := scanEndpoint(tx.QueryRow(ctx, `SELECT `+endpointColumns+` FROM webhook_endpoint WHERE org_id = $1 AND id = $2`, orgID, endpointID))
+		if err != nil {
+			return err
+		}
+		diff, err := audit.Diff("webhook_endpoint", nil, map[string]any{"secret_rotated": true, "overlap_until": until})
+		if err != nil {
+			return err
+		}
+		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, Action: "webhook.rotate_secret", TargetType: "webhook_endpoint", TargetID: endpointID, Diff: diff}); err != nil {
+			return err
+		}
+		out = WebhookEndpointCreated{Endpoint: e, Secret: secret, PreviousSecretExpiresAt: &until}
 		return nil
 	})
 	if err != nil {

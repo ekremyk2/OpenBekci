@@ -51,7 +51,9 @@ const (
 	eventVersion         = 1
 	maxEventsPerEndpoint = 50
 	secretPrefix         = "whsec_"
-	secretCipherPurpose  = "integrations.webhook_secret"
+	// SecretOverlap is how long a rotated-out webhook secret keeps signing.
+	SecretOverlap       = 24 * time.Hour
+	secretCipherPurpose = "integrations.webhook_secret"
 )
 
 // EventTypes lists the subscribable event types in display order.
@@ -83,12 +85,23 @@ type Event struct {
 // Sign returns the OpenBekci-Signature header value for body sent at time t:
 // "t=<unix>,v1=<hex HMAC-SHA256(secret, t + "." + body)>".
 func Sign(secret string, t time.Time, body []byte) string {
+	return SignAll([]string{secret}, t, body)
+}
+
+// SignAll signs with every secret in order, one v1 entry each: "t=<unix>,v1=<new>,v1=<old>".
+// During the overlap after a secret rotation the endpoint's current secret
+// comes first and the replaced one second; receivers accept any matching v1.
+func SignAll(secrets []string, t time.Time, body []byte) string {
 	ts := strconv.FormatInt(t.Unix(), 10)
-	m := hmac.New(sha256.New, []byte(secret))
-	m.Write([]byte(ts))
-	m.Write([]byte("."))
-	m.Write(body)
-	return "t=" + ts + ",v1=" + hex.EncodeToString(m.Sum(nil))
+	out := "t=" + ts
+	for _, secret := range secrets {
+		m := hmac.New(sha256.New, []byte(secret))
+		m.Write([]byte(ts))
+		m.Write([]byte("."))
+		m.Write(body)
+		out += ",v1=" + hex.EncodeToString(m.Sum(nil))
+	}
+	return out
 }
 
 // VerifySignature checks a header produced by Sign: the v1 tag must match and
