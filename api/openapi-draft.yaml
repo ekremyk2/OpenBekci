@@ -14594,9 +14594,9 @@ paths:
       operationId: operations.createTicketComment
       summary: Comment on a ticket
       description: |-
-        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+        **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
 
-        Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+        Permission (any one of): `tickets.open`, `tickets.work`.
 
         Problems: `conflict` (409).
       tags:
@@ -14606,18 +14606,12 @@ paths:
         - bearerAuth: []
       x-openbekci-roles:
         org_admin:
-          - tickets.read
           - tickets.open
         site_manager:
-          - tickets.read
           - tickets.open
         board_member:
-          - tickets.read
           - tickets.open
-        auditor:
-          - tickets.read
         staff:
-          - tickets.read_assigned
           - tickets.open
           - tickets.work
         owner:

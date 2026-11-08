@@ -181,7 +181,7 @@ func init() {
 		"operations.listTicketComments": op(perms(read), 200, func(w *authztest.World, org authztest.Org, s d2Site, t *testing.T) mreq {
 			return mreq{method: "GET", path: orgPath(org, "/tickets/"+s.ticket(w, t).String()+"/comments")}
 		}),
-		"operations.createTicketComment": op(perms(authz.AnyOf(tickets.PermRead, tickets.PermOpen, tickets.PermReadAssigned, tickets.PermWork)), 201, func(w *authztest.World, org authztest.Org, s d2Site, t *testing.T) mreq {
+		"operations.createTicketComment": op(perms(authz.AnyOf(tickets.PermOpen, tickets.PermWork)), 201, func(w *authztest.World, org authztest.Org, s d2Site, t *testing.T) mreq {
 			return jsonReq("POST", orgPath(org, "/tickets/"+s.ticket(w, t).String()+"/comments"), `{"body":"Plumber called"}`)
 		}),
 		"operations.listTicketHistory": op(perms(read), 200, func(w *authztest.World, org authztest.Org, s d2Site, t *testing.T) mreq {

@@ -2594,9 +2594,9 @@ export interface paths {
         put?: never;
         /**
          * Comment on a ticket
-         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`.
+         * @description **Release 0.1.** `visibility: internal` needs `tickets.manage` or `tickets.work`. Reading is not enough: an auditor (`tickets.read` only) cannot comment (403). The ticket must be visible to the caller, and a merged ticket takes no comments (409 `conflict`).
          *
-         *     Permission (any one of): `tickets.read`, `tickets.open`, `tickets.read_assigned`, `tickets.work`.
+         *     Permission (any one of): `tickets.open`, `tickets.work`.
          *
          *     Problems: `conflict` (409).
          */

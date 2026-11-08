@@ -220,6 +220,15 @@ func (s *Service) loadVisible(ctx context.Context, tx pgx.Tx, orgID, ticketID uu
 	return t, c, nil
 }
 
+// errMerged answers every change to a ticket that was merged into another: a
+// merged ticket is terminal (its votes and discussion live on the target).
+func errMerged(t Ticket) error {
+	if t.MergedIntoID != nil {
+		return problem.Conflict("the ticket was merged into another ticket; work on the target")
+	}
+	return nil
+}
+
 func (c caps) canWork(t Ticket) bool {
 	return c.manage || (c.work && t.Assignee != nil && t.Assignee.PersonID != nil && *t.Assignee.PersonID == c.person)
 }
@@ -595,6 +604,9 @@ func (s *Service) UpdateTicket(ctx context.Context, orgID, ticketID uuid.UUID, e
 		if !c.manage {
 			return problem.Forbidden("you need tickets.manage to change a ticket")
 		}
+		if err := errMerged(before); err != nil {
+			return err
+		}
 		if before.Version != expected {
 			return tenancy.ErrVersion
 		}
@@ -760,6 +772,9 @@ func (s *Service) Transition(ctx context.Context, orgID, ticketID uuid.UUID, in 
 		if !c.canWork(before) {
 			return problem.Forbidden("you may not change the status of this ticket")
 		}
+		if err := errMerged(before); err != nil {
+			return err
+		}
 		name, semantic, err := s.statusOf(ctx, tx, orgID, before.SiteID, in.StatusID)
 		if err != nil {
 			return err
@@ -823,6 +838,11 @@ func (s *Service) Merge(ctx context.Context, orgID, ticketID, intoID uuid.UUID) 
 	}
 	var out Ticket
 	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		// Lock both rows in id order, so A merged into B and B into A at the same
+		// time cannot deadlock.
+		if _, err := tx.Exec(ctx, `SELECT 1 FROM ticket WHERE org_id = $1 AND id = ANY($2) ORDER BY id FOR UPDATE`, orgID, []uuid.UUID{ticketID, intoID}); err != nil {
+			return err
+		}
 		before, c, err := s.loadVisible(ctx, tx, orgID, ticketID, true)
 		if err != nil {
 			return err
@@ -831,7 +851,10 @@ func (s *Service) Merge(ctx context.Context, orgID, ticketID, intoID uuid.UUID) 
 			return problem.Forbidden("you need tickets.manage to merge tickets")
 		}
 		target, _, err := s.loadVisible(ctx, tx, orgID, intoID, true)
-		if err != nil || target.SiteID != before.SiteID {
+		if err != nil {
+			return err // 404 for a ticket the caller cannot see, 403 without rights: not a validation problem
+		}
+		if target.SiteID != before.SiteID {
 			return problem.Validation(problem.Field{Field: "into_ticket_id", Code: "invalid_value"})
 		}
 		if before.MergedIntoID != nil {
@@ -887,6 +910,9 @@ func (s *Service) SetVote(ctx context.Context, orgID, ticketID uuid.UUID, voted 
 		}
 		if !c.open || c.person == uuid.Nil {
 			return problem.Forbidden("you may not vote here")
+		}
+		if err := errMerged(t); err != nil {
+			return err
 		}
 		if t.Visibility != VisCommon {
 			return problem.Conflict("only common tickets can be voted")
@@ -1020,6 +1046,14 @@ func (s *Service) CreateComment(ctx context.Context, orgID, ticketID uuid.UUID, 
 		if c.person == uuid.Nil {
 			return problem.Forbidden("this account has no person in the organization")
 		}
+		// reading is not enough (auditors read): commenting needs tickets.open on
+		// a ticket the caller can see, or tickets.manage / tickets.work
+		if !c.open && !c.manage && !c.work {
+			return problem.Forbidden("you need tickets.open to comment")
+		}
+		if err := errMerged(t); err != nil {
+			return err
+		}
 		if visibility == "internal" && (!c.manage && !c.canWork(t)) {
 			return problem.Forbidden("internal notes need tickets.manage or tickets.work")
 		}
@@ -1051,14 +1085,63 @@ func (s *Service) CreateComment(ctx context.Context, orgID, ticketID uuid.UUID, 
 		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &t.SiteID, Action: "tickets.comment", TargetType: "ticket_comment", TargetID: cid, Diff: diff}); err != nil {
 			return err
 		}
-		if visibility == "public" && t.ReporterPersonID != c.person {
-			return s.notify.Notify(ctx, tx, jobs.NotifyArgs{OrgID: orgID, SiteID: &t.SiteID, Type: "ticket.commented",
-				Recipients: []jobs.Recipient{{PersonID: &t.ReporterPersonID}},
-				Payload:    map[string]any{"ticket_id": ticketID, "title": t.Title, "author": out.AuthorName}, Link: "/tickets/" + ticketID.String()})
+		if visibility != "public" {
+			return nil
 		}
-		return nil
+		// the reporter hears about comments of others; a comment of a resident
+		// (not management) goes to the assignee, or to the managers when nobody is assigned
+		var to []uuid.UUID
+		if t.ReporterPersonID != c.person {
+			to = append(to, t.ReporterPersonID)
+		}
+		if !c.manage {
+			if t.Assignee != nil && t.Assignee.PersonID != nil {
+				to = append(to, *t.Assignee.PersonID)
+			} else if t.Assignee == nil {
+				mgrs, err := s.managersOf(ctx, tx, orgID, t.SiteID)
+				if err != nil {
+					return err
+				}
+				to = append(to, mgrs...)
+			}
+		}
+		seen := map[uuid.UUID]bool{c.person: true}
+		var rcpt []jobs.Recipient
+		for _, p := range to {
+			if !seen[p] {
+				seen[p] = true
+				pid := p
+				rcpt = append(rcpt, jobs.Recipient{PersonID: &pid})
+			}
+		}
+		if len(rcpt) == 0 {
+			return nil
+		}
+		return s.notify.Notify(ctx, tx, jobs.NotifyArgs{OrgID: orgID, SiteID: &t.SiteID, Type: "ticket.commented", Recipients: rcpt,
+			Key:     "ticket.commented:" + cid.String(),
+			Payload: map[string]any{"ticket_id": ticketID, "title": t.Title, "author": out.AuthorName}, Link: "/tickets/" + ticketID.String()})
 	})
 	return out, tenancy.DBProblem(err, "comment")
+}
+
+// managersOf returns the people who run the site's tickets: administrators,
+// site managers and the board, by a membership in force at the site.
+func (s *Service) managersOf(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := tx.Query(ctx, `SELECT DISTINCT person_id FROM membership WHERE org_id = $1 AND role IN ('org_admin', 'site_manager', 'board_member')
+		AND valid_from <= now() AND (valid_to IS NULL OR valid_to > now()) AND (scope_type = 'org' OR (scope_type = 'site' AND scope_id = $2))`, orgID, siteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []uuid.UUID
+	for rows.Next() {
+		var p uuid.UUID
+		if err := rows.Scan(&p); err != nil {
+			return nil, err
+		}
+		out = append(out, p)
+	}
+	return out, rows.Err()
 }
 
 // CreateAttachment attaches an uploaded file to a ticket or to one of its
