@@ -4,7 +4,7 @@ get:
   operationId: money.getBudgetVsActualReport
   summary: Budget versus actual
   description: |-
-    **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+    **Release 0.1.**  JSON by default; `format=csv` downloads it.
 
     Permission (any one of): `reports.read`, `reports.aggregate`.
   tags:
@@ -38,20 +38,12 @@ get:
     - $ref: ../../components/draft-common.yaml#/parameters/Format
   responses:
     "200":
-      description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+      description: The report. JSON by default; `format=csv` selects a CSV download.
       content:
         application/json:
           schema:
             $ref: ../../components/money.yaml#/schemas/BudgetVsActualReport
         text/csv:
-          schema:
-            type: string
-            format: binary
-        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
-          schema:
-            type: string
-            format: binary
-        application/pdf:
           schema:
             type: string
             format: binary

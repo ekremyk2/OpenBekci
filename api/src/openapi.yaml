@@ -527,6 +527,90 @@ paths:
     $ref: './paths/money/collection-cases-case_id_close.yaml'
   /v1/orgs/{org_id}/debt-breakdown:
     $ref: './paths/money/debt-breakdown.yaml'
+  /v1/orgs/{org_id}/charge-plans/{plan_id}:
+    $ref: './paths/money/charge-plans-plan_id.yaml'
+  /v1/orgs/{org_id}/charge-plans/{plan_id}/rates:
+    $ref: './paths/money/charge-plans-plan_id-rates.yaml'
+  /v1/orgs/{org_id}/charge-plans/{plan_id}/rates/{rate_id}:
+    $ref: './paths/money/charge-plans-plan_id-rates-rate_id.yaml'
+  /v1/orgs/{org_id}/charge-plans:preview:
+    $ref: './paths/money/charge-plans_preview.yaml'
+  /v1/orgs/{org_id}/charge-generation:
+    $ref: './paths/money/charge-generation.yaml'
+  /v1/orgs/{org_id}/charges/{charge_id}:
+    $ref: './paths/money/charges-charge_id.yaml'
+  /v1/orgs/{org_id}/charges/{charge_id}:cancel:
+    $ref: './paths/money/charges-charge_id_cancel.yaml'
+  /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:
+    $ref: './paths/money/opening-balances-opening_balance_id.yaml'
+  /v1/orgs/{org_id}/opening-balances/{opening_balance_id}:void:
+    $ref: './paths/money/opening-balances-opening_balance_id_void.yaml'
+  /v1/orgs/{org_id}/opening-balances:import:
+    $ref: './paths/money/opening-balances_import.yaml'
+  /v1/orgs/{org_id}/late-fee-accruals:
+    $ref: './paths/money/late-fee-accruals.yaml'
+  /v1/orgs/{org_id}/late-fee-bookings:
+    $ref: './paths/money/late-fee-bookings.yaml'
+  /v1/orgs/{org_id}/late-fee-waivers:
+    $ref: './paths/money/late-fee-waivers.yaml'
+  /v1/orgs/{org_id}/late-fee-freezes:
+    $ref: './paths/money/late-fee-freezes.yaml'
+  /v1/orgs/{org_id}/late-fee-freezes/{freeze_id}:
+    $ref: './paths/money/late-fee-freezes-freeze_id.yaml'
+  /v1/orgs/{org_id}/payments:declare:
+    $ref: './paths/money/payments_declare.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:confirm:
+    $ref: './paths/money/payments-payment_id_confirm.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:reject:
+    $ref: './paths/money/payments-payment_id_reject.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}/receipt:
+    $ref: './paths/money/payments-payment_id-receipt.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:send-receipt:
+    $ref: './paths/money/payments-payment_id_send-receipt.yaml'
+  /v1/orgs/{org_id}/persons/{person_id}/statement:
+    $ref: './paths/money/persons-person_id-statement.yaml'
+  /v1/orgs/{org_id}/statements:send:
+    $ref: './paths/money/statements_send.yaml'
+  /v1/orgs/{org_id}/reports/income-expense:
+    $ref: './paths/money/reports-income-expense.yaml'
+  /v1/orgs/{org_id}/reports/trial-balance:
+    $ref: './paths/money/reports-trial-balance.yaml'
+  /v1/orgs/{org_id}/reports/receivables-aging:
+    $ref: './paths/money/reports-receivables-aging.yaml'
+  /v1/orgs/{org_id}/reports/fund-balances:
+    $ref: './paths/money/reports-fund-balances.yaml'
+  /v1/orgs/{org_id}/reports/budget-vs-actual:
+    $ref: './paths/money/reports-budget-vs-actual.yaml'
+  /v1/orgs/{org_id}/money/overview:
+    $ref: './paths/money/money-overview.yaml'
+  /v1/orgs/{org_id}/transfers:
+    $ref: './paths/money/transfers.yaml'
+  /v1/orgs/{org_id}/transfers/{transfer_id}:
+    $ref: './paths/money/transfers-transfer_id.yaml'
+  /v1/orgs/{org_id}/refunds:
+    $ref: './paths/money/refunds.yaml'
+  /v1/orgs/{org_id}/refunds/{refund_id}:
+    $ref: './paths/money/refunds-refund_id.yaml'
+  /v1/orgs/{org_id}/expenses:
+    $ref: './paths/money/expenses.yaml'
+  /v1/orgs/{org_id}/expenses/{expense_id}:
+    $ref: './paths/money/expenses-expense_id.yaml'
+  /v1/orgs/{org_id}/expenses/{expense_id}:void:
+    $ref: './paths/money/expenses-expense_id_void.yaml'
+  /v1/orgs/{org_id}/bills:
+    $ref: './paths/money/bills.yaml'
+  /v1/orgs/{org_id}/bills/{bill_id}:
+    $ref: './paths/money/bills-bill_id.yaml'
+  /v1/orgs/{org_id}/bills/{bill_id}/payments:
+    $ref: './paths/money/bills-bill_id-payments.yaml'
+  /v1/orgs/{org_id}/budgets:
+    $ref: './paths/money/budgets.yaml'
+  /v1/orgs/{org_id}/budgets/{budget_id}:
+    $ref: './paths/money/budgets-budget_id.yaml'
+  /v1/orgs/{org_id}/budgets/{budget_id}/lines:
+    $ref: './paths/money/budgets-budget_id-lines.yaml'
+  /v1/orgs/{org_id}/budgets/{budget_id}:finalize:
+    $ref: './paths/money/budgets-budget_id_finalize.yaml'
 components:
   securitySchemes:
     agentAuth:

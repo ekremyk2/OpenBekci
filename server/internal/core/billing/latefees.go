@@ -2,7 +2,9 @@ package billing
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
@@ -30,9 +32,11 @@ type PolicyRow struct {
 	GraceDays       int    `json:"grace_days"`
 }
 
-// SetLateFeePolicy adds a schedule entry taking effect on from (money.manage).
-// The rate is capped at 500 bps per month (the statutory maximum is applied
-// by the pack's preset); a later entry never changes fees already accrued (prospective).
+// SetLateFeePolicy appends a schedule entry taking effect on from (money.manage).
+// The schedule is append-only: from must be today or later (and after the lock
+// date), later than every existing row (409 otherwise), and the rate is capped at
+// 500 bps a month, the statutory maximum. The automatic default row of a new
+// site is replaced by the site's first own entry.
 func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID, row PolicyRow) ([]PolicyRow, error) {
 	if _, err := ledger.ParseDate(row.From); err != nil {
 		return nil, bad("from", "invalid_format")
@@ -45,22 +49,47 @@ func (s *Service) SetLateFeePolicy(ctx context.Context, orgID, siteID uuid.UUID,
 	}
 	var out []PolicyRow
 	err := s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
-		if _, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyManage, orgID, siteID); err != nil {
+		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyManage, orgID, siteID)
+		if err != nil {
 			return err
 		}
-		if _, err := tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days) VALUES ($1,$2,$3,$4::date,$5,$6)
-			ON CONFLICT (org_id, site_id, from_on) DO UPDATE SET rate_bps_per_month = EXCLUDED.rate_bps_per_month, grace_days = EXCLUDED.grace_days`,
+		if row.From < ledger.Today(site.Timezone, s.Now()) || (site.LockDate != nil && row.From <= *site.LockDate) {
+			return bad("from", "must_not_be_in_the_past")
+		}
+		if _, err := tx.Exec(ctx, `DELETE FROM late_fee_policy WHERE org_id=$1 AND site_id=$2 AND is_default`, orgID, siteID); err != nil {
+			return err
+		}
+		var last *string
+		if err := tx.QueryRow(ctx, `SELECT max(from_on)::text FROM late_fee_policy WHERE org_id=$1 AND site_id=$2`, orgID, siteID).Scan(&last); err != nil {
+			return err
+		}
+		if last != nil && row.From <= *last {
+			return problem.Conflict("the late fee schedule already has an entry from " + *last + "; a new entry must start later")
+		}
+		if _, err := tx.Exec(ctx, `INSERT INTO late_fee_policy (id, org_id, site_id, from_on, rate_bps_per_month, grace_days) VALUES ($1,$2,$3,$4::date,$5,$6)`,
 			id.New(), orgID, siteID, row.From, row.RateBPSPerMonth, row.GraceDays); err != nil {
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, siteID, "late_fee_policy.set", "late_fee_policy", siteID, nil, row); err != nil {
 			return err
 		}
-		var err error
 		out, err = listPolicy(ctx, tx, orgID, siteID)
 		return err
 	})
 	return out, err
+}
+
+// PolicyVersion is the optimistic-lock counter of the schedule: it grows with every
+// appended entry and when the automatic default is replaced.
+func (s *Service) PolicyVersion(ctx context.Context, orgID, siteID uuid.UUID) (int, error) {
+	n := 0
+	err := s.run(ctx, orgID, "site", func(tx pgx.Tx) error {
+		if err := ledger.RequireSite(ctx, tx, ledger.PermMoneyRead, siteID); err != nil {
+			return err
+		}
+		return tx.QueryRow(ctx, `SELECT COALESCE(2 * count(*) - count(*) FILTER (WHERE is_default), 0)::int FROM late_fee_policy WHERE org_id=$1 AND site_id=$2`, orgID, siteID).Scan(&n)
+	})
+	return n, err
 }
 
 func listPolicy(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID) ([]PolicyRow, error) {
@@ -132,7 +161,23 @@ type bookingRow struct {
 	amount       int64
 }
 
-// accrue computes the fee to date of a unit side from open principal and dates.
+// closedMonthEnd is the last day of the month before the one today is in: fees
+// are booked once a month, up to the end of the last closed month.
+func closedMonthEnd(today string) string {
+	t, _ := time.Parse(ledger.DateLayout, today)
+	return time.Date(t.Year(), t.Month(), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, -1).Format(ledger.DateLayout)
+}
+
+// bookingWhere selects the late_fee_booking rows of a debtor from parameter n on.
+func (d Debtor) bookingWhere(n int) (string, []any) {
+	if d.IsPerson() {
+		return fmt.Sprintf(`debtor_kind = 'person' AND person_id = $%d`, n), []any{*d.PersonID}
+	}
+	return fmt.Sprintf(`unit_id = $%d AND debtor_kind = $%d`, n, n+1), []any{*d.UnitID, d.Kind}
+}
+
+// accrue computes the fee to date of a debtor (a unit side or a person with
+// carried debt) from open principal and dates.
 func accrue(ctx context.Context, tx pgx.Tx, org uuid.UUID, site tenancy.Site, d Debtor, asOf string) (Accrual, []bookingRow, latefee.Expectation, error) {
 	siteID := site.ID
 	cur := ledger.Currency(site)
@@ -142,7 +187,7 @@ func accrue(ctx context.Context, tx pgx.Tx, org uuid.UUID, site tenancy.Site, d 
 	if err != nil {
 		return acc, nil, latefee.Expectation{}, err
 	}
-	if len(pol) == 0 || d.IsPerson() {
+	if len(pol) == 0 {
 		return acc, nil, latefee.Expectation{Fee: acc.Expected, Waived: acc.Waived, Surplus: acc.Waived}, nil
 	}
 	charges, err := LoadCharges(ctx, tx, org, siteID, d)
@@ -163,7 +208,14 @@ func accrue(ctx context.Context, tx pgx.Tx, org uuid.UUID, site tenancy.Site, d 
 		ocs = append(ocs, oc)
 	}
 	var freezes []latefee.Freeze
-	frows, err := tx.Query(ctx, `SELECT from_on::text, to_on::text FROM late_fee_freeze WHERE org_id=$1 AND site_id=$2 AND unit_id=$3 AND debtor_kind=$4`, org, siteID, *d.UnitID, d.Kind)
+	var frows pgx.Rows
+	if d.IsPerson() {
+		// a freeze of the unit side a debt was carried from keeps applying to it
+		frows, err = tx.Query(ctx, `SELECT from_on::text, to_on::text FROM late_fee_freeze WHERE org_id=$1 AND site_id=$2 AND unit_id IN
+			(SELECT unit_id FROM charge WHERE org_id=$1 AND site_id=$2 AND debtor_kind='person' AND debtor_person_id=$3)`, org, siteID, *d.PersonID)
+	} else {
+		frows, err = tx.Query(ctx, `SELECT from_on::text, to_on::text FROM late_fee_freeze WHERE org_id=$1 AND site_id=$2 AND unit_id=$3 AND debtor_kind=$4`, org, siteID, *d.UnitID, d.Kind)
+	}
 	if err != nil {
 		return acc, nil, latefee.Expectation{}, err
 	}
@@ -188,7 +240,8 @@ func accrue(ctx context.Context, tx pgx.Tx, org uuid.UUID, site tenancy.Site, d 
 	if err != nil {
 		return acc, nil, latefee.Expectation{}, fmt.Errorf("accrue late fee: %w", err)
 	}
-	brows, err := tx.Query(ctx, `SELECT period, kind, amount FROM late_fee_booking WHERE org_id=$1 AND site_id=$2 AND unit_id=$3 AND debtor_kind=$4 ORDER BY created_at, id`, org, siteID, *d.UnitID, d.Kind)
+	where, wargs := d.bookingWhere(3)
+	brows, err := tx.Query(ctx, `SELECT period, kind, amount FROM late_fee_booking WHERE org_id=$1 AND site_id=$2 AND `+where+` ORDER BY created_at, id`, append([]any{org, siteID}, wargs...)...)
 	if err != nil {
 		return acc, nil, latefee.Expectation{}, err
 	}
@@ -242,22 +295,59 @@ func (s *Service) AccrueLateFee(ctx context.Context, orgID, siteID uuid.UUID, d 
 	return out, err
 }
 
-// reconcile posts the delta between the fee expected to date and the booked
-// fee as a fee charge (positive) or a reversal (negative). It returns the
-// journal entry it posted (uuid.Nil when nothing was needed).
-func (s *Service) reconcile(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site tenancy.Site, ch ledger.Chart, d Debtor, today string) (uuid.UUID, int64, error) {
-	acc, _, _, err := accrue(ctx, tx, orgID, site, d, today)
+// feeUnitPerson names the unit a fee charge of d is booked on and the person it
+// snapshots: the unit side's latest principal debtor, or the carried person.
+func feeUnitPerson(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, d Debtor) (uuid.UUID, *uuid.UUID, error) {
+	if d.IsPerson() {
+		var unit uuid.UUID
+		err := tx.QueryRow(ctx, `SELECT unit_id FROM charge WHERE org_id=$1 AND site_id=$2 AND debtor_kind='person' AND debtor_person_id=$3 AND kind='principal'
+			ORDER BY due_date, id LIMIT 1`, orgID, siteID, *d.PersonID).Scan(&unit)
+		return unit, d.PersonID, err
+	}
+	var person *uuid.UUID
+	err := tx.QueryRow(ctx, `SELECT debtor_person_id FROM charge WHERE org_id=$1 AND site_id=$2 AND unit_id=$3 AND debtor_kind=$4 AND kind='principal' AND cancel_entry_id IS NULL
+		ORDER BY due_date DESC, id DESC LIMIT 1`, orgID, siteID, *d.UnitID, d.Kind).Scan(&person)
+	if errors.Is(err, pgx.ErrNoRows) {
+		err = nil
+	}
+	return *d.UnitID, person, err
+}
+
+// reconcile posts the delta between the fee expected up to asOf and the booked
+// fee as a fee charge (positive) or a reversal (negative), entries dated
+// entryDate. A reversal never exceeds the unpaid fee: the excess becomes
+// prepayment credit. It returns the journal entry it posted (uuid.Nil when
+// nothing was needed).
+func reconcile(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, site tenancy.Site, ch ledger.Chart, d Debtor, asOf, entryDate string) (uuid.UUID, int64, error) {
+	acc, _, _, err := accrue(ctx, tx, orgID, site, d, asOf)
 	if err != nil || acc.Unbooked.Amount == 0 {
 		return uuid.Nil, 0, err
 	}
-	period := today[:7]
+	unit, person, err := feeUnitPerson(ctx, tx, orgID, site.ID, d)
+	if err != nil {
+		return uuid.Nil, 0, err
+	}
 	amt := acc.Unbooked.Amount
-	var person *uuid.UUID
+	period := asOf[:7]
+	where, wargs := d.bookingWhere(4)
+	var existingFees int
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM late_fee_booking WHERE org_id=$1 AND site_id=$2 AND kind='fee' AND period LIKE $3 AND `+where,
+		append([]any{orgID, site.ID, period + "%"}, wargs...)...).Scan(&existingFees); err != nil {
+		return uuid.Nil, 0, err
+	}
+	debtorKind := d.Kind
+	if d.IsPerson() {
+		debtorKind = "person"
+	}
 	var entry uuid.UUID
 	var chargeID *uuid.UUID
+	kind := "fee"
 	if amt > 0 {
-		cid, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: site.ID, UnitID: *d.UnitID, FundID: ch.OperatingFund, Period: period, Kind: "fee", ChargeType: "late_fee",
-			DebtorKind: d.Kind, PersonID: person, Amount: amt, DueDate: today, EntryDate: today, Description: "Late fee " + period, CreditAccount: ch.Account(ledger.SubLateFeeIncome), SourceType: "late_fee"})
+		if existingFees > 0 {
+			period = fmt.Sprintf("%s#%d", period, existingFees+1) // a top-up after a reversal in the same month
+		}
+		cid, err := postCharge(ctx, tx, ch, chargeIn{OrgID: orgID, SiteID: site.ID, UnitID: unit, FundID: ch.OperatingFund, Period: period, Kind: "fee", ChargeType: "late_fee",
+			DebtorKind: debtorKind, PersonID: person, Amount: amt, DueDate: entryDate, EntryDate: entryDate, Description: "Late fee " + period, CreditAccount: ch.Account(ledger.SubLateFeeIncome), SourceType: "late_fee"})
 		if err != nil {
 			return uuid.Nil, 0, err
 		}
@@ -266,34 +356,68 @@ func (s *Service) reconcile(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, sit
 			return uuid.Nil, 0, err
 		}
 	} else {
-		// a reversal: income back, receivable down; recorded as a negative fee row
-		cid := id.New()
-		entry, err = ledger.PostEntry(ctx, tx, ledger.Entry{OrgID: orgID, SiteID: site.ID, EntryDate: today, Memo: "Late fee reversal " + period, SourceType: "late_fee.reversal", SourceID: &cid, Lines: []ledger.Line{
-			{AccountID: ch.Account(ledger.SubLateFeeIncome), FundID: ch.OperatingFund, Debit: -amt, UnitID: d.UnitID, DebtorKind: d.Kind},
-			{AccountID: ch.Account(ledger.ReceivableSub(d.Kind)), FundID: ch.OperatingFund, Credit: -amt, UnitID: d.UnitID, DebtorKind: d.Kind},
-		}})
+		kind = "reversal"
+		charges, err := LoadCharges(ctx, tx, orgID, site.ID, d)
 		if err != nil {
 			return uuid.Nil, 0, err
 		}
-		if _, err := tx.Exec(ctx, `INSERT INTO charge (id, org_id, site_id, unit_id, period, kind, charge_type, debtor_kind, amount, due_date, description, fund_id, journal_entry_id, status)
-			VALUES ($1,$2,$3,$4,$5,'fee','late_fee_reversal',$6,$7,$8::date,$9,$10,$11,'paid')`,
-			cid, orgID, site.ID, *d.UnitID, period, d.Kind, amt, today, "Late fee reversal "+period, ch.OperatingFund, entry); err != nil {
+		_, unpaid := OpenTotal(charges)
+		reverse := -amt
+		capped := min(reverse, max(unpaid, 0))
+		excess := reverse - capped
+		cid := id.New()
+		income := ledger.Line{AccountID: ch.Account(ledger.SubLateFeeIncome), FundID: ch.OperatingFund, Debit: reverse, UnitID: &unit}
+		if !d.IsPerson() {
+			income.DebtorKind = d.Kind
+		}
+		lines := []ledger.Line{income}
+		if capped > 0 {
+			lines = append(lines, d.Line(ledger.Line{AccountID: ch.Account(d.ReceivableSubtype()), FundID: ch.OperatingFund, Credit: capped}, nil))
+		}
+		if excess > 0 {
+			lines = append(lines, d.Line(ledger.Line{AccountID: ch.Account(ledger.SubPrepayment), FundID: ch.OperatingFund, Credit: excess}, nil))
+		}
+		entry, err = ledger.PostEntry(ctx, tx, ledger.Entry{OrgID: orgID, SiteID: site.ID, EntryDate: entryDate, Memo: "Late fee reversal " + period, SourceType: "late_fee.reversal", SourceID: &cid, Lines: lines})
+		if err != nil {
 			return uuid.Nil, 0, err
 		}
-		chargeID = &cid
+		if capped > 0 {
+			if _, err := tx.Exec(ctx, `INSERT INTO charge (id, org_id, site_id, unit_id, period, kind, charge_type, debtor_kind, debtor_person_id, amount, due_date, description, fund_id, journal_entry_id, status)
+				VALUES ($1,$2,$3,$4,$5,'fee','late_fee_reversal',$6,$7,$8,$9::date,$10,$11,$12,'paid')`,
+				cid, orgID, site.ID, unit, period, debtorKind, person, -capped, entryDate, "Late fee reversal "+period, ch.OperatingFund, entry); err != nil {
+				return uuid.Nil, 0, err
+			}
+			chargeID = &cid
+		}
 	}
-	kind := "fee"
-	if amt < 0 {
-		kind = "reversal"
+	var bookPerson *uuid.UUID
+	if d.IsPerson() {
+		bookPerson = d.PersonID
 	}
-	_, err = tx.Exec(ctx, `INSERT INTO late_fee_booking (id, org_id, site_id, unit_id, debtor_kind, period, kind, amount, charge_id, entry_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-		id.New(), orgID, site.ID, *d.UnitID, d.Kind, period, kind, amt, chargeID, entry)
+	_, err = tx.Exec(ctx, `INSERT INTO late_fee_booking (id, org_id, site_id, unit_id, debtor_kind, person_id, period, kind, amount, charge_id, entry_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+		id.New(), orgID, site.ID, unit, debtorKind, bookPerson, period, kind, amt, chargeID, entry)
 	return entry, amt, err
 }
 
-// CrystallizeLateFees reconciles the fee bookings of every unit side of the
-// site with the fee expected to date (the hourly job, rule 8): it books new
-// fees and posts reversals after backdated payments, and is idempotent. It
+// CloseLateFees books the fee accrued up to asOf for one debtor inside the
+// caller's transaction (move-out: the leaver's fee is booked before debt is carried).
+func CloseLateFees(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, d Debtor, asOf string) error {
+	site, err := tenancy.LoadSite(ctx, tx, orgID, siteID, false, false)
+	if err != nil {
+		return err
+	}
+	ch, err := ledger.EnsureChart(ctx, tx, orgID, siteID)
+	if err != nil {
+		return err
+	}
+	_, _, err = reconcile(ctx, tx, orgID, site, ch, d, asOf, asOf)
+	return err
+}
+
+// CrystallizeLateFees reconciles the fee bookings of every debtor of the site
+// (unit sides and persons with carried debt) with the fee expected up to the end
+// of the last closed month (the hourly job, rule 8): it books the month's fee
+// once and posts reversals after backdated payments, and is idempotent. It
 // returns the number of postings made.
 func (s *Service) CrystallizeLateFees(ctx context.Context, orgID, siteID uuid.UUID) (int, error) {
 	n := 0
@@ -311,30 +435,44 @@ func (s *Service) CrystallizeLateFees(ctx context.Context, orgID, siteID uuid.UU
 			return err
 		}
 		today := ledger.Today(site.Timezone, s.Now())
-		rows, err := tx.Query(ctx, `SELECT DISTINCT unit_id, debtor_kind FROM charge WHERE org_id=$1 AND site_id=$2 AND kind='principal' AND debtor_kind IN ('owner','tenant')
-			AND cancel_entry_id IS NULL ORDER BY 1, 2`, orgID, siteID)
+		asOf := closedMonthEnd(today)
+		rows, err := tx.Query(ctx, `SELECT DISTINCT unit_id, debtor_kind, debtor_person_id FROM charge WHERE org_id=$1 AND site_id=$2 AND kind='principal' AND debtor_kind IN ('owner','tenant','person')
+			AND cancel_entry_id IS NULL ORDER BY 2, 1, 3`, orgID, siteID)
 		if err != nil {
 			return err
 		}
-		var sides []Debtor
+		var debtors []Debtor
 		for rows.Next() {
 			var u uuid.UUID
 			var k string
-			if err := rows.Scan(&u, &k); err != nil {
+			var p *uuid.UUID
+			if err := rows.Scan(&u, &k, &p); err != nil {
 				rows.Close()
 				return err
 			}
 			uu := u
-			sides = append(sides, Debtor{UnitID: &uu, Kind: k})
+			if k == "person" {
+				if p != nil && !slices.ContainsFunc(debtors, func(x Debtor) bool { return x.PersonID != nil && *x.PersonID == *p }) {
+					debtors = append(debtors, Debtor{PersonID: p})
+				}
+				continue
+			}
+			debtors = append(debtors, Debtor{UnitID: &uu, Kind: k})
 		}
 		rows.Close()
-		for _, d := range sides {
-			e, _, err := s.reconcile(ctx, tx, orgID, site, ch, d, today)
+		for _, d := range debtors {
+			ends, err := monthEndsToBook(ctx, tx, orgID, siteID, d, asOf)
 			if err != nil {
 				return err
 			}
-			if e != uuid.Nil {
-				n++
+			for _, end := range ends {
+				e, _, err := reconcile(ctx, tx, orgID, site, ch, d, end, today)
+				if err != nil {
+					return err
+				}
+				if e != uuid.Nil {
+					n++
+				}
 			}
 		}
 		if n > 0 {
@@ -392,7 +530,7 @@ func (s *Service) WaiveLateFee(ctx context.Context, orgID uuid.UUID, in WaiveInp
 		}
 		d := Debtor{UnitID: &in.UnitID, Kind: in.DebtorKind}
 		today := ledger.Today(site.Timezone, s.Now())
-		if _, _, err := s.reconcile(ctx, tx, orgID, site, ch, d, today); err != nil {
+		if _, _, err := reconcile(ctx, tx, orgID, site, ch, d, closedMonthEnd(today), today); err != nil {
 			return err
 		}
 		charges, err := LoadCharges(ctx, tx, orgID, in.SiteID, d)
@@ -416,7 +554,7 @@ func (s *Service) WaiveLateFee(ctx context.Context, orgID uuid.UUID, in WaiveInp
 			bookingID, orgID, in.SiteID, in.UnitID, in.DebtorKind, period, in.Amount, prior); err != nil {
 			return err
 		}
-		e, _, err := s.reconcile(ctx, tx, orgID, site, ch, d, today)
+		e, _, err := reconcile(ctx, tx, orgID, site, ch, d, closedMonthEnd(today), today)
 		if err != nil {
 			return err
 		}

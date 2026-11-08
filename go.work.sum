@@ -1067,3 +1067,7 @@ mvdan.cc/unparam v0.0.0-20260823230713-2fa3d841b0c8/go.mod h1:MrS/+zJ1M2xvGXhKkt
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=
 rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
+github.com/johannesboyne/gofakes3 v1.2.0/go.mod h1:UHhRZRod9rENGFrUWTYnQHZqlNgSmjOq8DaD/ATQYRM=
+github.com/ryszard/goskiplist v0.0.0-20150312221310-2dfbae5fcf46/go.mod h1:uAQ5PCi+MFsC7HjREoAz1BU+Mq60+05gifQSsHSDG/8=
+go.shabbyrobe.org/gocovmerge v0.0.0-20230507111327-fa4f82cfbf4d/go.mod h1:92Uoe3l++MlthCm+koNi0tcUCX3anayogF0Pa/sp24k=
+golang.org/x/image v0.47.0/go.mod h1:IkN5o4A7vq55vXN8FWjjnhg9Rs2GOtffqsSi9mWAKYE=

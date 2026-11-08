@@ -276,6 +276,7 @@ type Rate struct {
 	To         *string    `json:"to"`
 	Amount     int64      `json:"amount"`
 	DecisionID *uuid.UUID `json:"decision_id"`
+	CreatedAt  time.Time  `json:"created_at"`
 }
 
 // RateInput adds a rate; the previous open-ended rate is closed the day before From.
@@ -311,7 +312,7 @@ func (s *Service) AddRate(ctx context.Context, orgID, planID uuid.UUID, in RateI
 		if n > 0 {
 			return problem.Conflict("the rate overlaps another rate of the plan")
 		}
-		r = Rate{ID: id.New(), PlanID: planID, From: in.From, To: in.To, Amount: in.Amount, DecisionID: in.DecisionID}
+		r = Rate{ID: id.New(), PlanID: planID, From: in.From, To: in.To, Amount: in.Amount, DecisionID: in.DecisionID, CreatedAt: s.Now().UTC()}
 		if _, err := tx.Exec(ctx, `INSERT INTO charge_plan_rate (id, org_id, site_id, plan_id, from_on, to_on, amount, decision_id) VALUES ($1,$2,$3,$4,$5::date,$6::date,$7,$8)`,
 			r.ID, orgID, p.SiteID, planID, in.From, in.To, in.Amount, in.DecisionID); err != nil {
 			return err
@@ -332,14 +333,14 @@ func (s *Service) ListRates(ctx context.Context, orgID, planID uuid.UUID) ([]Rat
 		if err := ledger.RequireSite(ctx, tx, ledger.PermMoneyRead, p.SiteID); err != nil {
 			return err
 		}
-		rows, err := tx.Query(ctx, `SELECT id, plan_id, from_on::text, to_on::text, amount, decision_id FROM charge_plan_rate WHERE org_id=$1 AND plan_id=$2 ORDER BY from_on`, orgID, planID)
+		rows, err := tx.Query(ctx, `SELECT id, plan_id, from_on::text, to_on::text, amount, decision_id, created_at FROM charge_plan_rate WHERE org_id=$1 AND plan_id=$2 ORDER BY from_on`, orgID, planID)
 		if err != nil {
 			return err
 		}
 		defer rows.Close()
 		for rows.Next() {
 			var r Rate
-			if err := rows.Scan(&r.ID, &r.PlanID, &r.From, &r.To, &r.Amount, &r.DecisionID); err != nil {
+			if err := rows.Scan(&r.ID, &r.PlanID, &r.From, &r.To, &r.Amount, &r.DecisionID, &r.CreatedAt); err != nil {
 				return err
 			}
 			out = append(out, r)
@@ -460,7 +461,7 @@ func (s *Service) planShares(ctx context.Context, tx pgx.Tx, site tenancy.Site, 
 				ws = append(ws, allocate.Weight{UnitID: u.id, Exempt: true})
 			}
 		}
-		res, err := allocate.Allocate(amount, ws, allocate.ByID(), allocate.WithRotation(p.Name+"/"+per.Key))
+		res, err := allocate.Allocate(amount, ws, allocate.ByID(), allocate.WithRotation(p.ID.String()+"/"+per.Key))
 		if err != nil {
 			return nil, problem.Wrap(422, problem.CodeValidationFailed, "the plan cannot be allocated", err)
 		}
@@ -524,78 +525,4 @@ func periodsOf(p Plan, upTo string, tz *time.Location) ([]rates.Period, error) {
 		}
 	}
 	return out, nil
-}
-
-// PreviewItem is one unit of a plan preview.
-type PreviewItem struct {
-	UnitID          uuid.UUID   `json:"unit_id"`
-	DoorNumber      string      `json:"door_number"`
-	Amount          money.Money `json:"amount"`
-	EffectiveDebtor Debtor      `json:"effective_debtor"`
-}
-
-// Preview is what a plan would bill for one period.
-type Preview struct {
-	Period  string        `json:"period"`
-	DueDate string        `json:"due_date"`
-	Total   money.Money   `json:"total"`
-	Items   []PreviewItem `json:"items"`
-}
-
-// PreviewPlan shows, without writing, what the plan bills in the period that
-// contains the given day (default: the next due period from today); the
-// effective debtor of every unit is resolved the same way generation does (money.read).
-func (s *Service) PreviewPlan(ctx context.Context, orgID, planID uuid.UUID, day string) (Preview, error) {
-	var pv Preview
-	err := s.run(ctx, orgID, "plan", func(tx pgx.Tx) error {
-		p, err := scanPlan(tx.QueryRow(ctx, `SELECT `+planCols+` FROM charge_plan WHERE org_id=$1 AND id=$2`, orgID, planID))
-		if err != nil {
-			return err
-		}
-		site, err := ledger.SiteFor(ctx, tx, ledger.PermMoneyRead, orgID, p.SiteID)
-		if err != nil {
-			return err
-		}
-		tz := ledger.Location(site.Timezone)
-		if day == "" {
-			day = ledger.Today(site.Timezone, s.Now())
-		}
-		end, _ := ledger.ParseDate(day)
-		horizon := end.AddDate(0, 1, 0).Format(ledger.DateLayout) // include the next period
-		pers, err := periodsOf(p, horizon, tz)
-		if err != nil {
-			return bad("start", "invalid_value")
-		}
-		var target *rates.Period
-		for i := range pers {
-			if pers[i].DueDate.Format(ledger.DateLayout) >= day {
-				target = &pers[i]
-				break
-			}
-		}
-		if target == nil {
-			return problem.Conflict("the plan has no period due on or after that day")
-		}
-		sc, err := loadSchedule(ctx, tx, orgID, planID, ledger.Currency(site), tz)
-		if err != nil {
-			return err
-		}
-		rate, ok := rates.ForPeriod(sc, *target, tz)
-		if !ok {
-			return problem.Conflict("no rate is in force for that period")
-		}
-		due := target.DueDate.In(tz).Format(ledger.DateLayout)
-		shares, err := s.planShares(ctx, tx, site, p, *target, rate.Amount, due)
-		if err != nil {
-			return err
-		}
-		pv = Preview{Period: target.Key, DueDate: due, Total: money.Zero(ledger.Currency(site)), Items: []PreviewItem{}}
-		for _, sh := range shares {
-			pv.Total.Amount += sh.Amount
-			uid, side := sh.UnitID, sh.Side
-			pv.Items = append(pv.Items, PreviewItem{UnitID: sh.UnitID, DoorNumber: sh.Door, Amount: money.New(sh.Amount, ledger.Currency(site)), EffectiveDebtor: Debtor{UnitID: &uid, Kind: side, PersonID: sh.PersonID}})
-		}
-		return nil
-	})
-	return pv, err
 }

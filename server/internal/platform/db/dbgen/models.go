@@ -333,6 +333,41 @@ type BankTransaction struct {
 	UpdatedAt    pgtype.Timestamptz
 }
 
+type Bill struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	VendorID          pgtype.UUID
+	DocumentNo        pgtype.Text
+	IssueDate         pgtype.Date
+	DueDate           pgtype.Date
+	Amount            int64
+	CategoryAccountID pgtype.UUID
+	FundID            pgtype.UUID
+	FileID            pgtype.UUID
+	Description       pgtype.Text
+	Status            string
+	JournalEntryID    pgtype.UUID
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type BillPayment struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	BillID            pgtype.UUID
+	Amount            int64
+	PaidOn            pgtype.Date
+	PaidFromAccountID pgtype.UUID
+	Reference         pgtype.Text
+	JournalEntryID    pgtype.UUID
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+}
+
 type Block struct {
 	ID        pgtype.UUID
 	OrgID     pgtype.UUID
@@ -366,6 +401,28 @@ type Booking struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type Budget struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	FiscalYearID pgtype.UUID
+	Status       string
+	DecisionID   pgtype.UUID
+	CreatedBy    pgtype.UUID
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
+}
+
+type BudgetLine struct {
+	OrgID                    pgtype.UUID
+	SiteID                   pgtype.UUID
+	BudgetID                 pgtype.UUID
+	ExpenseCategoryAccountID pgtype.UUID
+	FundID                   pgtype.UUID
+	Amount                   int64
 }
 
 type CashBox struct {
@@ -615,6 +672,30 @@ type DunningStage struct {
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz
 	Version      int32
+}
+
+type Expense struct {
+	ID                 pgtype.UUID
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	CategoryAccountID  pgtype.UUID
+	FundID             pgtype.UUID
+	Amount             int64
+	PaidOn             pgtype.Date
+	PaidFromAccountID  pgtype.UUID
+	VendorID           pgtype.UUID
+	Description        string
+	DocumentNo         pgtype.Text
+	FileID             pgtype.UUID
+	RecurringExpenseID pgtype.UUID
+	Status             string
+	JournalEntryID     pgtype.UUID
+	VoidEntryID        pgtype.UUID
+	VoidedReason       pgtype.Text
+	VoidedAt           pgtype.Timestamptz
+	CreatedBy          pgtype.UUID
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
 }
 
 type Facility struct {
@@ -882,6 +963,7 @@ type LateFeeBooking struct {
 	ChargeID   pgtype.UUID
 	EntryID    pgtype.UUID
 	CreatedAt  pgtype.Timestamptz
+	PersonID   pgtype.UUID
 }
 
 type LateFeeFreeze struct {
@@ -894,6 +976,9 @@ type LateFeeFreeze struct {
 	ToOn       pgtype.Date
 	Reason     string
 	CreatedAt  pgtype.Timestamptz
+	Version    int32
+	UpdatedAt  pgtype.Timestamptz
+	CaseID     pgtype.UUID
 }
 
 type LateFeePolicy struct {
@@ -904,6 +989,7 @@ type LateFeePolicy struct {
 	RateBpsPerMonth int32
 	GraceDays       int32
 	CreatedAt       pgtype.Timestamptz
+	IsDefault       bool
 }
 
 type LateFeeWaiver struct {
@@ -1101,6 +1187,7 @@ type OpeningBalance struct {
 	VoidEntryID    pgtype.UUID
 	CreatedBy      pgtype.UUID
 	CreatedAt      pgtype.Timestamptz
+	VoidReason     pgtype.Text
 }
 
 type OrgStorageUsage struct {
@@ -1224,6 +1311,25 @@ type PollAnswer struct {
 	AnsweredAt   pgtype.Timestamptz
 }
 
+type RecurringExpense struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	CategoryAccountID pgtype.UUID
+	FundID            pgtype.UUID
+	Amount            int64
+	PaidFromAccountID pgtype.UUID
+	VendorID          pgtype.UUID
+	Description       string
+	DocumentNo        pgtype.Text
+	Frequency         string
+	DayOfMonth        int32
+	NextOn            pgtype.Date
+	Active            bool
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+}
+
 type RecurringVisitor struct {
 	ID            pgtype.UUID
 	OrgID         pgtype.UUID
@@ -1243,6 +1349,25 @@ type RecurringVisitor struct {
 	CreatedAt     pgtype.Timestamptz
 	UpdatedAt     pgtype.Timestamptz
 	Version       int32
+}
+
+type Refund struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	PersonID          pgtype.UUID
+	UnitID            pgtype.UUID
+	DebtorKind        pgtype.Text
+	Amount            int64
+	Reason            string
+	Kind              string
+	PaidFromAccountID pgtype.UUID
+	RefundedOn        pgtype.Date
+	CreditID          pgtype.UUID
+	PaymentID         pgtype.UUID
+	JournalEntryID    pgtype.UUID
+	CreatedBy         pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
 }
 
 type Sequence struct {
@@ -1442,6 +1567,21 @@ type TicketWorkflow struct {
 	IsDefault bool
 	Version   int32
 	UpdatedAt pgtype.Timestamptz
+}
+
+type Transfer struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	FromAccountID  pgtype.UUID
+	ToAccountID    pgtype.UUID
+	Amount         int64
+	TransferredOn  pgtype.Date
+	Memo           pgtype.Text
+	Kind           string
+	JournalEntryID pgtype.UUID
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
 }
 
 type Unit struct {

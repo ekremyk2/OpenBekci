@@ -41,7 +41,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.ops.late)
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.money)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
@@ -121,6 +121,7 @@ type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
 	gov     *governance.Service
+	money   httpapi.MoneyDeps
 	comm    *community.Service
 	idem    *idempotency.PG
 	files   *files.Service
@@ -190,7 +191,10 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
-	registerMoney, periodicMoney := moneyJobs(d, log, ops.late)
+	mny := newMoney(d, ops.late, fs, ops.documents)
+	ops.dashboards.SetMoney(moneyFigures{reports: mny.Reports})
+	gov.SetEffects(govMoney{budgets: mny.Treasury})
+	registerMoney, periodicMoney := moneyJobs(d, log, ops.late, fs)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
 		d.Close()
@@ -211,7 +215,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, idem: idem, files: fs, ops: ops, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, access: acc, money: mny, idem: idem, files: fs, ops: ops, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

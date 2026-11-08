@@ -57,6 +57,15 @@ var siteScopedTables = map[string]bool{
 	"poll": true, "poll_answer": true, "attendance": true, "vote_count": true, "decision_counter": true, "decision": true,
 }
 
+func init() {
+	for _, t := range moneyTables {
+		siteScopedTables[t] = true // the ledger travels with the site
+	}
+	for t, cols := range moneyPersonColumns {
+		personColumns[t] = append(personColumns[t], cols...)
+	}
+}
+
 // childTables have no site column: each row hangs off a site-scoped parent of
 // the archive (table, column), which must be one of the archive's own rows.
 var childTables = map[string][2]string{
@@ -78,7 +87,7 @@ var personColumns = map[string][]string{
 // neverFromArchive are columns that name an account or an action of the source
 // instance. They are cleared on import: an archive never links a person to a
 // login, and records of who did something do not carry over.
-var neverFromArchive = []string{"user_id", "created_by", "decided_by", "invited_by", "accepted_by", "invitation_id", "uploaded_by", "changed_by", "recorded_by", "checked_in_by"}
+var neverFromArchive = []string{"user_id", "created_by", "decided_by", "invited_by", "accepted_by", "invitation_id", "uploaded_by", "changed_by", "recorded_by", "checked_in_by", "posted_by", "matched_by"}
 
 func invalidArchive(reason string) error {
 	return problem.Validation(problem.Field{Field: "file", Code: "invalid_value", Params: map[string]any{"reason": reason}})
@@ -89,6 +98,10 @@ func invalidArchive(reason string) error {
 type importPlan struct {
 	rows    map[string][]map[string]any
 	summary map[string]any
+	// lockDate is the site's money lock date: the site is inserted without it
+	// and it is set again once the journal is in (the lock-date trigger refuses
+	// entries dated before it).
+	lockDate any
 }
 
 // planImport validates the archive and drops everything that must not be
@@ -120,6 +133,13 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, kee
 				}
 			}
 			r["org_id"] = orgID.String()
+			if isMoneyTable(t.Name) {
+				for _, c := range fileColumns {
+					if _, ok := r[c]; ok {
+						r[c] = nil
+					}
+				}
+			}
 			for _, c := range neverFromArchive {
 				if _, ok := r[c]; ok {
 					r[c] = nil
@@ -132,6 +152,8 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, kee
 	if fmt.Sprint(siteRow["id"]) != site {
 		return importPlan{}, invalidArchive("site_id_mismatch")
 	}
+	plan.lockDate = siteRow["lock_date"]
+	siteRow["lock_date"] = nil
 	plan.rows["site"] = []map[string]any{siteRow}
 
 	blockIDs := map[string]bool{}
@@ -340,6 +362,11 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte, 
 				}
 			}
 			plan.summary[t.Name] = len(rows)
+		}
+		if plan.lockDate != nil {
+			if _, err := tx.Exec(ctx, `UPDATE site SET lock_date = $3::date WHERE org_id = $1 AND id = $2`, orgID, a.SiteID, fmt.Sprint(plan.lockDate)); err != nil {
+				return err
+			}
 		}
 		plan.summary["untrusted"] = !trusted
 		eid := id.New()

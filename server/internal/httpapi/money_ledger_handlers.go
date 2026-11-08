@@ -10,9 +10,11 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/billing"
 	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/core/treasury"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -28,6 +30,10 @@ type MoneyDeps struct {
 	// BankImport and Collections are phase C3 (bank statement import, collections).
 	BankImport  *bankimport.Service
 	Collections *collections.Service
+	// Treasury serves transfers, refunds, expenses, bills and budgets.
+	Treasury *treasury.Service
+	// Docs makes the receipts, closing documents and sent statements.
+	Docs *moneydocs.Service
 }
 
 func (s *apiServer) lg() (*ledger.Service, error) {

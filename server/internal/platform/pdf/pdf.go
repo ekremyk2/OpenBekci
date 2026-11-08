@@ -1,7 +1,8 @@
 // Package pdf writes simple text documents (statements, receipts, certificates)
 // as PDF 1.4 without dependencies. It uses the standard Helvetica fonts with an
 // encoding that adds the Turkish letters (Ş ş Ğ ğ İ ı) on top of WinAnsi, so
-// no font file is embedded and the output is small and deterministic.
+// no font file is embedded and the output is small and deterministic. The Turkish
+// lira sign (₺), which no standard font has, is drawn as a vector shape.
 package pdf
 
 import (
@@ -17,6 +18,12 @@ const (
 	marginBottom = 50.0
 	marginTop    = 56.0
 )
+
+// Lira is the Turkish lira sign.
+const Lira = '₺'
+
+// liraAdvance is the width of the lira sign in ems.
+const liraAdvance = 0.58
 
 var turkish = map[rune]byte{'Ş': 128, 'ş': 129, 'Ğ': 130, 'ğ': 131, 'İ': 132, 'ı': 133}
 
@@ -67,7 +74,45 @@ func (d *Doc) Text(x float64, s string, size float64, bold bool) {
 	if bold {
 		f = "F2"
 	}
-	fmt.Fprintf(d.cur, "BT /%s %.1f Tf %.1f %.1f Td (%s) Tj ET\n", f, size, x, d.Y, encode(s))
+	if !strings.ContainsRune(s, Lira) {
+		fmt.Fprintf(d.cur, "BT /%s %.1f Tf %.1f %.1f Td (%s) Tj ET\n", f, size, x, d.Y, encode(s))
+		return
+	}
+	// the lira sign is drawn; the text around it is set as usual
+	for i, part := range strings.Split(s, string(Lira)) {
+		if i > 0 {
+			d.lira(x, size, bold)
+			x += size * liraAdvance
+		}
+		if part != "" {
+			fmt.Fprintf(d.cur, "BT /%s %.1f Tf %.1f %.1f Td (%s) Tj ET\n", f, size, x, d.Y, encode(part))
+			x += Width(part, size)
+		}
+	}
+}
+
+// lira draws the Turkish lira sign at x on the current baseline: an upright stem with a foot to
+// the right and two slanted bars across it.
+func (d *Doc) lira(x, size float64, bold bool) {
+	w := size * 0.075
+	if bold {
+		w = size * 0.1
+	}
+	y := d.Y
+	p := func(fx, fy float64) (float64, float64) { return x + fx*size, y + fy*size }
+	var b strings.Builder
+	line := func(ax, ay, bx, by float64) {
+		x1, y1 := p(ax, ay)
+		x2, y2 := p(bx, by)
+		fmt.Fprintf(&b, "%.2f %.2f m %.2f %.2f l S\n", x1, y1, x2, y2)
+	}
+	fmt.Fprintf(&b, "q %.2f w 0 J 0 j\n", w)
+	line(0.2, 0.0, 0.2, 0.70)   // stem
+	line(0.2, 0.0, 0.5, 0.12)   // foot
+	line(0.02, 0.26, 0.5, 0.48) // lower bar
+	line(0.02, 0.40, 0.5, 0.62) // upper bar
+	b.WriteString("Q\n")
+	d.cur.WriteString(b.String())
 }
 
 // Right writes s right-aligned to x (an estimate from the average glyph width).
@@ -75,8 +120,11 @@ func (d *Doc) Right(x float64, s string, size float64, bold bool) {
 	d.Text(x-Width(s, size), s, size, bold)
 }
 
-// Width estimates the width of s in points (Helvetica averages about 0.5 em).
-func Width(s string, size float64) float64 { return float64(len([]rune(s))) * size * 0.5 }
+// Width estimates the width of s in points (Helvetica averages about 0.5 em; the lira sign is a little wider).
+func Width(s string, size float64) float64 {
+	n := strings.Count(s, string(Lira))
+	return float64(len([]rune(s))-n)*size*0.5 + float64(n)*size*liraAdvance
+}
 
 // Skip moves down by h points, starting a new page when the page is full.
 func (d *Doc) Skip(h float64) {

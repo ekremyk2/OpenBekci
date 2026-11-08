@@ -5131,7 +5131,7 @@ export interface paths {
         };
         /**
          * Cash-basis income and expense (gelir-gider)
-         * @description **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.** The sheet read at the assembly (M8). JSON by default; `format=csv` downloads it.
          *
          *     Permission (any one of): `reports.read`, `reports.aggregate`.
          */
@@ -5181,7 +5181,7 @@ export interface paths {
         };
         /**
          * Budget versus actual
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission (any one of): `reports.read`, `reports.aggregate`.
          */
@@ -5206,7 +5206,7 @@ export interface paths {
         };
         /**
          * Trial balance
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5231,7 +5231,7 @@ export interface paths {
         };
         /**
          * Receivables aging
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -5306,7 +5306,7 @@ export interface paths {
         };
         /**
          * Fund balances
-         * @description **Release 0.1.**  JSON by default; `format=csv|xlsx|pdf` downloads it.
+         * @description **Release 0.1.**  JSON by default; `format=csv` downloads it.
          *
          *     Permission: `reports.read`.
          */
@@ -13269,7 +13269,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            status: "active" | "paused" | "ended";
+            status: "active" | "paused" | "archived";
             /** Format: uuid */
             decision_id: string | null;
             current_rate: components["schemas"]["ChargePlanRate"] | null;
@@ -13359,7 +13359,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            status?: "active" | "paused" | "ended";
+            status?: "active" | "paused" | "archived";
             /** Format: uuid */
             decision_id?: string | null;
             /** Format: uuid */
@@ -13975,7 +13975,7 @@ export interface components {
             amount: components["schemas"]["Money"];
             reason: string;
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         /**
          * @example {
@@ -14062,7 +14062,7 @@ export interface components {
             to?: string | null;
             reason: string;
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
         LateFeeFreezeUpdate: {
@@ -14289,6 +14289,7 @@ export interface components {
          *       "received_on": "2026-03-05",
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *       "debtor": {
+         *         "mode": "unit_side",
          *         "unit_id": "0192a3f0-1000-7000-8000-000000000001",
          *         "debtor_kind": "tenant"
          *       }
@@ -14315,7 +14316,7 @@ export interface components {
             allocations?: components["schemas"]["AllocationInput"][];
             send_receipt?: components["schemas"]["ReceiptDelivery"];
             /** @description Who the payment settles: a unit side or a person (carried debt). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         PaymentVoid: {
             reason: string;
@@ -14328,7 +14329,7 @@ export interface components {
             site_id: string;
             amount: components["schemas"]["Money"];
             /** @description Who owes: a unit side or a person (see DebtorRef). */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         AllocationPreview: {
             allocations: components["schemas"]["PaymentAllocation"][];
@@ -14344,7 +14345,7 @@ export interface components {
             reference?: string;
             note?: string;
             /** @description Who the declared transfer is for. Residents declare for their own side; a former occupant never declares. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         PaymentConfirm: {
             /** Format: uuid */
@@ -14962,11 +14963,11 @@ export interface components {
             payment_id?: string;
             /**
              * Format: uuid
-             * @description For an outgoing line: link an expense. Reserved for the expenses release; until then it is answered with 422 `unsupported` on `expense_id`.
+             * @description For an outgoing line: link a posted expense of the same site and amount (no payment is created). A line that is not outgoing, an expense that is not posted or of another amount, or one already linked to another line is refused.
              */
             expense_id?: string;
             /** @description Who the line pays; omitted when matching to `payment_id` or `expense_id`. */
-            debtor?: components["schemas"]["DebtorRef"];
+            debtor?: Omit<components["schemas"]["DebtorRef"], "mode">;
         };
         BankTransactionReason: {
             reason?: string;
@@ -15691,6 +15692,7 @@ export interface components {
          *       "debtor_kind": "owner",
          *       "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
          *       "debtor": {
+         *         "mode": "unit_side",
          *         "unit_id": "0192a3f0-1000-7000-8000-000000000005",
          *         "debtor_kind": "owner"
          *       },
@@ -15732,7 +15734,7 @@ export interface components {
              */
             debtor_person_id: string | null;
             /** @description Whose debt this case is about, as it was opened. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             opened_on: string;
             lawyer: string | null;
@@ -15760,7 +15762,7 @@ export interface components {
             /** Format: uuid */
             site_id: string;
             /** @description Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             opened_on: string;
             lawyer?: string | null;
@@ -15784,6 +15786,7 @@ export interface components {
          *           "debtor_kind": "owner",
          *           "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
          *           "debtor": {
+         *             "mode": "unit_side",
          *             "unit_id": "0192a3f0-1000-7000-8000-000000000005",
          *             "debtor_kind": "owner"
          *           },
@@ -15827,7 +15830,7 @@ export interface components {
         };
         DebtBreakdown: {
             /** @description Whose debt this is. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             as_of: string;
             lines: components["schemas"]["DebtBreakdownLine"][];
@@ -15862,7 +15865,7 @@ export interface components {
         /** @description Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`. */
         Statement: {
             /** @description Whose statement this is: a unit side or a person. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -15877,7 +15880,7 @@ export interface components {
         };
         StatementSend: {
             /** @description Whose statement to send. */
-            debtor: components["schemas"]["DebtorRef"];
+            debtor: Omit<components["schemas"]["DebtorRef"], "mode">;
             /** Format: date */
             from: string;
             /** Format: date */
@@ -16066,6 +16069,10 @@ export interface components {
         MoneyOverview: {
             /** Format: date */
             as_of: string;
+            /** @description The balance of every fund. */
+            funds: components["schemas"]["FundBalanceRow"][];
+            /** @description The five largest overdue debtors. */
+            top_debtors: components["schemas"]["DebtorRow"][];
             receivable_owner: components["schemas"]["Money"];
             receivable_tenant: components["schemas"]["Money"];
             cash: components["schemas"]["Money"];
@@ -20681,30 +20688,8 @@ export interface components {
             items: components["schemas"]["PlatformJob"][];
             next_cursor: string | null;
         };
-        /**
-         * @description Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.
-         * @example {
-         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
-         *       "debtor_kind": "tenant"
-         *     }
-         */
-        DebtorRef: {
-            /**
-             * Format: uuid
-             * @description Unit mode: the unit.
-             */
-            unit_id?: string;
-            /**
-             * @description Unit mode: the side of the unit that owes.
-             * @enum {string}
-             */
-            debtor_kind?: "owner" | "tenant";
-            /**
-             * Format: uuid
-             * @description Person mode: the person who owes; covers charges carried to them and charges keyed on them.
-             */
-            person_id?: string;
-        } & (unknown | unknown);
+        /** @description Who owes: a debtor key, one of two modes told apart by `mode`. `unit_side` addresses the open charges of one side of a unit; `person` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). A body that does not match its mode is 422 `validation_failed`. */
+        DebtorRef: components["schemas"]["DebtorRefUnitSide"] | components["schemas"]["DebtorRefPerson"];
         /**
          * @description Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.
          * @example {
@@ -20719,7 +20704,7 @@ export interface components {
              * @description Open enum.
              * @enum {string}
              */
-            debtor_kind: "owner" | "tenant";
+            debtor_kind: "owner" | "tenant" | "person";
             /**
              * Format: uuid
              * @description The person on the due date; null when the side is vacant.
@@ -21007,6 +20992,48 @@ export interface components {
          * @enum {string}
          */
         Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        /**
+         * @example {
+         *       "mode": "unit_side",
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "debtor_kind": "tenant"
+         *     }
+         */
+        DebtorRefUnitSide: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "unit_side";
+            /**
+             * Format: uuid
+             * @description The unit.
+             */
+            unit_id: string;
+            /**
+             * @description The side of the unit that owes.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+        };
+        /**
+         * @example {
+         *       "mode": "person",
+         *       "person_id": "0192a3f0-1000-7000-8000-000000000002"
+         *     }
+         */
+        DebtorRefPerson: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            mode: "person";
+            /**
+             * Format: uuid
+             * @description The person who owes; covers charges carried to them and charges keyed on them.
+             */
+            person_id: string;
+        };
         /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
         TicketWorkflowRestore: {
             /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
@@ -29819,7 +29846,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29827,8 +29854,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["IncomeExpenseReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29897,7 +29922,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29905,8 +29930,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BudgetVsActualReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29936,7 +29959,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29944,8 +29967,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["TrialBalanceReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -29975,7 +29996,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -29983,8 +30004,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReceivablesAgingReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];
@@ -30092,7 +30111,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            /** @description The report. JSON by default; `format=csv` selects a CSV download. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -30100,8 +30119,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["FundBalancesReport"];
                     "text/csv": string;
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
-                    "application/pdf": string;
                 };
             };
             401: components["responses"]["Problem"];

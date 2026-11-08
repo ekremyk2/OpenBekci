@@ -179,7 +179,7 @@ func newAccess(cfg Config, log *slog.Logger, d *db.DB, comm *community.Service) 
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
-func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, notify jobs.Notifier) (httpapi.Deps, error) {
+func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, mny httpapi.MoneyDeps) (httpapi.Deps, error) {
 	ident, err := newIdentity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
@@ -205,7 +205,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey),
 		People:      peopleSvc,
 		Community:   communitySvc,
-		Money:       newMoney(d, notify),
+		Money:       mny,
 		Audit:       audit.NewService(d),
 		Files:       fs,
 		Authenticator: httpapi.SessionAuthenticator{

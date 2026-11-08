@@ -122,6 +122,14 @@ func NewService(db TxRunner, money MoneyFigures) *Service {
 	return &Service{db: db, money: money, now: time.Now}
 }
 
+// SetMoney wires the money module's figures in (the wiring calls it once the
+// money services exist); nil leaves the zero stub.
+func (s *Service) SetMoney(m MoneyFigures) {
+	if m != nil {
+		s.money = m
+	}
+}
+
 // Meeting is an upcoming meeting (0.2).
 type Meeting struct {
 	ID          uuid.UUID `json:"id"`

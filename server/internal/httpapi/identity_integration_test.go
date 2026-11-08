@@ -17,14 +17,22 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/ledger"
+	"github.com/openbekci/openbekci/server/internal/core/moneydocs"
+	"github.com/openbekci/openbekci/server/internal/core/payments"
+	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
+	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/core/treasury"
 	"github.com/openbekci/openbekci/server/internal/permissions"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/db/dbtest"
@@ -110,7 +118,7 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
 		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d), Access: e.acc,
-		Money:         newTestMoney(d, e.tenSvc),
+		Money:         e.moneyDeps(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}
 	e.h = NewRouter(e.deps, Options{})
@@ -534,4 +542,16 @@ func TestIntegrationHTTPMeWithOrganization(t *testing.T) {
 		o.Roles[0].ScopeType != "org" || o.Roles[0].ScopeID != nil || len(o.Permissions) == 0 || o.Sites == nil {
 		t.Errorf("org = %+v", o)
 	}
+}
+
+// moneyDeps builds the money services of the test environment, with the file scopes of their documents registered.
+func (e *idEnv) moneyDeps(d *db.DB) MoneyDeps {
+	bill := billing.NewService(d, e.tenSvc, nil)
+	pay := payments.NewService(d, nil, nil)
+	rep := reports.NewService(d, nil)
+	e.files.RegisterResolver(treasury.FileScope, treasury.FileResolver(), files.WithMaxFiles(5))
+	e.files.RegisterResolver(moneydocs.ScopePayment, moneydocs.PaymentFileResolver())
+	return MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: bill, Payments: pay, Reports: rep,
+		Treasury: treasury.NewService(d, e.files, nil), Docs: moneydocs.NewService(d, e.files, pay, rep, nil, nil),
+		BankImport: bankimport.NewService(d, pay, nil), Collections: collections.NewService(d, bill, nil, nil)}
 }

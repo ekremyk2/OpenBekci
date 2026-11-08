@@ -103,11 +103,25 @@ func (s *Service) DebtorStatement(ctx context.Context, orgID, siteID uuid.UUID, 
 		}
 		tz := ledger.Location(site.Timezone)
 		today := ledger.Today(site.Timezone, s.Now())
+		manager := ledger.HasSite(ctx, tx, ledger.PermStatementsRead, siteID)
+		if !manager && !d.IsPerson() && d.UnitID != nil {
+			// a resident sees only what is dated inside their own period on the unit
+			if wf, wt, ok := authz.MoneyWindow(ctx, *d.UnitID, authz.UnitSide(d.Kind)); ok {
+				if f := wf.Format(ledger.DateLayout); from == "" || from < f {
+					from = f
+				}
+				if wt != nil {
+					if last := wt.AddDate(0, 0, -1).Format(ledger.DateLayout); to == "" || to > last {
+						to = last
+					}
+				}
+			}
+		}
 		asOf := today
 		if to != "" && to < today {
 			asOf = to
 		}
-		if !ledger.HasSite(ctx, tx, ledger.PermStatementsRead, siteID) {
+		if !manager {
 			if d.IsPerson() || d.UnitID == nil {
 				return problem.Forbidden("you do not have the statements.read permission here")
 			}
@@ -282,7 +296,7 @@ func (st Statement) CSV() ([]byte, error) {
 	_ = w.Write([]string{"date", "kind", "part", "ref", "amount", "balance_principal", "balance_fee", "balance_total"})
 	_ = w.Write([]string{"", "opening", "", "", "", fmtMoney(st.Opening.Principal), fmtMoney(st.Opening.Fee), fmtMoney(st.Opening.Total)})
 	for _, r := range st.Rows {
-		_ = w.Write([]string{r.Date, r.Kind, r.Part, r.Ref, fmtMoney(r.Amount), fmtMoney(r.Balance.Principal), fmtMoney(r.Balance.Fee), fmtMoney(r.Balance.Total)})
+		_ = w.Write([]string{r.Date, r.Kind, r.Part, CSVText(r.Ref), fmtMoney(r.Amount), fmtMoney(r.Balance.Principal), fmtMoney(r.Balance.Fee), fmtMoney(r.Balance.Total)})
 	}
 	w.Flush()
 	return b.Bytes(), w.Error()
@@ -297,7 +311,7 @@ func (st Statement) PDF() []byte {
 	if st.From != nil {
 		rng = *st.From + " - " + st.AsOf
 	}
-	d.Line("Period: "+rng+"   Currency: "+string(st.Currency), 9, false)
+	d.Line("Period: "+rng+"   Currency: "+currencyLabel(st.Currency), 9, false)
 	d.Skip(6)
 	cols := []float64{50, 105, 165, 245, 400, 470, 545}
 	head := func() {
@@ -321,8 +335,8 @@ func (st Statement) PDF() []byte {
 		d.Text(cols[1], r.Kind, 8, false)
 		d.Text(cols[2], r.Part, 8, false)
 		ref := r.Ref
-		if len(ref) > 28 {
-			ref = ref[:28]
+		if rs := []rune(ref); len(rs) > 28 {
+			ref = string(rs[:28])
 		}
 		d.Text(cols[3], ref, 8, false)
 		d.Right(cols[4], fmtMoney(r.Amount), 8, false)

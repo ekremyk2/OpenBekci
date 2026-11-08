@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -97,10 +98,18 @@ func DebtorCSV(rows []DebtorRow) ([]byte, error) {
 		if r.OldestDue != nil {
 			due = *r.OldestDue
 		}
-		_ = w.Write([]string{door, r.DebtorKind, person, fmtMoney(r.Principal), fmtMoney(r.Fee), fmtMoney(r.Total), due, itoa(r.DaysOverdue)})
+		_ = w.Write([]string{CSVText(door), r.DebtorKind, CSVText(person), fmtMoney(r.Principal), fmtMoney(r.Fee), fmtMoney(r.Total), due, itoa(r.DaysOverdue)})
 	}
 	w.Flush()
 	return b.Bytes(), w.Error()
+}
+
+// CSVText neutralizes a free-text cell that a spreadsheet would run as a formula (starts with = + - @, tab or CR).
+func CSVText(s string) string {
+	if s != "" && strings.ContainsRune("=+-@	", rune(s[0])) {
+		return "'" + s
+	}
+	return s
 }
 
 func itoa(n int) string { return fmtMoney(money.New(int64(n), "JPY")) }

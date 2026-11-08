@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
@@ -520,7 +521,39 @@ func (s *Service) Match(ctx context.Context, orgID, txnID uuid.UUID, in MatchInp
 			return problem.Conflict("the line is already " + r.status)
 		}
 		if in.ExpenseID != nil {
-			return problem.Validation(problem.Field{Field: "expense_id", Code: "unsupported"})
+			// an outgoing line settles an expense that was posted without the bank: the link is
+			// the match (no payment is created; the expense already posted its entry)
+			if r.amount >= 0 {
+				return bad("expense_id", "invalid_value")
+			}
+			var amt int64
+			var st string
+			var xsite uuid.UUID
+			err := tx.QueryRow(ctx, `SELECT amount, status, site_id FROM expense WHERE org_id=$1 AND id=$2 FOR UPDATE`, orgID, *in.ExpenseID).Scan(&amt, &st, &xsite)
+			if errors.Is(err, pgx.ErrNoRows) || (err == nil && xsite != r.site) {
+				return bad("expense_id", "invalid_value")
+			}
+			if err != nil {
+				return err
+			}
+			if st != "posted" {
+				return problem.Conflict("only a posted expense can be linked to a bank line")
+			}
+			if amt != -r.amount {
+				return problem.Validation(problem.Field{Field: "expense_id", Code: "amount_mismatch"})
+			}
+			if _, err := tx.Exec(ctx, `UPDATE bank_transaction SET match_status='matched', expense_id=$3, payment_id=NULL, matched_by=$4, matched_at=now(), updated_at=now() WHERE org_id=$1 AND id=$2`,
+				orgID, txnID, *in.ExpenseID, ledger.Actor(ctx)); err != nil {
+				if pe := new(pgconn.PgError); errors.As(err, &pe) && pe.Code == "23505" {
+					return problem.Conflict("the expense is already linked to another bank line")
+				}
+				return err
+			}
+			if err := ledger.Audit(ctx, tx, orgID, r.site, "bank_transaction.match", "bank_transaction", txnID, map[string]any{"status": r.status}, map[string]any{"status": "matched", "expense_id": *in.ExpenseID}); err != nil {
+				return err
+			}
+			out, err = scanTx(tx.QueryRow(ctx, txSel+` WHERE t.org_id=$1 AND t.id=$2`, orgID, txnID))
+			return err
 		}
 		if r.amount <= 0 {
 			return bad("amount", "invalid_value")
@@ -550,7 +583,7 @@ func (s *Service) Match(ctx context.Context, orgID, txnID uuid.UUID, in MatchInp
 			if _, err := tx.Exec(ctx, `UPDATE payment SET asset_account_id=$3 WHERE org_id=$1 AND id=$2`, orgID, dp.ID, r.asset); err != nil {
 				return err
 			}
-			cp, err := pay.Confirm(ctx, orgID, dp.ID, r.bookedOn, chargeIDs)
+			cp, err := pay.Confirm(ctx, orgID, dp.ID, r.asset, r.bookedOn, chargeIDs)
 			if err != nil {
 				return err
 			}
@@ -611,7 +644,7 @@ func (s *Service) Unmatch(ctx context.Context, orgID, txnID uuid.UUID, reason st
 		if len(sug) > 0 {
 			next = "suggested"
 		}
-		if _, err := tx.Exec(ctx, `UPDATE bank_transaction SET match_status=$3, payment_id=NULL, note=$4, matched_by=NULL, matched_at=NULL, updated_at=now() WHERE org_id=$1 AND id=$2`, orgID, txnID, next, nilIfEmpty(reason)); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE bank_transaction SET match_status=$3, payment_id=NULL, expense_id=NULL, note=$4, matched_by=NULL, matched_at=NULL, updated_at=now() WHERE org_id=$1 AND id=$2`, orgID, txnID, next, nilIfEmpty(reason)); err != nil {
 			return err
 		}
 		if err := ledger.Audit(ctx, tx, orgID, r.site, "bank_transaction.unmatch", "bank_transaction", txnID, map[string]any{"status": r.status, "payment_id": r.paymentID}, map[string]any{"status": next, "reason": reason}); err != nil {

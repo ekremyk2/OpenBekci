@@ -148,7 +148,7 @@ func init() {
 		"money.createPayment": {perms: perms(ledger.PermPaymentsRecord), status: 201, override: collectorOverride, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			f := w.NewSite(t, org)
 			ch := seedChart(w, t, org, f.Site)
-			return jsonReq("POST", orgPath(org, "/payments"), fmt.Sprintf(`{"site_id":"%s","method":"bank_transfer","amount":{"amount":100,"currency":"TRY"},"received_on":"2026-01-10","asset_account_id":"%s","debtor":{"unit_id":"%s","debtor_kind":"owner"}}`, f.Site, ch.Account(ledger.SubBank), f.Unit), moneyIdem()...)
+			return jsonReq("POST", orgPath(org, "/payments"), fmt.Sprintf(`{"site_id":"%s","method":"bank_transfer","amount":{"amount":100,"currency":"TRY"},"received_on":"2026-01-10","asset_account_id":"%s","debtor":{"mode":"unit_side","unit_id":"%s","debtor_kind":"owner"}}`, f.Site, ch.Account(ledger.SubBank), f.Unit), moneyIdem()...)
 		}},
 		"money.getPayment": {perms: anyPerms(ledger.PermMoneyRead, ledger.PermStatementsReadOwn), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
 			return mreq{method: "GET", path: orgPath(org, "/payments/"+seedPayment(w, t, org).String())}

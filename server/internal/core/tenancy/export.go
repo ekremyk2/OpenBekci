@@ -47,6 +47,15 @@ const personsOfSite = `SELECT person_id FROM occupancy WHERE org_id = $1 AND sit
 		UNION SELECT r.person_id FROM announcement_recipient r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2
 		UNION SELECT r.person_id FROM announcement_read r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2
 		UNION SELECT addressed_person_id FROM document WHERE org_id = $1 AND site_id = $2 AND addressed_person_id IS NOT NULL
+		UNION SELECT debtor_person_id FROM charge WHERE org_id = $1 AND site_id = $2 AND debtor_person_id IS NOT NULL
+		UNION SELECT debtor_person_id FROM payment WHERE org_id = $1 AND site_id = $2 AND debtor_person_id IS NOT NULL
+		UNION SELECT payer_person_id FROM payment WHERE org_id = $1 AND site_id = $2 AND payer_person_id IS NOT NULL
+		UNION SELECT person_id FROM journal_line WHERE org_id = $1 AND site_id = $2 AND person_id IS NOT NULL
+		UNION SELECT collector_person_id FROM cash_box WHERE org_id = $1 AND site_id = $2 AND collector_person_id IS NOT NULL
+		UNION SELECT person_id FROM refund WHERE org_id = $1 AND site_id = $2 AND person_id IS NOT NULL
+		UNION SELECT person_id FROM late_fee_booking WHERE org_id = $1 AND site_id = $2 AND person_id IS NOT NULL
+		UNION SELECT person_id FROM dunning_event WHERE org_id = $1 AND site_id = $2 AND person_id IS NOT NULL
+		UNION SELECT debtor_person_id FROM collection_case WHERE org_id = $1 AND site_id = $2 AND debtor_person_id IS NOT NULL
 	UNION SELECT person_id FROM attendance WHERE org_id = $1 AND site_id = $2
 	UNION SELECT proxy_for_person_id FROM attendance WHERE org_id = $1 AND site_id = $2 AND proxy_for_person_id IS NOT NULL
 	UNION SELECT person_id FROM meeting_notice WHERE org_id = $1 AND site_id = $2

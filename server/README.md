@@ -415,6 +415,37 @@ balances, income and expense), `moneyhooks` (the move-out hook `people.MoneyHook
   (`platform/pdf/unicode.go`). A collection case (unit side or person) freezes the unit side's late fees (a `late_fee_freeze` from the opening date, created in
   the same transaction) and skips the debtor in reminders and runs; closing it ends the freeze and charges legal costs back as a `legal_cost` charge.
   `debt-breakdown` gives principal and the late fee still owed per charge as of a date (JSON, CSV, XLSX, PDF).
+- **Credit and fees (rules after the PR 14 review).** Prepayment credit is consumed: it is applied to the debtor's open charges, oldest first, principal before
+  fee, when a charge is generated or created and before a payment is allocated (`billing.ApplyCredit`: debit prepayment, credit receivable, an allocation without a
+  payment, dated from the later of the due date and the day the credit arrived), so no fee accrues while credit covers the principal and the invariant is
+  **receivable == sum of open charges** (the credit stays a separate liability; section 9.13 reads "sum of open charges less applied credit"). Late fees are booked
+  once per debtor and closed month, up to the end of the last closed month (`late_fee_booking` is unique per debtor and month, a top-up after a reversal in the
+  same month gets a `#n` suffix); the accrued but unbooked fee is the last statement line. A reversal never exceeds the unpaid fee (the excess becomes
+  prepayment credit) and no negative fee row is created without one. The schedule is append-only: the site has the statutory default (5 % a month, no grace)
+  from the day it is created (`is_default`, replaced by the site's first own entry), a new entry starts today or later and after the previous one (409 otherwise),
+  the database refuses UPDATE and DELETE of the others, and `version` of the policy (the `If-Match` of `setLateFeePolicy`) counts entries. Person debtors (carried
+  debt) accrue like unit sides and honour the freezes of the unit side the debt came from. Move-out books the fee up to the move-out date first, carries unpaid
+  principal and fee net of reversals (the reversal rows move with the fees) and moves the fee bookings to the person; a move-out, charge or plan posting dated on or
+  before the lock date is refused (`locked_period`), never re-dated. The lock date must be before today, `received_on` and `paid_on` may not be in the future,
+  and a closed or approved fiscal year takes no postings. `ReverseJournalEntry` refuses entries of charges, payments, fees, opening balances, move-outs, expenses,
+  bills, transfers and refunds (use the typed void or cancel); manual entries refuse receivable, prepayment, deposit and opening equity accounts, and every line
+  fund must match the fund its account is bound to. Cancelling a paid charge keeps the payments as credit.
+- **Served operations.** Besides the ledger, plans (get, update, rates list, create and delete, preview), generation status, charges (get, cancel), opening
+  balances (get, void, CSV import `kind,unit,side,principal,late_fee,account_id` with a typed `mapping`, `dry_run`, synchronous so `job_id` is null), late fee
+  accruals, bookings, waivers and freezes, declared payments (declare, confirm, reject), person and unit statements, `statements:send`, receipts (PDF, send), the
+  income and expense, trial balance, receivables aging, fund balance and budget-versus-actual reports (JSON or `format=csv`; xlsx and pdf answer 422), the money
+  overview, transfers, refunds, expenses, bills (site setting `bills_enabled`) and budgets are served; collections, bank imports and the rest of the draft are not.
+- **Treasury** (`internal/core/treasury`). Transfers (cash box to bank is a deposit, box to box a hand-over; same fund, not in the future, after the lock date),
+  refunds (an overpayment refund cannot exceed the debtor's credit), expenses (category account, fund, paid-from cash account, vendor, document number, receipt file
+  attached under the scope `expense`; `recurring {frequency: monthly, day}` creates a `recurring_expense` and the hourly job `expenses.recurring` posts one expense
+  per due day, skipping locked days), bills and bill payments (payables account), budgets (one per fiscal year, lines per expense account and fund, `If-Match`
+  on the lines, `money.BudgetFinalizer` implemented by `treasury.Service.FinalizeBudget` for the governance decision effect, wired by the merge-forward).
+- **Documents** (`internal/core/moneydocs`). Receipt PDFs are filed as generated files of the scope `payment:<id>` when a payment is recorded or confirmed (TODO: the
+  unit's folder once the documents module exists); the hourly catch-up fills the closing statement and the debt certificate of every move-out
+  (`move_out.*_file_id`, scope `move_out:<id>`); `statements:send` files the PDF and enqueues `statement.send` notifications. The PDF writer draws the lira sign as a
+  vector shape (no font is embedded). Notifications are still the `notifications.money` jobs with a log-only worker: the notifications module (D2) is not on this branch.
+- **Hand-over.** A site export carries every money table (`tenancy/export_money.go`, parents first); the import leaves the lock date off while the journal goes in and
+  sets it afterwards; files are not carried yet (`file_id` columns are cleared).
 
 ## Tests
 

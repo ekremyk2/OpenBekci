@@ -51,6 +51,9 @@ func (s *Service) Declare(ctx context.Context, orgID uuid.UUID, in DeclareInput)
 		if _, err := ledger.ParseDate(in.PaidOn); err != nil {
 			return bad("paid_on", "invalid_format")
 		}
+		if in.PaidOn > ledger.Today(site.Timezone, s.Now()) {
+			return bad("paid_on", "in_the_future")
+		}
 		ch, err := ledger.EnsureChart(ctx, tx, orgID, in.SiteID)
 		if err != nil {
 			return err
@@ -85,7 +88,7 @@ func debtorOf(p Payment) billing.Debtor {
 
 // Confirm settles a declared payment (payments.record): it is allocated and
 // posted like a recorded payment, optionally with another received date.
-func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, receivedOn string, chargeIDs []uuid.UUID) (Payment, error) {
+func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, assetAccount uuid.UUID, receivedOn string, chargeIDs []uuid.UUID) (Payment, error) {
 	var out Payment
 	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) error {
 		p, err := scanPayment(tx.QueryRow(ctx, paySel+` WHERE p.org_id=$1 AND p.id=$2 FOR UPDATE OF p`, orgID, paymentID))
@@ -112,13 +115,26 @@ func (s *Service) Confirm(ctx context.Context, orgID, paymentID uuid.UUID, recei
 			}
 			p.ReceivedOn = receivedOn
 		}
+		if p.ReceivedOn > ledger.Today(site.Timezone, s.Now()) {
+			return bad("received_on", "in_the_future")
+		}
+		if err := s.requireOwnBox(ctx, tx, orgID, p); err != nil {
+			return err
+		}
+		if assetAccount != uuid.Nil && assetAccount != p.AssetAccountID {
+			var typ, sub string
+			if err := tx.QueryRow(ctx, `SELECT type, COALESCE(subtype,'') FROM account WHERE org_id=$1 AND site_id=$2 AND id=$3`, orgID, p.SiteID, assetAccount).Scan(&typ, &sub); err != nil || typ != "asset" || sub != ledger.SubBank {
+				return bad("asset_account_id", "invalid_value")
+			}
+			p.AssetAccountID = assetAccount
+		}
 		d := debtorOf(p)
 		allocs, err := s.settle(ctx, tx, orgID, site, ch, &p, d, chargeIDs)
 		if err != nil {
 			return err
 		}
-		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6 WHERE org_id=$1 AND id=$2`,
-			orgID, paymentID, p.ReceivedOn, p.ReceiptNo, p.JournalEntryID, ledger.Actor(ctx)); err != nil {
+		if _, err := tx.Exec(ctx, `UPDATE payment SET status='confirmed', received_on=$3::date, receipt_no=$4, journal_entry_id=$5, recorded_by=$6, asset_account_id=$7 WHERE org_id=$1 AND id=$2`,
+			orgID, paymentID, p.ReceivedOn, p.ReceiptNo, p.JournalEntryID, ledger.Actor(ctx), p.AssetAccountID); err != nil {
 			return err
 		}
 		if err := saveAllocations(ctx, tx, orgID, p.SiteID, p, allocs); err != nil {
@@ -151,6 +167,9 @@ func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason
 		if err := ledger.RequireSite(ctx, tx, ledger.PermPaymentsRecord, p.SiteID); err != nil {
 			return err
 		}
+		if err := s.requireOwnBox(ctx, tx, orgID, p); err != nil {
+			return err
+		}
 		if p.Status != "pending_declared" {
 			return problem.Conflict("only a declared payment can be rejected")
 		}
@@ -161,7 +180,7 @@ func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason
 			return err
 		}
 		if s.Notifier != nil {
-			payload := []byte(`{"payment_id":"` + paymentID.String() + `","reason":` + jsonString(reason) + `}`)
+			payload, _ := json.Marshal(map[string]any{"payment_id": p.ID, "unit_id": p.UnitID, "debtor_kind": p.DebtorKind, "person_id": p.PersonID, "amount": p.Net, "reason": reason})
 			if err := s.Notifier.Enqueue(ctx, tx, ledger.Notification{Type: NotifyPaymentRejected, OrgID: orgID, SiteID: p.SiteID, Payload: payload}); err != nil {
 				return err
 			}
@@ -170,11 +189,6 @@ func (s *Service) Reject(ctx context.Context, orgID, paymentID uuid.UUID, reason
 		return err
 	})
 	return out, err
-}
-
-func jsonString(s string) string {
-	b, _ := json.Marshal(s)
-	return string(b)
 }
 
 // Void reverses a confirmed payment (payments.record; a collector only in their own cash box): its entry is reversed dated
@@ -207,7 +221,41 @@ func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason s
 		if p.Status != "confirmed" || p.JournalEntryID == nil {
 			return problem.Conflict("only a confirmed payment can be voided")
 		}
-		rid, err := ledger.Reverse(ctx, tx, orgID, p.SiteID, *p.JournalEntryID, ledger.Today(site.Timezone, s.Now()), "Payment voided: "+reason)
+		if err := billing.LockOpenCharges(ctx, tx, orgID, p.SiteID, debtorOf(p)); err != nil {
+			return err
+		}
+		today := ledger.Today(site.Timezone, s.Now())
+		// allocations a cancelled charge already gave back as credit: the reversal below would
+		// debit the receivable for them again, so move that credit back first
+		chart, err := ledger.EnsureChart(ctx, tx, orgID, p.SiteID)
+		if err != nil {
+			return err
+		}
+		given, err := tx.Query(ctx, `SELECT c.fund_id, SUM(a.amount) FROM payment_allocation a JOIN charge c ON c.org_id = a.org_id AND c.id = a.charge_id
+			WHERE a.org_id=$1 AND a.payment_id=$2 AND a.voided GROUP BY c.fund_id`, orgID, paymentID)
+		if err != nil {
+			return err
+		}
+		type back struct {
+			fund uuid.UUID
+			amt  int64
+		}
+		var backs []back
+		for given.Next() {
+			var b back
+			if err := given.Scan(&b.fund, &b.amt); err != nil {
+				given.Close()
+				return err
+			}
+			backs = append(backs, b)
+		}
+		given.Close()
+		for _, b := range backs {
+			if err := billing.MoveCreditToReceivable(ctx, tx, orgID, p.SiteID, chart, debtorOf(p), b.fund, b.amt, today, "Payment voided: credit of a cancelled charge returned"); err != nil {
+				return err
+			}
+		}
+		rid, err := ledger.Reverse(ctx, tx, orgID, p.SiteID, *p.JournalEntryID, today, "Payment voided: "+reason)
 		if err != nil {
 			return err
 		}
@@ -230,6 +278,15 @@ func (s *Service) Void(ctx context.Context, orgID, paymentID uuid.UUID, reason s
 		}
 		if _, err := billing.RefreshStatus(ctx, tx, orgID, p.SiteID, ids); err != nil {
 			return err
+		}
+		ch, err := ledger.EnsureChart(ctx, tx, orgID, p.SiteID)
+		if err != nil {
+			return err
+		}
+		if credit, err := billing.CreditOf(ctx, tx, orgID, p.SiteID, ch, debtorOf(p)); err != nil {
+			return err
+		} else if credit < 0 {
+			return problem.Conflict("the surplus of this payment has already been applied to later charges; cancel those charges first")
 		}
 		if err := ledger.Audit(ctx, tx, orgID, p.SiteID, "payment.void", "payment", paymentID, map[string]any{"status": "confirmed"}, map[string]any{"status": "voided", "reason": reason}); err != nil {
 			return err
@@ -315,6 +372,46 @@ func (s *Service) Get(ctx context.Context, orgID, paymentID uuid.UUID) (Payment,
 			return problem.NotFound("no such payment")
 		}
 		if authz.CanAccessUnit(ctx, *p.UnitID, authz.UnitSide(*p.DebtorKind)) != nil {
+			return problem.NotFound("no such payment")
+		}
+		return nil
+	})
+	return p, err
+}
+
+// requireOwnBox lets a collector without money.manage settle or turn down only the
+// declared transfers into their own cash box (M5); a declared bank transfer
+// belongs to the bank account, so it needs money.manage.
+func (s *Service) requireOwnBox(ctx context.Context, tx pgx.Tx, orgID uuid.UUID, p Payment) error {
+	if ledger.HasSite(ctx, tx, ledger.PermMoneyManage, p.SiteID) {
+		return nil
+	}
+	user := ledger.Actor(ctx)
+	if user == nil {
+		return problem.Forbidden("a signed-in account is needed")
+	}
+	own, ok, err := ledger.CollectorBox(ctx, tx, orgID, p.SiteID, *user)
+	if err != nil {
+		return err
+	}
+	if !ok || own != p.AssetAccountID {
+		return problem.Forbidden("you may settle only payments of your own cash box")
+	}
+	return nil
+}
+
+// GetForReceipt returns a payment to whoever may read its receipt: holders of money.read or payments.record
+// at the site (a collector sees the payments of the building), or the resident of the unit side it was paid for.
+func (s *Service) GetForReceipt(ctx context.Context, orgID, paymentID uuid.UUID) (Payment, error) {
+	var p Payment
+	err := s.run(ctx, orgID, "payment", func(tx pgx.Tx) (err error) {
+		if p, err = loadPayment(ctx, tx, orgID, paymentID); err != nil {
+			return err
+		}
+		if ledger.HasSite(ctx, tx, ledger.PermMoneyRead, p.SiteID) || ledger.HasSite(ctx, tx, ledger.PermPaymentsRecord, p.SiteID) {
+			return nil
+		}
+		if p.UnitID == nil || p.DebtorKind == nil || authz.CanAccessUnit(ctx, *p.UnitID, authz.UnitSide(*p.DebtorKind)) != nil {
 			return problem.NotFound("no such payment")
 		}
 		return nil

@@ -142,7 +142,7 @@ func TestIntegrationBillingAndPayments(t *testing.T) {
 		t.Fatalf("preview %+v %v", pv, err)
 	} else {
 		for _, it := range pv.Items {
-			if it.DoorNumber == "A-2" && it.EffectiveDebtor.Kind != "owner" {
+			if it.DoorNumber == "A-2" && it.EffectiveDebtor.DebtorKind != "owner" {
 				t.Errorf("A-2 default debtor %+v", it.EffectiveDebtor)
 			}
 		}
@@ -186,6 +186,8 @@ func TestIntegrationBillingAndPayments(t *testing.T) {
 	w.invariants(t)
 
 	// late fees: accrual on demand, crystallization books it, a second run is a no-op
+	// fees are booked monthly, up to the end of the last closed month
+	const closed = "2026-02-28"
 	acc, err := w.bill.AccrueLateFee(ctx, e.OrgID, e.SiteID, a1, "")
 	if err != nil || acc.Accrued.Amount <= 0 {
 		t.Fatalf("accrual %+v %v", acc, err)
@@ -196,7 +198,7 @@ func TestIntegrationBillingAndPayments(t *testing.T) {
 	if got, _ := w.bill.CrystallizeLateFees(ctx, e.OrgID, e.SiteID); got != 0 {
 		t.Errorf("second crystallize posted %d", got)
 	}
-	acc, _ = w.bill.AccrueLateFee(ctx, e.OrgID, e.SiteID, a1, "")
+	acc, _ = w.bill.AccrueLateFee(ctx, e.OrgID, e.SiteID, a1, closed)
 	if acc.Unbooked.Amount != 0 || acc.Booked.Amount != acc.Accrued.Amount {
 		t.Errorf("after crystallization %+v", acc)
 	}
@@ -210,7 +212,7 @@ func TestIntegrationBillingAndPayments(t *testing.T) {
 	if got, err := w.bill.CrystallizeLateFees(ctx, e.OrgID, e.SiteID); err != nil || got != 1 {
 		t.Fatalf("backdated crystallize %d %v", got, err)
 	}
-	acc, _ = w.bill.AccrueLateFee(ctx, e.OrgID, e.SiteID, a1, "")
+	acc, _ = w.bill.AccrueLateFee(ctx, e.OrgID, e.SiteID, a1, closed)
 	if acc.Booked.Amount >= feeBefore || acc.Unbooked.Amount != 0 {
 		t.Errorf("fee after the backdated payment %+v, was %d", acc, feeBefore)
 	}
@@ -244,10 +246,10 @@ func TestIntegrationBillingAndPayments(t *testing.T) {
 
 	// the lock date refuses new postings
 	ld, _ := w.led.GetLockDate(ctx, e.OrgID, e.SiteID)
-	if _, err := w.led.SetLockDate(ctx, e.OrgID, e.SiteID, ld.Version, ledger.Ptr("2026-03-31")); err != nil {
+	if _, err := w.led.SetLockDate(ctx, e.OrgID, e.SiteID, ld.Version, ledger.Ptr("2026-03-01")); err != nil {
 		t.Fatal(err)
 	}
-	_, err = w.pay.Record(ctx, e.OrgID, payments.Input{SiteID: e.SiteID, Debtor: a1, Method: "bank_transfer", Amount: money.New(100, "TRY"), ReceivedOn: "2026-03-15"})
+	_, err = w.pay.Record(ctx, e.OrgID, payments.Input{SiteID: e.SiteID, Debtor: a1, Method: "bank_transfer", Amount: money.New(100, "TRY"), ReceivedOn: "2026-02-20"})
 	if problem.From(err).Code != problem.CodeLockedPeriod {
 		t.Errorf("payment inside the lock: %v", err)
 	}
@@ -272,16 +274,17 @@ func TestIntegrationOpeningBalancesAndCancel(t *testing.T) {
 	}
 	// a payment settles part of it; voiding then refuses
 	a1 := billing.Debtor{UnitID: &w.a1, Kind: "owner"}
+	e.Clock.Set("2026-01-05")
 	if _, err := w.pay.Record(ctx, e.OrgID, payments.Input{SiteID: e.SiteID, Debtor: a1, Method: "bank_transfer", Amount: money.New(1000, "TRY"), ReceivedOn: "2026-01-02"}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob.ID); problem.From(err).Status != 409 {
+	if _, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob.ID, "test"); problem.From(err).Status != 409 {
 		t.Errorf("void with payments: %v", err)
 	}
 	// a fresh balance can be voided, twice (idempotent)
 	ob2, _ := w.bill.CreateOpeningBalance(ctx, e.OrgID, billing.OpeningInput{SiteID: e.SiteID, AsOf: "2025-12-31", Kind: "unit_receivable", UnitID: &w.a2, DebtorKind: "owner", Principal: 700}, false)
 	for i := 0; i < 2; i++ {
-		if v, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob2.ID); err != nil || !v.Voided {
+		if v, err := w.bill.VoidOpeningBalance(ctx, e.OrgID, ob2.ID, "test"); err != nil || !v.Voided {
 			t.Fatalf("void %d: %+v %v", i, v, err)
 		}
 	}

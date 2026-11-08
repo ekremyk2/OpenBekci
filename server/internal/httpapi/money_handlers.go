@@ -13,6 +13,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/money"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
+	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -183,6 +184,7 @@ func (s *apiServer) MoneyCreatePayment(ctx context.Context, req gen.MoneyCreateP
 	if err != nil {
 		return nil, err
 	}
+	s.fileReceipt(ctx, req.OrgId, v.ID)
 	out, err := conv[gen.Payment](v)
 	return gen.MoneyCreatePayment201JSONResponse(out), err
 }
@@ -354,12 +356,16 @@ func (s *apiServer) lateFeePolicyOut(ctx context.Context, orgID, siteID uuid.UUI
 	if err != nil {
 		return gen.LateFeePolicy{}, err
 	}
+	ver, err := b.PolicyVersion(ctx, orgID, siteID)
+	if err != nil {
+		return gen.LateFeePolicy{}, err
+	}
 	rate, grace := 0.0, 0
 	if n := len(rows); n > 0 {
 		rate, grace = float64(rows[n-1].RateBPSPerMonth)/100, rows[n-1].GraceDays
 	}
 	return conv[gen.LateFeePolicy](map[string]any{"site_id": siteID, "rate_pct_per_month": rate, "max_rate_pct_per_month": 5, "grace_days": grace, "simple": true,
-		"version": len(rows), "waiver_reauth_threshold": money.New(thr, cur)})
+		"version": ver, "waiver_reauth_threshold": money.New(thr, cur)})
 }
 
 func (s *apiServer) MoneyGetLateFeePolicy(ctx context.Context, req gen.MoneyGetLateFeePolicyRequestObject) (gen.MoneyGetLateFeePolicyResponseObject, error) {
@@ -376,6 +382,17 @@ func (s *apiServer) MoneySetLateFeePolicy(ctx context.Context, req gen.MoneySetL
 		return nil, hasBody(true)
 	}
 	site := siteOf(req.Params.SiteId)
+	want, err := ifMatchVersion(&req.Params.IfMatch)
+	if err != nil {
+		return nil, err
+	}
+	have, err := b.PolicyVersion(ctx, req.OrgId, site)
+	if err != nil {
+		return nil, err
+	}
+	if have != want {
+		return nil, tenancy.ErrVersion
+	}
 	st, err := s.siteToday(ctx, req.OrgId, site)
 	if err != nil {
 		return nil, err
@@ -514,7 +531,7 @@ func (s *apiServer) MoneyGetUnitStatement(ctx context.Context, req gen.MoneyGetU
 	if st.To != nil {
 		to = *st.To
 	}
-	out, err := conv[gen.Statement](map[string]any{"debtor": map[string]any{"unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, "from": from, "to": to, "opening_balance": st.Opening.Total,
+	out, err := conv[gen.Statement](map[string]any{"debtor": map[string]any{"mode": "unit_side", "unit_id": req.UnitId, "debtor_kind": req.DebtorKind}, "from": from, "to": to, "opening_balance": st.Opening.Total,
 		"closing_balance": st.Closing.Total, "accrued_late_fee": st.AccruedFee, "credit": st.Credit, "total_due": st.Closing.Total, "lines": lines})
 	return gen.MoneyGetUnitStatement200JSONResponse(out), err
 }
