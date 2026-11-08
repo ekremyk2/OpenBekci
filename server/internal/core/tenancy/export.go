@@ -36,7 +36,14 @@ const personsOfSite = `SELECT person_id FROM occupancy WHERE org_id = $1 AND sit
 	UNION SELECT person_id FROM unit_claim WHERE org_id = $1 AND site_id = $2
 	UNION SELECT person_id FROM directory_consent WHERE org_id = $1 AND site_id = $2
 	UNION SELECT person_id FROM membership WHERE org_id = $1 AND ((scope_type = 'site' AND scope_id = $2)
-	      OR (scope_type = 'block' AND scope_id IN (SELECT id FROM block WHERE org_id = $1 AND site_id = $2)))`
+	      OR (scope_type = 'block' AND scope_id IN (SELECT id FROM block WHERE org_id = $1 AND site_id = $2)))
+		UNION SELECT reporter_person_id FROM ticket WHERE org_id = $1 AND site_id = $2
+		UNION SELECT assignee_person_id FROM ticket WHERE org_id = $1 AND site_id = $2 AND assignee_person_id IS NOT NULL
+		UNION SELECT author_person_id FROM ticket_comment WHERE org_id = $1 AND site_id = $2
+		UNION SELECT v.person_id FROM ticket_vote v JOIN ticket t ON t.org_id = v.org_id AND t.id = v.ticket_id WHERE v.org_id = $1 AND t.site_id = $2
+		UNION SELECT r.person_id FROM announcement_recipient r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2
+		UNION SELECT r.person_id FROM announcement_read r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2
+		UNION SELECT addressed_person_id FROM document WHERE org_id = $1 AND site_id = $2 AND addressed_person_id IS NOT NULL`
 
 // exportTables are the tables of an archive in insertion order (parents first).
 // Every site-scoped tenant table belongs here or in excludedTables; the
@@ -58,6 +65,24 @@ var exportTables = []exportTable{
 	{"unit_claim", `SELECT to_jsonb(t) FROM unit_claim t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
 	{"membership", `SELECT to_jsonb(t) FROM membership t WHERE t.org_id = $1 AND ((t.scope_type = 'site' AND t.scope_id = $2)
 		OR (t.scope_type = 'block' AND t.scope_id IN (SELECT id FROM block WHERE org_id = $1 AND site_id = $2))) ORDER BY t.id`},
+	// operations (daily operation): files first, the tables that point at them after
+	{"file", `SELECT to_jsonb(t) FROM file t WHERE t.org_id = $1 AND t.site_id = $2 AND t.status <> 'deleted' ORDER BY t.id`},
+	{"ticket_workflow", `SELECT to_jsonb(t) FROM ticket_workflow t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.site_id`},
+	{"ticket_status", `SELECT to_jsonb(t) FROM ticket_status t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"ticket_category", `SELECT to_jsonb(t) FROM ticket_category t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"ticket", `SELECT to_jsonb(t) FROM ticket t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"ticket_comment", `SELECT to_jsonb(t) FROM ticket_comment t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"ticket_attachment", `SELECT to_jsonb(t) FROM ticket_attachment t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"ticket_vote", `SELECT to_jsonb(v) FROM ticket_vote v JOIN ticket t ON t.org_id = v.org_id AND t.id = v.ticket_id WHERE v.org_id = $1 AND t.site_id = $2 ORDER BY v.ticket_id, v.person_id`},
+	{"ticket_status_history", `SELECT to_jsonb(t) FROM ticket_status_history t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"announcement", `SELECT to_jsonb(t) FROM announcement t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"announcement_file", `SELECT to_jsonb(f) FROM announcement_file f JOIN announcement a ON a.org_id = f.org_id AND a.id = f.announcement_id WHERE f.org_id = $1 AND a.site_id = $2 ORDER BY f.announcement_id, f.file_id`},
+	{"announcement_recipient", `SELECT to_jsonb(r) FROM announcement_recipient r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2 ORDER BY r.announcement_id, r.person_id`},
+	{"announcement_read", `SELECT to_jsonb(r) FROM announcement_read r JOIN announcement a ON a.org_id = r.org_id AND a.id = r.announcement_id WHERE r.org_id = $1 AND a.site_id = $2 ORDER BY r.announcement_id, r.person_id`},
+	{"folder", `SELECT to_jsonb(t) FROM folder t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.created_at, t.id`},
+	{"document", `SELECT to_jsonb(t) FROM document t WHERE t.org_id = $1 AND t.site_id = $2 ORDER BY t.id`},
+	{"site_notification_config", `SELECT to_jsonb(t) FROM site_notification_config t WHERE t.org_id = $1 AND t.site_id = $2`},
+	{"site_channel_default", `SELECT to_jsonb(t) FROM site_channel_default t WHERE t.org_id = $1 AND t.site_id = $2`},
 }
 
 // excludedTables are tenant tables a site archive does not carry, with the reason.
@@ -68,6 +93,12 @@ var excludedTables = map[string]string{
 	"import_batch": "operational record of spreadsheet imports",
 	"import_row":   "operational record of spreadsheet imports",
 	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
+
+	"notification":          "personal inbox entries of accounts of the old organization; ephemeral and not site data",
+	"notification_delivery": "delivery bookkeeping (provider ids, attempts) of messages already sent",
+	"notification_mute":     "personal preferences of an account, not site data; people set them again",
+	"sms_usage":             "the instance's SMS counter of the old organization; the new site starts at zero",
+	"org_storage_usage":     "derived byte counter of the organization; recomputed from its files",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried
@@ -341,6 +372,13 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte) 
 					}
 				}
 				insert = append(insert, r)
+			}
+			if t.Name == "folder" && len(insert) > 0 {
+				// inserting the units created their folders (trigger); the archive
+				// carries the originals, with their ids and the documents in them
+				if _, err := tx.Exec(ctx, `DELETE FROM folder WHERE org_id = $1 AND site_id = $2 AND kind = 'unit'`, orgID, a.SiteID); err != nil {
+					return err
+				}
 			}
 			if len(insert) > 0 {
 				blob, err := json.Marshal(insert)

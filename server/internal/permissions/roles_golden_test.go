@@ -14,6 +14,14 @@ import (
 // table in testdata/roles.golden.json, which is independent of the registry
 // (and of the generated spec, which is derived from it): a wrong role
 // assignment in a module cannot pass by being generated consistently.
+// occupantOnly are permissions that no built-in role holds: they come from
+// occupancies (documents.upload_own: owners, tenants, household) or from a
+// former occupancy (documents.read_addressed). They need no golden role.
+var occupantOnly = map[string]bool{
+	"documents.read_addressed": true,
+	"documents.upload_own":     true,
+}
+
 func TestRolePermissionsGolden(t *testing.T) {
 	raw, err := os.ReadFile(filepath.Join("testdata", "roles.golden.json"))
 	if err != nil {
@@ -60,7 +68,7 @@ func TestRolePermissionsGolden(t *testing.T) {
 				held = true
 			}
 		}
-		if !held {
+		if !held && !occupantOnly[string(p)] {
 			t.Errorf("permission %s is registered but no role in the golden table holds it", p)
 		}
 	}
