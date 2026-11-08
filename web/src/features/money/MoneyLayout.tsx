@@ -2,6 +2,7 @@ import { Link, Outlet } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
+import { moneyAccess } from '@/lib/money-access'
 import { cn } from '@/lib/utils'
 import { useMoneyCtx } from './api'
 import { Select } from './ui'
@@ -19,11 +20,8 @@ export function MoneyLayout() {
   const { t } = useLingui()
   const { can, org, me } = useSession()
   const ctx = useMoneyCtx()
-  const manager = can('money.read')
-  const resident =
-    !manager &&
-    (can('statements.read_own') ||
-      !!me?.occupancies.some((o) => o.organization_id === org?.id && o.may_see_money))
+  const access = moneyAccess(me, org?.id)
+  const { manager, collector, resident, transparency } = access
 
   const managerTabs: Tab[] = [
     { to: '/orgs/$orgId/money', label: t`Overview`, any: ['money.read'], exact: true },
@@ -51,13 +49,19 @@ export function MoneyLayout() {
     { to: '/orgs/$orgId/money/pay', label: t`Pay`, any: [] },
     { to: '/orgs/$orgId/money/statements', label: t`Statement`, any: [] },
   ]
+  const collectorTabs: Tab[] = [
+    { to: '/orgs/$orgId/money/payments/new', label: t`Record cash`, any: [], exact: true },
+  ]
+  const reportsTab: Tab = { to: '/orgs/$orgId/money/reports', label: t`Reports`, any: [] }
   const tabs = manager
     ? managerTabs.filter((tab) => tab.any.some((p) => can(p)))
-    : resident
-      ? residentTabs
-      : []
+    : [
+        ...(resident ? residentTabs : []),
+        ...(collector ? collectorTabs : []),
+        ...(transparency ? [reportsTab] : []),
+      ]
 
-  if (!manager && !resident) {
+  if (!access.any) {
     return (
       <EmptyState
         title={t`You do not have access to this`}

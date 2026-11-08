@@ -3,6 +3,7 @@ import { Building2, HomeIcon, LifeBuoy, UserRound, Users, Wallet } from 'lucide-
 import { msg } from '@lingui/core/macro'
 import type { MessageDescriptor } from '@lingui/core'
 import type { Me } from '@/api/schema'
+import { moneyAccess } from '@/lib/money-access'
 import { can } from '@/lib/permissions'
 
 /**
@@ -52,10 +53,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: msg`Money`,
     to: '/orgs/$orgId/money',
     icon: Wallet,
-    visible: ({ me, orgId }) =>
-      can(me, orgId, 'money.read') ||
-      can(me, orgId, 'statements.read_own') ||
-      me.occupancies.some((o) => o.organization_id === orgId && o.may_see_money),
+    visible: ({ me, orgId }) => moneyAccess(me, orgId).any,
   },
   {
     id: 'tickets',

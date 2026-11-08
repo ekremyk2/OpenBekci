@@ -4,7 +4,7 @@ import { Gate } from '@/features/money/ui'
 
 export const Route = createFileRoute('/orgs/$orgId/money/payments/new')({
   component: () => (
-    <Gate permission="money.read">
+    <Gate anyOf={['payments.record', 'money.read']}>
       <NewPaymentPage />
     </Gate>
   ),

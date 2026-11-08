@@ -15,11 +15,16 @@ import {
 import { moneyApi, unwrap, useMoneyCtx, useMoneyQuery, type MoneyCtx } from './api'
 import { Gate, PageHeader, QueryBoundary, SideBadge, Stat } from './ui'
 import { PortalHome } from './PortalPages'
+import { NewPaymentPage } from './PaymentsPages'
+import { moneyAccess } from '@/lib/money-access'
 
 export function OverviewPage() {
-  const { can } = useSession()
-  if (!can('money.read')) return <PortalHome />
-  return <ManagerOverview />
+  const { can, me, org } = useSession()
+  if (can('money.read')) return <ManagerOverview />
+  const access = moneyAccess(me, org?.id)
+  // a cash collector without a resident side lands straight on the one thing they can do
+  if (access.collector && !access.resident) return <NewPaymentPage />
+  return <PortalHome />
 }
 
 function ManagerOverview() {
