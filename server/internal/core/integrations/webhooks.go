@@ -112,8 +112,18 @@ func secretAAD(orgID, endpointID uuid.UUID) []byte {
 	return []byte(orgID.String() + "/" + endpointID.String())
 }
 
+// requireWebhooks checks the permission. Changing endpoints (webhooks.manage)
+// is closed to API keys even if a key row somehow lists the scope: an endpoint
+// is an outbound channel and a signing secret, which only a signed-in
+// administrator may set up.
 func (s *Service) requireWebhooks(ctx context.Context, perm authz.Permission, orgID uuid.UUID) error {
-	return authz.Require(ctx, perm, authz.Scope{OrgID: orgID})
+	if err := authz.Require(ctx, perm, authz.Scope{OrgID: orgID}); err != nil {
+		return err
+	}
+	if p := authz.PrincipalFromContext(ctx); perm == PermWebhooksManage && p != nil && p.APIKey != nil {
+		return problem.Forbidden("an API key cannot manage webhook endpoints")
+	}
+	return nil
 }
 
 func (s *Service) validateURL(ctx context.Context, raw string) (string, error) {

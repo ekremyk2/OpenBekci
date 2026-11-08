@@ -146,8 +146,9 @@ func (s *Service) requireKeyAdmin(ctx context.Context, orgID uuid.UUID) (*authz.
 }
 
 // validateScopes checks that every scope is a registered organization-scope
-// permission that the creator holds through a role, and not an apikeys.*
-// permission (a key never manages keys).
+// permission that the creator holds through a role, and neither an apikeys.*
+// permission nor webhooks.manage (a key never manages keys or webhook
+// endpoints; webhooks.read may be given).
 func (s *Service) validateScopes(ctx context.Context, orgID uuid.UUID, scopes []string) ([]string, error) {
 	if len(scopes) == 0 || len(scopes) > 200 {
 		return nil, problem.Validation(problem.Field{Field: "scopes", Code: "invalid_value"})
@@ -169,7 +170,7 @@ func (s *Service) validateScopes(ctx context.Context, orgID uuid.UUID, scopes []
 			return nil, f("duplicate")
 		case !ok:
 			return nil, f("unknown_permission")
-		case strings.HasPrefix(name, "apikeys."):
+		case strings.HasPrefix(name, "apikeys."), perm == PermWebhooksManage:
 			return nil, f("not_allowed")
 		case !slices.Contains(def.Scopes, authz.ScopeOrg):
 			return nil, f("not_allowed")

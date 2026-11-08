@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -61,6 +62,7 @@ func TestIntegrationAPIKeyLifecycle(t *testing.T) {
 		`["documents.upload_own"]`:    "not_",
 		`["platform.manage"]`:         "not_allowed",
 		`["apikeys.manage"]`:          "not_allowed",
+		`["webhooks.manage"]`:         "not_allowed", // a key never manages webhook endpoints
 		`["audit.read","audit.read"]`: "duplicate",
 	} {
 		r := p.must(p.call("POST", p.keysURL(""), `{"name":"x","scopes":`+scopes+`}`, p.adm), 422)
@@ -71,7 +73,7 @@ func TestIntegrationAPIKeyLifecycle(t *testing.T) {
 	p.must(p.call("POST", p.keysURL(""), `{"name":"x","scopes":[]}`, p.adm), 422)
 	p.must(p.call("POST", p.keysURL(""), `{"name":"x","scopes":["audit.read"],"expires_at":"2020-01-01T00:00:00Z"}`, p.adm), 422)
 
-	key, secret := p.newKey("reporting", `["audit.read","webhooks.manage"]`, "")
+	key, secret := p.newKey("reporting", `["audit.read","org.manage"]`, "")
 	keyID, prefix := str(key, "id"), str(key, "prefix")
 	if str(key, "status") != "active" || key["last_used_at"] != nil || len(prefix) != 8 {
 		t.Errorf("key = %+v", key)
@@ -86,8 +88,10 @@ func TestIntegrationAPIKeyLifecycle(t *testing.T) {
 	// the key authenticates, with exactly its scopes
 	p.must(p.call("GET", auditURL, "", secret), 200)
 	hook := `{"url":"https://93.184.216.34/h","events":["ticket.created"]}`
-	p.must(p.call("POST", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", hook, secret), 201)
-	p.problemCode(p.call("GET", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", "", secret), 403, "insufficient_permission") // webhooks.read was not granted
+	p.problemCode(p.call("POST", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", hook, secret), 403, "insufficient_permission") // webhooks.manage cannot be a scope
+	p.problemCode(p.call("GET", "/v1/orgs/"+p.org.ID.String()+"/webhook-endpoints", "", secret), 403, "insufficient_permission")  // webhooks.read was not granted
+	orgURL := "/v1/orgs/" + p.org.ID.String()
+	p.must(p.call("PATCH", orgURL, `{"name":"Renamed by a key"}`, secret, "If-Match", `"`+strconv.Itoa(p.w.OrgVersion(t, p.org))+`"`), 200)
 	p.problemCode(p.call("GET", "/v1/me", "", secret), 403, "insufficient_permission")                                           // no account permissions
 	p.problemCode(p.call("GET", "/v1/orgs/"+p.w.OrgB.ID.String()+"/audit", "", secret), 404, "not_found")                        // another organization
 	p.problemCode(p.call("POST", p.keysURL(""), `{"name":"y","scopes":["audit.read"]}`, secret), 403, "insufficient_permission") // a key cannot manage keys
@@ -106,9 +110,9 @@ func TestIntegrationAPIKeyLifecycle(t *testing.T) {
 
 	// the audit trail names the key as the actor, never the person who made it
 	var rows []map[string]any
-	rows = items(p.must(p.call("GET", auditURL+"?action=webhook.create", "", p.adm), 200))
+	rows = items(p.must(p.call("GET", auditURL+"?action=org.update", "", p.adm), 200))
 	if len(rows) != 1 || str(rows[0], "actor_kind") != "api_key" || str(rows[0], "actor_key_id") != keyID || rows[0]["actor_user_id"] != nil {
-		t.Errorf("webhook.create audit = %+v", rows)
+		t.Errorf("org.update audit = %+v", rows)
 	}
 	rows = items(p.must(p.call("GET", auditURL+"?action=apikey.create", "", p.adm), 200))
 	if len(rows) != 1 || str(rows[0], "actor_kind") != "user" || str(rows[0], "actor_user_id") == "" {
