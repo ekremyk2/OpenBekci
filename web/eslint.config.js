@@ -15,6 +15,7 @@ export default tseslint.config(
       'src/routeTree.gen.ts',
       'src/api/clients-ts-generated',
       'public',
+      'src/mocks/sw',
     ],
   },
   js.configs.recommended,
