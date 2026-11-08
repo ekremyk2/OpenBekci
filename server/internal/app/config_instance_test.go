@@ -45,3 +45,42 @@ func TestLoadConfigMaxBodyBytes(t *testing.T) {
 		}
 	}
 }
+
+func TestLoadConfigFilesAndStorage(t *testing.T) {
+	c, err := LoadConfig("", env(baseEnv()))
+	if err != nil || c.MaxUploadBytes != 0 || c.StorageDriver != "" || c.ClamAVAddr != "" || len(c.FilesAllowedExtensions) != 0 {
+		t.Fatalf("defaults: %v %+v", err, c)
+	}
+	e := baseEnv()
+	e["OPENBEKCI_MAX_UPLOAD_BYTES"] = "1048576"
+	e["OPENBEKCI_FILES_ALLOWED_EXTENSIONS"] = "jpg, PDF"
+	e["OPENBEKCI_STORAGE_DRIVER"] = "S3"
+	e["OPENBEKCI_STORAGE_S3_BUCKET"] = "bekci"
+	e["OPENBEKCI_STORAGE_S3_ENDPOINT"] = "http://minio:9000"
+	e["OPENBEKCI_STORAGE_S3_ACCESS_KEY"] = "key"
+	e["OPENBEKCI_STORAGE_S3_SECRET_KEY"] = "secret"
+	e["OPENBEKCI_STORAGE_S3_PATH_STYLE"] = "true"
+	e["OPENBEKCI_CLAMAV_ADDR"] = "clamav:3310"
+	c, err = LoadConfig("", env(e))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.MaxUploadBytes != 1<<20 || c.StorageDriver != "s3" || c.StorageS3Bucket != "bekci" || !c.StorageS3PathStyle ||
+		c.StorageS3SecretKey != "secret" || c.ClamAVAddr != "clamav:3310" || len(c.FilesAllowedExtensions) != 2 {
+		t.Errorf("settings wrong: %+v", c)
+	}
+	for k, v := range map[string]string{
+		"OPENBEKCI_MAX_UPLOAD_BYTES": "0", "OPENBEKCI_STORAGE_DRIVER": "ftp", "OPENBEKCI_STORAGE_S3_PATH_STYLE": "maybe",
+	} {
+		bad := baseEnv()
+		bad[k] = v
+		if _, err := LoadConfig("", env(bad)); err == nil {
+			t.Errorf("%s=%s accepted", k, v)
+		}
+	}
+	noBucket := baseEnv()
+	noBucket["OPENBEKCI_STORAGE_DRIVER"] = "s3"
+	if _, err := LoadConfig("", env(noBucket)); err == nil {
+		t.Error("the s3 driver without a bucket was accepted")
+	}
+}

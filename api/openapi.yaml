@@ -25,6 +25,8 @@ tags:
     description: Persons, occupancies, memberships, invitations, join codes and claims, move-out, directory, vendors.
   - name: codes
     description: Labels for open enums and site-defined statuses.
+  - name: operations
+    description: Everyday operation of the building; for now the files (uploaded and generated, streamed through the server).
   - name: platform
     description: Instance operation (platform administrators).
   - name: money
@@ -548,6 +550,292 @@ paths:
         '404':
           $ref: '#/components/responses/Problem'
         '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/files:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: operations.uploadFile
+      summary: Upload a file
+      description: |
+        **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+        sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+        the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+        `multipart_order`, and so is a field this operation does not know.
+
+        Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+        `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+        the caller to add files there; without it the file is a draft that expires after 7 days and that
+        only its uploader can see, read and discard.
+
+        The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+        plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+        Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+        metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+        `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+
+        Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+        is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+        decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+        `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+        has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+        then 429 `rate_limited`.
+
+        `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+        the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+        encoding) replays the first response, and a different file under the same key is 422
+        `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.upload
+      x-idempotent: optional
+      x-openbekci-stream: true
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUpload'
+      responses:
+        '201':
+          description: The stored file.
+          headers:
+            Location:
+              description: The file's metadata URL.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '400':
+          $ref: '#/components/responses/Problem'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '413':
+          $ref: '#/components/responses/Problem'
+        '415':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '429':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      operationId: operations.listFiles
+      summary: List files
+      description: |
+        **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+        access to it (the module that owns the resource decides; administrators with `files.manage` always have
+        it). Without a scope, an administrator sees every file of the organization and anyone else the files
+        they uploaded. Needs `files.read`.
+
+        Not in the first draft of the contract: added with the module, because the web app needs the files of a
+        resource and an administrator needs to see what is stored.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: scope
+          in: query
+          description: Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: One page of files.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/files/{file_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/FileId'
+    get:
+      operationId: operations.downloadFile
+      summary: Download a file
+      description: |
+        **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+        everything else is sent with `Content-Disposition: attachment`. All responses carry
+        `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+        `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+        answer is a 302 to a short-lived presigned URL instead of the bytes.
+
+        Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+        a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+        resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+        a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+        storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+        or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+        quarantined file has no downloadable content (404).
+      tags:
+        - operations
+      security:
+        - {}
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-openbekci-stream: true
+      x-stability: stable
+      parameters:
+        - name: variant
+          in: query
+          description: Image variant, `thumb` or `medium`. Absent for the original.
+          schema:
+            type: string
+            enum:
+              - thumb
+              - medium
+        - name: exp
+          in: query
+          description: Expiry of a signed URL, Unix seconds. Sent with `sig`.
+          schema:
+            type: integer
+            format: int64
+        - name: sig
+          in: query
+          description: Signature of a signed URL. Sent with `exp`.
+          schema:
+            type: string
+            maxLength: 128
+      responses:
+        '200':
+          description: The file's bytes, with the stored type as `Content-Type`.
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+            Content-Security-Policy:
+              schema:
+                type: string
+            Cache-Control:
+              schema:
+                type: string
+            X-Content-Type-Options:
+              schema:
+                type: string
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '302':
+          description: Short-lived signed URL (S3 driver).
+          headers:
+            Location:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: operations.deleteFile
+      summary: Delete an unattached file
+      description: |
+        **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+        and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+        file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+        who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+        `maintenance.prune_files` job. Recorded in the audit trail.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.upload
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: Deleted.
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/files/{file_id}/meta:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - $ref: '#/components/parameters/FileId'
+    get:
+      operationId: operations.getFileMeta
+      summary: Get file metadata
+      description: |
+        **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+        anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+        `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
+      tags:
+        - operations
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        - files.read
+      x-stability: stable
+      responses:
+        '200':
+          description: The file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -7706,6 +7994,14 @@ components:
       schema:
         type: string
         format: uuid
+    FileId:
+      name: file_id
+      in: path
+      required: true
+      description: The file id.
+      schema:
+        type: string
+        format: uuid
     Format:
       name: format
       in: query
@@ -7787,6 +8083,7 @@ components:
             - method_not_allowed
             - unsupported_media_type
             - timeout
+            - scan_unavailable
         detail:
           type: string
           description: Human-readable explanation, not for machine parsing.
@@ -8477,6 +8774,9 @@ components:
         - collections.manage
         - directory.read
         - exports.create
+        - files.manage
+        - files.read
+        - files.upload
         - invitations.household
         - invitations.manage
         - jobs.read
@@ -13970,6 +14270,177 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Running balance.
+    FileVariant:
+      type: object
+      description: A rendition of an image, generated on upload.
+      required:
+        - width
+        - height
+        - size
+        - mime
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+        size:
+          type: integer
+          format: int64
+          description: Bytes.
+        mime:
+          type: string
+    FileLinks:
+      type: object
+      description: |
+        Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+        Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+        fetch the file's metadata again for fresh ones.
+      required:
+        - original
+        - variants
+        - expires_at
+      properties:
+        original:
+          type: string
+          nullable: true
+          description: URL of the original; null while the file is not ready.
+        variants:
+          type: object
+          description: URLs of the image variants (`thumb`, `medium`) by name; empty for other files.
+          additionalProperties:
+            type: string
+        expires_at:
+          type: string
+          format: date-time
+    File:
+      type: object
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - size
+        - mime
+        - sha256
+        - status
+        - source
+        - uploaded_by
+        - scope
+        - has_variants
+        - retention_until
+        - variants
+        - links
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          description: The file name. A re-encoded image gets the extension of its stored type.
+        size:
+          type: integer
+          format: int64
+          description: Bytes of the stored original (for images, after metadata stripping and downscaling).
+        mime:
+          type: string
+          description: The stored type, from sniffing the content.
+        sha256:
+          type: string
+          description: Hex SHA-256 of the stored original.
+        status:
+          type: string
+          x-open-enum: true
+          description: |
+            Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+            administrators see it). `pending` and `deleted` files are never returned.
+          enum:
+            - ready
+            - quarantined
+        source:
+          type: string
+          x-open-enum: true
+          description: 'Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).'
+          enum:
+            - uploaded
+            - generated
+        uploaded_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+        scope:
+          type: string
+          nullable: true
+          description: The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft.
+        has_variants:
+          type: boolean
+          description: 'Images: `thumb` and `medium` exist.'
+        retention_until:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+        variants:
+          type: object
+          description: Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side).
+          additionalProperties:
+            $ref: '#/components/schemas/FileVariant'
+        links:
+          $ref: '#/components/schemas/FileLinks'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    FileList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+    FileUpload:
+      type: object
+      description: |
+        The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+        it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+        `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
+        (the body is not buffered); the server checks the fields itself.
+      required:
+        - file
+      properties:
+        scope:
+          type: string
+          description: |
+            Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+            (`ticket`) and the id a UUID. Without it the file is a draft.
+        site_id:
+          type: string
+          format: uuid
+          description: The site the file belongs to; limits who can read it to site-scoped grants.
+        name:
+          type: string
+          description: File name when the `file` part carries none.
+        file:
+          type: string
+          format: binary
     ReauthEmailCode:
       type: object
       required:
@@ -13991,6 +14462,9 @@ x-openbekci-roles:
     - collections.manage
     - directory.read
     - exports.create
+    - files.manage
+    - files.read
+    - files.upload
     - invitations.household
     - invitations.manage
     - jobs.read
@@ -14040,6 +14514,9 @@ x-openbekci-roles:
     - collections.manage
     - directory.read
     - exports.create
+    - files.manage
+    - files.read
+    - files.upload
     - invitations.household
     - invitations.manage
     - jobs.read
@@ -14084,6 +14561,8 @@ x-openbekci-roles:
     - collections.manage
     - directory.read
     - exports.create
+    - files.read
+    - files.upload
     - invitations.manage
     - jobs.read
     - me.manage
@@ -14120,6 +14599,8 @@ x-openbekci-roles:
     - codes.read
     - directory.read
     - exports.create
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read
@@ -14143,6 +14624,8 @@ x-openbekci-roles:
   accountant:
     - codes.read
     - exports.create
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read
@@ -14165,6 +14648,8 @@ x-openbekci-roles:
     - vendors.read
   staff:
     - codes.read
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read
@@ -14176,6 +14661,8 @@ x-openbekci-roles:
     - vendors.read
   guard:
     - codes.read
+    - files.read
+    - files.upload
     - jobs.read
     - me.manage
     - me.read

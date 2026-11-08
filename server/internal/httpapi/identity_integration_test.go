@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
@@ -11,10 +12,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
@@ -29,9 +32,13 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/mail"
 	"github.com/openbekci/openbekci/server/internal/platform/sms"
+	"github.com/openbekci/openbekci/server/internal/platform/storage"
 )
 
 const testBase = "https://bekci.example.org"
+
+// testScope is a files scope type any member may read and attach to.
+const testScope = "test.members"
 
 type idEnv struct {
 	t      *testing.T
@@ -44,6 +51,8 @@ type idEnv struct {
 	people *people.Service
 	tenSvc *tenancy.Service
 	cookie *http.Cookie
+	files  *files.Service
+	deps   Deps
 }
 
 func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
@@ -71,15 +80,21 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 		t.Fatal(perr)
 	}
 	e.tenSvc = tenancy.NewService(d)
+	signer := storage.NewSigner(cfg.SecretKey)
+	e.files = files.NewService(d, storage.NewLocal(t.TempDir(), signer), files.Config{Signer: signer, Log: cfg.Log})
+	// a scope type any member may read and attach to, for the files tests
+	allowAll := func(context.Context, pgx.Tx, files.ScopeRef) (bool, error) { return true, nil }
+	e.files.RegisterResolver(testScope, files.ResolverFuncs{Read: allowAll, Attach: allowAll}, files.WithMaxFiles(3))
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
-	e.h = NewRouter(Deps{
+	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Money: MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: billing.NewService(d, e.tenSvc, nil), Payments: payments.NewService(d, nil, nil), Reports: reports.NewService(d, nil)}, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, People: e.people, Money: MoneyDeps{Ledger: ledger.NewService(d, nil), Billing: billing.NewService(d, e.tenSvc, nil), Payments: payments.NewService(d, nil, nil), Reports: reports.NewService(d, nil)}, Audit: audit.NewService(d), Files: e.files,
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
-	}, Options{})
+	}
+	e.h = NewRouter(e.deps, Options{})
 	return e
 }
 

@@ -62,8 +62,8 @@ Backend plan section 8 and overview section 6.2 are authoritative; this is the w
   `code` is a stable open enum (clients translate by it): `validation_failed` (422), `bad_request` (400, malformed
   request), `unauthenticated` (401), `not_found`, `conflict`, `version_conflict`, `idempotency_mismatch` (422),
   `locked_period`, `insufficient_permission` (403), `reauth_required`, `mfa_required` (reserved), `invalid_grant`,
-  `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403, cookie-session mutations without the right `Origin` and `X-Requested-With`), `sms_unavailable` and `mail_unavailable` (503), `method_not_allowed` (405, with `Allow`), `unsupported_media_type` (415), `timeout` (504), `payload_too_large` (413; JSON request
-  bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, before validation). `invalid_grant` is a 401, and 401 responses carry
+  `rate_limited` (429, with `Retry-After`), `pack_error`, `site_offboarded`, `internal_error` (500), `csrf_failed` (403, cookie-session mutations without the right `Origin` and `X-Requested-With`), `sms_unavailable` and `mail_unavailable` (503), `method_not_allowed` (405, with `Allow`), `unsupported_media_type` (415), `timeout` (504), `scan_unavailable` (503, the virus scanner could not be reached, so an upload was refused), `payload_too_large` (413; JSON request
+  bodies are capped at 1 MiB, `OPENBEKCI_MAX_BODY_BYTES`, and file uploads at `OPENBEKCI_MAX_UPLOAD_BYTES`, 25 MiB by default, before validation). `invalid_grant` is a 401, and 401 responses carry
   `WWW-Authenticate`. `instance` (also `request_id`) is the request id,
   also sent as `X-Request-Id`. `errors[]` carries per-field problems; `field` is a dotted path or the query/header
   parameter name, `code` one of `required`, `invalid`, `invalid_type`, `invalid_format`, `invalid_value`,
@@ -89,6 +89,7 @@ Defined once here; read at runtime from the embedded spec (`gen.GetSwagger()`), 
 | `x-ui` | schema or property | uiSchema hints | schema-driven settings forms |
 | `x-secret` | property | `true` | write-only setting field, never returned |
 | `x-stability` | operation | `stable` (default) or `preview` | `preview` adds `X-OpenBekci-Stability: preview` to responses; clients may depend only on `stable` |
+| `x-openbekci-stream` | operation | `true` | the operation streams its request body (multipart upload) or a binary response (download): the request body is not buffered for validation, an `x-idempotent` request hash covers method, path and query only and the handler records a digest of what it streamed, which a retry must match, and a non-JSON response is not decoded by the response validator. Today: `operations.uploadFile` and `operations.downloadFile` |
 | `x-open-enum` | schema | `true` | marks an open enum (see above) |
 | `x-known-values` | schema | list | documents the known values of an open string without an `enum` |
 | `x-requires-setting` | operation | a site setting name | the operation exists only while that site setting is on (for example `bills_enabled`); otherwise 404 `not_found` |

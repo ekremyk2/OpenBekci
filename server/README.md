@@ -239,6 +239,72 @@ balances, income and expense), `moneyhooks` (the move-out hook `people.MoneyHook
   policy and debtor report and unit statement operations are served; the rest of the draft `money` module (expenses, collections, bank imports, transfers,
   refunds, budgets, other reports, ...) is not implemented yet. A site hand-over does not carry money data yet (`tenancy/export_money.go`).
 
+## Files and storage
+
+Files are the `file` table (metadata, scope, status, retention, image variants) plus blobs in a `storage.Blob`
+(`internal/platform/storage`): the local driver under `DATA_DIR/files/<org>/<yy>/<mm>/<id>` (atomic writes) or S3
+(`OPENBEKCI_STORAGE_DRIVER=s3`, `OPENBEKCI_STORAGE_S3_*`, any S3-compatible store). Uploads always stream through the
+server: `POST /v1/orgs/{org_id}/files` (multipart; form fields first, then `file`). Settings:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `OPENBEKCI_MAX_UPLOAD_BYTES` | 25 MiB | one file; the multipart route alone bypasses the 1 MiB JSON cap (`MAX_BODY_BYTES`), its request cap is this plus 1 MiB of framing, and uploads get a 10 minute timeout |
+| `OPENBEKCI_FILES_ALLOWED_EXTENSIONS` | jpg jpeg png webp pdf txt csv docx xlsx pptx odt ods doc xls | narrows the built-in allowlist |
+| `OPENBEKCI_STORAGE_DRIVER` | `local` | `local` or `s3` |
+| `OPENBEKCI_CLAMAV_ADDR` | unset | clamd `host:port` or `unix:/path`; unset skips scanning, unreachable refuses uploads with 503 `scan_unavailable` |
+| `OPENBEKCI_CLAMAV_TIMEOUT` | 60s | longest one scan may take (connecting is limited to 5 s); slower is 503 `scan_unavailable` |
+| `OPENBEKCI_MAX_IMAGE_PIXELS` | 25000000 | images with more pixels are 422, decided from the header alone (a decoded image costs 4 bytes per pixel) |
+| `OPENBEKCI_IMAGE_WORKERS` | max(1, CPUs/2) | images decoded and re-encoded at once, process wide; the others wait |
+
+Each user may upload 30 files a minute (in-memory token bucket per instance), then 429 `rate_limited`.
+
+What an upload goes through: the extension must be allowed and the first bytes must really be that type
+(`http.DetectContentType`; a renamed executable is 415), over-limit files are 413 (no partial blob is kept), the body is
+spooled to a temporary file and scanned from there when ClamAV is configured (nothing reaches storage before the scan; a
+flagged file is `quarantined`, cannot be attached and expires after the draft lifetime), images are decoded from the
+spooled file (header first: more than `OPENBEKCI_MAX_IMAGE_PIXELS` is 422) and re-encoded (EXIF including GPS, XMP, ICC
+and comments are dropped, the EXIF rotation of JPEG, PNG and WebP is applied to the pixels, the stored original is capped at
+4096 px, `thumb` 256 px and `medium` 1600 px variants are made, one at a time), everything else is stored as is, and the
+SHA-256 of what is stored is recorded. A file without a scope is a draft that expires after 7 days and that only its
+uploader (and `files.manage`) sees; once it is attached, visibility is the scope's resolver, for the uploader too. The form
+fields (`scope` as `<type>:<id>`, `site_id`, `name`) come before `file`; a field after it is 422 `multipart_order` and the
+file is discarded again. File names lose directories, control characters and bidi overrides. `Idempotency-Key` on an upload
+compares content (the SHA-256 of the form), not length: a retry of the same file replays, another file is 422
+`idempotency_mismatch`.
+
+Contract (the draft's operations, one set of ids): `operations.uploadFile` `POST /files`, `operations.listFiles`
+`GET /files`, `operations.getFileMeta` `GET /files/{id}/meta`, `operations.downloadFile` `GET /files/{id}` (the bytes, or a
+302 to a presigned URL with S3; `?variant=thumb|medium`; `exp` and `sig` of a `links` URL stand in for a session and a
+session sent along is ignored), `operations.deleteFile` `DELETE /files/{id}` (the uploader discards a draft with
+`files.upload`; an attached file only `files.manage` removes, the uploader gets 409). Downloads are authorized per file,
+images are `inline`, everything else `Content-Disposition: attachment`, always `X-Content-Type-Options: nosniff`,
+`Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`. `uploaded_by` is shown to the uploader and to
+`files.manage` only. File metadata carries short-lived `links`: signed paths on this server for the local driver (usable
+without a session), presigned GETs for S3. A `.csv` is served as an attachment with its bytes as uploaded: guarding
+against spreadsheet formula injection (cells starting with `=`, `+`, `-`, `@`) is the job of whatever imports or
+displays it. Deleting is soft; the hourly `maintenance.prune_files` job also expires drafts and files past `retention_until`,
+removes blobs and gives the storage back to `org_storage_usage` (a deleted file another table still references keeps its
+row), in batches of 200 up to 5000 files per run, skipping rows another transaction holds (`Attach` locks the row). At
+start-up, `.tmp-*` leftovers of the local driver and spooled uploads older than an hour are removed.
+
+For other modules (Go):
+
+```go
+// wiring: tell the file module who may read and attach to your resource (ticket photos: at most 10)
+filesSvc.RegisterResolver("ticket", ticketFiles{}, files.WithMaxFiles(10)) // ticketFiles implements files.VisibilityResolver
+
+// in your own tenant transaction, attach what the client uploaded first (atomic with the ticket insert)
+f, err := filesSvc.Attach(ctx, tx, orgID, fileID, files.ScopeRef{Type: "ticket", ID: ticketID})
+
+// generated documents (statements, receipts, minutes): server side, source "generated", no permission check
+f, err := filesSvc.UploadGenerated(ctx, files.UploadParams{OrgID: orgID, Name: "statement.pdf", Content: r,
+    Scope: &files.ScopeRef{Type: "document", ID: documentID}})
+```
+
+`files.upload` and `files.read` are held by every role (they only open the endpoints); `files.manage` (org_admin,
+site_manager) reads and deletes any file and shows `Usage`. A table that references files should use a composite
+foreign key `(org_id, file_id) REFERENCES file (org_id, id)`.
+
 ## Tests
 
 ```powershell
@@ -259,11 +325,11 @@ cmd/openbekci/     cobra commands
 internal/app/      config, startup checks, wiring, lifecycle
 internal/httpapi/  router, middleware, /healthz, /readyz, MountAPI, spec-driven pipeline, gen/ (generated)
 internal/problem/  RFC 9457 problem+json errors
-internal/core/     business modules (instance, authz, identity, tenancy, audit, platformadmin, ...)
+internal/core/     business modules (instance, authz, identity, tenancy, audit, files, platformadmin, ...)
 internal/permissions/ the permission registry built from every module (also run by cmd/genpermissions)
 internal/authztest/  seeded world for authorization tests
 internal/platform/ db (pools, tenant tx, migrations), jobs (River), id (UUIDv7), idempotency,
-                   crypto (argon2id, opaque tokens), sms (gateway, netgsm), mail (smtp), ratelimit,
+                   crypto (argon2id, opaque tokens), sms (gateway, netgsm), mail (smtp), ratelimit, storage (local, s3),
                    pii (personal data registry for audit diffs)
 internal/webassets web app embed; -tags nowebassets serves a placeholder
 db/migrations/     goose SQL        db/queries/  sqlc inputs

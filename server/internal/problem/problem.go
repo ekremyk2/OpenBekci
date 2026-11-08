@@ -52,6 +52,7 @@ const (
 	CodeMethodNotAllowed       Code = "method_not_allowed"
 	CodeUnsupportedMediaType   Code = "unsupported_media_type"
 	CodeTimeout                Code = "timeout"
+	CodeScanUnavailable        Code = "scan_unavailable"
 )
 
 // Field is one entry of the errors[] array.

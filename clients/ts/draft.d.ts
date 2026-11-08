@@ -6285,15 +6285,47 @@ export interface paths {
             };
             cookie?: never;
         };
-        get?: never;
+        /**
+         * List files
+         * @description **Release 0.1.** Newest first. With `scope`, the files attached to that resource; the caller needs read
+         *     access to it (the module that owns the resource decides; administrators with `files.manage` always have
+         *     it). Without a scope, an administrator sees every file of the organization and anyone else the files
+         *     they uploaded. Needs `files.read`.
+         *
+         *     Not in the first draft of the contract: added with the module, because the web app needs the files of a
+         *     resource and an administrator needs to see what is stored.
+         */
+        get: operations["operations.listFiles"];
         put?: never;
         /**
          * Upload a file
-         * @description **Release 0.1.** Streams through the server: type sniffed, EXIF location stripped, `thumb` and `medium` generated for images.
+         * @description **Release 0.1.** `multipart/form-data`, streamed through the server (no direct-to-storage uploads): type
+         *     sniffed, EXIF location stripped, `thumb` and `medium` generated for images. The form fields come **before**
+         *     the `file` part (see `FileUpload`); a field after it is 422 `validation_failed` with the field code
+         *     `multipart_order`, and so is a field this operation does not know.
          *
-         *     Permission: `files.upload`.
+         *     Needs `files.upload` (at the site, when `site_id` is given). With `scope` (`<type>:<id>`, for example
+         *     `ticket:2f9c...`) the file is attached to that resource at once and the module that owns it must allow
+         *     the caller to add files there; without it the file is a draft that expires after 7 days and that
+         *     only its uploader can see, read and discard.
          *
-         *     Problems: `payload_too_large` (413), `validation_failed` (422), `conflict` (409).
+         *     The content is sniffed: the extension must be on the instance's allowlist (photos, PDF, office documents,
+         *     plain text by default) and the bytes must really be that type, whatever the client's `Content-Type`.
+         *     Images are decoded and re-encoded, which strips EXIF (including the GPS location) and every other piece of
+         *     metadata, rotated upright first (JPEG, PNG and WebP), downscaled to at most 4096 px, and given `thumb` and
+         *     `medium` variants. A file the virus scanner flags is stored as `quarantined`.
+         *
+         *     Problems: a file over `OPENBEKCI_MAX_UPLOAD_BYTES` (25 MiB by default) is 413 `payload_too_large`; a type that
+         *     is not allowed or does not match its extension is 415 `unsupported_media_type`; an image that cannot be
+         *     decoded or has more than `OPENBEKCI_MAX_IMAGE_PIXELS` pixels (25 million by default) is 422
+         *     `validation_failed`; a scanner that cannot be reached is 503 `scan_unavailable`; a resource that already
+         *     has its maximum number of files (ticket photos: 10) is 409 `conflict`; a user may upload 30 files a minute,
+         *     then 429 `rate_limited`.
+         *
+         *     `Idempotency-Key` is honoured and compares content: the first upload under a key is stored, a retry with
+         *     the same form (same fields, same file bytes and name, whatever the multipart boundary or transfer
+         *     encoding) replays the first response, and a different file under the same key is 422
+         *     `idempotency_mismatch`, also when it has the same length. Nothing is stored for a replay or a mismatch.
          */
         post: operations["operations.uploadFile"];
         delete?: never;
@@ -6309,16 +6341,16 @@ export interface paths {
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         /**
          * Get file metadata
-         * @description **Release 0.1.** Get file metadata.
-         *
-         *     Permission: `files.read`.
+         * @description **Release 0.1.** Needs `files.read` and the file visible to the caller (see `operations.downloadFile`);
+         *     anything else is 404, so file ids do not leak. `links` carries fresh short-lived download URLs.
+         *     `uploaded_by` is the uploader's user id for the uploader and for `files.manage`, and null for everyone else.
          */
         get: operations["operations.getFileMeta"];
         put?: never;
@@ -6336,27 +6368,37 @@ export interface paths {
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         /**
          * Download a file
-         * @description **Release 0.1.** Visibility is decided by the resource the file is attached to. `variant` applies to images.
+         * @description **Release 0.1.** Streams the file. Images (`image/jpeg`, `image/png`, `image/webp`) are sent `inline`;
+         *     everything else is sent with `Content-Disposition: attachment`. All responses carry
+         *     `X-Content-Type-Options: nosniff`, `Content-Security-Policy: sandbox` and `Cache-Control: private, no-store`.
+         *     `variant=thumb|medium` selects an image variant (404 for a file that has none). With the S3 driver the
+         *     answer is a 302 to a short-lived presigned URL instead of the bytes.
          *
-         *     Permission: `files.read`.
+         *     Two ways in. With a session: needs `files.read` and the file visible to the caller: a draft (not attached to
+         *     a resource) to its uploader and to `files.manage`; an attached file to whoever the owning module's
+         *     resolver lets read it, and to `files.manage`; anything else is 404, so file ids do not leak. Or without
+         *     a session, with the `exp` and `sig` query parameters of a `links` URL from the file's metadata (local
+         *     storage; with S3 the links point at the bucket); the signature is checked first, a session cookie
+         *     or token that comes with it is ignored. A missing or invalid signature and an expired one are 401. A
+         *     quarantined file has no downloadable content (404).
          */
         get: operations["operations.downloadFile"];
         put?: never;
         post?: never;
         /**
          * Delete an unattached file
-         * @description **Release 0.1.** Delete an unattached file.
-         *
-         *     Permission: `files.upload`.
-         *
-         *     Problems: `conflict` (409).
+         * @description **Release 0.1.** Discards a file that is not attached to a resource: its uploader may (needs `files.upload`),
+         *     and so may a holder of `files.manage`, who may also delete an attached file. The uploader of an attached
+         *     file gets 409 `conflict`: it belongs to the resource now and its owning module detaches it. Anyone else
+         *     who cannot see the file gets 404. The file disappears at once; its blobs are removed by the hourly
+         *     `maintenance.prune_files` job. Recorded in the audit trail.
          */
         delete: operations["operations.deleteFile"];
         options?: never;
@@ -9528,7 +9570,7 @@ export interface components {
              * @description Stable machine-readable error code. Open enum.
              * @enum {string}
              */
-            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout";
+            code: "validation_failed" | "bad_request" | "unauthenticated" | "not_found" | "conflict" | "version_conflict" | "idempotency_mismatch" | "locked_period" | "insufficient_permission" | "reauth_required" | "mfa_required" | "invalid_grant" | "rate_limited" | "pack_error" | "site_offboarded" | "internal_error" | "csrf_failed" | "sms_unavailable" | "mail_unavailable" | "payload_too_large" | "method_not_allowed" | "unsupported_media_type" | "timeout" | "scan_unavailable";
             /** @description Human-readable explanation, not for machine parsing. */
             detail?: string;
             /** @description The request id (also in the `X-Request-Id` response header), for support and logs. */
@@ -20487,7 +20529,113 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "collections.manage" | "directory.read" | "exports.create" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        Permission: "audit.read" | "audit.report" | "claims.decide" | "codes.read" | "collections.manage" | "directory.read" | "exports.create" | "files.manage" | "files.read" | "files.upload" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.manage" | "me.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read";
+        /** @description A rendition of an image, generated on upload. */
+        FileVariant: {
+            width: number;
+            height: number;
+            /**
+             * Format: int64
+             * @description Bytes.
+             */
+            size: number;
+            mime: string;
+        };
+        /**
+         * @description Short-lived URLs that download the file without a session, for `<img src>` and the mobile image loader.
+         *     Local storage signs a path on this server; S3 presigns a GET on the bucket. They expire at `expires_at`:
+         *     fetch the file's metadata again for fresh ones.
+         */
+        FileLinks: {
+            /** @description URL of the original; null while the file is not ready. */
+            original: string | null;
+            /** @description URLs of the image variants (`thumb`, `medium`) by name; empty for other files. */
+            variants: {
+                [key: string]: string;
+            };
+            /** Format: date-time */
+            expires_at: string;
+        };
+        "File-2": {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string | null;
+            /** @description The file name. A re-encoded image gets the extension of its stored type. */
+            name: string;
+            /**
+             * Format: int64
+             * @description Bytes of the stored original (for images, after metadata stripping and downscaling).
+             */
+            size: number;
+            /** @description The stored type, from sniffing the content. */
+            mime: string;
+            /** @description Hex SHA-256 of the stored original. */
+            sha256: string;
+            /**
+             * @description Open enum: `ready`, `quarantined` (the virus scan flagged it: it has no downloadable content and only
+             *     administrators see it). `pending` and `deleted` files are never returned.
+             * @enum {string}
+             */
+            status: "ready" | "quarantined";
+            /**
+             * @description Open enum: `uploaded`, `generated` (statements, receipts and minutes the server produced).
+             * @enum {string}
+             */
+            source: "uploaded" | "generated";
+            /**
+             * Format: uuid
+             * @description The user id of the uploader. Shown to the uploader and to `files.manage` only; null for everyone else and for generated files.
+             */
+            uploaded_by: string | null;
+            /** @description The resource the file is attached to, `<type>:<id>` (for example `ticket:2f9c...`); null for a draft. */
+            scope: string | null;
+            /** @description Images: `thumb` and `medium` exist. */
+            has_variants: boolean;
+            /**
+             * Format: date-time
+             * @description When the file expires. Drafts (not attached to a resource) expire after 7 days; attaching clears it.
+             */
+            retention_until: string | null;
+            /** @description Image variants by name (`thumb`, 256 px, and `medium`, 1600 px, on the longer side). */
+            variants: {
+                [key: string]: components["schemas"]["FileVariant"];
+            };
+            links: components["schemas"]["FileLinks"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        FileList: {
+            items: components["schemas"]["File-2"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description The multipart form of an upload. Fields must come **before** `file`: the file is streamed to storage as
+         *     it arrives. A field after it, or one not listed here, is 422 `validation_failed` (field code
+         *     `multipart_order` or `unknown_field`). Request-body validation is skipped for this operation
+         *     (the body is not buffered); the server checks the fields itself.
+         */
+        FileUpload: {
+            /**
+             * @description Attach the file to a resource at once, `<type>:<id>`: the type is one the owning module registered
+             *     (`ticket`) and the id a UUID. Without it the file is a draft.
+             */
+            scope?: string;
+            /**
+             * Format: uuid
+             * @description The site the file belongs to; limits who can read it to site-scoped grants.
+             */
+            site_id?: string;
+            /** @description File name when the `file` part carries none. */
+            name?: string;
+            /** Format: binary */
+            file: string;
+        };
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -20578,6 +20726,8 @@ export interface components {
         Locale: string;
         /** @description Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it. */
         GuardSession: string;
+        /** @description The file id. */
+        FileId: string;
     };
     requestBodies: never;
     headers: never;
@@ -31135,6 +31285,41 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    "operations.listFiles": {
+        parameters: {
+            query?: {
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+                /** @description Only files attached to this resource, `<type>:<id>`, for example `ticket:2f9c...`. */
+                scope?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One page of files. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
     "operations.uploadFile": {
         parameters: {
             query?: never;
@@ -31150,30 +31335,31 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    file: string;
-                    /** Format: uuid */
-                    site_id?: string;
-                    scope?: string;
-                };
+                "multipart/form-data": components["schemas"]["FileUpload"];
             };
         };
         responses: {
-            /** @description Created */
+            /** @description The stored file. */
             201: {
                 headers: {
+                    /** @description The file's metadata URL. */
+                    Location?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["File"];
+                    "application/json": components["schemas"]["File-2"];
                 };
             };
+            400: components["responses"]["Problem"];
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
             409: components["responses"]["Problem"];
             413: components["responses"]["Problem"];
+            415: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
+            429: components["responses"]["Problem"];
+            503: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };
@@ -31184,40 +31370,8 @@ export interface operations {
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["File"];
-                };
-            };
-            401: components["responses"]["Problem"];
-            403: components["responses"]["Problem"];
-            404: components["responses"]["Problem"];
-            default: components["responses"]["Problem"];
-        };
-    };
-    "operations.downloadFile": {
-        parameters: {
-            query?: {
-                /** @description Filter by `variant`. */
-                variant?: "thumb" | "medium";
-            };
-            header?: never;
-            path: {
-                /** @description Organization id. */
-                org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
@@ -31229,7 +31383,47 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/octet-stream": string;
+                    "application/json": components["schemas"]["File-2"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "operations.downloadFile": {
+        parameters: {
+            query?: {
+                /** @description Image variant, `thumb` or `medium`. Absent for the original. */
+                variant?: "thumb" | "medium";
+                /** @description Expiry of a signed URL, Unix seconds. Sent with `sig`. */
+                exp?: number;
+                /** @description Signature of a signed URL. Sent with `exp`. */
+                sig?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The file's bytes, with the stored type as `Content-Type`. */
+            200: {
+                headers: {
+                    "Content-Disposition"?: string;
+                    "Content-Security-Policy"?: string;
+                    "Cache-Control"?: string;
+                    "X-Content-Type-Options"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
                 };
             };
             /** @description Short-lived signed URL (S3 driver). */
@@ -31250,18 +31444,21 @@ export interface operations {
     "operations.deleteFile": {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description Organization id. */
                 org_id: components["parameters"]["OrgId"];
-                /** @description Id of the file. */
-                file_id: string;
+                /** @description The file id. */
+                file_id: components["parameters"]["FileId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description No content */
+            /** @description Deleted. */
             204: {
                 headers: {
                     [name: string]: unknown;

@@ -182,6 +182,28 @@ type Facility struct {
 	Version   int32
 }
 
+type File struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Key            string
+	Name           string
+	Size           int64
+	Mime           string
+	Sha256         pgtype.Text
+	UploadedBy     pgtype.UUID
+	ScopeType      pgtype.Text
+	ScopeID        pgtype.UUID
+	Status         string
+	Source         string
+	RetentionUntil pgtype.Timestamptz
+	Variants       []byte
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	DeletedAt      pgtype.Timestamptz
+	PurgedAt       pgtype.Timestamptz
+}
+
 type FiscalYear struct {
 	ID                   pgtype.UUID
 	OrgID                pgtype.UUID
@@ -222,6 +244,7 @@ type IdempotencyKey struct {
 	ExpiresAt           pgtype.Timestamptz
 	Owner               pgtype.UUID
 	ResponseHeaders     []byte
+	ContentDigest       pgtype.Text
 }
 
 type ImportBatch struct {
@@ -462,6 +485,13 @@ type OpeningBalance struct {
 	VoidEntryID    pgtype.UUID
 	CreatedBy      pgtype.UUID
 	CreatedAt      pgtype.Timestamptz
+}
+
+type OrgStorageUsage struct {
+	OrgID     pgtype.UUID
+	Bytes     int64
+	Files     int32
+	UpdatedAt pgtype.Timestamptz
 }
 
 type Organization struct {

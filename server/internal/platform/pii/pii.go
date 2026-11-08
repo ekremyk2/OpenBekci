@@ -40,6 +40,7 @@ var Registered = []Field{
 	{"user", "email"},
 	{"user", "phone"},
 	{"user", "password_hash"},
+	{"file", "name"},
 	{"vehicle", "plate"},
 	{"visitor", "name"},
 	{"visitor", "phone"},

@@ -16,12 +16,34 @@ import (
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
+// validation validates the request against the spec. Operations marked
+// x-openbekci-stream get their parameters validated but not their body (it is
+// streamed, never buffered); the handler checks what the body carries. A
+// streamed request must still be multipart, else 415.
+func (p *pipeline) validation(next http.Handler) http.Handler {
+	full := requestValidator(p.spec, false)(next)
+	streamed := requestValidator(p.spec, true)(next)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		info := p.op(r)
+		if !info.stream {
+			full.ServeHTTP(w, r)
+			return
+		}
+		if info.hasBody && !strings.HasPrefix(strings.ToLower(r.Header.Get("Content-Type")), "multipart/form-data") {
+			problem.Write(w, r, problem.New(http.StatusUnsupportedMediaType, problem.CodeUnsupportedMediaType, "the request Content-Type must be multipart/form-data"))
+			return
+		}
+		streamed.ServeHTTP(w, r)
+	})
+}
+
 // requestValidator returns the kin-openapi request validation middleware with
-// errors rendered as problem+json.
-func requestValidator(spec *openapi3.T) func(http.Handler) http.Handler {
+// errors rendered as problem+json. With excludeBody only parameters are checked.
+func requestValidator(spec *openapi3.T, excludeBody bool) func(http.Handler) http.Handler {
 	return nethttpmw.OapiRequestValidatorWithOptions(spec, &nethttpmw.Options{
 		Options: openapi3filter.Options{
-			MultiError: true,
+			ExcludeRequestBody: excludeBody,
+			MultiError:         true,
 			// Authentication is enforced by the pipeline's authentication step
 			// (Authenticator), not by kin; here only the parameters and body count.
 			AuthenticationFunc: openapi3filter.NoopAuthenticationFunc,

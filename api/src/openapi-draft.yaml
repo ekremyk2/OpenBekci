@@ -1405,7 +1405,7 @@ components:
     SmsUsage:
       $ref: ./components/operations.yaml#/schemas/SmsUsage
     File:
-      $ref: ./components/operations.yaml#/schemas/File
+      $ref: ./components/files.yaml#/schemas/File
     ExportRequest:
       $ref: ./components/operations.yaml#/schemas/ExportRequest
     AuditEvent:

@@ -62,12 +62,14 @@ var exportTables = []exportTable{
 
 // excludedTables are tenant tables a site archive does not carry, with the reason.
 var excludedTables = map[string]string{
-	"organization": "the tenant root; the target organization already exists",
-	"audit_event":  "the audit trail stays with the organization that made the changes",
-	"site_export":  "the record of the hand-over itself",
-	"import_batch": "operational record of spreadsheet imports",
-	"import_row":   "operational record of spreadsheet imports",
-	"invitation":   "pending invitations and the join code are not carried over; invite again from the new organization",
+	"organization":      "the tenant root; the target organization already exists",
+	"audit_event":       "the audit trail stays with the organization that made the changes",
+	"site_export":       "the record of the hand-over itself",
+	"import_batch":      "operational record of spreadsheet imports",
+	"import_row":        "operational record of spreadsheet imports",
+	"file":              "blobs stay with the organization's storage; a hand-over carries no files yet",
+	"org_storage_usage": "the organization's storage counter",
+	"invitation":        "pending invitations and the join code are not carried over; invite again from the new organization",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

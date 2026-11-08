@@ -25,6 +25,8 @@ tags:
     description: Persons, occupancies, memberships, invitations, join codes and claims, move-out, directory, vendors.
   - name: codes
     description: Labels for open enums and site-defined statuses.
+  - name: operations
+    description: Everyday operation of the building; for now the files (uploaded and generated, streamed through the server).
   - name: platform
     description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
@@ -63,6 +65,12 @@ paths:
     $ref: ./paths/me-sessions-id.yaml
   /v1/orgs/{org_id}/audit:
     $ref: ./paths/orgs-org-id-audit.yaml
+  /v1/orgs/{org_id}/files:
+    $ref: './paths/operations/files.yaml'
+  /v1/orgs/{org_id}/files/{file_id}:
+    $ref: './paths/operations/files-file_id.yaml'
+  /v1/orgs/{org_id}/files/{file_id}/meta:
+    $ref: './paths/operations/files-file_id-meta.yaml'
   /v1/platform/audit:
     $ref: ./paths/platform-audit.yaml
   /v1/orgs/{org_id}:
@@ -627,3 +635,13 @@ components:
       $ref: './components/money.yaml#/schemas/Statement'
     StatementLine:
       $ref: './components/money.yaml#/schemas/StatementLine'
+    FileVariant:
+      $ref: './components/files.yaml#/schemas/FileVariant'
+    FileLinks:
+      $ref: './components/files.yaml#/schemas/FileLinks'
+    File:
+      $ref: './components/files.yaml#/schemas/File'
+    FileList:
+      $ref: './components/files.yaml#/schemas/FileList'
+    FileUpload:
+      $ref: './components/files.yaml#/schemas/FileUpload'
