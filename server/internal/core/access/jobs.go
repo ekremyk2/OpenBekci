@@ -25,11 +25,22 @@ type ProjectArgs struct {
 func (ProjectArgs) Kind() string { return "access.project" }
 
 // ReconcileArgs are the arguments of access.reconcile; empty means every site
-// that has access points (the nightly run).
+// that has access points. Nightly (the periodic run, hourly) narrows that to the
+// sites whose local time is NightlyHour.
 type ReconcileArgs struct {
-	OrgID  uuid.UUID `json:"org_id,omitempty"`
-	SiteID uuid.UUID `json:"site_id,omitempty"`
+	OrgID   uuid.UUID `json:"org_id,omitempty"`
+	SiteID  uuid.UUID `json:"site_id,omitempty"`
+	Nightly bool      `json:"nightly,omitempty"`
 }
+
+// NightlyHour is the site-local hour (0-23) at which the nightly reconcile runs.
+const NightlyHour = 3
+
+// ActivateArgs are the arguments of access.activate.
+type ActivateArgs struct{}
+
+// Kind implements river.JobArgs.
+func (ActivateArgs) Kind() string { return "access.activate" }
 
 // Kind implements river.JobArgs.
 func (ReconcileArgs) Kind() string { return "access.reconcile" }
@@ -75,7 +86,12 @@ func (w *reconcileWorker) Work(ctx context.Context, job *river.Job[ReconcileArgs
 	sites := []Site{{OrgID: job.Args.OrgID, SiteID: job.Args.SiteID}}
 	if job.Args.SiteID == uuid.Nil {
 		var err error
-		if sites, err = w.s.ActiveSites(ctx); err != nil {
+		if job.Args.Nightly {
+			sites, err = w.s.SitesAtLocalHour(ctx, NightlyHour)
+		} else {
+			sites, err = w.s.ActiveSites(ctx)
+		}
+		if err != nil {
 			return err
 		}
 	}
@@ -94,6 +110,16 @@ func (w *reconcileWorker) Work(ctx context.Context, job *river.Job[ReconcileArgs
 		}
 	}
 	return first
+}
+
+type activateWorker struct {
+	river.WorkerDefaults[ActivateArgs]
+	s *Service
+}
+
+func (w *activateWorker) Work(ctx context.Context, _ *river.Job[ActivateArgs]) error {
+	_, err := w.s.MarkDueOccupancies(ctx)
+	return err
 }
 
 type pruneWorker struct {
@@ -125,6 +151,7 @@ func (w *pruneWorker) Work(ctx context.Context, _ *river.Job[PruneArgs]) error {
 func (s *Service) Workers(w *river.Workers) {
 	river.AddWorker(w, &projectWorker{s: s})
 	river.AddWorker(w, &reconcileWorker{s: s})
+	river.AddWorker(w, &activateWorker{s: s})
 	river.AddWorker(w, &pruneWorker{s: s})
 }
 
@@ -134,8 +161,13 @@ func PeriodicJobs() []*river.PeriodicJob {
 	return []*river.PeriodicJob{
 		river.NewPeriodicJob(river.PeriodicInterval(10*time.Second),
 			func() (river.JobArgs, *river.InsertOpts) { return ProjectArgs{}, nil }, nil),
-		river.NewPeriodicJob(river.PeriodicInterval(24*time.Hour),
-			func() (river.JobArgs, *river.InsertOpts) { return ReconcileArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}),
+		// occupancies that start (or end) today change who may drive in: marked in
+		// the first local hour of the day, every 10 minutes so a restart cannot skip it
+		river.NewPeriodicJob(river.PeriodicInterval(10*time.Minute),
+			func() (river.JobArgs, *river.InsertOpts) { return ActivateArgs{}, nil }, nil),
+		// hourly; each site reconciles in its own local hour NightlyHour, whatever the server start time
+		river.NewPeriodicJob(river.PeriodicInterval(time.Hour),
+			func() (river.JobArgs, *river.InsertOpts) { return ReconcileArgs{Nightly: true}, nil }, nil),
 		river.NewPeriodicJob(river.PeriodicInterval(24*time.Hour),
 			func() (river.JobArgs, *river.InsertOpts) { return PruneArgs{}, nil }, nil),
 	}

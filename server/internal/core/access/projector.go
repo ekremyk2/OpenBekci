@@ -608,6 +608,54 @@ func (s *Service) sites(ctx context.Context, query string) ([]Site, error) {
 	return out, err
 }
 
+// SitesAtLocalHour lists the sites with access points whose local time is in the given hour.
+func (s *Service) SitesAtLocalHour(ctx context.Context, hour int) ([]Site, error) {
+	var out []Site
+	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		rows, err := tx.Query(ctx, `SELECT DISTINCT p.org_id, p.site_id FROM access_point p
+			JOIN site st ON st.org_id = p.org_id AND st.id = p.site_id
+			WHERE extract(hour FROM $1::timestamptz AT TIME ZONE st.timezone) = $2 ORDER BY 1, 2`, s.now(), hour)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var st Site
+			if err := rows.Scan(&st.OrgID, &st.SiteID); err != nil {
+				return err
+			}
+			out = append(out, st)
+		}
+		return rows.Err()
+	})
+	return out, err
+}
+
+// MarkDueOccupancies queues the vehicles of units whose occupancy starts or ends
+// on the site-local date of today, during the first local hour of the day: the
+// occupancy trigger only fires when the row changes, so a future-dated occupancy
+// would otherwise wait for the nightly reconcile. It returns the rows queued.
+func (s *Service) MarkDueOccupancies(ctx context.Context) (int64, error) {
+	var n int64
+	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		ct, err := tx.Exec(ctx, `INSERT INTO access_dirty (org_id, site_id, source_type, source_id)
+			SELECT DISTINCT v.org_id, v.site_id, 'vehicle', v.id
+			  FROM occupancy o
+			  JOIN site st ON st.org_id = o.org_id AND st.id = o.site_id
+			  JOIN vehicle v ON v.org_id = o.org_id AND v.unit_id = o.unit_id
+			 WHERE extract(hour FROM $1::timestamptz AT TIME ZONE st.timezone) = 0
+			   AND (o.valid_from = ($1::timestamptz AT TIME ZONE st.timezone)::date
+			     OR o.valid_to = ($1::timestamptz AT TIME ZONE st.timezone)::date)
+			ON CONFLICT (org_id, source_type, source_id) DO NOTHING`, s.now())
+		if err != nil {
+			return err
+		}
+		n = ct.RowsAffected()
+		return nil
+	})
+	return n, err
+}
+
 // DirtySites are the sites with queued sources.
 func (s *Service) DirtySites(ctx context.Context) ([]Site, error) {
 	return s.sites(ctx, `SELECT DISTINCT org_id, site_id FROM access_dirty ORDER BY 1, 2 LIMIT 200`)

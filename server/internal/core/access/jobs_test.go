@@ -45,8 +45,11 @@ func TestIntegrationJobs(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = client.Stop(context.Background()) })
 
-	// the nightly reconcile also runs once at start-up
-	waitFor10(t, "the start-up reconcile", func() bool { return e.creds()["34JOB111"].Published })
+	// the nightly reconcile no longer runs at start-up (it runs at a site-local hour); a targeted one does
+	if _, err := client.Insert(ctx, access.ReconcileArgs{OrgID: e.site.OrgID, SiteID: e.site.SiteID}, nil); err != nil {
+		t.Fatal(err)
+	}
+	waitFor10(t, "the reconcile", func() bool { return e.creds()["34JOB111"].Published })
 
 	e.vehicle(e.site, e.unit, "34JOB222")
 	if _, err := client.Insert(ctx, access.ProjectArgs{}, nil); err != nil {
