@@ -14,6 +14,7 @@ import {
 import { apiDraft, ifMatch, type Document, type DocumentVisibility, type Folder } from '@/api/draft'
 import { fileUrl } from '@/api/files'
 import { useSession } from '@/app/session'
+import { ConfirmDialog } from '@/components/data/ConfirmDialog'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { SiteDate } from '@/components/data/SiteDate'
@@ -310,6 +311,7 @@ function DocumentRow({
   const { t } = useLingui()
   const qc = useQueryClient()
   const [renaming, setRenaming] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const [title, setTitle] = useState(doc.title)
   const refresh = () => qc.invalidateQueries({ queryKey: ['operations.listDocuments'] })
   const patch = useMutation({
@@ -407,12 +409,20 @@ function DocumentRow({
             variant="ghost"
             size="icon"
             aria-label={t`Delete ${doc.title}`}
-            onClick={() => {
-              if (window.confirm(t`Delete "${doc.title}"?`)) remove.mutate()
-            }}
+            onClick={() => setConfirmDelete(true)}
           >
             <Trash2Icon />
           </Button>
+          <ConfirmDialog
+            open={confirmDelete}
+            onOpenChange={setConfirmDelete}
+            title={<Trans>Delete this document?</Trans>}
+            description={<Trans>"{doc.title}" will be removed. This cannot be undone.</Trans>}
+            confirmLabel={<Trans>Delete</Trans>}
+            destructive
+            busy={remove.isPending}
+            onConfirm={() => remove.mutate(undefined, { onSettled: () => setConfirmDelete(false) })}
+          />
         </>
       ) : null}
     </li>
