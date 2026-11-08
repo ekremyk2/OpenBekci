@@ -375,7 +375,7 @@ func straySecret(node any, path []string) string {
 	switch n := node.(type) {
 	case map[string]any:
 		for k, v := range n {
-			if k == "x-secret" && !(len(path) == 2 && path[0] == "properties") {
+			if k == "x-secret" && (len(path) != 2 || path[0] != "properties") {
 				return "/" + strings.Join(path, "/")
 			}
 			if hit := straySecret(v, append(path[:len(path):len(path)], k)); hit != "" {
