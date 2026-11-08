@@ -1,22 +1,42 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { CarIcon, PlusIcon } from 'lucide-react'
+import { CarIcon, PlusIcon, RefreshCwIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from '@/lib/toast'
-import { gApi, idemHeader, unwrap, useKeyStore, useOrgMutation, useOrgQuery, useSiteCtx, type S, type SiteCtx } from '@/features/meetings/kit/api'
+import {
+  gApi,
+  idemHeader,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  useSiteCtx,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
 import { PageHeader, QueryBoundary, Select } from '@/features/meetings/kit/ui'
 import { ApprovalBadge, ApprovalInbox } from './ApprovalInbox'
 import { PreRegisterDialog } from './PreRegisterDialog'
+import { QrOnceDialog } from './QrOnceDialog'
 import { RecurringTab } from './RecurringTab'
 
-export function entryStatus(e: Pick<S['VisitorEntry'], 'cancelled' | 'arrived_at' | 'left_at' | 'approval_status'>) {
+export function entryStatus(
+  e: Pick<S['VisitorEntry'], 'cancelled' | 'arrived_at' | 'left_at' | 'approval_status'>,
+) {
   if (e.cancelled) return 'cancelled' as const
   if (e.left_at) return 'left' as const
   if (e.arrived_at) return 'arrived' as const
@@ -44,15 +64,22 @@ function HistoryTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean }) {
   const keys = useKeyStore()
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('')
-  const list = useOrgQuery(['visitor-entries', ctx.siteId, q, status], () =>
-    unwrap(
-      gApi.GET('/v1/orgs/{org_id}/visitor-entries', {
-        params: {
-          path: { org_id: ctx.orgId },
-          query: { site_id: ctx.siteId, limit: 100, ...(q.trim() ? { q: q.trim() } : {}), ...(status ? { approval_status: status } : {}) },
-        },
-      }),
-    ).then((r) => r.items),
+  const list = useOrgQuery(
+    ['visitor-entries', ctx.siteId, q, status],
+    () =>
+      unwrap(
+        gApi.GET('/v1/orgs/{org_id}/visitor-entries', {
+          params: {
+            path: { org_id: ctx.orgId },
+            query: {
+              site_id: ctx.siteId,
+              limit: 100,
+              ...(q.trim() ? { q: q.trim() } : {}),
+              ...(status ? { approval_status: status } : {}),
+            },
+          },
+        }),
+      ).then((r) => r.items),
     { refetchInterval: 15_000 },
   )
   const cancel = useOrgMutation(async (e: S['VisitorEntry']) => {
@@ -63,11 +90,53 @@ function HistoryTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean }) {
     )
     keys.done(e.id)
   })
+  const [reissued, setReissued] = useState<{
+    token: string
+    name: string
+    from: string
+    to: string
+  } | null>(null)
+  // `:rotate-qr` is part of the contract being added (C1: shown once, then only a rotate action);
+  // until the typed draft has it, the path is typed as its sibling `:cancel`, same shape.
+  const rotate = useOrgMutation(async (e: S['VisitorEntry']) => {
+    const r = await unwrap(
+      gApi.POST(
+        '/v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr' as '/v1/orgs/{org_id}/visitor-entries/{entry_id}:cancel',
+        {
+          params: {
+            path: { org_id: ctx.orgId, entry_id: e.id },
+            header: idemHeader(keys.get(`rotate-${e.id}`)),
+          },
+        },
+      ),
+    )
+    keys.done(`rotate-${e.id}`)
+    return r
+  })
   return (
     <div className="flex flex-col gap-4">
+      {reissued ? (
+        <QrOnceDialog
+          token={reissued.token}
+          name={reissued.name}
+          validity={`${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: ctx.timeZone }).format(new Date(reissued.from))} – ${new Intl.DateTimeFormat(undefined, { timeStyle: 'short', timeZone: ctx.timeZone }).format(new Date(reissued.to))}`}
+          onClose={() => setReissued(null)}
+        />
+      ) : null}
       <div className="flex flex-wrap gap-2">
-        <Input aria-label={t`Search visitors`} placeholder={t`Search name or plate`} className="max-w-xs" value={q} onChange={(e) => setQ(e.target.value)} />
-        <Select aria-label={t`Status`} className="w-auto" value={status} onChange={(e) => setStatus(e.target.value)}>
+        <Input
+          aria-label={t`Search visitors`}
+          placeholder={t`Search name or plate`}
+          className="max-w-xs"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+        <Select
+          aria-label={t`Status`}
+          className="w-auto"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
           <option value="">{t`Any status`}</option>
           <option value="pre_approved">{t`Expected`}</option>
           <option value="approved">{t`Approved`}</option>
@@ -79,7 +148,9 @@ function HistoryTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean }) {
         query={list}
         isEmpty={(d) => d.length === 0}
         emptyTitle={t`No visitors yet`}
-        emptyDescription={canManage ? t`Pre-register a guest to get a QR code for the gate.` : undefined}
+        emptyDescription={
+          canManage ? t`Pre-register a guest to get a QR code for the gate.` : undefined
+        }
       >
         {(items) => (
           <Table>
@@ -124,13 +195,43 @@ function HistoryTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean }) {
                   <TableCell>
                     <StatusBadge status={entryStatus(e)} />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="flex flex-wrap gap-2">
+                    {canManage && !e.cancelled && !e.arrived_at ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={rotate.isPending}
+                        aria-label={t`Rotate the QR code of ${e.name}`}
+                        onClick={() =>
+                          rotate.mutate(e, {
+                            onSuccess: (r) => {
+                              if (r.qr_token)
+                                setReissued({
+                                  token: r.qr_token,
+                                  name: r.name,
+                                  from: r.window_from,
+                                  to: r.window_to,
+                                })
+                              else toast.info(t`The QR code was rotated.`)
+                            },
+                            onError: () => toast.error(t`The QR code could not be rotated.`),
+                          })
+                        }
+                      >
+                        <RefreshCwIcon />
+                        <Trans>Rotate QR</Trans>
+                      </Button>
+                    ) : null}
                     {canManage && !e.cancelled && !e.arrived_at ? (
                       <Button
                         size="sm"
                         variant="outline"
                         disabled={cancel.isPending}
-                        onClick={() => cancel.mutate(e, { onSuccess: () => toast.info(t`The pass was cancelled.`) })}
+                        onClick={() =>
+                          cancel.mutate(e, {
+                            onSuccess: () => toast.info(t`The pass was cancelled.`),
+                          })
+                        }
                       >
                         <Trans>Cancel pass</Trans>
                       </Button>

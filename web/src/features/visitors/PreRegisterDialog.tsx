@@ -5,7 +5,14 @@ import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useSession } from '@/app/session'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { useBookableUnits } from '@/features/bookings/BookDialog'
@@ -25,15 +32,25 @@ export function usePreRegisterSchema() {
       z
         .object({
           unit_id: z.string().min(1, t`Choose the unit the visitor is for.`),
-          name: z.string().trim().min(2, t`Enter the visitor's name.`).max(120),
+          name: z
+            .string()
+            .trim()
+            .min(2, t`Enter the visitor's name.`)
+            .max(120),
           plate: z
             .string()
             .trim()
-            .refine((p) => p === '' || /^[A-Za-z0-9 -]{4,12}$/.test(p), t`Enter a plate like 34 ABC 123.`),
+            .refine(
+              (p) => p === '' || /^[A-Za-z0-9 -]{4,12}$/.test(p),
+              t`Enter a plate like 34 ABC 123.`,
+            ),
           from: z.string().min(1, t`Choose when the visit starts.`),
           to: z.string().min(1, t`Choose when the visit ends.`),
         })
-        .refine((v) => !v.from || !v.to || v.to > v.from, { path: ['to'], message: t`The visit must end after it starts.` }),
+        .refine((v) => !v.from || !v.to || v.to > v.from, {
+          path: ['to'],
+          message: t`The visit must end after it starts.`,
+        }),
     [t],
   )
 }
@@ -56,7 +73,12 @@ export function PreRegisterDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () 
       to: instantToLocalInput(new Date(now.getTime() + 4 * 3_600_000).toISOString(), ctx.timeZone),
     },
   })
-  const [pass, setPass] = useState<{ token: string; name: string; from: string; to: string } | null>(null)
+  const [pass, setPass] = useState<{
+    token: string
+    name: string
+    from: string
+    to: string
+  } | null>(null)
   const firstUnit = units[0]?.id
   useEffect(() => {
     if (firstUnit && !form.getValues('unit_id')) form.setValue('unit_id', firstUnit)
@@ -96,7 +118,8 @@ export function PreRegisterDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () 
           onSubmit={form.handleSubmit(async (v) => {
             try {
               const e = await create.mutateAsync(v)
-              if (e.qr_token) setPass({ token: e.qr_token, name: e.name, from: e.window_from, to: e.window_to })
+              if (e.qr_token)
+                setPass({ token: e.qr_token, name: e.name, from: e.window_from, to: e.window_to })
               else onClose()
             } catch (e) {
               applyServerErrors(form, e, t`Could not register the visitor.`)
@@ -108,7 +131,9 @@ export function PreRegisterDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () 
               <Trans>Pre-register a visitor</Trans>
             </DialogTitle>
             <DialogDescription>
-              <Trans>You get a QR code to send to your guest. The guard scans it at the gate.</Trans>
+              <Trans>
+                You get a QR code to send to your guest. The guard scans it at the gate.
+              </Trans>
             </DialogDescription>
           </DialogHeader>
           <Field label={t`Unit`} htmlFor="pr-unit" error={err.unit_id?.message}>
@@ -151,4 +176,3 @@ export function PreRegisterDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () 
     </Dialog>
   )
 }
-

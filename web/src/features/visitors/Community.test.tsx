@@ -18,7 +18,9 @@ describe('visitor QR is shown once', () => {
     const code = await screen.findByTestId('qr-code-text')
     expect(code.textContent).toMatch(/^obk1\./)
     expect(await screen.findByRole('img', { name: 'Visitor QR code' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'WhatsApp' }).getAttribute('href')).toContain('https://wa.me/?text=')
+    expect(screen.getByRole('link', { name: 'WhatsApp' }).getAttribute('href')).toContain(
+      'https://wa.me/?text=',
+    )
     expect(screen.getByRole('link', { name: 'SMS' }).getAttribute('href')).toMatch(/^sms:/)
     expect(screen.getByText(/shown only now/)).toBeInTheDocument()
     const token = code.textContent!
@@ -28,6 +30,21 @@ describe('visitor QR is shown once', () => {
     // the history lists the visitor but never the token
     await userEvent.click(screen.getByRole('tab', { name: 'Visitors' }))
     expect(await screen.findByText('Deniz Acar')).toBeInTheDocument()
+    expect(document.body.textContent).not.toContain(token)
+  })
+})
+
+describe('rotate the QR of a visitor', () => {
+  it('re-issues a new code once after rotating, and the history still never lists it', async () => {
+    mountGov('/orgs/org-1/visitors')
+    await userEvent.click(await screen.findByRole('tab', { name: 'Visitors' }))
+    const rotate = (await screen.findAllByRole('button', { name: /Rotate the QR code of/ }))[0]!
+    await userEvent.click(rotate)
+    const code = await screen.findByTestId('qr-code-text')
+    expect(code.textContent).toMatch(/\.r1$/)
+    const token = code.textContent!
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }))
+    await waitFor(() => expect(screen.queryByTestId('qr-code-text')).not.toBeInTheDocument())
     expect(document.body.textContent).not.toContain(token)
   })
 })
@@ -77,7 +94,9 @@ describe('booking rules', () => {
     await userEvent.type(within(dialog).getByLabelText('From'), '03:00')
     await userEvent.clear(within(dialog).getByLabelText('Until'))
     await userEvent.type(within(dialog).getByLabelText('Until'), '04:00')
-    expect(await within(dialog).findByText('The facility is closed at that time.')).toBeInTheDocument()
+    expect(
+      await within(dialog).findByText('The facility is closed at that time.'),
+    ).toBeInTheDocument()
     expect(within(dialog).getByRole('button', { name: 'Book now' })).toBeDisabled()
   })
 

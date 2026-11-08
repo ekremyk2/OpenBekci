@@ -35,6 +35,7 @@ interface State {
   requests: S['VisitorApprovalRequest'][]
   deliveries: S['Delivery'][]
   failedPins: number
+  rotations: number
 }
 
 const allDays = [1, 2, 3, 4, 5, 6, 7]
@@ -76,7 +77,11 @@ function fresh(): State {
         site_id: SITE,
         name: 'Community hall',
         description: null,
-        rules: rules({ fee: null, max_duration_minutes: 240, opening_hours: [{ days: [1, 2, 3, 4, 5], start: '10:00', end: '20:00' }] }),
+        rules: rules({
+          fee: null,
+          max_duration_minutes: 240,
+          opening_hours: [{ days: [1, 2, 3, 4, 5], start: '10:00', end: '20:00' }],
+        }),
         enabled: true,
         created_at: t,
         updated_at: t,
@@ -170,6 +175,7 @@ function fresh(): State {
       },
     ],
     failedPins: 0,
+    rotations: 0,
   }
 }
 
@@ -220,20 +226,34 @@ function checkRules(f: S['Facility'], start: Date, end: Date, unitId: string) {
   const r = f.rules
   const errors: { field: string; code: string; message: string }[] = []
   const minutes = (end.getTime() - start.getTime()) / 60_000
-  if (minutes <= 0) errors.push({ field: 'end', code: 'end_before_start', message: 'End must be after start.' })
+  if (minutes <= 0)
+    errors.push({ field: 'end', code: 'end_before_start', message: 'End must be after start.' })
   if (minutes > r.max_duration_minutes)
-    errors.push({ field: 'end', code: 'too_long', message: `At most ${r.max_duration_minutes} minutes.` })
+    errors.push({
+      field: 'end',
+      code: 'too_long',
+      message: `At most ${r.max_duration_minutes} minutes.`,
+    })
   if (r.min_notice_minutes !== null && start.getTime() - Date.now() < r.min_notice_minutes * 60_000)
     errors.push({ field: 'start', code: 'too_soon', message: 'Too short notice.' })
   if (start.getTime() - Date.now() > r.max_days_ahead * 86_400_000)
-    errors.push({ field: 'start', code: 'too_far_ahead', message: `At most ${r.max_days_ahead} days ahead.` })
+    errors.push({
+      field: 'start',
+      code: 'too_far_ahead',
+      message: `At most ${r.max_days_ahead} days ahead.`,
+    })
   const day = start.getUTCDay() === 0 ? 7 : start.getUTCDay()
   const startMin = start.getUTCHours() * 60 + start.getUTCMinutes()
   const endMin = end.getUTCHours() * 60 + end.getUTCMinutes()
-  const open = r.opening_hours.some((h) => h.days.includes(day) && startMin >= toMinutes(h.start) && endMin <= toMinutes(h.end))
-  if (!open) errors.push({ field: 'start', code: 'outside_hours', message: 'Outside opening hours.' })
+  const open = r.opening_hours.some(
+    (h) => h.days.includes(day) && startMin >= toMinutes(h.start) && endMin <= toMinutes(h.end),
+  )
+  if (!open)
+    errors.push({ field: 'start', code: 'outside_hours', message: 'Outside opening hours.' })
   if (r.quota_per_unit !== null) {
-    const used = db.bookings.filter((b) => b.facility_id === f.id && b.unit_id === unitId && b.status === 'confirmed').length
+    const used = db.bookings.filter(
+      (b) => b.facility_id === f.id && b.unit_id === unitId && b.status === 'confirmed',
+    ).length
     if (used >= r.quota_per_unit)
       errors.push({ field: 'unit_id', code: 'quota_exceeded', message: 'Booking quota used up.' })
   }
@@ -336,7 +356,9 @@ export const communityHandlers = [
   }),
   http.post(`${BASE}/bookings`, async ({ request }) => {
     if (!request.headers.get('Idempotency-Key'))
-      return problem(422, 'validation_failed', { errors: [{ field: 'Idempotency-Key', code: 'required' }] })
+      return problem(422, 'validation_failed', {
+        errors: [{ field: 'Idempotency-Key', code: 'required' }],
+      })
     const b = (await request.json()) as S['BookingCreate']
     const f = facilityOf(b.facility_id)
     if (!f) return problem(404, 'not_found')
@@ -384,7 +406,9 @@ export const communityHandlers = [
     const b = db.bookings.find((x) => x.id === id)
     if (!b || action !== 'cancel') return problem(404, 'not_found')
     if (!request.headers.get('Idempotency-Key'))
-      return problem(422, 'validation_failed', { errors: [{ field: 'Idempotency-Key', code: 'required' }] })
+      return problem(422, 'validation_failed', {
+        errors: [{ field: 'Idempotency-Key', code: 'required' }],
+      })
     const body = (await request.json().catch(() => ({}))) as S['BookingCancel']
     const f = facilityOf(b.facility_id)
     const cutoff = (f?.rules.cancel_refund_cutoff_hours ?? 0) * 3_600_000
@@ -446,6 +470,12 @@ export const communityHandlers = [
   http.post(`${BASE}/visitor-entries/:entryAction`, ({ params }) => {
     const [id, action] = String(params.entryAction).split(':')
     const e = entryOf(id)
+    if (e && action === 'rotate-qr') {
+      // the old code stops working, the new one is returned once
+      e.qr_token = `obk1.vis.${id}.r${++db.rotations}`
+      e.updated_at = nowIso()
+      return HttpResponse.json(e)
+    }
     if (!e || action !== 'cancel') return problem(404, 'not_found')
     e.cancelled = true
     e.updated_at = nowIso()
@@ -522,7 +552,10 @@ export const communityHandlers = [
     if (db.failedPins >= 5) {
       return HttpResponse.json(
         { type: 'about:blank', title: 'rate_limited', status: 429, code: 'rate_limited' },
-        { status: 429, headers: { 'content-type': 'application/problem+json', 'Retry-After': '900' } },
+        {
+          status: 429,
+          headers: { 'content-type': 'application/problem+json', 'Retry-After': '900' },
+        },
       )
     }
     const g = GUARDS.find((x) => x.person_id === b.person_id)
@@ -547,7 +580,13 @@ export const communityHandlers = [
     const res: S['GateConsole'] = {
       server_time: nowIso(),
       expected_visitors: db.entries
-        .filter((e) => !e.cancelled && !e.left_at && Date.parse(e.window_to) + 1_800_000 > now && Date.parse(e.window_from) - 1_800_000 < now + 86_400_000)
+        .filter(
+          (e) =>
+            !e.cancelled &&
+            !e.left_at &&
+            Date.parse(e.window_to) + 1_800_000 > now &&
+            Date.parse(e.window_from) - 1_800_000 < now + 86_400_000,
+        )
         .filter((e) => e.approval_status !== 'requested' && e.approval_status !== 'denied')
         .map(guardView),
       pending_approvals: db.entries.filter((e) => e.approval_status === 'requested').map(guardView),
@@ -585,7 +624,9 @@ export const communityHandlers = [
         .filter((e) => !e.cancelled)
         .filter(
           (e) =>
-            (!q || e.name.toLowerCase().includes(q) || (e.plate ?? '').toLowerCase().replaceAll(' ', '').includes(q.replaceAll(' ', ''))) &&
+            (!q ||
+              e.name.toLowerCase().includes(q) ||
+              (e.plate ?? '').toLowerCase().replaceAll(' ', '').includes(q.replaceAll(' ', ''))) &&
             (!plate || (e.plate ?? '').toLowerCase().replaceAll(' ', '').includes(plate)) &&
             (!p.get('unit_door_number') || e.unit_door_number === p.get('unit_door_number')) &&
             (!p.get('approval_status') || e.approval_status === p.get('approval_status')),
@@ -607,9 +648,15 @@ export const communityHandlers = [
   }),
   http.post(`${BASE}/gate/visitors\\:scan`, async ({ request }) => {
     const b = (await request.json()) as S['ScanRequest']
-    const e = db.entries.find((x) => x.qr_token === b.token.trim() || `obk1.rec.${x.id}` === b.token.trim())
+    const e = db.entries.find(
+      (x) => x.qr_token === b.token.trim() || `obk1.rec.${x.id}` === b.token.trim(),
+    )
     const rec = db.recurring.find((x) => x.qr_token === b.token.trim())
-    const out = (valid: boolean, reason: S['ScanResult']['reason'], entry: S['VisitorEntry'] | null): S['ScanResult'] => ({
+    const out = (
+      valid: boolean,
+      reason: S['ScanResult']['reason'],
+      entry: S['VisitorEntry'] | null,
+    ): S['ScanResult'] => ({
       valid,
       reason,
       entry: entry ? guardView(entry) : null,
@@ -702,7 +749,11 @@ export const communityHandlers = [
     const e = entryOf(id)
     if (!e) return problem(404, 'not_found')
     if (action === 'arrive') {
-      if (e.approval_status === 'denied' || e.approval_status === 'expired' || e.approval_status === 'requested')
+      if (
+        e.approval_status === 'denied' ||
+        e.approval_status === 'expired' ||
+        e.approval_status === 'requested'
+      )
         return problem(409, 'conflict')
       e.arrived_at = nowIso()
     } else if (action === 'leave') {
@@ -715,7 +766,9 @@ export const communityHandlers = [
     const q = qs(request).get('q')?.toLowerCase().replaceAll(' ', '') ?? ''
     return list(
       accessDb()
-        .credentials.filter((c) => c.kind === 'plate' && c.value.toLowerCase().replaceAll(' ', '').includes(q))
+        .credentials.filter(
+          (c) => c.kind === 'plate' && c.value.toLowerCase().replaceAll(' ', '').includes(q),
+        )
         .map((c) => ({ plate: c.value, unit_door_number: c.unit_door_number ?? '' })),
     )
   }),

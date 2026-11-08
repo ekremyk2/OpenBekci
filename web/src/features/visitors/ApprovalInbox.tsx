@@ -4,7 +4,16 @@ import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/lib/toast'
-import { gApi, idemHeader, unwrap, useKeyStore, useOrgMutation, useOrgQuery, type S, type SiteCtx } from '@/features/meetings/kit/api'
+import {
+  gApi,
+  idemHeader,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
 import { QueryBoundary } from '@/features/meetings/kit/ui'
 
 export const APPROVAL_POLL_MS = 5000
@@ -53,7 +62,8 @@ function RequestRow({ ctx, r }: { ctx: SiteCtx; r: S['VisitorApprovalRequest'] }
   const answer = (d: 'approve' | 'deny') =>
     decide.mutate(d, {
       onSuccess: () => toast.info(d === 'approve' ? t`Visitor approved.` : t`Visitor denied.`),
-      onError: () => toast.error(t`Could not send your answer. It may already have been answered or expired.`),
+      onError: () =>
+        toast.error(t`Could not send your answer. It may already have been answered or expired.`),
     })
   return (
     <li className="flex flex-wrap items-center gap-3 rounded-lg border p-4">
@@ -73,7 +83,12 @@ function RequestRow({ ctx, r }: { ctx: SiteCtx; r: S['VisitorApprovalRequest'] }
             <CheckIcon />
             <Trans>Approve</Trans>
           </Button>
-          <Button size="lg" variant="destructive" disabled={decide.isPending} onClick={() => answer('deny')}>
+          <Button
+            size="lg"
+            variant="destructive"
+            disabled={decide.isPending}
+            onClick={() => answer('deny')}
+          >
             <XIcon />
             <Trans>Deny</Trans>
           </Button>

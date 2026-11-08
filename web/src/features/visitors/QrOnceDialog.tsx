@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { CheckIcon, CopyIcon, MailIcon, MessageCircleIcon, SmartphoneIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { QrCode } from '@/features/meetings/kit/QrCode'
 import { Callout } from '@/features/meetings/kit/widgets'
 
@@ -10,12 +17,12 @@ import { Callout } from '@/features/meetings/kit/widgets'
 export const qrValue = (token: string) => (token.startsWith('obk1.') ? token : `obk1.${token}`)
 
 /** Deep links that carry the pass text; the QR image itself cannot ride along, the code can. */
-export function shareLinks(message: string) {
+export function shareLinks(message: string, subject: string) {
   const text = encodeURIComponent(message)
   return {
     whatsapp: `https://wa.me/?text=${text}`,
     sms: `sms:?&body=${text}`,
-    email: `mailto:?subject=${encodeURIComponent('Visitor pass')}&body=${text}`,
+    email: `mailto:?subject=${encodeURIComponent(subject)}&body=${text}`,
   }
 }
 
@@ -39,7 +46,7 @@ export function QrOnceDialog({
   const [copied, setCopied] = useState(false)
   const value = qrValue(token)
   const message = t`Visitor pass for ${name}, valid ${validity}. Show this QR code at the gate, or give the guard this code: ${value}`
-  const links = shareLinks(message)
+  const links = shareLinks(message, t`Visitor pass`)
   return (
     <Dialog open onOpenChange={(o) => (!o ? onClose() : undefined)}>
       <DialogContent>
@@ -56,7 +63,10 @@ export function QrOnceDialog({
           </code>
         </div>
         <Callout tone="warning" role="status">
-          <Trans>This code is shown only now. Send it to your guest before you close this window.</Trans>
+          <Trans>
+            This code is shown only now. Send it to your guest before you close this window.
+            WhatsApp, SMS and e-mail carry the code through those services.
+          </Trans>
         </Callout>
         <div className="grid gap-2 sm:grid-cols-2">
           <Button asChild variant="outline">

@@ -7,9 +7,23 @@ import { PlusIcon } from 'lucide-react'
 import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
@@ -17,9 +31,25 @@ import { useSession } from '@/app/session'
 import { useBookableUnits } from '@/features/bookings/BookDialog'
 import { daysLabel } from '@/features/bookings/rules'
 import { useWeekdayNames } from '@/features/bookings/FacilitiesPage'
-import { gApi, idemHeader, unwrap, useKeyStore, useOrgMutation, useOrgQuery, type S, type SiteCtx } from '@/features/meetings/kit/api'
+import {
+  gApi,
+  idemHeader,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
 import { todayIn } from '@/features/meetings/kit/time'
-import { applyServerErrors, Field, FormRootError, QueryBoundary, ConfirmDialog, Select } from '@/features/meetings/kit/ui'
+import {
+  applyServerErrors,
+  Field,
+  FormRootError,
+  QueryBoundary,
+  ConfirmDialog,
+  Select,
+} from '@/features/meetings/kit/ui'
 import { normalizePlate } from './PreRegisterDialog'
 import { QrOnceDialog } from './QrOnceDialog'
 
@@ -34,7 +64,10 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
       z
         .object({
           unit_id: z.string().min(1, t`Choose a unit.`),
-          name: z.string().trim().min(2, t`Enter the person's name.`),
+          name: z
+            .string()
+            .trim()
+            .min(2, t`Enter the person's name.`),
           plate: z.string().trim(),
           days: z.array(z.number()).min(1, t`Choose at least one day.`),
           start: z.string().regex(/^\d{2}:\d{2}$/, t`Enter a time.`),
@@ -42,7 +75,10 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
           valid_from: z.string().min(1, t`Choose a start date.`),
           valid_to: z.string(),
         })
-        .refine((v) => v.end > v.start, { path: ['end'], message: t`The end must be after the start.` })
+        .refine((v) => v.end > v.start, {
+          path: ['end'],
+          message: t`The end must be after the start.`,
+        })
         .refine((v) => v.valid_to === '' || v.valid_to >= v.valid_from, {
           path: ['valid_to'],
           message: t`The last day must not be before the first.`,
@@ -88,7 +124,14 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
   )
   const err = form.formState.errors
   if (pass)
-    return <QrOnceDialog token={pass.token} name={pass.name} validity={t`on the chosen days until you revoke it`} onClose={onClose} />
+    return (
+      <QrOnceDialog
+        token={pass.token}
+        name={pass.name}
+        validity={t`on the chosen days until you revoke it`}
+        onClose={onClose}
+      />
+    )
   return (
     <Dialog open onOpenChange={(o) => (!o ? onClose() : undefined)}>
       <DialogContent>
@@ -110,7 +153,10 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
               <Trans>New recurring visitor</Trans>
             </DialogTitle>
             <DialogDescription>
-              <Trans>For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR code.</Trans>
+              <Trans>
+                For a cleaner, a carer or a nanny: a standing permission with its own long-lived QR
+                code.
+              </Trans>
             </DialogDescription>
           </DialogHeader>
           <Field label={t`Unit`} htmlFor="rv-unit" error={err.unit_id?.message}>
@@ -145,7 +191,11 @@ function NewRecurringDialog({ ctx, onClose }: { ctx: SiteCtx; onClose: () => voi
                         key={d}
                         type="button"
                         aria-pressed={on}
-                        onClick={() => field.onChange(on ? field.value.filter((x) => x !== d) : [...field.value, d])}
+                        onClick={() =>
+                          field.onChange(
+                            on ? field.value.filter((x) => x !== d) : [...field.value, d],
+                          )
+                        }
                         className={cn(
                           'rounded-md border px-3 py-1.5 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                           on ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
@@ -210,7 +260,10 @@ export function RecurringTab({ ctx, canManage }: { ctx: SiteCtx; canManage: bool
   const revoke = useOrgMutation(async (r: S['RecurringVisitor']) => {
     await unwrap(
       gApi.POST('/v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:revoke', {
-        params: { path: { org_id: ctx.orgId, recurring_visitor_id: r.id }, header: idemHeader(keys.get(r.id)) },
+        params: {
+          path: { org_id: ctx.orgId, recurring_visitor_id: r.id },
+          header: idemHeader(keys.get(r.id)),
+        },
       }),
     )
     keys.done(r.id)
@@ -272,7 +325,11 @@ export function RecurringTab({ ctx, canManage }: { ctx: SiteCtx; canManage: bool
                   </TableCell>
                   <TableCell>
                     <Badge variant={r.status === 'active' ? 'success' : 'secondary'}>
-                      {r.status === 'active' ? t`Active` : r.status === 'revoked' ? t`Revoked` : t`Expired`}
+                      {r.status === 'active'
+                        ? t`Active`
+                        : r.status === 'revoked'
+                          ? t`Revoked`
+                          : t`Expired`}
                     </Badge>
                   </TableCell>
                   <TableCell>
