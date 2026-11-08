@@ -71,7 +71,7 @@ var childTables = map[string][2]string{
 var personColumns = map[string][]string{
 	"ticket": {"reporter_person_id", "assignee_person_id"}, "ticket_comment": {"author_person_id"},
 	"ticket_vote": {"person_id"}, "announcement_recipient": {"person_id"}, "announcement_read": {"person_id"},
-	"document": {"addressed_person_id"},
+	"document":   {"addressed_person_id"},
 	"attendance": {"person_id", "proxy_for_person_id"}, "meeting_notice": {"person_id"}, "poll_answer": {"answered_by"},
 }
 

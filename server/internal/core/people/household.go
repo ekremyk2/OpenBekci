@@ -166,7 +166,10 @@ func (s *Service) EndHouseholdOccupancy(ctx context.Context, orgID, unitID, occI
 		if err != nil {
 			return err
 		}
-		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &unit.SiteID, Action: "occupancy.end_household", TargetType: "occupancy", TargetID: occID, Diff: diff})
+		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &unit.SiteID, Action: "occupancy.end_household", TargetType: "occupancy", TargetID: occID, Diff: diff}); err != nil {
+			return err
+		}
+		return s.occupancyEnded(ctx, tx, orgID, occ, end)
 	})
 	return tenancy.DBProblem(err, "end household occupancy")
 }

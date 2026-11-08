@@ -11,21 +11,28 @@ schemas:
       - attendance.manage
       - audit.read
       - audit.report
+      - bookings.create
+      - bookings.manage
+      - bookings.read
       - claims.decide
       - codes.read
       - dashboard.portfolio
       - dashboard.site
       - dashboard.staff
       - decisions.manage
+      - deliveries.read
       - directory.read
       - documents.manage
       - documents.read
       - documents.read_addressed
       - documents.upload_own
       - exports.create
+      - facilities.manage
       - files.manage
       - files.read
       - files.upload
+      - gate.manage
+      - gate.operate
       - invitations.household
       - invitations.manage
       - jobs.read
@@ -70,12 +77,18 @@ schemas:
       - vehicles.read
       - vendors.manage
       - vendors.read
+      - visitors.decide
+      - visitors.manage
+      - visitors.read
 x-openbekci-roles:
   org_admin:
     - announcements.publish
     - announcements.read
     - attendance.manage
     - audit.read
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - claims.decide
     - codes.read
     - dashboard.portfolio
@@ -85,9 +98,12 @@ x-openbekci-roles:
     - documents.manage
     - documents.read
     - exports.create
+    - facilities.manage
     - files.manage
     - files.read
     - files.upload
+    - gate.manage
+    - gate.operate
     - invitations.household
     - invitations.manage
     - jobs.read
@@ -129,10 +145,15 @@ x-openbekci-roles:
     - vehicles.read
     - vendors.manage
     - vendors.read
+    - visitors.manage
+    - visitors.read
   site_manager:
     - announcements.publish
     - announcements.read
     - attendance.manage
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - claims.decide
     - codes.read
     - dashboard.portfolio
@@ -142,9 +163,12 @@ x-openbekci-roles:
     - documents.manage
     - documents.read
     - exports.create
+    - facilities.manage
     - files.manage
     - files.read
     - files.upload
+    - gate.manage
+    - gate.operate
     - invitations.household
     - invitations.manage
     - jobs.read
@@ -182,10 +206,15 @@ x-openbekci-roles:
     - vehicles.read
     - vendors.manage
     - vendors.read
+    - visitors.manage
+    - visitors.read
   board_member:
     - announcements.publish
     - announcements.read
     - attendance.manage
+    - bookings.create
+    - bookings.manage
+    - bookings.read
     - codes.read
     - dashboard.site
     - decisions.manage
@@ -193,6 +222,7 @@ x-openbekci-roles:
     - documents.manage
     - documents.read
     - exports.create
+    - facilities.manage
     - files.read
     - files.upload
     - invitations.manage
@@ -224,6 +254,8 @@ x-openbekci-roles:
     - vehicles.read
     - vendors.manage
     - vendors.read
+    - visitors.manage
+    - visitors.read
   auditor:
     - announcements.read
     - audit.read
@@ -254,6 +286,7 @@ x-openbekci-roles:
     - units.read
     - vehicles.read
     - vendors.read
+    - visitors.read
   accountant:
     - announcements.read
     - codes.read
@@ -298,6 +331,7 @@ x-openbekci-roles:
     - codes.read
     - files.read
     - files.upload
+    - gate.operate
     - jobs.read
     - me.dashboard
     - me.manage

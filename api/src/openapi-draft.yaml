@@ -682,6 +682,13 @@ paths:
     $ref: ./paths/auth/auth-password-reset.yaml
   /v1/auth/password-reset/consume:
     $ref: ./paths/auth/auth-password-reset-consume.yaml
+  /v1/orgs/{org_id}/gate/units:
+    $ref: './paths/community/gate-units.yaml'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
+    $ref: './paths/community/recurring-visitors-recurring_visitor_id_rotate-qr.yaml'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
+    $ref: './paths/community/visitor-entries-entry_id_rotate-qr.yaml'
+
 components:
   securitySchemes:
     cookieAuth:

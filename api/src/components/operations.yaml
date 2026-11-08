@@ -18,6 +18,8 @@ schemas:
       - meeting.called
       - meeting.decisions
       - meeting.assembly_due
+      - delivery.waiting
+      - visitor.qr_rotated
       - term.expiring
       - visitor.approval_requested
       - visitor.arrived

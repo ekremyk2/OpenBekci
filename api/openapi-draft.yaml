@@ -21086,9 +21086,11 @@ paths:
 
         Guard minimization (S3): the response carries no phone numbers, e-mail addresses, national ids, balances or QR tokens.
 
+        **Rate limit.** 30 scans a minute per guard session: the next one is 429 `rate_limited` with `Retry-After`. Every scan that matches nothing (unknown, unparseable or another site's QR) is audited with the console and guard session, never the scanned text.
+
         Permission: `gate.operate`.
 
-        Problems: `conflict` (409).
+        Problems: `conflict` (409), `rate_limited` (429), `guard_session_required` and `guard_session_expired` (401).
       tags:
         - community
       security:
@@ -21126,6 +21128,8 @@ paths:
         '409':
           $ref: '#/components/responses/Problem'
         '422':
+          $ref: '#/components/responses/Problem'
+        '429':
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
@@ -23742,6 +23746,173 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/gate/units:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: gate.searchUnits
+      summary: Find a unit by door number or block
+      description: |-
+        **Release 0.3.** The booth's unit picker for walk-ins and parcels: guards hold no `units.read`, so this is their way to find a unit. It matches the door number or the block name and returns the id, door number and block name only; no occupants, areas, shares or other unit data. Needs a guard session.
+
+        Problems: `guard_session_required` and `guard_session_expired` (401).
+
+        Permission: `gate.operate`.
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - gate.operate
+        site_manager:
+          - gate.operate
+        guard:
+          - gate.operate
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Part of a door number or block name.
+          required: true
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/GuardSession'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateUnitList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/recurring-visitors/{recurring_visitor_id}:rotate-qr:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: recurring_visitor_id
+        in: path
+        required: true
+        description: Id of the recurring visitor.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.rotateRecurringVisitorQr
+      summary: Rotate the QR of a recurring visitor
+      description: |-
+        **Release 0.3.** Issue a new QR token for a recurring visitor; the old QR stops working at once, also at the gate. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecurringVisitor'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/visitor-entries/{entry_id}:rotate-qr:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: entry_id
+        in: path
+        required: true
+        description: Id of the entry.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: community.rotateVisitorEntryQr
+      summary: Rotate the QR of a visitor entry
+      description: |-
+        **Release 0.3.** Issue a new QR token for a pre-registration that has not been used; the old QR stops working at once. The new token goes to the unit's current occupants only (owner, tenant, household) and they are notified: the response carries `qr_token` only when the caller is one of them, so a manager or board member who rotates it gets `null`. Audited.
+
+        Permission: `visitors.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - community
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - visitors.manage
+        site_manager:
+          - visitors.manage
+        board_member:
+          - visitors.manage
+        owner:
+          - visitors.manage
+        tenant:
+          - visitors.manage
+        household:
+          - visitors.manage
+      x-idempotent: optional
+      x-stability: preview
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitorEntry'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     cookieAuth:
@@ -23864,7 +24035,8 @@ components:
     GuardSession:
       name: X-Guard-Session
       in: header
-      description: Optional guard session from `community.createGuardSession`. With a valid token the action is attributed to that guard (audit actor and `decided_by` fields) instead of the console's login principal; the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the login principal is the actor. An unknown, expired or ended token is 401 `invalid_grant`; a token from another console login session or another site is 403 `insufficient_permission`. The header is never required and is ignored by operations that do not list it.
+      x-go-name: GuardSessionHeader
+      description: Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it.
       schema:
         type: string
     FileId:
@@ -23933,6 +24105,8 @@ components:
             - reauth_required
             - mfa_required
             - invalid_grant
+            - guard_session_required
+            - guard_session_expired
             - rate_limited
             - pack_error
             - site_offboarded
@@ -33758,6 +33932,8 @@ components:
         - meeting.called
         - meeting.decisions
         - meeting.assembly_due
+        - delivery.waiting
+        - visitor.qr_rotated
         - term.expiring
         - visitor.approval_requested
         - visitor.arrived
@@ -38473,7 +38649,7 @@ components:
         qr_token:
           type: string
           nullable: true
-          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+          description: The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
         decided_by:
           type: string
           format: uuid
@@ -38677,7 +38853,7 @@ components:
         qr_token:
           type: string
           nullable: true
-          description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+          description: The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
         created_at:
           type: string
           format: date-time
@@ -39157,11 +39333,19 @@ components:
       type: object
       required:
         - connected
+        - online
+        - clock_suspect
         - last_seen_at
         - points
       properties:
         connected:
           type: boolean
+        online:
+          type: boolean
+          description: Whether the agent has reported recently enough to be trusted with opening a gate.
+        clock_suspect:
+          type: boolean
+          description: Whether the agent's clock disagrees with the server's, so time windows judged on the gate cannot be trusted.
         last_seen_at:
           type: string
           format: date-time
@@ -39178,6 +39362,8 @@ components:
         - kind
         - direction
         - enabled
+        - online
+        - clock_suspect
       properties:
         id:
           type: string
@@ -39190,6 +39376,12 @@ components:
           type: string
         enabled:
           type: boolean
+        online:
+          type: boolean
+          description: Whether the access point's controller is reachable through the agent.
+        clock_suspect:
+          type: boolean
+          description: Whether the access point's clock is suspect; opening it is refused with 409 `clock_suspect`.
     GateConsole:
       type: object
       description: Everything the booth page shows at once; auto-refreshed.
@@ -41642,21 +41834,28 @@ components:
         - attendance.manage
         - audit.read
         - audit.report
+        - bookings.create
+        - bookings.manage
+        - bookings.read
         - claims.decide
         - codes.read
         - dashboard.portfolio
         - dashboard.site
         - dashboard.staff
         - decisions.manage
+        - deliveries.read
         - directory.read
         - documents.manage
         - documents.read
         - documents.read_addressed
         - documents.upload_own
         - exports.create
+        - facilities.manage
         - files.manage
         - files.read
         - files.upload
+        - gate.manage
+        - gate.operate
         - invitations.household
         - invitations.manage
         - jobs.read
@@ -41701,6 +41900,9 @@ components:
         - vehicles.read
         - vendors.manage
         - vendors.read
+        - visitors.decide
+        - visitors.manage
+        - visitors.read
     TicketWorkflowRestore:
       type: object
       description: Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`.
@@ -41909,3 +42111,43 @@ components:
           description: Door numbers of units without an owner of record; nobody votes for them.
           items:
             type: string
+    GateUnit:
+      type: object
+      description: A unit as the booth's picker shows it; nothing about who lives there.
+      required:
+        - id
+        - door_number
+        - block_name
+      properties:
+        id:
+          type: string
+          format: uuid
+        door_number:
+          type: string
+        block_name:
+          type: string
+          nullable: true
+          description: The block's name; `null` for the hidden block of a single-building site.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000001
+        door_number: A-12
+        block_name: A Block
+    GateUnitList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateUnit'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000001
+            door_number: A-12
+            block_name: A Block
+        next_cursor: null

@@ -12,6 +12,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -49,7 +50,9 @@ type Deps struct {
 	People  *people.Service
 	// Governance serves the 0.2 assembly operations.
 	Governance *governance.Service
-	Audit      *audit.Service
+	// Community serves the community operations (bookings, visitors, guard console, parcels).
+	Community *community.Service
+	Audit     *audit.Service
 	// Files serves the /v1/orgs/{org_id}/files operations. Nil answers them
 	// with an internal error (unit tests only).
 	Files *files.Service

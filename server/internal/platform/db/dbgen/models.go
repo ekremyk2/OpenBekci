@@ -156,6 +156,29 @@ type Block struct {
 	Version   int32
 }
 
+type Booking struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	FacilityID      pgtype.UUID
+	UnitID          pgtype.UUID
+	PersonID        pgtype.UUID
+	StartAt         pgtype.Timestamptz
+	EndAt           pgtype.Timestamptz
+	Status          string
+	DebtorKind      pgtype.Text
+	ChargeID        pgtype.UUID
+	FeeAmount       pgtype.Int8
+	FeeCurrency     pgtype.Text
+	RefundAmount    pgtype.Int8
+	CancelledReason pgtype.Text
+	CancelledBy     pgtype.UUID
+	CreatedBy       pgtype.UUID
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
+}
+
 type Decision struct {
 	ID                    pgtype.UUID
 	OrgID                 pgtype.UUID
@@ -183,6 +206,20 @@ type DecisionCounter struct {
 	SiteID pgtype.UUID
 	Year   int32
 	LastNo int32
+}
+
+type Delivery struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	UnitID          pgtype.UUID
+	ReceivedAt      pgtype.Timestamptz
+	ReceivedBy      pgtype.UUID
+	Description     pgtype.Text
+	CollectedAt     pgtype.Timestamptz
+	CollectedByName pgtype.Text
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
 }
 
 type DeliveryLog struct {
@@ -228,14 +265,29 @@ type Document struct {
 }
 
 type Facility struct {
-	ID        pgtype.UUID
-	OrgID     pgtype.UUID
-	SiteID    pgtype.UUID
-	Name      string
-	Rules     []byte
-	CreatedAt pgtype.Timestamptz
-	UpdatedAt pgtype.Timestamptz
-	Version   int32
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	Name        string
+	Rules       []byte
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+	Version     int32
+	Description pgtype.Text
+	Enabled     bool
+}
+
+type FacilityBlock struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	FacilityID pgtype.UUID
+	StartAt    pgtype.Timestamptz
+	EndAt      pgtype.Timestamptz
+	Reason     pgtype.Text
+	CreatedBy  pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
 }
 
 type File struct {
@@ -277,6 +329,26 @@ type Folder struct {
 	Version           int32
 }
 
+type GatePin struct {
+	OrgID        pgtype.UUID
+	PersonID     pgtype.UUID
+	PinHash      string
+	AttemptsFrom pgtype.Timestamptz
+	SetBy        pgtype.UUID
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
+type GatePinAttempt struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PersonID  pgtype.UUID
+	ConsoleID pgtype.UUID
+	Ok        bool
+	At        pgtype.Timestamptz
+}
+
 type GovernanceSetting struct {
 	OrgID     pgtype.UUID
 	SiteID    pgtype.UUID
@@ -285,6 +357,18 @@ type GovernanceSetting struct {
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 	Version   int32
+}
+
+type GuardSession struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PersonID  pgtype.UUID
+	ConsoleID pgtype.UUID
+	TokenHash []byte
+	ExpiresAt pgtype.Timestamptz
+	EndedAt   pgtype.Timestamptz
+	CreatedAt pgtype.Timestamptz
 }
 
 type IdempotencyKey struct {
@@ -624,6 +708,27 @@ type PollAnswer struct {
 	AnsweredAt   pgtype.Timestamptz
 }
 
+type RecurringVisitor struct {
+	ID            pgtype.UUID
+	OrgID         pgtype.UUID
+	SiteID        pgtype.UUID
+	UnitID        pgtype.UUID
+	Name          string
+	Plate         pgtype.Text
+	Days          []int16
+	StartTime     string
+	EndTime       string
+	ValidFrom     pgtype.Date
+	ValidTo       pgtype.Date
+	Status        string
+	QrTokenHash   []byte
+	QrTokenSealed []byte
+	RegisteredBy  pgtype.UUID
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+	Version       int32
+}
+
 type Session struct {
 	ID          pgtype.UUID
 	UserID      pgtype.UUID
@@ -900,6 +1005,48 @@ type Vendor struct {
 	CreatedAt                pgtype.Timestamptz
 	UpdatedAt                pgtype.Timestamptz
 	Version                  int32
+}
+
+type VisitorApprovalRequest struct {
+	ID          pgtype.UUID
+	OrgID       pgtype.UUID
+	SiteID      pgtype.UUID
+	EntryID     pgtype.UUID
+	UnitID      pgtype.UUID
+	RequestedBy pgtype.UUID
+	RequestedAt pgtype.Timestamptz
+	ExpiresAt   pgtype.Timestamptz
+	Status      string
+	DecidedBy   pgtype.UUID
+	DecidedAt   pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
+type VisitorEntry struct {
+	ID                 pgtype.UUID
+	OrgID              pgtype.UUID
+	SiteID             pgtype.UUID
+	UnitID             pgtype.UUID
+	Name               string
+	Plate              pgtype.Text
+	WindowFrom         pgtype.Timestamptz
+	WindowTo           pgtype.Timestamptz
+	ApprovalStatus     string
+	Source             string
+	QrTokenHash        []byte
+	QrTokenSealed      []byte
+	RecurringVisitorID pgtype.UUID
+	DecidedBy          pgtype.UUID
+	DecidedAt          pgtype.Timestamptz
+	ArrivedAt          pgtype.Timestamptz
+	ArrivedBy          pgtype.UUID
+	LeftAt             pgtype.Timestamptz
+	Cancelled          bool
+	RegisteredBy       pgtype.UUID
+	CreatedAt          pgtype.Timestamptz
+	UpdatedAt          pgtype.Timestamptz
+	Version            int32
 }
 
 type VoteCount struct {

@@ -41,6 +41,8 @@ const (
 	CodeReauthRequired         Code = "reauth_required"
 	CodeMFARequired            Code = "mfa_required"
 	CodeInvalidGrant           Code = "invalid_grant"
+	CodeGuardSessionRequired   Code = "guard_session_required"
+	CodeGuardSessionExpired    Code = "guard_session_expired"
 	CodeRateLimited            Code = "rate_limited"
 	CodePackError              Code = "pack_error"
 	CodeSiteOffboarded         Code = "site_offboarded"

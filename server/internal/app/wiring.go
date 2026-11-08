@@ -6,8 +6,11 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -18,6 +21,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/permissions"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
+	"github.com/openbekci/openbekci/server/internal/platform/jobs"
 	"github.com/openbekci/openbekci/server/internal/platform/storage"
 )
 
@@ -51,7 +55,7 @@ func newIdentity(cfg Config, log *slog.Logger, d *db.DB) (*identity.Service, err
 
 // newPeople builds the people service: national ids are sealed with
 // ENCRYPTION_KEY and invitations go out through the SMS and mail gateways.
-func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) (*people.Service, error) {
+func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service, comm *community.Service) (*people.Service, error) {
 	gw, err := newSMSGateway(cfg, log)
 	if err != nil {
 		return nil, err
@@ -66,6 +70,31 @@ func newPeople(cfg Config, log *slog.Logger, d *db.DB, ident *identity.Service) 
 		InstanceName:  cfg.InstanceName,
 		SMS:           gw,
 		Mail:          mailer,
+		Log:           log,
+		Hooks:         peopleHooks(comm),
+	})
+}
+
+// peopleHooks subscribes the community module to the people module's events:
+// when an occupancy ends, the visitor credentials its person registered end.
+func peopleHooks(comm *community.Service) people.Hooks {
+	return people.Hooks{
+		OnOccupancyEnded: func(ctx context.Context, tx pgx.Tx, e people.OccupancyEnded) error {
+			return comm.OnOccupancyEnded(ctx, tx, e.OrgID, e.UnitID, e.PersonID)
+		},
+	}
+}
+
+// newCommunity builds the community service. The money, notifications and QR
+// modules are not wired yet, so the booking charger and the notifier are the
+// no-op defaults (a booking stores its fee, a notification is dropped); a later
+// phase passes the real ones here.
+func newCommunity(cfg Config, log *slog.Logger, d *db.DB, notify jobs.Notifier) (*community.Service, error) {
+	return community.NewService(d, community.Config{
+		Notifier:      notify,
+		EncryptionKey: cfg.EncryptionKey,
+		BaseURL:       cfg.BaseURL,
+		Platform:      d,
 		Log:           log,
 	})
 }
@@ -125,13 +154,13 @@ func newGovernance(cfg Config, log *slog.Logger, d *db.DB, fs *files.Service) *g
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
-func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service) (httpapi.Deps, error) {
+func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service) (httpapi.Deps, error) {
 	ident, err := newIdentity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{}) // sites and blocks exist from phase B on
-	peopleSvc, err := newPeople(cfg, log, d, ident)
+	peopleSvc, err := newPeople(cfg, log, d, ident, communitySvc)
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
@@ -149,6 +178,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		Authz:       authz.NewResolver(d, reg, nil),
 		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey),
 		People:      peopleSvc,
+		Community:   communitySvc,
 		Audit:       audit.NewService(d),
 		Files:       fs,
 		Authenticator: httpapi.SessionAuthenticator{

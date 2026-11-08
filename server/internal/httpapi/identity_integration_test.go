@@ -16,6 +16,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
@@ -48,6 +49,10 @@ type idEnv struct {
 	people *people.Service
 	tenSvc *tenancy.Service
 	gov    *governance.Service
+	comm   *community.Service
+	notes  *recNotifier
+	charge *recCharger
+	hooks  *recHooks
 	cookie *http.Cookie
 	files  *files.Service
 	ops    *opsTest
@@ -74,7 +79,10 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	authz.SetScopeLoader(tenancy.ScopeLoader{})
 	t.Cleanup(func() { authz.SetScopeLoader(nil) })
 	var perr error
-	e.people, perr = people.NewService(d, e.svc, people.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, InstanceName: "Test", SMS: e.sms, Mail: e.mail, Log: cfg.Log})
+	e.people, perr = people.NewService(d, e.svc, people.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, InstanceName: "Test", SMS: e.sms, Mail: e.mail, Log: cfg.Log,
+		Hooks: people.Hooks{OnOccupancyEnded: func(ctx context.Context, tx pgx.Tx, ev people.OccupancyEnded) error {
+			return e.comm.OnOccupancyEnded(ctx, tx, ev.OrgID, ev.UnitID, ev.PersonID)
+		}}})
 	if perr != nil {
 		t.Fatal(perr)
 	}
@@ -86,13 +94,19 @@ func newIDEnv(t *testing.T, withSMS, withMail bool) *idEnv {
 	e.files.RegisterResolver(testScope, files.ResolverFuncs{Read: allowAll, Attach: allowAll}, files.WithMaxFiles(3))
 	e.ops = newOpsTest(d, e.files)
 	e.gov = governance.NewService(d, d, governance.Config{BaseURL: testBase, InstanceName: "Test", Log: cfg.Log})
+	e.notes, e.charge, e.hooks = &recNotifier{}, &recCharger{}, &recHooks{}
+	e.comm, perr = community.NewService(d, community.Config{EncryptionKey: []byte("0123456789abcdef0123456789abcdef-enc"), BaseURL: testBase, Platform: d, Log: cfg.Log,
+		Notifier: e.notes, Charger: e.charge, Hooks: e.hooks.hooks()})
+	if perr != nil {
+		t.Fatal(perr)
+	}
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(e.svc)
 	inst := instance.NewService(instance.Config{Name: "Test", BaseURL: testBase, ServerVersion: "0.1.0", MinAppVersionAndroid: "1.0.0", MinAppVersionIOS: "1.0.0"},
 		instance.PGIDSource{DB: d}, methods)
 	e.deps = Deps{
 		Log: cfg.Log, DB: d, Idempotency: idempotency.NewPG(d), Instance: inst, Identity: e.svc,
-		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Audit: audit.NewService(d),
+		Authz: authz.NewResolver(d, reg, nil), Tenancy: e.tenSvc, Files: e.files, Ops: e.ops.deps, People: e.people, Governance: e.gov, Community: e.comm, Audit: audit.NewService(d),
 		Authenticator: SessionAuthenticator{Identity: e.svc, Origins: []string{testBase}}, ValidateResponses: true,
 	}
 	e.h = NewRouter(e.deps, Options{})

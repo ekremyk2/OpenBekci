@@ -596,7 +596,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
-        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+        description: The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
       decided_by:
         type: string
         format: uuid
@@ -800,7 +800,7 @@ schemas:
       qr_token:
         type: string
         nullable: true
-        description: The QR token; `obk1.<token>` is what the QR encodes. Returned only to the people of the unit it belongs to and to holders of `visitors.manage`; `null` for every other reader (board, auditor, guards). It is also served by the `.../qr` operations.
+        description: The QR token, always including the `obk1.` prefix (the value is `obk1.<token>`, exactly what the QR encodes and what `community.scanGateVisitor` takes). Returned only to the unit's current occupants (owner, tenant, household), never to managers, board members, auditors or guards (`null` for them); a manager issues a new one to the occupants with the `rotate-qr` operation. It is also served by the `.../qr` operations.
       created_at:
         type: string
         format: date-time
@@ -1280,11 +1280,19 @@ schemas:
     type: object
     required:
       - connected
+      - online
+      - clock_suspect
       - last_seen_at
       - points
     properties:
       connected:
         type: boolean
+      online:
+        type: boolean
+        description: Whether the agent has reported recently enough to be trusted with opening a gate.
+      clock_suspect:
+        type: boolean
+        description: Whether the agent's clock disagrees with the server's, so time windows judged on the gate cannot be trusted.
       last_seen_at:
         type: string
         format: date-time
@@ -1301,6 +1309,8 @@ schemas:
       - kind
       - direction
       - enabled
+      - online
+      - clock_suspect
     properties:
       id:
         type: string
@@ -1313,6 +1323,12 @@ schemas:
         type: string
       enabled:
         type: boolean
+      online:
+        type: boolean
+        description: Whether the access point's controller is reachable through the agent.
+      clock_suspect:
+        type: boolean
+        description: Whether the access point's clock is suspect; opening it is refused with 409 `clock_suspect`.
   GateConsole:
     type: object
     description: Everything the booth page shows at once; auto-refreshed.
@@ -1403,6 +1419,46 @@ schemas:
           description: null
           status: waiting
           collected_by_name: null
+      next_cursor: null
+  GateUnit:
+    type: object
+    description: A unit as the booth's picker shows it; nothing about who lives there.
+    required:
+      - id
+      - door_number
+      - block_name
+    properties:
+      id:
+        type: string
+        format: uuid
+      door_number:
+        type: string
+      block_name:
+        type: string
+        nullable: true
+        description: The block's name; `null` for the hidden block of a single-building site.
+    example:
+      id: 0192a3f0-1000-7000-8000-000000000001
+      door_number: A-12
+      block_name: A Block
+  GateUnitList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/GateUnit"
+      next_cursor:
+        type: string
+        nullable: true
+    example:
+      items:
+        - id: 0192a3f0-1000-7000-8000-000000000001
+          door_number: A-12
+          block_name: A Block
       next_cursor: null
   GatePlate:
     type: object

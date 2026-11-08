@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/openbekci/openbekci/server/internal/core/community"
 	"github.com/openbekci/openbekci/server/internal/core/files"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
@@ -17,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
+	"github.com/riverqueue/river"
 )
 
 const shutdownTimeout = 20 * time.Second
@@ -37,7 +39,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files)
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
@@ -115,6 +117,7 @@ type runtime struct {
 	db      *db.DB
 	jobs    *jobs.Client
 	gov     *governance.Service
+	comm    *community.Service
 	idem    *idempotency.PG
 	files   *files.Service
 	ops     *opsServices
@@ -177,8 +180,14 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 	}
 	gov := newGovernance(cfg, log, d, fs)
 	registerGov, periodicGov := gov.JobOptions()
+	comm, err := newCommunity(cfg, log, d, ops.late)
+	if err != nil {
+		d.Close()
+		return nil, err
+	}
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
-		Notifications: ops.notifications, Tasks: ops.tasks(), Register: registerGov, Periodic: periodicGov})
+		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) { registerGov(w); comm.RegisterWorkers(w) },
+		Periodic: append(periodicGov, community.PeriodicJobs()...)})
 	if err != nil {
 		d.Close()
 		return nil, err
@@ -191,7 +200,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 			return nil, fmt.Errorf("start river: %w", err)
 		}
 	}
-	return &runtime{db: d, jobs: client, gov: gov, idem: idem, files: fs, ops: ops, working: withWorker}, nil
+	return &runtime{db: d, jobs: client, gov: gov, comm: comm, idem: idem, files: fs, ops: ops, working: withWorker}, nil
 }
 
 func (rt *runtime) stopJobsCtx(ctx context.Context) error {

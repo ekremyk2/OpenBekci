@@ -23,7 +23,9 @@ const (
 	SettingTenantsArePortalUsers = "tenants_are_portal_users"
 	SettingDirectoryEnabled      = "directory_enabled"
 	SettingAppurtenanceDefault   = "appurtenance_default"
-	SettingPayerDefaults         = "payer_defaults"
+	// SettingVisitorRetentionDays is how long the visitor logs are kept (7 to 365).
+	SettingVisitorRetentionDays = "visitor_retention_days"
+	SettingPayerDefaults        = "payer_defaults"
 )
 
 // Appurtenance modes (S2).
@@ -146,6 +148,15 @@ func validateSettings(settings map[string]any) []problem.Field {
 			if _, isBool := v.(bool); !isBool {
 				f = append(f, problem.Field{Field: "settings." + k, Code: "invalid_type"})
 			}
+		}
+	}
+	if v, ok := settings[SettingVisitorRetentionDays]; ok {
+		if n, isNum := v.(float64); !isNum || n != float64(int(n)) {
+			f = append(f, problem.Field{Field: "settings." + SettingVisitorRetentionDays, Code: "invalid_type"})
+		} else if n < 7 {
+			f = append(f, problem.Field{Field: "settings." + SettingVisitorRetentionDays, Code: "too_small", Params: map[string]any{"min": 7}})
+		} else if n > 365 {
+			f = append(f, problem.Field{Field: "settings." + SettingVisitorRetentionDays, Code: "too_large", Params: map[string]any{"max": 365}})
 		}
 	}
 	if v, ok := settings[SettingAppurtenanceDefault]; ok {

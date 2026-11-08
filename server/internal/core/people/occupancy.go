@@ -496,7 +496,17 @@ func (s *Service) UpdateOccupancy(ctx context.Context, orgID, occID uuid.UUID, e
 		if out, err = loadOcc(ctx, tx, orgID, occID, false); err != nil {
 			return err
 		}
-		return audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &before.SiteID, Action: "occupancy.update", TargetType: "occupancy", TargetID: occID, Diff: diff})
+		if err := audit.Record(ctx, tx, audit.Event{OrgID: orgID, SiteID: &before.SiteID, Action: "occupancy.update", TargetType: "occupancy", TargetID: occID, Diff: diff}); err != nil {
+			return err
+		}
+		if next.ValidTo != nil && (before.ValidTo == nil || *before.ValidTo != *next.ValidTo) {
+			ends, perr := time.Parse(dateLayout, *next.ValidTo)
+			if perr != nil {
+				return perr
+			}
+			return s.occupancyEnded(ctx, tx, orgID, out, ends)
+		}
+		return nil
 	})
 	if errors.Is(err, tenancy.ErrVersion) {
 		return Occupancy{}, tenancy.VersionConflict("occupancy")
@@ -724,10 +734,25 @@ func (s *Service) MoveOutOccupancy(ctx context.Context, orgID, occID uuid.UUID, 
 		if _, err := tx.Exec(ctx, `UPDATE occupancy SET valid_to = $3, updated_at = now(), version = version + 1 WHERE org_id = $1 AND id = $2`, orgID, occID, in.AsOf); err != nil {
 			return err
 		}
+		ended := []Occupancy{occ}
 		if in.EndHousehold {
-			if _, err := tx.Exec(ctx, `UPDATE occupancy SET valid_to = $4, updated_at = now(), version = version + 1
-				WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND kind = 'household' AND valid_from < $4 AND (valid_to IS NULL OR valid_to > $4)`,
-				orgID, occ.UnitID, occ.Side, in.AsOf); err != nil {
+			rows, err := tx.Query(ctx, `UPDATE occupancy SET valid_to = $4, updated_at = now(), version = version + 1
+				WHERE org_id = $1 AND unit_id = $2 AND side = $3 AND kind = 'household' AND valid_from < $4 AND (valid_to IS NULL OR valid_to > $4)
+				RETURNING id, person_id`,
+				orgID, occ.UnitID, occ.Side, in.AsOf)
+			if err != nil {
+				return err
+			}
+			for rows.Next() {
+				m := Occupancy{SiteID: occ.SiteID, UnitID: occ.UnitID, Kind: KindHousehold, Side: occ.Side}
+				if err := rows.Scan(&m.ID, &m.PersonID); err != nil {
+					rows.Close()
+					return err
+				}
+				ended = append(ended, m)
+			}
+			rows.Close()
+			if err := rows.Err(); err != nil {
 				return err
 			}
 		} else if _, err := tx.Exec(ctx, `UPDATE occupancy SET may_see_money = false, updated_at = now(), version = version + 1
@@ -735,6 +760,11 @@ func (s *Service) MoveOutOccupancy(ctx context.Context, orgID, occID uuid.UUID, 
 			orgID, occ.UnitID, occ.Side, in.AsOf); err != nil {
 			// household members who stay do not keep the previous holder's grant of money access
 			return err
+		}
+		for _, e := range ended {
+			if err := s.occupancyEnded(ctx, tx, orgID, e, in.AsOf); err != nil {
+				return err
+			}
 		}
 		var succ *uuid.UUID
 		if in.SuccessorPersonID != nil {

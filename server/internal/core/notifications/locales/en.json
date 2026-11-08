@@ -14,6 +14,8 @@
   "meeting.called": {"title": "Meeting called", "body": "{{.title}} on {{.date}}.", "subject": "Meeting on {{.date}}", "sms": "{{.site}}: meeting on {{.date}}. {{.title}}"},
   "meeting.decisions": {"title": "Decisions of the meeting", "body": "The decisions of {{.title}} are available.", "subject": "Decisions of {{.title}}", "sms": "{{.site}}: the decisions of {{.title}} are available."},
   "meeting.assembly_due": {"title": "Ordinary assembly due", "body": "The ordinary assembly of {{.year}} is due in {{.month}}.", "subject": "Ordinary assembly {{.year}}", "sms": "{{.site}}: the ordinary assembly of {{.year}} is due in {{.month}}."},
+  "delivery.waiting": {"title": "Parcel still waiting", "body": "A parcel for {{.unit_door_number}} has been waiting for {{.weeks}} week(s).", "subject": "Parcel waiting for {{.unit_door_number}}", "sms": "{{.site}}: a parcel for {{.unit_door_number}} is still waiting at the desk."},
+  "visitor.qr_rotated": {"title": "New visitor QR code", "body": "A new QR code was issued for {{.visitor_name}}. Open the app to see it.", "subject": "New QR code for {{.visitor_name}}", "sms": "{{.site}}: a new QR code was issued for {{.visitor_name}}."},
   "term.expiring": {"title": "Term ending", "body": "The term of {{.name}} ends on {{.date}}.", "subject": "Term ending on {{.date}}", "sms": "{{.site}}: the term of {{.name}} ends on {{.date}}."},
   "visitor.approval_requested": {"title": "Visitor at the gate", "body": "{{.name}} is waiting. Approve or decline.", "subject": "Visitor at the gate", "sms": "{{.site}}: {{.name}} is at the gate."},
   "visitor.arrived": {"title": "Visitor arrived", "body": "{{.name}} arrived.", "subject": "Visitor arrived", "sms": "{{.site}}: {{.name}} arrived."},

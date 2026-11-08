@@ -259,7 +259,7 @@ func TestProblemCodesMatchSpec(t *testing.T) {
 	for _, c := range []problem.Code{
 		problem.CodeValidationFailed, problem.CodeBadRequest, problem.CodeUnauthenticated, problem.CodeNotFound,
 		problem.CodeConflict, problem.CodeVersionConflict, problem.CodeIdempotencyMismatch, problem.CodeLockedPeriod,
-		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant,
+		problem.CodeInsufficientPermission, problem.CodeReauthRequired, problem.CodeMFARequired, problem.CodeInvalidGrant, problem.CodeGuardSessionRequired, problem.CodeGuardSessionExpired,
 		problem.CodeRateLimited, problem.CodePackError, problem.CodeSiteOffboarded, problem.CodeInternalError, problem.CodePayloadTooLarge, problem.CodeMethodNotAllowed, problem.CodeUnsupportedMediaType, problem.CodeTimeout,
 		problem.CodeCSRFFailed, problem.CodeSMSUnavailable, problem.CodeMailUnavailable,
 		problem.CodeScanUnavailable,

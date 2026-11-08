@@ -33,6 +33,8 @@ const (
 	TypeBookingConfirmed      = "booking.confirmed"
 	TypeBookingCancelled      = "booking.cancelled"
 	TypeDeliveryReceived      = "delivery.received"
+	TypeDeliveryWaiting       = "delivery.waiting"
+	TypeVisitorQRRotated      = "visitor.qr_rotated"
 	TypeAgentSilent           = "access.agent_silent"
 	TypeAgentClockSkew        = "access.agent_clock_skew"
 	TypeAgentStopped          = "access.agent_stopped"
@@ -50,7 +52,7 @@ var Vocabulary = []string{
 	TypeAnnouncementPublished, TypeChargeDueSoon, TypeChargeOverdue, TypePaymentReceipt, TypePaymentDeclared,
 	TypePaymentConfirmed, TypePaymentRejected, TypeStatementSent, TypeTicketUpdated, TypeTicketCommented,
 	TypeClaimRequested, TypeClaimDecided, TypeMeetingCalled, TypeMeetingDecisions, TypeAssemblyDue, TypeTermExpiring,
-	TypeVisitorApproval, TypeVisitorArrived, TypeBookingConfirmed, TypeBookingCancelled, TypeDeliveryReceived,
+	TypeVisitorApproval, TypeVisitorArrived, TypeBookingConfirmed, TypeBookingCancelled, TypeDeliveryReceived, TypeDeliveryWaiting, TypeVisitorQRRotated,
 	TypeAgentSilent, TypeAgentClockSkew, TypeAgentStopped,
 }
 

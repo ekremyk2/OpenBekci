@@ -770,5 +770,3 @@ func (s *apiServer) GovernanceListTermReminders(ctx context.Context, req gen.Gov
 	out, err := listOf[gen.TermReminderList](items, next)
 	return gen.GovernanceListTermReminders200JSONResponse(out), err
 }
-
-
