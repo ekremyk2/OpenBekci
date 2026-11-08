@@ -8,6 +8,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
+	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/platformadmin"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
@@ -20,6 +21,7 @@ type Admin struct {
 	Platform *platformadmin.Service
 	Tenancy  *tenancy.Service
 	db       *db.DB
+	encKey   []byte
 }
 
 // OpenAdmin connects as the app and platform roles and builds the services.
@@ -38,8 +40,13 @@ func OpenAdmin(ctx context.Context, cfg Config, log *slog.Logger) (*Admin, error
 		return nil, err
 	}
 	authz.SetScopeLoader(tenancy.ScopeLoader{})
-	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d}, nil
+	return &Admin{Identity: ident, Platform: platformadmin.NewService(d), Tenancy: tenancy.NewService(d).WithArchiveKey(cfg.SecretKey), db: d, encKey: cfg.EncryptionKey}, nil
 }
 
 // Close releases the database connections.
 func (a *Admin) Close() { a.db.Close() }
+
+// ResealNationalIDs rewrites national ids sealed in the old format under the current key id.
+func (a *Admin) ResealNationalIDs(ctx context.Context) (done, failed int, err error) {
+	return people.ResealNationalIDs(ctx, a.db, a.encKey)
+}

@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -9,6 +10,11 @@ import (
 	"fmt"
 	"io"
 )
+
+// CurrentKeyID names the key a sealed value is written with. Sealed values start
+// with "<id>:" so a rotated key can be told from the old one (plan 16); values
+// without a prefix are the pre-key-id format and open with the same key.
+const CurrentKeyID = "k1"
 
 // FieldCipher seals single database fields (national ids) with AES-256-GCM.
 // The key is derived from OPENBEKCI_ENCRYPTION_KEY and a purpose label, so a
@@ -46,11 +52,24 @@ func (c *FieldCipher) Seal(plaintext, aad []byte) ([]byte, error) {
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
 		return nil, fmt.Errorf("crypto: read nonce: %w", err)
 	}
-	return c.aead.Seal(nonce, nonce, plaintext, aad), nil
+	out := append([]byte(CurrentKeyID+":"), c.aead.Seal(nonce, nonce, plaintext, aad)...)
+	return out, nil
 }
 
 // Open decrypts a value sealed by Seal.
 func (c *FieldCipher) Open(sealed, aad []byte) ([]byte, error) {
+	if rest, ok := bytes.CutPrefix(sealed, []byte(CurrentKeyID+":")); ok {
+		if pt, err := c.open(rest, aad); err == nil {
+			return pt, nil
+		}
+	}
+	return c.open(sealed, aad)
+}
+
+// NeedsReseal reports whether sealed is in the old format or under another key id.
+func NeedsReseal(sealed []byte) bool { return !bytes.HasPrefix(sealed, []byte(CurrentKeyID+":")) }
+
+func (c *FieldCipher) open(sealed, aad []byte) ([]byte, error) {
 	n := c.aead.NonceSize()
 	if len(sealed) < n+c.aead.Overhead() {
 		return nil, errors.New("crypto: sealed value is too short")

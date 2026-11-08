@@ -33,6 +33,7 @@ func (p *pb) archiveOf(t *testing.T) (siteID uuid.UUID, data []byte, resident uu
 	f := p.w.NewSite(t, p.org)
 	resident = p.w.NewPerson(t, p.org)
 	p.w.NewOccupancy(t, f, f.Unit, resident, "owner")
+	p.w.Exec(t, `UPDATE person SET national_id_enc = '\x6b313a0102', national_id_country = 'TR' WHERE id = $1`, resident)
 	board := p.w.NewPerson(t, p.org)
 	p.w.Exec(t, `INSERT INTO membership (id, org_id, person_id, role, scope_type, scope_id, site_owned, valid_from) VALUES ($1, $2, $3, 'board_member', 'site', $4, true, now() - interval '1 day')`, id.New(), p.org.ID, board, f.Site)
 	mgr := p.w.NewPerson(t, p.org)
@@ -72,6 +73,9 @@ func TestIntegrationSiteImportCarriesNoCompanyRolesAndNoAccountLinks(t *testing.
 	// the archive never links an account
 	if n := p.qInt(`SELECT count(*) FROM person WHERE org_id = $1 AND user_id IS NOT NULL`, orgB); n != linked0 {
 		t.Fatalf("%d imported people are linked to an account", n)
+	}
+	if n := p.qInt(`SELECT count(*) FROM person WHERE org_id = $1 AND national_id_enc IS NOT NULL`, orgB); n != 1 {
+		t.Fatalf("a same-instance import keeps sealed national ids, got %d", n)
 	}
 	if n := p.qInt(`SELECT count(*) FROM person WHERE org_id = $1`, orgB); n != people0+2 { // resident and board member
 		t.Fatalf("people imported = %d", n)
@@ -117,6 +121,9 @@ func TestIntegrationSiteImportRefusesUnsignedAndTamperedArchives(t *testing.T) {
 	// even with the explicit option, the planted rows grant nothing
 	if _, err := p.e.tenSvc.SystemImportSiteWithOptions(context.Background(), orgB, unsigned, tenancy.ImportOptions{AllowUntrusted: true}); err != nil {
 		t.Fatalf("untrusted import: %v", err)
+	}
+	if n := p.qInt(`SELECT count(*) FROM person WHERE org_id = $1 AND national_id_enc IS NOT NULL`, orgB); n != 0 {
+		t.Fatalf("an untrusted import must drop sealed national ids, got %d", n)
 	}
 	if n := p.qInt(`SELECT count(*) FROM membership WHERE org_id = $1 AND scope_type = 'org'`, orgB); n != org0 {
 		t.Fatalf("an organization-wide membership was planted (%d)", n)

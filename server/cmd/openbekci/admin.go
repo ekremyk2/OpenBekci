@@ -31,6 +31,7 @@ func newAdminCmd(load configLoader) *cobra.Command {
 		newExportSiteCmd(load),
 		newImportSiteCmd(load),
 		newOffboardSiteCmd(load),
+		newResealCmd(load),
 	)
 	return cmd
 }

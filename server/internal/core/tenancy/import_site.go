@@ -13,6 +13,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -71,7 +72,7 @@ type importPlan struct {
 // inside the site survive (role memberships of the outgoing management and any
 // organization-wide membership are dropped); user links are cleared; claims
 // (tied to accounts) are not carried; persons nobody refers to are dropped.
-func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID) (importPlan, error) {
+func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID, keepSealed bool) (importPlan, error) {
 	known := map[string]bool{}
 	for _, t := range exportTables {
 		known[t.Name] = true
@@ -147,6 +148,7 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID) (im
 
 	// persons: referenced ones only; the archive never links an account
 	personIDs := map[string]bool{}
+	sealedDropped := 0
 	for _, r := range a.Tables["person"] {
 		personIDs[fmt.Sprint(r["id"])] = true
 	}
@@ -170,7 +172,15 @@ func planImport(a Archive, cols map[string]map[string]bool, orgID uuid.UUID) (im
 		if !referenced[pid] {
 			continue
 		}
+		if !keepSealed && r["national_id_enc"] != nil {
+			r["national_id_enc"], r["national_id_country"] = nil, nil
+			sealedDropped++
+		}
 		plan.rows["person"] = append(plan.rows["person"], r)
+	}
+	if sealedDropped > 0 {
+		plan.summary["national_id_dropped"] = sealedDropped
+		warnings = append(warnings, fmt.Sprintf("%d national ids were not imported: they are sealed with the source instance's key, which this import does not have; enter them again", sealedDropped))
 	}
 	plan.summary["person_dropped"] = len(a.Tables["person"]) - len(plan.rows["person"])
 	plan.summary["person_unlinked"] = len(plan.rows["person"]) // no account link comes from an archive
@@ -234,7 +244,7 @@ func (s *Service) importSite(ctx context.Context, orgID uuid.UUID, data []byte, 
 		if err != nil {
 			return err
 		}
-		plan, err := planImport(a, cols, orgID)
+		plan, err := planImport(a, cols, orgID, trusted && a.FieldKeyID == crypto.CurrentKeyID)
 		if err != nil {
 			return err
 		}

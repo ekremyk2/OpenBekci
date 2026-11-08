@@ -16,6 +16,7 @@ import (
 
 	"github.com/openbekci/openbekci/server/internal/core/audit"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
+	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 	"github.com/openbekci/openbekci/server/internal/problem"
 )
@@ -94,6 +95,9 @@ type Archive struct {
 	SiteID      uuid.UUID                   `json:"site_id"`
 	SiteName    string                      `json:"site_name"`
 	Tables      map[string][]map[string]any `json:"tables"`
+	// FieldKeyID is the key id national ids in this archive are sealed with; the key
+	// itself is the exporting instance's ENCRYPTION_KEY and never travels with it.
+	FieldKeyID string `json:"field_key_id,omitempty"`
 	// Signature is an HMAC-SHA256 (hex) of the archive with this field empty,
 	// keyed from the instance SECRET_KEY: it proves the archive was produced
 	// by this instance and not altered since.
@@ -177,7 +181,7 @@ func buildArchive(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, now t
 	if err != nil {
 		return Archive{}, nil, err
 	}
-	a := Archive{Format: ArchiveFormat, Version: ArchiveVersion, ExportedAt: now.UTC(), SourceOrgID: orgID, SiteID: siteID, SiteName: site.Name, Tables: map[string][]map[string]any{}}
+	a := Archive{Format: ArchiveFormat, FieldKeyID: crypto.CurrentKeyID, Version: ArchiveVersion, ExportedAt: now.UTC(), SourceOrgID: orgID, SiteID: siteID, SiteName: site.Name, Tables: map[string][]map[string]any{}}
 	counts := map[string]any{}
 	for _, t := range exportTables {
 		rows, err := tx.Query(ctx, t.Query, orgID, siteID)
