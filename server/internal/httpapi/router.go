@@ -20,6 +20,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/instance"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
+	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
 	"github.com/openbekci/openbekci/server/internal/platform/idempotency"
 	"github.com/openbekci/openbekci/server/internal/platform/jobs"
@@ -66,6 +67,9 @@ type Deps struct {
 	// documents, notifications, dashboards, codes). Nil fields answer their
 	// operations with an internal error (unit tests only).
 	Ops OpsDeps
+	// Packs serves the pack administration operations and the pack routes (webhooks and
+	// callbacks); nil leaves them unwired (unit tests).
+	Packs *packs.Host
 	// InsecureCookies drops the Secure flag of the session cookie (INSECURE_DEV).
 	InsecureCookies bool
 	// ValidateResponses checks every response against the spec (dev aid).

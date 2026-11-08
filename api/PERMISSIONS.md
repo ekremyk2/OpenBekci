@@ -140,6 +140,13 @@ Where an operation lists several permissions, holding any one of them suffices. 
 | `access.open` | Open an access point manually. | `org_admin`, `site_manager`, `guard` |
 | `access.view_events` | Read the access event log. | `org_admin`, `site_manager`, `board_member`, `auditor` |
 
+## packs
+
+| Permission | Meaning | Roles |
+|---|---|---|
+| `packs.read` | List the packs compiled into the server with their settings schema and the organization's enablement (secret values are never returned). | `org_admin` |
+| `packs.manage` | Enable and disable packs for the organization and change their settings. | `org_admin` |
+
 ## platform
 
 | Permission | Meaning | Roles |

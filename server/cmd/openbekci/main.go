@@ -40,7 +40,11 @@ func newRootCmd() *cobra.Command {
 	}
 	root.PersistentFlags().StringVar(&configPath, "config", "", "path to an optional YAML config file (OPENBEKCI_* variables override it)")
 
-	load := func() (app.Config, error) { return app.LoadConfig(configPath, os.Getenv) }
+	load := func() (app.Config, error) {
+		cfg, err := app.LoadConfig(configPath, os.Getenv)
+		cfg.Packs = Official
+		return cfg, err
+	}
 	root.AddCommand(
 		newServeCmd(load),
 		newWorkerCmd(load),

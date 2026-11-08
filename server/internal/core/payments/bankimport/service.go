@@ -28,9 +28,10 @@ const RawRetention = 90 * 24 * time.Hour
 
 // Service is the bank import module.
 type Service struct {
-	db  ledger.TxRunner
-	pay *payments.Service
-	Now func() time.Time
+	db    ledger.TxRunner
+	pay   *payments.Service
+	packs PackImporters
+	Now   func() time.Time
 }
 
 // NewService returns a Service; now nil means time.Now.
@@ -64,9 +65,30 @@ type Importer struct {
 	DefaultMapping *Mapping `json:"default_mapping"`
 }
 
-// Importers lists the importers; bank packs add theirs later.
-func (s *Service) Importers() []Importer {
-	return []Importer{{ID: CoreCSV, Name: "Generic CSV / XLSX statement", Formats: []string{"csv", "xlsx"}, DefaultMapping: &Mapping{Columns: DefaultColumns}}}
+// PackImporters is the pack side of the importers: the statement importers
+// of the packs enabled for an organization. The wiring adapts the pack runtime
+// to it (the core never imports the runtime).
+type PackImporters interface {
+	// Importers lists the importers of the organization's enabled packs.
+	Importers(ctx context.Context, orgID uuid.UUID) ([]Importer, error)
+	// Parse parses a statement with a pack importer; ok is false when no
+	// enabled pack provides the importer. opening and closing are the balances
+	// the file states, when it does.
+	Parse(ctx context.Context, orgID uuid.UUID, importerID, filename string, data []byte) (lines []Line, rowErrs []RowError, opening, closing *int64, ok bool, err error)
+}
+
+// SetPacks sets the source of pack importers (nil: only the generic CSV importer).
+func (s *Service) SetPacks(p PackImporters) { s.packs = p }
+
+// Importers lists the generic importer and the importers of the packs enabled for the organization.
+func (s *Service) Importers(ctx context.Context, orgID uuid.UUID) []Importer {
+	out := []Importer{{ID: CoreCSV, Name: "Generic CSV / XLSX statement", Formats: []string{"csv", "xlsx"}, DefaultMapping: &Mapping{Columns: DefaultColumns}}}
+	if s.packs != nil {
+		if more, err := s.packs.Importers(ctx, orgID); err == nil {
+			out = append(out, more...)
+		}
+	}
+	return out
 }
 
 // Import is an uploaded statement as the API shows it.
@@ -181,15 +203,38 @@ func nilIfEmpty(s string) *string {
 // today; a failed parse is a 422 and nothing is stored, rows that fail are
 // listed in the import's error and the status becomes partial.
 func (s *Service) Create(ctx context.Context, orgID uuid.UUID, in CreateInput) (Import, error) {
-	if in.Importer != CoreCSV {
-		return Import{}, bad("importer", "invalid_value")
-	}
 	if len(in.Data) > MaxFileBytes {
 		return Import{}, problem.New(413, problem.CodePayloadTooLarge, "the statement is larger than 10 MiB")
 	}
-	lines, rowErrs, perr := Parse(in.Filename, in.Data, in.Mapping)
-	if perr != nil {
-		return Import{}, problem.Validation(problem.Field{Field: "file", Code: "invalid_format"})
+	var lines []Line
+	var rowErrs []RowError
+	if in.Importer == CoreCSV {
+		var perr error
+		lines, rowErrs, perr = Parse(in.Filename, in.Data, in.Mapping)
+		if perr != nil {
+			return Import{}, problem.Validation(problem.Field{Field: "file", Code: "invalid_format"})
+		}
+	} else {
+		// an importer of a pack enabled for the organization
+		if s.packs == nil {
+			return Import{}, bad("importer", "invalid_value")
+		}
+		var opening, closing *int64
+		var ok bool
+		var perr error
+		lines, rowErrs, opening, closing, ok, perr = s.packs.Parse(ctx, orgID, in.Importer, in.Filename, in.Data)
+		switch {
+		case perr != nil:
+			if errors.As(perr, new(*problem.Error)) {
+				return Import{}, perr
+			}
+			return Import{}, problem.Validation(problem.Field{Field: "file", Code: "invalid_format"})
+		case !ok:
+			return Import{}, bad("importer", "invalid_value")
+		}
+		if in.OpeningBalance == nil && in.ClosingBalance == nil {
+			in.OpeningBalance, in.ClosingBalance = opening, closing
+		}
 	}
 	if len(lines) == 0 {
 		return Import{}, problem.Validation(problem.Field{Field: "file", Code: "required"})

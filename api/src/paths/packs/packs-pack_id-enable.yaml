@@ -1,0 +1,55 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: pack_id
+    in: path
+    required: true
+    description: Id of the pack, for example `tr`.
+    schema:
+      type: string
+post:
+  operationId: packs.enable
+  summary: Enable a pack
+  description: |-
+    **Release 0.4.** Enable the pack for the organization with settings. The settings are validated against the pack's
+    schema and its own checks (for example a live credential test), the presets of the pack are applied to the settings
+    the organization's sites have not changed, and the pack's own setup runs. Enabling an enabled pack updates its
+    settings and re-applies presets to settings still holding a pack default. Audited; secret values are not.
+
+    Permission: `packs.manage`.
+
+    Problems: `validation_failed` (422), `not_found` (404, unknown pack), `pack_error` (500).
+  tags:
+    - packs
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - packs.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  requestBody:
+    required: false
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/packs.yaml#/schemas/PackEnableRequest
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/packs.yaml#/schemas/Pack
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

@@ -36,7 +36,7 @@ func (s *apiServer) MoneyListBankImporters(ctx context.Context, req gen.MoneyLis
 	if err != nil {
 		return nil, err
 	}
-	out, err := listOf[gen.BankImporterList](b.Importers(), "")
+	out, err := listOf[gen.BankImporterList](b.Importers(ctx, req.OrgId), "")
 	return gen.MoneyListBankImporters200JSONResponse(out), err
 }
 

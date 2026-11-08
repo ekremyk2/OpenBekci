@@ -60,6 +60,8 @@ schemas:
       - occupancies.read
       - org.manage
       - org.read
+      - packs.manage
+      - packs.read
       - payments.declare
       - payments.record
       - people.erase
@@ -147,6 +149,8 @@ x-openbekci-roles:
     - occupancies.read
     - org.manage
     - org.read
+    - packs.manage
+    - packs.read
     - payments.declare
     - payments.record
     - people.erase

@@ -104,11 +104,33 @@ type Document struct {
 	RelayChallenge *string
 }
 
+// PackDetail describes a pack compiled into the server.
+type PackDetail struct {
+	ID        string
+	Version   string
+	MinSDK    string
+	Countries []string
+	// Enabled is true when at least one organization has the pack enabled.
+	Enabled bool
+}
+
+// PackSource reports the packs of the server (the packs runtime implements it).
+type PackSource interface {
+	// EnabledPackIDs lists the ids of packs enabled for at least one organization.
+	EnabledPackIDs(ctx context.Context) ([]string, error)
+	// PackDetails lists the compiled-in packs.
+	PackDetails() []PackDetail
+	// SDKVersion is the pack SDK version the server implements.
+	SDKVersion() string
+}
+
 // Info is the authenticated twin: the document plus policies.
 type Info struct {
 	Document
 	// Policies is empty until later phases add instance policies.
 	Policies map[string]any
+	// PackDetails are the compiled-in packs; empty without a PackSource.
+	PackDetails []PackDetail
 }
 
 // TxRunner runs a transaction on a non-tenant connection (*db.DB.InAppTx).
@@ -141,6 +163,7 @@ type Service struct {
 	cfg     Config
 	ids     IDSource
 	methods *AuthMethodRegistry
+	packs   PackSource
 	now     func() time.Time
 
 	mu       sync.Mutex
@@ -194,6 +217,15 @@ func (s *Service) Discovery(ctx context.Context) (Document, error) {
 		PushRelayIDs:  []string{},
 		Packs:         []string{},
 	}
+	if s.packs != nil {
+		ids, err := s.packs.EnabledPackIDs(ctx)
+		if err != nil {
+			return Document{}, fmt.Errorf("list enabled packs: %w", err)
+		}
+		doc.Packs = append(doc.Packs, ids...)
+		v := s.packs.SDKVersion()
+		doc.SDKVersion = &v
+	}
 	if s.cfg.LogoURL != "" {
 		doc.LogoURL = &s.cfg.LogoURL
 	}
@@ -210,5 +242,31 @@ func (s *Service) Info(ctx context.Context) (Info, error) {
 	if err != nil {
 		return Info{}, err
 	}
-	return Info{Document: d, Policies: map[string]any{}}, nil
+	info := Info{Document: d, Policies: map[string]any{}, PackDetails: []PackDetail{}}
+	if s.packs != nil {
+		enabled := map[string]bool{}
+		for _, id := range d.Packs {
+			enabled[id] = true
+		}
+		for _, p := range s.packs.PackDetails() {
+			p.Enabled = enabled[p.ID]
+			info.PackDetails = append(info.PackDetails, p)
+		}
+	}
+	return info, nil
+}
+
+// WithPacks sets the source of pack information (pack ids and sdk_version in
+// the discovery document, details in the authenticated twin) and returns s.
+func (s *Service) WithPacks(p PackSource) *Service {
+	s.packs = p
+	return s
+}
+
+// Invalidate drops the cached document so the next request rebuilds it (a
+// pack was enabled or disabled).
+func (s *Service) Invalidate() {
+	s.mu.Lock()
+	s.cachedAt = time.Time{}
+	s.mu.Unlock()
 }

@@ -21,6 +21,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
+	"github.com/openbekci/openbekci/server/internal/packs"
 	"github.com/openbekci/openbekci/server/internal/permissions"
 	"github.com/openbekci/openbekci/server/internal/platform/crypto"
 	"github.com/openbekci/openbekci/server/internal/platform/db"
@@ -180,7 +181,7 @@ func newAccess(cfg Config, log *slog.Logger, d *db.DB, comm *community.Service) 
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
-func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, mny httpapi.MoneyDeps) (httpapi.Deps, error) {
+func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, mny httpapi.MoneyDeps, host *packs.Host) (httpapi.Deps, error) {
 	ident, err := newIdentity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
@@ -197,13 +198,24 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 	}
 	methods := &instance.AuthMethodRegistry{}
 	methods.Register(ident) // password always, sms_otp and magic_link when configured
+	inst := instance.NewService(instance.Config{
+		Name:                 cfg.InstanceName,
+		BaseURL:              cfg.BaseURL,
+		ServerVersion:        cfg.ServerVersion,
+		MinAppVersionAndroid: cfg.MinAppVersionAndroid,
+		MinAppVersionIOS:     cfg.MinAppVersionIOS,
+		LogoURL:              cfg.BrandingLogoURL,
+		PrimaryColor:         cfg.BrandingPrimaryColor,
+	}, instance.PGIDSource{DB: d}, methods).WithPacks(host)
+	host.OnChange(inst.Invalidate) // enabling or disabling a pack changes the discovery document
 	return httpapi.Deps{
 		Log:         log,
 		DB:          d,
 		Idempotency: idem,
 		Identity:    ident,
 		Authz:       authz.NewResolver(d, reg, nil),
-		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey),
+		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host),
+		Packs:       host,
 		People:      peopleSvc,
 		Community:   communitySvc,
 		Money:       mny,
@@ -213,16 +225,8 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 			Identity: ident,
 			Origins:  append([]string{cfg.BaseURL}, cfg.ExtraOrigins...),
 		},
-		InsecureCookies: cfg.InsecureDev,
-		Instance: instance.NewService(instance.Config{
-			Name:                 cfg.InstanceName,
-			BaseURL:              cfg.BaseURL,
-			ServerVersion:        cfg.ServerVersion,
-			MinAppVersionAndroid: cfg.MinAppVersionAndroid,
-			MinAppVersionIOS:     cfg.MinAppVersionIOS,
-			LogoURL:              cfg.BrandingLogoURL,
-			PrimaryColor:         cfg.BrandingPrimaryColor,
-		}, instance.PGIDSource{DB: d}, methods),
+		InsecureCookies:   cfg.InsecureDev,
+		Instance:          inst,
 		ValidateResponses: cfg.ValidateResponses,
 	}, nil
 }

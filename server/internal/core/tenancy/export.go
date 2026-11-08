@@ -153,6 +153,11 @@ var excludedTables = map[string]string{ //nolint:gosec // table names, not crede
 	"access_event":         "the opening log stays with the organization that recorded it",
 	"access_dirty":         "outbox of the projector",
 	"access_event_counter": "sequence counter of the opening log, which stays with the old organization",
+	// packs: per organization, not site data (the site's pack-filled settings travel inside the site row)
+	"pack_enablement":      "which packs the old organization enabled, with their settings and sealed secrets; the target organization enables its own",
+	"pack_enablement_site": "per-site pack settings and sealed secrets of the old organization's packs",
+	"site_pack_default":    "bookkeeping of which settings a pack filled; the settings themselves travel in the site row",
+	"provider_settlement":  "payout bookkeeping against the old organization's provider clearing accounts",
 }
 
 // ExportManifest returns every tenant table the archive format knows (carried

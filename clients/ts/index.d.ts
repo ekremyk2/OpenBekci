@@ -346,6 +346,128 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List the packs
+         * @description **Release 0.4.** Every pack compiled into the server with its manifest, its settings schema (JSON Schema with `x-ui`
+         *     and `x-secret`) and the organization's enablement and settings. Secret fields are never returned: `secrets_set` names
+         *     the ones that are set.
+         *
+         *     Permission: `packs.read`.
+         */
+        get: operations["packs.list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/packs/{pack_id}/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the pack, for example `tr`. */
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enable a pack
+         * @description **Release 0.4.** Enable the pack for the organization with settings. The settings are validated against the pack's
+         *     schema and its own checks (for example a live credential test), the presets of the pack are applied to the settings
+         *     the organization's sites have not changed, and the pack's own setup runs. Enabling an enabled pack updates its
+         *     settings and re-applies presets to settings still holding a pack default. Audited; secret values are not.
+         *
+         *     Permission: `packs.manage`.
+         *
+         *     Problems: `validation_failed` (422), `not_found` (404, unknown pack), `pack_error` (500).
+         */
+        post: operations["packs.enable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/packs/{pack_id}/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the pack, for example `tr`. */
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Disable a pack
+         * @description **Release 0.4.** Disable the pack for the organization. Its data and settings are kept, its providers and importers
+         *     stop being offered, its routes answer 404, and the settings its presets filled stay as the sites' own. Disabling a
+         *     pack that is not enabled changes nothing. Removing the data is a separate operator command
+         *     (`openbekci admin packs purge`).
+         *
+         *     Permission: `packs.manage`.
+         *
+         *     Problems: `not_found` (404, unknown pack), `pack_error` (500).
+         */
+        post: operations["packs.disable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/packs/{pack_id}/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the pack, for example `tr`. */
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update the settings of a pack
+         * @description **Release 0.4.** Replace the non-secret settings of one scope (`org`, or `site` with `site_id`). Secret fields
+         *     (`x-secret`) keep their stored value unless named in `values`; a `null` clears one. The result never contains secret
+         *     values. The pack must be enabled (`conflict`, 409, otherwise).
+         *
+         *     Permission: `packs.manage`.
+         *
+         *     Problems: `validation_failed` (422), `not_found` (404), `conflict` (409), `pack_error` (500).
+         */
+        put: operations["packs.updateSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/platform/audit": {
         parameters: {
             query?: never;
@@ -8741,9 +8863,19 @@ export interface components {
         InstancePolicies: {
             [key: string]: unknown;
         };
+        InstancePack: {
+            id: string;
+            version: string;
+            min_sdk: string;
+            countries: string[];
+            /** @description Enabled for at least one organization of the instance. */
+            enabled: boolean;
+        };
         /** @description Authenticated twin of the discovery document, with policies. */
         Instance: components["schemas"]["DiscoveryDocument"] & {
             policies: components["schemas"]["InstancePolicies"];
+            /** @description The packs compiled into this server (`packs` lists the ones enabled for at least one organization). */
+            pack_details: components["schemas"]["InstancePack"][];
         };
         /** @description The signed-in account (instance-wide, not per organization). */
         AuthUser: {
@@ -9021,7 +9153,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "packs.manage" | "packs.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -10477,6 +10609,92 @@ export interface components {
             extra: {
                 [key: string]: unknown;
             } | null;
+            /**
+             * @description The settings a pack filled in (presets) that still hold the value the pack wrote, by settings key, for the
+             *     "pack default" marker. A setting the site edited is its own and is not listed. Absent without packs.
+             */
+            pack_defaults?: {
+                [key: string]: {
+                    /** @description Id of the pack that wrote the value. */
+                    pack: string;
+                    /** @description The value the pack wrote. */
+                    value: unknown;
+                };
+            };
+        };
+        /**
+         * @description A pack compiled into this server, with the organization's enablement and settings.
+         *     `settings_schemas` holds the JSON Schema 2020-12 of the `org` and `site` scope settings (extensions `x-ui` and
+         *     `x-secret`); only the scopes the pack has settings for are present.
+         */
+        Pack: {
+            /** @description The pack id, for example `tr`. */
+            id: string;
+            version: string;
+            /** @description The oldest SDK version the pack builds against. */
+            min_sdk: string;
+            /** @description ISO 3166-1 alpha-2 codes the pack is meant for (drives the suggested-packs hint). */
+            countries: string[];
+            /** @description What the pack contributes, as `<extension point>:<id>` (open set). */
+            provides: string[];
+            enabled: boolean;
+            /** Format: date-time */
+            enabled_at: string | null;
+            settings_schemas: {
+                [key: string]: unknown;
+            };
+            /** @description The organization-scope settings without the secret fields. */
+            settings: {
+                [key: string]: unknown;
+            };
+            /** @description Names of the organization-scope secret fields that are set. */
+            secrets_set: string[];
+            /** @description Site-scope settings, one entry per site that has some. */
+            sites: components["schemas"]["PackSiteSettings"][];
+        };
+        /** @description The site-scope settings of a pack for one site. Secret fields are never returned; `secrets_set` names the ones that are set. */
+        PackSiteSettings: {
+            /** Format: uuid */
+            site_id: string;
+            /** @description The non-secret settings of the site. */
+            values: {
+                [key: string]: unknown;
+            };
+            /** @description Names of the secret fields that are set (the UI shows set / not set). */
+            secrets_set: string[];
+        };
+        PackList: {
+            items: components["schemas"]["Pack"][];
+        };
+        /** @description Enable a pack for the organization. Without `settings` an enabled-before pack keeps its stored settings. */
+        PackEnableRequest: {
+            /** @description Organization-scope settings, validated against the pack's schema. Secret fields are written once and never returned. */
+            settings?: {
+                [key: string]: unknown;
+            };
+        };
+        /** @description Replace the non-secret settings of a scope. Secret fields keep their value unless named here; a `null` secret clears it. */
+        PackSettingsUpdate: {
+            /** @description `org` or `site`. */
+            scope: string;
+            /**
+             * Format: uuid
+             * @description Required for the `site` scope.
+             */
+            site_id?: string;
+            values: {
+                [key: string]: unknown;
+            };
+        };
+        PackSettings: {
+            /** @description `org` or `site`. */
+            scope: string;
+            /** Format: uuid */
+            site_id: string | null;
+            values: {
+                [key: string]: unknown;
+            };
+            secrets_set: string[];
         };
         /** @description Partial update of the site settings. */
         SiteSettingsUpdate: {
@@ -19813,6 +20031,140 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "packs.list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "packs.enable": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the pack, for example `tr`. */
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PackEnableRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pack"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "packs.disable": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the pack, for example `tr`. */
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Pack"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "packs.updateSettings": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the pack, for example `tr`. */
+                pack_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PackSettingsUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PackSettings"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

@@ -11,6 +11,15 @@ import (
 // newSMSGateway builds the configured SMS gateway; nil (SMS disabled) when
 // SMS_PROVIDER is empty.
 func newSMSGateway(cfg Config, log *slog.Logger) (sms.Gateway, error) {
+	gw, err := newBaseSMSGateway(cfg, log)
+	if err != nil || gw == nil || cfg.SMSPicker == nil {
+		return gw, err
+	}
+	// an organization may have chosen the SMS provider of an enabled pack
+	return sms.Routed{Default: gw, Picker: cfg.SMSPicker}, nil
+}
+
+func newBaseSMSGateway(cfg Config, log *slog.Logger) (sms.Gateway, error) {
 	switch cfg.SMSProvider {
 	case "":
 		return nil, nil //nolint:nilnil // nil gateway means SMS is disabled
