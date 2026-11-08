@@ -17,6 +17,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/moneyhooks"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
@@ -179,9 +180,25 @@ func newAccess(cfg Config, log *slog.Logger, d *db.DB, comm *community.Service) 
 	return access.NewService(d, acfg), nil
 }
 
+// newIntegrations builds the API key and webhook service: webhook secrets are
+// sealed with ENCRYPTION_KEY, and a failing endpoint tells the organization's
+// administrators through the shared notifier. Its job workers are registered
+// with the River client and the job insert function is set once the client
+// exists (see start); the audit sink that emits webhook events is installed there too.
+func newIntegrations(cfg Config, log *slog.Logger, d *db.DB, notify jobs.Notifier) (*integrations.Service, error) {
+	reg, err := permissions.NewRegistry()
+	if err != nil {
+		return nil, err
+	}
+	return integrations.NewService(d, integrations.Config{
+		Registry: reg, EncryptionKey: cfg.EncryptionKey, Notifier: notify, Log: log,
+		AllowedCIDRs: cfg.WebhookAllowedCIDRs, MaxAttempts: cfg.WebhookMaxAttempts, KeyRatePerMinute: cfg.APIKeyRatePerMinute,
+	})
+}
+
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
-func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, mny httpapi.MoneyDeps, host *packs.Host) (httpapi.Deps, error) {
+func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, mny httpapi.MoneyDeps, integ *integrations.Service, host *packs.Host) (httpapi.Deps, error) {
 	ident, err := newIdentity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
@@ -209,20 +226,22 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 	}, instance.PGIDSource{DB: d}, methods).WithPacks(host)
 	host.OnChange(inst.Invalidate) // enabling or disabling a pack changes the discovery document
 	return httpapi.Deps{
-		Log:         log,
-		DB:          d,
-		Idempotency: idem,
-		Identity:    ident,
-		Authz:       authz.NewResolver(d, reg, nil),
-		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host),
-		Packs:       host,
-		People:      peopleSvc,
-		Community:   communitySvc,
-		Money:       mny,
-		Audit:       audit.NewService(d),
-		Files:       fs,
+		Log:          log,
+		DB:           d,
+		Idempotency:  idem,
+		Identity:     ident,
+		Authz:        authz.NewResolver(d, reg, nil),
+		Tenancy:      tenancy.NewService(d).WithArchiveKey(cfg.SecretKey).WithSiteHook(host),
+		Packs:        host,
+		People:       peopleSvc,
+		Community:    communitySvc,
+		Money:        mny,
+		Audit:        audit.NewService(d),
+		Integrations: integ,
+		Files:        fs,
 		Authenticator: httpapi.SessionAuthenticator{
 			Identity: ident,
+			Keys:     integ,
 			Origins:  append([]string{cfg.BaseURL}, cfg.ExtraOrigins...),
 		},
 		InsecureCookies:   cfg.InsecureDev,

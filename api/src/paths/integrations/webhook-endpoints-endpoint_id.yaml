@@ -1,0 +1,117 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: endpoint_id
+    in: path
+    required: true
+    description: Id of the webhook endpoint.
+    schema:
+      type: string
+      format: uuid
+get:
+  operationId: integrations.getWebhookEndpoint
+  summary: Get a webhook endpoint
+  description: |-
+    **Release 0.4.** Get a webhook endpoint (never its secret).
+
+    Permission: `webhooks.read`.
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.read
+  x-stability: preview
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/WebhookEndpoint
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+patch:
+  operationId: integrations.updateWebhookEndpoint
+  summary: Change a webhook endpoint
+  description: |-
+    **Release 0.4.** Change the URL, the subscribed events, the description or `active`.
+    Changing the URL or re-activating the endpoint clears its failing mark.
+
+    Permission: `webhooks.manage`.
+
+    Problems: `version_conflict` (409), `validation_failed` (422).
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/draft-common.yaml#/parameters/IfMatch
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/integrations.yaml#/schemas/WebhookEndpointUpdate
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/WebhookEndpoint
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "409":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+delete:
+  operationId: integrations.deleteWebhookEndpoint
+  summary: Delete a webhook endpoint
+  description: |-
+    **Release 0.4.** Deletes the endpoint and its delivery log. Deliveries still queued for it are dropped.
+
+    Permission: `webhooks.manage`.
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - webhooks.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "204":
+      description: Deleted
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

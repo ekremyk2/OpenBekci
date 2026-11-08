@@ -59,6 +59,10 @@ const (
 	CodeAgentOffline Code = "agent_offline"
 	// CodeAgentSessionExpired: the agent's long-poll session ended; start a new one with hello (410).
 	CodeAgentSessionExpired Code = "agent_session_expired"
+	// CodeAPIKeyRevoked: the API key was revoked or replaced by a rotation (401).
+	CodeAPIKeyRevoked Code = "api_key_revoked"
+	// CodeAPIKeyExpired: the API key is past its expires_at (401).
+	CodeAPIKeyExpired Code = "api_key_expired"
 )
 
 // Field is one entry of the errors[] array.

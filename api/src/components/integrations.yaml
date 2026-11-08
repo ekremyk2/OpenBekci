@@ -1,0 +1,335 @@
+schemas:
+  ApiKey:
+    type: object
+    description: |
+      An organization API key as listed: its public prefix and metadata, never the secret.
+      The bearer token is `obk_<prefix>_<secret>`. The key's effective permissions are the
+      intersection of `scopes` and the grants of the administrator who created it
+      (`created_by`), evaluated on every request, and never exceed them.
+    required:
+      - id
+      - org_id
+      - name
+      - prefix
+      - scopes
+      - site_id
+      - status
+      - created_by
+      - created_at
+      - rotated_at
+      - last_used_at
+      - expires_at
+      - revoked_at
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      name:
+        type: string
+        description: A label chosen by the administrator (1 to 120 characters).
+      prefix:
+        type: string
+        description: The public part of the token (8 lower-case letters and digits); changes on rotation.
+        example: k3x9q7ab
+      scopes:
+        type: array
+        description: Permission names the key may use, from the permission registry.
+        items:
+          type: string
+        example:
+          - tickets.read
+          - payments.read
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: When set, the key's permissions apply to this site only.
+      status:
+        type: string
+        x-open-enum: true
+        description: "Open enum: `active`, `revoked` (also after being replaced by a rotation: the old token is invalid) or `expired`."
+        enum:
+          - active
+          - revoked
+          - expired
+      created_by:
+        type: string
+        format: uuid
+        description: The user whose grants bound the key.
+      created_at:
+        type: string
+        format: date-time
+      rotated_at:
+        type: string
+        format: date-time
+        nullable: true
+      last_used_at:
+        type: string
+        format: date-time
+        nullable: true
+        description: Updated at most every five minutes.
+      expires_at:
+        type: string
+        format: date-time
+        nullable: true
+      revoked_at:
+        type: string
+        format: date-time
+        nullable: true
+  ApiKeyList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/ApiKey"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  ApiKeyCreate:
+    type: object
+    required:
+      - name
+      - scopes
+    properties:
+      name:
+        type: string
+        description: A label, 1 to 120 characters.
+      scopes:
+        type: array
+        description: |
+          Permission names the key may use. Each must be a permission the caller holds through a
+          role in this organization; `apikeys.*` permissions and permissions that exist only for
+          people (occupancy rights) cannot be given to a key. Field errors name the permission
+          (`unknown_permission`, `not_held`, `not_allowed`, `duplicate`).
+        items:
+          type: string
+        minItems: 1
+        maxItems: 200
+      site_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: Restrict the key to one site of the organization.
+      expires_at:
+        type: string
+        format: date-time
+        nullable: true
+        description: "Must be in the future. Omitted or null: the key does not expire."
+  ApiKeyCreated:
+    type: object
+    required:
+      - key
+      - secret
+    properties:
+      key:
+        $ref: "#/schemas/ApiKey"
+      secret:
+        type: string
+        description: "The full bearer token `obk_<prefix>_<secret>`. Shown exactly once, never stored; keep it safe."
+  WebhookEndpoint:
+    type: object
+    description: An outbound webhook endpoint. Its signing secret is shown once when it is created and never again.
+    required:
+      - id
+      - org_id
+      - url
+      - events
+      - active
+      - description
+      - failing
+      - failing_since
+      - consecutive_failures
+      - created_by
+      - created_at
+      - updated_at
+      - version
+    properties:
+      id:
+        type: string
+        format: uuid
+      org_id:
+        type: string
+        format: uuid
+      url:
+        type: string
+        description: "`https` only; the host must not resolve to a private, loopback or link-local address (unless the operator allows the range)."
+      events:
+        type: array
+        description: Subscribed event types. Known values `payment.recorded`, `payment.confirmed`, `charge.created`, `charges.generated`, `ticket.created`, `ticket.status_changed`, `announcement.published`, `meeting.called`, `decision.applied`, `visitor.approved`, `delivery.received`.
+        items:
+          type: string
+      active:
+        type: boolean
+      description:
+        type: string
+        nullable: true
+      failing:
+        type: boolean
+        description: True while the last delivery that used up its attempts has not been followed by a success.
+      failing_since:
+        type: string
+        format: date-time
+        nullable: true
+      consecutive_failures:
+        type: integer
+      created_by:
+        type: string
+        format: uuid
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      version:
+        type: integer
+        description: Goes in `If-Match` on update.
+  WebhookEndpointList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/WebhookEndpoint"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next page; null on the last page.
+  WebhookEndpointCreate:
+    type: object
+    required:
+      - url
+      - events
+    properties:
+      url:
+        type: string
+        description: "`https://` URL, at most 2000 characters, without credentials or fragment."
+      events:
+        type: array
+        description: At least one known event type. `ping` is sent by the test operation and cannot be subscribed to.
+        items:
+          type: string
+        minItems: 1
+        maxItems: 50
+      description:
+        type: string
+        nullable: true
+        description: Up to 500 characters.
+      active:
+        type: boolean
+        description: Default true.
+  WebhookEndpointCreated:
+    type: object
+    required:
+      - endpoint
+      - secret
+    properties:
+      endpoint:
+        $ref: "#/schemas/WebhookEndpoint"
+      secret:
+        type: string
+        description: "The signing secret `whsec_...`. Shown exactly once; verify `OpenBekci-Signature` with it."
+      previous_secret_expires_at:
+        type: string
+        format: date-time
+        description: Only when the secret was rotated. Until then the replaced secret signs as well (a second `v1` entry in `OpenBekci-Signature`).
+  WebhookEndpointUpdate:
+    type: object
+    description: "Partial update: send only the fields to change. The resource `version` goes in If-Match. Changing the `url` or re-activating the endpoint clears its failing mark."
+    properties:
+      url:
+        type: string
+      events:
+        type: array
+        items:
+          type: string
+        minItems: 1
+        maxItems: 50
+      description:
+        type: string
+        nullable: true
+      active:
+        type: boolean
+  WebhookDelivery:
+    type: object
+    description: One delivery of an event to an endpoint, as logged.
+    required:
+      - id
+      - endpoint_id
+      - event_id
+      - event_type
+      - status
+      - attempts
+      - response_code
+      - last_error
+      - next_retry_at
+      - created_at
+      - delivered_at
+    properties:
+      id:
+        type: string
+        format: uuid
+        description: Sent as `OpenBekci-Delivery-Id`; the same on every retry.
+      endpoint_id:
+        type: string
+        format: uuid
+      event_id:
+        type: string
+        format: uuid
+      event_type:
+        type: string
+      status:
+        type: string
+        x-open-enum: true
+        description: "Open enum: `pending` (queued or waiting for a retry), `succeeded`, `failed` (attempts used up)."
+        enum:
+          - pending
+          - succeeded
+          - failed
+      attempts:
+        type: integer
+      response_code:
+        type: integer
+        nullable: true
+        description: HTTP status of the last attempt, when the receiver answered.
+      last_error:
+        type: string
+        nullable: true
+        description: "Short machine-readable reason of the last failure, for example `http_status: 500` or `forbidden_target`."
+      next_retry_at:
+        type: string
+        format: date-time
+        nullable: true
+      created_at:
+        type: string
+        format: date-time
+      delivered_at:
+        type: string
+        format: date-time
+        nullable: true
+  WebhookDeliveryList:
+    type: object
+    required:
+      - items
+      - next_cursor
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/schemas/WebhookDelivery"
+      next_cursor:
+        type: string
+        nullable: true
+        description: Pass as `cursor` for the next (older) page; null on the last page.

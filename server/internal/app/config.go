@@ -129,6 +129,18 @@ type Config struct {
 	// SMSPicker routes an organization's messages to the SMS provider it chose from its enabled
 	// packs; set by the server wiring, not by the environment.
 	SMSPicker sms.Picker
+	// APIKeyRatePerMinute limits requests per organization API key
+	// (OPENBEKCI_API_KEY_RATE_PER_MINUTE); zero takes the default (600), a
+	// negative value removes the limit.
+	APIKeyRatePerMinute int
+	// WebhookMaxAttempts bounds delivery attempts per (event, endpoint)
+	// (OPENBEKCI_WEBHOOK_MAX_ATTEMPTS); zero takes the default (8).
+	WebhookMaxAttempts int
+	// WebhookAllowedCIDRs are private, loopback or link-local ranges webhooks
+	// may reach (OPENBEKCI_WEBHOOK_ALLOWED_CIDRS, comma separated CIDRs or
+	// bare IPs). Empty keeps the SSRF guard strict.
+	WebhookAllowedCIDRs []netip.Prefix
+
 	// ServerVersion is the build version; set by the command, not by the environment.
 	ServerVersion string
 }
@@ -231,6 +243,9 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	if err = c.loadFiles(l); err != nil {
 		return Config{}, err
 	}
+	if err = c.loadIntegrations(l); err != nil {
+		return Config{}, err
+	}
 
 	for _, o := range []struct {
 		name string
@@ -278,6 +293,36 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 	}
 	c.SecretKey, c.EncryptionKey = []byte(secret), []byte(enc)
 	return c, nil
+}
+
+// loadIntegrations reads the API key and webhook settings.
+func (c *Config) loadIntegrations(l lookup) error {
+	if v := l.must("API_KEY_RATE_PER_MINUTE"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil {
+			return fmt.Errorf("%sAPI_KEY_RATE_PER_MINUTE: %q is not an integer (negative removes the limit)", envPrefix, v)
+		}
+		c.APIKeyRatePerMinute = n
+	}
+	if v := l.must("WEBHOOK_MAX_ATTEMPTS"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > 20 {
+			return fmt.Errorf("%sWEBHOOK_MAX_ATTEMPTS: %q is not an integer from 1 to 20", envPrefix, v)
+		}
+		c.WebhookMaxAttempts = n
+	}
+	for _, item := range splitList(l.must("WEBHOOK_ALLOWED_CIDRS")) {
+		if p, err := netip.ParsePrefix(item); err == nil {
+			c.WebhookAllowedCIDRs = append(c.WebhookAllowedCIDRs, p.Masked())
+			continue
+		}
+		a, err := netip.ParseAddr(item)
+		if err != nil {
+			return fmt.Errorf("%sWEBHOOK_ALLOWED_CIDRS: %q is not a CIDR or IP address", envPrefix, item)
+		}
+		c.WebhookAllowedCIDRs = append(c.WebhookAllowedCIDRs, netip.PrefixFrom(a, a.BitLen()))
+	}
+	return nil
 }
 
 // loadFiles reads the file storage and upload settings.

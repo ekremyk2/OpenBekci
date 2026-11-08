@@ -18,6 +18,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/integrations"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
@@ -60,7 +61,7 @@ func MountAPI(r chi.Router, deps Deps) {
 	if deps.DB != nil {
 		p.tenantDB = deps.DB
 	}
-	srv := &apiServer{mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
+	srv := &apiServer{integrations: deps.Integrations, mny: deps.Money, access: deps.Access, community: deps.Community, governance: deps.Governance, people: deps.People, instance: deps.Instance, identity: deps.Identity, tenancy: deps.Tenancy, files: deps.Files, OpsDeps: deps.Ops, audit: deps.Audit, resolver: deps.Authz, insecureCookies: deps.InsecureCookies, packs: deps.Packs}
 	strict := gen.NewStrictHandlerWithOptions(srv, []gen.StrictMiddlewareFunc{requestInfo}, gen.StrictHTTPServerOptions{
 		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
 			problem.Write(w, r, requestBindError(err))
@@ -113,9 +114,11 @@ type apiServer struct {
 	governance *governance.Service
 	community  *community.Service
 	access     *access.Service
-	mny        MoneyDeps
-	audit      *audit.Service
-	files      *files.Service
+	// integrations serves API keys and webhook endpoints.
+	integrations *integrations.Service
+	mny          MoneyDeps
+	audit        *audit.Service
+	files        *files.Service
 	OpsDeps
 	resolver        *authz.Resolver
 	insecureCookies bool // INSECURE_DEV: no Secure flag on the session cookie

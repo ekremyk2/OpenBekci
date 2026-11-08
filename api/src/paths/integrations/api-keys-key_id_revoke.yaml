@@ -1,0 +1,48 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+  - name: key_id
+    in: path
+    required: true
+    description: Id of the API key.
+    schema:
+      type: string
+      format: uuid
+post:
+  operationId: integrations.revokeApiKey
+  summary: Revoke an API key
+  description: |-
+    **Release 0.4.** Revokes the key; its token answers 401 `api_key_revoked` from then on.
+    Revoking a revoked key returns it unchanged.
+
+    Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+
+    Permission: `apikeys.manage`.
+
+    Problems: `reauth_required` (403).
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - apikeys.manage
+  x-idempotent: optional
+  x-stability: preview
+  parameters:
+    - $ref: ../../components/common.yaml#/parameters/IdempotencyKey
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/ApiKey
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "404":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem

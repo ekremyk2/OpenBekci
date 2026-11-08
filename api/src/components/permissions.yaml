@@ -12,6 +12,8 @@ schemas:
       - access.view_events
       - announcements.publish
       - announcements.read
+      - apikeys.manage
+      - apikeys.read
       - attendance.manage
       - audit.read
       - audit.report
@@ -98,6 +100,8 @@ schemas:
       - visitors.decide
       - visitors.manage
       - visitors.read
+      - webhooks.manage
+      - webhooks.read
 x-openbekci-roles:
   org_admin:
     - access.manage
@@ -106,6 +110,8 @@ x-openbekci-roles:
     - access.view_events
     - announcements.publish
     - announcements.read
+    - apikeys.manage
+    - apikeys.read
     - attendance.manage
     - audit.read
     - bookings.create
@@ -183,6 +189,8 @@ x-openbekci-roles:
     - vendors.read
     - visitors.manage
     - visitors.read
+    - webhooks.manage
+    - webhooks.read
   site_manager:
     - access.manage
     - access.open

@@ -148,6 +148,7 @@ var sections = map[string]map[string]pair{
 		"access.agent_silent":        {"Gate agent silent", "Geçiş ajanı sessiz"},
 		"access.agent_clock_skew":    {"Gate agent clock skew", "Geçiş ajanı saat farkı"},
 		"access.agent_stopped":       {"Gate agent stopped", "Geçiş ajanı durdu"},
+		"webhook.endpoint_failing":   {"Webhook endpoint failing", "Webhook uç noktası başarısız"},
 		"auth.sign_in_code":          {"Sign-in code", "Giriş kodu"},
 		"invitation.sent":            {"Invitation", "Davetiye"},
 	},
@@ -196,6 +197,8 @@ var sections = map[string]map[string]pair{
 		"payload_too_large":       {"The upload is too large", "Yükleme çok büyük"},
 		"agent_offline":           {"The gate agent is offline", "Kapı ajanı çevrimdışı"},
 		"agent_session_expired":   {"The agent session has expired", "Ajan oturumu sona erdi"},
+		"api_key_revoked":         {"This API key was revoked", "Bu API anahtarı iptal edildi"},
+		"api_key_expired":         {"This API key has expired", "Bu API anahtarının süresi doldu"},
 	},
 	"field_error_codes": {
 		"required":       {"Required", "Zorunlu"},

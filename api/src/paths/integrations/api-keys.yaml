@@ -1,0 +1,88 @@
+parameters:
+  - $ref: ../../components/draft-common.yaml#/parameters/OrgId
+get:
+  operationId: integrations.listApiKeys
+  summary: List API keys
+  description: |-
+    **Release 0.4.** Lists the organization's API keys: prefix and metadata only, never a secret.
+
+    Permission: `apikeys.read`.
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - apikeys.read
+  x-stability: preview
+  parameters:
+    - name: status
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - active
+          - revoked
+          - expired
+      description: Filter by `status`.
+    - $ref: ../../components/common.yaml#/parameters/Limit
+    - $ref: ../../components/common.yaml#/parameters/Cursor
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/ApiKeyList
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
+post:
+  operationId: integrations.createApiKey
+  summary: Create an API key
+  description: |-
+    **Release 0.4.** Creates a key and returns its secret exactly once. The scopes must be
+    permissions the caller holds; the key never exceeds the creating administrator's grants.
+
+    Sensitive (backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`). An API key cannot create keys.
+
+    Permission: `apikeys.manage`.
+
+    Problems: `reauth_required` (403), `validation_failed` (422).
+  tags:
+    - integrations
+  security:
+    - cookieAuth: []
+    - bearerAuth: []
+  x-openbekci-roles:
+    org_admin:
+      - apikeys.manage
+  x-idempotent: none
+  x-stability: preview
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/integrations.yaml#/schemas/ApiKeyCreate
+  responses:
+    "201":
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/integrations.yaml#/schemas/ApiKeyCreated
+    "401":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "403":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    "422":
+      $ref: ../../components/problem.yaml#/responses/Problem
+    default:
+      $ref: ../../components/problem.yaml#/responses/Problem
