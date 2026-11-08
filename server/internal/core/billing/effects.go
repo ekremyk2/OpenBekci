@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
@@ -191,6 +192,9 @@ func (s *Service) planRateChange(ctx context.Context, tx pgx.Tx, orgID uuid.UUID
 	case !errors.Is(err, pgx.ErrNoRows):
 		return ch, err
 	}
+	if p.Status != "active" { // after the idempotent return: a decision applied before the plan was paused stays applied
+		return ch, conflictField("the plan is "+p.Status+": a paused or archived plan takes no new rate", "plan_id", "invalid_value", map[string]any{"reason": "plan_not_active", "status": p.Status})
+	}
 	var lock *string
 	if err := tx.QueryRow(ctx, `SELECT lock_date::text FROM site WHERE org_id=$1 AND id=$2`, orgID, p.SiteID).Scan(&lock); err != nil {
 		return ch, err
@@ -347,14 +351,21 @@ func (s *Service) ApplySpecialAssessment(ctx context.Context, orgID uuid.UUID, e
 		if _, err := ledger.ParseDate(in.Start); err != nil {
 			return bad("plan.start", "invalid_format")
 		}
-		var existing uuid.UUID
-		err = tx.QueryRow(ctx, `SELECT p.id FROM charge_plan p JOIN charge_plan_rate r ON r.org_id = p.org_id AND r.plan_id = p.id
-			WHERE p.org_id=$1 AND p.site_id=$2 AND p.charge_type='special_assessment' AND r.decision_id=$3 LIMIT 1`, orgID, e.SiteID, e.DecisionID).Scan(&existing)
-		switch {
-		case err == nil:
-			res = EffectResult{RecordType: EffectPlan, RecordID: existing, Preview: map[string]any{"kind": "special_assessment", "plan_id": existing, "already_applied": true}}
-			return nil
-		case !errors.Is(err, pgx.ErrNoRows):
+		// applied already under this decision: the same plan again
+		applied := func() (bool, error) {
+			var existing uuid.UUID
+			err := tx.QueryRow(ctx, `SELECT p.id FROM charge_plan p JOIN charge_plan_rate r ON r.org_id = p.org_id AND r.plan_id = p.id
+				WHERE p.org_id=$1 AND p.site_id=$2 AND p.charge_type='special_assessment' AND r.decision_id=$3 LIMIT 1`, orgID, e.SiteID, e.DecisionID).Scan(&existing)
+			switch {
+			case err == nil:
+				res = EffectResult{RecordType: EffectPlan, RecordID: existing, Preview: map[string]any{"kind": "special_assessment", "plan_id": existing, "already_applied": true}}
+				return true, nil
+			case errors.Is(err, pgx.ErrNoRows):
+				return false, nil
+			}
+			return false, err
+		}
+		if done, err := applied(); done || err != nil {
 			return err
 		}
 		var lock *string
@@ -375,11 +386,25 @@ func (s *Service) ApplySpecialAssessment(ctx context.Context, orgID uuid.UUID, e
 		if dryRun {
 			return nil
 		}
+		// charge_plan_rate_decision (unique per decision) is the guard when another
+		// apply of the same decision committed since the lookup: undo ours, return theirs
+		if _, err := tx.Exec(ctx, `SAVEPOINT assessment_apply`); err != nil {
+			return err
+		}
 		plan, err := s.CreatePlan(ctx, orgID, in)
 		if err != nil {
 			return err
 		}
 		if _, err := tx.Exec(ctx, `UPDATE charge_plan_rate SET decision_id=$3 WHERE org_id=$1 AND plan_id=$2`, orgID, plan.ID, e.DecisionID); err != nil {
+			var pe *pgconn.PgError
+			if errors.As(err, &pe) && pe.Code == "23505" && pe.ConstraintName == "charge_plan_rate_decision" {
+				if _, rerr := tx.Exec(ctx, `ROLLBACK TO SAVEPOINT assessment_apply`); rerr != nil {
+					return rerr
+				}
+				if done, aerr := applied(); done || aerr != nil {
+					return aerr
+				}
+			}
 			return err
 		}
 		// bill now, even when the due date is ahead (a one-off charge is posted
