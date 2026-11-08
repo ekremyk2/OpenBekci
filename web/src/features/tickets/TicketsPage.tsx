@@ -74,7 +74,8 @@ export function TicketsPage({
   const canManage = can('tickets.manage')
   const canWork = can('tickets.work')
   const canOpen = can('tickets.open')
-  const view: TicketView = forcedView ?? search.view ?? (canReadAll ? 'all' : 'mine')
+  const view: TicketView =
+    forcedView ?? search.view ?? (canReadAll ? 'all' : canWork ? 'queue' : 'mine')
 
   const [text, setText] = useState(search.q ?? '')
   const q = useDebounced(text, 300)
@@ -125,6 +126,7 @@ export function TicketsPage({
     )
   }
 
+  // staff (work-only) land on their queue; the other views stay one click away
   const tabs: { id: TicketView; label: string; show: boolean }[] = [
     { id: 'all', label: t`All tickets`, show: canReadAll },
     { id: 'mine', label: t`My tickets`, show: canOpen },

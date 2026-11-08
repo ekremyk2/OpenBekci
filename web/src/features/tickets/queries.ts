@@ -72,6 +72,31 @@ export function useCategories(orgId: string, siteId: string | undefined, archive
   return useQuery({ ...categoriesQuery(orgId, siteId ?? '', archived), enabled: !!siteId })
 }
 
+/**
+ * The caller's person id, learned from the staff queue (every ticket in it is assigned to the
+ * caller). `/v1/me` carries no person id, and `tickets.work` covers assigned tickets only, so this
+ * is how the detail page knows which tickets a work-only user may act on. Kept once found: a ticket
+ * leaves the queue when it is closed, and the answer must not.
+ */
+export function useMyPersonId(orgId: string, siteId: string | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: ['operations.myPersonId', orgId, siteId],
+    enabled: enabled && !!siteId,
+    staleTime: (query) => (query.state.data ? Infinity : 0),
+    queryFn: async () => {
+      const page = must(
+        await apiDraft.GET('/v1/orgs/{org_id}/tickets', {
+          params: {
+            path: { org_id: orgId },
+            query: { site_id: siteId!, queue: true, limit: 1 },
+          },
+        }),
+      )
+      return page.items[0]?.assignee?.person_id ?? null
+    },
+  })
+}
+
 /** Tickets are invalidated as a family after any ticket mutation. */
 export const TICKET_KEYS = [
   'operations.listTickets',

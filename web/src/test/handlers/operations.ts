@@ -856,9 +856,11 @@ route('PATCH', `${O}/tickets/{id}`, async ({ p, request }) => {
   return json(ticketView(t))
 })
 route('POST', `${O}/tickets/{id}:transition`, async ({ p, request }) => {
-  if (!can('tickets.manage') && !can('tickets.work')) return forbidden()
   const t = findTicket(p[0])
   if (!t) return notFound()
+  // tickets.work is "assigned tickets" (PERMISSIONS.md): a work-only user may not touch others
+  const mine = (t.assignee as Json | null)?.person_id === personId()
+  if (!can('tickets.manage') && !(can('tickets.work') && mine)) return forbidden()
   const b = await body<Json>(request)
   const to = statusOf(b.status_id as string)
   if (!to)

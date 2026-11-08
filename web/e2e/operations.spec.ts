@@ -26,7 +26,7 @@ async function switchRole(page: Page, role: 'resident' | 'staff' | 'manager') {
   )
 }
 
-test('resident opens a ticket with a photo, staff changes the status, the resident sees it', async ({
+test('resident opens a ticket with a photo, manager changes the status (staff cannot: it is not assigned to them), the resident sees it', async ({
   page,
 }) => {
   await signInAs(page, 'resident')
@@ -47,8 +47,13 @@ test('resident opens a ticket with a photo, staff changes the status, the reside
   await expect(page.getByRole('button', { name: /Open photo 1 of 1/ })).toBeVisible()
   await expect(page.getByText('Open', { exact: true }).first()).toBeVisible()
 
-  // staff takes over (same in-memory data, no reload)
+  // staff (tickets.work) may only act on tickets assigned to them
   await switchRole(page, 'staff')
+  await expect(page.getByRole('heading', { name: 'Elevator door does not close' })).toBeVisible()
+  await expect(page.getByLabel('Change status')).toHaveCount(0)
+
+  // the manager takes over (same in-memory data, no reload)
+  await switchRole(page, 'manager')
   await expect(page.getByLabel('Change status')).toBeVisible()
   await page.getByLabel('Change status').selectOption({ label: 'In progress' })
   await page.getByLabel('Note with the status change').fill('Technician comes tomorrow')

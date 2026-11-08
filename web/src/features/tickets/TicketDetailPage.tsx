@@ -10,7 +10,7 @@ import { AttachmentGallery } from '@/components/files/AttachmentGallery'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSite } from '@/features/dashboard/site'
 import { StatusBadge, VisibilityBadge } from './badges'
-import { commentsQuery, historyQuery, ticketQuery, useWorkflow } from './queries'
+import { commentsQuery, historyQuery, ticketQuery, useMyPersonId, useWorkflow } from './queries'
 import {
   AssigneeEditor,
   MergeDialog,
@@ -35,6 +35,9 @@ export function TicketDetailPage({ ticketId }: { ticketId: string }) {
   const canWork = can('tickets.work')
   const canInternal = canManage || canWork || can('tickets.read')
   const canOpen = can('tickets.open')
+  // `tickets.work` is "assigned tickets": a work-only user acts on the tickets assigned to them
+  const workOnly = canWork && !canManage
+  const me = useMyPersonId(orgId, siteId, workOnly)
 
   if (ticket.isPending) return <PageSkeleton />
   if (ticket.isError) {
@@ -42,6 +45,8 @@ export function TicketDetailPage({ ticketId }: { ticketId: string }) {
   }
   const t = ticket.data
   const closed = t.status_semantic === 'closed_like'
+  const assignedToMe = !!me.data && t.assignee?.person_id === me.data
+  const canChangeStatus = canManage || (canWork && assignedToMe)
 
   return (
     <div className="flex flex-col gap-4">
@@ -159,7 +164,7 @@ export function TicketDetailPage({ ticketId }: { ticketId: string }) {
             </CardContent>
           </Card>
 
-          {(canManage || canWork) && workflow.data && !t.merged_into_id ? (
+          {canChangeStatus && workflow.data && !t.merged_into_id ? (
             <Card>
               <CardContent className="pt-6">
                 <StatusChanger
