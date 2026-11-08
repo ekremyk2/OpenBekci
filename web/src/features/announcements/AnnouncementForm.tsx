@@ -1,10 +1,11 @@
-import { lazy, Suspense, useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm, useWatch, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
+
 import {
   apiDraft,
   ifMatch,
@@ -24,7 +25,7 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useBlocks, useUnits } from '@/features/dashboard/reference'
 import { useSite } from '@/features/dashboard/site'
-import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
+import { usePayloadKeys, withIdempotencyKey } from '@/lib/idempotency'
 import { must } from '@/lib/pagination'
 import { isoToZonedLocal, zonedLocalToIso } from '@/lib/zoned'
 import { toast } from '@/lib/toast'
@@ -114,8 +115,11 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
   const orgId = org?.id ?? ''
   const tz = site?.timezone ?? 'UTC'
   const applyError = useApplyApiError()
-  const createKey = useIdempotencyKey()
-  const publishKey = useIdempotencyKey()
+  // Keys follow their payload: a retry of the same request replays its key, an edited payload gets
+  // a new one (one key with two bodies is 422 idempotency_mismatch).
+  const keyFor = usePayloadKeys()
+  // What the server holds for this form once a save went through, and the payload it was saved with.
+  const saved = useRef<{ announcement: Announcement; fingerprint: string } | null>(null)
   const [intent, setIntent] = useState<'draft' | 'publish'>('draft')
 
   const schema = useMemo(
@@ -207,52 +211,68 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
         expires_at: v.expires_at ? zonedLocalToIso(v.expires_at, tz) : null,
         file_ids: fileIds,
       }
-      let saved: Announcement
-      if (existing) {
-        saved = must(
+      const fingerprint = JSON.stringify(payload)
+
+      // Step 1, save. After a save has gone through, a retry never creates again: it skips the
+      // save when nothing changed and PATCHes the saved record when the person edited meanwhile.
+      const held = saved.current?.announcement ?? existing
+      let record: Announcement
+      if (saved.current && saved.current.fingerprint === fingerprint) {
+        record = saved.current.announcement
+      } else if (held) {
+        record = must(
           await apiDraft.PATCH('/v1/orgs/{org_id}/announcements/{announcement_id}', {
             params: {
-              path: { org_id: orgId, announcement_id: existing.id },
-              header: ifMatch(existing.version),
+              path: { org_id: orgId, announcement_id: held.id },
+              header: ifMatch(held.version),
             },
             body: payload,
           }),
         )
+        saved.current = { announcement: record, fingerprint }
       } else {
-        saved = must(
+        const body = { site_id: site!.id, ...payload }
+        record = must(
           await apiDraft.POST('/v1/orgs/{org_id}/announcements', {
             params: { path: { org_id: orgId } },
-            body: { site_id: site!.id, ...payload },
-            ...withIdempotencyKey(createKey.key),
+            body,
+            ...withIdempotencyKey(keyFor('create', body)),
           }),
         )
+        saved.current = { announcement: record, fingerprint }
       }
-      if (intent === 'publish' && !scheduled) {
-        saved = must(
+
+      // Step 2, publish. Its own key, tied to the record and the channels being sent.
+      if (intent === 'publish' && !scheduled && record.status !== 'published') {
+        const publishBody = { channels: v.channels }
+        record = must(
           await apiDraft.POST('/v1/orgs/{org_id}/announcements/{announcement_id}:publish', {
             params: {
-              path: { org_id: orgId, announcement_id: saved.id },
-              header: { 'Idempotency-Key': publishKey.key },
+              path: { org_id: orgId, announcement_id: record.id },
+              header: {
+                'Idempotency-Key': keyFor('publish', { id: record.id, ...publishBody }),
+              },
             },
-            body: { channels: v.channels },
+            body: publishBody,
           }),
         )
+        saved.current = { announcement: record, fingerprint }
       }
-      return saved
+      return record
     },
-    onSuccess: async (saved) => {
+    onSuccess: async (result) => {
       await qc.invalidateQueries({ queryKey: ['operations.listAnnouncements'] })
       await qc.invalidateQueries({ queryKey: ['operations.getAnnouncement'] })
       toast.info(
-        saved.status === 'published'
+        result.status === 'published'
           ? t`Announcement published.`
-          : saved.status === 'scheduled'
+          : result.status === 'scheduled'
             ? t`Announcement scheduled.`
             : t`Draft saved.`,
       )
       await navigate({
         to: '/orgs/$orgId/announcements/$announcementId',
-        params: { orgId, announcementId: saved.id },
+        params: { orgId, announcementId: result.id },
       })
     },
     onError: (e) => applyError(form, e),
@@ -378,7 +398,8 @@ export function AnnouncementForm({ existing }: { existing?: Announcement }) {
             <>
               <SubmitButton
                 busy={save.isPending && intent === 'publish'}
-                disabled={uploads.busy || !site}
+                // O5: no publish (or schedule) without the counts for what is chosen now
+                disabled={uploads.busy || !site || !preview.current}
                 onClick={() => setIntent('publish')}
               >
                 {scheduled ? <Trans>Schedule</Trans> : <Trans>Publish</Trans>}
