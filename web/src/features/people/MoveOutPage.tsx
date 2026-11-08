@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { FileTextIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi, type Schema } from '@/api/draft'
 import { runWithReauth } from '@/app/reauth'
+import { todayInZone } from '@/lib/dates'
+import { useActiveSite } from '@/features/sites/useActiveSite'
 import { useSession } from '@/app/session'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { Money } from '@/components/data/Money'
@@ -37,7 +39,8 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
   const applyError = useApplyFormError()
   const orgId = org?.id ?? ''
   const occQ = useQuery({ ...personQueries.occupancy(orgId, occupancyId), enabled: !!org })
-  const [asOf, setAsOf] = useState(() => new Date().toISOString().slice(0, 10))
+  const { timezone } = useActiveSite()
+  const [asOf, setAsOf] = useState(() => todayInZone(timezone))
   const [transferTo, setTransferTo] = useState<PickerOption | null>(null)
   const [done, setDone] = useState<Schema<'MoveOut'> | null>(null)
 
@@ -53,7 +56,7 @@ export function MoveOutPage({ occupancyId }: { occupancyId: string }) {
     resolver: zodResolver(schema),
     defaultValues: { open_charges: 'carry_to_person', disposition_reason: '' },
   })
-  const choice = form.watch('open_charges')
+  const choice = useWatch({ control: form.control, name: 'open_charges' })
   const previewQ = useQuery({
     queryKey: ['people.previewMoveOut', orgId, occupancyId, asOf, choice],
     enabled: !!org && /^\d{4}-\d{2}-\d{2}$/.test(asOf),

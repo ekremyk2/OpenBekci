@@ -12,6 +12,8 @@ import { useSession } from '@/app/session'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { DataTable, ListEmpty, useCursorPages } from '@/components/data/DataTable'
 import { SiteDate } from '@/components/data/SiteDate'
+import { zoneOfSite } from '@/lib/dates'
+import { normalizeDestination } from '@/lib/contact'
 import { PersonPicker, type PickerOption } from '@/components/forms/EntityPicker'
 import { Field, FormError, SubmitButton, useApplyFormError } from '@/components/forms/FormBits'
 import { Badge } from '@/components/ui/badge'
@@ -40,15 +42,16 @@ export function InvitationsPanel({ orgId, personId }: { orgId: string; personId?
   const pages = useCursorPages()
   const [open, setOpen] = useState(false)
   const query = useQuery(personQueries.invitations(orgId, { personId, cursor: pages.cursor }))
-  const tz = org?.sites[0]?.timezone ?? 'UTC'
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ['people.listInvitations', orgId] })
   const resend = useMutation({
     mutationFn: (id: string) =>
-      draftApi.POST('/v1/orgs/{org_id}/invitations/{invitation_id}:resend', {
-        params: { path: { org_id: orgId, invitation_id: id } },
-        ...withIdempotencyKey(crypto.randomUUID()),
-      }),
+      runWithReauth((key) =>
+        draftApi.POST('/v1/orgs/{org_id}/invitations/{invitation_id}:resend', {
+          params: { path: { org_id: orgId, invitation_id: id } },
+          ...withIdempotencyKey(key),
+        }),
+      ),
     onSuccess: invalidate,
   })
   const revoke = useMutation({
@@ -75,7 +78,12 @@ export function InvitationsPanel({ orgId, personId }: { orgId: string; personId?
     },
     {
       header: t`Expires`,
-      cell: ({ row }) => <SiteDate value={row.original.expires_at} timeZone={tz} />,
+      cell: ({ row }) => (
+        <SiteDate
+          value={row.original.expires_at}
+          timeZone={zoneOfSite(org?.sites, row.original.site_id)}
+        />
+      ),
     },
     {
       header: t`Actions`,
@@ -170,8 +178,17 @@ function InviteDialog({
   const [personError, setPersonError] = useState<string | undefined>()
   const schema = useMemo(
     () =>
-      z.object({ site_id: z.string().min(1), channel: z.string(), destination: z.string().trim() }),
-    [],
+      z
+        .object({
+          site_id: z.string().min(1),
+          channel: z.string(),
+          destination: z.string().trim(),
+        })
+        .refine((v) => v.destination === '' || normalizeDestination(v.channel, v.destination), {
+          path: ['destination'],
+          message: t`Enter a phone number in international format (+90 555 111 22 33) or a valid email address`,
+        }),
+    [t],
   )
   const form = useForm({
     resolver: zodResolver(schema),
@@ -185,8 +202,10 @@ function InviteDialog({
           body: {
             site_id: v.site_id,
             person_id: personId ?? person!.id,
-            channel: v.channel as 'sms',
-            destination: v.destination || undefined,
+            channel: v.channel === 'email' ? 'email' : 'sms',
+            destination: v.destination
+              ? (normalizeDestination(v.channel, v.destination) ?? v.destination)
+              : undefined,
           },
           ...withIdempotencyKey(idem.key),
         }),

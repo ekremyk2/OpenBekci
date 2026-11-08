@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi } from '@/api/draft'
 import { AppError } from '@/api/errors'
@@ -17,6 +17,9 @@ import { Input } from '@/components/ui/input'
 import { Field, FormError, SubmitButton } from './FormBits'
 
 type Method = 'password' | 'sms_otp'
+
+/** Seconds before another SMS code can be requested. */
+export const RESEND_COOLDOWN_S = 30
 
 /**
  * Re-authentication modal (web plan §7): password or a code sent to the account's own phone, then
@@ -43,14 +46,23 @@ function ReauthForm({ hasPhone, phone }: { hasPhone: boolean; phone: string | nu
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | undefined>()
+  const [cooldown, setCooldown] = useState(0)
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const timer = setTimeout(() => setCooldown((c) => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [cooldown])
 
   async function sendCode() {
-    if (!phone) return
+    if (!phone || cooldown > 0) return
     setError(undefined)
+    setCooldown(RESEND_COOLDOWN_S)
     try {
       await draftApi.POST('/v1/auth/otp', { body: { phone } })
       setSent(true)
     } catch {
+      setCooldown(0)
       setError(t`We could not send the code. Please try again.`)
     }
   }
@@ -136,6 +148,19 @@ function ReauthForm({ hasPhone, phone }: { hasPhone: boolean; phone: string | nu
                   <Trans>Code sent.</Trans>
                 </span>
               ) : null}
+              <Button
+                type="button"
+                variant="link"
+                className="h-auto p-0"
+                disabled={cooldown > 0}
+                onClick={() => void sendCode()}
+              >
+                {cooldown > 0 ? (
+                  <Trans>Send the code again in {cooldown} s</Trans>
+                ) : (
+                  <Trans>Send the code again</Trans>
+                )}
+              </Button>
             </>
           )}
         </div>

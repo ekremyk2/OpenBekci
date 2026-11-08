@@ -123,6 +123,9 @@ msgstr "All your sites at a glance, as of"
 msgid "Allocation keys"
 msgstr "Allocation keys"
 
+msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
+msgstr "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
+
 msgid "Any account status"
 msgstr "Any account status"
 
@@ -473,6 +476,9 @@ msgstr "Enter a date"
 msgid "Enter a name"
 msgstr "Enter a name"
 
+msgid "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
+msgstr "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
+
 msgid "Enter a share between 1 and 100"
 msgstr "Enter a share between 1 and 100"
 
@@ -626,6 +632,10 @@ msgstr "Household member"
 msgid "Household members"
 msgstr "Household members"
 
+#. placeholder {0}: unit.unit_label
+msgid "Household of {0}"
+msgstr "Household of {0}"
+
 msgid "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
 msgstr "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
 
@@ -678,8 +688,9 @@ msgstr "Invitations I sent"
 msgid "Invite"
 msgstr "Invite"
 
-msgid "Invite a household member"
-msgstr "Invite a household member"
+#. placeholder {0}: unit.unit_label
+msgid "Invite a household member to {0}"
+msgstr "Invite a household member to {0}"
 
 msgid "Invite a person"
 msgstr "Invite a person"
@@ -741,6 +752,9 @@ msgstr "Listed"
 
 msgid "Listed with phone"
 msgstr "Listed with phone"
+
+msgid "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
+msgstr "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
 
 msgid "Lock date"
 msgstr "Lock date"
@@ -889,9 +903,6 @@ msgstr "Nothing dated on or before the lock date can be posted or changed. Movin
 msgid "Nothing matches these filters. Try removing some."
 msgstr "Nothing matches these filters. Try removing some."
 
-msgid "Nothing was changed. Fix the file and try again."
-msgstr "Nothing was changed. Fix the file and try again."
-
 msgid "Notifications"
 msgstr "Notifications"
 
@@ -1014,9 +1025,12 @@ msgstr "Parking and storage default"
 msgid "Password"
 msgstr "Password"
 
-#. placeholder {0}: Object.keys(next).length
-msgid "Pasted {0} values. Check them, then save."
-msgstr "Pasted {0} values. Check them, then save."
+#. placeholder {0}: unmatched.length
+msgid "Pasted {count} values. {0} rows did not match a unit and were skipped: {shown}. Check them, then save."
+msgstr "Pasted {count} values. {0} rows did not match a unit and were skipped: {shown}. Check them, then save."
+
+msgid "Pasted {count} values. Check them, then save."
+msgstr "Pasted {count} values. Check them, then save."
 
 msgid "Payers should write"
 msgstr "Payers should write"
@@ -1261,6 +1275,12 @@ msgstr "Send me a code"
 msgid "Send me a code instead"
 msgstr "Send me a code instead"
 
+msgid "Send the code again"
+msgstr "Send the code again"
+
+msgid "Send the code again in {cooldown} s"
+msgstr "Send the code again in {cooldown} s"
+
 msgid "Send to (optional)"
 msgstr "Send to (optional)"
 
@@ -1411,11 +1431,14 @@ msgstr "The directory is empty"
 msgid "The file could not be checked. Please try again."
 msgstr "The file could not be checked. Please try again."
 
-msgid "The import could not be started. Nothing was changed."
-msgstr "The import could not be started. Nothing was changed."
+msgid "The import could not be started. Please try again; a retry never applies it twice."
+msgstr "The import could not be started. Please try again; a retry never applies it twice."
 
-msgid "The job did not finish. Nothing was changed."
-msgstr "The job did not finish. Nothing was changed."
+msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
+msgstr "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
+
+msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
+msgstr "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
 
 msgid "The move-out is recorded. The documents were also filed with the unit."
 msgstr "The move-out is recorded. The documents were also filed with the unit."
@@ -1449,6 +1472,10 @@ msgstr "The values could not be saved. Check them and try again."
 
 msgid "Theme"
 msgstr "Theme"
+
+#. placeholder {0}: badMoney.join(', ')
+msgid "These columns have values that are not whole numbers: {0}. Write amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}."
+msgstr "These columns have values that are not whole numbers: {0}. Write amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}."
 
 msgid "These neighbours chose to be listed."
 msgstr "These neighbours chose to be listed."

@@ -67,6 +67,7 @@ export function DataTable<T>({
   caption,
   pager,
 }: DataTableProps<T>) {
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table is not memoizable; the table instance is used only inside this component
   const table = useReactTable({
     data: data ?? [],
     columns,

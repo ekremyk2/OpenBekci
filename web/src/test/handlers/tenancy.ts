@@ -275,7 +275,7 @@ export function importHandler(kind: 'units' | 'people' | 'opening') {
   }
 }
 
-function keyValuesFor(keyId: string, blockId: string | null) {
+function keyValuesFor(keyId: string, blockId: string | null, url: URL) {
   const key = db.keys.find((k) => k.id === keyId)!
   const units = db.units.filter(
     (u) =>
@@ -291,10 +291,9 @@ function keyValuesFor(keyId: string, blockId: string | null) {
     return u.id in stored ? [{ unit_id: u.id, value: stored[u.id]!, computed: false }] : []
   })
   return {
-    items,
+    ...paginate(items, url),
     total: items.reduce((s, i) => s + i.value, 0),
     complete: items.length === units.length,
-    next_cursor: null,
   }
 }
 
@@ -436,6 +435,7 @@ export const tenancyHandlers = [
       lock_date: db.lockDates[String(params.siteId)] ?? null,
       changed_by: null,
       changed_at: null,
+      version: 1,
     }),
   ),
   http.put(o('sites/:siteId/lock-date'), async ({ params, request }) => {
@@ -454,6 +454,7 @@ export const tenancyHandlers = [
       lock_date: body.lock_date,
       changed_by: null,
       changed_at: nowIso(),
+      version: 2,
     })
   }),
 
@@ -637,7 +638,11 @@ export const tenancyHandlers = [
   }),
   http.get(o('allocation-keys/:keyId/values'), ({ params, request }) =>
     HttpResponse.json(
-      keyValuesFor(String(params.keyId), new URL(request.url).searchParams.get('block_id')),
+      keyValuesFor(
+        String(params.keyId),
+        new URL(request.url).searchParams.get('block_id'),
+        new URL(request.url),
+      ),
     ),
   ),
   http.put(o('allocation-keys/:keyId/values'), async ({ params, request }) => {

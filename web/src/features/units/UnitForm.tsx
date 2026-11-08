@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -84,7 +84,7 @@ export function UnitForm({
       block_id: unit?.block_id ?? '',
     },
   })
-  const type = form.watch('type')
+  const type = useWatch({ control: form.control, name: 'type' })
   const showParent = APPURTENANCE_TYPES.includes(type)
   const defaultAppurtenance = settingsQ.data?.parking_storage_default !== 'independent'
   const { errors } = form.formState

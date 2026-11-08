@@ -26,6 +26,22 @@ export const ifMatch = (version: number | string) => ({
   'If-Match': version === '*' ? '*' : `"${version}"`,
 })
 
+/**
+ * `If-Match` for an entity whose `version` is known. A missing version is a programming or
+ * loading error, never silently widened to "any version" (that would drop lost-update protection).
+ */
+export function ifMatchOf(version: number | string | undefined) {
+  if (version === undefined) throw new Error('Cannot save: the current version is not loaded yet')
+  return ifMatch(version)
+}
+
+/**
+ * `If-Match: *` ("any version"): ONLY for the two resources whose draft contract requires the
+ * header but exposes no `version` to send: the site settings and the site bank details. There is
+ * no lost-update protection for them until the contract adds a version field.
+ */
+export const ifMatchAny = () => ifMatch('*')
+
 const isBlob = (v: unknown): boolean =>
   typeof v === 'object' && v !== null && typeof (v as Blob).arrayBuffer === 'function'
 

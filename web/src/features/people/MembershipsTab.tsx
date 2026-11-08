@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -12,6 +12,8 @@ import { roleLabel } from '@/lib/labels'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { SiteDate } from '@/components/data/SiteDate'
+import { todayInZone, zoneOfSite } from '@/lib/dates'
+import { useActiveSite } from '@/features/sites/useActiveSite'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { Field, FormError, SubmitButton, useApplyFormError } from '@/components/forms/FormBits'
 import { Badge } from '@/components/ui/badge'
@@ -61,7 +63,10 @@ export function MembershipsTab({
     m.scope_type === 'org'
       ? scopeLabel('org', i18n)
       : (sites.find((s) => s.id === m.scope_id)?.name ?? scopeLabel(m.scope_type, i18n))
-  const tz = sites[0]?.timezone ?? 'UTC'
+  const { timezone: activeZone } = useActiveSite()
+  // a site-scoped role is dated in that site's zone; org-wide roles in the site being worked on
+  const tz = (m: Schema<'Membership'>) =>
+    m.scope_type === 'site' ? zoneOfSite(sites, m.scope_id, activeZone) : activeZone
 
   const remove = useMutation({
     mutationFn: (m: Schema<'Membership'>) =>
@@ -93,10 +98,10 @@ export function MembershipsTab({
               <span className="font-medium">{roleLabel(m.role, i18n)}</span>
               <span className="text-muted-foreground">{scopeName(m)}</span>
               <span className="text-muted-foreground">
-                <SiteDate value={m.valid_from} timeZone={tz} />
+                <SiteDate value={m.valid_from} timeZone={tz(m)} />
                 {' – '}
                 {m.valid_to ? (
-                  <SiteDate value={m.valid_to} timeZone={tz} />
+                  <SiteDate value={m.valid_to} timeZone={tz(m)} />
                 ) : (
                   <Trans>open-ended</Trans>
                 )}
@@ -189,11 +194,11 @@ function AddMembership({
       role: 'site_manager',
       scope_type: 'site',
       scope_id: sites[0]?.id ?? '',
-      valid_from: new Date().toISOString().slice(0, 10),
+      valid_from: todayInZone(zoneOfSite(sites, sites[0]?.id)),
       valid_to: '',
     },
   })
-  const scope = form.watch('scope_type')
+  const scope = useWatch({ control: form.control, name: 'scope_type' })
   const add = useMutation({
     mutationFn: (v: z.infer<typeof schema>) =>
       runWithReauth(() =>

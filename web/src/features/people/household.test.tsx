@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { server } from '@/test/setup'
 import { mountApp } from '@/test/render'
 import { db } from '@/test/handlers/db'
 
@@ -65,5 +67,57 @@ describe('re-authentication dialog', () => {
     await userEvent.type(within(dialog).getByLabelText('Code from the SMS'), '123456')
     await userEvent.click(within(dialog).getByRole('button', { name: 'Confirm' }))
     await waitFor(() => expect(screen.getByTestId('national-id')).toHaveTextContent('10000000146'))
+  })
+})
+
+describe('household panel with several units', () => {
+  it('shows one section per owned or rented unit, each inviting for its own unit', async () => {
+    const posted: string[] = []
+    server.use(
+      http.post('*/v1/orgs/:orgId/units/:unitId/household-invitations', ({ params }) => {
+        posted.push(String(params.unitId))
+        return HttpResponse.json(
+          { ...db.invitations[0]!, id: 'inv-new', kind: 'household' },
+          { status: 201 },
+        )
+      }),
+    )
+    await mountApp('/orgs/org-1/me', {
+      permissions: ['invitations.household'],
+      occupancies: [
+        {
+          id: 'o1',
+          organization_id: 'org-1',
+          site_id: 'site-a',
+          unit_id: 'unit-12',
+          unit_label: 'A Blok 12',
+          kind: 'owner',
+          may_see_money: true,
+        },
+        {
+          id: 'o2',
+          organization_id: 'org-1',
+          site_id: 'site-a',
+          unit_id: 'unit-30',
+          unit_label: 'B Blok 30',
+          kind: 'tenant',
+          may_see_money: true,
+        },
+      ],
+    })
+    const second = await screen.findByRole('region', { name: 'Household of B Blok 30' })
+    expect(screen.getByRole('region', { name: 'Household of A Blok 12' })).toBeInTheDocument()
+    await userEvent.type(within(second).getByLabelText('Name'), 'Deniz')
+    await userEvent.type(within(second).getByLabelText('Phone or email'), '+905550001122')
+    await userEvent.click(within(second).getByRole('button', { name: 'Send invitation' }))
+    await waitFor(() => expect(posted).toEqual(['unit-30']))
+  })
+
+  it('rejects a phone number that is not in international format', async () => {
+    await mountApp('/orgs/org-1/me', { permissions: ['invitations.household'] })
+    await userEvent.type(await screen.findByLabelText('Name'), 'Deniz')
+    await userEvent.type(screen.getByLabelText('Phone or email'), '0555 000 11 22')
+    await userEvent.click(screen.getByRole('button', { name: 'Send invitation' }))
+    expect(await screen.findByText(/international format/)).toBeInTheDocument()
   })
 })

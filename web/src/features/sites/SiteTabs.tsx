@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { draftApi, ifMatch, type Schema } from '@/api/draft'
+import { draftApi, ifMatchAny, ifMatchOf, type Schema } from '@/api/draft'
 import { AppError } from '@/api/errors'
 import { runWithReauth } from '@/app/reauth'
 import { useSession } from '@/app/session'
@@ -73,7 +73,7 @@ function SettingsForm({
     mutationFn: (v: z.infer<typeof settingsSchema>) =>
       runWithReauth(() =>
         draftApi.PATCH('/v1/orgs/{org_id}/sites/{site_id}/settings', {
-          params: { path: { org_id: orgId, site_id: siteId }, header: ifMatch('*') },
+          params: { path: { org_id: orgId, site_id: siteId }, header: ifMatchAny() },
           body: v as Schema<'SiteSettingsUpdate'>,
         }),
       ),
@@ -218,7 +218,7 @@ export function SiteBankTab({
     mutationFn: (v: z.output<typeof schema>) =>
       runWithReauth(() =>
         draftApi.PUT('/v1/orgs/{org_id}/sites/{site_id}/bank-details', {
-          params: { path: { org_id: orgId, site_id: siteId }, header: ifMatch('*') },
+          params: { path: { org_id: orgId, site_id: siteId }, header: ifMatchAny() },
           body: {
             iban: v.iban,
             holder: v.holder,
@@ -386,7 +386,7 @@ export function SiteLockTab({
         draftApi.PUT('/v1/orgs/{org_id}/sites/{site_id}/lock-date', {
           params: {
             path: { org_id: orgId, site_id: siteId },
-            header: ifMatch(query.data?.version ?? '*'),
+            header: ifMatchOf(query.data?.version),
           },
           body: { lock_date: v.lock_date || null },
           ...withIdempotencyKey(idem.key),
@@ -494,7 +494,7 @@ export function SiteBlocksTab({
       draftApi.DELETE('/v1/orgs/{org_id}/blocks/{block_id}', {
         params: {
           path: { org_id: orgId, block_id: id },
-          header: ifMatch(query.data?.items.find((b) => b.id === id)?.version ?? '*'),
+          header: ifMatchOf(query.data?.items.find((b) => b.id === id)?.version),
         },
       }),
     onSuccess: invalidate,

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -13,6 +13,8 @@ import { occupancyKindLabel } from '@/lib/labels'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { SiteDate } from '@/components/data/SiteDate'
+import { todayInZone } from '@/lib/dates'
+import { useActiveSite } from '@/features/sites/useActiveSite'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { UnitPicker, type PickerOption } from '@/components/forms/EntityPicker'
 import { Field, FormError, SubmitButton, useApplyFormError } from '@/components/forms/FormBits'
@@ -34,20 +36,19 @@ export function OccupanciesTab({
   canEdit: boolean
 }) {
   const { t, i18n } = useLingui()
-  const { org, can } = useSession()
+  const { can } = useSession()
   const queryClient = useQueryClient()
   const query = useQuery(personQueries.occupancies(orgId, personId))
-  const tz = (siteName: string) =>
-    org?.sites.find((s) => s.name === siteName)?.timezone ?? org?.sites[0]?.timezone ?? 'UTC'
+  const { timezone: tz } = useActiveSite()
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ['people.listOccupancies', orgId] })
   const money = useMutation({
     mutationFn: (v: { id: string; on: boolean }) =>
-      runWithReauth(() =>
+      runWithReauth((key) =>
         draftApi.PUT('/v1/orgs/{org_id}/occupancies/{occupancy_id}/money-access', {
           params: { path: { org_id: orgId, occupancy_id: v.id } },
           body: { may_see_money: v.on },
-          ...withIdempotencyKey(crypto.randomUUID()),
+          ...withIdempotencyKey(key),
         }),
       ),
     onSuccess: invalidate,
@@ -89,10 +90,10 @@ export function OccupanciesTab({
                   </Badge>
                 ) : null}
                 <span className="text-muted-foreground">
-                  <SiteDate value={o.valid_from} timeZone={tz('')} />
+                  <SiteDate value={o.valid_from} timeZone={tz} />
                   {' – '}
                   {o.valid_to ? (
-                    <SiteDate value={o.valid_to} timeZone={tz('')} />
+                    <SiteDate value={o.valid_to} timeZone={tz} />
                   ) : (
                     <Trans>today</Trans>
                   )}
@@ -138,7 +139,8 @@ function AddOccupancy({
   const idem = useIdempotencyKey()
   const applyError = useApplyFormError()
   const sites = org?.sites ?? []
-  const [siteId, setSiteId] = useState(sites[0]?.id ?? '')
+  const active = useActiveSite()
+  const [siteId, setSiteId] = useState(active.siteId ?? sites[0]?.id ?? '')
   const [unit, setUnit] = useState<PickerOption | null>(null)
   const schema = useMemo(
     () =>
@@ -162,11 +164,11 @@ function AddOccupancy({
       kind: 'owner',
       share_pct: '',
       is_correspondent: false,
-      valid_from: new Date().toISOString().slice(0, 10),
+      valid_from: todayInZone(active.timezone),
       valid_to: '',
     },
   })
-  const kind = form.watch('kind')
+  const kind = useWatch({ control: form.control, name: 'kind' })
   const add = useMutation({
     mutationFn: (v: z.infer<typeof schema>) =>
       runWithReauth(() =>

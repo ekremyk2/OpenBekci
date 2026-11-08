@@ -7,6 +7,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi } from '@/api/draft'
 import { runWithReauth } from '@/app/reauth'
 import { useSession } from '@/app/session'
+import { normalizeDestination } from '@/lib/contact'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { ErrorState } from '@/components/data/ErrorState'
 import { Field, FormError, SubmitButton, useApplyFormError } from '@/components/forms/FormBits'
@@ -24,35 +25,51 @@ import { inviteStatusLabel } from './labels'
  */
 export function HouseholdPanel() {
   const { org, me, can } = useSession()
+  const orgId = org?.id ?? ''
+  if (!can('invitations.household')) return null
+  // one section per unit side the caller owns or rents (a second flat, or both sides of one)
+  const seen = new Set<string>()
+  const own = (me?.occupancies ?? []).filter((o) => {
+    if (o.organization_id !== orgId || (o.kind !== 'owner' && o.kind !== 'tenant')) return false
+    const key = `${o.unit_id}:${o.kind}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+  return (
+    <>
+      {own.map((o) => (
+        <HouseholdSection key={`${o.unit_id}:${o.kind}`} orgId={orgId} unit={o} />
+      ))}
+    </>
+  )
+}
+
+type OwnOccupancy = NonNullable<ReturnType<typeof useSession>['me']>['occupancies'][number]
+
+function HouseholdSection({ orgId, unit }: { orgId: string; unit: OwnOccupancy }) {
   const { t, i18n } = useLingui()
   const queryClient = useQueryClient()
   const idem = useIdempotencyKey()
   const applyError = useApplyFormError()
-  const orgId = org?.id ?? ''
-  const unit = me?.occupancies.find(
-    (o) => o.organization_id === orgId && (o.kind === 'owner' || o.kind === 'tenant'),
-  )
-  const allowed = !!unit && can('invitations.household')
 
   const invitesQ = useQuery({
-    queryKey: ['me.listHouseholdInvitations', orgId, unit?.unit_id],
-    enabled: allowed,
+    queryKey: ['me.listHouseholdInvitations', orgId, unit.unit_id],
     queryFn: async () => {
       const { data } = await draftApi.GET('/v1/orgs/{org_id}/me/household-invitations', {
-        params: { path: { org_id: orgId }, query: { unit_id: unit!.unit_id } },
+        params: { path: { org_id: orgId }, query: { unit_id: unit.unit_id } },
       })
       return data!
     },
   })
   const membersQ = useQuery({
-    queryKey: ['people.listOccupancies', orgId, { unit_id: unit?.unit_id, kind: 'household' }],
-    enabled: allowed,
+    queryKey: ['people.listOccupancies', orgId, { unit_id: unit.unit_id, kind: 'household' }],
     retry: false,
     queryFn: async () => {
       const { data } = await draftApi.GET('/v1/orgs/{org_id}/occupancies', {
         params: {
           path: { org_id: orgId },
-          query: { unit_id: unit!.unit_id, kind: 'household', active: true },
+          query: { unit_id: unit.unit_id, kind: 'household', active: true },
         },
       })
       return data!
@@ -65,17 +82,22 @@ export function HouseholdPanel() {
 
   const schema = useMemo(
     () =>
-      z.object({
-        display_name: z
-          .string()
-          .trim()
-          .min(1, t`Enter their name`),
-        channel: z.string(),
-        destination: z
-          .string()
-          .trim()
-          .min(1, t`Enter their phone number or email address`),
-      }),
+      z
+        .object({
+          display_name: z
+            .string()
+            .trim()
+            .min(1, t`Enter their name`),
+          channel: z.string(),
+          destination: z
+            .string()
+            .trim()
+            .min(1, t`Enter their phone number or email address`),
+        })
+        .refine((v) => v.destination === '' || normalizeDestination(v.channel, v.destination), {
+          path: ['destination'],
+          message: t`Enter a phone number in international format (+90 555 111 22 33) or a valid email address`,
+        }),
     [t],
   )
   const form = useForm({
@@ -86,11 +108,11 @@ export function HouseholdPanel() {
     mutationFn: (v: z.infer<typeof schema>) =>
       runWithReauth(() =>
         draftApi.POST('/v1/orgs/{org_id}/units/{unit_id}/household-invitations', {
-          params: { path: { org_id: orgId, unit_id: unit!.unit_id } },
+          params: { path: { org_id: orgId, unit_id: unit.unit_id } },
           body: {
             display_name: v.display_name,
-            channel: v.channel as 'sms',
-            destination: v.destination,
+            channel: v.channel === 'email' ? 'email' : 'sms',
+            destination: normalizeDestination(v.channel, v.destination) ?? v.destination,
           },
           ...withIdempotencyKey(idem.key),
         }),
@@ -118,9 +140,8 @@ export function HouseholdPanel() {
   })
   const { errors } = form.formState
 
-  if (!allowed || !unit) return null
   return (
-    <Card>
+    <Card role="region" aria-label={t`Household of ${unit.unit_label}`}>
       <CardHeader>
         <CardTitle>
           <Trans>People in my household</Trans>
@@ -172,31 +193,35 @@ export function HouseholdPanel() {
         ) : null}
         <form
           noValidate
-          aria-label={t`Invite a household member`}
+          aria-label={t`Invite a household member to ${unit.unit_label}`}
           className="grid gap-3 sm:grid-cols-2"
           onSubmit={form.handleSubmit((v) => invite.mutateAsync(v).catch(() => undefined))}
         >
-          <Field id="hh-name" label={<Trans>Name</Trans>} error={errors.display_name?.message}>
+          <Field
+            id={`hh-name-${unit.unit_id}`}
+            label={<Trans>Name</Trans>}
+            error={errors.display_name?.message}
+          >
             <Input
-              id="hh-name"
+              id={`hh-name-${unit.unit_id}`}
               aria-invalid={!!errors.display_name}
               {...form.register('display_name')}
             />
           </Field>
-          <Field id="hh-channel" label={<Trans>Send by</Trans>}>
-            <Select id="hh-channel" {...form.register('channel')}>
+          <Field id={`hh-channel-${unit.unit_id}`} label={<Trans>Send by</Trans>}>
+            <Select id={`hh-channel-${unit.unit_id}`} {...form.register('channel')}>
               <option value="sms">SMS</option>
               <option value="email">{t`Email`}</option>
             </Select>
           </Field>
           <Field
-            id="hh-dest"
+            id={`hh-dest-${unit.unit_id}`}
             label={<Trans>Phone or email</Trans>}
             error={errors.destination?.message}
             className="sm:col-span-2"
           >
             <Input
-              id="hh-dest"
+              id={`hh-dest-${unit.unit_id}`}
               dir="ltr"
               aria-invalid={!!errors.destination}
               {...form.register('destination')}

@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { DownloadIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { draftApi, ifMatch } from '@/api/draft'
+import { draftApi, ifMatchOf, ifMatch } from '@/api/draft'
 import { runWithReauth } from '@/app/reauth'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { EmptyState } from '@/components/data/EmptyState'
@@ -88,7 +88,7 @@ export function VehiclesPanel({
       draftApi.DELETE('/v1/orgs/{org_id}/vehicles/{vehicle_id}', {
         params: {
           path: { org_id: orgId, vehicle_id: id },
-          header: ifMatch(versions.get(id) ?? '*'),
+          header: ifMatchOf(versions.get(id)),
         },
       }),
     onSuccess: invalidate,

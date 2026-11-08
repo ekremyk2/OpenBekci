@@ -123,6 +123,9 @@ msgstr "Tüm sitelerinize bir bakışta, şu tarih itibarıyla:"
 msgid "Allocation keys"
 msgstr "Dağıtım anahtarları"
 
+msgid "Amounts are whole numbers in the smallest currency unit, without separators: {exampleMinor} means {exampleFormatted}."
+msgstr "Tutarlar, en küçük para biriminde ve ayraçsız tam sayılardır: {exampleMinor}, {exampleFormatted} demektir."
+
 msgid "Any account status"
 msgstr "Herhangi bir hesap durumu"
 
@@ -473,6 +476,9 @@ msgstr "Bir tarih girin"
 msgid "Enter a name"
 msgstr "Bir ad girin"
 
+msgid "Enter a phone number in international format (+90 555 111 22 33) or a valid email address"
+msgstr "Uluslararası biçimde bir telefon numarası (+90 555 111 22 33) veya geçerli bir e-posta adresi girin"
+
 msgid "Enter a share between 1 and 100"
 msgstr "1 ile 100 arasında bir pay girin"
 
@@ -626,6 +632,10 @@ msgstr "Hane halkı üyesi"
 msgid "Household members"
 msgstr "Hane üyeleri"
 
+#. placeholder {0}: unit.unit_label
+msgid "Household of {0}"
+msgstr "{0} hanesi"
+
 msgid "How a shared cost is split among units. Under the Condominium Law (Kat Mülkiyeti Kanunu, no. 634) the default is each flat's land share (arsa payı) unless your management plan says otherwise, so new sites start with that key. Add a custom table for things like heating meters."
 msgstr "Ortak bir giderin birimler arasında nasıl paylaştırıldığı. Kat Mülkiyeti Kanunu (634 sayılı) uyarınca, yönetim planınız aksini söylemiyorsa varsayılan, her dairenin arsa payıdır; bu yüzden yeni siteler bu anahtarla başlar. Isı sayacı gibi şeyler için özel bir tablo ekleyin."
 
@@ -678,8 +688,9 @@ msgstr "Gönderdiğim davetler"
 msgid "Invite"
 msgstr "Davet et"
 
-msgid "Invite a household member"
-msgstr "Bir hane üyesini davet et"
+#. placeholder {0}: unit.unit_label
+msgid "Invite a household member to {0}"
+msgstr "{0} için bir hane üyesi davet et"
 
 msgid "Invite a person"
 msgstr "Bir kişiyi davet et"
@@ -741,6 +752,9 @@ msgstr "Listede"
 
 msgid "Listed with phone"
 msgstr "Telefonuyla listede"
+
+msgid "Loading all units and values: {loadedUnits} units, {loadedValues} values so far."
+msgstr "Tüm bağımsız bölümler ve değerler yükleniyor: şimdiye kadar {loadedUnits} bölüm, {loadedValues} değer."
 
 msgid "Lock date"
 msgstr "Kilit tarihi"
@@ -889,9 +903,6 @@ msgstr "Kilit tarihinde ve öncesinde tarihlenen hiçbir şey kaydedilemez veya 
 msgid "Nothing matches these filters. Try removing some."
 msgstr "Hiçbir şey bu filtrelerle eşleşmiyor. Bazılarını kaldırmayı deneyin."
 
-msgid "Nothing was changed. Fix the file and try again."
-msgstr "Hiçbir şey değişmedi. Dosyayı düzeltip yeniden deneyin."
-
 msgid "Notifications"
 msgstr "Bildirimler"
 
@@ -1014,9 +1025,12 @@ msgstr "Otopark ve depo varsayılanı"
 msgid "Password"
 msgstr "Parola"
 
-#. placeholder {0}: Object.keys(next).length
-msgid "Pasted {0} values. Check them, then save."
-msgstr "{0} değer yapıştırıldı. Kontrol edip kaydedin."
+#. placeholder {0}: unmatched.length
+msgid "Pasted {count} values. {0} rows did not match a unit and were skipped: {shown}. Check them, then save."
+msgstr "{count} değer yapıştırıldı. {0} satır hiçbir bölümle eşleşmedi ve atlandı: {shown}. Kontrol edin, sonra kaydedin."
+
+msgid "Pasted {count} values. Check them, then save."
+msgstr "{count} değer yapıştırıldı. Kontrol edin, sonra kaydedin."
 
 msgid "Payers should write"
 msgstr "Ödeme yapanın yazması gereken"
@@ -1261,6 +1275,12 @@ msgstr "Bana kod gönder"
 msgid "Send me a code instead"
 msgstr "Bunun yerine bana kod gönder"
 
+msgid "Send the code again"
+msgstr "Kodu yeniden gönder"
+
+msgid "Send the code again in {cooldown} s"
+msgstr "Kodu {cooldown} sn sonra yeniden gönder"
+
 msgid "Send to (optional)"
 msgstr "Gönderilecek yer (isteğe bağlı)"
 
@@ -1411,11 +1431,14 @@ msgstr "Rehber boş"
 msgid "The file could not be checked. Please try again."
 msgstr "Dosya kontrol edilemedi. Lütfen yeniden deneyin."
 
-msgid "The import could not be started. Nothing was changed."
-msgstr "İçe aktarma başlatılamadı. Hiçbir şey değişmedi."
+msgid "The import could not be started. Please try again; a retry never applies it twice."
+msgstr "İçe aktarma başlatılamadı. Lütfen yeniden deneyin; yeniden deneme iki kez uygulanmaz."
 
-msgid "The job did not finish. Nothing was changed."
-msgstr "İş tamamlanamadı. Hiçbir şey değişmedi."
+msgid "The import did not complete. Some rows may already have been applied: check the units and people pages, fix the file and try again."
+msgstr "İçe aktarma tamamlanmadı. Bazı satırlar uygulanmış olabilir: bağımsız bölümler ve kişiler sayfalarını kontrol edin, dosyayı düzeltip yeniden deneyin."
+
+msgid "The job did not finish. Some rows may already have been applied: check the units and people pages before you try again."
+msgstr "İş tamamlanmadı. Bazı satırlar uygulanmış olabilir: yeniden denemeden önce bağımsız bölümler ve kişiler sayfalarını kontrol edin."
 
 msgid "The move-out is recorded. The documents were also filed with the unit."
 msgstr "Taşınma kaydedildi. Belgeler birimin dosyasına da eklendi."
@@ -1449,6 +1472,10 @@ msgstr "Değerler kaydedilemedi. Kontrol edip yeniden deneyin."
 
 msgid "Theme"
 msgstr "Tema"
+
+#. placeholder {0}: badMoney.join(', ')
+msgid "These columns have values that are not whole numbers: {0}. Write amounts in the smallest unit, for example {exampleMinor} for {exampleFormatted}."
+msgstr "Bu sütunlarda tam sayı olmayan değerler var: {0}. Tutarları en küçük birimde yazın, örneğin {exampleFormatted} için {exampleMinor}."
 
 msgid "These neighbours chose to be listed."
 msgstr "Bu komşular listede yer almayı seçti."

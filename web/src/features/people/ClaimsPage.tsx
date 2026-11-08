@@ -14,6 +14,8 @@ import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { occupancyKindLabel } from '@/lib/labels'
 import { DataTable, ListEmpty, useCursorPages } from '@/components/data/DataTable'
 import { SiteDate } from '@/components/data/SiteDate'
+import { todayInZone } from '@/lib/dates'
+import { useActiveSite } from '@/features/sites/useActiveSite'
 import { Field, FormError, SubmitButton, useApplyFormError } from '@/components/forms/FormBits'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Badge } from '@/components/ui/badge'
@@ -41,7 +43,7 @@ export function ClaimsPage({ status }: { status: string }) {
   const navigate = useNavigate()
   const pages = useCursorPages()
   const orgId = org?.id ?? ''
-  const tz = org?.sites[0]?.timezone ?? 'UTC'
+  const { timezone: tz } = useActiveSite()
   const query = useQuery({
     ...personQueries.claims(orgId, { status: status || undefined, cursor: pages.cursor }),
     enabled: !!org,
@@ -163,6 +165,7 @@ function DecisionDialog({
   const queryClient = useQueryClient()
   const idem = useIdempotencyKey()
   const applyError = useApplyFormError()
+  const { timezone: siteZone } = useActiveSite()
   const approve = mode === 'approve'
   const schema = useMemo(
     () =>
@@ -185,7 +188,7 @@ function DecisionDialog({
   )
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { share_pct: '', valid_from: new Date().toISOString().slice(0, 10), reason: '' },
+    defaultValues: { share_pct: '', valid_from: todayInZone(siteZone), reason: '' },
   })
   const decide = useMutation({
     mutationFn: (v: z.infer<typeof schema>) =>

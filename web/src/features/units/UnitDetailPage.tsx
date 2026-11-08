@@ -1,7 +1,7 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { draftApi, ifMatch, type Schema } from '@/api/draft'
+import { draftApi, ifMatchOf, ifMatch, type Schema } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { SiteDate } from '@/components/data/SiteDate'
 import { ErrorState } from '@/components/data/ErrorState'
@@ -47,7 +47,7 @@ export function UnitDetailPage({ unitId }: { unitId: string }) {
   const remove = useMutation({
     mutationFn: () =>
       draftApi.DELETE('/v1/orgs/{org_id}/units/{unit_id}', {
-        params: { path: { org_id: orgId, unit_id: unitId }, header: ifMatch(unit?.version ?? '*') },
+        params: { path: { org_id: orgId, unit_id: unitId }, header: ifMatchOf(unit?.version) },
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['tenancy.listUnits', orgId] })

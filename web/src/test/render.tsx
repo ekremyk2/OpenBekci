@@ -33,14 +33,18 @@ export function nodeFile(parts: string[], name: string, type = 'text/csv'): File
  */
 export async function mountApp(
   path: string,
-  opts: { permissions?: string[]; seed?: (db: ReturnType<typeof resetDb>) => void } = {},
+  opts: {
+    permissions?: string[]
+    occupancies?: Parameters<typeof adminHandlers>[1]
+    seed?: (db: ReturnType<typeof resetDb>) => void
+  } = {},
 ) {
   localStorage.clear()
   i18n.activate('en')
   const fresh = resetDb()
   opts.seed?.(fresh)
   jobPolling.ms = 10
-  server.use(...adminHandlers(opts.permissions))
+  server.use(...adminHandlers(opts.permissions, opts.occupancies))
   const queryClient = createQueryClient()
   queryClient.setDefaultOptions({ queries: { retry: false, staleTime: 0 } })
   const router = createAppRouter(queryClient, createMemoryHistory({ initialEntries: [path] }))

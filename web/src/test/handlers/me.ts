@@ -40,9 +40,13 @@ export const ALL_PERMISSIONS = [
 ]
 
 /** A signed-in organization admin with everything granted, for mock mode and screen tests. */
-export function adminMe(permissions: string[] = ALL_PERMISSIONS): Me {
+export function adminMe(
+  permissions: string[] = ALL_PERMISSIONS,
+  occupancies: Me['occupancies'] = meFixture.occupancies,
+): Me {
   return {
     ...meFixture,
+    occupancies,
     user: { ...meFixture.user, locale: 'en' },
     organizations: [
       {
@@ -61,7 +65,7 @@ export function adminMe(permissions: string[] = ALL_PERMISSIONS): Me {
   }
 }
 
-export const adminHandlers = (permissions?: string[]) => [
-  http.get('*/v1/me', () => HttpResponse.json(adminMe(permissions))),
+export const adminHandlers = (permissions?: string[], occupancies?: Me['occupancies']) => [
+  http.get('*/v1/me', () => HttpResponse.json(adminMe(permissions, occupancies))),
   http.get('*/.well-known/openbekci.json', () => HttpResponse.json(discoveryFixture)),
 ]

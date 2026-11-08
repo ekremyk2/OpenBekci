@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
+import { useActiveSite } from '@/features/sites/useActiveSite'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,7 +41,7 @@ export function PortfolioPage() {
   const { t } = useLingui()
   const orgId = org?.id ?? ''
   const query = usePortfolio(orgId, !!org)
-  const tz = org?.sites[0]?.timezone ?? 'UTC'
+  const { timezone: tz } = useActiveSite()
   if (query.isLoading) return <PageSkeleton />
   if (query.error) return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
   const data = query.data!
