@@ -178,6 +178,13 @@ func inTx(ctx context.Context, pool *pgxpool.Pool, orgID string, fn func(pgx.Tx)
 		return fmt.Errorf("begin tx: %w", err)
 	}
 	defer func() {
+		// a panic in fn (pack code runs here, and callers recover it further
+		// up) must not leave the transaction open: its connection would never
+		// return to the pool
+		if r := recover(); r != nil {
+			_ = tx.Rollback(context.WithoutCancel(ctx))
+			panic(r)
+		}
 		if err != nil {
 			_ = tx.Rollback(ctx)
 		}
