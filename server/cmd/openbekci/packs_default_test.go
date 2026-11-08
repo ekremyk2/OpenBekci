@@ -4,10 +4,10 @@ package main
 
 import "testing"
 
-// The default build contains no pack: a pack is compiled in only by listing it
-// in Official (a fork) or with -tags examplepack (tests).
-func TestDefaultBuildHasNoPacks(t *testing.T) {
-	if len(Official) != 0 {
-		t.Fatalf("the default build lists %d packs", len(Official))
+// The default build contains the official Turkish pack and nothing else; a
+// fork adds its pack by listing it in Official, -tags nopacks removes all.
+func TestDefaultBuildListsTheTurkishPack(t *testing.T) {
+	if len(Official) != 1 || Official[0].Manifest().ID != "tr" {
+		t.Fatalf("the default build lists %v", Official)
 	}
 }

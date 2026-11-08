@@ -18,7 +18,6 @@ const (
 	RuleUnanimity                     = "unanimity"
 	VoteWeightPerUnit                 = "per_unit"
 	VoteWeightPerOwner                = "per_owner"
-	PresetTR634                       = "tr-634"
 	DefaultTopic                      = "default"
 	callFirst                         = "first"
 	callSecond                        = "second"
@@ -77,23 +76,22 @@ type PresetNote struct {
 
 func strp(s string) *string { return &s }
 
-// TurkishPreset is the Law 634 default set (every claim is marked verify).
-func TurkishPreset() Settings {
+// GenericPreset is the default rule set of a site without a legal preset (a
+// country pack): a majority of the units present on the first call and no
+// quorum on the second, a simple majority of those present for every topic,
+// one vote per unit without caps, a 15 day call, a second meeting 7 to 15 days
+// later and the ordinary assembly in January. A pack fills the site settings
+// quorum, thresholds, vote_weight and schedule with the values of its country
+// (see FromSiteSettings); a site can set the same values by hand.
+func GenericPreset() Settings {
+	simple := func(topic string) Threshold { return Threshold{Topic: topic, Rule: RuleSimpleMajorityPresent} }
 	return Settings{
-		Quorum: QuorumRule{FirstCallByCountPct: 50, FirstCallBySharePct: 50, SecondCallRequiresQuorum: false},
-		Thresholds: []Threshold{
-			{Topic: DefaultTopic, Rule: RuleMajorityCountAndShare, Note: strp("Law 634 art. 32: majority by number of owners and by arsa payi (verify)")},
-			{Topic: "budget", Rule: RuleMajorityCountAndShare, Note: strp("Budget and dues: art. 32 (verify)")},
-			{Topic: "election", Rule: RuleMajorityCountAndShare, Note: strp("Manager, board and auditor elections: art. 32 (verify)")},
-			{Topic: "routine", Rule: RuleSimpleMajorityPresent, Note: strp("Routine matters decided by those present, where the yonetim plani allows (verify)")},
-			{Topic: "plan_amendment", Rule: RuleFourFifths, Note: strp("Changing the yonetim plani: art. 28, four-fifths (verify)")},
-			{Topic: "common_area_change", Rule: RuleFourFifths, Note: strp("Significant changes to common areas: art. 19, four-fifths (verify)")},
-			{Topic: "main_structure_change", Rule: RuleUnanimity, Note: strp("Changes to the main structure and rights of each owner: art. 18, unanimity (verify)")},
-		},
-		MaxVotesPerPersonPct:     100.0 / 3,
-		ProxyCapPct:              5,
-		ProxyCapSmallBuildingMax: 2,
-		SmallBuildingUnitLimit:   40,
+		Quorum:                   QuorumRule{FirstCallByCountPct: 50, FirstCallBySharePct: 0, SecondCallRequiresQuorum: false},
+		Thresholds:               []Threshold{simple(DefaultTopic), simple("budget"), simple("election"), simple("routine"), simple("plan_amendment"), simple("common_area_change"), simple("main_structure_change")},
+		MaxVotesPerPersonPct:     100,
+		ProxyCapPct:              100,
+		ProxyCapSmallBuildingMax: 0,
+		SmallBuildingUnitLimit:   0,
 		CallMinDays:              15,
 		SecondCallMinDays:        7,
 		SecondCallMaxDays:        15,
@@ -105,19 +103,13 @@ func TurkishPreset() Settings {
 	}
 }
 
-// TurkishPresetNotes are the remarks that come with the Law 634 preset.
-func TurkishPresetNotes() []PresetNote {
+// GenericPresetNotes are the remarks about how the system evaluates meetings;
+// they hold for every country. Legal remarks belong to the country's pack.
+func GenericPresetNotes() []PresetNote {
 	return []PresetNote{
-		{Key: "quorum", Note: "First call: a majority by number of owners and by arsa payi. Second call: no quorum, decisions by the majority of those present (art. 29).", Verify: true},
-		{Key: "vote_weight", Note: "One vote per unit regardless of arsa payi; co-owners vote through one representative.", Verify: true},
-		{Key: "max_votes_per_person", Note: "A person holds at most one third of all votes (art. 31).", Verify: true},
-		{Key: "proxy_caps", Note: "A proxy holder represents at most 5 % of the votes; in buildings of 40 units or fewer at most two other owners.", Verify: true},
-		{Key: "call_timing", Note: "The call goes out at least 15 days before the meeting; the second meeting is 7 to 15 days after the first.", Verify: true},
-		{Key: "thresholds", Note: "Article mapping of the threshold table; the yonetim plani may deviate where the law allows.", Verify: true},
-		{Key: "ordinary_assembly", Note: "The ordinary assembly meets yearly, in January unless the yonetim plani says otherwise; managers are reminded in the month before (ordinary_assembly_month).", Verify: true},
-		{Key: "abstentions_and_ties", Note: "An abstention counts as present but is not a yes, so it counts against every majority; a tie rejects, because every majority is strict. A simple majority of those present is measured against everybody present, so a present owner who does not vote counts against too. Unanimity and four-fifths are measured against all eligible votes, and votes above a person's cap do not count, so unanimity is unreachable when one person holds more than the cap.", Verify: true},
-		{Key: "call_held", Note: "Quorum and the vote evaluation follow the call that was actually opened (first, or second after the first failed its quorum), never the clock. Attendance does not carry from the first call to the second.", Verify: true},
-		{Key: "co_owners_check_in", Note: "Co-owners of a unit vote through one representative. A co-owner who is not the representative cannot check in on their own: the representative is recorded in_person for the unit, and only if the representative is absent can the unit be represented by a proxy, which counts against the proxy cap.", Verify: true},
+		{Key: "abstentions_and_ties", Note: "An abstention counts as present but is not a yes, so it counts against every majority; a tie rejects, because every majority is strict. A simple majority of those present is measured against everybody present, so a present owner who does not vote counts against too. Unanimity and four-fifths are measured against all eligible votes, and votes above a person's cap do not count, so unanimity is unreachable when one person holds more than the cap."},
+		{Key: "call_held", Note: "Quorum and the vote evaluation follow the call that was actually opened (first, or second after the first failed its quorum), never the clock. Attendance does not carry from the first call to the second."},
+		{Key: "co_owners_check_in", Note: "Co-owners of a unit vote through one representative. A co-owner who is not the representative cannot check in on their own: the representative is recorded in_person for the unit, and only if the representative is absent can the unit be represented by a proxy, which counts against the proxy cap."},
 	}
 }
 
@@ -247,8 +239,9 @@ func EvalQuorum(q QuorumRule, call string, eligible, present Weight) QuorumResul
 	}
 	rc, rs := q.FirstCallByCountPct, q.FirstCallBySharePct
 	res.RequiredCountPct, res.RequiredSharePct = &rc, &rs
-	res.ByCount = exceeds(float64(present.Votes), float64(eligible.Votes), rc)
-	res.ByShare = exceeds(present.Share, eligible.Share, rs)
+	// a base of zero percent is no requirement on that base (the generic quorum has no share rule)
+	res.ByCount = rc <= 0 || exceeds(float64(present.Votes), float64(eligible.Votes), rc)
+	res.ByShare = rs <= 0 || exceeds(present.Share, eligible.Share, rs)
 	res.Reached = res.ByCount && res.ByShare
 	return res
 }

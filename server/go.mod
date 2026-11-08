@@ -19,6 +19,7 @@ require (
 	github.com/oapi-codegen/nullable v1.2.0
 	github.com/oapi-codegen/runtime v1.8.0
 	github.com/openbekci/openbekci/packs/example v0.0.0-00010101000000-000000000000
+	github.com/openbekci/openbekci/packs/tr v0.0.0-00010101000000-000000000000
 	github.com/openbekci/openbekci/sdk v0.0.0-00010101000000-000000000000
 	github.com/pressly/goose/v3 v3.29.0
 	github.com/riverqueue/river v0.51.1
@@ -432,3 +433,5 @@ tool (
 replace github.com/openbekci/openbekci/sdk => ../sdk
 
 replace github.com/openbekci/openbekci/packs/example => ../packs/example
+
+replace github.com/openbekci/openbekci/packs/tr => ../packs/tr

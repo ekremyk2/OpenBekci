@@ -31,10 +31,10 @@ func TestAssemblyYearDue(t *testing.T) {
 }
 
 func TestBelowLegalDefaults(t *testing.T) {
-	if got := belowLegalDefaults(TurkishPreset()); len(got) != 0 {
+	if got := belowLegalDefaults(law634(), law634()); len(got) != 0 {
 		t.Fatalf("the preset deviates from itself: %v", got)
 	}
-	s := TurkishPreset()
+	s := law634()
 	s.Quorum.FirstCallByCountPct = 0
 	s.CallMinDays = 1
 	s.ProxyCapPct = 50
@@ -44,17 +44,17 @@ func TestBelowLegalDefaults(t *testing.T) {
 			s.Thresholds[i].Rule = RuleSimpleMajorityPresent
 		}
 	}
-	got := belowLegalDefaults(s)
+	got := belowLegalDefaults(s, law634())
 	for _, want := range []string{"quorum.first_call_by_count_pct", "call_min_days", "proxy_cap_pct", "max_votes_per_person_pct", "thresholds.plan_amendment"} {
 		if !slices.Contains(got, want) {
 			t.Errorf("%s is not reported as a deviation: %v", want, got)
 		}
 	}
 	// stricter than the law is not a deviation
-	strict := TurkishPreset()
+	strict := law634()
 	strict.CallMinDays = 30
 	strict.Quorum.FirstCallBySharePct = 75
-	if got := belowLegalDefaults(strict); len(got) != 0 {
+	if got := belowLegalDefaults(strict, law634()); len(got) != 0 {
 		t.Errorf("stricter settings reported as deviations: %v", got)
 	}
 }

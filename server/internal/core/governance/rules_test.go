@@ -7,12 +7,14 @@ import (
 )
 
 func TestPresetIsValid(t *testing.T) {
-	if err := TurkishPreset().Validate(); err != nil {
-		t.Fatalf("Turkish preset does not validate: %v", err)
+	for name, s := range map[string]Settings{"generic": GenericPreset(), "law 634 (pack)": law634()} {
+		if err := s.Validate(); err != nil {
+			t.Fatalf("%s preset does not validate: %v", name, err)
+		}
 	}
-	for _, n := range TurkishPresetNotes() {
-		if !n.Verify {
-			t.Errorf("note %q is a legal claim and must be marked verify", n.Key)
+	for _, n := range GenericPresetNotes() {
+		if n.Verify {
+			t.Errorf("note %q describes the system, not the law", n.Key)
 		}
 	}
 }
@@ -20,7 +22,7 @@ func TestPresetIsValid(t *testing.T) {
 // Presets are only defaults: a site may deviate where its yonetim plani allows,
 // so legal numbers are editable; only sanity is validated.
 func TestSettingsAreSiteEditable(t *testing.T) {
-	s := TurkishPreset()
+	s := law634()
 	s.Quorum.FirstCallByCountPct = 66.7
 	s.Quorum.SecondCallRequiresQuorum = true
 	s.CallMinDays = 7
@@ -48,7 +50,7 @@ func TestSettingsValidation(t *testing.T) {
 		"reminder lead out of range": func(s *Settings) { s.TermReminderDays = 0 },
 	}
 	for name, mutate := range cases {
-		s := TurkishPreset()
+		s := law634()
 		mutate(&s)
 		if s.Validate() == nil {
 			t.Errorf("%s: want a validation problem", name)
@@ -57,7 +59,7 @@ func TestSettingsValidation(t *testing.T) {
 }
 
 func TestEvalQuorum(t *testing.T) {
-	law := TurkishPreset().Quorum
+	law := law634().Quorum
 	strict := QuorumRule{FirstCallByCountPct: 50, FirstCallBySharePct: 50, SecondCallRequiresQuorum: true}
 	elig := Weight{Votes: 100, Share: 1000}
 	cases := []struct {
@@ -111,7 +113,7 @@ func TestPersonVoteCap(t *testing.T) {
 }
 
 func TestProxyCaps(t *testing.T) {
-	s := TurkishPreset() // 5 % of the votes; at most two others in buildings of up to 40 units
+	s := law634() // 5 % of the votes; at most two others in buildings of up to 40 units
 	cases := []struct {
 		name         string
 		units, votes int64
@@ -177,7 +179,7 @@ func TestEvalThreshold(t *testing.T) {
 }
 
 func TestTopicTable(t *testing.T) {
-	s := TurkishPreset()
+	s := law634()
 	if r := s.RuleFor("plan_amendment"); r.Rule != RuleFourFifths {
 		t.Errorf("plan_amendment = %s", r.Rule)
 	}
@@ -190,14 +192,14 @@ func TestTopicTable(t *testing.T) {
 }
 
 func TestLeadBucket(t *testing.T) {
-	leads := reminderLeads(TurkishPreset()) // 7, 30, 90
+	leads := reminderLeads(law634()) // 7, 30, 90
 	want := map[int]int{200: -1, 91: -1, 90: 90, 60: 90, 31: 90, 30: 30, 8: 30, 7: 7, 0: 7, -1: 0, -20: 0}
 	for days, b := range want {
 		if got := leadBucket(leads, days); got != b {
 			t.Errorf("days left %d: bucket %d, want %d", days, got, b)
 		}
 	}
-	short := TurkishPreset()
+	short := law634()
 	short.TermReminderDays = 20
 	if got := reminderLeads(short); len(got) != 2 || got[0] != 7 || got[1] != 20 {
 		t.Errorf("leads for a 20-day setting = %v, want [7 20]", got)

@@ -12,6 +12,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/authztest"
 	"github.com/openbekci/openbekci/server/internal/core/authz"
 	"github.com/openbekci/openbekci/server/internal/core/governance"
+	"github.com/openbekci/openbekci/server/internal/core/governance/govtest"
 	"github.com/openbekci/openbekci/server/internal/platform/id"
 )
 
@@ -66,7 +67,7 @@ func govSeed(t *testing.T, w *authztest.World, org authztest.Org, status string)
 				{PersonID: g.p2, DisplayName: "Owner Two", Units: []governance.SnapUnit{{UnitID: g.u2, DoorNumber: "B", Share: 1}}, Votes: 1, Share: 1},
 			}}
 		b, _ := json.Marshal(sn)
-		r, _ := json.Marshal(governance.TurkishPreset())
+		r, _ := json.Marshal(govtest.Law634())
 		snap, rules, calledAt = string(b), string(r), now
 	}
 	w.Exec(t, `INSERT INTO meeting (id, org_id, site_id, kind, scope, scheduled_at, second_call_at, location, status, eligibility_snapshot, settings_snapshot, called_at, held_call)
@@ -133,7 +134,7 @@ func init() {
 			return mreq{method: "GET", path: orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+"/governance-settings")}
 		}},
 		"governance.setGovernanceSettings": {perms: perms(manage), status: 200, build: func(w *authztest.World, org authztest.Org, t *testing.T) mreq {
-			b, _ := json.Marshal(governance.TurkishPreset())
+			b, _ := json.Marshal(govtest.Law634())
 			return jsonReq("PUT", orgPath(org, "/sites/"+w.NewSite(t, org).Site.String()+"/governance-settings"), string(b), ifm, `"1"`)
 		}},
 		"governance.listGovernancePresets": {perms: perms(read), status: 200, build: mget("/v1/orgs/{org_id}/governance-presets")},

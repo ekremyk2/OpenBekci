@@ -60,7 +60,7 @@ func (a Attendance) auditView() map[string]any {
 // rules are the settings in force for a meeting: the snapshot taken when it
 // was called, else the current ones.
 func (m Meeting) rules() Settings {
-	set := TurkishPreset()
+	set := GenericPreset()
 	if len(m.settings) > 0 {
 		_ = json.Unmarshal(m.settings, &set)
 	}

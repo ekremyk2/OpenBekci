@@ -65,6 +65,7 @@ jobs:
             server/go.sum
             sdk/go.sum
             packs/example/go.mod
+            packs/tr/go.mod
       # gen:check and api:lint run Redocly and openapi-typescript through `pnpm dlx`.
       - uses: pnpm/action-setup@v4
         with:
@@ -78,10 +79,11 @@ jobs:
           go build ./...
           go build -tags nopacks ./...
           go build -tags examplepack ./...
-      - name: SDK and example pack (need only the SDK)
+      - name: SDK and the example and Turkish packs (need only the SDK)
         run: |
           (cd sdk && go vet ./... && go test ./...)
           (cd packs/example && go vet ./... && go test ./...)
+          (cd packs/tr && go vet ./... && go test ./...)
       - name: Lint (go vet, go mod tidy -diff, golangci-lint)
         run: sh tools/task.sh lint
       - name: API lint
