@@ -56,12 +56,16 @@ export function hasPendingReplays(): boolean {
 }
 
 /**
- * Runs `fn`; on 403 `reauth_required` shows the re-authentication dialog and, once confirmed,
+ * Runs `fn(key)`; `key` is created once and is identical on the replay (use it as the
+ * Idempotency-Key of operations that have no form-level key). On 403 `reauth_required` shows the re-authentication dialog and, once confirmed,
  * runs `fn` once more. Cancelling rethrows the original error.
  */
-export async function runWithReauth<T>(fn: () => Promise<T>): Promise<T> {
+export async function runWithReauth<T>(fn: (key: string) => Promise<T>): Promise<T> {
+  // One Idempotency-Key per logical operation: the first attempt and the replay receive the same
+  // key, so a request that did reach the server (or whose response was lost) is deduplicated.
+  const key = crypto.randomUUID()
   try {
-    return await fn()
+    return await fn(key)
   } catch (e) {
     if (!(e instanceof AppError && e.isReauthRequired)) throw e
     replays++
@@ -72,6 +76,6 @@ export async function runWithReauth<T>(fn: () => Promise<T>): Promise<T> {
     } finally {
       replays--
     }
-    return fn()
+    return fn(key)
   }
 }

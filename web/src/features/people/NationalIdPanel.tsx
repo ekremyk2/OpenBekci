@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,6 +14,9 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { isValidNationalId } from './tckn'
 
+/** The revealed national id hides itself again after this long. */
+const REVEAL_MS = 30_000
+
 /**
  * National id (S6): masked by default; "Show" asks for re-authentication, then reads the number.
  * Entry is checksum-validated (TCKN for TR) before it is sent.
@@ -23,7 +26,16 @@ export function NationalIdPanel({ orgId, person }: { orgId: string; person: Sche
   const queryClient = useQueryClient()
   const idem = useIdempotencyKey()
   const applyError = useApplyFormError()
+  // The revealed number lives only in this component's state: never in a query or mutation cache
+  // (those keep results after unmount), cleared on unmount and hidden again after 30 seconds.
   const [shown, setShown] = useState<string | null>(null)
+  const [revealing, setRevealing] = useState(false)
+  useEffect(() => {
+    if (shown === null) return
+    const timer = setTimeout(() => setShown(null), REVEAL_MS)
+    return () => clearTimeout(timer)
+  }, [shown])
+  useEffect(() => () => setShown(null), [])
   const [editing, setEditing] = useState(false)
   const schema = useMemo(
     () =>
@@ -48,16 +60,22 @@ export function NationalIdPanel({ orgId, person }: { orgId: string; person: Sche
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ['people.getPerson', orgId, person.id] })
 
-  const reveal = useMutation({
-    mutationFn: () =>
-      runWithReauth(async () => {
+  async function reveal() {
+    setRevealing(true)
+    try {
+      const d = await runWithReauth(async () => {
         const { data } = await draftApi.GET('/v1/orgs/{org_id}/persons/{person_id}/national-id', {
           params: { path: { org_id: orgId, person_id: person.id } },
         })
         return data as (Schema<'NationalId'> & { value?: string }) | undefined
-      }),
-    onSuccess: (d) => setShown(d?.value ?? d?.masked ?? ''),
-  })
+      })
+      setShown(d?.value ?? d?.masked ?? '')
+    } catch {
+      // the global error handler already reported it (or the user cancelled the re-authentication)
+    } finally {
+      setRevealing(false)
+    }
+  }
   const save = useMutation({
     mutationFn: (v: z.infer<typeof schema>) =>
       runWithReauth(() =>
@@ -78,10 +96,10 @@ export function NationalIdPanel({ orgId, person }: { orgId: string; person: Sche
   })
   const clear = useMutation({
     mutationFn: () =>
-      runWithReauth(() =>
+      runWithReauth((key) =>
         draftApi.DELETE('/v1/orgs/{org_id}/persons/{person_id}/national-id', {
           params: { path: { org_id: orgId, person_id: person.id } },
-          ...withIdempotencyKey(crypto.randomUUID()),
+          ...withIdempotencyKey(key),
         }),
       ),
     onSuccess: async () => {
@@ -108,12 +126,7 @@ export function NationalIdPanel({ orgId, person }: { orgId: string; person: Sche
             {person.national_id_country} {shown ?? person.national_id_masked}
           </span>
           {shown === null ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => reveal.mutate()}
-              disabled={reveal.isPending}
-            >
+            <Button variant="outline" size="sm" onClick={() => void reveal()} disabled={revealing}>
               <EyeIcon aria-hidden="true" />
               <Trans>Show</Trans>
             </Button>

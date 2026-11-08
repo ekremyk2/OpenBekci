@@ -4,7 +4,8 @@ import { PrinterIcon, RefreshCwIcon } from 'lucide-react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { draftApi } from '@/api/draft'
 import { useSession } from '@/app/session'
-import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
+import { runWithReauth } from '@/app/reauth'
+import { withIdempotencyKey } from '@/lib/idempotency'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton } from '@/components/data/Skeletons'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -44,7 +45,6 @@ export function SiteQrPage({ siteId }: { siteId: string }) {
   const { org } = useSession()
   const { t } = useLingui()
   const queryClient = useQueryClient()
-  const idem = useIdempotencyKey()
   const orgId = org?.id ?? ''
   const siteQ = useQuery({ ...siteQueries.one(orgId, siteId), enabled: !!org })
   const codeQ = useQuery({
@@ -61,21 +61,24 @@ export function SiteQrPage({ siteId }: { siteId: string }) {
     queryClient.invalidateQueries({ queryKey: ['people.getJoinCode', orgId, siteId] })
   const toggle = useMutation({
     mutationFn: (enabled: boolean) =>
-      draftApi.PUT('/v1/orgs/{org_id}/sites/{site_id}/join-code', {
-        params: { path: { org_id: orgId, site_id: siteId } },
-        body: { enabled },
-        ...withIdempotencyKey(crypto.randomUUID()),
-      }),
+      runWithReauth((key) =>
+        draftApi.PUT('/v1/orgs/{org_id}/sites/{site_id}/join-code', {
+          params: { path: { org_id: orgId, site_id: siteId } },
+          body: { enabled },
+          ...withIdempotencyKey(key),
+        }),
+      ),
     onSuccess: invalidate,
   })
   const rotate = useMutation({
     mutationFn: () =>
-      draftApi.POST('/v1/orgs/{org_id}/sites/{site_id}/join-code:rotate', {
-        params: { path: { org_id: orgId, site_id: siteId } },
-        ...withIdempotencyKey(idem.key),
-      }),
+      runWithReauth((key) =>
+        draftApi.POST('/v1/orgs/{org_id}/sites/{site_id}/join-code:rotate', {
+          params: { path: { org_id: orgId, site_id: siteId } },
+          ...withIdempotencyKey(key),
+        }),
+      ),
     onSuccess: async () => {
-      idem.renew()
       await invalidate()
     },
   })

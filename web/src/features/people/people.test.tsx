@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { screen, waitFor, within } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { server } from '@/test/setup'
@@ -301,5 +301,57 @@ describe('directory, vendors, portfolio', () => {
   it('portfolio needs dashboard.portfolio', async () => {
     await mountApp('/orgs/org-1/portfolio', { permissions: ['sites.read'] })
     expect(await screen.findByText('You do not have access to this page')).toBeInTheDocument()
+  })
+})
+
+describe('re-authentication replay', () => {
+  it('replays a sensitive request with the same Idempotency-Key', async () => {
+    const keys: (string | null)[] = []
+    server.use(
+      http.delete('*/v1/orgs/:orgId/persons/:personId/national-id', ({ request }) => {
+        keys.push(request.headers.get('Idempotency-Key'))
+        return keys.length === 1
+          ? problem(403, 'reauth_required', 'Confirm it is you to continue.')
+          : new HttpResponse(null, { status: 204 })
+      }),
+    )
+    await mountApp('/orgs/org-1/people/person-1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Remove' }))
+    await reauth()
+    await waitFor(() => expect(keys).toHaveLength(2))
+    expect(keys[0]).toBeTruthy()
+    expect(keys[1]).toBe(keys[0])
+  })
+})
+
+describe('revealed national id', () => {
+  it('is kept out of the query caches and hides itself after 30 seconds', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    try {
+      const { queryClient } = await mountApp('/orgs/org-1/people/person-1')
+      await userEvent.click(await screen.findByRole('button', { name: 'Show' }))
+      await reauth()
+      await waitFor(() =>
+        expect(screen.getByTestId('national-id')).toHaveTextContent('TR 10000000146'),
+      )
+      const cached = JSON.stringify([
+        queryClient
+          .getMutationCache()
+          .getAll()
+          .map((m) => m.state),
+        queryClient
+          .getQueryCache()
+          .getAll()
+          .map((q) => q.state.data),
+      ])
+      expect(cached).not.toContain('10000000146')
+      await act(async () => {}) // let the auto-hide timer register
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(30_000)
+      })
+      expect(screen.getByTestId('national-id')).toHaveTextContent('*******1234')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
