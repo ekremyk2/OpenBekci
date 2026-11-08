@@ -40,6 +40,12 @@ type AccessEvent struct {
 	RawPayload     []byte
 }
 
+type AccessEventCounter struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Seq    int64
+}
+
 type AccessPoint struct {
 	ID        pgtype.UUID
 	OrgID     pgtype.UUID
