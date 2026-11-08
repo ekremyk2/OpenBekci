@@ -20,18 +20,18 @@ import (
 // recordingNotifier is a governance.Notifier that remembers what was enqueued.
 type recordingNotifier struct {
 	mu       sync.Mutex
-	notifies []jobs.Notify
+	notifies []jobs.NotifyArgs
 	absent   []uuid.UUID
 }
 
-func (r *recordingNotifier) Enqueue(_ context.Context, _ pgx.Tx, n jobs.Notify) error {
+func (r *recordingNotifier) Notify(_ context.Context, _ pgx.Tx, n jobs.NotifyArgs) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.notifies = append(r.notifies, n)
 	return nil
 }
 
-func (r *recordingNotifier) EnqueueNotifyAbsentees(_ context.Context, _ pgx.Tx, _, meetingID uuid.UUID) error {
+func (r *recordingNotifier) EnqueueNotifyAbsentees(_ context.Context, _ pgx.Tx, _, meetingID uuid.UUID, _ []string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.absent = append(r.absent, meetingID)
@@ -459,7 +459,7 @@ func TestIntegrationGovernanceFlow(t *testing.T) {
 	if len(rn.absent) != 1 {
 		t.Fatalf("closing did not enqueue governance.notify_absentees: %v", rn.absent)
 	}
-	if err := e.gov.RunNotifyAbsentees(context.Background(), org.ID, uuid.MustParse(mid)); err != nil { // what the job does
+	if err := e.gov.RunNotifyAbsentees(context.Background(), org.ID, uuid.MustParse(mid), nil); err != nil { // what the job does
 		t.Fatal(err)
 	}
 	if dn := litems(c.must(200, mgr, "GET", base(mpath+"/notices?phase=decisions"), "")); len(dn) != 1 || gstr(dn[0], "person_id") != p5.String() || gstr(dn[0], "status") != "recorded" {
@@ -543,7 +543,7 @@ func TestIntegrationGovernanceTermReminders(t *testing.T) {
 		t.Fatalf("%d notifications for 3 terms (the second run must add none), want 3", n)
 	}
 	for _, n := range rec.notifies {
-		if n.Topic != "governance.term_expiry" || len(n.PersonIDs) == 0 || len(n.Channels) == 0 {
+		if n.Type != "governance.term_expiry" || len(n.Recipients) == 0 || n.Key == "" || len(n.Channels) == 0 {
 			t.Fatalf("notification = %+v", n)
 		}
 	}

@@ -499,8 +499,8 @@ func (s *Service) CallMeeting(ctx context.Context, orgID, id uuid.UUID, in Meeti
 		}
 		if len(channels) > 0 && s.notifier != nil {
 			body := fmt.Sprintf("%s: %s, %s", si.Name, fmtTime(m.ScheduledAt, si.Loc, si.Locale), m.Location)
-			if err := s.notifier.Enqueue(ctx, tx, jobs.Notify{OrgID: orgID, SiteID: &m.SiteID, Topic: "governance.call", PersonIDs: people, Channels: channels,
-				Title: letter.Title, Body: body, RefType: "meeting", RefID: id}); err != nil {
+			if err := s.notifier.Notify(ctx, tx, jobs.NotifyArgs{OrgID: orgID, SiteID: &m.SiteID, Type: "governance.call", Recipients: recipients(people), Channels: channels,
+				Payload: map[string]any{"title": letter.Title, "body": body, "meeting_id": id}, Link: "/meetings/" + id.String(), Key: "governance.call:" + id.String()}); err != nil {
 				return err
 			}
 		}
@@ -666,7 +666,7 @@ func (s *Service) CloseMeeting(ctx context.Context, orgID, id uuid.UUID) (Meetin
 		if s.notifier == nil {
 			return nil
 		}
-		return s.notifier.EnqueueNotifyAbsentees(ctx, tx, orgID, m.ID)
+		return s.notifier.EnqueueNotifyAbsentees(ctx, tx, orgID, m.ID, []string{"in_app"})
 	})
 }
 

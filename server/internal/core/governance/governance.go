@@ -96,10 +96,24 @@ type DocumentFiler interface {
 // Notifier enqueues a notification job in the caller's transaction. The
 // wiring implements it with the job client; nil means notifications are not
 // sent (the legal record, meeting_notice, is kept either way).
+//
+// Notify takes the shared notification job (jobs.NotifyArgs, kind
+// notifications.deliver) so the operations module's dispatcher serves it; Key
+// makes a redelivery idempotent.
 type Notifier interface {
-	Enqueue(ctx context.Context, tx pgx.Tx, n jobs.Notify) error
-	// EnqueueNotifyAbsentees schedules the governance.notify_absentees job of a closed meeting.
-	EnqueueNotifyAbsentees(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID) error
+	Notify(ctx context.Context, tx pgx.Tx, a jobs.NotifyArgs) error
+	// EnqueueNotifyAbsentees schedules the governance.notify_absentees job of a
+	// meeting: the delivery of its decisions to the owners who were absent.
+	EnqueueNotifyAbsentees(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID, channels []string) error
+}
+
+// recipients names people as notification recipients.
+func recipients(people []uuid.UUID) []jobs.Recipient {
+	out := make([]jobs.Recipient, 0, len(people))
+	for _, p := range people {
+		out = append(out, jobs.Recipient{PersonID: ptr(p)})
+	}
+	return out
 }
 
 // Config configures the Service.

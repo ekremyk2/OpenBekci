@@ -27,6 +27,7 @@ func (TermRemindersArgs) Kind() string { return "governance.term_reminders" }
 type NotifyAbsenteesArgs struct {
 	OrgID     uuid.UUID `json:"org_id"`
 	MeetingID uuid.UUID `json:"meeting_id"`
+	Channels  []string  `json:"channels,omitempty"`
 }
 
 // Kind implements river.JobArgs.
@@ -47,7 +48,7 @@ type notifyAbsenteesWorker struct {
 }
 
 func (w *notifyAbsenteesWorker) Work(ctx context.Context, job *river.Job[NotifyAbsenteesArgs]) error {
-	return w.s.RunNotifyAbsentees(ctx, job.Args.OrgID, job.Args.MeetingID)
+	return w.s.RunNotifyAbsentees(ctx, job.Args.OrgID, job.Args.MeetingID, job.Args.Channels)
 }
 
 // TermRemindersInterval is how often the term reminder job runs.
@@ -73,14 +74,13 @@ func (s *Service) JobOptions() (func(*river.Workers), []*river.PeriodicJob) {
 type RiverNotifier struct{ Client *jobs.Client }
 
 // Enqueue implements Notifier.
-func (r RiverNotifier) Enqueue(ctx context.Context, tx pgx.Tx, n jobs.Notify) error {
-	_, err := r.Client.InsertTx(ctx, tx, n, nil)
-	return err
+func (r RiverNotifier) Notify(ctx context.Context, tx pgx.Tx, a jobs.NotifyArgs) error {
+	return jobs.QueueNotifier{Client: r.Client}.Notify(ctx, tx, a)
 }
 
 // EnqueueNotifyAbsentees implements Notifier.
-func (r RiverNotifier) EnqueueNotifyAbsentees(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID) error {
-	_, err := r.Client.InsertTx(ctx, tx, NotifyAbsenteesArgs{OrgID: orgID, MeetingID: meetingID}, nil)
+func (r RiverNotifier) EnqueueNotifyAbsentees(ctx context.Context, tx pgx.Tx, orgID, meetingID uuid.UUID, channels []string) error {
+	_, err := r.Client.InsertTx(ctx, tx, NotifyAbsenteesArgs{OrgID: orgID, MeetingID: meetingID, Channels: channels}, nil)
 	return err
 }
 
@@ -88,7 +88,10 @@ func (r RiverNotifier) EnqueueNotifyAbsentees(ctx context.Context, tx pgx.Tx, or
 // were absent (in-app by default; the manager can send again through other
 // channels with the notify-decisions operation) and records the delivery like
 // the call. It does nothing when the decisions were already sent.
-func (s *Service) RunNotifyAbsentees(ctx context.Context, orgID, meetingID uuid.UUID) error {
+func (s *Service) RunNotifyAbsentees(ctx context.Context, orgID, meetingID uuid.UUID, channels []string) error {
+	if len(channels) == 0 {
+		channels = []string{"in_app"}
+	}
 	return s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
 		m, err := loadMeeting(ctx, tx, orgID, meetingID, true)
 		if err != nil {
@@ -111,7 +114,7 @@ func (s *Service) RunNotifyAbsentees(ctx context.Context, orgID, meetingID uuid.
 		if err != nil {
 			return err
 		}
-		_, err = s.notifyAbsentees(ctx, tx, m, sc, []string{"in_app"}, false)
+		_, err = s.notifyAbsentees(ctx, tx, m, sc, channels, false)
 		return err
 	})
 }
@@ -239,15 +242,16 @@ func (s *Service) termRemindersOrg(ctx context.Context, tx pgx.Tx, orgID uuid.UU
 		if tag.RowsAffected() == 0 {
 			continue
 		}
-		recipients, err := termRecipients(ctx, tx, orgID, t.site, t.person)
+		people, err := termRecipients(ctx, tx, orgID, t.site, t.person)
 		if err != nil {
 			return err
 		}
-		if s.notifier != nil && len(recipients) > 0 {
+		if s.notifier != nil && len(people) > 0 {
 			title := fmt.Sprintf("%s: %s", t.role, t.name)
 			body := fmt.Sprintf("%s term ends %s (%d days)", t.role, end.Format("2006-01-02"), days)
-			if err := s.notifier.Enqueue(ctx, tx, jobs.Notify{OrgID: orgID, SiteID: &t.site, Topic: "governance.term_expiry", PersonIDs: recipients,
-				Channels: []string{"in_app", "email"}, Title: title, Body: body, RefType: "membership", RefID: t.membership}); err != nil {
+			if err := s.notifier.Notify(ctx, tx, jobs.NotifyArgs{OrgID: orgID, SiteID: &t.site, Type: "governance.term_expiry", Recipients: recipients(people),
+				Channels: []string{"in_app", "email"}, Payload: map[string]any{"title": title, "body": body, "membership_id": t.membership},
+				Link: "/sites/" + t.site.String() + "/term-reminders", Key: fmt.Sprintf("governance.term_expiry:%s:%d", t.membership, bucket)}); err != nil {
 				return err
 			}
 			if _, err := tx.Exec(ctx, `UPDATE term_reminder SET notified_at = now() WHERE org_id = $1 AND id = $2`, orgID, rid); err != nil {

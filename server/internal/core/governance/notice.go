@@ -345,9 +345,12 @@ func (s *Service) notifyAbsentees(ctx context.Context, tx pgx.Tx, m Meeting, sc 
 		}
 	}
 	if s.notifier != nil {
-		if err := s.notifier.Enqueue(ctx, tx, jobs.Notify{OrgID: m.OrgID, SiteID: &m.SiteID, Topic: "governance.decisions", PersonIDs: people, Channels: channels,
-			Title: si.Name, Body: fmt.Sprintf("%s: %s", si.Name, fmtTime(m.ScheduledAt, si.Loc, si.Locale)), RefType: "meeting", RefID: m.ID}); err != nil {
-			return res, err
+		for _, p := range people {
+			if err := s.notifier.Notify(ctx, tx, jobs.NotifyArgs{OrgID: m.OrgID, SiteID: &m.SiteID, Type: "governance.decisions", Recipients: recipients([]uuid.UUID{p}), Channels: channels,
+				Payload: map[string]any{"title": si.Name, "body": fmt.Sprintf("%s: %s", si.Name, fmtTime(m.ScheduledAt, si.Loc, si.Locale)), "meeting_id": m.ID},
+				Link:    "/meetings/" + m.ID.String(), Key: "governance.decisions:" + m.ID.String() + ":" + p.String()}); err != nil {
+				return res, err
+			}
 		}
 	}
 	if _, err := tx.Exec(ctx, `UPDATE decision SET notified_at = $3, updated_at = now(), version = version + 1 WHERE org_id = $1 AND meeting_id = $2 AND notified_at IS NULL`, m.OrgID, m.ID, now); err != nil {
