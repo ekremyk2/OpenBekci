@@ -2559,6 +2559,11 @@ export interface components {
             permissions: components["schemas"]["PermissionGrant"][];
             /** @description Sites of the organization the caller can see through a membership or an occupancy. */
             sites: components["schemas"]["MeSite"][];
+            /**
+             * Format: uuid
+             * @description The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
+             */
+            person_id: string | null;
         };
         Me: {
             user: components["schemas"]["MeUser"];

@@ -30,6 +30,8 @@ type OrgAccess struct {
 	Roles         []RoleGrant
 	// Sites the person can see here through a membership or an occupancy.
 	Sites []MeSite
+	// PersonID is the caller's person in this organization (nil when none is linked).
+	PersonID *uuid.UUID
 }
 
 // Me is the caller's identity: the account and its organizations.
@@ -80,6 +82,25 @@ func (s *Service) Me(ctx context.Context, userID uuid.UUID) (Me, error) {
 					ScopeID: r.Membership.ScopeID, SiteOwned: r.SiteOwned,
 				})
 			}
+		}
+		prows, err := tx.Query(ctx, `SELECT org_id, id FROM person WHERE user_id = $1`, userID)
+		if err != nil {
+			return err
+		}
+		defer prows.Close()
+		for prows.Next() {
+			var org, pid uuid.UUID
+			if err := prows.Scan(&org, &pid); err != nil {
+				return err
+			}
+			if i, ok := idx[org]; ok {
+				p := pid
+				me.Organizations[i].PersonID = &p
+			}
+		}
+		prows.Close()
+		if err := prows.Err(); err != nil {
+			return err
 		}
 		return s.loadSitesAndOccupancies(ctx, tx, userID, now, &me)
 	})

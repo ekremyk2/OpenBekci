@@ -256,6 +256,9 @@ func TestIntegrationPhaseBFlow(t *testing.T) {
 		t.Fatalf("me.occupancies = %v", occs)
 	}
 	orgsMe := me["organizations"].([]any)[0].(map[string]any)
+	if pid, _ := orgsMe["person_id"].(string); pid == "" {
+		t.Fatalf("me.organizations[].person_id missing: %v", orgsMe)
+	}
 	if len(orgsMe["sites"].([]any)) != 1 {
 		t.Fatalf("me.sites = %v", orgsMe["sites"])
 	}

@@ -376,6 +376,7 @@ schemas:
       - roles
       - permissions
       - sites
+      - person_id
     properties:
       default_locale:
         type: string
@@ -400,6 +401,11 @@ schemas:
         description: Sites of the organization the caller can see through a membership or an occupancy.
         items:
           $ref: "#/schemas/MeSite"
+      person_id:
+        type: string
+        format: uuid
+        nullable: true
+        description: The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
   MeOccupancy:
     type: object
     description: One unit occupancy of the caller, enough for the web and mobile apps to build their unit switcher and decide what to show at boot.

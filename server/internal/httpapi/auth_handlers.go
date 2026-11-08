@@ -379,6 +379,7 @@ func (s *apiServer) MeGet(ctx context.Context, _ gen.MeGetRequestObject) (gen.Me
 			DefaultLocale: o.DefaultLocale,
 			Permissions:   s.permissionGrants(o),
 			Sites:         meSites(o.Sites),
+			PersonId:      nullUUID(o.PersonID),
 		})
 	}
 	return gen.MeGet200JSONResponse(gen.Me{

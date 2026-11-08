@@ -6110,6 +6110,7 @@ components:
         - roles
         - permissions
         - sites
+        - person_id
       properties:
         default_locale:
           type: string
@@ -6134,6 +6135,11 @@ components:
           description: Sites of the organization the caller can see through a membership or an occupancy.
           items:
             $ref: '#/components/schemas/MeSite'
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The caller's person in this organization, null when no person is linked. Lets a client tell "assigned to me" without scanning queues.
     Me:
       type: object
       required:
