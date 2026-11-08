@@ -520,6 +520,44 @@ func (s *Service) Attach(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID
 	return f, nil
 }
 
+// AttachGenerated attaches a server-generated draft (UploadGenerated without a
+// scope) to the resource that now owns it, inside tx. It is service-internal:
+// it checks no uploader and no resolver, because the generated file belongs to
+// no user, and the calling module authorized its own action. The file must be
+// a ready, unattached, generated file; attaching clears its expiry.
+func (s *Service) AttachGenerated(ctx context.Context, tx pgx.Tx, orgID, fileID uuid.UUID, ref ScopeRef) (File, error) {
+	if !scopeTypeRE.MatchString(ref.Type) || ref.ID == uuid.Nil {
+		return File{}, problem.Validation(problem.Field{Field: "scope", Code: "invalid_value"})
+	}
+	f, err := s.loadForUpdate(ctx, tx, orgID, fileID)
+	if err != nil {
+		return File{}, internalOr(err, "attach generated file")
+	}
+	if f.Source != SourceGenerated || f.Status != StatusReady || f.Scope != nil {
+		return File{}, problem.Conflict("the generated file is not an unattached draft")
+	}
+	before := f.auditView()
+	f.Scope, f.RetentionUntil = &ref, nil
+	if _, err := tx.Exec(ctx, `UPDATE file SET scope_type = $2, scope_id = $3, retention_until = NULL, updated_at = $4 WHERE id = $1`, f.ID, ref.Type, ref.ID, s.now()); err != nil {
+		return File{}, internalOr(err, "attach generated file")
+	}
+	if err := s.record(ctx, tx, "files.attach", f, before, f.auditView()); err != nil {
+		return File{}, internalOr(err, "attach generated file")
+	}
+	return f, nil
+}
+
+// DiscardDraft removes an unattached generated draft that lost a race (another
+// transaction filed the same source record first). A file that is attached is
+// left alone. Failures are not fatal: retention expires the draft anyway.
+func (s *Service) DiscardDraft(ctx context.Context, orgID, fileID uuid.UUID) {
+	_ = s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+		_, err := tx.Exec(ctx, `UPDATE file SET status = 'deleted', deleted_at = $3, updated_at = $3
+			WHERE org_id = $1 AND id = $2 AND scope_type IS NULL AND source = 'generated' AND status <> 'deleted'`, orgID, fileID, s.now())
+		return err
+	})
+}
+
 // Detach detaches a file from its resource inside tx. The file becomes a
 // draft again and expires after the unattached lifetime unless attached
 // elsewhere; delete it with Delete (or let it expire) to get rid of it. The

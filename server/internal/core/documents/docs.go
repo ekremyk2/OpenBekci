@@ -498,20 +498,37 @@ var _ Filer = (*Service)(nil)
 
 // FileGenerated stores generated content as a file (source generated) and
 // files it in the right folder with the right visibility, inside the caller's
-// tenant transaction tx. The file blob is written first through its own
-// transaction; a rolled back caller leaves an orphan file that retention
-// removes. It checks no permission: the caller authorized its own action.
+// tenant transaction tx. It checks no permission: the caller authorized its own
+// action.
+//
+// Filing the same (GeneratedType, GeneratedID) twice, also concurrently,
+// yields one document: the content is first stored as an expiring draft (no
+// scope, so a caller that rolls back leaves only a draft that retention
+// removes), then, under an advisory lock on the source record, the document
+// row is inserted with ON CONFLICT DO NOTHING; the draft is attached to the
+// document with files.AttachGenerated. The loser of a race returns the
+// winner's document and discards its draft.
 func (s *Service) FileGenerated(ctx context.Context, tx pgx.Tx, p GeneratedParams) (Document, error) {
 	if p.GeneratedType == "" || p.GeneratedID == uuid.Nil {
 		return Document{}, problem.Internal(errors.New("documents: generated document without its source record"))
 	}
-	var existing uuid.UUID
-	err := tx.QueryRow(ctx, `SELECT id FROM document WHERE org_id = $1 AND generated_type = $2 AND generated_id = $3`, p.OrgID, p.GeneratedType, p.GeneratedID).Scan(&existing)
-	if err == nil {
-		return scanDoc(tx.QueryRow(ctx, docSelect+` WHERE d.org_id = $1 AND d.id = $2`, p.OrgID, existing))
+	if d, ok, err := s.generatedDoc(ctx, tx, p); err != nil || ok {
+		return d, err
 	}
-	if !errors.Is(err, pgx.ErrNoRows) {
+	// 1. the content, as a draft that expires unless a document claims it
+	site := p.SiteID
+	until := time.Now().Add(files.DefaultUnattachedTTL)
+	f, err := s.files.UploadGenerated(ctx, files.UploadParams{OrgID: p.OrgID, SiteID: &site, RetentionUntil: &until, Name: p.FileName, Content: p.Content})
+	if err != nil {
 		return Document{}, err
+	}
+	// 2. one filing per source record at a time
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended($1, 0))`, "documents.generated:"+p.GeneratedType+":"+p.GeneratedID.String()); err != nil {
+		return Document{}, err
+	}
+	if d, ok, err := s.generatedDoc(ctx, tx, p); err != nil || ok {
+		s.files.DiscardDraft(ctx, p.OrgID, f.ID)
+		return d, err
 	}
 	var folderID uuid.UUID
 	if p.UnitID != nil {
@@ -542,20 +559,29 @@ func (s *Service) FileGenerated(ctx context.Context, tx pgx.Tx, p GeneratedParam
 			return Document{}, err
 		}
 	}
-	did := id.New()
-	site := p.SiteID
-	f, err := s.files.UploadGenerated(ctx, files.UploadParams{OrgID: p.OrgID, SiteID: &site, Scope: &files.ScopeRef{Type: "document", ID: did}, Name: p.FileName, Content: p.Content})
-	if err != nil {
-		return Document{}, err
-	}
 	var lvl *string
 	var units []uuid.UUID
 	if p.Visibility != nil {
 		lvl, units = &p.Visibility.Level, p.Visibility.UnitIDs
 	}
-	if _, err := tx.Exec(ctx, `INSERT INTO document (id, org_id, site_id, folder_id, title, file_id, visibility_level, visibility_unit_ids, source, generated_type, generated_id, addressed_person_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'generated', $9, $10, $11)`,
-		did, p.OrgID, p.SiteID, folderID, p.Title, f.ID, lvl, nilIfEmpty(units), p.GeneratedType, p.GeneratedID, p.RecipientPersonID); err != nil {
+	did := id.New()
+	var inserted uuid.UUID
+	err = tx.QueryRow(ctx, `INSERT INTO document (id, org_id, site_id, folder_id, title, file_id, visibility_level, visibility_unit_ids, source, generated_type, generated_id, addressed_person_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'generated', $9, $10, $11)
+		ON CONFLICT (org_id, generated_type, generated_id) WHERE generated_id IS NOT NULL DO NOTHING RETURNING id`,
+		did, p.OrgID, p.SiteID, folderID, p.Title, f.ID, lvl, nilIfEmpty(units), p.GeneratedType, p.GeneratedID, p.RecipientPersonID).Scan(&inserted)
+	if errors.Is(err, pgx.ErrNoRows) { // lost the race: the first document stands
+		d, ok, gerr := s.generatedDoc(ctx, tx, p)
+		s.files.DiscardDraft(ctx, p.OrgID, f.ID)
+		if gerr != nil || !ok {
+			return Document{}, gerr
+		}
+		return d, nil
+	}
+	if err != nil {
+		return Document{}, err
+	}
+	if _, err := s.files.AttachGenerated(ctx, tx, p.OrgID, f.ID, files.ScopeRef{Type: "document", ID: did}); err != nil {
 		return Document{}, err
 	}
 	out, err := scanDoc(tx.QueryRow(ctx, docSelect+` WHERE d.org_id = $1 AND d.id = $2`, p.OrgID, did))
@@ -563,6 +589,20 @@ func (s *Service) FileGenerated(ctx context.Context, tx pgx.Tx, p GeneratedParam
 		return out, err
 	}
 	return out, recordDoc(ctx, tx, "documents.generated", nil, out)
+}
+
+// generatedDoc returns the document already filed for the source record.
+func (s *Service) generatedDoc(ctx context.Context, tx pgx.Tx, p GeneratedParams) (Document, bool, error) {
+	var existing uuid.UUID
+	err := tx.QueryRow(ctx, `SELECT id FROM document WHERE org_id = $1 AND generated_type = $2 AND generated_id = $3`, p.OrgID, p.GeneratedType, p.GeneratedID).Scan(&existing)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Document{}, false, nil
+	}
+	if err != nil {
+		return Document{}, false, err
+	}
+	d, err := scanDoc(tx.QueryRow(ctx, docSelect+` WHERE d.org_id = $1 AND d.id = $2`, p.OrgID, existing))
+	return d, err == nil, err
 }
 
 // resolver is the file visibility resolver of the "document" scope.
