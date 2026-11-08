@@ -29,11 +29,12 @@ import (
 )
 
 // DB is the database access the module needs, satisfied by *db.DB.
-// InAppTx is used only for the two SECURITY DEFINER lookups that map an agent
-// token to its organization before a tenant transaction can be opened.
+// InPlatformTx (the BYPASSRLS pool) serves the lookups that run before a tenant
+// is known (agent token to organization, the jobs' site lists) and the
+// retention function of the opening log; request handlers never use it.
 type DB interface {
 	InTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error
-	InAppTx(ctx context.Context, fn func(pgx.Tx) error) error
+	InPlatformTx(ctx context.Context, fn func(pgx.Tx) error) error
 }
 
 // Sealer encrypts the small secrets the module must read back (the rotated

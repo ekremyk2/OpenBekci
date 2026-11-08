@@ -3,6 +3,7 @@ package access_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 	"testing"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/openbekci/openbekci/server/internal/core/access"
 	"github.com/openbekci/openbekci/server/internal/core/access/protocol"
@@ -162,19 +164,46 @@ func TestIntegrationRowLevelSecurityOnEveryTable(t *testing.T) {
 			t.Errorf("%q must be refused", stmt)
 		}
 	}
-	// the two lookups of the agent token reveal the organization of an agent id and nothing else
-	var org *uuid.UUID
-	_ = e.d.InAppTx(context.Background(), func(tx pgx.Tx) error {
-		return tx.QueryRow(context.Background(), `SELECT access_agent_org($1)`, a.ID).Scan(&org)
-	})
-	if org == nil || *org != e.org {
-		t.Fatalf("access_agent_org = %v", org)
+	// the definer functions are not callable by the request-serving role (no tenant context
+	// needed to try), and the former request-path lookups no longer exist
+	sqlState := func(q string, args ...any) string {
+		var code string
+		_ = e.d.InAppTx(context.Background(), func(tx pgx.Tx) error {
+			// a savepoint-free probe: the transaction is rolled back by returning the error
+			_, err := tx.Exec(context.Background(), q, args...)
+			var pe *pgconn.PgError
+			if errors.As(err, &pe) {
+				code = pe.Code
+			}
+			return err
+		})
+		return code
 	}
-	_ = e.d.InAppTx(context.Background(), func(tx pgx.Tx) error {
-		return tx.QueryRow(context.Background(), `SELECT access_agent_org($1)`, uuid.New()).Scan(&org)
+	if c := sqlState(`SELECT access_prune_events($1, now() + interval '1 day')`, e.org); c != "42501" {
+		t.Errorf("access_prune_events as the app role: SQLSTATE %q, want 42501", c)
+	}
+	if c := sqlState(`SELECT access_scrub_plate($1, $2)`, e.org, uuid.New()); c != "42501" {
+		t.Errorf("access_scrub_plate as the app role: SQLSTATE %q, want 42501", c)
+	}
+	for _, q := range []string{`SELECT * FROM access_active_sites()`, `SELECT * FROM access_dirty_sites()`, `SELECT access_agent_org($1)`} {
+		if c := sqlState(q, a.ID); c == "" {
+			t.Errorf("%s must not be callable by the app role", q)
+		}
+	}
+	var kept int
+	_ = e.d.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT count(*) FROM access_event WHERE org_id = $1`, e.org).Scan(&kept)
 	})
-	if org != nil {
-		t.Fatalf("an unknown agent id resolves to %v", org)
+	if kept == 0 {
+		t.Error("the opening log was emptied")
+	}
+	// no tenant context: the agent table shows nothing to the app role, so ids cannot be mapped to organizations
+	var visible int
+	_ = e.d.InAppTx(context.Background(), func(tx pgx.Tx) error {
+		return tx.QueryRow(context.Background(), `SELECT count(*) FROM agent WHERE id = $1`, a.ID).Scan(&visible)
+	})
+	if visible != 0 {
+		t.Errorf("the app role maps an agent id to a row without tenant context")
 	}
 }
 

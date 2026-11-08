@@ -100,7 +100,7 @@ func TestIntegrationOpeningLogRetention(t *testing.T) {
 	}
 	mustEq(t, "events kept", e.count("access_event"), 2)
 
-	err = e.d.InTenantTx(context.Background(), e.org, func(tx pgx.Tx) error {
+	err = e.d.InPlatformTx(context.Background(), func(tx pgx.Tx) error {
 		var scrubbed int64
 		if err := tx.QueryRow(context.Background(), `SELECT access_scrub_plate($1, $2)`, e.org, cred).Scan(&scrubbed); err != nil {
 			return err

@@ -575,23 +575,23 @@ func (s *Service) Prune(ctx context.Context, site Site) (int64, error) {
 const EventRetention = 90 * 24 * time.Hour
 
 // PruneEvents deletes opening-log rows older than the retention for an
-// organization, through the SECURITY DEFINER function (the application roles
-// cannot delete from access_event).
+// organization, through the SECURITY DEFINER function, which only the platform
+// role may execute (the application roles cannot delete from access_event).
 func (s *Service) PruneEvents(ctx context.Context, orgID uuid.UUID) (int64, error) {
 	var n int64
-	err := s.db.InTenantTx(ctx, orgID, func(tx pgx.Tx) error {
+	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
 		return tx.QueryRow(ctx, `SELECT access_prune_events($1, $2)`, orgID, s.now().Add(-EventRetention)).Scan(&n)
 	})
 	return n, err
 }
 
 // Sites lists the sites that have queued sources (dirty) or access points
-// (active), through the SECURITY DEFINER lookups; the background jobs run
-// without an organization.
-func (s *Service) sites(ctx context.Context, fn string) ([]Site, error) {
+// (active), through the platform pool; the background jobs run without an
+// organization.
+func (s *Service) sites(ctx context.Context, query string) ([]Site, error) {
 	var out []Site
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		rows, err := tx.Query(ctx, `SELECT org_id, site_id FROM `+fn+`()`)
+	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		rows, err := tx.Query(ctx, query)
 		if err != nil {
 			return err
 		}
@@ -610,12 +610,12 @@ func (s *Service) sites(ctx context.Context, fn string) ([]Site, error) {
 
 // DirtySites are the sites with queued sources.
 func (s *Service) DirtySites(ctx context.Context) ([]Site, error) {
-	return s.sites(ctx, "access_dirty_sites")
+	return s.sites(ctx, `SELECT DISTINCT org_id, site_id FROM access_dirty ORDER BY 1, 2 LIMIT 200`)
 }
 
 // ActiveSites are the sites with at least one access point.
 func (s *Service) ActiveSites(ctx context.Context) ([]Site, error) {
-	return s.sites(ctx, "access_active_sites")
+	return s.sites(ctx, `SELECT DISTINCT org_id, site_id FROM access_point ORDER BY 1, 2`)
 }
 
 // Kick projects a site's queued sources now, in the background of this

@@ -330,20 +330,20 @@ CREATE TRIGGER access_occupancy_dirty AFTER INSERT OR UPDATE OR DELETE ON occupa
 
 -- +goose Down
 DROP TRIGGER access_occupancy_dirty ON occupancy;
-DROP FUNCTION access_mark_occupancy_dirty();
+DROP FUNCTION IF EXISTS access_mark_occupancy_dirty();
 DROP TRIGGER access_vehicle_dirty ON vehicle;
-DROP FUNCTION access_mark_vehicle_dirty();
-DROP FUNCTION access_active_sites();
-DROP FUNCTION access_dirty_sites();
+DROP FUNCTION IF EXISTS access_mark_vehicle_dirty();
+DROP FUNCTION IF EXISTS access_active_sites();
+DROP FUNCTION IF EXISTS access_dirty_sites();
 DROP TABLE access_dirty;
-DROP FUNCTION access_scrub_plate(uuid, uuid);
-DROP FUNCTION access_prune_events(uuid, timestamptz);
+DROP FUNCTION IF EXISTS access_scrub_plate(uuid, uuid);
+DROP FUNCTION IF EXISTS access_prune_events(uuid, timestamptz);
 DROP TABLE access_event;
 DROP TABLE agent_command;
 DROP TABLE allowlist_change;
 DROP TABLE credential;
 DROP TABLE access_site_state;
 DROP TABLE access_point;
-DROP FUNCTION access_enrol_agent(bytea);
-DROP FUNCTION access_agent_org(uuid);
+DROP FUNCTION IF EXISTS access_enrol_agent(bytea);
+DROP FUNCTION IF EXISTS access_agent_org(uuid);
 DROP TABLE agent;

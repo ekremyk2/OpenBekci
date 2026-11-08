@@ -490,20 +490,18 @@ func (s *Service) Enrol(ctx context.Context, req protocol.EnrolRequest, ip strin
 	}
 	hash := hashToken(req.EnrolmentToken)
 	var orgID, agentID uuid.UUID
-	found := false
-	err = s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		err := tx.QueryRow(ctx, `SELECT org_id, agent_id FROM access_enrol_agent($1)`, hash).Scan(&orgID, &agentID)
+	err = s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		err := tx.QueryRow(ctx, `SELECT org_id, id FROM agent WHERE enrol_token_hash = $1 LIMIT 1`, hash).Scan(&orgID, &agentID)
 		if errors.Is(err, pgx.ErrNoRows) {
+			// an unknown token takes the same path as an expired one: the tenant
+			// transaction below runs against an organization that has no such agent
+			orgID, agentID = uuid.New(), uuid.New()
 			return nil
 		}
-		found = err == nil
 		return err
 	})
 	if err != nil {
 		return protocol.EnrolResponse{}, problem.Internal(fmt.Errorf("enrol lookup: %w", err))
-	}
-	if !found {
-		return protocol.EnrolResponse{}, notFoundEnrol()
 	}
 	token, err := newAgentToken(agentID)
 	if err != nil {
@@ -575,17 +573,22 @@ func (s *Service) AuthenticateAgent(ctx context.Context, bearer string) (AgentPr
 	if !ok {
 		return AgentPrincipal{}, ErrUnknownToken
 	}
-	var org *uuid.UUID // access_agent_org answers NULL for an unknown agent
-	err := s.db.InAppTx(ctx, func(tx pgx.Tx) error {
-		return tx.QueryRow(ctx, `SELECT access_agent_org($1)`, agentID).Scan(&org)
+	var orgID uuid.UUID
+	found := true
+	err := s.db.InPlatformTx(ctx, func(tx pgx.Tx) error {
+		err := tx.QueryRow(ctx, `SELECT org_id FROM agent WHERE id = $1 ORDER BY created_at LIMIT 1`, agentID).Scan(&orgID)
+		if errors.Is(err, pgx.ErrNoRows) {
+			found = false
+			return nil
+		}
+		return err
 	})
 	if err != nil {
 		return AgentPrincipal{}, fmt.Errorf("agent lookup: %w", err)
 	}
-	if org == nil {
+	if !found {
 		return AgentPrincipal{}, ErrUnknownToken
 	}
-	orgID := *org
 	presented := hashToken(bearer)
 	now := s.now()
 	var p AgentPrincipal
