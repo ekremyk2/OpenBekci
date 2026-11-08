@@ -2954,7 +2954,6 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/AllocationInput"
-        description: "Manual override; omitted: automatic oldest-first."
       send_receipt:
         $ref: "#/schemas/ReceiptDelivery"
       debtor:
@@ -3569,6 +3568,7 @@ schemas:
       - org_id
       - site_id
       - importer
+      - filename
       - file_id
       - asset_account_id
       - status
@@ -3593,9 +3593,14 @@ schemas:
         format: uuid
       importer:
         type: string
+      filename:
+        type: string
+        description: The uploaded file name.
       file_id:
         type: string
         format: uuid
+        nullable: true
+        description: "The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB)."
       asset_account_id:
         type: string
         format: uuid
@@ -3646,6 +3651,7 @@ schemas:
       org_id: 0192a3f0-1000-7000-8000-000000000003
       site_id: 0192a3f0-1000-7000-8000-000000000004
       importer: importer
+      filename: statement.csv
       file_id: 0192a3f0-1000-7000-8000-000000000005
       asset_account_id: 0192a3f0-1000-7000-8000-000000000006
       status: parsing
@@ -3682,6 +3688,7 @@ schemas:
           org_id: 0192a3f0-1000-7000-8000-000000000003
           site_id: 0192a3f0-1000-7000-8000-000000000004
           importer: importer
+          filename: statement.csv
           file_id: 0192a3f0-1000-7000-8000-000000000005
           asset_account_id: 0192a3f0-1000-7000-8000-000000000006
           status: parsing
@@ -3708,6 +3715,16 @@ schemas:
       - ledger_opening
       - ledger_closing
       - difference
+      - statement_movement
+      - ledger_movement
+      - lines_total
+      - statement_check
+      - matched_total
+      - unmatched_total
+      - ignored_total
+      - matched_count
+      - unmatched_count
+      - ignored_count
     properties:
       import_id:
         type: string
@@ -3730,6 +3747,44 @@ schemas:
         allOf:
           - $ref: ./common.yaml#/schemas/Money
         description: Statement movement minus ledger movement.
+      statement_movement:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: "Closing minus opening when the statement has both balances, else the sum of its lines."
+      ledger_movement:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: Movement of the bank account in the ledger over the statement period (all postings, not only matched lines).
+      lines_total:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: Sum of all statement lines.
+      statement_check:
+        type: object
+        nullable: true
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: "Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances."
+      matched_total:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: Lines matched to a payment.
+      unmatched_total:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: "Unmatched and suggested lines; with only matched payments posting to the account the difference equals this."
+      ignored_total:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+      matched_count:
+        type: integer
+        format: int64
+      unmatched_count:
+        type: integer
+        format: int64
+      ignored_count:
+        type: integer
+        format: int64
   MatchSuggestion:
     type: object
     required:
@@ -3773,6 +3828,7 @@ schemas:
       - amount
       - counterparty
       - description
+      - reference
       - match_status
       - payment_id
       - expense_id
@@ -3805,6 +3861,10 @@ schemas:
       description:
         type: string
         nullable: true
+      reference:
+        type: string
+        nullable: true
+        description: "The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it."
       match_status:
         type: string
         description: Open enum.
@@ -3843,6 +3903,7 @@ schemas:
         currency: TRY
       counterparty: null
       description: null
+      reference: null
       match_status: unmatched
       payment_id: null
       expense_id: null
@@ -3881,6 +3942,7 @@ schemas:
             currency: TRY
           counterparty: null
           description: null
+          reference: null
           match_status: unmatched
           payment_id: null
           expense_id: null
@@ -3904,14 +3966,15 @@ schemas:
         type: array
         items:
           $ref: "#/schemas/AllocationInput"
+        description: "Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee."
       payment_id:
         type: string
         format: uuid
-        description: Confirm this declared payment with the line.
+        description: Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
       expense_id:
         type: string
         format: uuid
-        description: "For an outgoing line: link an expense."
+        description: "For an outgoing line: link an expense. Reserved for the expenses release; until then it is answered with 422 `unsupported` on `expense_id`."
       debtor:
         allOf:
           - $ref: "#/schemas/DebtorRef"
@@ -4667,6 +4730,7 @@ schemas:
             - in_app
             - email
             - sms
+            - letter
           x-open-enum: true
       template_key:
         type: string
@@ -4733,6 +4797,7 @@ schemas:
             - in_app
             - email
             - sms
+            - letter
           x-open-enum: true
       template_key:
         type: string
@@ -4767,6 +4832,7 @@ schemas:
             - in_app
             - email
             - sms
+            - letter
           x-open-enum: true
       template_key:
         type: string
@@ -4835,6 +4901,7 @@ schemas:
             - in_app
             - email
             - sms
+            - letter
         description: Chosen by the sender (O5).
   DunningRunPreview:
     type: object
@@ -4893,6 +4960,9 @@ schemas:
       - debtor_kind
       - person_id
       - stage_id
+      - period
+      - amount_due
+      - has_letter
       - sent_at
       - channel
       - document_file_id
@@ -4915,9 +4985,12 @@ schemas:
       unit_id:
         type: string
         format: uuid
+        nullable: true
+        description: Null for a person debtor (carried debt).
       debtor_kind:
         type: string
-        description: Open enum.
+        nullable: true
+        description: Open enum. Null for a person debtor.
         enum:
           - owner
           - tenant
@@ -4929,6 +5002,16 @@ schemas:
       stage_id:
         type: string
         format: uuid
+      period:
+        type: string
+        description: "The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel."
+      amount_due:
+        allOf:
+          - $ref: ./common.yaml#/schemas/Money
+        description: The overdue balance when the event was created.
+      has_letter:
+        type: boolean
+        description: "A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`."
       sent_at:
         type: string
         format: date-time
@@ -4960,6 +5043,11 @@ schemas:
       debtor_kind: owner
       person_id: null
       stage_id: 0192a3f0-1000-7000-8000-000000000006
+      period: 2026-03
+      amount_due:
+        amount: 200000
+        currency: TRY
+      has_letter: false
       sent_at: 2026-03-01T09:00:00Z
       channel: in_app
       document_file_id: null
@@ -4989,6 +5077,11 @@ schemas:
           debtor_kind: owner
           person_id: null
           stage_id: 0192a3f0-1000-7000-8000-000000000006
+          period: 2026-03
+          amount_due:
+            amount: 200000
+            currency: TRY
+          has_letter: false
           sent_at: 2026-03-01T09:00:00Z
           channel: in_app
           document_file_id: null
@@ -5005,6 +5098,7 @@ schemas:
       - unit_id
       - debtor_kind
       - debtor_person_id
+      - debtor
       - opened_on
       - lawyer
       - file_no
@@ -5028,9 +5122,12 @@ schemas:
       unit_id:
         type: string
         format: uuid
+        nullable: true
+        description: Null for a person debtor.
       debtor_kind:
         type: string
-        description: Open enum.
+        nullable: true
+        description: Open enum. Null for a person debtor.
         enum:
           - owner
           - tenant
@@ -5038,6 +5135,12 @@ schemas:
       debtor_person_id:
         type: string
         format: uuid
+        nullable: true
+        description: "The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself."
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: Whose debt this case is about, as it was opened.
       opened_on:
         type: string
         format: date
@@ -5080,6 +5183,9 @@ schemas:
       unit_id: 0192a3f0-1000-7000-8000-000000000005
       debtor_kind: owner
       debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+      debtor:
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        debtor_kind: owner
       opened_on: 2026-03-01
       lawyer: null
       file_no: null
@@ -5096,27 +5202,16 @@ schemas:
     type: object
     required:
       - site_id
-      - unit_id
-      - debtor_kind
-      - debtor_person_id
+      - debtor
       - opened_on
     properties:
       site_id:
         type: string
         format: uuid
-      unit_id:
-        type: string
-        format: uuid
-      debtor_kind:
-        type: string
-        description: Open enum.
-        enum:
-          - owner
-          - tenant
-        x-open-enum: true
-      debtor_person_id:
-        type: string
-        format: uuid
+      debtor:
+        allOf:
+          - $ref: "#/schemas/DebtorRef"
+        description: "Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes."
       opened_on:
         type: string
         format: date
@@ -5164,6 +5259,9 @@ schemas:
           unit_id: 0192a3f0-1000-7000-8000-000000000005
           debtor_kind: owner
           debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+          debtor:
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            debtor_kind: owner
           opened_on: 2026-03-01
           lawyer: null
           file_no: null

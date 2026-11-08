@@ -23,11 +23,15 @@ import (
 // newMoney builds the money services (phase C) served by the HTTP API.
 func newMoney(d *db.DB, notify jobs.Notifier) httpapi.MoneyDeps {
 	tn := tenancy.NewService(d)
+	bill := billing.NewService(d, tn, nil)
+	pay := payments.NewService(d, nil, moneyNotifier{out: notify})
 	return httpapi.MoneyDeps{
-		Ledger:   ledger.NewService(d, nil),
-		Billing:  billing.NewService(d, tn, nil),
-		Payments: payments.NewService(d, nil, moneyNotifier{out: notify}),
-		Reports:  reports.NewService(d, nil),
+		Ledger:      ledger.NewService(d, nil),
+		Billing:     bill,
+		Payments:    pay,
+		Reports:     reports.NewService(d, nil),
+		BankImport:  newBankImport(d, pay),
+		Collections: newCollections(d, bill, notify),
 	}
 }
 
@@ -92,11 +96,13 @@ func (w *catchUpWorker) Work(ctx context.Context, _ *river.Job[CatchUpArgs]) err
 
 // moneyJobs returns the money modules' workers (jobs.Options.Register) and
 // schedules (jobs.Options.Periodic).
-func moneyJobs(d *db.DB, log *slog.Logger) (func(*river.Workers), []*river.PeriodicJob) {
+func moneyJobs(d *db.DB, log *slog.Logger, notify jobs.Notifier) (func(*river.Workers), []*river.PeriodicJob) {
 	register := func(ws *river.Workers) {
 		river.AddWorker(ws, &catchUpWorker{d: d, log: log})
+		collectJobs(ws, d, log, notify)
 	}
 	periodic := []*river.PeriodicJob{river.NewPeriodicJob(river.PeriodicInterval(time.Hour),
 		func() (river.JobArgs, *river.InsertOpts) { return CatchUpArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true})}
+	periodic = append(periodic, collectPeriodic()...)
 	return register, periodic
 }

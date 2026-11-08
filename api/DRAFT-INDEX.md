@@ -206,17 +206,17 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.listRefunds` | `GET /v1/orgs/{org_id}/refunds` | 0.1 | `money.read` | - | not yet served |
 | money | `money.createRefund` | `POST /v1/orgs/{org_id}/refunds` | 0.1 | `money.post` | required | not yet served |
 | money | `money.getRefund` | `GET /v1/orgs/{org_id}/refunds/{refund_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listBankImporters` | `GET /v1/orgs/{org_id}/bank-importers` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listBankStatementImports` | `GET /v1/orgs/{org_id}/bank-statement-imports` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createBankStatementImport` | `POST /v1/orgs/{org_id}/bank-statement-imports` | 0.1 | `money.post` | optional | not yet served |
-| money | `money.getBankStatementImport` | `GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.deleteBankStatementImport` | `DELETE /v1/orgs/{org_id}/bank-statement-imports/{import_id}` | 0.1 | `money.post` | optional | not yet served |
-| money | `money.getImportReconciliation` | `GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listBankTransactions` | `GET /v1/orgs/{org_id}/bank-transactions` | 0.1 | `money.read` | - | not yet served |
-| money | `money.getBankTransaction` | `GET /v1/orgs/{org_id}/bank-transactions/{transaction_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.matchBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match` | 0.1 | `payments.record` | required | not yet served |
-| money | `money.unmatchBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch` | 0.1 | `payments.record` | required | not yet served |
-| money | `money.ignoreBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore` | 0.1 | `payments.record` | optional | not yet served |
+| money | `money.listBankImporters` | `GET /v1/orgs/{org_id}/bank-importers` | 0.1 | `money.read` | - | served |
+| money | `money.listBankStatementImports` | `GET /v1/orgs/{org_id}/bank-statement-imports` | 0.1 | `money.read` | - | served |
+| money | `money.createBankStatementImport` | `POST /v1/orgs/{org_id}/bank-statement-imports` | 0.1 | `money.post` | optional | served |
+| money | `money.getBankStatementImport` | `GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}` | 0.1 | `money.read` | - | served |
+| money | `money.deleteBankStatementImport` | `DELETE /v1/orgs/{org_id}/bank-statement-imports/{import_id}` | 0.1 | `money.post` | optional | served |
+| money | `money.getImportReconciliation` | `GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation` | 0.1 | `money.read` | - | served |
+| money | `money.listBankTransactions` | `GET /v1/orgs/{org_id}/bank-transactions` | 0.1 | `money.read` | - | served |
+| money | `money.getBankTransaction` | `GET /v1/orgs/{org_id}/bank-transactions/{transaction_id}` | 0.1 | `money.read` | - | served |
+| money | `money.matchBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match` | 0.1 | `payments.record` | required | served |
+| money | `money.unmatchBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch` | 0.1 | `payments.record` | required | served |
+| money | `money.ignoreBankTransaction` | `POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore` | 0.1 | `payments.record` | optional | served |
 | money | `money.listExpenses` | `GET /v1/orgs/{org_id}/expenses` | 0.1 | `money.read` | - | not yet served |
 | money | `money.createExpense` | `POST /v1/orgs/{org_id}/expenses` | 0.1 | `money.post` | required | not yet served |
 | money | `money.getExpense` | `GET /v1/orgs/{org_id}/expenses/{expense_id}` | 0.1 | `money.read` | - | not yet served |
@@ -230,20 +230,21 @@ Total: 424 new operations, plus the 15 already served (instance, auth, me) which
 | money | `money.createBill` | `POST /v1/orgs/{org_id}/bills` | 0.1 | `money.post` | required | not yet served |
 | money | `money.getBill` | `GET /v1/orgs/{org_id}/bills/{bill_id}` | 0.1 | `money.read` | - | not yet served |
 | money | `money.createBillPayment` | `POST /v1/orgs/{org_id}/bills/{bill_id}/payments` | 0.1 | `money.post` | required | not yet served |
-| money | `money.listDunningStages` | `GET /v1/orgs/{org_id}/dunning-stages` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createDunningStage` | `POST /v1/orgs/{org_id}/dunning-stages` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.getDunningStage` | `GET /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.updateDunningStage` | `PATCH /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.deleteDunningStage` | `DELETE /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.previewDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs:preview` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.createDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs` | 0.1 | `collections.manage` | required | not yet served |
-| money | `money.listDunningEvents` | `GET /v1/orgs/{org_id}/dunning-events` | 0.1 | `money.read` | - | not yet served |
-| money | `money.listCollectionCases` | `GET /v1/orgs/{org_id}/collection-cases` | 0.1 | `money.read` | - | not yet served |
-| money | `money.createCollectionCase` | `POST /v1/orgs/{org_id}/collection-cases` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.getCollectionCase` | `GET /v1/orgs/{org_id}/collection-cases/{case_id}` | 0.1 | `money.read` | - | not yet served |
-| money | `money.updateCollectionCase` | `PATCH /v1/orgs/{org_id}/collection-cases/{case_id}` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.closeCollectionCase` | `POST /v1/orgs/{org_id}/collection-cases/{case_id}:close` | 0.1 | `collections.manage` | optional | not yet served |
-| money | `money.getDebtBreakdown` | `GET /v1/orgs/{org_id}/debt-breakdown` | 0.1 | `collections.manage` | - | not yet served |
+| money | `money.listDunningStages` | `GET /v1/orgs/{org_id}/dunning-stages` | 0.1 | `money.read` | - | served |
+| money | `money.createDunningStage` | `POST /v1/orgs/{org_id}/dunning-stages` | 0.1 | `collections.manage` | optional | served |
+| money | `money.getDunningStage` | `GET /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `money.read` | - | served |
+| money | `money.updateDunningStage` | `PATCH /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `collections.manage` | optional | served |
+| money | `money.deleteDunningStage` | `DELETE /v1/orgs/{org_id}/dunning-stages/{stage_id}` | 0.1 | `collections.manage` | optional | served |
+| money | `money.previewDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs:preview` | 0.1 | `collections.manage` | optional | served |
+| money | `money.createDunningRun` | `POST /v1/orgs/{org_id}/dunning-runs` | 0.1 | `collections.manage` | required | served |
+| money | `money.listDunningEvents` | `GET /v1/orgs/{org_id}/dunning-events` | 0.1 | `money.read` | - | served |
+| money | `money.getDunningLetter` | `GET /v1/orgs/{org_id}/dunning-letter` | 0.1 | `collections.manage` | - | served |
+| money | `money.listCollectionCases` | `GET /v1/orgs/{org_id}/collection-cases` | 0.1 | `money.read` | - | served |
+| money | `money.createCollectionCase` | `POST /v1/orgs/{org_id}/collection-cases` | 0.1 | `collections.manage` | optional | served |
+| money | `money.getCollectionCase` | `GET /v1/orgs/{org_id}/collection-cases/{case_id}` | 0.1 | `money.read` | - | served |
+| money | `money.updateCollectionCase` | `PATCH /v1/orgs/{org_id}/collection-cases/{case_id}` | 0.1 | `collections.manage` | optional | served |
+| money | `money.closeCollectionCase` | `POST /v1/orgs/{org_id}/collection-cases/{case_id}:close` | 0.1 | `collections.manage` | optional | served |
+| money | `money.getDebtBreakdown` | `GET /v1/orgs/{org_id}/debt-breakdown` | 0.1 | `collections.manage` | - | served |
 | money | `money.getUnitStatement` | `GET /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}` | 0.1 | `statements.read`, `statements.read_own` | - | served |
 | money | `money.getPersonStatement` | `GET /v1/orgs/{org_id}/persons/{person_id}/statement` | 0.1 | `statements.read`, `statements.read_own` | - | not yet served |
 | money | `money.sendStatement` | `POST /v1/orgs/{org_id}/statements:send` | 0.1 | `statements.read` | required | not yet served |

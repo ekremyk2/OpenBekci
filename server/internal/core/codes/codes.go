@@ -124,6 +124,7 @@ var sections = map[string]map[string]pair{
 		"announcement.published":     {"Announcement", "Duyuru"},
 		"charge.due_soon":            {"Payment due soon", "Ödeme tarihi yaklaşıyor"},
 		"charge.overdue":             {"Payment overdue", "Ödeme gecikti"},
+		"dunning.reminder":           {"Payment reminder", "Ödeme hatırlatması"},
 		"payment.receipt":            {"Payment receipt", "Ödeme makbuzu"},
 		"payment.declared":           {"Payment declared", "Ödeme bildirildi"},
 		"payment.confirmed":          {"Payment confirmed", "Ödeme onaylandı"},

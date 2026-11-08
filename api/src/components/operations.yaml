@@ -6,6 +6,7 @@ schemas:
       - announcement.published
       - charge.due_soon
       - charge.overdue
+      - dunning.reminder
       - payment.receipt
       - payment.declared
       - payment.confirmed

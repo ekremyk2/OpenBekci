@@ -190,7 +190,7 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
-	registerMoney, periodicMoney := moneyJobs(d, log)
+	registerMoney, periodicMoney := moneyJobs(d, log, ops.late)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
 		d.Close()

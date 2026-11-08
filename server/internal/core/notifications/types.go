@@ -15,6 +15,7 @@ const (
 	TypeAnnouncementPublished = "announcement.published"
 	TypeChargeDueSoon         = "charge.due_soon"
 	TypeChargeOverdue         = "charge.overdue"
+	TypeDunningReminder       = "dunning.reminder"
 	TypePaymentReceipt        = "payment.receipt"
 	TypePaymentDeclared       = "payment.declared"
 	TypePaymentConfirmed      = "payment.confirmed"
@@ -49,7 +50,7 @@ const (
 // Vocabulary lists the types a person may mute or a site may configure, in
 // display order.
 var Vocabulary = []string{
-	TypeAnnouncementPublished, TypeChargeDueSoon, TypeChargeOverdue, TypePaymentReceipt, TypePaymentDeclared,
+	TypeAnnouncementPublished, TypeChargeDueSoon, TypeChargeOverdue, TypeDunningReminder, TypePaymentReceipt, TypePaymentDeclared,
 	TypePaymentConfirmed, TypePaymentRejected, TypeStatementSent, TypeTicketUpdated, TypeTicketCommented,
 	TypeClaimRequested, TypeClaimDecided, TypeMeetingCalled, TypeMeetingDecisions, TypeAssemblyDue, TypeTermExpiring,
 	TypeVisitorApproval, TypeVisitorArrived, TypeBookingConfirmed, TypeBookingCancelled, TypeDeliveryReceived, TypeDeliveryWaiting, TypeVisitorQRRotated,
@@ -79,7 +80,7 @@ func ValidChannel(c string) bool { return slices.Contains(validChannels, c) }
 // they go to one address (see UnmutableChannel).
 func DefaultChannels(t string) []string {
 	switch t {
-	case TypeChargeDueSoon, TypeChargeOverdue, TypePaymentReceipt:
+	case TypeChargeDueSoon, TypeChargeOverdue, TypeDunningReminder, TypePaymentReceipt:
 		return []string{jobs.ChannelInApp, jobs.ChannelSMS}
 	case TypeStatementSent, TypePaymentConfirmed, TypePaymentRejected, TypeTicketUpdated, TypeTicketCommented:
 		return []string{jobs.ChannelInApp, jobs.ChannelEmail}

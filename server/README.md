@@ -396,6 +396,25 @@ balances, income and expense), `moneyhooks` (the move-out hook `people.MoneyHook
 - **Served and draft.** The ledger, charge plans (list, create), charges (list), payments (list, create, get, void), opening balances (list, create), late fee
   policy and debtor report and unit statement operations are served; the rest of the draft `money` module (expenses, collections, bank imports, transfers,
   refunds, budgets, other reports, ...) is not implemented yet. A site hand-over does not carry money data yet (`tenancy/export_money.go`).
+- **Bank statement import** (`core/payments/bankimport`). `POST /bank-statement-imports` (multipart: `site_id`, `file`, `importer=core_csv`, `asset_account_id`,
+  optional `mapping`, `opening_balance`, `closing_balance`) takes CSV or XLSX up to 10 MiB. `core_csv` reads `booked_on,amount,counterparty,description,reference`
+  (or a typed `ColumnMapping`; Turkish `1.234,50` and `05.03.2026` are understood, UTF-8 or windows-1254). Parsing is synchronous; a bad row makes the import
+  `partial`, a bad file is 422, the same file twice into one account is 409. The upload is kept as bytes on the import row (TODO: move to the files module, then
+  fill `file_id`); each line keeps its `raw` row for 90 days (`bank.prune_raw`, daily). Incoming lines get suggestions: reference `<door>-<period>` (for example
+  `A-12-2026-03`), payer name against the person on each unit side, amount against the open charges. Person IBANs are not stored, so there is no IBAN match yet.
+  Matching is manual only: `:match` with a `DebtorRef` creates and confirms a bank-transfer payment, or with `payment_id` confirms a declared payment of the same
+  amount; both run in the caller's transaction (`payments.Service.WithTx`), allocation as usual. `:unmatch` voids that payment. The reconciliation compares the statement
+  with the ledger movement of the bank account over the statement period (`difference` equals the unmatched total when only matched payments posted to the account).
+  Linking an outgoing line to an expense (`expense_id`) answers 422 until expenses exist.
+- **Collections** (`core/collections`). Dunning stages per site (days after the oldest overdue due date, channels `in_app|email|sms|letter`, template key); the
+  hourly `collections.run_stages` job fires, per debtor, the highest enabled stage that escalates past what the debtor already received for the current
+  delinquency (period = month of the oldest overdue charge), once per debtor, stage, period and channel, creating `dunning_event` rows and
+  `notifications.money` jobs of type `dunning.reminder`; manual `dunning-runs:preview` and `dunning-runs` take `debtors[]` of `DebtorRef`. The `letter` channel stores
+  an ihtarname PDF on the event (TODO: file it into documents; `getDunningLetter` also generates one on the spot for a debtor). The letter text is
+  `locales/tr/ihtarname.txt`; the PDF embeds the Go fonts (BSD) so `ğşİı` are real text, and the missing `₺` is drawn as vector strokes with ActualText U+20BA
+  (`platform/pdf/unicode.go`). A collection case (unit side or person) freezes the unit side's late fees (a `late_fee_freeze` from the opening date, created in
+  the same transaction) and skips the debtor in reminders and runs; closing it ends the freeze and charges legal costs back as a `legal_cost` charge.
+  `debt-breakdown` gives principal and the late fee still owed per charge as of a date (JSON, CSV, XLSX, PDF).
 
 ## Tests
 

@@ -16655,6 +16655,1478 @@ paths:
           $ref: '#/components/responses/Problem'
         default:
           $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-importers:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listBankImporters
+      summary: List bank statement importers
+      description: |-
+        **Release 0.1.** List bank statement importers.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankImporterList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-statement-imports:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listBankStatementImports
+      summary: List bank statement imports
+      description: |-
+        **Release 0.1.** List bank statement imports.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Filter by `status`.
+        - name: asset_account_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `asset_account_id`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankStatementImportList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createBankStatementImport
+      summary: Upload a bank statement
+      description: |-
+        **Release 0.1.** Upload a CSV or XLSX statement (up to 10 MiB). The `core_csv` importer reads the columns `booked_on,amount,counterparty,description,reference` (Turkish numbers such as `1.234,50` and dates such as `05.03.2026` are understood); a typed `mapping` (a JSON `ColumnMapping`, targets `booked_on`, `amount`, `counterparty`, `description`, `reference`, `balance`) maps other layouts. Parsing happens within the request: a file that cannot be read is 422, rows that fail make the import `partial` and are listed in `error`. The same file cannot be imported twice into one account (409). Opening and closing balances are read from the `balance` column or sent as `opening_balance` and `closing_balance`. Each incoming line gets ranked suggestions (reference scheme `<door>-<period>`, payer name, amount); matching is always manual.
+
+        Permission: `money.post`.
+
+        Problems: `payload_too_large` (413), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                site_id:
+                  type: string
+                  format: uuid
+                file:
+                  type: string
+                  format: binary
+                importer:
+                  type: string
+                asset_account_id:
+                  type: string
+                  format: uuid
+                mapping:
+                  type: object
+                  additionalProperties: true
+                  description: A JSON `ColumnMapping` (or just its `columns`) as text.
+                opening_balance:
+                  type: string
+                  description: Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional.
+                closing_balance:
+                  type: string
+                  description: Statement closing balance as a decimal amount; optional.
+              required:
+                - site_id
+                - file
+                - importer
+                - asset_account_id
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankStatementImport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '413':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-statement-imports/{import_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: import_id
+        in: path
+        required: true
+        description: Id of the import.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getBankStatementImport
+      summary: Get a bank statement import
+      description: |-
+        **Release 0.1.** Get a bank statement import.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankStatementImport'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: money.deleteBankStatementImport
+      summary: Discard a bank statement import
+      description: |-
+        **Release 0.1.** Only while no transaction is matched.
+
+        Permission: `money.post`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.post
+        site_manager:
+          - money.post
+        board_member:
+          - money.post
+        accountant:
+          - money.post
+      x-idempotent: optional
+      x-stability: stable
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: import_id
+        in: path
+        required: true
+        description: Id of the import.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getImportReconciliation
+      summary: Reconciliation balances of an import
+      description: |-
+        **Release 0.1.** Statement opening/closing against the ledger balance of the bank account.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportReconciliation'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-transactions:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listBankTransactions
+      summary: List bank transactions
+      description: |-
+        **Release 0.1.** List bank transactions.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: import_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `import_id`.
+        - name: match_status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - unmatched
+              - suggested
+              - matched
+              - ignored
+          description: Filter by `match_status`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Free-text search.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransactionList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: transaction_id
+        in: path
+        required: true
+        description: Id of the transaction.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getBankTransaction
+      summary: Get a bank transaction
+      description: |-
+        **Release 0.1.** Get a bank transaction.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransaction'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: transaction_id
+        in: path
+        required: true
+        description: Id of the transaction.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.matchBankTransaction
+      summary: Match a line to a unit side, payment or expense
+      description: |-
+        **Release 0.1.** Manual matching: creates a confirmed payment for the unit side (or confirms a declared one).
+
+        Permission: `payments.record`.
+
+        Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankTransactionMatch'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransaction'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: transaction_id
+        in: path
+        required: true
+        description: Id of the transaction.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.unmatchBankTransaction
+      summary: Undo a match
+      description: |-
+        **Release 0.1.** Voids the payment created by the match.
+
+        Permission: `payments.record`.
+
+        Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankTransactionReason'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransaction'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: transaction_id
+        in: path
+        required: true
+        description: Id of the transaction.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.ignoreBankTransaction
+      summary: Ignore a line
+      description: |-
+        **Release 0.1.** Ignore a line.
+
+        Permission: `payments.record`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - payments.record
+        site_manager:
+          - payments.record
+        board_member:
+          - payments.record
+        accountant:
+          - payments.record
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankTransactionReason'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankTransaction'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-stages:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listDunningStages
+      summary: List dunning stages
+      description: |-
+        **Release 0.1.** Cursor-paginated list of dunning stages.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningStageList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createDunningStage
+      summary: Create dunning stage
+      description: |-
+        **Release 0.1.** Creates a dunning stage.
+
+        Permission: `collections.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DunningStageCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningStage'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-stages/{stage_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: stage_id
+        in: path
+        required: true
+        description: Id of the stage.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getDunningStage
+      summary: Get dunning stage
+      description: |-
+        **Release 0.1.** Get dunning stage.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningStage'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: money.updateDunningStage
+      summary: Update dunning stage
+      description: |-
+        **Release 0.1.** Update dunning stage.
+
+        Permission: `collections.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DunningStageUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningStage'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      operationId: money.deleteDunningStage
+      summary: Delete dunning stage
+      description: |-
+        **Release 0.1.** Delete dunning stage.
+
+        Permission: `collections.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: No content
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-runs:preview:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.previewDunningRun
+      summary: Preview a reminder run
+      description: |-
+        **Release 0.1.** Recipient and SMS counts before anything is sent.
+
+        Permission: `collections.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DunningRunRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningRunPreview'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-runs:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    post:
+      operationId: money.createDunningRun
+      summary: Send a reminder run
+      description: |-
+        **Release 0.1.** Send a reminder run.
+
+        Permission: `collections.manage`.
+
+        Problems: `sms_unavailable` (503), `mail_unavailable` (503), `conflict` (409), `idempotency_mismatch` (422).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: required
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKeyRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DunningRunRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningRun'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        '503':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-events:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listDunningEvents
+      summary: List sent reminders
+      description: |-
+        **Release 0.1.** List sent reminders.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant.'
+        - name: stage_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by `stage_id`.
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Start of the range (inclusive).
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: End of the range (inclusive).
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DunningEventList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-letter:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getDunningLetter
+      summary: Download the ihtarname (warning letter) of an event or a debtor
+      description: |-
+        **Release 0.1.** A generic Turkish warning letter as a PDF (embedded font, with the debt breakdown). Two ways to ask:
+
+        - `event_id`: the letter of a dunning event; it is generated on first request and stored with the event.
+        - `site_id` plus a debtor (`unit_id` and `debtor_kind` together, or `person_id`): a letter generated on the spot as of `as_of` (default today); nothing is stored.
+
+        The PDF is kept with the event until the files module can file it into documents.
+
+        Permission: `collections.manage`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-stability: stable
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: The dunning event whose letter to return.
+        - name: site_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Debtor mode - the site.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Debtor mode, unit side: send with `debtor_kind`.'
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            enum:
+              - owner
+              - tenant
+          description: 'Debtor mode, unit side: owner or tenant.'
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Debtor mode, person: the person whose carried debt the letter is about.'
+        - $ref: '#/components/parameters/AsOfDate'
+      responses:
+        '200':
+          description: The letter.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/collection-cases:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.listCollectionCases
+      summary: List collection cases
+      description: |-
+        **Release 0.1.** Cursor-paginated list of collection cases.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by unit.
+        - name: status
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - open
+              - closed
+          description: Filter by `status`.
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCaseList'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    post:
+      operationId: money.createCollectionCase
+      summary: Create collection case
+      description: |-
+        **Release 0.1.** Creates a collection case.
+
+        Permission: `collections.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionCaseCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCase'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/collection-cases/{case_id}:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: case_id
+        in: path
+        required: true
+        description: Id of the case.
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: money.getCollectionCase
+      summary: Get collection case
+      description: |-
+        **Release 0.1.** Get collection case.
+
+        Permission: `money.read`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - money.read
+        site_manager:
+          - money.read
+        board_member:
+          - money.read
+        auditor:
+          - money.read
+        accountant:
+          - money.read
+      x-stability: stable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCase'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+    patch:
+      operationId: money.updateCollectionCase
+      summary: Update collection case
+      description: |-
+        **Release 0.1.** Update collection case.
+
+        Permission: `collections.manage`.
+
+        Problems: `version_conflict` (409), `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionCaseUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCase'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/collection-cases/{case_id}:close:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+      - name: case_id
+        in: path
+        required: true
+        description: Id of the case.
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: money.closeCollectionCase
+      summary: Close a collection case
+      description: |-
+        **Release 0.1.** Close a collection case.
+
+        Permission: `collections.manage`.
+
+        Problems: `conflict` (409).
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-idempotent: optional
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectionCaseClose'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionCase'
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
+          $ref: '#/components/responses/Problem'
+        '409':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/debt-breakdown:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getDebtBreakdown
+      summary: Debt breakdown for a unit side (ihtarname attachment)
+      description: |-
+        **Release 0.1.** Principal and fee per period as of a date; JSON, or a CSV/XLSX/PDF export.
+
+        Targeting: `unit_id` and `debtor_kind` together, or `person_id` (carried debt of a person); exactly one mode.
+
+        Permission: `collections.manage`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-stability: stable
+      parameters:
+        - $ref: '#/components/parameters/SiteIdRequired'
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Filter by unit. Unit mode: send with the other.'
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            enum:
+              - owner
+              - tenant
+          description: 'Debtor side of the unit: owner or tenant. Unit mode: send with the other.'
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Person mode: the person whose debt to break down (instead of `unit_id` + `debtor_kind`).'
+        - name: as_of
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Evaluate as of this date (default today).
+        - $ref: '#/components/parameters/Format'
+      responses:
+        '200':
+          description: The report. JSON by default; `format` selects a CSV, XLSX or PDF download.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtBreakdown'
+            text/csv:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
 components:
   securitySchemes:
     agentAuth:
@@ -16775,6 +18247,13 @@ components:
           - xlsx
           - pdf
         default: json
+    AsOfDate:
+      name: as_of
+      in: query
+      description: Evaluate as of this date (default today in the site timezone).
+      schema:
+        type: string
+        format: date
   responses:
     Problem:
       description: Error. RFC 9457 problem details with a stable `code`.
@@ -20813,6 +22292,7 @@ components:
         - announcement.published
         - charge.due_soon
         - charge.overdue
+        - dunning.reminder
         - payment.receipt
         - payment.declared
         - payment.confirmed
@@ -30067,7 +31547,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AllocationInput'
-          description: 'Manual override; omitted: automatic oldest-first.'
         send_receipt:
           $ref: '#/components/schemas/ReceiptDelivery'
         debtor:
@@ -30266,6 +31745,1175 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Running balance.
+    BankImporter:
+      type: object
+      required:
+        - id
+        - name
+        - formats
+      properties:
+        id:
+          type: string
+          description: '`core_csv` or a pack importer id.'
+        name:
+          type: string
+        formats:
+          type: array
+          items:
+            type: string
+        default_mapping:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ColumnMapping'
+          nullable: true
+      example:
+        id: id
+        name: Ali Veli
+        formats:
+          - formats
+        default_mapping:
+          columns: {}
+          date_format: null
+          delimiter: null
+          sheet: null
+          remember: null
+    BankImporterList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankImporter'
+        next_cursor:
+          type: string
+          nullable: true
+      example:
+        items:
+          - id: id
+            name: Ali Veli
+            formats:
+              - formats
+            default_mapping:
+              columns: {}
+              date_format: null
+              delimiter: null
+              sheet: null
+              remember: null
+        next_cursor: null
+    BankStatementImport:
+      type: object
+      description: An uploaded bank statement (M5).
+      required:
+        - id
+        - org_id
+        - site_id
+        - importer
+        - filename
+        - file_id
+        - asset_account_id
+        - status
+        - opening_balance
+        - closing_balance
+        - period_from
+        - period_to
+        - transaction_count
+        - unmatched_count
+        - error
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        importer:
+          type: string
+        filename:
+          type: string
+          description: The uploaded file name.
+        file_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB).
+        asset_account_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - parsing
+            - ready
+            - partial
+            - failed
+          x-open-enum: true
+        opening_balance:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+        closing_balance:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+        period_from:
+          type: string
+          format: date
+          nullable: true
+        period_to:
+          type: string
+          format: date
+          nullable: true
+        transaction_count:
+          type: integer
+          format: int64
+        unmatched_count:
+          type: integer
+          format: int64
+        error:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        importer: importer
+        filename: statement.csv
+        file_id: 0192a3f0-1000-7000-8000-000000000005
+        asset_account_id: 0192a3f0-1000-7000-8000-000000000006
+        status: parsing
+        opening_balance:
+          amount: 200000
+          currency: TRY
+        closing_balance:
+          amount: 200000
+          currency: TRY
+        period_from: null
+        period_to: null
+        transaction_count: 3
+        unmatched_count: 3
+        error: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    BankStatementImportList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankStatementImport'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            importer: importer
+            filename: statement.csv
+            file_id: 0192a3f0-1000-7000-8000-000000000005
+            asset_account_id: 0192a3f0-1000-7000-8000-000000000006
+            status: parsing
+            opening_balance:
+              amount: 200000
+              currency: TRY
+            closing_balance:
+              amount: 200000
+              currency: TRY
+            period_from: null
+            period_to: null
+            transaction_count: 3
+            unmatched_count: 3
+            error: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    ImportReconciliation:
+      type: object
+      required:
+        - import_id
+        - statement_opening
+        - statement_closing
+        - ledger_opening
+        - ledger_closing
+        - difference
+        - statement_movement
+        - ledger_movement
+        - lines_total
+        - statement_check
+        - matched_total
+        - unmatched_total
+        - ignored_total
+        - matched_count
+        - unmatched_count
+        - ignored_count
+      properties:
+        import_id:
+          type: string
+          format: uuid
+        statement_opening:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+        statement_closing:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          nullable: true
+        ledger_opening:
+          $ref: '#/components/schemas/Money'
+        ledger_closing:
+          $ref: '#/components/schemas/Money'
+        difference:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Statement movement minus ledger movement.
+        statement_movement:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Closing minus opening when the statement has both balances, else the sum of its lines.
+        ledger_movement:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Movement of the bank account in the ledger over the statement period (all postings, not only matched lines).
+        lines_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Sum of all statement lines.
+        statement_check:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: 'Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances.'
+        matched_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Lines matched to a payment.
+        unmatched_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Unmatched and suggested lines; with only matched payments posting to the account the difference equals this.
+        ignored_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+        matched_count:
+          type: integer
+          format: int64
+        unmatched_count:
+          type: integer
+          format: int64
+        ignored_count:
+          type: integer
+          format: int64
+    MatchSuggestion:
+      type: object
+      required:
+        - unit_id
+        - unit_door_number
+        - debtor_kind
+        - person_id
+        - score
+        - reason
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        unit_door_number:
+          type: string
+        debtor_kind:
+          type: string
+          description: Open enum.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        score:
+          type: number
+        reason:
+          type: string
+          description: For example `reference`, `payer_name`, `amount`.
+    BankTransaction:
+      type: object
+      description: A statement line. The raw payload is stripped after reconciliation.
+      required:
+        - id
+        - org_id
+        - site_id
+        - import_id
+        - booked_on
+        - amount
+        - counterparty
+        - description
+        - reference
+        - match_status
+        - payment_id
+        - expense_id
+        - suggestions
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        import_id:
+          type: string
+          format: uuid
+        booked_on:
+          type: string
+          format: date
+        amount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: 'Positive: money in; negative: money out.'
+        counterparty:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        reference:
+          type: string
+          nullable: true
+          description: The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it.
+        match_status:
+          type: string
+          description: Open enum.
+          enum:
+            - unmatched
+            - suggested
+            - matched
+            - ignored
+          x-open-enum: true
+        payment_id:
+          type: string
+          format: uuid
+          nullable: true
+        expense_id:
+          type: string
+          format: uuid
+          nullable: true
+        suggestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchSuggestion'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        import_id: 0192a3f0-1000-7000-8000-000000000005
+        booked_on: '2026-03-01'
+        amount:
+          amount: 200000
+          currency: TRY
+        counterparty: null
+        description: null
+        reference: null
+        match_status: unmatched
+        payment_id: null
+        expense_id: null
+        suggestions:
+          - unit_id: 0192a3f0-1000-7000-8000-000000000006
+            unit_door_number: unit door number
+            debtor_kind: owner
+            person_id: null
+            score: 1.5
+            reason: reason
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    BankTransactionList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankTransaction'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            import_id: 0192a3f0-1000-7000-8000-000000000005
+            booked_on: '2026-03-01'
+            amount:
+              amount: 200000
+              currency: TRY
+            counterparty: null
+            description: null
+            reference: null
+            match_status: unmatched
+            payment_id: null
+            expense_id: null
+            suggestions:
+              - unit_id: 0192a3f0-1000-7000-8000-000000000006
+                unit_door_number: unit door number
+                debtor_kind: owner
+                person_id: null
+                score: 1.5
+                reason: reason
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    BankTransactionMatch:
+      type: object
+      properties:
+        payer_person_id:
+          type: string
+          format: uuid
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationInput'
+          description: 'Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee.'
+        payment_id:
+          type: string
+          format: uuid
+          description: Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
+        expense_id:
+          type: string
+          format: uuid
+          description: 'For an outgoing line: link an expense. Reserved for the expenses release; until then it is answered with 422 `unsupported` on `expense_id`.'
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Who the line pays; omitted when matching to `payment_id` or `expense_id`.
+    BankTransactionReason:
+      type: object
+      properties:
+        reason:
+          type: string
+    DunningStage:
+      type: object
+      description: 'Site-defined collection stage: reminder 1 at N days, reminder 2, ihtarname.'
+      required:
+        - id
+        - org_id
+        - site_id
+        - name
+        - kind
+        - days_after_due
+        - channels
+        - template_key
+        - position
+        - enabled
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - reminder
+            - ihtarname
+          x-open-enum: true
+        days_after_due:
+          type: integer
+          format: int64
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - letter
+            x-open-enum: true
+        template_key:
+          type: string
+          nullable: true
+        position:
+          type: integer
+          format: int64
+        enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        name: Ali Veli
+        kind: reminder
+        days_after_due: 1
+        channels:
+          - in_app
+        template_key: null
+        position: 1
+        enabled: false
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    DunningStageCreate:
+      type: object
+      required:
+        - site_id
+        - name
+        - kind
+        - days_after_due
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - reminder
+            - ihtarname
+          x-open-enum: true
+        days_after_due:
+          type: integer
+          format: int64
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - letter
+            x-open-enum: true
+        template_key:
+          type: string
+          nullable: true
+        position:
+          type: integer
+          format: int64
+        enabled:
+          type: boolean
+    DunningStageUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        name:
+          type: string
+        kind:
+          type: string
+          description: Open enum.
+          enum:
+            - reminder
+            - ihtarname
+          x-open-enum: true
+        days_after_due:
+          type: integer
+          format: int64
+        channels:
+          type: array
+          items:
+            type: string
+            description: Open enum.
+            enum:
+              - in_app
+              - email
+              - sms
+              - letter
+            x-open-enum: true
+        template_key:
+          type: string
+          nullable: true
+        position:
+          type: integer
+          format: int64
+        enabled:
+          type: boolean
+    DunningStageList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DunningStage'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            name: Ali Veli
+            kind: reminder
+            days_after_due: 1
+            channels:
+              - in_app
+            template_key: null
+            position: 1
+            enabled: false
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    DunningRunRequest:
+      type: object
+      required:
+        - site_id
+        - stage_id
+        - channels
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        stage_id:
+          type: string
+          format: uuid
+        debtors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DebtorRef'
+          description: 'Restrict the run to these debtors; omitted: every debtor above `min_balance`. Person targets reach carried debt of former occupants.'
+        min_balance:
+          $ref: '#/components/schemas/Money'
+        channels:
+          type: array
+          items:
+            type: string
+            enum:
+              - in_app
+              - email
+              - sms
+              - letter
+          description: Chosen by the sender (O5).
+    DunningRunPreview:
+      type: object
+      required:
+        - recipient_count
+        - sms_count
+        - skipped_frozen
+      properties:
+        recipient_count:
+          type: integer
+          format: int64
+        sms_count:
+          type: integer
+          format: int64
+        skipped_frozen:
+          type: integer
+          format: int64
+          description: 'Skipped: late fees and reminders are frozen (open collection case).'
+    DunningRun:
+      type: object
+      required:
+        - id
+        - site_id
+        - stage_id
+        - event_count
+        - sms_count
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        stage_id:
+          type: string
+          format: uuid
+        event_count:
+          type: integer
+          format: int64
+        sms_count:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+    DunningEvent:
+      type: object
+      description: A reminder or notice sent to a unit side.
+      required:
+        - id
+        - org_id
+        - site_id
+        - run_id
+        - unit_id
+        - debtor_kind
+        - person_id
+        - stage_id
+        - period
+        - amount_due
+        - has_letter
+        - sent_at
+        - channel
+        - document_file_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        run_id:
+          type: string
+          format: uuid
+          nullable: true
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null for a person debtor (carried debt).
+        debtor_kind:
+          type: string
+          nullable: true
+          description: Open enum. Null for a person debtor.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        person_id:
+          type: string
+          format: uuid
+          nullable: true
+        stage_id:
+          type: string
+          format: uuid
+        period:
+          type: string
+          description: 'The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel.'
+        amount_due:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: The overdue balance when the event was created.
+        has_letter:
+          type: boolean
+          description: A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`.
+        sent_at:
+          type: string
+          format: date-time
+        channel:
+          type: string
+          description: Open enum.
+          enum:
+            - in_app
+            - email
+            - sms
+            - letter
+          x-open-enum: true
+        document_file_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        run_id: null
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        debtor_kind: owner
+        person_id: null
+        stage_id: 0192a3f0-1000-7000-8000-000000000006
+        period: 2026-03
+        amount_due:
+          amount: 200000
+          currency: TRY
+        has_letter: false
+        sent_at: '2026-03-01T09:00:00Z'
+        channel: in_app
+        document_file_id: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+    DunningEventList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DunningEvent'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            run_id: null
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            debtor_kind: owner
+            person_id: null
+            stage_id: 0192a3f0-1000-7000-8000-000000000006
+            period: 2026-03
+            amount_due:
+              amount: 200000
+              currency: TRY
+            has_letter: false
+            sent_at: '2026-03-01T09:00:00Z'
+            channel: in_app
+            document_file_id: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+        next_cursor: null
+    CollectionCase:
+      type: object
+      description: Legal collection; while open, late fees and reminders are frozen.
+      required:
+        - id
+        - org_id
+        - site_id
+        - unit_id
+        - debtor_kind
+        - debtor_person_id
+        - debtor
+        - opened_on
+        - lawyer
+        - file_no
+        - status
+        - closed_on
+        - costs_charged
+        - notes
+        - created_at
+        - updated_at
+        - version
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        site_id:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null for a person debtor.
+        debtor_kind:
+          type: string
+          nullable: true
+          description: Open enum. Null for a person debtor.
+          enum:
+            - owner
+            - tenant
+          x-open-enum: true
+        debtor_person_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 'The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself.'
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Whose debt this case is about, as it was opened.
+        opened_on:
+          type: string
+          format: date
+        lawyer:
+          type: string
+          nullable: true
+        file_no:
+          type: string
+          nullable: true
+        status:
+          type: string
+          description: Open enum.
+          enum:
+            - open
+            - closed
+          x-open-enum: true
+        closed_on:
+          type: string
+          format: date
+          nullable: true
+        costs_charged:
+          $ref: '#/components/schemas/Money'
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+          format: int64
+          description: Optimistic-lock counter; send it back as If-Match on updates.
+      example:
+        id: 0192a3f0-1000-7000-8000-000000000002
+        org_id: 0192a3f0-1000-7000-8000-000000000003
+        site_id: 0192a3f0-1000-7000-8000-000000000004
+        unit_id: 0192a3f0-1000-7000-8000-000000000005
+        debtor_kind: owner
+        debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+        debtor:
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
+        opened_on: '2026-03-01'
+        lawyer: null
+        file_no: null
+        status: open
+        closed_on: null
+        costs_charged:
+          amount: 200000
+          currency: TRY
+        notes: null
+        created_at: '2026-03-01T09:00:00Z'
+        updated_at: '2026-03-01T09:00:00Z'
+        version: 1
+    CollectionCaseCreate:
+      type: object
+      required:
+        - site_id
+        - debtor
+        - opened_on
+      properties:
+        site_id:
+          type: string
+          format: uuid
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes.'
+        opened_on:
+          type: string
+          format: date
+        lawyer:
+          type: string
+          nullable: true
+        file_no:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+    CollectionCaseUpdate:
+      type: object
+      description: 'Partial update: send only the fields to change. The resource `version` goes in If-Match.'
+      properties:
+        lawyer:
+          type: string
+          nullable: true
+        file_no:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+    CollectionCaseList:
+      type: object
+      required:
+        - items
+        - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CollectionCase'
+        next_cursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` for the next page; null on the last page.
+      example:
+        items:
+          - id: 0192a3f0-1000-7000-8000-000000000002
+            org_id: 0192a3f0-1000-7000-8000-000000000003
+            site_id: 0192a3f0-1000-7000-8000-000000000004
+            unit_id: 0192a3f0-1000-7000-8000-000000000005
+            debtor_kind: owner
+            debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+            debtor:
+              unit_id: 0192a3f0-1000-7000-8000-000000000005
+              debtor_kind: owner
+            opened_on: '2026-03-01'
+            lawyer: null
+            file_no: null
+            status: open
+            closed_on: null
+            costs_charged:
+              amount: 200000
+              currency: TRY
+            notes: null
+            created_at: '2026-03-01T09:00:00Z'
+            updated_at: '2026-03-01T09:00:00Z'
+            version: 1
+        next_cursor: null
+    CollectionCaseClose:
+      type: object
+      properties:
+        costs:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Legal costs charged back to the debtor side.
+        note:
+          type: string
+    DebtBreakdown:
+      type: object
+      required:
+        - debtor
+        - as_of
+        - lines
+        - total_principal
+        - total_late_fee
+      properties:
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Whose debt this is.
+        as_of:
+          type: string
+          format: date
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DebtBreakdownLine'
+        total_principal:
+          $ref: '#/components/schemas/Money'
+        total_late_fee:
+          $ref: '#/components/schemas/Money'
+    DebtBreakdownLine:
+      type: object
+      required:
+        - period
+        - charge_id
+        - due_date
+        - principal
+        - late_fee
+      properties:
+        period:
+          type: string
+          nullable: true
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          description: 'The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.'
+        charge_id:
+          type: string
+          format: uuid
+        due_date:
+          type: string
+          format: date
+        principal:
+          $ref: '#/components/schemas/Money'
+        late_fee:
+          $ref: '#/components/schemas/Money'
+    ColumnMapping:
+      type: object
+      description: Column mapping chosen in the import wizard.
+      required:
+        - columns
+        - date_format
+        - delimiter
+        - sheet
+        - remember
+      properties:
+        columns:
+          type: object
+          additionalProperties:
+            type: string
+          description: |-
+            Target field name to source column header (or zero-based index as a string). The target names per import kind:
+            `importUnits`: `block`, `door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi`, `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+            `importPeople`: the owner and tenant columns of `importUnits` plus `door_number`;
+            `importAllocationKeyValues`: `door_number` (required), `value`;
+            `importOpeningBalances`: `kind`, `unit`, `side`, `principal`, `late_fee`, `account_id`.
+            The multipart `mapping` part is this object (or just its `columns`) as JSON text.
+        date_format:
+          type: string
+          nullable: true
+          description: For example `DD.MM.YYYY`.
+        delimiter:
+          type: string
+          nullable: true
+          description: CSV delimiter.
+        sheet:
+          type: string
+          nullable: true
+          description: XLSX sheet name.
+        remember:
+          type: boolean
+          nullable: true
+          description: Remember this mapping for the organization.
     ReauthEmailCode:
       type: object
       required:

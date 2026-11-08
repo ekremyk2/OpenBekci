@@ -489,6 +489,44 @@ paths:
     $ref: './paths/money/reports-debtors.yaml'
   /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}:
     $ref: './paths/money/units-unit_id-statements-debtor_kind.yaml'
+  /v1/orgs/{org_id}/bank-importers:
+    $ref: './paths/money/bank-importers.yaml'
+  /v1/orgs/{org_id}/bank-statement-imports:
+    $ref: './paths/money/bank-statement-imports.yaml'
+  /v1/orgs/{org_id}/bank-statement-imports/{import_id}:
+    $ref: './paths/money/bank-statement-imports-import_id.yaml'
+  /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation:
+    $ref: './paths/money/bank-statement-imports-import_id-reconciliation.yaml'
+  /v1/orgs/{org_id}/bank-transactions:
+    $ref: './paths/money/bank-transactions.yaml'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:
+    $ref: './paths/money/bank-transactions-transaction_id.yaml'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match:
+    $ref: './paths/money/bank-transactions-transaction_id_match.yaml'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch:
+    $ref: './paths/money/bank-transactions-transaction_id_unmatch.yaml'
+  /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore:
+    $ref: './paths/money/bank-transactions-transaction_id_ignore.yaml'
+  /v1/orgs/{org_id}/dunning-stages:
+    $ref: './paths/money/dunning-stages.yaml'
+  /v1/orgs/{org_id}/dunning-stages/{stage_id}:
+    $ref: './paths/money/dunning-stages-stage_id.yaml'
+  /v1/orgs/{org_id}/dunning-runs:preview:
+    $ref: './paths/money/dunning-runs_preview.yaml'
+  /v1/orgs/{org_id}/dunning-runs:
+    $ref: './paths/money/dunning-runs.yaml'
+  /v1/orgs/{org_id}/dunning-events:
+    $ref: './paths/money/dunning-events.yaml'
+  /v1/orgs/{org_id}/dunning-letter:
+    $ref: './paths/money/dunning-letter.yaml'
+  /v1/orgs/{org_id}/collection-cases:
+    $ref: './paths/money/collection-cases.yaml'
+  /v1/orgs/{org_id}/collection-cases/{case_id}:
+    $ref: './paths/money/collection-cases-case_id.yaml'
+  /v1/orgs/{org_id}/collection-cases/{case_id}:close:
+    $ref: './paths/money/collection-cases-case_id_close.yaml'
+  /v1/orgs/{org_id}/debt-breakdown:
+    $ref: './paths/money/debt-breakdown.yaml'
 components:
   securitySchemes:
     agentAuth:
@@ -1316,3 +1354,57 @@ components:
       $ref: './components/money.yaml#/schemas/Statement'
     StatementLine:
       $ref: './components/money.yaml#/schemas/StatementLine'
+    BankImporter:
+      $ref: './components/money.yaml#/schemas/BankImporter'
+    BankImporterList:
+      $ref: './components/money.yaml#/schemas/BankImporterList'
+    BankStatementImport:
+      $ref: './components/money.yaml#/schemas/BankStatementImport'
+    BankStatementImportList:
+      $ref: './components/money.yaml#/schemas/BankStatementImportList'
+    ImportReconciliation:
+      $ref: './components/money.yaml#/schemas/ImportReconciliation'
+    MatchSuggestion:
+      $ref: './components/money.yaml#/schemas/MatchSuggestion'
+    BankTransaction:
+      $ref: './components/money.yaml#/schemas/BankTransaction'
+    BankTransactionList:
+      $ref: './components/money.yaml#/schemas/BankTransactionList'
+    BankTransactionMatch:
+      $ref: './components/money.yaml#/schemas/BankTransactionMatch'
+    BankTransactionReason:
+      $ref: './components/money.yaml#/schemas/BankTransactionReason'
+    DunningStage:
+      $ref: './components/money.yaml#/schemas/DunningStage'
+    DunningStageCreate:
+      $ref: './components/money.yaml#/schemas/DunningStageCreate'
+    DunningStageUpdate:
+      $ref: './components/money.yaml#/schemas/DunningStageUpdate'
+    DunningStageList:
+      $ref: './components/money.yaml#/schemas/DunningStageList'
+    DunningRunRequest:
+      $ref: './components/money.yaml#/schemas/DunningRunRequest'
+    DunningRunPreview:
+      $ref: './components/money.yaml#/schemas/DunningRunPreview'
+    DunningRun:
+      $ref: './components/money.yaml#/schemas/DunningRun'
+    DunningEvent:
+      $ref: './components/money.yaml#/schemas/DunningEvent'
+    DunningEventList:
+      $ref: './components/money.yaml#/schemas/DunningEventList'
+    CollectionCase:
+      $ref: './components/money.yaml#/schemas/CollectionCase'
+    CollectionCaseCreate:
+      $ref: './components/money.yaml#/schemas/CollectionCaseCreate'
+    CollectionCaseUpdate:
+      $ref: './components/money.yaml#/schemas/CollectionCaseUpdate'
+    CollectionCaseList:
+      $ref: './components/money.yaml#/schemas/CollectionCaseList'
+    CollectionCaseClose:
+      $ref: './components/money.yaml#/schemas/CollectionCaseClose'
+    DebtBreakdown:
+      $ref: './components/money.yaml#/schemas/DebtBreakdown'
+    DebtBreakdownLine:
+      $ref: './components/money.yaml#/schemas/DebtBreakdownLine'
+    ColumnMapping:
+      $ref: ./components/draft-common.yaml#/schemas/ColumnMapping
