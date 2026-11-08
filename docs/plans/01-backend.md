@@ -434,6 +434,7 @@ All variables carry the `OPENBEKCI_` prefix (`OPENBEKCI_DATABASE_URL`, …); the
 |---|---|---|
 | `DATABASE_URL` | yes | app role |
 | `MIGRATOR_DATABASE_URL`, `PLATFORM_DATABASE_URL` | no | default to `DATABASE_URL` with the respective role; the platform role must have BYPASSRLS |
+| `DATABASE_SIDE_POOL_MAX` | no | size of the second app-role pool for transactions opened while another is held (draft file storage inside a filing); default 4, in addition to the app pool |
 | `BASE_URL` | yes | public URL; cookies, links, Origin checks |
 | `EXTRA_ORIGINS` | no | additional accepted origins (LAN name + public domain) |
 | `SECRET_KEY`, `ENCRYPTION_KEY` | yes | ≥ 32 random bytes; placeholders refused; `_FILE` variants accepted |

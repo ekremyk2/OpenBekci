@@ -117,6 +117,9 @@ func withDatabase(t testing.TB, base, dbName, user, password string) string {
 		t.Fatalf("parse %q: %v", base, err)
 	}
 	u.Path = "/" + dbName
+	if v := os.Getenv("OPENBEKCI_TEST_POOL_MAX"); v != "" && user != "" {
+		u.RawQuery = "pool_max_conns=" + v
+	}
 	if user != "" {
 		u.User = url.UserPassword(user, password)
 	}

@@ -17,6 +17,8 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/openbekci/openbekci/server/internal/platform/db"
 )
 
 const envPrefix = "OPENBEKCI_"
@@ -26,6 +28,9 @@ type Config struct {
 	DatabaseURL         string
 	MigratorDatabaseURL string
 	PlatformDatabaseURL string
+	// DatabaseSidePoolMax caps the second connection pool for transactions
+	// opened while another is held (OPENBEKCI_DATABASE_SIDE_POOL_MAX); default 4.
+	DatabaseSidePoolMax int
 
 	BaseURL      string
 	ExtraOrigins []string
@@ -205,6 +210,15 @@ func LoadConfig(path string, getenv func(string) string) (Config, error) {
 			return Config{}, fmt.Errorf("%sMAX_BODY_BYTES: %q is not a positive integer", envPrefix, v)
 		}
 		c.MaxBodyBytes = n
+	}
+
+	c.DatabaseSidePoolMax = db.DefaultSidePoolMax
+	if v := l.must("DATABASE_SIDE_POOL_MAX"); v != "" {
+		n, perr := strconv.Atoi(v)
+		if perr != nil || n < 1 {
+			return Config{}, fmt.Errorf("%sDATABASE_SIDE_POOL_MAX: %q is not a positive integer", envPrefix, v)
+		}
+		c.DatabaseSidePoolMax = n
 	}
 
 	if err = c.loadFiles(l); err != nil {

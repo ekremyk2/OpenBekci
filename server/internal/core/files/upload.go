@@ -150,7 +150,7 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 
 	// 1. Reserve the row, so a crash leaves a pending row the maintenance job
 	// sweeps instead of an orphan blob nobody knows about.
-	err := s.db.InTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
+	err := s.db.InIndependentTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
 		if m.authorize && p.SiteID != nil {
 			sc, err := authz.ScopeOfSite(ctx, tx, *p.SiteID)
 			switch {
@@ -208,7 +208,7 @@ func (s *Service) ingest(ctx context.Context, p UploadParams, m ingestMode) (Fil
 		t := now.Add(s.cfg.UnattachedTTL)
 		f.RetentionUntil = &t
 	}
-	err = s.db.InTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
+	err = s.db.InIndependentTenantTx(ctx, p.OrgID, func(tx pgx.Tx) error {
 		variants, err := json.Marshal(f.Variants)
 		if err != nil {
 			return err
@@ -467,7 +467,7 @@ func (s *Service) discard(f File) {
 			s.cfg.Log.Error("discard upload blob", "key", k, "error", err)
 		}
 	}
-	err := s.db.InTenantTx(ctx, f.OrgID, func(tx pgx.Tx) error {
+	err := s.db.InIndependentTenantTx(ctx, f.OrgID, func(tx pgx.Tx) error {
 		_, err := tx.Exec(ctx, `DELETE FROM file WHERE id = $1 AND status = 'pending'`, f.ID)
 		return err
 	})

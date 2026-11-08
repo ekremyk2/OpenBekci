@@ -225,3 +225,24 @@ func TestValidateServeRejectsIdenticalKeys(t *testing.T) {
 		t.Errorf("err = %v; want identical-keys error", err)
 	}
 }
+
+func TestLoadConfigDatabaseSidePoolMax(t *testing.T) {
+	c, err := LoadConfig("", env(baseEnv()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.DatabaseSidePoolMax != 4 {
+		t.Errorf("default = %d, want 4", c.DatabaseSidePoolMax)
+	}
+	e := baseEnv()
+	e["OPENBEKCI_DATABASE_SIDE_POOL_MAX"] = "7"
+	if c, err = LoadConfig("", env(e)); err != nil || c.DatabaseSidePoolMax != 7 {
+		t.Errorf("set to 7: %d, %v", c.DatabaseSidePoolMax, err)
+	}
+	for _, bad := range []string{"0", "-1", "x"} {
+		e["OPENBEKCI_DATABASE_SIDE_POOL_MAX"] = bad
+		if _, err := LoadConfig("", env(e)); err == nil {
+			t.Errorf("%q accepted", bad)
+		}
+	}
+}

@@ -27,7 +27,7 @@ openbekci admin set-password --user <email|phone>
 openbekci version
 ```
 
-Configuration is `OPENBEKCI_*` environment variables (secrets also accept `_FILE`), optionally a `--config file.yaml` with the lowercase names (`database_url: ...`); the environment wins. See [.env.example](../.env.example) and [deploy/compose/.env.example](../deploy/compose/.env.example).
+Configuration is `OPENBEKCI_*` environment variables (secrets also accept `_FILE`), optionally a `--config file.yaml` with the lowercase names (`database_url: ...`); the environment wins. `OPENBEKCI_DATABASE_SIDE_POOL_MAX` (default 4) sizes the second app-role connection pool that transactions use when they open while the caller already holds one (generated files stored during a filing); it adds to the main pool's connections, so count it against Postgres `max_connections`. See [.env.example](../.env.example) and [deploy/compose/.env.example](../deploy/compose/.env.example).
 
 ## Accounts, organizations and signing in
 

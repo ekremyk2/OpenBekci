@@ -26,6 +26,9 @@ import (
 // InPlatformTx is for the maintenance job only (it works across
 // organizations); everything a request does goes through InTenantTx.
 type TxRunner interface {
+	// InIndependentTenantTx is for the transactions that run while the caller
+	// holds its own: they use a separate pool, so they cannot starve.
+	InIndependentTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error
 	InTenantTx(ctx context.Context, orgID uuid.UUID, fn func(pgx.Tx) error) error
 	InPlatformTx(ctx context.Context, fn func(pgx.Tx) error) error
 }
