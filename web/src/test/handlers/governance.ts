@@ -55,10 +55,26 @@ function lawSettings(): S['GovernanceSettingsSet'] {
 }
 
 const PRESET_NOTES: S['PresetNote'][] = [
-  { key: 'quorum', note: 'Law 634 art. 29: majority by number and by land share (verify).', verify: true },
-  { key: 'proxy_cap', note: 'A person may represent at most 5% of all votes (verify).', verify: true },
-  { key: 'call_timing', note: 'Call at least 15 days ahead; second meeting 7 to 15 days later (verify).', verify: true },
-  { key: 'max_votes', note: 'One person holds at most one third of all votes (art. 31).', verify: false },
+  {
+    key: 'quorum',
+    note: 'Law 634 art. 29: majority by number and by land share (verify).',
+    verify: true,
+  },
+  {
+    key: 'proxy_cap',
+    note: 'A person may represent at most 5% of all votes (verify).',
+    verify: true,
+  },
+  {
+    key: 'call_timing',
+    note: 'Call at least 15 days ahead; second meeting 7 to 15 days later (verify).',
+    verify: true,
+  },
+  {
+    key: 'max_votes',
+    note: 'One person holds at most one third of all votes (art. 31).',
+    verify: false,
+  },
 ]
 
 interface State {
@@ -271,7 +287,13 @@ function quorumOf(meeting: S['Meeting']): S['Quorum'] {
   }
 }
 
-function hintFor(item: S['AgendaItem'] | undefined, yes: number, no: number, abstain: number, yesShare: number) {
+function hintFor(
+  item: S['AgendaItem'] | undefined,
+  yes: number,
+  no: number,
+  abstain: number,
+  yesShare: number,
+) {
   const rule = db.settings.settings.thresholds.find((t) => t.topic === item?.topic)?.rule
   const present = yes + no + abstain
   if (present === 0) return 'undetermined' as const
@@ -391,7 +413,11 @@ export const governanceHandlers = [
       m.called_at = nowIso()
       m.call_letter_document_id = uid('doc')
       m.eligibility_snapshot = {
-        owners: OWNERS.map((o) => ({ person_id: o.personId, unit_ids: [o.unitId], share: o.share })),
+        owners: OWNERS.map((o) => ({
+          person_id: o.personId,
+          unit_ids: [o.unitId],
+          share: o.share,
+        })),
       }
       db.notices = db.notices.filter((n) => n.meeting_id !== m.id).concat(noticesFor(m.id))
       return HttpResponse.json(bump(m))
@@ -470,12 +496,20 @@ export const governanceHandlers = [
     const m = meetingOf(params.meetingId)
     if (!m) return problem(404, 'not_found')
     m.minutes_document_id = m.minutes_document_id ?? uid('doc')
-    return HttpResponse.json({ meeting_id: m.id, document_id: m.minutes_document_id, file_id: 'file-minutes' })
+    return HttpResponse.json({
+      meeting_id: m.id,
+      document_id: m.minutes_document_id,
+      file_id: 'file-minutes',
+    })
   }),
   http.get(`${BASE}/meetings/:meetingId/minutes`, ({ params }) => {
     const m = meetingOf(params.meetingId)
     if (!m?.minutes_document_id) return problem(404, 'not_found')
-    return HttpResponse.json({ meeting_id: m.id, document_id: m.minutes_document_id, file_id: 'file-minutes' })
+    return HttpResponse.json({
+      meeting_id: m.id,
+      document_id: m.minutes_document_id,
+      file_id: 'file-minutes',
+    })
   }),
 
   // notices (G3)
@@ -488,7 +522,8 @@ export const governanceHandlers = [
   http.put(`${BASE}/meetings/:meetingId/notices/:personId`, async ({ params, request }) => {
     const b = (await request.json()) as S['MeetingNoticeRecord']
     let n = db.notices.find(
-      (x) => x.meeting_id === params.meetingId && x.person_id === params.personId && x.phase === b.phase,
+      (x) =>
+        x.meeting_id === params.meetingId && x.person_id === params.personId && x.phase === b.phase,
     )
     if (!n) {
       const owner = OWNERS.find((o) => o.personId === params.personId)
@@ -524,7 +559,11 @@ export const governanceHandlers = [
 
   // agenda
   http.get(`${BASE}/meetings/:meetingId/agenda-items`, ({ params }) =>
-    list(db.agenda.filter((a) => a.meeting_id === params.meetingId).sort((a, b) => a.position - b.position)),
+    list(
+      db.agenda
+        .filter((a) => a.meeting_id === params.meetingId)
+        .sort((a, b) => a.position - b.position),
+    ),
   ),
   http.post(`${BASE}/meetings/:meetingId/agenda-items`, async ({ params, request }) => {
     const b = (await request.json()) as S['AgendaItemCreate']
@@ -595,7 +634,9 @@ export const governanceHandlers = [
     const b = (await request.json()) as S['PollAnswerSet']
     const id = String(params.itemId)
     if (db.polls.get(id)?.status !== 'open') return problem(409, 'conflict')
-    db.pollAnswers = db.pollAnswers.filter((a) => !(a.agenda_item_id === id && a.unit_id === b.unit_id))
+    db.pollAnswers = db.pollAnswers.filter(
+      (a) => !(a.agenda_item_id === id && a.unit_id === b.unit_id),
+    )
     const a: S['PollAnswer'] = {
       agenda_item_id: id,
       unit_id: b.unit_id,
@@ -672,7 +713,11 @@ export const governanceHandlers = [
     const m = meetingOf(params.meetingId)
     if (!m) return problem(404, 'not_found')
     if (m.status !== 'called' && m.status !== 'in_session') return problem(409, 'conflict')
-    if (db.attendance.some((a) => a.meeting_id === m.id && a.unit_ids.some((u) => b.unit_ids.includes(u))))
+    if (
+      db.attendance.some(
+        (a) => a.meeting_id === m.id && a.unit_ids.some((u) => b.unit_ids.includes(u)),
+      )
+    )
       return problem(409, 'conflict')
     const owner = OWNERS.find((o) => o.personId === b.person_id)
     const row: S['Attendance'] = {
@@ -703,7 +748,8 @@ export const governanceHandlers = [
     const m = meetingOf(params.meetingId)
     if (!m) return problem(404, 'not_found')
     const match = OWNERS.find((o) => tokenOf(m.id, o.personId) === b.token.trim())
-    if (!match) return problem(422, 'validation_failed', { errors: [{ field: 'token', code: 'invalid' }] })
+    if (!match)
+      return problem(422, 'validation_failed', { errors: [{ field: 'token', code: 'invalid' }] })
     if (db.attendance.some((a) => a.meeting_id === m.id && a.unit_ids.includes(match.unitId)))
       return problem(409, 'conflict')
     const row: S['Attendance'] = {
@@ -795,7 +841,9 @@ export const governanceHandlers = [
     const d = db.decisions.find((x) => x.id === id)
     if (!d || action !== 'apply') return problem(404, 'not_found')
     if (!request.headers.get('Idempotency-Key'))
-      return problem(422, 'validation_failed', { errors: [{ field: 'Idempotency-Key', code: 'required' }] })
+      return problem(422, 'validation_failed', {
+        errors: [{ field: 'Idempotency-Key', code: 'required' }],
+      })
     if (d.effect) return problem(409, 'conflict')
     const b = (await request.json()) as S['DecisionApply']
     const dry = qs(request).get('dry_run') === 'true'

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -34,7 +34,10 @@ export function MeetingFormPage() {
           title: z.string().max(200),
           scheduled: z.string().min(1, t`Choose a date and time.`),
           second: z.string().min(1, t`Choose a date and time.`),
-          location: z.string().trim().min(1, t`Enter the place of the assembly.`),
+          location: z
+            .string()
+            .trim()
+            .min(1, t`Enter the place of the assembly.`),
         })
         .refine((v) => !v.scheduled || !v.second || v.second > v.scheduled, {
           path: ['second'],
@@ -54,7 +57,7 @@ export function MeetingFormPage() {
       location: '',
     },
   })
-  const watched = form.watch()
+  const watched = useWatch({ control: form.control })
   const issues =
     settings.data && watched.scheduled && watched.second
       ? callTimingIssues(
@@ -129,7 +132,11 @@ export function MeetingFormPage() {
                 <option value="extraordinary">{labels.meetingKind('extraordinary')}</option>
               </Select>
             </Field>
-            <Field label={t`Title (optional)`} htmlFor="m-title" error={form.formState.errors.title?.message}>
+            <Field
+              label={t`Title (optional)`}
+              htmlFor="m-title"
+              error={form.formState.errors.title?.message}
+            >
               <Input id="m-title" {...form.register('title')} />
             </Field>
             <Field
@@ -161,16 +168,17 @@ export function MeetingFormPage() {
                   {issues.includes('call_too_late') ? (
                     <li>
                       <Trans>
-                        The call must go out at least {settings.data.settings.call_min_days} days before the
-                        meeting. Move the date or send the call later only if the rules allow it.
+                        The call must go out at least {settings.data.settings.call_min_days} days
+                        before the meeting. Move the date or send the call later only if the rules
+                        allow it.
                       </Trans>
                     </li>
                   ) : null}
                   {issues.includes('second_call_timing') ? (
                     <li>
                       <Trans>
-                        The second meeting should be {settings.data.settings.second_call_min_days} to{' '}
-                        {settings.data.settings.second_call_max_days} days after the first.
+                        The second meeting should be {settings.data.settings.second_call_min_days}{' '}
+                        to {settings.data.settings.second_call_max_days} days after the first.
                       </Trans>
                     </li>
                   ) : null}

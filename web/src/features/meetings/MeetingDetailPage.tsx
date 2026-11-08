@@ -13,7 +13,17 @@ import { toast } from '@/lib/toast'
 import { AgendaPanel } from './AgendaPanel'
 import { DecisionsPanel } from './DecisionsPanel'
 import { useMeeting } from './hooks'
-import { gApi, idemHeader, orgUrl, unwrap, useOrgMutation, useOrgQuery, useSiteCtx, type S, type SiteCtx } from './kit/api'
+import {
+  gApi,
+  idemHeader,
+  orgUrl,
+  unwrap,
+  useOrgMutation,
+  useOrgQuery,
+  useSiteCtx,
+  type S,
+  type SiteCtx,
+} from './kit/api'
 import { PageHeader, QueryBoundary, ReasonDialog, Select } from './kit/ui'
 import { Callout, DownloadButton } from './kit/widgets'
 import { MEETING_STATUS_VARIANT, useGovLabels } from './labels'
@@ -44,7 +54,10 @@ function StatusActions({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] }
   const cancel = useOrgMutation(async (reason: string) =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}:cancel', {
-        params: { path: { org_id: ctx.orgId, meeting_id: meeting.id }, header: idemHeader(cancelKey.key) },
+        params: {
+          path: { org_id: ctx.orgId, meeting_id: meeting.id },
+          header: idemHeader(cancelKey.key),
+        },
         body: { reason },
       }),
     ),
@@ -53,7 +66,12 @@ function StatusActions({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] }
   return (
     <>
       {s === 'called' ? (
-        <Button onClick={() => move.mutate('start', { onError: () => toast.error(t`Could not start the assembly.`) })} disabled={move.isPending}>
+        <Button
+          onClick={() =>
+            move.mutate('start', { onError: () => toast.error(t`Could not start the assembly.`) })
+          }
+          disabled={move.isPending}
+        >
           <PlayIcon />
           <Trans>Start the assembly</Trans>
         </Button>
@@ -61,7 +79,9 @@ function StatusActions({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] }
       {s === 'in_session' ? (
         <Button
           variant="secondary"
-          onClick={() => move.mutate('close', { onError: () => toast.error(t`Could not close the assembly.`) })}
+          onClick={() =>
+            move.mutate('close', { onError: () => toast.error(t`Could not close the assembly.`) })
+          }
           disabled={move.isPending}
         >
           <SquareIcon />
@@ -107,7 +127,10 @@ function MinutesPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] })
   const generate = useOrgMutation(async () =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}/minutes:generate', {
-        params: { path: { org_id: ctx.orgId, meeting_id: meeting.id }, header: idemHeader(genKey.key) },
+        params: {
+          path: { org_id: ctx.orgId, meeting_id: meeting.id },
+          header: idemHeader(genKey.key),
+        },
       }),
     ),
   )
@@ -119,7 +142,14 @@ function MinutesPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] })
           query: { dry_run: dry },
           header: idemHeader(dry ? `${notifyKey.key}-preview` : notifyKey.key),
         },
-        body: { channels: channels === 'sms' ? ['in_app', 'sms'] : channels === 'email' ? ['in_app', 'email'] : ['in_app'] },
+        body: {
+          channels:
+            channels === 'sms'
+              ? ['in_app', 'sms']
+              : channels === 'email'
+                ? ['in_app', 'email']
+                : ['in_app'],
+        },
       }),
     ),
   )
@@ -142,7 +172,8 @@ function MinutesPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] })
                 disabled={generate.isPending}
                 onClick={() =>
                   generate.mutate(undefined, {
-                    onSuccess: () => toast.info(t`The minutes were generated and filed in the documents.`),
+                    onSuccess: () =>
+                      toast.info(t`The minutes were generated and filed in the documents.`),
                     onError: () => toast.error(t`Could not generate the minutes.`),
                   })
                 }
@@ -165,10 +196,21 @@ function MinutesPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] })
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             <p className="text-sm text-muted-foreground">
-              <Trans>The decisions go to the owners who were not present. Each delivery is recorded like the call.</Trans>
+              <Trans>
+                The decisions go to the owners who were not present. Each delivery is recorded like
+                the call.
+              </Trans>
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              <Select aria-label={t`Channel`} className="w-auto" value={channels} onChange={(e) => { setChannels(e.target.value); setPreview(null) }}>
+              <Select
+                aria-label={t`Channel`}
+                className="w-auto"
+                value={channels}
+                onChange={(e) => {
+                  setChannels(e.target.value)
+                  setPreview(null)
+                }}
+              >
                 <option value="in_app">{t`In the app only`}</option>
                 <option value="email">{t`App and email`}</option>
                 <option value="sms">{t`App and SMS`}</option>
@@ -176,7 +218,12 @@ function MinutesPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting'] })
               <Button
                 variant="outline"
                 disabled={notify.isPending}
-                onClick={() => notify.mutate(true, { onSuccess: setPreview, onError: () => toast.error(t`Could not check the recipients.`) })}
+                onClick={() =>
+                  notify.mutate(true, {
+                    onSuccess: setPreview,
+                    onError: () => toast.error(t`Could not check the recipients.`),
+                  })
+                }
               >
                 <Trans>Check recipients</Trans>
               </Button>
@@ -214,7 +261,11 @@ function MinutesDownload({ ctx, meetingId }: { ctx: SiteCtx; meetingId: string }
   const q = useMeetingMinutes(ctx, meetingId)
   if (!q.data) return null
   return (
-    <DownloadButton url={orgUrl(ctx.orgId, `/files/${q.data.file_id}`)} filename={`minutes-${meetingId}.pdf`} variant="outline">
+    <DownloadButton
+      url={orgUrl(ctx.orgId, `/files/${q.data.file_id}`)}
+      filename={`minutes-${meetingId}.pdf`}
+      variant="outline"
+    >
       <Trans>Minutes (PDF)</Trans>
     </DownloadButton>
   )
@@ -297,7 +348,9 @@ export function MeetingDetailPage({ meetingId }: { meetingId: string }) {
   const manage = can('meetings.manage')
   return (
     <QueryBoundary query={meeting} skeleton="page">
-      {(m) => (manage ? <ManagerMeeting ctx={ctx} meeting={m} /> : <PortalMeeting ctx={ctx} meeting={m} />)}
+      {(m) =>
+        manage ? <ManagerMeeting ctx={ctx} meeting={m} /> : <PortalMeeting ctx={ctx} meeting={m} />
+      }
     </QueryBoundary>
   )
 }

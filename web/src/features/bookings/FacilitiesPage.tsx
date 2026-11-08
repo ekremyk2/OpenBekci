@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -24,8 +24,28 @@ import { Input } from '@/components/ui/input'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { gApi, idemHeader, ifMatch, unwrap, useOrgMutation, useOrgQuery, useSiteCtx, type S, type SiteCtx } from '@/features/meetings/kit/api'
-import { applyServerErrors, Checkbox, Field, FormRootError, PageHeader, QueryBoundary, ConfirmDialog, Select, Textarea } from '@/features/meetings/kit/ui'
+import {
+  gApi,
+  idemHeader,
+  ifMatch,
+  unwrap,
+  useOrgMutation,
+  useOrgQuery,
+  useSiteCtx,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
+import {
+  applyServerErrors,
+  Checkbox,
+  Field,
+  FormRootError,
+  PageHeader,
+  QueryBoundary,
+  ConfirmDialog,
+  Select,
+  Textarea,
+} from '@/features/meetings/kit/ui'
 import { daysLabel } from './rules'
 
 type Rules = S['FacilityRules']
@@ -59,9 +79,16 @@ export function useFacilitySchema() {
       z
         .string()
         .trim()
-        .refine((s) => (optional && s === '') || (/^\d+$/.test(s) && Number(s) >= min && Number(s) <= max), t`Enter a whole number from ${min} to ${max}.`)
+        .refine(
+          (s) =>
+            (optional && s === '') || (/^\d+$/.test(s) && Number(s) >= min && Number(s) <= max),
+          t`Enter a whole number from ${min} to ${max}.`,
+        )
     return z.object({
-      name: z.string().trim().min(1, t`Enter a name.`),
+      name: z
+        .string()
+        .trim()
+        .min(1, t`Enter a name.`),
       description: z.string(),
       enabled: z.boolean(),
       hours: z
@@ -72,7 +99,10 @@ export function useFacilitySchema() {
               start: z.string().regex(hhmm, t`Enter a time.`),
               end: z.string().regex(hhmm, t`Enter a time.`),
             })
-            .refine((h) => h.end > h.start, { path: ['end'], message: t`Closing must be after opening.` }),
+            .refine((h) => h.end > h.start, {
+              path: ['end'],
+              message: t`Closing must be after opening.`,
+            }),
         )
         .min(1, t`Add the opening hours.`),
       max_duration_minutes: int(5, 1440),
@@ -80,7 +110,9 @@ export function useFacilitySchema() {
       min_notice_minutes: int(0, 100000, true),
       quota_per_unit: int(0, 1000, true),
       quota_period: z.enum(['week', 'month']),
-      who_may_book: z.array(z.enum(['owner', 'tenant', 'household'])).min(1, t`Choose who may book.`),
+      who_may_book: z
+        .array(z.enum(['owner', 'tenant', 'household']))
+        .min(1, t`Choose who may book.`),
       fee: z.custom<bigint | null>((v) => v === null || (typeof v === 'bigint' && v >= 0n)),
       cancel_refund_cutoff_hours: int(0, 10000, true),
     })
@@ -133,11 +165,20 @@ export function fromFacility(f: S['Facility']): FacilityValues {
     quota_period: r.quota_period ?? 'month',
     who_may_book: r.who_may_book,
     fee: r.fee ? BigInt(r.fee.amount) : null,
-    cancel_refund_cutoff_hours: r.cancel_refund_cutoff_hours === null ? '' : String(r.cancel_refund_cutoff_hours),
+    cancel_refund_cutoff_hours:
+      r.cancel_refund_cutoff_hours === null ? '' : String(r.cancel_refund_cutoff_hours),
   }
 }
 
-function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S['Facility'] | null; onClose: () => void }) {
+function FacilityDialog({
+  ctx,
+  facility,
+  onClose,
+}: {
+  ctx: SiteCtx
+  facility: S['Facility'] | null
+  onClose: () => void
+}) {
   const { t } = useLingui()
   const idem = useIdempotencyKey()
   const days = useWeekdayNames()
@@ -158,7 +199,10 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
     if (facility) {
       return unwrap(
         gApi.PATCH('/v1/orgs/{org_id}/facilities/{facility_id}', {
-          params: { path: { org_id: ctx.orgId, facility_id: facility.id }, header: ifMatch(facility.version) },
+          params: {
+            path: { org_id: ctx.orgId, facility_id: facility.id },
+            header: ifMatch(facility.version),
+          },
           body,
         }),
       )
@@ -170,7 +214,7 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
       }),
     )
   })
-  const who = form.watch('who_may_book')
+  const who = useWatch({ control: form.control, name: 'who_may_book' })
   const whoNames = { owner: t`Owners`, tenant: t`Tenants`, household: t`Household members` }
   return (
     <Dialog open onOpenChange={(o) => (!o ? onClose() : undefined)}>
@@ -191,7 +235,9 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
           <DialogHeader>
             <DialogTitle>{facility ? t`Edit facility` : t`New facility`}</DialogTitle>
             <DialogDescription>
-              <Trans>A booking inside these rules is confirmed at once; there is no approval queue.</Trans>
+              <Trans>
+                A booking inside these rules is confirmed at once; there is no approval queue.
+              </Trans>
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -224,7 +270,11 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
                             key={d}
                             type="button"
                             aria-pressed={on}
-                            onClick={() => field.onChange(on ? field.value.filter((x) => x !== d) : [...field.value, d])}
+                            onClick={() =>
+                              field.onChange(
+                                on ? field.value.filter((x) => x !== d) : [...field.value, d],
+                              )
+                            }
                             className={cn(
                               'rounded-md border px-2 py-1 text-xs font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                               on ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
@@ -238,11 +288,29 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
                   )}
                 />
                 <div className="flex flex-wrap items-center gap-2">
-                  <Input aria-label={t`Opens`} type="time" dir="ltr" className="w-auto" {...form.register(`hours.${i}.start`)} />
+                  <Input
+                    aria-label={t`Opens`}
+                    type="time"
+                    dir="ltr"
+                    className="w-auto"
+                    {...form.register(`hours.${i}.start`)}
+                  />
                   <span>–</span>
-                  <Input aria-label={t`Closes`} type="time" dir="ltr" className="w-auto" {...form.register(`hours.${i}.end`)} />
+                  <Input
+                    aria-label={t`Closes`}
+                    type="time"
+                    dir="ltr"
+                    className="w-auto"
+                    {...form.register(`hours.${i}.end`)}
+                  />
                   {hours.fields.length > 1 ? (
-                    <Button type="button" variant="ghost" size="icon" aria-label={t`Remove hours`} onClick={() => hours.remove(i)}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={t`Remove hours`}
+                      onClick={() => hours.remove(i)}
+                    >
                       <Trash2Icon />
                     </Button>
                   ) : null}
@@ -267,18 +335,55 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
             </div>
           </fieldset>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label={t`Longest booking (minutes)`} htmlFor="fc-dur" error={err.max_duration_minutes?.message}>
-              <Input id="fc-dur" inputMode="numeric" dir="ltr" {...form.register('max_duration_minutes')} />
+            <Field
+              label={t`Longest booking (minutes)`}
+              htmlFor="fc-dur"
+              error={err.max_duration_minutes?.message}
+            >
+              <Input
+                id="fc-dur"
+                inputMode="numeric"
+                dir="ltr"
+                {...form.register('max_duration_minutes')}
+              />
             </Field>
-            <Field label={t`How far ahead (days)`} htmlFor="fc-ahead" error={err.max_days_ahead?.message}>
-              <Input id="fc-ahead" inputMode="numeric" dir="ltr" {...form.register('max_days_ahead')} />
+            <Field
+              label={t`How far ahead (days)`}
+              htmlFor="fc-ahead"
+              error={err.max_days_ahead?.message}
+            >
+              <Input
+                id="fc-ahead"
+                inputMode="numeric"
+                dir="ltr"
+                {...form.register('max_days_ahead')}
+              />
             </Field>
-            <Field label={t`Shortest notice (minutes)`} htmlFor="fc-notice" error={err.min_notice_minutes?.message}>
-              <Input id="fc-notice" inputMode="numeric" dir="ltr" {...form.register('min_notice_minutes')} />
+            <Field
+              label={t`Shortest notice (minutes)`}
+              htmlFor="fc-notice"
+              error={err.min_notice_minutes?.message}
+            >
+              <Input
+                id="fc-notice"
+                inputMode="numeric"
+                dir="ltr"
+                {...form.register('min_notice_minutes')}
+              />
             </Field>
             <div className="grid grid-cols-2 gap-2">
-              <Field label={t`Bookings per unit`} htmlFor="fc-quota" error={err.quota_per_unit?.message} hint={t`Empty: no limit`}>
-                <Input id="fc-quota" inputMode="numeric" dir="ltr" {...form.register('quota_per_unit')} />
+              <Field
+                label={t`Bookings per unit`}
+                htmlFor="fc-quota"
+                error={err.quota_per_unit?.message}
+                hint={t`Empty: no limit`}
+              >
+                <Input
+                  id="fc-quota"
+                  inputMode="numeric"
+                  dir="ltr"
+                  {...form.register('quota_per_unit')}
+                />
               </Field>
               <Field label={t`per`} htmlFor="fc-period">
                 <Select id="fc-period" {...form.register('quota_period')}>
@@ -299,9 +404,13 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
                   label={whoNames[k]}
                   checked={who.includes(k)}
                   onChange={(e) =>
-                    form.setValue('who_may_book', e.target.checked ? [...who, k] : who.filter((x) => x !== k), {
-                      shouldValidate: true,
-                    })
+                    form.setValue(
+                      'who_may_book',
+                      e.target.checked ? [...who, k] : who.filter((x) => x !== k),
+                      {
+                        shouldValidate: true,
+                      },
+                    )
                   }
                 />
               ))}
@@ -313,12 +422,21 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
             ) : null}
           </fieldset>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label={t`Fee per booking`} htmlFor="fc-fee" hint={t`Becomes a charge when the booking is confirmed. Empty: free.`}>
+            <Field
+              label={t`Fee per booking`}
+              htmlFor="fc-fee"
+              hint={t`Becomes a charge when the booking is confirmed. Empty: free.`}
+            >
               <Controller
                 control={form.control}
                 name="fee"
                 render={({ field }) => (
-                  <MoneyInput id="fc-fee" currency={ctx.currency} value={field.value} onChange={field.onChange} />
+                  <MoneyInput
+                    id="fc-fee"
+                    currency={ctx.currency}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                 )}
               />
             </Field>
@@ -327,7 +445,12 @@ function FacilityDialog({ ctx, facility, onClose }: { ctx: SiteCtx; facility: S[
               htmlFor="fc-cutoff"
               error={err.cancel_refund_cutoff_hours?.message}
             >
-              <Input id="fc-cutoff" inputMode="numeric" dir="ltr" {...form.register('cancel_refund_cutoff_hours')} />
+              <Input
+                id="fc-cutoff"
+                inputMode="numeric"
+                dir="ltr"
+                {...form.register('cancel_refund_cutoff_hours')}
+              />
             </Field>
           </div>
           <FormRootError message={err.root?.message} />
@@ -352,7 +475,11 @@ export function RulesSummary({ rules }: { rules: Rules }) {
     <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
       <div className="flex gap-2">
         <dt className="text-muted-foreground">{t`Hours`}</dt>
-        <dd>{rules.opening_hours.map((h) => `${daysLabel(h.days, names)} ${h.start}–${h.end}`).join('; ')}</dd>
+        <dd>
+          {rules.opening_hours
+            .map((h) => `${daysLabel(h.days, names)} ${h.start}–${h.end}`)
+            .join('; ')}
+        </dd>
       </div>
       <div className="flex gap-2">
         <dt className="text-muted-foreground">{t`Longest`}</dt>
@@ -374,7 +501,9 @@ export function RulesSummary({ rules }: { rules: Rules }) {
       </div>
       <div className="flex gap-2">
         <dt className="text-muted-foreground">{t`Fee`}</dt>
-        <dd>{rules.fee ? <Money minor={rules.fee.amount} currency={rules.fee.currency} /> : t`free`}</dd>
+        <dd>
+          {rules.fee ? <Money minor={rules.fee.amount} currency={rules.fee.currency} /> : t`free`}
+        </dd>
       </div>
     </dl>
   )
@@ -401,7 +530,11 @@ export function FacilitiesPage() {
         description={t`Halls, courts and barbecue areas, each with its own booking rules.`}
         actions={
           <>
-            <Link to="/orgs/$orgId/bookings" params={{ orgId: ctx.orgId }} className={buttonVariants({ variant: 'outline' })}>
+            <Link
+              to="/orgs/$orgId/bookings"
+              params={{ orgId: ctx.orgId }}
+              className={buttonVariants({ variant: 'outline' })}
+            >
               <Trans>Bookings</Trans>
             </Link>
             {manage ? (
@@ -425,10 +558,14 @@ export function FacilitiesPage() {
               <Card key={f.id}>
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                   <CardTitle className="text-base">{f.name}</CardTitle>
-                  <Badge variant={f.enabled ? 'success' : 'secondary'}>{f.enabled ? t`Open` : t`Closed`}</Badge>
+                  <Badge variant={f.enabled ? 'success' : 'secondary'}>
+                    {f.enabled ? t`Open` : t`Closed`}
+                  </Badge>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
-                  {f.description ? <p className="text-sm text-muted-foreground">{f.description}</p> : null}
+                  {f.description ? (
+                    <p className="text-sm text-muted-foreground">{f.description}</p>
+                  ) : null}
                   <RulesSummary rules={f.rules} />
                   {manage ? (
                     <div className="flex gap-2">
@@ -446,7 +583,13 @@ export function FacilitiesPage() {
           </div>
         )}
       </QueryBoundary>
-      {editing ? <FacilityDialog ctx={ctx} facility={editing === 'new' ? null : editing} onClose={() => setEditing(null)} /> : null}
+      {editing ? (
+        <FacilityDialog
+          ctx={ctx}
+          facility={editing === 'new' ? null : editing}
+          onClose={() => setEditing(null)}
+        />
+      ) : null}
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(o) => (!o ? setDeleting(null) : undefined)}
@@ -455,7 +598,9 @@ export function FacilitiesPage() {
         confirmLabel={t`Delete`}
         destructive
         pending={remove.isPending}
-        onConfirm={() => deleting && remove.mutate(deleting, { onSuccess: () => setDeleting(null) })}
+        onConfirm={() =>
+          deleting && remove.mutate(deleting, { onSuccess: () => setDeleting(null) })
+        }
       />
     </div>
   )

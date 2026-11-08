@@ -8,7 +8,16 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/lib/toast'
-import { gApi, idemHeader, orgUrl, unwrap, useKeyStore, useOrgMutation, useOrgQuery, useSiteCtx } from './kit/api'
+import {
+  gApi,
+  idemHeader,
+  orgUrl,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  useSiteCtx,
+} from './kit/api'
 import { QrScanner } from './kit/QrScanner'
 import { Field, PageHeader, QueryBoundary, Select } from './kit/ui'
 import { Callout, DownloadButton } from './kit/widgets'
@@ -19,14 +28,22 @@ import { proxyLimit, proxyWarnings, type OwnerRow } from './logic'
 const POLL_MS = 5000
 
 /** Warnings text for the proxy form; exported for the tests. */
-export function ProxyWarnings({ warnings, limit }: { warnings: ('proxy_cap' | 'max_votes')[]; limit: number }) {
+export function ProxyWarnings({
+  warnings,
+  limit,
+}: {
+  warnings: ('proxy_cap' | 'max_votes')[]
+  limit: number
+}) {
   if (warnings.length === 0) return null
   return (
     <Callout tone="warning" role="alert">
       <ul className="list-disc ps-5">
         {warnings.includes('proxy_cap') ? (
           <li>
-            <Trans>This person would hold more proxies than the limit of {limit} for this site.</Trans>
+            <Trans>
+              This person would hold more proxies than the limit of {limit} for this site.
+            </Trans>
           </li>
         ) : null}
         {warnings.includes('max_votes') ? (
@@ -76,10 +93,19 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
   const [proxyFor, setProxyFor] = useState<string | null>(null)
 
   const record = useOrgMutation(
-    async (v: { id: string; person_id: string; unit_ids: string[]; mode: 'in_person' | 'proxy'; proxy_for?: string }) => {
+    async (v: {
+      id: string
+      person_id: string
+      unit_ids: string[]
+      mode: 'in_person' | 'proxy'
+      proxy_for?: string
+    }) => {
       const r = await unwrap(
         gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}/attendance', {
-          params: { path: { org_id: ctx.orgId, meeting_id: meetingId }, header: idemHeader(keys.get(v.id)) },
+          params: {
+            path: { org_id: ctx.orgId, meeting_id: meetingId },
+            header: idemHeader(keys.get(v.id)),
+          },
           body: {
             person_id: v.person_id,
             unit_ids: v.unit_ids,
@@ -100,7 +126,10 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
   const checkin = useOrgMutation(async (token: string) => {
     return unwrap(
       gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}/attendance:checkin', {
-        params: { path: { org_id: ctx.orgId, meeting_id: meetingId }, header: idemHeader(keys.get(`qr-${token}`)) },
+        params: {
+          path: { org_id: ctx.orgId, meeting_id: meetingId },
+          header: idemHeader(keys.get(`qr-${token}`)),
+        },
         body: { token },
       }),
     )
@@ -109,7 +138,10 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
   const rows = useMemo(() => {
     const needle = search.trim().toLowerCase()
     return owners.rows.filter(
-      (o) => !needle || o.name.toLowerCase().includes(needle) || o.units.some((u) => u.label.toLowerCase().includes(needle)),
+      (o) =>
+        !needle ||
+        o.name.toLowerCase().includes(needle) ||
+        o.units.some((u) => u.label.toLowerCase().includes(needle)),
     )
   }, [owners.rows, search])
 
@@ -159,9 +191,7 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
       />
       {meeting.data && !open ? (
         <Callout tone="warning" role="status">
-          <Trans>
-            Attendance can be recorded only while the assembly is called or in session.
-          </Trans>
+          <Trans>Attendance can be recorded only while the assembly is called or in session.</Trans>
         </Callout>
       ) : null}
       <QueryBoundary query={quorum} skeleton="page">
@@ -238,7 +268,10 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
                                       unit_ids: o.units.map((u) => u.id),
                                       mode: 'in_person',
                                     },
-                                    { onError: () => toast.error(t`Could not record the attendance.`) },
+                                    {
+                                      onError: () =>
+                                        toast.error(t`Could not record the attendance.`),
+                                    },
                                   )
                                 }
                                 aria-label={t`Mark ${o.name} present`}
@@ -251,7 +284,9 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
                                 variant="secondary"
                                 disabled={!open}
                                 aria-expanded={proxyFor === o.personId}
-                                onClick={() => setProxyFor(proxyFor === o.personId ? null : o.personId)}
+                                onClick={() =>
+                                  setProxyFor(proxyFor === o.personId ? null : o.personId)
+                                }
                                 aria-label={t`Record a proxy for ${o.name}`}
                               >
                                 <Trans>Proxy</Trans>
@@ -304,7 +339,11 @@ export function AttendanceDeskPage({ meetingId }: { meetingId: string }) {
               <p className="mb-3 text-sm text-muted-foreground">
                 <Trans>Scan the code from the owner's phone or from the printed call letter.</Trans>
               </p>
-              <QrScanner onScan={(tok) => void onScan(tok)} busy={!open || checkin.isPending} large />
+              <QrScanner
+                onScan={(tok) => void onScan(tok)}
+                busy={!open || checkin.isPending}
+                large
+              />
             </CardContent>
           </Card>
           <Card>
@@ -384,7 +423,11 @@ function ProxyForm({
             : undefined
         }
       >
-        <Select id={`proxy-${owner.personId}`} value={holder} onChange={(e) => setHolder(e.target.value)}>
+        <Select
+          id={`proxy-${owner.personId}`}
+          value={holder}
+          onChange={(e) => setHolder(e.target.value)}
+        >
           <option value="">{t`Choose a person`}</option>
           {persons
             .filter((p) => p.id !== owner.personId)
@@ -395,7 +438,9 @@ function ProxyForm({
             ))}
         </Select>
       </Field>
-      {settings ? <ProxyWarnings warnings={warnings} limit={proxyLimit(settings, totalUnits)} /> : null}
+      {settings ? (
+        <ProxyWarnings warnings={warnings} limit={proxyLimit(settings, totalUnits)} />
+      ) : null}
       <div>
         <Button size="lg" disabled={!holder || pending} onClick={() => onSubmit(holder)}>
           {warnings.length > 0 ? t`Record anyway` : t`Record proxy`}

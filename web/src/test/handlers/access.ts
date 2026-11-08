@@ -48,7 +48,9 @@ function agent(partial: Partial<S['Agent']> & Pick<S['Agent'], 'id' | 'name'>): 
   }
 }
 
-function point(partial: Partial<S['AccessPoint']> & Pick<S['AccessPoint'], 'id' | 'name'>): S['AccessPoint'] {
+function point(
+  partial: Partial<S['AccessPoint']> & Pick<S['AccessPoint'], 'id' | 'name'>,
+): S['AccessPoint'] {
   const t = nowIso()
   return {
     org_id: ORG,
@@ -67,7 +69,9 @@ function point(partial: Partial<S['AccessPoint']> & Pick<S['AccessPoint'], 'id' 
 
 function fresh(): State {
   const t = nowIso()
-  const cred = (c: Partial<S['Credential']> & Pick<S['Credential'], 'id' | 'kind' | 'value' | 'source_type'>): S['Credential'] => ({
+  const cred = (
+    c: Partial<S['Credential']> & Pick<S['Credential'], 'id' | 'kind' | 'value' | 'source_type'>,
+  ): S['Credential'] => ({
     org_id: ORG,
     site_id: SITE,
     source_id: null,
@@ -101,14 +105,51 @@ function fresh(): State {
     ],
     points: [
       point({ id: 'pt-main', name: 'Main vehicle gate' }),
-      point({ id: 'pt-door', name: 'Lobby door', kind: 'pedestrian_door', agent_id: 'agent-1', driver_ref: { instance: 'gate-relay', channel: '2' } }),
-      point({ id: 'pt-service', name: 'Service gate', agent_id: 'agent-2', driver_ref: { instance: 'gate-relay', channel: '1' } }),
+      point({
+        id: 'pt-door',
+        name: 'Lobby door',
+        kind: 'pedestrian_door',
+        agent_id: 'agent-1',
+        driver_ref: { instance: 'gate-relay', channel: '2' },
+      }),
+      point({
+        id: 'pt-service',
+        name: 'Service gate',
+        agent_id: 'agent-2',
+        driver_ref: { instance: 'gate-relay', channel: '1' },
+      }),
     ],
     credentials: [
-      cred({ id: 'cr-1', kind: 'plate', value: '34 ABC 123', source_type: 'vehicle', unit_id: 'u-a1', unit_door_number: 'A1' }),
-      cred({ id: 'cr-2', kind: 'plate', value: '06 XYZ 987', source_type: 'vehicle', unit_id: 'u-b1', unit_door_number: 'B1' }),
-      cred({ id: 'cr-3', kind: 'visitor_qr', value: 'obk1.…', source_type: 'visitor_entry', max_uses: 1 }),
-      cred({ id: 'cr-4', kind: 'tag', value: 'TAG-00A1', source_type: 'manual', point_scope: 'all' }),
+      cred({
+        id: 'cr-1',
+        kind: 'plate',
+        value: '34 ABC 123',
+        source_type: 'vehicle',
+        unit_id: 'u-a1',
+        unit_door_number: 'A1',
+      }),
+      cred({
+        id: 'cr-2',
+        kind: 'plate',
+        value: '06 XYZ 987',
+        source_type: 'vehicle',
+        unit_id: 'u-b1',
+        unit_door_number: 'B1',
+      }),
+      cred({
+        id: 'cr-3',
+        kind: 'visitor_qr',
+        value: 'obk1.…',
+        source_type: 'visitor_entry',
+        max_uses: 1,
+      }),
+      cred({
+        id: 'cr-4',
+        kind: 'tag',
+        value: 'TAG-00A1',
+        source_type: 'manual',
+        point_scope: 'all',
+      }),
     ],
     events: [
       {
@@ -170,7 +211,9 @@ export function resetAccessDb() {
 export const accessDb = () => db
 
 /** Appends an opening event (used by the guard console flows in the community handlers too). */
-export function pushAccessEvent(e: Partial<S['AccessEvent']> & Pick<S['AccessEvent'], 'point_id' | 'decision' | 'reason'>) {
+export function pushAccessEvent(
+  e: Partial<S['AccessEvent']> & Pick<S['AccessEvent'], 'point_id' | 'decision' | 'reason'>,
+) {
   const t = nowIso()
   db.seq += 1
   db.events.push({
@@ -313,7 +356,9 @@ export const accessHandlers = [
     const p = db.points.find((x) => x.id === id)
     if (!p || action !== 'open') return problem(404, 'not_found')
     if (!request.headers.get('Idempotency-Key'))
-      return problem(422, 'validation_failed', { errors: [{ field: 'Idempotency-Key', code: 'required' }] })
+      return problem(422, 'validation_failed', {
+        errors: [{ field: 'Idempotency-Key', code: 'required' }],
+      })
     const a = db.agents.find((x) => x.id === p.agent_id)
     if (!a?.connected) return problem(409, 'agent_offline')
     const t = Date.now()

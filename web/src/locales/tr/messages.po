@@ -921,6 +921,10 @@ msgstr "Parolanızı girin."
 msgid "Enter your phone number"
 msgstr "Telefon numaranızı girin"
 
+#. placeholder {0}: guard.displayName
+msgid "Enter your PIN to leave. {0} is on the gate."
+msgstr "Çıkmak için PIN'inizi girin. Kapıda {0} görevli."
+
 msgid "Existing bookings stay in the history."
 msgstr "Mevcut rezervasyonlar geçmişte kalır."
 
@@ -1104,6 +1108,9 @@ msgstr "Son görülme"
 
 msgid "Law 634 default: one third."
 msgstr "Kanun 634 varsayılanı: üçte bir."
+
+msgid "Leave"
+msgstr "Çık"
 
 msgid "Leave the guard console"
 msgstr "Güvenlik konsolundan çık"
@@ -1767,6 +1774,13 @@ msgstr "İptal edildi"
 msgid "Role"
 msgstr "Rol"
 
+msgid "Rotate QR"
+msgstr "QR'ı yenile"
+
+#. placeholder {0}: e.name
+msgid "Rotate the QR code of {0}"
+msgstr "{0} için QR kodunu yenile"
+
 msgid "Rotate token"
 msgstr "Anahtarı yenile"
 
@@ -2045,6 +2059,9 @@ msgstr "Bu parola doğru değil."
 msgid "That time is already taken or blocked. Choose another slot."
 msgstr "Bu saat zaten dolu veya engelli. Başka bir saat seçin."
 
+msgid "The accounting period of this change is locked."
+msgstr "Bu değişikliğin muhasebe dönemi kilitli."
+
 msgid "The agent is offline."
 msgstr "Ajan çevrim dışı."
 
@@ -2152,14 +2169,23 @@ msgstr "Geçiş iptal edildi."
 msgid "The permission was revoked."
 msgstr "İzin iptal edildi."
 
+msgid "The PIN could not be checked. Check the connection and try again."
+msgstr "PIN denetlenemedi. Bağlantıyı kontrol edip yeniden deneyin."
+
 msgid "The poll is closed."
 msgstr "Anket kapatıldı."
 
 msgid "The poll is open."
 msgstr "Anket açıldı."
 
+msgid "The QR code could not be rotated."
+msgstr "QR kodu yenilenemedi."
+
 msgid "The QR code stops working at once."
 msgstr "QR kod hemen çalışmaz hale gelir."
+
+msgid "The QR code was rotated."
+msgstr "QR kodu yenilendi."
 
 msgid "The request could not be sent by SMS. Call the resident instead."
 msgstr "İstek SMS ile gönderilemedi. Bunun yerine sakini arayın."
@@ -2190,6 +2216,9 @@ msgstr "İkinci toplantı, ilkinden {0} ila {1} gün sonra olmalıdır."
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr "{0} adlı kişinin {1} görevi <0/> tarihinde bitiyor ({2} gün kaldı). Toplantıyı zamanında planlayın."
 
+msgid "The values changed after the last attempt. Review them and confirm again."
+msgstr "Değerler son denemeden sonra değişti. Gözden geçirip yeniden onaylayın."
+
 msgid "The visit must end after it starts."
 msgstr "Ziyaret, başladıktan sonra bitmelidir."
 
@@ -2211,8 +2240,8 @@ msgstr "Bu kod tanınmıyor."
 msgid "This code is not valid for this assembly."
 msgstr "Bu kod bu toplantı için geçerli değil."
 
-msgid "This code is shown only now. Send it to your guest before you close this window."
-msgstr "Bu kod yalnızca şimdi gösteriliyor. Bu pencereyi kapatmadan önce misafirinize gönderin."
+msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
+msgstr "Bu kod yalnızca şimdi gösterilir. Bu pencereyi kapatmadan önce misafirinize gönderin. WhatsApp, SMS ve e-posta kodu bu hizmetler üzerinden iletir."
 
 msgid "This decision already has an applied change."
 msgstr "Bu kararın zaten uygulanmış bir değişikliği var."
@@ -2310,6 +2339,9 @@ msgstr "Çok fazla istek gönderildi. {0} saniye sonra tekrar deneyin."
 msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
 msgstr "Çok fazla yanlış PIN. Bu güvenlik görevlisi yaklaşık {minutes} dakika kilitli."
 
+msgid "Too many wrong PINs. Try again later."
+msgstr "Çok fazla yanlış PIN. Daha sonra yeniden deneyin."
+
 msgid "Topic"
 msgstr "Konu"
 
@@ -2385,6 +2417,9 @@ msgstr "Ziyaretçi kodu"
 
 msgid "Visitor denied."
 msgstr "Ziyaretçi reddedildi."
+
+msgid "Visitor pass"
+msgstr "Ziyaretçi geçişi"
 
 msgid "Visitor pass for {name}"
 msgstr "{name} için ziyaretçi geçişi"

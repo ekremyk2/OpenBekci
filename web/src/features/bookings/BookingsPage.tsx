@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useQueries } from '@tanstack/react-query'
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from 'lucide-react'
@@ -10,13 +10,45 @@ import { Money } from '@/components/data/Money'
 import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { toast } from '@/lib/toast'
-import { gApi, idemHeader, okey, unwrap, useKeyStore, useOrgMutation, useOrgQuery, useSiteCtx, type S, type SiteCtx } from '@/features/meetings/kit/api'
-import { addDays, instantToLocalInput, localInputToInstant, startOfMonth, startOfWeek, todayIn } from '@/features/meetings/kit/time'
+import {
+  gApi,
+  idemHeader,
+  okey,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  useSiteCtx,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
+import {
+  addDays,
+  instantToLocalInput,
+  localInputToInstant,
+  startOfMonth,
+  startOfWeek,
+  todayIn,
+} from '@/features/meetings/kit/time'
 import { Field, FormRootError, PageHeader, QueryBoundary, Select } from '@/features/meetings/kit/ui'
 import { Callout } from '@/features/meetings/kit/widgets'
 import { BookDialog } from './BookDialog'
@@ -42,19 +74,37 @@ function rangeOf(view: View, anchor: string) {
   const from = startOfMonth(anchor)
   const [y, m] = from.split('-').map(Number) as [number, number]
   const to = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10)
-  return { from: view === 'month' ? from : addDays(anchor, -30), to: view === 'month' ? to : addDays(anchor, 60) }
+  return {
+    from: view === 'month' ? from : addDays(anchor, -30),
+    to: view === 'month' ? to : addDays(anchor, 60),
+  }
 }
 
-function CancelDialog({ ctx, booking, facility, onClose }: { ctx: SiteCtx; booking: S['Booking']; facility?: S['Facility']; onClose: () => void }) {
+function CancelDialog({
+  ctx,
+  booking,
+  facility,
+  onClose,
+}: {
+  ctx: SiteCtx
+  booking: S['Booking']
+  facility?: S['Facility']
+  onClose: () => void
+}) {
   const { t } = useLingui()
   const keys = useKeyStore()
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const refund = facility ? refundOnCancel(facility.rules, booking.start) : { fee: null, refunded: false }
+  const refund = facility
+    ? refundOnCancel(facility.rules, booking.start)
+    : { fee: null, refunded: false }
   const cancel = useOrgMutation(async () => {
     const r = await unwrap(
       gApi.POST('/v1/orgs/{org_id}/bookings/{booking_id}:cancel', {
-        params: { path: { org_id: ctx.orgId, booking_id: booking.id }, header: idemHeader(keys.get(booking.id)) },
+        params: {
+          path: { org_id: ctx.orgId, booking_id: booking.id },
+          header: idemHeader(keys.get(booking.id)),
+        },
         body: reason.trim() ? { reason: reason.trim() } : {},
       }),
     )
@@ -69,15 +119,16 @@ function CancelDialog({ ctx, booking, facility, onClose }: { ctx: SiteCtx; booki
             <Trans>Cancel this booking?</Trans>
           </DialogTitle>
           <DialogDescription>
-            {booking.facility_name} · <SiteDate value={booking.start} timeZone={ctx.timeZone} kind="datetime" />
+            {booking.facility_name} ·{' '}
+            <SiteDate value={booking.start} timeZone={ctx.timeZone} kind="datetime" />
           </DialogDescription>
         </DialogHeader>
         {refund.fee ? (
           <Callout tone={refund.refunded ? 'success' : 'warning'} role="status">
             {refund.refunded ? (
               <Trans>
-                The fee of <Money minor={refund.fee.amount} currency={refund.fee.currency} /> is refunded
-                automatically.
+                The fee of <Money minor={refund.fee.amount} currency={refund.fee.currency} /> is
+                refunded automatically.
               </Trans>
             ) : (
               <Trans>
@@ -116,7 +167,15 @@ function CancelDialog({ ctx, booking, facility, onClose }: { ctx: SiteCtx; booki
   )
 }
 
-function BlockDialog({ ctx, facilities, onClose }: { ctx: SiteCtx; facilities: S['Facility'][]; onClose: () => void }) {
+function BlockDialog({
+  ctx,
+  facilities,
+  onClose,
+}: {
+  ctx: SiteCtx
+  facilities: S['Facility'][]
+  onClose: () => void
+}) {
   const { t } = useLingui()
   const keys = useKeyStore()
   const today = todayIn(ctx.timeZone)
@@ -125,18 +184,23 @@ function BlockDialog({ ctx, facilities, onClose }: { ctx: SiteCtx; facilities: S
   const [to, setTo] = useState(`${today}T22:00`)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const blocks = useOrgQuery(['blocks', facilityId], () =>
-    unwrap(
-      gApi.GET('/v1/orgs/{org_id}/facilities/{facility_id}/blocks', {
-        params: { path: { org_id: ctx.orgId, facility_id: facilityId }, query: { limit: 100 } },
-      }),
-    ).then((r) => r.items),
+  const blocks = useOrgQuery(
+    ['blocks', facilityId],
+    () =>
+      unwrap(
+        gApi.GET('/v1/orgs/{org_id}/facilities/{facility_id}/blocks', {
+          params: { path: { org_id: ctx.orgId, facility_id: facilityId }, query: { limit: 100 } },
+        }),
+      ).then((r) => r.items),
     { enabled: facilityId !== '' },
   )
   const add = useOrgMutation(async () =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/facilities/{facility_id}/blocks', {
-        params: { path: { org_id: ctx.orgId, facility_id: facilityId }, header: idemHeader(keys.get(`${facilityId}${from}${to}`)) },
+        params: {
+          path: { org_id: ctx.orgId, facility_id: facilityId },
+          header: idemHeader(keys.get(`${facilityId}${from}${to}`)),
+        },
         body: {
           start: localInputToInstant(from, ctx.timeZone),
           end: localInputToInstant(to, ctx.timeZone),
@@ -172,10 +236,22 @@ function BlockDialog({ ctx, facilities, onClose }: { ctx: SiteCtx; facilities: S
         </Field>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label={t`From`} htmlFor="bl-from">
-            <Input id="bl-from" type="datetime-local" dir="ltr" value={from} onChange={(e) => setFrom(e.target.value)} />
+            <Input
+              id="bl-from"
+              type="datetime-local"
+              dir="ltr"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+            />
           </Field>
           <Field label={t`Until`} htmlFor="bl-to">
-            <Input id="bl-to" type="datetime-local" dir="ltr" value={to} onChange={(e) => setTo(e.target.value)} />
+            <Input
+              id="bl-to"
+              type="datetime-local"
+              dir="ltr"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+            />
           </Field>
         </div>
         <Field label={t`Reason`} htmlFor="bl-reason">
@@ -191,7 +267,8 @@ function BlockDialog({ ctx, facilities, onClose }: { ctx: SiteCtx; facilities: S
                   setError(null)
                   setReason('')
                 },
-                onError: () => setError(t`Could not block these dates. Existing bookings may overlap.`),
+                onError: () =>
+                  setError(t`Could not block these dates. Existing bookings may overlap.`),
               })
             }
           >
@@ -203,7 +280,8 @@ function BlockDialog({ ctx, facilities, onClose }: { ctx: SiteCtx; facilities: S
             <li key={b.id} className="flex items-center justify-between gap-2">
               <span>
                 <SiteDate value={b.start} timeZone={ctx.timeZone} kind="datetime" /> –{' '}
-                <SiteDate value={b.end} timeZone={ctx.timeZone} kind="datetime" /> {b.reason ? `· ${b.reason}` : ''}
+                <SiteDate value={b.end} timeZone={ctx.timeZone} kind="datetime" />{' '}
+                {b.reason ? `· ${b.reason}` : ''}
               </span>
               <Button size="sm" variant="ghost" onClick={() => del.mutate(b.id)}>
                 <Trans>Remove</Trans>
@@ -264,7 +342,10 @@ export function BookingsPage() {
           queryFn: () =>
             unwrap(
               gApi.GET('/v1/orgs/{org_id}/facilities/{facility_id}/availability', {
-                params: { path: { org_id: ctx.orgId, facility_id: f.id }, query: { from: fromIso, to: toIso } },
+                params: {
+                  path: { org_id: ctx.orgId, facility_id: f.id },
+                  query: { from: fromIso, to: toIso },
+                },
               }),
             ),
         })),
@@ -276,14 +357,17 @@ export function BookingsPage() {
           queryFn: () =>
             unwrap(
               gApi.GET('/v1/orgs/{org_id}/facilities/{facility_id}/blocks', {
-                params: { path: { org_id: ctx.orgId, facility_id: f.id }, query: { from: fromIso, to: toIso, limit: 100 } },
+                params: {
+                  path: { org_id: ctx.orgId, facility_id: f.id },
+                  query: { from: fromIso, to: toIso, limit: 100 },
+                },
               }),
             ).then((r) => r.items.map((b) => ({ ...b, facility_name: f.name }))),
         }))
       : [],
   })
 
-  const slots = useMemo<Slot[]>(() => {
+  const slots: Slot[] = (() => {
     const out: Slot[] = []
     const own = new Set<string>()
     for (const b of bookings.data ?? []) {
@@ -302,17 +386,34 @@ export function BookingsPage() {
       const f = visible[i]
       for (const s of q.data?.taken ?? []) {
         if (own.has(`${f?.id}|${s.start}`)) continue
-        out.push({ key: `t-${f?.id}-${s.start}`, start: s.start, end: s.end, kind: 'taken', label: `${f?.name ?? ''} · ${t`Taken`}` })
+        out.push({
+          key: `t-${f?.id}-${s.start}`,
+          start: s.start,
+          end: s.end,
+          kind: 'taken',
+          label: `${f?.name ?? ''} · ${t`Taken`}`,
+        })
       }
       for (const s of q.data?.blocked ?? [])
-        out.push({ key: `b-${f?.id}-${s.start}`, start: s.start, end: s.end, kind: 'blocked', label: `${f?.name ?? ''} · ${t`Not available`}` })
+        out.push({
+          key: `b-${f?.id}-${s.start}`,
+          start: s.start,
+          end: s.end,
+          kind: 'blocked',
+          label: `${f?.name ?? ''} · ${t`Not available`}`,
+        })
     })
     for (const q of blocksQ)
       for (const b of q.data ?? [])
-        out.push({ key: `bl-${b.id}`, start: b.start, end: b.end, kind: 'blocked', label: `${b.facility_name} · ${b.reason ?? t`Blocked`}` })
+        out.push({
+          key: `bl-${b.id}`,
+          start: b.start,
+          end: b.end,
+          kind: 'blocked',
+          label: `${b.facility_name} · ${b.reason ?? t`Blocked`}`,
+        })
     return out.sort((a, b) => a.start.localeCompare(b.start))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookings.data, availability.map((a) => a.dataUpdatedAt).join(','), blocksQ.map((a) => a.dataUpdatedAt).join(','), manager, facilityId])
+  })()
 
   const dayOf = (iso: string) => instantToLocalInput(iso, ctx.timeZone).slice(0, 10)
   const time = (iso: string) => instantToLocalInput(iso, ctx.timeZone).slice(11)
@@ -320,11 +421,19 @@ export function BookingsPage() {
   for (let d = range.from; d < range.to; d = addDays(d, 1)) days.push(d)
   const monthLead = view === 'month' ? (new Date(`${range.from}T12:00:00Z`).getUTCDay() + 6) % 7 : 0
   const shift = (dir: -1 | 1) =>
-    setAnchor(view === 'week' ? addDays(anchor, 7 * dir) : view === 'month' ? addDays(startOfMonth(anchor), dir === 1 ? 32 : -1) : addDays(anchor, 30 * dir))
+    setAnchor(
+      view === 'week'
+        ? addDays(anchor, 7 * dir)
+        : view === 'month'
+          ? addDays(startOfMonth(anchor), dir === 1 ? 32 : -1)
+          : addDays(anchor, 30 * dir),
+    )
   const title =
     view === 'week'
       ? `${new Intl.DateTimeFormat(intl, { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${range.from}T12:00:00Z`))} – ${new Intl.DateTimeFormat(intl, { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${addDays(range.to, -1)}T12:00:00Z`))}`
-      : new Intl.DateTimeFormat(intl, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${range.from}T12:00:00Z`))
+      : new Intl.DateTimeFormat(intl, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+          new Date(`${range.from}T12:00:00Z`),
+        )
 
   const chip = (s: Slot) => (
     <li
@@ -341,7 +450,11 @@ export function BookingsPage() {
       </span>
       <span className="truncate">{s.label}</span>
       {s.booking && (manager || can('bookings.create')) ? (
-        <button type="button" className="w-fit text-start underline-offset-2 hover:underline" onClick={() => setCancelling(s.booking!)}>
+        <button
+          type="button"
+          className="w-fit text-start underline-offset-2 hover:underline"
+          onClick={() => setCancelling(s.booking!)}
+        >
           <Trans>Cancel</Trans>
         </button>
       ) : null}
@@ -356,7 +469,11 @@ export function BookingsPage() {
         actions={
           <>
             {can('facilities.manage') ? (
-              <Link to="/orgs/$orgId/facilities" params={{ orgId: ctx.orgId }} className={buttonVariants({ variant: 'outline' })}>
+              <Link
+                to="/orgs/$orgId/facilities"
+                params={{ orgId: ctx.orgId }}
+                className={buttonVariants({ variant: 'outline' })}
+              >
                 <Trans>Facilities and rules</Trans>
               </Link>
             ) : null}
@@ -375,7 +492,12 @@ export function BookingsPage() {
         }
       />
       <div className="flex flex-wrap items-center gap-2">
-        <Select aria-label={t`Facility`} className="w-auto" value={facilityId} onChange={(e) => setFacilityId(e.target.value)}>
+        <Select
+          aria-label={t`Facility`}
+          className="w-auto"
+          value={facilityId}
+          onChange={(e) => setFacilityId(e.target.value)}
+        >
           <option value="">{t`All facilities`}</option>
           {list.map((f) => (
             <option key={f.id} value={f.id}>
@@ -390,7 +512,10 @@ export function BookingsPage() {
               type="button"
               aria-pressed={view === v}
               onClick={() => setView(v)}
-              className={cn('rounded px-3 py-1 text-sm', view === v ? 'bg-primary text-primary-foreground' : 'hover:bg-accent')}
+              className={cn(
+                'rounded px-3 py-1 text-sm',
+                view === v ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+              )}
             >
               {v === 'week' ? t`Week` : v === 'month' ? t`Month` : t`List`}
             </button>
@@ -450,18 +575,37 @@ export function BookingsPage() {
                   {slots.map((s) => (
                     <TableRow key={s.key}>
                       <TableCell>
-                        <SiteDate value={s.start} timeZone={ctx.timeZone} kind="datetime" /> – {time(s.end)}
+                        <SiteDate value={s.start} timeZone={ctx.timeZone} kind="datetime" /> –{' '}
+                        {time(s.end)}
                       </TableCell>
                       <TableCell>{s.booking?.facility_name ?? s.label}</TableCell>
                       <TableCell>
-                        {s.booking ? (manager ? `${s.booking.unit_door_number} · ${s.booking.person_display_name ?? ''}` : t`My unit`) : <Badge variant="secondary">{s.kind === 'blocked' ? t`Blocked` : t`Taken`}</Badge>}
+                        {s.booking ? (
+                          manager ? (
+                            `${s.booking.unit_door_number} · ${s.booking.person_display_name ?? ''}`
+                          ) : (
+                            t`My unit`
+                          )
+                        ) : (
+                          <Badge variant="secondary">
+                            {s.kind === 'blocked' ? t`Blocked` : t`Taken`}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
-                        {s.booking?.fee ? <Money minor={s.booking.fee.amount} currency={s.booking.fee.currency} /> : '–'}
+                        {s.booking?.fee ? (
+                          <Money minor={s.booking.fee.amount} currency={s.booking.fee.currency} />
+                        ) : (
+                          '–'
+                        )}
                       </TableCell>
                       <TableCell>
                         {s.booking ? (
-                          <Button size="sm" variant="outline" onClick={() => setCancelling(s.booking!)}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setCancelling(s.booking!)}
+                          >
                             <Trans>Cancel</Trans>
                           </Button>
                         ) : null}
@@ -472,9 +616,20 @@ export function BookingsPage() {
               </Table>
             )
           ) : (
-            <div className={cn('grid gap-px overflow-hidden rounded-md border bg-border', 'grid-cols-7')} role="grid" aria-label={t`Calendar`}>
+            <div
+              className={cn(
+                'grid gap-px overflow-hidden rounded-md border bg-border',
+                'grid-cols-7',
+              )}
+              role="grid"
+              aria-label={t`Calendar`}
+            >
               {names.map((n) => (
-                <div key={n} role="columnheader" className="bg-muted px-2 py-1 text-center text-xs font-medium">
+                <div
+                  key={n}
+                  role="columnheader"
+                  className="bg-muted px-2 py-1 text-center text-xs font-medium"
+                >
                   {n}
                 </div>
               ))}
@@ -482,9 +637,20 @@ export function BookingsPage() {
                 <div key={`lead-${i}`} className="bg-background" aria-hidden="true" />
               ))}
               {days.map((d) => (
-                <div key={d} role="gridcell" className={cn('flex min-h-24 flex-col gap-1 bg-background p-1', d === todayIn(ctx.timeZone) && 'ring-2 ring-inset ring-primary')}>
-                  <span className="text-xs text-muted-foreground tabular-nums">{Number(d.slice(8))}</span>
-                  <ul className="flex flex-col gap-1">{slots.filter((s) => dayOf(s.start) === d).map(chip)}</ul>
+                <div
+                  key={d}
+                  role="gridcell"
+                  className={cn(
+                    'flex min-h-24 flex-col gap-1 bg-background p-1',
+                    d === todayIn(ctx.timeZone) && 'ring-2 ring-inset ring-primary',
+                  )}
+                >
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {Number(d.slice(8))}
+                  </span>
+                  <ul className="flex flex-col gap-1">
+                    {slots.filter((s) => dayOf(s.start) === d).map(chip)}
+                  </ul>
                 </div>
               ))}
             </div>
@@ -501,9 +667,16 @@ export function BookingsPage() {
           onClose={() => setBooking(false)}
         />
       ) : null}
-      {blocking ? <BlockDialog ctx={ctx} facilities={list} onClose={() => setBlocking(false)} /> : null}
+      {blocking ? (
+        <BlockDialog ctx={ctx} facilities={list} onClose={() => setBlocking(false)} />
+      ) : null}
       {cancelling ? (
-        <CancelDialog ctx={ctx} booking={cancelling} facility={list.find((f) => f.id === cancelling.facility_id)} onClose={() => setCancelling(null)} />
+        <CancelDialog
+          ctx={ctx}
+          booking={cancelling}
+          facility={list.find((f) => f.id === cancelling.facility_id)}
+          onClose={() => setCancelling(null)}
+        />
       ) : null}
     </div>
   )

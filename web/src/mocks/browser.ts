@@ -57,7 +57,11 @@ function buildMe(role: string | null): Me {
     },
   ]
   const permissions =
-    role === 'resident' ? RESIDENT_PERMISSIONS : role === 'guard' ? GUARD_PERMISSIONS : MANAGER_PERMISSIONS
+    role === 'resident'
+      ? RESIDENT_PERMISSIONS
+      : role === 'guard'
+        ? GUARD_PERMISSIONS
+        : MANAGER_PERMISSIONS
   return {
     ...meFixture,
     organizations: [

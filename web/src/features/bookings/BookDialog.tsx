@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { AppError } from '@/api/errors'
 import { useSession } from '@/app/session'
@@ -16,7 +16,14 @@ import { Input } from '@/components/ui/input'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import { useUnits } from '@/features/meetings/hooks'
-import { gApi, idemHeader, unwrap, useOrgMutation, type S, type SiteCtx } from '@/features/meetings/kit/api'
+import {
+  gApi,
+  idemHeader,
+  unwrap,
+  useOrgMutation,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
 import { localInputToInstant, startOfMonth, startOfWeek } from '@/features/meetings/kit/time'
 import { Field, FormRootError, Select } from '@/features/meetings/kit/ui'
 import { Callout } from '@/features/meetings/kit/widgets'
@@ -27,12 +34,23 @@ export function useBookableUnits(ctx: SiteCtx, manager: boolean) {
   const { me, org } = useSession()
   const units = useUnits(ctx.orgId, ctx.siteId)
   if (manager) {
-    return (units.data ?? []).map((u) => ({ id: u.id, label: u.door_number, kind: 'owner' as 'owner' | 'tenant' | 'household' }))
+    return (units.data ?? []).map((u) => ({
+      id: u.id,
+      label: u.door_number,
+      kind: 'owner' as 'owner' | 'tenant' | 'household',
+    }))
   }
-  const seen = new Map<string, { id: string; label: string; kind: 'owner' | 'tenant' | 'household' }>()
+  const seen = new Map<
+    string,
+    { id: string; label: string; kind: 'owner' | 'tenant' | 'household' }
+  >()
   for (const o of me?.occupancies ?? []) {
     if (o.organization_id === org?.id && o.site_id === ctx.siteId && !seen.has(o.unit_id))
-      seen.set(o.unit_id, { id: o.unit_id, label: o.unit_label, kind: o.kind as 'owner' | 'tenant' | 'household' })
+      seen.set(o.unit_id, {
+        id: o.unit_id,
+        label: o.unit_label,
+        kind: o.kind as 'owner' | 'tenant' | 'household',
+      })
   }
   return [...seen.values()]
 }
@@ -94,12 +112,10 @@ export function BookDialog({
 
   const start = date && from ? localInputToInstant(`${date}T${from}`, ctx.timeZone) : ''
   const end = date && to ? localInputToInstant(`${date}T${to}`, ctx.timeZone) : ''
-  const used = useMemo(() => {
+  const used = (() => {
     if (!facility || !start) return 0
     const period =
-      facility.rules.quota_period === 'week'
-        ? [startOfWeek(date), 7]
-        : [startOfMonth(date), 31]
+      facility.rules.quota_period === 'week' ? [startOfWeek(date), 7] : [startOfMonth(date), 31]
     const lo = localInputToInstant(`${period[0]}T00:00`, ctx.timeZone)
     const hi = Date.parse(lo) + Number(period[1]) * 86_400_000
     return bookings.filter(
@@ -110,7 +126,7 @@ export function BookDialog({
         Date.parse(b.start) >= Date.parse(lo) &&
         Date.parse(b.start) < hi,
     ).length
-  }, [bookings, facility, unit?.id, date, start, ctx.timeZone])
+  })()
   const issues =
     facility && start && end
       ? validateBooking({
@@ -158,7 +174,8 @@ export function BookDialog({
                   err instanceof AppError && err.status === 409
                     ? t`That time is already taken or blocked. Choose another slot.`
                     : err instanceof AppError && err.isValidation
-                      ? (Object.values(err.fieldErrors)[0]?.[0]?.message ?? t`The booking breaks a rule of this facility.`)
+                      ? (Object.values(err.fieldErrors)[0]?.[0]?.message ??
+                        t`The booking breaks a rule of this facility.`)
                       : t`Could not book. Please try again.`,
                 ),
             })
@@ -192,20 +209,39 @@ export function BookDialog({
           </Field>
           <div className="grid gap-3 sm:grid-cols-3">
             <Field label={t`Date`} htmlFor="bk-date">
-              <Input id="bk-date" type="date" dir="ltr" value={date} onChange={(e) => setDate(e.target.value)} />
+              <Input
+                id="bk-date"
+                type="date"
+                dir="ltr"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
             </Field>
             <Field label={t`From`} htmlFor="bk-from">
-              <Input id="bk-from" type="time" dir="ltr" value={from} onChange={(e) => setFrom(e.target.value)} />
+              <Input
+                id="bk-from"
+                type="time"
+                dir="ltr"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
             </Field>
             <Field label={t`Until`} htmlFor="bk-to">
-              <Input id="bk-to" type="time" dir="ltr" value={to} onChange={(e) => setTo(e.target.value)} />
+              <Input
+                id="bk-to"
+                type="time"
+                dir="ltr"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
             </Field>
           </div>
           {facility?.rules.fee ? (
             <Callout tone="info" role="status">
               <Trans>
-                Fee: <Money minor={facility.rules.fee.amount} currency={facility.rules.fee.currency} />, charged to
-                the unit's account when the booking is confirmed.
+                Fee:{' '}
+                <Money minor={facility.rules.fee.amount} currency={facility.rules.fee.currency} />,
+                charged to the unit's account when the booking is confirmed.
                 {facility.rules.cancel_refund_cutoff_hours !== null
                   ? ` Refunded if you cancel at least ${facility.rules.cancel_refund_cutoff_hours} hours ahead.`
                   : ''}
@@ -214,7 +250,11 @@ export function BookDialog({
           ) : null}
           {manager && facility?.rules.fee ? (
             <Field label={t`Charge to`} htmlFor="bk-debtor">
-              <Select id="bk-debtor" value={debtor} onChange={(e) => setDebtor(e.target.value as 'owner' | 'tenant')}>
+              <Select
+                id="bk-debtor"
+                value={debtor}
+                onChange={(e) => setDebtor(e.target.value as 'owner' | 'tenant')}
+              >
                 <option value="owner">{t`Owner`}</option>
                 <option value="tenant">{t`Tenant`}</option>
               </Select>
@@ -234,7 +274,10 @@ export function BookDialog({
             <Button type="button" variant="outline" onClick={onClose}>
               <Trans>Cancel</Trans>
             </Button>
-            <Button type="submit" disabled={!facility || !unit || issues.length > 0 || create.isPending}>
+            <Button
+              type="submit"
+              disabled={!facility || !unit || issues.length > 0 || create.isPending}
+            >
               <Trans>Book now</Trans>
             </Button>
           </DialogFooter>

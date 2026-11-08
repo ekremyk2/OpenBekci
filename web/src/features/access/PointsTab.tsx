@@ -7,14 +7,45 @@ import { DoorOpenIcon, PlusIcon } from 'lucide-react'
 import { AppError } from '@/api/errors'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import { manualOpenState } from '@/features/gate/openState'
-import { gApi, idemHeader, ifMatch, unwrap, useOrgMutation, useOrgQuery, type S, type SiteCtx } from '@/features/meetings/kit/api'
-import { applyServerErrors, Checkbox, ConfirmDialog, Field, FormRootError, QueryBoundary, Select } from '@/features/meetings/kit/ui'
+import {
+  gApi,
+  idemHeader,
+  ifMatch,
+  unwrap,
+  useOrgMutation,
+  useOrgQuery,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
+import {
+  applyServerErrors,
+  Checkbox,
+  ConfirmDialog,
+  Field,
+  FormRootError,
+  QueryBoundary,
+  Select,
+} from '@/features/meetings/kit/ui'
 import { useAgents } from './AgentsTab'
 
 function usePoints(ctx: SiteCtx) {
@@ -27,13 +58,26 @@ function usePoints(ctx: SiteCtx) {
   )
 }
 
-function PointDialog({ ctx, point, agents, onClose }: { ctx: SiteCtx; point: S['AccessPoint'] | null; agents: S['Agent'][]; onClose: () => void }) {
+function PointDialog({
+  ctx,
+  point,
+  agents,
+  onClose,
+}: {
+  ctx: SiteCtx
+  point: S['AccessPoint'] | null
+  agents: S['Agent'][]
+  onClose: () => void
+}) {
   const { t } = useLingui()
   const idem = useIdempotencyKey()
   const schema = useMemo(
     () =>
       z.object({
-        name: z.string().trim().min(1, t`Enter a name.`),
+        name: z
+          .string()
+          .trim()
+          .min(1, t`Enter a name.`),
         kind: z.enum(['vehicle_gate', 'pedestrian_door']),
         direction: z.enum(['in', 'out', 'both']),
         agent_id: z.string(),
@@ -62,13 +106,19 @@ function PointDialog({ ctx, point, agents, onClose }: { ctx: SiteCtx; point: S['
       kind: v.kind,
       direction: v.direction,
       agent_id: v.agent_id === '' ? null : v.agent_id,
-      driver_ref: v.instance === '' ? null : { instance: v.instance, ...(v.channel ? { channel: v.channel } : {}) },
+      driver_ref:
+        v.instance === ''
+          ? null
+          : { instance: v.instance, ...(v.channel ? { channel: v.channel } : {}) },
       enabled: v.enabled,
     }
     if (point)
       return unwrap(
         gApi.PATCH('/v1/orgs/{org_id}/access-points/{point_id}', {
-          params: { path: { org_id: ctx.orgId, point_id: point.id }, header: ifMatch(point.version) },
+          params: {
+            path: { org_id: ctx.orgId, point_id: point.id },
+            header: ifMatch(point.version),
+          },
           body,
         }),
       )
@@ -98,7 +148,10 @@ function PointDialog({ ctx, point, agents, onClose }: { ctx: SiteCtx; point: S['
           <DialogHeader>
             <DialogTitle>{point ? t`Edit access point` : t`New access point`}</DialogTitle>
             <DialogDescription>
-              <Trans>A gate or door an agent can open. Driver details are configured on the agent computer.</Trans>
+              <Trans>
+                A gate or door an agent can open. Driver details are configured on the agent
+                computer.
+              </Trans>
             </DialogDescription>
           </DialogHeader>
           <Field label={t`Name`} htmlFor="ap-name" error={err.name?.message}>
@@ -156,7 +209,17 @@ function PointDialog({ ctx, point, agents, onClose }: { ctx: SiteCtx; point: S['
 }
 
 /** Manual open from the admin screen (the guard console has its own); explains why it is disabled. */
-function AdminOpenButton({ ctx, point, agent, canOpen }: { ctx: SiteCtx; point: S['AccessPoint']; agent: S['Agent'] | undefined; canOpen: boolean }) {
+function AdminOpenButton({
+  ctx,
+  point,
+  agent,
+  canOpen,
+}: {
+  ctx: SiteCtx
+  point: S['AccessPoint']
+  agent: S['Agent'] | undefined
+  canOpen: boolean
+}) {
   const { t } = useLingui()
   const k = useIdempotencyKey()
   const state = manualOpenState({
@@ -194,20 +257,35 @@ function AdminOpenButton({ ctx, point, agent, canOpen }: { ctx: SiteCtx; point: 
               k.renew()
               toast.info(t`Open command sent.`)
             },
-            onError: (e) => toast.error(e instanceof AppError && e.code === 'agent_offline' ? t`The agent is offline.` : t`Could not open.`),
+            onError: (e) =>
+              toast.error(
+                e instanceof AppError && e.code === 'agent_offline'
+                  ? t`The agent is offline.`
+                  : t`Could not open.`,
+              ),
           })
         }
       >
         <DoorOpenIcon />
         <Trans>Open</Trans>
       </Button>
-      {state.reason ? <span className="text-xs text-muted-foreground">{why[state.reason]}</span> : null}
+      {state.reason ? (
+        <span className="text-xs text-muted-foreground">{why[state.reason]}</span>
+      ) : null}
     </div>
   )
 }
 
 /** Access points CRUD (D6). */
-export function PointsTab({ ctx, canManage, canOpen }: { ctx: SiteCtx; canManage: boolean; canOpen: boolean }) {
+export function PointsTab({
+  ctx,
+  canManage,
+  canOpen,
+}: {
+  ctx: SiteCtx
+  canManage: boolean
+  canOpen: boolean
+}) {
   const { t } = useLingui()
   const points = usePoints(ctx)
   const agents = useAgents(ctx)
@@ -262,14 +340,23 @@ export function PointsTab({ ctx, canManage, canOpen }: { ctx: SiteCtx; canManage
               {items.map((p) => (
                 <TableRow key={p.id}>
                   <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell>{p.kind === 'vehicle_gate' ? t`Vehicle gate` : t`Pedestrian door`}</TableCell>
+                  <TableCell>
+                    {p.kind === 'vehicle_gate' ? t`Vehicle gate` : t`Pedestrian door`}
+                  </TableCell>
                   <TableCell>{agentName(p.agent_id)}</TableCell>
                   <TableCell>
-                    <Badge variant={p.enabled ? 'success' : 'secondary'}>{p.enabled ? t`Enabled` : t`Disabled`}</Badge>
+                    <Badge variant={p.enabled ? 'success' : 'secondary'}>
+                      {p.enabled ? t`Enabled` : t`Disabled`}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap items-start gap-2">
-                      <AdminOpenButton ctx={ctx} point={p} agent={agents.data?.find((a) => a.id === p.agent_id)} canOpen={canOpen} />
+                      <AdminOpenButton
+                        ctx={ctx}
+                        point={p}
+                        agent={agents.data?.find((a) => a.id === p.agent_id)}
+                        canOpen={canOpen}
+                      />
                       {canManage ? (
                         <>
                           <Button size="sm" variant="outline" onClick={() => setEditing(p)}>
@@ -288,7 +375,14 @@ export function PointsTab({ ctx, canManage, canOpen }: { ctx: SiteCtx; canManage
           </Table>
         )}
       </QueryBoundary>
-      {editing ? <PointDialog ctx={ctx} point={editing === 'new' ? null : editing} agents={agents.data ?? []} onClose={() => setEditing(null)} /> : null}
+      {editing ? (
+        <PointDialog
+          ctx={ctx}
+          point={editing === 'new' ? null : editing}
+          agents={agents.data ?? []}
+          onClose={() => setEditing(null)}
+        />
+      ) : null}
       <ConfirmDialog
         open={deleting !== null}
         onOpenChange={(o) => (!o ? setDeleting(null) : undefined)}
@@ -296,9 +390,10 @@ export function PointsTab({ ctx, canManage, canOpen }: { ctx: SiteCtx; canManage
         confirmLabel={t`Delete`}
         destructive
         pending={remove.isPending}
-        onConfirm={() => deleting && remove.mutate(deleting, { onSuccess: () => setDeleting(null) })}
+        onConfirm={() =>
+          deleting && remove.mutate(deleting, { onSuccess: () => setDeleting(null) })
+        }
       />
     </div>
   )
 }
-

@@ -6,7 +6,17 @@ import { useLocale } from '@/app/locale'
 import type { S } from './kit/api'
 import { quorumView } from './logic'
 
-function Bar({ value, required, ok, label }: { value: number; required: number | null; ok: boolean | null; label: string }) {
+function Bar({
+  value,
+  required,
+  ok,
+  label,
+}: {
+  value: number
+  required: number | null
+  ok: boolean | null
+  label: string
+}) {
   const v = Math.max(0, Math.min(100, value))
   return (
     <div className="flex flex-col gap-1">
@@ -84,7 +94,12 @@ export function QuorumCard({ quorum, className }: { quorum: S['Quorum']; classNa
               </Trans>
             </span>
           </div>
-          <Bar value={v.countPct} required={v.requiredCountPct} ok={v.countOk} label={t`Share of owners present`} />
+          <Bar
+            value={v.countPct}
+            required={v.requiredCountPct}
+            ok={v.countOk}
+            label={t`Share of owners present`}
+          />
           {v.requiredCountPct !== null ? (
             <span className="text-xs text-muted-foreground">
               {v.moreOwnersNeeded && v.moreOwnersNeeded > 0 ? (
@@ -110,7 +125,12 @@ export function QuorumCard({ quorum, className }: { quorum: S['Quorum']; classNa
               <Trans>{fmt(v.presentSharePct)}% present</Trans>
             </span>
           </div>
-          <Bar value={v.presentSharePct} required={v.requiredSharePct} ok={v.shareOk} label={t`Share of land present`} />
+          <Bar
+            value={v.presentSharePct}
+            required={v.requiredSharePct}
+            ok={v.shareOk}
+            label={t`Share of land present`}
+          />
           {v.requiredSharePct !== null ? (
             <span className="text-xs text-muted-foreground">
               <Trans>More than {v.requiredSharePct}% needed.</Trans>

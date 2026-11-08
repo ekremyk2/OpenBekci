@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -21,13 +21,22 @@ import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import { ApplyDecisionDialog } from './ApplyDecisionDialog'
 import { useAgenda, useDecisions, useGovernanceSettings, useOwnerRows, usePersons } from './hooks'
-import { gApi, idemHeader, unwrap, useOrgMutation, useOrgQuery, type S, type SiteCtx } from './kit/api'
+import {
+  gApi,
+  idemHeader,
+  unwrap,
+  useOrgMutation,
+  useOrgQuery,
+  type S,
+  type SiteCtx,
+} from './kit/api'
 import { applyServerErrors, Checkbox, Field, FormRootError, Select, Textarea } from './kit/ui'
 import { Callout } from './kit/widgets'
 import { OUTCOME_VARIANT, useGovLabels } from './labels'
 import { effectKindForTopic, evaluateThreshold } from './logic'
 
-export const decisionNo = (d: Pick<S['Decision'], 'year' | 'sequence_no'>) => `${d.year}/${d.sequence_no}`
+export const decisionNo = (d: Pick<S['Decision'], 'year' | 'sequence_no'>) =>
+  `${d.year}/${d.sequence_no}`
 
 // ------------------------------------------------------------------ in-room counts
 
@@ -36,7 +45,12 @@ const pctStr = z.string().regex(/^\d*([.,]\d+)?$/)
 const toNum = (s: string) => Number(s.replace(',', '.') || 0)
 
 /** The in-room count of one agenda item with the threshold evaluation next to it. */
-export function VoteCountsCard({ ctx, item, onRecordDecision, eligibleUnits }: {
+export function VoteCountsCard({
+  ctx,
+  item,
+  onRecordDecision,
+  eligibleUnits,
+}: {
   ctx: SiteCtx
   item: S['AgendaItem']
   eligibleUnits: number
@@ -80,12 +94,17 @@ export function VoteCountsCard({ ctx, item, onRecordDecision, eligibleUnits }: {
     // only when the stored record changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saved?.recorded_at])
-  const w = form.watch()
+  const w = { yes: '', no: '', abstain: '', yesShare: '', ...useWatch({ control: form.control }) }
   const yes = toNum(w.yes)
   const rule = settings.data?.settings.thresholds.find((x) => x.topic === item.topic)?.rule
   const evaln = evaluateThreshold(
     rule,
-    { yes, no: toNum(w.no), abstain: toNum(w.abstain), yesSharePct: w.yesShare === '' ? null : toNum(w.yesShare) },
+    {
+      yes,
+      no: toNum(w.no),
+      abstain: toNum(w.abstain),
+      yesSharePct: w.yesShare === '' ? null : toNum(w.yesShare),
+    },
     eligibleUnits,
   )
   const save = useOrgMutation(async (v: Values) =>
@@ -128,10 +147,20 @@ export function VoteCountsCard({ ctx, item, onRecordDecision, eligibleUnits }: {
             <Input id={`n-${item.id}`} inputMode="numeric" dir="ltr" {...form.register('no')} />
           </Field>
           <Field label={t`Abstain`} htmlFor={`a-${item.id}`}>
-            <Input id={`a-${item.id}`} inputMode="numeric" dir="ltr" {...form.register('abstain')} />
+            <Input
+              id={`a-${item.id}`}
+              inputMode="numeric"
+              dir="ltr"
+              {...form.register('abstain')}
+            />
           </Field>
           <Field label={t`Yes share of land (%)`} htmlFor={`s-${item.id}`}>
-            <Input id={`s-${item.id}`} inputMode="decimal" dir="ltr" {...form.register('yesShare')} />
+            <Input
+              id={`s-${item.id}`}
+              inputMode="decimal"
+              dir="ltr"
+              {...form.register('yesShare')}
+            />
           </Field>
           <div className="flex flex-wrap items-center gap-2 sm:col-span-4">
             <Button type="submit" size="sm" disabled={save.isPending}>
@@ -153,7 +182,9 @@ export function VoteCountsCard({ ctx, item, onRecordDecision, eligibleUnits }: {
             <span>
               <Trans>
                 Needed: at least {evaln.neededYes} yes votes
-                {evaln.neededSharePct !== null ? ` and more than ${evaln.neededSharePct}% of the land share` : ''}
+                {evaln.neededSharePct !== null
+                  ? ` and more than ${evaln.neededSharePct}% of the land share`
+                  : ''}
               </Trans>
               {' · '}
               {evaln.met === null ? (
@@ -214,13 +245,19 @@ export function DecisionDialog({
   const schema = useMemo(
     () =>
       z.object({
-        text: z.string().trim().min(1, t`Write the decision.`),
+        text: z
+          .string()
+          .trim()
+          .min(1, t`Write the decision.`),
         outcome: z.enum(['accepted', 'rejected', 'no_vote', 'noted']),
         concerns_residents: z.boolean(),
         dissents: z.array(
           z.object({
             person_id: z.string().min(1, t`Choose a person.`),
-            text: z.string().trim().min(1, t`Write the dissent.`),
+            text: z
+              .string()
+              .trim()
+              .min(1, t`Write the dissent.`),
           }),
         ),
       }),
@@ -231,7 +268,14 @@ export function DecisionDialog({
     resolver: zodResolver(schema),
     defaultValues: {
       text: item?.title ?? '',
-      outcome: hint === 'accepted' ? 'accepted' : hint === 'rejected' ? 'rejected' : item?.will_be_voted ? 'no_vote' : 'noted',
+      outcome:
+        hint === 'accepted'
+          ? 'accepted'
+          : hint === 'rejected'
+            ? 'rejected'
+            : item?.will_be_voted
+              ? 'no_vote'
+              : 'noted',
       concerns_residents: false,
       dissents: [],
     },
@@ -277,7 +321,11 @@ export function DecisionDialog({
               {item ? item.title : <Trans>A decision without an agenda item.</Trans>}
             </DialogDescription>
           </DialogHeader>
-          <Field label={t`Decision text`} htmlFor="dec-text" error={form.formState.errors.text?.message}>
+          <Field
+            label={t`Decision text`}
+            htmlFor="dec-text"
+            error={form.formState.errors.text?.message}
+          >
             <Textarea id="dec-text" {...form.register('text')} />
           </Field>
           <Field label={t`Outcome`} htmlFor="dec-outcome">
@@ -295,7 +343,10 @@ export function DecisionDialog({
             </legend>
             {dissents.fields.map((f, i) => (
               <div key={f.id} className="grid gap-2 sm:grid-cols-[12rem_1fr_auto]">
-                <Select aria-label={t`Dissenting owner`} {...form.register(`dissents.${i}.person_id`)}>
+                <Select
+                  aria-label={t`Dissenting owner`}
+                  {...form.register(`dissents.${i}.person_id`)}
+                >
                   <option value="">{t`Choose a person`}</option>
                   {(persons.data ?? []).map((p) => (
                     <option key={p.id} value={p.id}>
@@ -304,13 +355,24 @@ export function DecisionDialog({
                   ))}
                 </Select>
                 <Input aria-label={t`Dissent text`} {...form.register(`dissents.${i}.text`)} />
-                <Button type="button" variant="ghost" size="icon" aria-label={t`Remove dissent`} onClick={() => dissents.remove(i)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={t`Remove dissent`}
+                  onClick={() => dissents.remove(i)}
+                >
                   <Trash2Icon />
                 </Button>
               </div>
             ))}
             <div>
-              <Button type="button" variant="outline" size="sm" onClick={() => dissents.append({ person_id: '', text: '' })}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => dissents.append({ person_id: '', text: '' })}
+              >
                 <PlusIcon />
                 <Trans>Add dissent</Trans>
               </Button>
@@ -359,7 +421,9 @@ export function DecisionRow({
         <span className="font-mono text-sm font-semibold" dir="ltr">
           {decisionNo(decision)}
         </span>
-        <Badge variant={OUTCOME_VARIANT[decision.outcome] ?? 'secondary'}>{labels.outcome(decision.outcome)}</Badge>
+        <Badge variant={OUTCOME_VARIANT[decision.outcome] ?? 'secondary'}>
+          {labels.outcome(decision.outcome)}
+        </Badge>
         {decision.concerns_residents ? (
           <Badge variant="outline">
             <Trans>Concerns residents</Trans>
@@ -371,7 +435,12 @@ export function DecisionRow({
           </Badge>
         ) : null}
         {canApply && decision.outcome === 'accepted' && !decision.effect ? (
-          <Button size="sm" variant={suggested ? 'default' : 'outline'} className="ms-auto" onClick={() => setApplying(true)}>
+          <Button
+            size="sm"
+            variant={suggested ? 'default' : 'outline'}
+            className="ms-auto"
+            onClick={() => setApplying(true)}
+          >
             <Trans>Apply effect</Trans>
           </Button>
         ) : null}
@@ -388,7 +457,12 @@ export function DecisionRow({
       ) : null}
       {footer}
       {applying ? (
-        <ApplyDecisionDialog ctx={ctx} decision={decision} suggestedKind={suggested} onClose={() => setApplying(false)} />
+        <ApplyDecisionDialog
+          ctx={ctx}
+          decision={decision}
+          suggestedKind={suggested}
+          onClose={() => setApplying(false)}
+        />
       ) : null}
     </li>
   )
@@ -401,7 +475,10 @@ export function DecisionsPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Mee
   const agenda = useAgenda(ctx.orgId, meeting.id)
   const owners = useOwnerRows(ctx.orgId, ctx.siteId)
   const decisions = useDecisions(ctx.orgId, ctx.siteId, { meeting_id: meeting.id })
-  const [recording, setRecording] = useState<{ item: S['AgendaItem'] | null; hint: S['VoteCount']['outcome_hint'] } | null>(null)
+  const [recording, setRecording] = useState<{
+    item: S['AgendaItem'] | null
+    hint: S['VoteCount']['outcome_hint']
+  } | null>(null)
   const canRecord = can('decisions.manage')
   const eligibleUnits = owners.rows.reduce((n, o) => n + o.units.length, 0)
   const voted = (agenda.data ?? []).filter((a) => a.will_be_voted)
@@ -431,7 +508,11 @@ export function DecisionsPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Mee
             <Trans>Decisions</Trans>
           </CardTitle>
           {active && canRecord ? (
-            <Button size="sm" variant="outline" onClick={() => setRecording({ item: null, hint: 'undetermined' })}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setRecording({ item: null, hint: 'undetermined' })}
+            >
               <Trans>Record a note</Trans>
             </Button>
           ) : null}
@@ -472,4 +553,3 @@ export function DecisionsPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Mee
     </div>
   )
 }
-

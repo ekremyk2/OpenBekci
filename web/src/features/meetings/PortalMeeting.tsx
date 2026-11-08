@@ -5,7 +5,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from '@/lib/toast'
 import { useDecisions, useUnits } from './hooks'
-import { gApi, idemHeader, orgUrl, unwrap, useKeyStore, useOrgMutation, useOrgQuery, type S, type SiteCtx } from './kit/api'
+import {
+  gApi,
+  idemHeader,
+  orgUrl,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  type S,
+  type SiteCtx,
+} from './kit/api'
 import { QrCode } from './kit/QrCode'
 import { PageHeader, QueryBoundary } from './kit/ui'
 import { Callout, DownloadButton } from './kit/widgets'
@@ -18,18 +28,20 @@ function MyPolls({ ctx, mine }: { ctx: SiteCtx; mine: S['MyMeeting'] }) {
   const labels = useGovLabels()
   const units = useUnits(ctx.orgId, ctx.siteId)
   const keys = useKeyStore()
-  const answer = useOrgMutation(async (v: { item: string; unit: string; answer: 'yes' | 'no' | 'abstain' }) => {
-    const id = `${v.item}-${v.unit}-${v.answer}`
-    const r = await unwrap(
-      gApi.PUT('/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer', {
-        params: { path: { org_id: ctx.orgId, agenda_item_id: v.item } },
-        headers: idemHeader(keys.get(id)),
-        body: { unit_id: v.unit, answer: v.answer },
-      }),
-    )
-    keys.done(id)
-    return r
-  })
+  const answer = useOrgMutation(
+    async (v: { item: string; unit: string; answer: 'yes' | 'no' | 'abstain' }) => {
+      const id = `${v.item}-${v.unit}-${v.answer}`
+      const r = await unwrap(
+        gApi.PUT('/v1/orgs/{org_id}/agenda-items/{agenda_item_id}/poll/answer', {
+          params: { path: { org_id: ctx.orgId, agenda_item_id: v.item } },
+          headers: idemHeader(keys.get(id)),
+          body: { unit_id: v.unit, answer: v.answer },
+        }),
+      )
+      keys.done(id)
+      return r
+    },
+  )
   if (mine.polls.length === 0) return null
   const door = (id: string) => units.data?.find((u) => u.id === id)?.door_number ?? id
   return (
@@ -43,8 +55,8 @@ function MyPolls({ ctx, mine }: { ctx: SiteCtx; mine: S['MyMeeting'] }) {
       <CardContent className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">
           <Trans>
-            Your answer is not a vote: it tells the manager what owners think. The binding vote is taken in
-            the room. One answer per unit; you can change it until the poll closes.
+            Your answer is not a vote: it tells the manager what owners think. The binding vote is
+            taken in the room. One answer per unit; you can change it until the poll closes.
           </Trans>
         </p>
         {mine.polls.map((p) => (
@@ -114,7 +126,10 @@ export function PortalMeeting({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meet
         }
         actions={
           meeting.call_letter_document_id ? (
-            <DownloadButton url={orgUrl(ctx.orgId, `/meetings/${meeting.id}/call-letter`)} filename={`call-letter-${meeting.id}.pdf`}>
+            <DownloadButton
+              url={orgUrl(ctx.orgId, `/meetings/${meeting.id}/call-letter`)}
+              filename={`call-letter-${meeting.id}.pdf`}
+            >
               <Trans>My call letter</Trans>
             </DownloadButton>
           ) : null
@@ -125,7 +140,9 @@ export function PortalMeeting({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meet
           <>
             {mine.eligible_unit_ids.length === 0 ? (
               <Callout tone="info">
-                <Trans>Only owners attend and answer polls. You can read the decisions below.</Trans>
+                <Trans>
+                  Only owners attend and answer polls. You can read the decisions below.
+                </Trans>
               </Callout>
             ) : null}
             {mine.attendance_qr ? (
@@ -175,7 +192,9 @@ export function PortalMeeting({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meet
                       <span className="font-mono text-sm font-semibold" dir="ltr">
                         {decisionNo(d)}
                       </span>
-                      <Badge variant={OUTCOME_VARIANT[d.outcome] ?? 'secondary'}>{labels.outcome(d.outcome)}</Badge>
+                      <Badge variant={OUTCOME_VARIANT[d.outcome] ?? 'secondary'}>
+                        {labels.outcome(d.outcome)}
+                      </Badge>
                     </div>
                     <p className="text-sm">{d.text}</p>
                   </li>

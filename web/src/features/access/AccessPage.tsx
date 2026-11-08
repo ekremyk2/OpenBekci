@@ -25,7 +25,9 @@ export function AccessPage() {
           <TabsTrigger value="agents">{t`Agents`}</TabsTrigger>
           <TabsTrigger value="points">{t`Access points`}</TabsTrigger>
           <TabsTrigger value="credentials">{t`Credentials`}</TabsTrigger>
-          {can('access.view_events') ? <TabsTrigger value="log">{t`Opening log`}</TabsTrigger> : null}
+          {can('access.view_events') ? (
+            <TabsTrigger value="log">{t`Opening log`}</TabsTrigger>
+          ) : null}
         </TabsList>
         <TabsContent value="agents">
           <AgentsTab ctx={ctx} canManage={manage} />

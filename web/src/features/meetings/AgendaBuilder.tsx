@@ -185,7 +185,12 @@ export function AgendaBuilder({
         </ol>
       )}
       <div className="flex flex-col gap-3 rounded-md border border-dashed p-3">
-        <AgendaItemFields value={draft} onChange={setDraft} thresholds={thresholds} idPrefix="new-item" />
+        <AgendaItemFields
+          value={draft}
+          onChange={setDraft}
+          thresholds={thresholds}
+          idPrefix="new-item"
+        />
         <div>
           <Button
             type="button"
@@ -193,7 +198,10 @@ export function AgendaBuilder({
             size="sm"
             disabled={draft.title.trim() === ''}
             onClick={() => {
-              onChange([...items, { ...draft, key: crypto.randomUUID(), title: draft.title.trim() }])
+              onChange([
+                ...items,
+                { ...draft, key: crypto.randomUUID(), title: draft.title.trim() },
+              ])
               setDraft({ title: '', description: '', will_be_voted: true, topic: '' })
             }}
           >

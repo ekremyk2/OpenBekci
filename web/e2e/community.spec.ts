@@ -19,7 +19,9 @@ test('call a meeting, check in, record the counts and apply the elected role', a
   await page.getByLabel('Title').fill('Elect the site manager')
   await page.getByLabel('Topic').selectOption({ label: 'Election of the manager' })
   await page.getByRole('button', { name: 'Add item' }).click()
-  await expect(page.getByRole('list', { name: 'Agenda' }).getByText('Elect the site manager')).toBeVisible()
+  await expect(
+    page.getByRole('list', { name: 'Agenda' }).getByText('Elect the site manager'),
+  ).toBeVisible()
 
   // call: legal timing is fine, the checklist appears
   await page.getByRole('tab', { name: 'Call' }).click()
@@ -79,6 +81,10 @@ test('pre-register a visitor, the guard scans the code and admits them', async (
   await page.getByLabel('QR code').fill(code)
   await page.getByRole('button', { name: 'Check', exact: true }).click()
   await expect(page.getByText('Valid pass')).toBeVisible()
-  await page.getByRole('status').filter({ hasText: 'Valid pass' }).getByRole('button', { name: 'Admit' }).click()
+  await page
+    .getByRole('status')
+    .filter({ hasText: 'Valid pass' })
+    .getByRole('button', { name: 'Admit' })
+    .click()
   await expect(page.getByText('Deniz Acar admitted.')).toBeVisible()
 })

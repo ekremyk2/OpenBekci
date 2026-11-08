@@ -34,7 +34,8 @@ export function quorumView(q: S['Quorum']): QuorumView {
   const countPct = pct(q.present_count, q.eligible_count)
   const presentSharePct = pct(q.present_share, q.eligible_share)
   const countOk = q.required_by_count_pct === null ? null : countPct > q.required_by_count_pct
-  const shareOk = q.required_by_share_pct === null ? null : presentSharePct > q.required_by_share_pct
+  const shareOk =
+    q.required_by_share_pct === null ? null : presentSharePct > q.required_by_share_pct
   let moreOwnersNeeded: number | null = null
   if (q.required_by_count_pct !== null) {
     // smallest n with n/eligible > required%
@@ -81,7 +82,8 @@ export function ownerRows(
       row = { personId: o.person_id, name: o.person_display_name, units: [], sharePct: null }
       by.set(o.person_id, row)
     }
-    if (!row.units.some((u) => u.id === o.unit_id)) row.units.push({ id: o.unit_id, label: o.unit_door_number })
+    if (!row.units.some((u) => u.id === o.unit_id))
+      row.units.push({ id: o.unit_id, label: o.unit_door_number })
     if (o.share_pct !== null && o.share_pct < 100) row.sharePct = o.share_pct
   }
   return [...by.values()].sort((a, b) => a.name.localeCompare(b.name))
@@ -110,7 +112,10 @@ export function proxyWarnings(args: {
       ? s.proxy_cap_small_building_max
       : Math.floor((totalUnits * s.proxy_cap_pct) / 100)
   if (proxies > cap) warnings.push('proxy_cap')
-  if (totalUnits > 0 && ((holderOwnUnits + proxies) / totalUnits) * 100 > s.max_votes_per_person_pct)
+  if (
+    totalUnits > 0 &&
+    ((holderOwnUnits + proxies) / totalUnits) * 100 > s.max_votes_per_person_pct
+  )
     warnings.push('max_votes')
   return warnings
 }
@@ -153,13 +158,15 @@ export function evaluateThreshold(
     case 'majority_count_and_share': {
       const neededYes = Math.floor(eligibleUnits / 2) + 1
       const byCount = counts.yes >= neededYes
-      const met = counts.yesSharePct === null ? (byCount ? null : false) : byCount && counts.yesSharePct > 50
+      const met =
+        counts.yesSharePct === null ? (byCount ? null : false) : byCount && counts.yesSharePct > 50
       return { neededYes, neededSharePct: 50, met }
     }
     case 'four_fifths': {
       const neededYes = Math.ceil((eligibleUnits * 4) / 5)
       const byCount = counts.yes >= neededYes
-      const met = counts.yesSharePct === null ? (byCount ? null : false) : byCount && counts.yesSharePct >= 80
+      const met =
+        counts.yesSharePct === null ? (byCount ? null : false) : byCount && counts.yesSharePct >= 80
       return { neededYes, neededSharePct: 80, met }
     }
     case 'unanimity':
@@ -196,7 +203,9 @@ export function callTimingIssues(
 }
 
 /** Topic of an agenda item to the kind of change a decision on it can apply (G5). */
-export function effectKindForTopic(topic: string | null | undefined): S['DecisionEffect']['kind'] | null {
+export function effectKindForTopic(
+  topic: string | null | undefined,
+): S['DecisionEffect']['kind'] | null {
   switch (topic) {
     case 'dues_rate':
       return 'dues_rate'

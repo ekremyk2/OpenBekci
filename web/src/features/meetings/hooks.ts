@@ -31,9 +31,11 @@ export function usePersons(orgId: string) {
   return useOrgQuery(
     ['persons'],
     () =>
-      unwrap(gApi.GET('/v1/orgs/{org_id}/persons', { params: { path: { org_id: orgId }, query: { limit: 200 } } })).then(
-        (r) => r.items,
-      ),
+      unwrap(
+        gApi.GET('/v1/orgs/{org_id}/persons', {
+          params: { path: { org_id: orgId }, query: { limit: 200 } },
+        }),
+      ).then((r) => r.items),
     { staleTime: 5 * 60_000 },
   )
 }
@@ -43,7 +45,9 @@ export function useUnits(orgId: string, siteId: string) {
     ['units', siteId],
     () =>
       unwrap(
-        gApi.GET('/v1/orgs/{org_id}/units', { params: { path: { org_id: orgId }, query: { site_id: siteId, limit: 200 } } }),
+        gApi.GET('/v1/orgs/{org_id}/units', {
+          params: { path: { org_id: orgId }, query: { site_id: siteId, limit: 200 } },
+        }),
       ).then((r) => r.items),
     { staleTime: 5 * 60_000 },
   )
@@ -85,7 +89,11 @@ export function useNotices(orgId: string, meetingId: string, phase: 'call' | 'de
   )
 }
 
-export function useDecisions(orgId: string, siteId: string, query: Record<string, string | number | undefined> = {}) {
+export function useDecisions(
+  orgId: string,
+  siteId: string,
+  query: Record<string, string | number | undefined> = {},
+) {
   return useOrgQuery(['decisions', siteId, query], () =>
     unwrap(
       gApi.GET('/v1/orgs/{org_id}/decisions', {

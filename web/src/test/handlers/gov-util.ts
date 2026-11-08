@@ -67,11 +67,53 @@ export interface MockOwner {
   phone: string
 }
 export const OWNERS: MockOwner[] = [
-  { personId: 'p-ayse', name: 'Ayşe Yılmaz', unitId: 'u-a1', door: 'A1', share: 20, phone: '+905551110001' },
-  { personId: 'p-mehmet', name: 'Mehmet Demir', unitId: 'u-a2', door: 'A2', share: 20, phone: '+905551110002' },
-  { personId: 'p-zeynep', name: 'Zeynep Kaya', unitId: 'u-b1', door: 'B1', share: 15, phone: '+905551110003' },
-  { personId: 'p-can', name: 'Can Öztürk', unitId: 'u-b2', door: 'B2', share: 15, phone: '+905551110004' },
-  { personId: 'p-elif', name: 'Elif Şahin', unitId: 'u-c1', door: 'C1', share: 15, phone: '+905551110005' },
-  { personId: 'p-ali', name: 'Ali Arslan', unitId: 'u-c2', door: 'C2', share: 15, phone: '+905551110006' },
+  {
+    personId: 'p-ayse',
+    name: 'Ayşe Yılmaz',
+    unitId: 'u-a1',
+    door: 'A1',
+    share: 20,
+    phone: '+905551110001',
+  },
+  {
+    personId: 'p-mehmet',
+    name: 'Mehmet Demir',
+    unitId: 'u-a2',
+    door: 'A2',
+    share: 20,
+    phone: '+905551110002',
+  },
+  {
+    personId: 'p-zeynep',
+    name: 'Zeynep Kaya',
+    unitId: 'u-b1',
+    door: 'B1',
+    share: 15,
+    phone: '+905551110003',
+  },
+  {
+    personId: 'p-can',
+    name: 'Can Öztürk',
+    unitId: 'u-b2',
+    door: 'B2',
+    share: 15,
+    phone: '+905551110004',
+  },
+  {
+    personId: 'p-elif',
+    name: 'Elif Şahin',
+    unitId: 'u-c1',
+    door: 'C1',
+    share: 15,
+    phone: '+905551110005',
+  },
+  {
+    personId: 'p-ali',
+    name: 'Ali Arslan',
+    unitId: 'u-c2',
+    door: 'C2',
+    share: 15,
+    phone: '+905551110006',
+  },
 ]
 export const unitDoor = (unitId: string) => OWNERS.find((o) => o.unitId === unitId)?.door ?? unitId

@@ -28,7 +28,10 @@ function Bar({ label, value, total }: { label: string; value: number; total: num
     <div className="flex items-center gap-2 text-sm">
       <span className="w-20">{label}</span>
       <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-        <div className="h-full bg-primary" ref={(el) => el?.style.setProperty('width', `${pct}%`)} />
+        <div
+          className="h-full bg-primary"
+          ref={(el) => el?.style.setProperty('width', `${pct}%`)}
+        />
       </div>
       <span className="w-8 text-end tabular-nums">{value}</span>
     </div>
@@ -103,7 +106,14 @@ function PollCard({ ctx, item }: { ctx: SiteCtx; item: S['AgendaItem'] }) {
     ),
   )
   const p = poll.data
-  const statusLabel = p?.status === 'open' ? t`Open` : p?.status === 'closed' ? t`Closed` : p ? t`Scheduled` : t`No poll`
+  const statusLabel =
+    p?.status === 'open'
+      ? t`Open`
+      : p?.status === 'closed'
+        ? t`Closed`
+        : p
+          ? t`Scheduled`
+          : t`No poll`
   const now = new Date()
   const inDays = (d: number) => new Date(now.getTime() + d * 86_400_000).toISOString()
   return (
@@ -149,8 +159,15 @@ function PollCard({ ctx, item }: { ctx: SiteCtx; item: S['AgendaItem'] }) {
             disabled={save.isPending}
             onClick={() =>
               save.mutate(
-                { opens_at: now.toISOString(), closes_at: p?.closes_at && Date.parse(p.closes_at) > Date.now() ? p.closes_at : inDays(7) },
-                { onSuccess: () => toast.info(t`The poll is open.`), onError: () => toast.error(t`Could not save the poll.`) },
+                {
+                  opens_at: now.toISOString(),
+                  closes_at:
+                    p?.closes_at && Date.parse(p.closes_at) > Date.now() ? p.closes_at : inDays(7),
+                },
+                {
+                  onSuccess: () => toast.info(t`The poll is open.`),
+                  onError: () => toast.error(t`Could not save the poll.`),
+                },
               )
             }
           >
@@ -163,7 +180,10 @@ function PollCard({ ctx, item }: { ctx: SiteCtx; item: S['AgendaItem'] }) {
             onClick={() =>
               save.mutate(
                 { opens_at: p!.opens_at, closes_at: now.toISOString() },
-                { onSuccess: () => toast.info(t`The poll is closed.`), onError: () => toast.error(t`Could not save the poll.`) },
+                {
+                  onSuccess: () => toast.info(t`The poll is closed.`),
+                  onError: () => toast.error(t`Could not save the poll.`),
+                },
               )
             }
           >
@@ -176,10 +196,19 @@ function PollCard({ ctx, item }: { ctx: SiteCtx; item: S['AgendaItem'] }) {
             onClick={() =>
               save.mutate(
                 {
-                  opens_at: localInputToInstant(opens || instantToLocalInput(p!.opens_at, ctx.timeZone), ctx.timeZone),
-                  closes_at: localInputToInstant(closes || instantToLocalInput(p!.closes_at, ctx.timeZone), ctx.timeZone),
+                  opens_at: localInputToInstant(
+                    opens || instantToLocalInput(p!.opens_at, ctx.timeZone),
+                    ctx.timeZone,
+                  ),
+                  closes_at: localInputToInstant(
+                    closes || instantToLocalInput(p!.closes_at, ctx.timeZone),
+                    ctx.timeZone,
+                  ),
                 },
-                { onSuccess: () => toast.info(t`Poll saved.`), onError: () => toast.error(t`Could not save the poll.`) },
+                {
+                  onSuccess: () => toast.info(t`Poll saved.`),
+                  onError: () => toast.error(t`Could not save the poll.`),
+                },
               )
             }
           >
@@ -201,8 +230,8 @@ export function PollsPanel({ ctx, meetingId }: { ctx: SiteCtx; meetingId: string
     <div className="flex flex-col gap-4">
       <Callout tone="info">
         <Trans>
-          Polls are not votes. Owners answer once per unit before the assembly so you can see the mood; the
-          binding count is recorded in the room.
+          Polls are not votes. Owners answer once per unit before the assembly so you can see the
+          mood; the binding count is recorded in the room.
         </Trans>
       </Callout>
       {items.length === 0 ? (

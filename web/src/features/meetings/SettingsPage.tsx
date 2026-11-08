@@ -9,11 +9,26 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { toast } from '@/lib/toast'
 import { useGovernanceSettings } from './hooks'
 import { gApi, ifMatch, unwrap, useOrgMutation, useOrgQuery, useSiteCtx, type S } from './kit/api'
-import { applyServerErrors, Checkbox, Field, FormRootError, PageHeader, QueryBoundary, Select } from './kit/ui'
+import {
+  applyServerErrors,
+  Checkbox,
+  Field,
+  FormRootError,
+  PageHeader,
+  QueryBoundary,
+  Select,
+} from './kit/ui'
 import { Callout } from './kit/widgets'
 import { THRESHOLD_RULE_LABEL_KEYS } from './hooks'
 import { useGovLabels } from './labels'
@@ -29,8 +44,14 @@ export function useSettingsSchema() {
         .string()
         .trim()
         .refine((s) => s !== '' && Number.isFinite(Number(s.replace(',', '.'))), t`Enter a number.`)
-        .refine((s) => Number(s.replace(',', '.')) >= min && Number(s.replace(',', '.')) <= max, t`Enter a value from ${min} to ${max}.`)
-        .refine((s) => !integer || Number.isInteger(Number(s.replace(',', '.'))), t`Enter a whole number.`)
+        .refine(
+          (s) => Number(s.replace(',', '.')) >= min && Number(s.replace(',', '.')) <= max,
+          t`Enter a value from ${min} to ${max}.`,
+        )
+        .refine(
+          (s) => !integer || Number.isInteger(Number(s.replace(',', '.'))),
+          t`Enter a whole number.`,
+        )
     return z
       .object({
         first_call_by_count_pct: num(0, 100, false),
@@ -39,7 +60,12 @@ export function useSettingsSchema() {
         thresholds: z.array(
           z.object({
             topic: z.string(),
-            rule: z.enum(['simple_majority_present', 'majority_count_and_share', 'four_fifths', 'unanimity']),
+            rule: z.enum([
+              'simple_majority_present',
+              'majority_count_and_share',
+              'four_fifths',
+              'unanimity',
+            ]),
             note: z.string().nullable(),
           }),
         ),
@@ -109,7 +135,9 @@ export function SettingsPage() {
   const manage = can('meetings.manage')
   const settings = useGovernanceSettings(ctx.orgId, ctx.siteId)
   const presets = useOrgQuery(['presets'], () =>
-    unwrap(gApi.GET('/v1/orgs/{org_id}/governance-presets', { params: { path: { org_id: ctx.orgId } } })).then((r) => r.items),
+    unwrap(
+      gApi.GET('/v1/orgs/{org_id}/governance-presets', { params: { path: { org_id: ctx.orgId } } }),
+    ).then((r) => r.items),
   )
   const schema = useSettingsSchema()
   const form = useForm<Values>({ resolver: zodResolver(schema) })
@@ -123,16 +151,30 @@ export function SettingsPage() {
   const save = useOrgMutation(async (v: Values) =>
     unwrap(
       gApi.PUT('/v1/orgs/{org_id}/sites/{site_id}/governance-settings', {
-        params: { path: { org_id: ctx.orgId, site_id: ctx.siteId }, header: ifMatch(loaded!.version) },
+        params: {
+          path: { org_id: ctx.orgId, site_id: ctx.siteId },
+          header: ifMatch(loaded!.version),
+        },
         body: toSettings(v),
       }),
     ),
   )
   const err = form.formState.errors
   const num = (name: keyof Values, label: string, hint?: string, suffix?: string) => (
-    <Field label={label} htmlFor={`gs-${name}`} error={(err[name] as { message?: string } | undefined)?.message} hint={hint}>
+    <Field
+      label={label}
+      htmlFor={`gs-${name}`}
+      error={(err[name] as { message?: string } | undefined)?.message}
+      hint={hint}
+    >
       <div className="flex items-center gap-2">
-        <Input id={`gs-${name}`} inputMode="decimal" dir="ltr" disabled={!manage} {...form.register(name as 'call_min_days')} />
+        <Input
+          id={`gs-${name}`}
+          inputMode="decimal"
+          dir="ltr"
+          disabled={!manage}
+          {...form.register(name as 'call_min_days')}
+        />
         {suffix ? <span className="text-sm text-muted-foreground">{suffix}</span> : null}
       </div>
     </Field>
@@ -163,7 +205,11 @@ export function SettingsPage() {
                 <CardHeader>
                   <CardTitle>
                     <Trans>Where the defaults come from</Trans>
-                    {s.preset ? <Badge variant="outline" className="ms-2">{s.preset}</Badge> : null}
+                    {s.preset ? (
+                      <Badge variant="outline" className="ms-2">
+                        {s.preset}
+                      </Badge>
+                    ) : null}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -187,7 +233,11 @@ export function SettingsPage() {
               <Card>
                 <CardContent className="flex flex-wrap items-end gap-3 pt-6">
                   <Field label={t`Load a preset`} htmlFor="gs-preset" className="min-w-60">
-                    <Select id="gs-preset" value={presetId} onChange={(e) => setPresetId(e.target.value)}>
+                    <Select
+                      id="gs-preset"
+                      value={presetId}
+                      onChange={(e) => setPresetId(e.target.value)}
+                    >
                       <option value="">{t`Choose a preset`}</option>
                       {(presets.data ?? []).map((p) => (
                         <option key={p.id} value={p.id}>
@@ -214,8 +264,18 @@ export function SettingsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
-                {num('first_call_by_count_pct', t`First call: more than this share of owners`, undefined, '%')}
-                {num('first_call_by_share_pct', t`First call: more than this share of the land`, undefined, '%')}
+                {num(
+                  'first_call_by_count_pct',
+                  t`First call: more than this share of owners`,
+                  undefined,
+                  '%',
+                )}
+                {num(
+                  'first_call_by_share_pct',
+                  t`First call: more than this share of the land`,
+                  undefined,
+                  '%',
+                )}
                 <div className="sm:col-span-2">
                   <Checkbox
                     label={t`The second call also needs a quorum`}
@@ -223,7 +283,9 @@ export function SettingsPage() {
                     {...form.register('second_call_requires_quorum')}
                   />
                   <p className="mt-1 text-xs text-muted-foreground">
-                    <Trans>Default: no quorum on the second call; decisions by majority of those present.</Trans>
+                    <Trans>
+                      Default: no quorum on the second call; decisions by majority of those present.
+                    </Trans>
                   </p>
                 </div>
               </CardContent>
@@ -266,7 +328,9 @@ export function SettingsPage() {
                             ))}
                           </Select>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{th.note ?? '–'}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {th.note ?? '–'}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -280,8 +344,18 @@ export function SettingsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
-                {num('max_votes_per_person_pct', t`Most votes one person may hold`, t`Law 634 default: one third.`, '%')}
-                {num('proxy_cap_pct', t`Most votes one person may represent by proxy`, undefined, '%')}
+                {num(
+                  'max_votes_per_person_pct',
+                  t`Most votes one person may hold`,
+                  t`Law 634 default: one third.`,
+                  '%',
+                )}
+                {num(
+                  'proxy_cap_pct',
+                  t`Most votes one person may represent by proxy`,
+                  undefined,
+                  '%',
+                )}
                 {num('small_building_unit_limit', t`Small building: up to this many units`)}
                 {num('proxy_cap_small_building_max', t`Small building: most proxies per person`)}
               </CardContent>
@@ -293,14 +367,32 @@ export function SettingsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
-                {num('call_min_days', t`Send the call at least this many days before`, undefined, t`days`)}
+                {num(
+                  'call_min_days',
+                  t`Send the call at least this many days before`,
+                  undefined,
+                  t`days`,
+                )}
                 {num('term_reminder_days', t`Remind before a term ends`, undefined, t`days`)}
-                {num('second_call_min_days', t`Second meeting: earliest, days after the first`, undefined, t`days`)}
-                {num('second_call_max_days', t`Second meeting: latest, days after the first`, undefined, t`days`)}
+                {num(
+                  'second_call_min_days',
+                  t`Second meeting: earliest, days after the first`,
+                  undefined,
+                  t`days`,
+                )}
+                {num(
+                  'second_call_max_days',
+                  t`Second meeting: latest, days after the first`,
+                  undefined,
+                  t`days`,
+                )}
               </CardContent>
             </Card>
             <Callout tone="info">
-              <Trans>Changes apply from the next assembly; an assembly that was already called keeps the rules it was called under.</Trans>
+              <Trans>
+                Changes apply from the next assembly; an assembly that was already called keeps the
+                rules it was called under.
+              </Trans>
             </Callout>
             <FormRootError message={form.formState.errors.root?.message} />
             {manage ? (

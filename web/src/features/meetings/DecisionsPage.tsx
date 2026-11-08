@@ -38,7 +38,12 @@ export function DecisionsPage() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <Select aria-label={t`Outcome`} className="w-auto" value={outcome} onChange={(e) => setOutcome(e.target.value)}>
+        <Select
+          aria-label={t`Outcome`}
+          className="w-auto"
+          value={outcome}
+          onChange={(e) => setOutcome(e.target.value)}
+        >
           <option value="">{t`Any outcome`}</option>
           {['accepted', 'rejected', 'no_vote', 'noted'].map((o) => (
             <option key={o} value={o}>
@@ -46,7 +51,12 @@ export function DecisionsPage() {
             </option>
           ))}
         </Select>
-        <Select aria-label={t`Year`} className="w-auto" value={year} onChange={(e) => setYear(e.target.value)}>
+        <Select
+          aria-label={t`Year`}
+          className="w-auto"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+        >
           <option value="">{t`Any year`}</option>
           {[thisYear, thisYear - 1, thisYear - 2].map((y) => (
             <option key={y} value={y}>

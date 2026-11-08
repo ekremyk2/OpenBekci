@@ -7,7 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from '@/lib/toast'
 import { AgendaItemFields, ThresholdHint, type DraftItem } from './AgendaBuilder'
 import { useAgenda, useGovernanceSettings } from './hooks'
-import { gApi, idemHeader, ifMatch, useKeyStore, useOrgMutation, type S, type SiteCtx } from './kit/api'
+import {
+  gApi,
+  idemHeader,
+  ifMatch,
+  useKeyStore,
+  useOrgMutation,
+  type S,
+  type SiteCtx,
+} from './kit/api'
 import { QueryBoundary } from './kit/ui'
 import { Callout } from './kit/widgets'
 import { useGovLabels } from './labels'
@@ -30,7 +38,12 @@ export function AgendaPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meetin
   const editable = meeting.status === 'draft'
   const keys = useKeyStore()
   const [editing, setEditing] = useState<string | null>(null)
-  const [fields, setFields] = useState<Fields>({ title: '', description: '', will_be_voted: true, topic: '' })
+  const [fields, setFields] = useState<Fields>({
+    title: '',
+    description: '',
+    will_be_voted: true,
+    topic: '',
+  })
   const [adding, setAdding] = useState(false)
 
   const payload = (f: Fields) => ({
@@ -41,7 +54,10 @@ export function AgendaPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meetin
   })
   const add = useOrgMutation(async (f: Fields) => {
     await gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}/agenda-items', {
-      params: { path: { org_id: ctx.orgId, meeting_id: meeting.id }, header: idemHeader(keys.get(`add-${f.title}`)) },
+      params: {
+        path: { org_id: ctx.orgId, meeting_id: meeting.id },
+        header: idemHeader(keys.get(`add-${f.title}`)),
+      },
       body: payload(f),
     })
     keys.done(`add-${f.title}`)
@@ -57,7 +73,10 @@ export function AgendaPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meetin
   })
   const remove = useOrgMutation(async (item: S['AgendaItem']) => {
     await gApi.DELETE('/v1/orgs/{org_id}/agenda-items/{agenda_item_id}', {
-      params: { path: { org_id: ctx.orgId, agenda_item_id: item.id }, header: ifMatch(item.version) },
+      params: {
+        path: { org_id: ctx.orgId, agenda_item_id: item.id },
+        header: ifMatch(item.version),
+      },
     })
   })
   const reorder = useOrgMutation(async (ids: string[]) => {
@@ -93,13 +112,21 @@ export function AgendaPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meetin
                 <li key={a.id} className="flex flex-col gap-2 rounded-md border p-3">
                   {editing === a.id ? (
                     <>
-                      <AgendaItemFields value={fields} onChange={setFields} thresholds={thresholds} idPrefix={`ed-${a.id}`} />
+                      <AgendaItemFields
+                        value={fields}
+                        onChange={setFields}
+                        thresholds={thresholds}
+                        idPrefix={`ed-${a.id}`}
+                      />
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           disabled={fields.title.trim() === '' || update.isPending}
                           onClick={() =>
-                            update.mutate({ item: a, f: fields }, { onSuccess: () => setEditing(null), onError: fail })
+                            update.mutate(
+                              { item: a, f: fields },
+                              { onSuccess: () => setEditing(null), onError: fail },
+                            )
                           }
                         >
                           <Trans>Save</Trans>
@@ -111,10 +138,14 @@ export function AgendaPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meetin
                     </>
                   ) : (
                     <div className="flex items-start gap-3">
-                      <span className="w-6 pt-0.5 text-center text-sm text-muted-foreground">{i + 1}</span>
+                      <span className="w-6 pt-0.5 text-center text-sm text-muted-foreground">
+                        {i + 1}
+                      </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-1">
                         <span className="font-medium">{a.title}</span>
-                        {a.description ? <span className="text-sm text-muted-foreground">{a.description}</span> : null}
+                        {a.description ? (
+                          <span className="text-sm text-muted-foreground">{a.description}</span>
+                        ) : null}
                         <span className="flex flex-wrap items-center gap-2 text-xs">
                           <Badge variant={a.will_be_voted ? 'info' : 'secondary'}>
                             {a.will_be_voted ? t`Will be voted` : t`For discussion`}
@@ -186,7 +217,12 @@ export function AgendaPanel({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meetin
         {editable ? (
           adding ? (
             <div className="flex flex-col gap-3 rounded-md border border-dashed p-3">
-              <AgendaItemFields value={fields} onChange={setFields} thresholds={thresholds} idPrefix="add-item" />
+              <AgendaItemFields
+                value={fields}
+                onChange={setFields}
+                thresholds={thresholds}
+                idPrefix="add-item"
+              />
               <div className="flex gap-2">
                 <Button
                   size="sm"

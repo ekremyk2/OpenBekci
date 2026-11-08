@@ -4,12 +4,35 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
-import { gApi, idemHeader, unwrap, useKeyStore, useOrgMutation, useOrgQuery, type S, type SiteCtx } from '@/features/meetings/kit/api'
+import {
+  gApi,
+  idemHeader,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  useOrgQuery,
+  type S,
+  type SiteCtx,
+} from '@/features/meetings/kit/api'
 import { ConfirmDialog, Field, FormRootError, QueryBoundary } from '@/features/meetings/kit/ui'
 import { Callout } from '@/features/meetings/kit/widgets'
 
@@ -48,20 +71,35 @@ export function EnrolTokenDialog({
           <DialogDescription>
             <Trans>
               Enter this token once when you install the agent on the gate computer. It expires{' '}
-              <SiteDate value={enrolment.enrolment_expires_at} timeZone={ctx.timeZone} kind="datetime" />.
+              <SiteDate
+                value={enrolment.enrolment_expires_at}
+                timeZone={ctx.timeZone}
+                kind="datetime"
+              />
+              .
             </Trans>
           </DialogDescription>
         </DialogHeader>
-        <code className="break-all rounded bg-muted p-3 text-sm" dir="ltr" data-testid="enrol-token">
+        <code
+          className="break-all rounded bg-muted p-3 text-sm"
+          dir="ltr"
+          data-testid="enrol-token"
+        >
           {enrolment.enrolment_token}
         </code>
         <Callout tone="warning" role="status">
-          <Trans>This token is shown only now. If you lose it, re-enrol the agent to get a new one.</Trans>
+          <Trans>
+            This token is shown only now. If you lose it, re-enrol the agent to get a new one.
+          </Trans>
         </Callout>
         <DialogFooter>
           <Button
             variant="outline"
-            onClick={() => void navigator.clipboard?.writeText(enrolment.enrolment_token).then(() => setCopied(true))}
+            onClick={() =>
+              void navigator.clipboard
+                ?.writeText(enrolment.enrolment_token)
+                .then(() => setCopied(true))
+            }
           >
             {copied ? <CheckIcon /> : <CopyIcon />}
             {copied ? t`Copied` : t`Copy the token`}
@@ -75,7 +113,15 @@ export function EnrolTokenDialog({
   )
 }
 
-function CreateAgentDialog({ ctx, onCreated, onClose }: { ctx: SiteCtx; onCreated: (e: S['AgentEnrolment']) => void; onClose: () => void }) {
+function CreateAgentDialog({
+  ctx,
+  onCreated,
+  onClose,
+}: {
+  ctx: SiteCtx
+  onCreated: (e: S['AgentEnrolment']) => void
+  onClose: () => void
+}) {
   const { t } = useLingui()
   const idem = useIdempotencyKey()
   const [name, setName] = useState('')
@@ -107,11 +153,14 @@ function CreateAgentDialog({ ctx, onCreated, onClose }: { ctx: SiteCtx; onCreate
               <Trans>New gate agent</Trans>
             </DialogTitle>
             <DialogDescription>
-              <Trans>The agent runs on a computer at the gate and opens it. You get a one-time token to enrol it.</Trans>
+              <Trans>
+                The agent runs on a computer at the gate and opens it. You get a one-time token to
+                enrol it.
+              </Trans>
             </DialogDescription>
           </DialogHeader>
           <Field label={t`Name`} htmlFor="ag-name">
-            <Input id="ag-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+            <Input id="ag-name" value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
           <FormRootError message={error ?? undefined} />
           <DialogFooter>
@@ -138,10 +187,18 @@ export function AgentFlags({ a }: { a: S['Agent'] }) {
           {t`Store error`}
         </Badge>
       ) : null}
-      {(a.lost_events ?? 0) > 0 ? <Badge variant="warning">{t`Lost events: ${a.lost_events}`}</Badge> : null}
-      {(a.dead_letters ?? 0) > 0 ? <Badge variant="warning">{t`Dead letters: ${a.dead_letters}`}</Badge> : null}
+      {(a.lost_events ?? 0) > 0 ? (
+        <Badge variant="warning">{t`Lost events: ${a.lost_events}`}</Badge>
+      ) : null}
+      {(a.dead_letters ?? 0) > 0 ? (
+        <Badge variant="warning">{t`Dead letters: ${a.dead_letters}`}</Badge>
+      ) : null}
       {a.drivers.map((d) => (
-        <Badge key={d.instance} variant={d.state === 'ok' ? 'secondary' : 'warning'} title={d.detail}>
+        <Badge
+          key={d.instance}
+          variant={d.state === 'ok' ? 'secondary' : 'warning'}
+          title={d.detail}
+        >
           {d.instance}: {d.state}
           {d.mock ? ` (${t`mock`})` : ''}
         </Badge>
@@ -158,16 +215,26 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
   const [creating, setCreating] = useState(false)
   const [enrolment, setEnrolment] = useState<S['AgentEnrolment'] | null>(null)
   const [revoking, setRevoking] = useState<S['Agent'] | null>(null)
-  const act = useOrgMutation(async (v: { agent: S['Agent']; kind: 'rotate-token' | 'reenrol' | 'revoke' }) => {
-    const id = `${v.agent.id}-${v.kind}`
-    const params = { path: { org_id: ctx.orgId, agent_id: v.agent.id }, header: idemHeader(keys.get(id)) }
-    let out: S['AgentEnrolment'] | S['Agent']
-    if (v.kind === 'reenrol') out = await unwrap(gApi.POST('/v1/orgs/{org_id}/agents/{agent_id}:reenrol', { params }))
-    else if (v.kind === 'revoke') out = await unwrap(gApi.POST('/v1/orgs/{org_id}/agents/{agent_id}:revoke', { params }))
-    else out = await unwrap(gApi.POST('/v1/orgs/{org_id}/agents/{agent_id}:rotate-token', { params }))
-    keys.done(id)
-    return out
-  })
+  const act = useOrgMutation(
+    async (v: { agent: S['Agent']; kind: 'rotate-token' | 'reenrol' | 'revoke' }) => {
+      const id = `${v.agent.id}-${v.kind}`
+      const params = {
+        path: { org_id: ctx.orgId, agent_id: v.agent.id },
+        header: idemHeader(keys.get(id)),
+      }
+      let out: S['AgentEnrolment'] | S['Agent']
+      if (v.kind === 'reenrol')
+        out = await unwrap(gApi.POST('/v1/orgs/{org_id}/agents/{agent_id}:reenrol', { params }))
+      else if (v.kind === 'revoke')
+        out = await unwrap(gApi.POST('/v1/orgs/{org_id}/agents/{agent_id}:revoke', { params }))
+      else
+        out = await unwrap(
+          gApi.POST('/v1/orgs/{org_id}/agents/{agent_id}:rotate-token', { params }),
+        )
+      keys.done(id)
+      return out
+    },
+  )
   const rebuild = useOrgMutation(async () => {
     await gApi.POST('/v1/orgs/{org_id}/access/allowlist:rebuild', {
       params: { path: { org_id: ctx.orgId }, header: idemHeader(keys.get('rebuild')) },
@@ -244,10 +311,18 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
                     <span className="block text-xs text-muted-foreground">{a.platform ?? '–'}</span>
                   </TableCell>
                   <TableCell>{statusBadge(a)}</TableCell>
-                  <TableCell>{a.last_seen ? <SiteDate value={a.last_seen} timeZone={ctx.timeZone} kind="datetime" /> : '–'}</TableCell>
+                  <TableCell>
+                    {a.last_seen ? (
+                      <SiteDate value={a.last_seen} timeZone={ctx.timeZone} kind="datetime" />
+                    ) : (
+                      '–'
+                    )}
+                  </TableCell>
                   <TableCell>
                     <AgentFlags a={a} />
-                    {a.queue_depth ? <span className="text-xs text-muted-foreground">{t`Queue: ${a.queue_depth}`}</span> : null}
+                    {a.queue_depth ? (
+                      <span className="text-xs text-muted-foreground">{t`Queue: ${a.queue_depth}`}</span>
+                    ) : null}
                   </TableCell>
                   <TableCell>
                     {canManage && a.status !== 'revoked' ? (
@@ -258,7 +333,10 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
                           onClick={() =>
                             act.mutate(
                               { agent: a, kind: 'reenrol' },
-                              { onSuccess: (r) => setEnrolment(r as S['AgentEnrolment']), onError: () => toast.error(t`Could not re-enrol the agent.`) },
+                              {
+                                onSuccess: (r) => setEnrolment(r as S['AgentEnrolment']),
+                                onError: () => toast.error(t`Could not re-enrol the agent.`),
+                              },
                             )
                           }
                         >
@@ -270,7 +348,10 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
                           onClick={() =>
                             act.mutate(
                               { agent: a, kind: 'rotate-token' },
-                              { onSuccess: () => toast.info(t`Token rotation started.`), onError: () => toast.error(t`Could not rotate the token.`) },
+                              {
+                                onSuccess: () => toast.info(t`Token rotation started.`),
+                                onError: () => toast.error(t`Could not rotate the token.`),
+                              },
                             )
                           }
                         >
@@ -298,7 +379,9 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
           }}
         />
       ) : null}
-      {enrolment ? <EnrolTokenDialog ctx={ctx} enrolment={enrolment} onClose={() => setEnrolment(null)} /> : null}
+      {enrolment ? (
+        <EnrolTokenDialog ctx={ctx} enrolment={enrolment} onClose={() => setEnrolment(null)} />
+      ) : null}
       <ConfirmDialog
         open={revoking !== null}
         onOpenChange={(o) => (!o ? setRevoking(null) : undefined)}
@@ -309,7 +392,13 @@ export function AgentsTab({ ctx, canManage }: { ctx: SiteCtx; canManage: boolean
         pending={act.isPending}
         onConfirm={() =>
           revoking &&
-          act.mutate({ agent: revoking, kind: 'revoke' }, { onSuccess: () => setRevoking(null), onError: () => toast.error(t`Could not revoke the agent.`) })
+          act.mutate(
+            { agent: revoking, kind: 'revoke' },
+            {
+              onSuccess: () => setRevoking(null),
+              onError: () => toast.error(t`Could not revoke the agent.`),
+            },
+          )
         }
       />
     </div>

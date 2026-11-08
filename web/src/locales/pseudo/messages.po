@@ -921,6 +921,10 @@ msgstr ""
 msgid "Enter your phone number"
 msgstr ""
 
+#. placeholder {0}: guard.displayName
+msgid "Enter your PIN to leave. {0} is on the gate."
+msgstr ""
+
 msgid "Existing bookings stay in the history."
 msgstr ""
 
@@ -1103,6 +1107,9 @@ msgid "Last seen"
 msgstr ""
 
 msgid "Law 634 default: one third."
+msgstr ""
+
+msgid "Leave"
 msgstr ""
 
 msgid "Leave the guard console"
@@ -1767,6 +1774,13 @@ msgstr ""
 msgid "Role"
 msgstr ""
 
+msgid "Rotate QR"
+msgstr ""
+
+#. placeholder {0}: e.name
+msgid "Rotate the QR code of {0}"
+msgstr ""
+
 msgid "Rotate token"
 msgstr ""
 
@@ -2045,6 +2059,9 @@ msgstr ""
 msgid "That time is already taken or blocked. Choose another slot."
 msgstr ""
 
+msgid "The accounting period of this change is locked."
+msgstr ""
+
 msgid "The agent is offline."
 msgstr ""
 
@@ -2152,13 +2169,22 @@ msgstr ""
 msgid "The permission was revoked."
 msgstr ""
 
+msgid "The PIN could not be checked. Check the connection and try again."
+msgstr ""
+
 msgid "The poll is closed."
 msgstr ""
 
 msgid "The poll is open."
 msgstr ""
 
+msgid "The QR code could not be rotated."
+msgstr ""
+
 msgid "The QR code stops working at once."
+msgstr ""
+
+msgid "The QR code was rotated."
 msgstr ""
 
 msgid "The request could not be sent by SMS. Call the resident instead."
@@ -2190,6 +2216,9 @@ msgstr ""
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr ""
 
+msgid "The values changed after the last attempt. Review them and confirm again."
+msgstr ""
+
 msgid "The visit must end after it starts."
 msgstr ""
 
@@ -2211,7 +2240,7 @@ msgstr ""
 msgid "This code is not valid for this assembly."
 msgstr ""
 
-msgid "This code is shown only now. Send it to your guest before you close this window."
+msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
 msgstr ""
 
 msgid "This decision already has an applied change."
@@ -2310,6 +2339,9 @@ msgstr ""
 msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
 msgstr ""
 
+msgid "Too many wrong PINs. Try again later."
+msgstr ""
+
 msgid "Topic"
 msgstr ""
 
@@ -2384,6 +2416,9 @@ msgid "Visitor code"
 msgstr ""
 
 msgid "Visitor denied."
+msgstr ""
+
+msgid "Visitor pass"
 msgstr ""
 
 msgid "Visitor pass for {name}"

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -18,13 +18,37 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { useIdempotencyKey } from '@/lib/idempotency'
 import { toast } from '@/lib/toast'
 import { GOV_SCALE, useGovernanceSettings, useNotices } from './hooks'
-import { gApi, idemHeader, orgUrl, unwrap, useKeyStore, useOrgMutation, type S, type SiteCtx } from './kit/api'
+import {
+  gApi,
+  idemHeader,
+  orgUrl,
+  unwrap,
+  useKeyStore,
+  useOrgMutation,
+  type S,
+  type SiteCtx,
+} from './kit/api'
 import { localInputToInstant, instantToLocalInput } from './kit/time'
-import { applyServerErrors, Checkbox, Field, FormRootError, QueryBoundary, Select, Textarea } from './kit/ui'
+import {
+  applyServerErrors,
+  Checkbox,
+  Field,
+  FormRootError,
+  QueryBoundary,
+  Select,
+  Textarea,
+} from './kit/ui'
 import { Callout, DownloadButton } from './kit/widgets'
 import { callTimingIssues, noticeProgress } from './logic'
 import { NOTICE_METHODS, useGovLabels } from './labels'
@@ -44,7 +68,10 @@ export function CallStep({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting']
   const call = useOrgMutation(async () =>
     unwrap(
       gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}:call', {
-        params: { path: { org_id: ctx.orgId, meeting_id: meeting.id }, header: idemHeader(idem.key) },
+        params: {
+          path: { org_id: ctx.orgId, meeting_id: meeting.id },
+          header: idemHeader(idem.key),
+        },
         body: { notify_channels: channels as ('in_app' | 'email' | 'sms')[] },
       }),
     ),
@@ -60,15 +87,15 @@ export function CallStep({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting']
       <CardContent className="flex flex-col gap-4">
         <p className="text-sm text-muted-foreground">
           <Trans>
-            Calling the assembly freezes who may vote, generates the call letter and creates a delivery
-            checklist with one line per owner.
+            Calling the assembly freezes who may vote, generates the call letter and creates a
+            delivery checklist with one line per owner.
           </Trans>
         </p>
         {issues.includes('call_too_late') && settings.data ? (
           <Callout tone="warning" role="alert">
             <Trans>
-              The first meeting is less than {settings.data.settings.call_min_days} days away. The server will
-              refuse a call that is too late; move the date first.
+              The first meeting is less than {settings.data.settings.call_min_days} days away. The
+              server will refuse a call that is too late; move the date first.
             </Trans>
           </Callout>
         ) : null}
@@ -106,7 +133,8 @@ export function CallStep({ ctx, meeting }: { ctx: SiteCtx; meeting: S['Meeting']
                 onError: (e) =>
                   setError(
                     e instanceof AppError && e.isValidation
-                      ? (Object.values(e.fieldErrors)[0]?.[0]?.message ?? t`The legal timing is not met.`)
+                      ? (Object.values(e.fieldErrors)[0]?.[0]?.message ??
+                          t`The legal timing is not met.`)
                       : t`Could not send the call.`,
                   ),
               })
@@ -142,7 +170,10 @@ export function DeliveryChecklist({
     const id = `bulk-${bulkMethod}-${selected.join(',')}`
     const r = await unwrap(
       gApi.POST('/v1/orgs/{org_id}/meetings/{meeting_id}/notices:bulk', {
-        params: { path: { org_id: ctx.orgId, meeting_id: meeting.id }, header: idemHeader(bulkKeys.get(id)) },
+        params: {
+          path: { org_id: ctx.orgId, meeting_id: meeting.id },
+          header: idemHeader(bulkKeys.get(id)),
+        },
         body: {
           person_ids: selected,
           phase,
@@ -159,7 +190,11 @@ export function DeliveryChecklist({
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle>
-          {phase === 'call' ? <Trans>Delivery of the call</Trans> : <Trans>Delivery of the decisions</Trans>}
+          {phase === 'call' ? (
+            <Trans>Delivery of the call</Trans>
+          ) : (
+            <Trans>Delivery of the decisions</Trans>
+          )}
         </CardTitle>
         {phase === 'call' ? (
           <DownloadButton
@@ -278,7 +313,9 @@ export function DeliveryChecklist({
                           disabled={n.status === 'recorded'}
                           onChange={(e) =>
                             setSelected((cur) =>
-                              e.target.checked ? [...cur, n.person_id] : cur.filter((x) => x !== n.person_id),
+                              e.target.checked
+                                ? [...cur, n.person_id]
+                                : cur.filter((x) => x !== n.person_id),
                             )
                           }
                         />
@@ -317,7 +354,12 @@ export function DeliveryChecklist({
           )}
         </QueryBoundary>
         {editing ? (
-          <NoticeDialog ctx={ctx} meeting={meeting} notice={editing} onClose={() => setEditing(null)} />
+          <NoticeDialog
+            ctx={ctx}
+            meeting={meeting}
+            notice={editing}
+            onClose={() => setEditing(null)}
+          />
         ) : null}
       </CardContent>
     </Card>
@@ -367,7 +409,7 @@ export function NoticeDialog({
       note: notice.note ?? '',
     },
   })
-  const method = form.watch('method')
+  const method = useWatch({ control: form.control, name: 'method' })
   const save = useOrgMutation(async (v: Values) => {
     let proof = notice.proof_file_id ?? undefined
     if (file) {
@@ -386,7 +428,9 @@ export function NoticeDialog({
     }
     return unwrap(
       gApi.PUT('/v1/orgs/{org_id}/meetings/{meeting_id}/notices/{person_id}', {
-        params: { path: { org_id: ctx.orgId, meeting_id: meeting.id, person_id: notice.person_id } },
+        params: {
+          path: { org_id: ctx.orgId, meeting_id: meeting.id, person_id: notice.person_id },
+        },
         headers: idemHeader(idem.key),
         body: {
           phase: notice.phase,
@@ -432,11 +476,17 @@ export function NoticeDialog({
               ))}
             </Select>
           </Field>
-          <Field label={t`Sent on`} htmlFor="nt-date" error={form.formState.errors.sent_on?.message}>
+          <Field
+            label={t`Sent on`}
+            htmlFor="nt-date"
+            error={form.formState.errors.sent_on?.message}
+          >
             <Input id="nt-date" type="date" dir="ltr" {...form.register('sent_on')} />
           </Field>
           <Field
-            label={method === 'registered_mail' ? t`Tracking number` : t`Tracking number (optional)`}
+            label={
+              method === 'registered_mail' ? t`Tracking number` : t`Tracking number (optional)`
+            }
             htmlFor="nt-track"
             error={form.formState.errors.tracking_no?.message}
           >

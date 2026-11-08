@@ -27,7 +27,10 @@ export function zonedWeekdayMinutes(iso: string | Date, timeZone: string) {
   }).formatToParts(d)
   const get = (t: string) => parts.find((p) => p.type === t)?.value ?? ''
   const map: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 }
-  return { weekday: map[get('weekday')] ?? 1, minutes: Number(get('hour')) * 60 + Number(get('minute')) }
+  return {
+    weekday: map[get('weekday')] ?? 1,
+    minutes: Number(get('hour')) * 60 + Number(get('minute')),
+  }
 }
 
 export interface BookingCheck {
@@ -59,10 +62,15 @@ export function validateBooking(c: BookingCheck): BookingIssue[] {
   const b = zonedWeekdayMinutes(c.end, c.timeZone)
   const sameDay = b.weekday === a.weekday && b.minutes >= a.minutes
   const open = rules.opening_hours.some(
-    (h) => h.days.includes(a.weekday) && sameDay && a.minutes >= hhmmToMinutes(h.start) && b.minutes <= hhmmToMinutes(h.end),
+    (h) =>
+      h.days.includes(a.weekday) &&
+      sameDay &&
+      a.minutes >= hhmmToMinutes(h.start) &&
+      b.minutes <= hhmmToMinutes(h.end),
   )
   if (!open) issues.push('outside_hours')
-  if (rules.quota_per_unit !== null && (c.usedInPeriod ?? 0) >= rules.quota_per_unit) issues.push('quota_exceeded')
+  if (rules.quota_per_unit !== null && (c.usedInPeriod ?? 0) >= rules.quota_per_unit)
+    issues.push('quota_exceeded')
   if (c.bookerKind && !rules.who_may_book.includes(c.bookerKind)) issues.push('not_allowed')
   return issues
 }
@@ -88,6 +96,10 @@ export function daysLabel(days: number[], names: string[]): string {
     else runs.push([d])
   }
   return runs
-    .map((r) => (r.length > 2 ? `${names[r[0]! - 1]}-${names[r[r.length - 1]! - 1]}` : r.map((d) => names[d - 1]).join(', ')))
+    .map((r) =>
+      r.length > 2
+        ? `${names[r[0]! - 1]}-${names[r[r.length - 1]! - 1]}`
+        : r.map((d) => names[d - 1]).join(', '),
+    )
     .join(', ')
 }

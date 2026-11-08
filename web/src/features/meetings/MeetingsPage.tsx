@@ -6,7 +6,14 @@ import { useSession } from '@/app/session'
 import { SiteDate } from '@/components/data/SiteDate'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { gApi, unwrap, useOrgQuery, useSiteCtx, type SiteCtx } from './kit/api'
 import { Callout } from './kit/widgets'
@@ -142,10 +149,15 @@ export function MeetingsPage() {
                     >
                       {m.title ?? labels.meetingKind(m.kind)}
                     </Link>
-                    <div className="text-xs text-muted-foreground">{labels.meetingKind(m.kind)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {labels.meetingKind(m.kind)}
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <CalendarClockIcon className="me-1 inline size-4 text-muted-foreground" aria-hidden="true" />
+                    <CalendarClockIcon
+                      className="me-1 inline size-4 text-muted-foreground"
+                      aria-hidden="true"
+                    />
                     <SiteDate value={m.scheduled_at} timeZone={ctx.timeZone} kind="datetime" />
                   </TableCell>
                   <TableCell>{m.location}</TableCell>

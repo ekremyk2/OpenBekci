@@ -921,6 +921,10 @@ msgstr "Enter your password."
 msgid "Enter your phone number"
 msgstr "Enter your phone number"
 
+#. placeholder {0}: guard.displayName
+msgid "Enter your PIN to leave. {0} is on the gate."
+msgstr "Enter your PIN to leave. {0} is on the gate."
+
 msgid "Existing bookings stay in the history."
 msgstr "Existing bookings stay in the history."
 
@@ -1104,6 +1108,9 @@ msgstr "Last seen"
 
 msgid "Law 634 default: one third."
 msgstr "Law 634 default: one third."
+
+msgid "Leave"
+msgstr "Leave"
 
 msgid "Leave the guard console"
 msgstr "Leave the guard console"
@@ -1767,6 +1774,13 @@ msgstr "Revoked"
 msgid "Role"
 msgstr "Role"
 
+msgid "Rotate QR"
+msgstr "Rotate QR"
+
+#. placeholder {0}: e.name
+msgid "Rotate the QR code of {0}"
+msgstr "Rotate the QR code of {0}"
+
 msgid "Rotate token"
 msgstr "Rotate token"
 
@@ -2045,6 +2059,9 @@ msgstr "That password is not correct."
 msgid "That time is already taken or blocked. Choose another slot."
 msgstr "That time is already taken or blocked. Choose another slot."
 
+msgid "The accounting period of this change is locked."
+msgstr "The accounting period of this change is locked."
+
 msgid "The agent is offline."
 msgstr "The agent is offline."
 
@@ -2152,14 +2169,23 @@ msgstr "The pass was cancelled."
 msgid "The permission was revoked."
 msgstr "The permission was revoked."
 
+msgid "The PIN could not be checked. Check the connection and try again."
+msgstr "The PIN could not be checked. Check the connection and try again."
+
 msgid "The poll is closed."
 msgstr "The poll is closed."
 
 msgid "The poll is open."
 msgstr "The poll is open."
 
+msgid "The QR code could not be rotated."
+msgstr "The QR code could not be rotated."
+
 msgid "The QR code stops working at once."
 msgstr "The QR code stops working at once."
+
+msgid "The QR code was rotated."
+msgstr "The QR code was rotated."
 
 msgid "The request could not be sent by SMS. Call the resident instead."
 msgstr "The request could not be sent by SMS. Call the resident instead."
@@ -2190,6 +2216,9 @@ msgstr "The second meeting should be {0} to {1} days after the first."
 msgid "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 msgstr "The term of {0} as {1} ends on <0/> ({2} days left). Schedule an assembly in time."
 
+msgid "The values changed after the last attempt. Review them and confirm again."
+msgstr "The values changed after the last attempt. Review them and confirm again."
+
 msgid "The visit must end after it starts."
 msgstr "The visit must end after it starts."
 
@@ -2211,8 +2240,8 @@ msgstr "This code is not known."
 msgid "This code is not valid for this assembly."
 msgstr "This code is not valid for this assembly."
 
-msgid "This code is shown only now. Send it to your guest before you close this window."
-msgstr "This code is shown only now. Send it to your guest before you close this window."
+msgid "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
+msgstr "This code is shown only now. Send it to your guest before you close this window. WhatsApp, SMS and e-mail carry the code through those services."
 
 msgid "This decision already has an applied change."
 msgstr "This decision already has an applied change."
@@ -2310,6 +2339,9 @@ msgstr "Too many requests. Try again in {0} seconds."
 msgid "Too many wrong PINs. This guard is locked for about {minutes} minutes."
 msgstr "Too many wrong PINs. This guard is locked for about {minutes} minutes."
 
+msgid "Too many wrong PINs. Try again later."
+msgstr "Too many wrong PINs. Try again later."
+
 msgid "Topic"
 msgstr "Topic"
 
@@ -2385,6 +2417,9 @@ msgstr "Visitor code"
 
 msgid "Visitor denied."
 msgstr "Visitor denied."
+
+msgid "Visitor pass"
+msgstr "Visitor pass"
 
 msgid "Visitor pass for {name}"
 msgstr "Visitor pass for {name}"
