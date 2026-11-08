@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"github.com/openbekci/openbekci/server/internal/platform/id"
+	"github.com/openbekci/openbekci/server/internal/problem"
 )
 
 // Account subtypes the money modules look up.
@@ -54,8 +55,16 @@ func EnsureAccount(ctx context.Context, tx pgx.Tx, orgID, siteID uuid.UUID, code
 		return uuid.Nil, err
 	}
 	var aid uuid.UUID
-	err := tx.QueryRow(ctx, `SELECT id FROM account WHERE org_id = $1 AND site_id = $2 AND code = $3`, orgID, siteID, code).Scan(&aid)
-	return aid, err
+	var gotType, gotSub string
+	if err := tx.QueryRow(ctx, `SELECT id, type, COALESCE(subtype, '') FROM account WHERE org_id = $1 AND site_id = $2 AND code = $3`, orgID, siteID, code).Scan(&aid, &gotType, &gotSub); err != nil {
+		return uuid.Nil, err
+	}
+	// the code may already belong to an account somebody created by hand: posting a
+	// provider fee or a clearing balance into it would silently misclassify the money
+	if gotType != typ || gotSub != subtype {
+		return uuid.Nil, problem.Conflict("account code " + code + " is already used by an account that is not the " + subtype + " account; rename or archive that account first")
+	}
+	return aid, nil
 }
 
 // Fund codes.
