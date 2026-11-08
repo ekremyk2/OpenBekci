@@ -41,12 +41,16 @@ jobs:
       - name: Lint
         run: pnpm lint
       - name: Typecheck
+        if: ${{ !cancelled() }}
         run: pnpm typecheck
       - name: Unit tests
+        if: ${{ !cancelled() }}
         run: pnpm test
       - name: Build
+        if: ${{ !cancelled() }}
         run: pnpm build
       - name: Size budgets
+        if: ${{ !cancelled() }}
         run: pnpm size
 
   e2e:
