@@ -17,7 +17,8 @@ test('dues plan with live preview, then a cash payment, then the statement', asy
 
   // 2. record a cash payment for A3 (owner side); it is allocated oldest first and gets receipt no. 1
   await page.goto('/orgs/org-1/money/payments/new?locale=en')
-  await page.getByLabel('Unit').selectOption({ label: 'A3' })
+  await page.getByLabel('Unit').click()
+  await page.getByRole('option', { name: 'A3', exact: true }).click()
   await page.getByLabel('Amount', { exact: true }).fill('900')
   await expect(page.getByRole('table', { name: 'Automatic allocation' })).toBeVisible()
   await page.getByRole('button', { name: 'Record payment' }).click()
