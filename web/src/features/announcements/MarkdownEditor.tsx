@@ -2,8 +2,8 @@ import { useRef, useState } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { BoldIcon, HeadingIcon, ItalicIcon, LinkIcon, ListIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
 import MarkdownView from './Markdown'
 
 /** Markdown source with a toolbar and a live, sanitized preview. Loaded lazily. */
@@ -41,35 +41,23 @@ export default function MarkdownEditor({
     onChange(value.slice(0, lineStart) + prefix + value.slice(lineStart))
   }
 
-  const tabClass = (active: boolean) =>
-    cn(
-      '-mb-px border-b-2 px-3 py-1.5 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-      active ? 'border-primary' : 'border-transparent text-muted-foreground',
-    )
-
   return (
-    <div className="flex flex-col gap-2">
+    <Tabs value={tab} onValueChange={(next) => setTab(next as 'write' | 'preview')}>
       <div className="flex flex-wrap items-center gap-1 border-b">
-        <div role="tablist" aria-label={t`Editor mode`} className="flex">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'write'}
-            className={tabClass(tab === 'write')}
-            onClick={() => setTab('write')}
-          >
-            {t`Write`}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'preview'}
-            className={tabClass(tab === 'preview')}
-            onClick={() => setTab('preview')}
-          >
-            {t`Preview`}
-          </button>
-        </div>
+        <TabsList
+          aria-label={t`Editor mode`}
+          className="h-auto gap-1 rounded-none bg-transparent p-0"
+        >
+          {(['write', 'preview'] as const).map((id) => (
+            <TabsTrigger
+              key={id}
+              value={id}
+              className="-mb-px h-auto flex-none rounded-none border-b-2 border-transparent px-3 py-1.5 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+            >
+              {id === 'write' ? t`Write` : t`Preview`}
+            </TabsTrigger>
+          ))}
+        </TabsList>
         {tab === 'write' ? (
           <div className="ms-auto flex gap-1">
             <Button
@@ -120,7 +108,7 @@ export default function MarkdownEditor({
           </div>
         ) : null}
       </div>
-      {tab === 'write' ? (
+      <TabsContent value="write">
         <Textarea
           id={id}
           ref={ref}
@@ -129,15 +117,14 @@ export default function MarkdownEditor({
           aria-invalid={invalid}
           onChange={(e) => onChange(e.target.value)}
         />
-      ) : (
-        <div className="min-h-40 rounded-md border p-3" aria-label={t`Preview`}>
-          {value.trim() ? (
-            <MarkdownView source={value} />
-          ) : (
-            <p className="text-sm text-muted-foreground">{t`Nothing to preview yet.`}</p>
-          )}
-        </div>
-      )}
-    </div>
+      </TabsContent>
+      <TabsContent value="preview" className="min-h-40 rounded-md border p-3">
+        {value.trim() ? (
+          <MarkdownView source={value} />
+        ) : (
+          <p className="text-sm text-muted-foreground">{t`Nothing to preview yet.`}</p>
+        )}
+      </TabsContent>
+    </Tabs>
   )
 }

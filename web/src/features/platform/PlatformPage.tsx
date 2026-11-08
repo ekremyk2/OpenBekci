@@ -9,6 +9,7 @@ import { PlusIcon, ServerIcon } from 'lucide-react'
 import { apiDraft, ifMatch, type PlatformOrg } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
+import { TabBar } from '@/components/data/TabBar'
 import { ErrorState } from '@/components/data/ErrorState'
 import { PageSkeleton, TableSkeleton } from '@/components/data/Skeletons'
 import { FormError, FormField, SubmitButton, useApplyApiError } from '@/components/forms/FormField'
@@ -30,7 +31,6 @@ import { Select } from '@/components/ui/select'
 import { useIdempotencyKey, withIdempotencyKey } from '@/lib/idempotency'
 import { LoadMore, must, useCursorQuery } from '@/lib/pagination'
 import { toast } from '@/lib/toast'
-import { cn } from '@/lib/utils'
 import { useLocale } from '@/app/locale'
 
 function StatusBadge({ status }: { status: string }) {
@@ -489,31 +489,17 @@ export function PlatformPage() {
           <Trans>Go home</Trans>
         </Link>
       </div>
-      <div
-        role="tablist"
-        aria-label={t`Platform sections`}
-        className="flex flex-wrap gap-1 border-b"
+      <TabBar
+        value={tab}
+        onValueChange={setTab}
+        label={t`Platform sections`}
+        tabs={tabs.map(([id, label]) => ({ id, label }))}
       >
-        {tabs.map(([id, label]) => (
-          <button
-            key={id}
-            role="tab"
-            type="button"
-            aria-selected={tab === id}
-            onClick={() => setTab(id)}
-            className={cn(
-              '-mb-px border-b-2 px-3 py-2 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-              tab === id ? 'border-primary' : 'border-transparent text-muted-foreground',
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      {tab === 'orgs' ? <OrgsTab canManage={canManage} /> : null}
-      {tab === 'health' ? <HealthTab /> : null}
-      {tab === 'jobs' ? <JobsTab /> : null}
-      {tab === 'settings' ? <SettingsTab canManage={canManage} /> : null}
+        {tab === 'orgs' ? <OrgsTab canManage={canManage} /> : null}
+        {tab === 'health' ? <HealthTab /> : null}
+        {tab === 'jobs' ? <JobsTab /> : null}
+        {tab === 'settings' ? <SettingsTab canManage={canManage} /> : null}
+      </TabBar>
     </div>
   )
 }

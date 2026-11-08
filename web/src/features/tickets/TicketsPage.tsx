@@ -5,6 +5,7 @@ import { LifeBuoyIcon, MessageSquareIcon, PlusIcon, ThumbsUpIcon } from 'lucide-
 import { apiDraft } from '@/api/draft'
 import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
+import { TabBar } from '@/components/data/TabBar'
 import { ErrorState } from '@/components/data/ErrorState'
 import { SiteDate } from '@/components/data/SiteDate'
 import { TableSkeleton } from '@/components/data/Skeletons'
@@ -12,7 +13,6 @@ import { buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { LoadMore, must, useCursorQuery } from '@/lib/pagination'
-import { cn } from '@/lib/utils'
 import { SitePicker, useSite } from '@/features/dashboard/site'
 import { useStaff, useUnits, useVendors } from '@/features/dashboard/reference'
 import { StatusBadge, VisibilityBadge } from './badges'
@@ -157,186 +157,171 @@ export function TicketsPage({
         ) : null}
       </div>
 
-      <div role="tablist" aria-label={t`Ticket views`} className="flex flex-wrap gap-1 border-b">
-        {tabs
-          .filter((x) => x.show)
-          .map((tab) => (
-            <button
-              key={tab.id}
-              role="tab"
-              type="button"
-              aria-selected={view === tab.id}
-              onClick={() => onSearch({ ...search, view: tab.id })}
-              className={cn(
-                '-mb-px border-b-2 px-3 py-2 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                view === tab.id
-                  ? 'border-primary text-foreground'
-                  : 'border-transparent text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-      </div>
-
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
-        <Input
-          type="search"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={t`Search tickets`}
-          aria-label={t`Search tickets`}
-          className="lg:col-span-2"
-        />
-        <Select
-          aria-label={t`Status`}
-          value={search.status ?? ''}
-          onChange={(e) => onSearch({ ...search, status: e.target.value || undefined })}
-        >
-          <option value="">{t`Any status`}</option>
-          {workflow.data?.statuses.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          aria-label={t`Category`}
-          value={search.category ?? ''}
-          onChange={(e) => onSearch({ ...search, category: e.target.value || undefined })}
-        >
-          <option value="">{t`Any category`}</option>
-          {categories.data?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
-        {view !== 'common' ? (
+      <TabBar
+        value={view}
+        onValueChange={(next) => onSearch({ ...search, view: next })}
+        label={t`Ticket views`}
+        tabs={tabs.filter((x) => x.show)}
+      >
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+          <Input
+            type="search"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t`Search tickets`}
+            aria-label={t`Search tickets`}
+            className="lg:col-span-2"
+          />
           <Select
-            aria-label={t`Visibility`}
-            value={search.visibility ?? ''}
-            onChange={(e) =>
-              onSearch({
-                ...search,
-                visibility: (e.target.value as 'private' | 'common') || undefined,
-              })
-            }
+            aria-label={t`Status`}
+            value={search.status ?? ''}
+            onChange={(e) => onSearch({ ...search, status: e.target.value || undefined })}
           >
-            <option value="">{t`Private and common`}</option>
-            <option value="private">{t`Private`}</option>
-            <option value="common">{t`Common`}</option>
-          </Select>
-        ) : null}
-        {canManage ? (
-          <>
-            <Select
-              aria-label={t`Assignee`}
-              value={search.assignee ?? ''}
-              onChange={(e) => onSearch({ ...search, assignee: e.target.value || undefined })}
-            >
-              <option value="">{t`Anyone`}</option>
-              {staff.data?.map((m) => (
-                <option key={m.person_id} value={`p:${m.person_id}`}>
-                  {m.person_display_name}
-                </option>
-              ))}
-              {vendors.data?.map((v) => (
-                <option key={v.id} value={`v:${v.id}`}>
-                  {v.name}
-                </option>
-              ))}
-            </Select>
-            <Select
-              aria-label={t`Unit`}
-              value={search.unit ?? ''}
-              onChange={(e) => onSearch({ ...search, unit: e.target.value || undefined })}
-            >
-              <option value="">{t`Any unit`}</option>
-              {units.data?.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.door_number}
-                </option>
-              ))}
-            </Select>
-          </>
-        ) : null}
-      </div>
-
-      {list.isPending ? (
-        <TableSkeleton rows={5} columns={3} />
-      ) : list.isError ? (
-        <ErrorState error={list.error} onRetry={() => void list.refetch()} />
-      ) : list.items.length === 0 ? (
-        <EmptyState
-          icon={LifeBuoyIcon}
-          title={<Trans>No tickets here</Trans>}
-          description={
-            view === 'queue' ? (
-              <Trans>Nothing is waiting for you.</Trans>
-            ) : (
-              <Trans>Tickets matching these filters will appear here.</Trans>
-            )
-          }
-          action={
-            canOpen ? (
-              <Link to="/orgs/$orgId/tickets/new" params={{ orgId }} className={buttonVariants()}>
-                <Trans>New ticket</Trans>
-              </Link>
-            ) : undefined
-          }
-        />
-      ) : (
-        <>
-          <ul className="flex flex-col divide-y rounded-lg border" aria-label={t`Tickets`}>
-            {list.items.map((ticket) => (
-              <li key={ticket.id}>
-                <Link
-                  to="/orgs/$orgId/tickets/$ticketId"
-                  params={{ orgId, ticketId: ticket.id }}
-                  className="flex flex-col gap-1 p-3 outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
-                >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-medium">{ticket.title}</span>
-                    <StatusBadge name={ticket.status_name} semantic={ticket.status_semantic} />
-                    <VisibilityBadge visibility={ticket.visibility} />
-                    {ticket.merged_into_id ? (
-                      <span className="text-xs text-muted-foreground">
-                        <Trans>Merged</Trans>
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                    {ticket.unit_door_number ? <span>{ticket.unit_door_number}</span> : null}
-                    <span>{ticket.reporter_display_name}</span>
-                    <SiteDate value={ticket.created_at} timeZone={tz} kind="datetime" />
-                    {ticket.assignee ? (
-                      <span>
-                        <Trans>Assigned to {ticket.assignee.display_name}</Trans>
-                      </span>
-                    ) : null}
-                    {ticket.visibility === 'common' || ticket.vote_count > 0 ? (
-                      <span className="inline-flex items-center gap-1">
-                        <ThumbsUpIcon className="size-3" aria-hidden="true" />
-                        <span aria-label={t`${ticket.vote_count} people confirmed this`}>
-                          +{ticket.vote_count}
-                        </span>
-                      </span>
-                    ) : null}
-                    {ticket.comment_count > 0 ? (
-                      <span className="inline-flex items-center gap-1">
-                        <MessageSquareIcon className="size-3" aria-hidden="true" />
-                        {ticket.comment_count}
-                      </span>
-                    ) : null}
-                  </div>
-                </Link>
-              </li>
+            <option value="">{t`Any status`}</option>
+            {workflow.data?.statuses.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
             ))}
-          </ul>
-          <LoadMore query={list} />
-        </>
-      )}
+          </Select>
+          <Select
+            aria-label={t`Category`}
+            value={search.category ?? ''}
+            onChange={(e) => onSearch({ ...search, category: e.target.value || undefined })}
+          >
+            <option value="">{t`Any category`}</option>
+            {categories.data?.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </Select>
+          {view !== 'common' ? (
+            <Select
+              aria-label={t`Visibility`}
+              value={search.visibility ?? ''}
+              onChange={(e) =>
+                onSearch({
+                  ...search,
+                  visibility: (e.target.value as 'private' | 'common') || undefined,
+                })
+              }
+            >
+              <option value="">{t`Private and common`}</option>
+              <option value="private">{t`Private`}</option>
+              <option value="common">{t`Common`}</option>
+            </Select>
+          ) : null}
+          {canManage ? (
+            <>
+              <Select
+                aria-label={t`Assignee`}
+                value={search.assignee ?? ''}
+                onChange={(e) => onSearch({ ...search, assignee: e.target.value || undefined })}
+              >
+                <option value="">{t`Anyone`}</option>
+                {staff.data?.map((m) => (
+                  <option key={m.person_id} value={`p:${m.person_id}`}>
+                    {m.person_display_name}
+                  </option>
+                ))}
+                {vendors.data?.map((v) => (
+                  <option key={v.id} value={`v:${v.id}`}>
+                    {v.name}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                aria-label={t`Unit`}
+                value={search.unit ?? ''}
+                onChange={(e) => onSearch({ ...search, unit: e.target.value || undefined })}
+              >
+                <option value="">{t`Any unit`}</option>
+                {units.data?.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.door_number}
+                  </option>
+                ))}
+              </Select>
+            </>
+          ) : null}
+        </div>
+
+        {list.isPending ? (
+          <TableSkeleton rows={5} columns={3} />
+        ) : list.isError ? (
+          <ErrorState error={list.error} onRetry={() => void list.refetch()} />
+        ) : list.items.length === 0 ? (
+          <EmptyState
+            icon={LifeBuoyIcon}
+            title={<Trans>No tickets here</Trans>}
+            description={
+              view === 'queue' ? (
+                <Trans>Nothing is waiting for you.</Trans>
+              ) : (
+                <Trans>Tickets matching these filters will appear here.</Trans>
+              )
+            }
+            action={
+              canOpen ? (
+                <Link to="/orgs/$orgId/tickets/new" params={{ orgId }} className={buttonVariants()}>
+                  <Trans>New ticket</Trans>
+                </Link>
+              ) : undefined
+            }
+          />
+        ) : (
+          <>
+            <ul className="flex flex-col divide-y rounded-lg border" aria-label={t`Tickets`}>
+              {list.items.map((ticket) => (
+                <li key={ticket.id}>
+                  <Link
+                    to="/orgs/$orgId/tickets/$ticketId"
+                    params={{ orgId, ticketId: ticket.id }}
+                    className="flex flex-col gap-1 p-3 outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">{ticket.title}</span>
+                      <StatusBadge name={ticket.status_name} semantic={ticket.status_semantic} />
+                      <VisibilityBadge visibility={ticket.visibility} />
+                      {ticket.merged_into_id ? (
+                        <span className="text-xs text-muted-foreground">
+                          <Trans>Merged</Trans>
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      {ticket.unit_door_number ? <span>{ticket.unit_door_number}</span> : null}
+                      <span>{ticket.reporter_display_name}</span>
+                      <SiteDate value={ticket.created_at} timeZone={tz} kind="datetime" />
+                      {ticket.assignee ? (
+                        <span>
+                          <Trans>Assigned to {ticket.assignee.display_name}</Trans>
+                        </span>
+                      ) : null}
+                      {ticket.visibility === 'common' || ticket.vote_count > 0 ? (
+                        <span className="inline-flex items-center gap-1">
+                          <ThumbsUpIcon className="size-3" aria-hidden="true" />
+                          <span aria-label={t`${ticket.vote_count} people confirmed this`}>
+                            +{ticket.vote_count}
+                          </span>
+                        </span>
+                      ) : null}
+                      {ticket.comment_count > 0 ? (
+                        <span className="inline-flex items-center gap-1">
+                          <MessageSquareIcon className="size-3" aria-hidden="true" />
+                          {ticket.comment_count}
+                        </span>
+                      ) : null}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <LoadMore query={list} />
+          </>
+        )}
+      </TabBar>
     </div>
   )
 }

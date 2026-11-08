@@ -8,6 +8,7 @@ import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/data/EmptyState'
 import { ErrorState } from '@/components/data/ErrorState'
 import { SiteDate } from '@/components/data/SiteDate'
+import { TabBar } from '@/components/data/TabBar'
 import { TableSkeleton } from '@/components/data/Skeletons'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -175,96 +176,88 @@ export function NotificationsPage() {
         <h1 className="me-auto text-2xl font-semibold">
           <Trans>Notifications</Trans>
         </h1>
-        <div role="tablist" aria-label={t`Notification views`} className="flex gap-1">
-          <Button
-            role="tab"
-            aria-selected={tab === 'inbox'}
-            variant={tab === 'inbox' ? 'secondary' : 'ghost'}
-            onClick={() => setTab('inbox')}
-          >
-            <Trans>Inbox</Trans>
-          </Button>
-          <Button
-            role="tab"
-            aria-selected={tab === 'preferences'}
-            variant={tab === 'preferences' ? 'secondary' : 'ghost'}
-            onClick={() => setTab('preferences')}
-          >
-            <Trans>Preferences</Trans>
-          </Button>
-        </div>
       </div>
 
-      {tab === 'preferences' ? (
-        <MutesPanel orgId={orgId} />
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center gap-3">
-            <Label className="gap-2 font-normal">
-              <Checkbox checked={unreadOnly} onChange={(e) => setUnreadOnly(e.target.checked)} />
-              <Trans>Unread only</Trans>
-            </Label>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ms-auto"
-              disabled={markAll.isPending}
-              onClick={() => markAll.mutate()}
-            >
-              <CheckCheckIcon aria-hidden="true" />
-              <Trans>Mark all as read</Trans>
-            </Button>
-          </div>
-          {list.isPending ? (
-            <TableSkeleton rows={4} columns={2} />
-          ) : list.isError ? (
-            <ErrorState error={list.error} onRetry={() => void list.refetch()} />
-          ) : list.items.length === 0 ? (
-            <EmptyState
-              icon={BellIcon}
-              title={<Trans>You are all caught up</Trans>}
-              description={<Trans>New notifications will appear here.</Trans>}
-            />
-          ) : (
-            <>
-              <ul
-                className="flex flex-col divide-y rounded-lg border"
-                aria-label={t`Notifications`}
+      <TabBar
+        value={tab}
+        onValueChange={setTab}
+        label={t`Notification views`}
+        tabs={[
+          { id: 'inbox', label: t`Inbox` },
+          { id: 'preferences', label: t`Preferences` },
+        ]}
+      >
+        {tab === 'preferences' ? (
+          <MutesPanel orgId={orgId} />
+        ) : (
+          <>
+            <div className="flex flex-wrap items-center gap-3">
+              <Label className="gap-2 font-normal">
+                <Checkbox checked={unreadOnly} onChange={(e) => setUnreadOnly(e.target.checked)} />
+                <Trans>Unread only</Trans>
+              </Label>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ms-auto"
+                disabled={markAll.isPending}
+                onClick={() => markAll.mutate()}
               >
-                {list.items.map((n) => (
-                  <li key={n.id}>
-                    <button
-                      type="button"
-                      onClick={() => open(n)}
-                      className="flex w-full items-start gap-3 p-3 text-start outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read_at ? 'bg-transparent' : 'bg-primary'}`}
-                      />
-                      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span className={n.read_at ? 'text-sm' : 'text-sm font-semibold'}>
-                          {notificationTitle(n) ?? notificationTypeLabel(n.type, i18n)}
+                <CheckCheckIcon aria-hidden="true" />
+                <Trans>Mark all as read</Trans>
+              </Button>
+            </div>
+            {list.isPending ? (
+              <TableSkeleton rows={4} columns={2} />
+            ) : list.isError ? (
+              <ErrorState error={list.error} onRetry={() => void list.refetch()} />
+            ) : list.items.length === 0 ? (
+              <EmptyState
+                icon={BellIcon}
+                title={<Trans>You are all caught up</Trans>}
+                description={<Trans>New notifications will appear here.</Trans>}
+              />
+            ) : (
+              <>
+                <ul
+                  className="flex flex-col divide-y rounded-lg border"
+                  aria-label={t`Notifications`}
+                >
+                  {list.items.map((n) => (
+                    <li key={n.id}>
+                      <button
+                        type="button"
+                        onClick={() => open(n)}
+                        className="flex w-full items-start gap-3 p-3 text-start outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`mt-1.5 size-2 shrink-0 rounded-full ${n.read_at ? 'bg-transparent' : 'bg-primary'}`}
+                        />
+                        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                          <span className={n.read_at ? 'text-sm' : 'text-sm font-semibold'}>
+                            {notificationTitle(n) ?? notificationTypeLabel(n.type, i18n)}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {notificationTypeLabel(n.type, i18n)} ·{' '}
+                            <SiteDate value={n.created_at} timeZone={tz} kind="datetime" />
+                          </span>
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {notificationTypeLabel(n.type, i18n)} ·{' '}
-                          <SiteDate value={n.created_at} timeZone={tz} kind="datetime" />
-                        </span>
-                      </span>
-                      {!n.read_at ? (
-                        <span className="sr-only">
-                          <Trans>Unread</Trans>
-                        </span>
-                      ) : null}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <LoadMore query={list} />
-            </>
-          )}
-        </>
-      )}
+                        {!n.read_at ? (
+                          <span className="sr-only">
+                            <Trans>Unread</Trans>
+                          </span>
+                        ) : null}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <LoadMore query={list} />
+              </>
+            )}
+          </>
+        )}
+      </TabBar>
     </div>
   )
 }
