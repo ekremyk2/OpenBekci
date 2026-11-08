@@ -7307,6 +7307,7 @@ paths:
       x-stability: stable
       parameters:
         - $ref: '#/components/parameters/IdempotencyKeyRequired'
+        - $ref: '#/components/parameters/DryRun'
       requestBody:
         required: true
         content:
@@ -8625,6 +8626,19 @@ paths:
             type: string
             format: date
           description: Filter by `due_to`.
+        - name: overdue
+          in: query
+          schema:
+            type: boolean
+          description: Only charges past their due date that are still open or partially paid.
+        - name: side
+          in: query
+          schema:
+            type: string
+            x-known-values:
+              - owner
+              - tenant
+          description: Debtor side of the unit (alias of `debtor_kind`).
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Cursor'
       responses:
@@ -30410,6 +30424,15 @@ components:
         unit_id:
           type: string
           format: uuid
+        unit_door_number:
+          type: string
+          description: Door number of the unit, for display next to the debtor.
+        unit_label:
+          type: string
+          description: Block and door number ("A Blok / 12").
+        block_name:
+          type: string
+          nullable: true
         debtor_kind:
           type: string
           description: Open enum.
@@ -30780,7 +30803,7 @@ components:
         - gross
         - fee
         - net
-        - received_at
+        - received_on
         - recorded_by
         - asset_account_id
         - reference
@@ -30838,9 +30861,9 @@ components:
           $ref: '#/components/schemas/Money'
         net:
           $ref: '#/components/schemas/Money'
-        received_at:
+        received_on:
           type: string
-          format: date-time
+          format: date
         recorded_by:
           type: string
           format: uuid
@@ -30912,7 +30935,7 @@ components:
         net:
           amount: 200000
           currency: TRY
-        received_at: '2026-03-01T09:00:00Z'
+        received_on: '2026-03-01'
         recorded_by: null
         asset_account_id: 0192a3f0-1000-7000-8000-000000000002
         reference: null
@@ -30969,7 +30992,7 @@ components:
             net:
               amount: 200000
               currency: TRY
-            received_at: '2026-03-01T09:00:00Z'
+            received_on: '2026-03-01'
             recorded_by: null
             asset_account_id: 0192a3f0-1000-7000-8000-000000000002
             reference: null
@@ -31012,7 +31035,7 @@ components:
         - site_id
         - method
         - amount
-        - received_at
+        - received_on
         - asset_account_id
         - debtor
       properties:
@@ -31031,9 +31054,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Gross amount.
-        received_at:
+        received_on:
           type: string
-          format: date-time
+          format: date
         asset_account_id:
           type: string
           format: uuid
@@ -31059,7 +31082,7 @@ components:
         amount:
           amount: 200000
           currency: TRY
-        received_at: '2026-03-05T10:15:00Z'
+        received_on: '2026-03-05'
         asset_account_id: 0192a3f0-1000-7000-8000-000000000002
         debtor:
           unit_id: 0192a3f0-1000-7000-8000-000000000001
@@ -31142,9 +31165,9 @@ components:
         asset_account_id:
           type: string
           format: uuid
-        received_at:
+        received_on:
           type: string
-          format: date-time
+          format: date
         allocations:
           type: array
           items:
@@ -31272,7 +31295,7 @@ components:
         - from_account_id
         - to_account_id
         - amount
-        - transferred_at
+        - transferred_on
         - memo
         - kind
         - journal_entry_id
@@ -31297,9 +31320,9 @@ components:
           format: uuid
         amount:
           $ref: '#/components/schemas/Money'
-        transferred_at:
+        transferred_on:
           type: string
-          format: date-time
+          format: date
         memo:
           type: string
           nullable: true
@@ -31332,7 +31355,7 @@ components:
         amount:
           amount: 200000
           currency: TRY
-        transferred_at: '2026-03-01T09:00:00Z'
+        transferred_on: '2026-03-01'
         memo: null
         kind: cash_handover
         journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
@@ -31346,7 +31369,7 @@ components:
         - from_account_id
         - to_account_id
         - amount
-        - transferred_at
+        - transferred_on
       properties:
         site_id:
           type: string
@@ -31359,9 +31382,9 @@ components:
           format: uuid
         amount:
           $ref: '#/components/schemas/Money'
-        transferred_at:
+        transferred_on:
           type: string
-          format: date-time
+          format: date
         memo:
           type: string
           nullable: true
@@ -31397,7 +31420,7 @@ components:
             amount:
               amount: 200000
               currency: TRY
-            transferred_at: '2026-03-01T09:00:00Z'
+            transferred_on: '2026-03-01'
             memo: null
             kind: cash_handover
             journal_entry_id: 0192a3f0-1000-7000-8000-000000000007
@@ -31419,7 +31442,7 @@ components:
         - reason
         - kind
         - paid_from_account_id
-        - refunded_at
+        - refunded_on
         - credit_id
         - payment_id
         - journal_entry_id
@@ -31466,9 +31489,9 @@ components:
         paid_from_account_id:
           type: string
           format: uuid
-        refunded_at:
+        refunded_on:
           type: string
-          format: date-time
+          format: date
         credit_id:
           type: string
           format: uuid
@@ -31499,7 +31522,7 @@ components:
         reason: reason
         kind: overpayment
         paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
-        refunded_at: '2026-03-01T09:00:00Z'
+        refunded_on: '2026-03-01'
         credit_id: null
         payment_id: null
         journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
@@ -31513,7 +31536,7 @@ components:
         - reason
         - kind
         - paid_from_account_id
-        - refunded_at
+        - refunded_on
       properties:
         site_id:
           type: string
@@ -31549,9 +31572,9 @@ components:
         paid_from_account_id:
           type: string
           format: uuid
-        refunded_at:
+        refunded_on:
           type: string
-          format: date-time
+          format: date
         credit_id:
           type: string
           format: uuid
@@ -31588,7 +31611,7 @@ components:
             reason: reason
             kind: overpayment
             paid_from_account_id: 0192a3f0-1000-7000-8000-000000000005
-            refunded_at: '2026-03-01T09:00:00Z'
+            refunded_on: '2026-03-01'
             credit_id: null
             payment_id: null
             journal_entry_id: 0192a3f0-1000-7000-8000-000000000006
@@ -32162,6 +32185,22 @@ components:
           type: string
           format: uuid
           nullable: true
+        recurring:
+          type: object
+          nullable: true
+          description: Makes this a monthly recurring expense in one atomic call (the first occurrence is posted now).
+          required:
+            - frequency
+          properties:
+            frequency:
+              type: string
+              enum:
+                - monthly
+            day:
+              type: integer
+              minimum: 1
+              maximum: 31
+              description: Day of the month; defaults to the day of `paid_on`.
     ExpenseList:
       type: object
       required:
@@ -41843,6 +41882,7 @@ components:
         - bookings.read
         - claims.decide
         - codes.read
+        - collections.manage
         - dashboard.portfolio
         - dashboard.site
         - dashboard.staff
@@ -41870,6 +41910,10 @@ components:
         - meetings.read
         - memberships.manage
         - memberships.read
+        - money.lock
+        - money.manage
+        - money.post
+        - money.read
         - notifications.manage
         - notifications.read
         - occupancies.grant_money
@@ -41878,6 +41922,8 @@ components:
         - occupancies.read
         - org.manage
         - org.read
+        - payments.declare
+        - payments.record
         - people.erase
         - people.manage
         - people.move_out
@@ -41885,6 +41931,9 @@ components:
         - people.read
         - platform.manage
         - polls.answer
+        - reports.aggregate
+        - reports.debtors
+        - reports.read
         - roles.read
         - sessions.manage_own
         - sites.bank_details
@@ -41892,6 +41941,8 @@ components:
         - sites.manage
         - sites.offboard
         - sites.read
+        - statements.read
+        - statements.read_own
         - tickets.manage
         - tickets.open
         - tickets.read

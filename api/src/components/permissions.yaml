@@ -20,6 +20,7 @@ schemas:
       - bookings.read
       - claims.decide
       - codes.read
+      - collections.manage
       - dashboard.portfolio
       - dashboard.site
       - dashboard.staff
@@ -47,6 +48,10 @@ schemas:
       - meetings.read
       - memberships.manage
       - memberships.read
+      - money.lock
+      - money.manage
+      - money.post
+      - money.read
       - notifications.manage
       - notifications.read
       - occupancies.grant_money
@@ -55,6 +60,8 @@ schemas:
       - occupancies.read
       - org.manage
       - org.read
+      - payments.declare
+      - payments.record
       - people.erase
       - people.manage
       - people.move_out
@@ -62,6 +69,9 @@ schemas:
       - people.read
       - platform.manage
       - polls.answer
+      - reports.aggregate
+      - reports.debtors
+      - reports.read
       - roles.read
       - sessions.manage_own
       - sites.bank_details
@@ -69,6 +79,8 @@ schemas:
       - sites.manage
       - sites.offboard
       - sites.read
+      - statements.read
+      - statements.read_own
       - tickets.manage
       - tickets.open
       - tickets.read
@@ -99,6 +111,7 @@ x-openbekci-roles:
     - bookings.read
     - claims.decide
     - codes.read
+    - collections.manage
     - dashboard.portfolio
     - dashboard.site
     - decisions.manage
@@ -122,6 +135,10 @@ x-openbekci-roles:
     - meetings.read
     - memberships.manage
     - memberships.read
+    - money.lock
+    - money.manage
+    - money.post
+    - money.read
     - notifications.manage
     - notifications.read
     - occupancies.grant_money
@@ -130,12 +147,17 @@ x-openbekci-roles:
     - occupancies.read
     - org.manage
     - org.read
+    - payments.declare
+    - payments.record
     - people.erase
     - people.manage
     - people.move_out
     - people.national_id
     - people.read
     - polls.answer
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - roles.read
     - sessions.manage_own
     - sites.bank_details
@@ -143,6 +165,8 @@ x-openbekci-roles:
     - sites.manage
     - sites.offboard
     - sites.read
+    - statements.read
+    - statements.read_own
     - tickets.manage
     - tickets.open
     - tickets.read
@@ -168,6 +192,7 @@ x-openbekci-roles:
     - bookings.read
     - claims.decide
     - codes.read
+    - collections.manage
     - dashboard.portfolio
     - dashboard.site
     - decisions.manage
@@ -191,6 +216,10 @@ x-openbekci-roles:
     - meetings.read
     - memberships.manage
     - memberships.read
+    - money.lock
+    - money.manage
+    - money.post
+    - money.read
     - notifications.manage
     - notifications.read
     - occupancies.grant_money
@@ -198,16 +227,23 @@ x-openbekci-roles:
     - occupancies.manage
     - occupancies.read
     - org.read
+    - payments.declare
+    - payments.record
     - people.manage
     - people.move_out
     - people.national_id
     - people.read
     - polls.answer
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - roles.read
     - sessions.manage_own
     - sites.bank_details
     - sites.manage
     - sites.read
+    - statements.read
+    - statements.read_own
     - tickets.manage
     - tickets.open
     - tickets.read
@@ -230,6 +266,7 @@ x-openbekci-roles:
     - bookings.manage
     - bookings.read
     - codes.read
+    - collections.manage
     - dashboard.site
     - decisions.manage
     - directory.read
@@ -247,18 +284,27 @@ x-openbekci-roles:
     - meetings.manage
     - meetings.read
     - memberships.read
+    - money.manage
+    - money.post
+    - money.read
     - notifications.read
     - occupancies.manage
     - occupancies.read
     - org.read
+    - payments.record
     - people.manage
     - people.read
     - polls.answer
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - roles.read
     - sessions.manage_own
     - sites.bank_details
     - sites.manage
     - sites.read
+    - statements.read
+    - statements.read_own
     - tickets.manage
     - tickets.open
     - tickets.read
@@ -290,14 +336,20 @@ x-openbekci-roles:
     - me.read
     - meetings.read
     - memberships.read
+    - money.read
     - notifications.read
     - occupancies.read
     - org.read
     - people.read
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - roles.read
     - sessions.manage_own
     - sites.bank_details
     - sites.read
+    - statements.read
+    - statements.read_own
     - tickets.read
     - units.read
     - vehicles.read
@@ -315,11 +367,21 @@ x-openbekci-roles:
     - me.dashboard
     - me.manage
     - me.read
+    - money.lock
+    - money.manage
+    - money.post
+    - money.read
     - notifications.read
     - org.read
+    - payments.record
+    - reports.aggregate
+    - reports.debtors
+    - reports.read
     - sessions.manage_own
     - sites.bank_details
     - sites.read
+    - statements.read
+    - statements.read_own
     - units.read
     - vendors.manage
     - vendors.read
@@ -335,6 +397,7 @@ x-openbekci-roles:
     - me.read
     - notifications.read
     - org.read
+    - payments.record
     - sessions.manage_own
     - sites.read
     - tickets.open

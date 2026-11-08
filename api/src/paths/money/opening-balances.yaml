@@ -94,6 +94,7 @@ post:
   x-stability: stable
   parameters:
     - $ref: ../../components/draft-common.yaml#/parameters/IdempotencyKeyRequired
+    - $ref: ../../components/draft-common.yaml#/parameters/DryRun
   requestBody:
     required: true
     content:

@@ -372,6 +372,30 @@ is never retried. Limits: enrol 10/min per IP, WebSocket upgrade 20/min and poll
 `server/testdata/access-protocol/` holds the shared conformance fixtures (valid and invalid messages, the evaluation
 cases with the inclusive overnight boundary, plate normalization); every one is run against the decoder and the served
 schemas in `api/agent-protocol/v1`.
+## Money (phase C)
+
+Modules: `internal/core/ledger` (funds, chart of accounts, cash boxes, fiscal years, the append-only journal, the `PostEntry` poster, lock date, receipt
+sequences), `billing` (charge plans with effective-dated rates, charge generation, charges, late fees, opening balances, open-item view), `payments`
+(cash and bank payments, declared transfers, receipts, allocation), `reports` (statements as JSON, CSV and PDF, debtor list, aging, trial balance, fund
+balances, income and expense), `moneyhooks` (the move-out hook `people.MoneyHooks`, registered in the wiring). Pure calculators live in `core/money/*`;
+`platform/pdf` writes the PDFs (Helvetica with Turkish letters, no font file).
+
+- **Double entry, funds, immutability.** Every posting goes through `ledger.PostEntry`: balanced overall and per fund, `fund_id` on every line, refused on or
+  before the site's lock date (`409 locked_period`; the database also refuses it by trigger). `journal_entry` and `journal_line` have no UPDATE or DELETE
+  grant and refuse them by trigger; a deferred trigger checks balance at commit. Corrections are reversals dated today (`ledger.Reverse`). Balances are
+  `SUM` over the `(account, date)` index; there is no cache. The default chart and the operating and reserve funds are created on first use of a site.
+- **Debtors.** A receivable is keyed by `(unit, side)` or by a person (carried debt after move-out). `billing.Debtor` is the `DebtorRef` of the API. Each charge
+  snapshots its debtor person (`tenancy.EffectivePayer` decides the side; a tenant side with no tenant on the due date bills the owner).
+- **Jobs.** `billing.catch_up` (hourly, on start too) runs `GenerateCharges` and `CrystallizeLateFees` for every active site; both are idempotent catch-up
+  jobs. Late fees are accrued on demand by `latefee.Accrue`; crystallization posts the delta between expected and booked fee (a reversal after a backdated payment).
+  Money notifications are River jobs of kind `notifications.money` (see `ledger/notify.go` for types and payloads); without a notifications module a log-only worker drops them.
+- **Re-authentication.** Moving the lock date back, posting or voiding opening balances (a dry run needs none) and waivers above the site threshold
+  (`late_fee_waiver_reauth_minor`, default 1000.00) need `POST /v1/auth/reauth` first.
+- **Commands.** `openbekci admin rebuild-charge-status --org --site` re-derives every `charge.status` from the allocations; `openbekci admin post-entry --org --site
+  --date --line CODE:DEBIT:CREDIT[:FUND] ...` posts a manual entry (audited, lock date applies).
+- **Served and draft.** The ledger, charge plans (list, create), charges (list), payments (list, create, get, void), opening balances (list, create), late fee
+  policy and debtor report and unit statement operations are served; the rest of the draft `money` module (expenses, collections, bank imports, transfers,
+  refunds, budgets, other reports, ...) is not implemented yet. A site hand-over does not carry money data yet (`tenancy/export_money.go`).
 
 ## Tests
 

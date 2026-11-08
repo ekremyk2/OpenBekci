@@ -33,6 +33,8 @@ tags:
     description: Agents, access points, credentials, access events and manual open (release 0.3).
   - name: agent
     description: "Agent transport: enrolment, WebSocket, long-poll, token rotation (release 0.3; message schemas in api/agent-protocol/v1)."
+  - name: money
+    description: Ledger, billing, payments, expenses, collections, statements and reports.
   - name: platform
     description: Instance operation (platform administrators).
 # Role to permission matrix, generated from the Go permission registry (task gen:permissions).
@@ -441,6 +443,52 @@ paths:
     $ref: ./paths/agent/agent-token_rotate.yaml
   /v1/agent/ws:
     $ref: ./paths/agent/agent-ws.yaml
+  /v1/orgs/{org_id}/funds:
+    $ref: './paths/money/funds.yaml'
+  /v1/orgs/{org_id}/funds/{fund_id}:
+    $ref: './paths/money/funds-fund_id.yaml'
+  /v1/orgs/{org_id}/accounts:
+    $ref: './paths/money/accounts.yaml'
+  /v1/orgs/{org_id}/accounts/{account_id}:
+    $ref: './paths/money/accounts-account_id.yaml'
+  /v1/orgs/{org_id}/cash-boxes:
+    $ref: './paths/money/cash-boxes.yaml'
+  /v1/orgs/{org_id}/cash-boxes/{cash_box_id}:
+    $ref: './paths/money/cash-boxes-cash_box_id.yaml'
+  /v1/orgs/{org_id}/fiscal-years:
+    $ref: './paths/money/fiscal-years.yaml'
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:
+    $ref: './paths/money/fiscal-years-fiscal_year_id.yaml'
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:close:
+    $ref: './paths/money/fiscal-years-fiscal_year_id_close.yaml'
+  /v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:approve:
+    $ref: './paths/money/fiscal-years-fiscal_year_id_approve.yaml'
+  /v1/orgs/{org_id}/journal-entries:
+    $ref: './paths/money/journal-entries.yaml'
+  /v1/orgs/{org_id}/journal-entries/{entry_id}:
+    $ref: './paths/money/journal-entries-entry_id.yaml'
+  /v1/orgs/{org_id}/journal-entries/{entry_id}:reverse:
+    $ref: './paths/money/journal-entries-entry_id_reverse.yaml'
+  /v1/orgs/{org_id}/sites/{site_id}/lock-date:
+    $ref: './paths/money/sites-site_id-lock-date.yaml'
+  /v1/orgs/{org_id}/charge-plans:
+    $ref: './paths/money/charge-plans.yaml'
+  /v1/orgs/{org_id}/charges:
+    $ref: './paths/money/charges.yaml'
+  /v1/orgs/{org_id}/payments:
+    $ref: './paths/money/payments.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:
+    $ref: './paths/money/payments-payment_id.yaml'
+  /v1/orgs/{org_id}/payments/{payment_id}:void:
+    $ref: './paths/money/payments-payment_id_void.yaml'
+  /v1/orgs/{org_id}/late-fee-policy:
+    $ref: './paths/money/late-fee-policy.yaml'
+  /v1/orgs/{org_id}/opening-balances:
+    $ref: './paths/money/opening-balances.yaml'
+  /v1/orgs/{org_id}/reports/debtors:
+    $ref: './paths/money/reports-debtors.yaml'
+  /v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}:
+    $ref: './paths/money/units-unit_id-statements-debtor_kind.yaml'
 components:
   securitySchemes:
     agentAuth:
@@ -1169,3 +1217,102 @@ components:
       $ref: ./components/access.yaml#/schemas/AgentTokenRotated
     CredentialCreate:
       $ref: ./components/access.yaml#/schemas/CredentialCreate
+
+    Account:
+      $ref: './components/money.yaml#/schemas/Account'
+    AccountCreate:
+      $ref: './components/money.yaml#/schemas/AccountCreate'
+    AccountList:
+      $ref: './components/money.yaml#/schemas/AccountList'
+    AccountUpdate:
+      $ref: './components/money.yaml#/schemas/AccountUpdate'
+    AllocationBasis:
+      $ref: './components/money.yaml#/schemas/AllocationBasis'
+    AllocationInput:
+      $ref: './components/money.yaml#/schemas/AllocationInput'
+    CashBox:
+      $ref: './components/money.yaml#/schemas/CashBox'
+    CashBoxCreate:
+      $ref: './components/money.yaml#/schemas/CashBoxCreate'
+    CashBoxList:
+      $ref: './components/money.yaml#/schemas/CashBoxList'
+    CashBoxUpdate:
+      $ref: './components/money.yaml#/schemas/CashBoxUpdate'
+    Charge:
+      $ref: './components/money.yaml#/schemas/Charge'
+    ChargeCreate:
+      $ref: './components/money.yaml#/schemas/ChargeCreate'
+    ChargeList:
+      $ref: './components/money.yaml#/schemas/ChargeList'
+    ChargePlan:
+      $ref: './components/money.yaml#/schemas/ChargePlan'
+    ChargePlanCreate:
+      $ref: './components/money.yaml#/schemas/ChargePlanCreate'
+    ChargePlanList:
+      $ref: './components/money.yaml#/schemas/ChargePlanList'
+    ChargePlanRate:
+      $ref: './components/money.yaml#/schemas/ChargePlanRate'
+    ChargeScope:
+      $ref: './components/money.yaml#/schemas/ChargeScope'
+    DebtorRef:
+      $ref: './components/money.yaml#/schemas/DebtorRef'
+    DebtorReport:
+      $ref: './components/money.yaml#/schemas/DebtorReport'
+    DebtorRow:
+      $ref: './components/money.yaml#/schemas/DebtorRow'
+    EffectiveDebtor:
+      $ref: './components/money.yaml#/schemas/EffectiveDebtor'
+    FiscalYear:
+      $ref: './components/money.yaml#/schemas/FiscalYear'
+    FiscalYearClose:
+      $ref: './components/money.yaml#/schemas/FiscalYearClose'
+    FiscalYearCreate:
+      $ref: './components/money.yaml#/schemas/FiscalYearCreate'
+    FiscalYearList:
+      $ref: './components/money.yaml#/schemas/FiscalYearList'
+    Fund:
+      $ref: './components/money.yaml#/schemas/Fund'
+    FundCreate:
+      $ref: './components/money.yaml#/schemas/FundCreate'
+    FundList:
+      $ref: './components/money.yaml#/schemas/FundList'
+    FundUpdate:
+      $ref: './components/money.yaml#/schemas/FundUpdate'
+    JournalEntry:
+      $ref: './components/money.yaml#/schemas/JournalEntry'
+    JournalEntryList:
+      $ref: './components/money.yaml#/schemas/JournalEntryList'
+    JournalLine:
+      $ref: './components/money.yaml#/schemas/JournalLine'
+    JournalReverse:
+      $ref: './components/money.yaml#/schemas/JournalReverse'
+    LateFeePolicy:
+      $ref: './components/money.yaml#/schemas/LateFeePolicy'
+    LateFeePolicySet:
+      $ref: './components/money.yaml#/schemas/LateFeePolicySet'
+    LockDate:
+      $ref: './components/money.yaml#/schemas/LockDate'
+    LockDateSet:
+      $ref: './components/money.yaml#/schemas/LockDateSet'
+    OpeningBalance:
+      $ref: './components/money.yaml#/schemas/OpeningBalance'
+    OpeningBalanceCreate:
+      $ref: './components/money.yaml#/schemas/OpeningBalanceCreate'
+    OpeningBalanceList:
+      $ref: './components/money.yaml#/schemas/OpeningBalanceList'
+    Payment:
+      $ref: './components/money.yaml#/schemas/Payment'
+    PaymentAllocation:
+      $ref: './components/money.yaml#/schemas/PaymentAllocation'
+    PaymentCreate:
+      $ref: './components/money.yaml#/schemas/PaymentCreate'
+    PaymentList:
+      $ref: './components/money.yaml#/schemas/PaymentList'
+    PaymentVoid:
+      $ref: './components/money.yaml#/schemas/PaymentVoid'
+    ReceiptDelivery:
+      $ref: './components/money.yaml#/schemas/ReceiptDelivery'
+    Statement:
+      $ref: './components/money.yaml#/schemas/Statement'
+    StatementLine:
+      $ref: './components/money.yaml#/schemas/StatementLine'

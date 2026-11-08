@@ -71,6 +71,22 @@ type AccessSiteState struct {
 	UpdatedAt     pgtype.Timestamptz
 }
 
+type Account struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Type      string
+	Subtype   pgtype.Text
+	FundID    pgtype.UUID
+	IsSystem  bool
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
+}
+
 type AgendaItem struct {
 	ID          pgtype.UUID
 	OrgID       pgtype.UUID
@@ -308,6 +324,75 @@ type Booking struct {
 	Version         int32
 }
 
+type CashBox struct {
+	ID                pgtype.UUID
+	OrgID             pgtype.UUID
+	SiteID            pgtype.UUID
+	Name              string
+	AccountID         pgtype.UUID
+	CollectorPersonID pgtype.UUID
+	CreatedAt         pgtype.Timestamptz
+	UpdatedAt         pgtype.Timestamptz
+	Version           int32
+}
+
+type Charge struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	PlanID          pgtype.UUID
+	UnitID          pgtype.UUID
+	Period          string
+	Kind            string
+	ChargeType      string
+	DebtorKind      string
+	DebtorPersonID  pgtype.UUID
+	Amount          int64
+	DueDate         pgtype.Date
+	Description     string
+	AllocationBasis []byte
+	FundID          pgtype.UUID
+	JournalEntryID  pgtype.UUID
+	CancelEntryID   pgtype.UUID
+	Status          string
+	CreatedAt       pgtype.Timestamptz
+}
+
+type ChargePlan struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	Name            string
+	Kind            string
+	ChargeType      string
+	DefaultDebtor   string
+	Frequency       string
+	DueDay          int32
+	StartOn         pgtype.Date
+	EndOn           pgtype.Date
+	AmountMode      string
+	AllocationKey   pgtype.Text
+	Scope           string
+	FundID          pgtype.UUID
+	IncomeAccountID pgtype.UUID
+	Status          string
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+	Version         int32
+}
+
+type ChargePlanRate struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	PlanID     pgtype.UUID
+	FromOn     pgtype.Date
+	ToOn       pgtype.Date
+	Amount     int64
+	DecisionID pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+}
+
 type Credential struct {
 	ID           pgtype.UUID
 	OrgID        pgtype.UUID
@@ -466,6 +551,19 @@ type File struct {
 	PurgedAt       pgtype.Timestamptz
 }
 
+type FiscalYear struct {
+	ID                   pgtype.UUID
+	OrgID                pgtype.UUID
+	SiteID               pgtype.UUID
+	StartOn              pgtype.Date
+	EndOn                pgtype.Date
+	Status               string
+	ApprovedByDecisionID pgtype.UUID
+	CreatedAt            pgtype.Timestamptz
+	UpdatedAt            pgtype.Timestamptz
+	Version              int32
+}
+
 type Folder struct {
 	ID                pgtype.UUID
 	OrgID             pgtype.UUID
@@ -481,6 +579,20 @@ type Folder struct {
 	CreatedAt         pgtype.Timestamptz
 	UpdatedAt         pgtype.Timestamptz
 	Version           int32
+}
+
+type Fund struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	Code      string
+	Name      string
+	Kind      string
+	IsDefault bool
+	Archived  bool
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	Version   int32
 }
 
 type GatePin struct {
@@ -610,6 +722,87 @@ type Invitation struct {
 	CreatedAt       pgtype.Timestamptz
 	UpdatedAt       pgtype.Timestamptz
 	Version         int32
+}
+
+type JournalEntry struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	EntryDate       pgtype.Date
+	DocumentDate    pgtype.Date
+	FiscalYearID    pgtype.UUID
+	Memo            string
+	SourceType      string
+	SourceID        pgtype.UUID
+	PostedBy        pgtype.UUID
+	PostedAt        pgtype.Timestamptz
+	ReversesEntryID pgtype.UUID
+}
+
+type JournalLine struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	EntryID    pgtype.UUID
+	EntryDate  pgtype.Date
+	AccountID  pgtype.UUID
+	FundID     pgtype.UUID
+	Debit      int64
+	Credit     int64
+	UnitID     pgtype.UUID
+	DebtorKind pgtype.Text
+	PersonID   pgtype.UUID
+	BlockID    pgtype.UUID
+	VendorID   pgtype.UUID
+}
+
+type LateFeeBooking struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	UnitID     pgtype.UUID
+	DebtorKind string
+	Period     string
+	Kind       string
+	Amount     int64
+	ChargeID   pgtype.UUID
+	EntryID    pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+}
+
+type LateFeeFreeze struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	UnitID     pgtype.UUID
+	DebtorKind string
+	FromOn     pgtype.Date
+	ToOn       pgtype.Date
+	Reason     string
+	CreatedAt  pgtype.Timestamptz
+}
+
+type LateFeePolicy struct {
+	ID              pgtype.UUID
+	OrgID           pgtype.UUID
+	SiteID          pgtype.UUID
+	FromOn          pgtype.Date
+	RateBpsPerMonth int32
+	GraceDays       int32
+	CreatedAt       pgtype.Timestamptz
+}
+
+type LateFeeWaiver struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	UnitID     pgtype.UUID
+	DebtorKind string
+	Amount     int64
+	Reason     string
+	ByUserID   pgtype.UUID
+	EntryID    pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
 }
 
 type LoginAttempt struct {
@@ -776,6 +969,26 @@ type Occupancy struct {
 	Version         int32
 }
 
+type OpeningBalance struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	AsOf           pgtype.Date
+	Kind           string
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	AccountID      pgtype.UUID
+	Principal      int64
+	LateFee        int64
+	JournalEntryID pgtype.UUID
+	EntryIds       []pgtype.UUID
+	ImportRowID    pgtype.UUID
+	VoidedAt       pgtype.Timestamptz
+	VoidEntryID    pgtype.UUID
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+}
+
 type OrgStorageUsage struct {
 	OrgID     pgtype.UUID
 	Bytes     int64
@@ -809,6 +1022,41 @@ type OtpCode struct {
 	ExpiresAt  pgtype.Timestamptz
 	Attempts   int32
 	ConsumedAt pgtype.Timestamptz
+}
+
+type Payment struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	DebtorPersonID pgtype.UUID
+	PayerPersonID  pgtype.UUID
+	Method         string
+	Gross          int64
+	Fee            int64
+	Net            int64
+	ReceivedOn     pgtype.Date
+	RecordedBy     pgtype.UUID
+	AssetAccountID pgtype.UUID
+	Reference      pgtype.Text
+	Status         string
+	ReceiptNo      pgtype.Text
+	JournalEntryID pgtype.UUID
+	VoidEntryID    pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+}
+
+type PaymentAllocation struct {
+	ID        pgtype.UUID
+	OrgID     pgtype.UUID
+	SiteID    pgtype.UUID
+	PaymentID pgtype.UUID
+	ChargeID  pgtype.UUID
+	Amount    int64
+	AppliedOn pgtype.Date
+	Voided    bool
+	CreatedAt pgtype.Timestamptz
 }
 
 type Person struct {
@@ -881,6 +1129,14 @@ type RecurringVisitor struct {
 	CreatedAt     pgtype.Timestamptz
 	UpdatedAt     pgtype.Timestamptz
 	Version       int32
+}
+
+type Sequence struct {
+	OrgID  pgtype.UUID
+	SiteID pgtype.UUID
+	Kind   string
+	Year   int32
+	Last   int32
 }
 
 type Session struct {

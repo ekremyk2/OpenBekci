@@ -53,6 +53,8 @@ type Deps struct {
 	Governance *governance.Service
 	// Community serves the community operations (bookings, visitors, guard console, parcels).
 	Community *community.Service
+	// Money are the money services (ledger, billing, payments, ...).
+	Money MoneyDeps
 	Audit     *audit.Service
 	// Access serves /v1/orgs/{org_id}/access-points, agents, credentials and events,
 	// and the agent transport under /v1/agent. Nil leaves them unwired (unit tests).

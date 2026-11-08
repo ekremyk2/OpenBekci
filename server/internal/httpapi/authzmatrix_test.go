@@ -336,6 +336,7 @@ func TestIntegrationAuthzMatrix(t *testing.T) {
 	}
 }
 
+// holdsAll: every listed permission is held; a "a|b" name is held when one of its alternatives is.
 func holdsAll(have, need []string) bool {
 	for _, n := range need {
 		ok := false

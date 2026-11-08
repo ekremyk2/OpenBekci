@@ -13832,6 +13832,11 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             unit_id: string;
+            /** @description Door number of the unit, for display next to the debtor. */
+            unit_door_number?: string;
+            /** @description Block and door number ("A Blok / 12"). */
+            unit_label?: string;
+            block_name?: string | null;
             /**
              * @description Open enum.
              * @enum {string}
@@ -14090,7 +14095,7 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "received_at": "2026-03-01T09:00:00Z",
+         *       "received_on": "2026-03-01",
          *       "recorded_by": null,
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *       "reference": null,
@@ -14147,8 +14152,8 @@ export interface components {
             gross: components["schemas"]["Money"];
             fee: components["schemas"]["Money"];
             net: components["schemas"]["Money"];
-            /** Format: date-time */
-            received_at: string;
+            /** Format: date */
+            received_on: string;
             /** Format: uuid */
             recorded_by: string | null;
             /** Format: uuid */
@@ -14200,7 +14205,7 @@ export interface components {
          *             "amount": 200000,
          *             "currency": "TRY"
          *           },
-         *           "received_at": "2026-03-01T09:00:00Z",
+         *           "received_on": "2026-03-01",
          *           "recorded_by": null,
          *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *           "reference": null,
@@ -14251,7 +14256,7 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "received_at": "2026-03-05T10:15:00Z",
+         *       "received_on": "2026-03-05",
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
          *       "debtor": {
          *         "unit_id": "0192a3f0-1000-7000-8000-000000000001",
@@ -14268,8 +14273,8 @@ export interface components {
             method: "cash" | "bank_transfer";
             /** @description Gross amount. */
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            received_at: string;
+            /** Format: date */
+            received_on: string;
             /**
              * Format: uuid
              * @description Bank account or the collector cash box account.
@@ -14315,8 +14320,8 @@ export interface components {
         PaymentConfirm: {
             /** Format: uuid */
             asset_account_id: string;
-            /** Format: date-time */
-            received_at?: string;
+            /** Format: date */
+            received_on?: string;
             allocations?: components["schemas"]["AllocationInput"][];
             /** Format: uuid */
             bank_transaction_id?: string;
@@ -14408,7 +14413,7 @@ export interface components {
          *         "amount": 200000,
          *         "currency": "TRY"
          *       },
-         *       "transferred_at": "2026-03-01T09:00:00Z",
+         *       "transferred_on": "2026-03-01",
          *       "memo": null,
          *       "kind": "cash_handover",
          *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
@@ -14429,8 +14434,8 @@ export interface components {
             /** Format: uuid */
             to_account_id: string;
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at: string;
+            /** Format: date */
+            transferred_on: string;
             memo: string | null;
             /**
              * @description Open enum.
@@ -14454,8 +14459,8 @@ export interface components {
             /** Format: uuid */
             to_account_id: string;
             amount: components["schemas"]["Money"];
-            /** Format: date-time */
-            transferred_at: string;
+            /** Format: date */
+            transferred_on: string;
             memo?: string | null;
             /**
              * @description Open enum.
@@ -14476,7 +14481,7 @@ export interface components {
          *             "amount": 200000,
          *             "currency": "TRY"
          *           },
-         *           "transferred_at": "2026-03-01T09:00:00Z",
+         *           "transferred_on": "2026-03-01",
          *           "memo": null,
          *           "kind": "cash_handover",
          *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000007",
@@ -14509,7 +14514,7 @@ export interface components {
          *       "reason": "reason",
          *       "kind": "overpayment",
          *       "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
-         *       "refunded_at": "2026-03-01T09:00:00Z",
+         *       "refunded_on": "2026-03-01",
          *       "credit_id": null,
          *       "payment_id": null,
          *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
@@ -14542,8 +14547,8 @@ export interface components {
             kind: "overpayment" | "deposit_return" | "other";
             /** Format: uuid */
             paid_from_account_id: string;
-            /** Format: date-time */
-            refunded_at: string;
+            /** Format: date */
+            refunded_on: string;
             /** Format: uuid */
             credit_id: string | null;
             /** Format: uuid */
@@ -14576,8 +14581,8 @@ export interface components {
             kind: "overpayment" | "deposit_return" | "other";
             /** Format: uuid */
             paid_from_account_id: string;
-            /** Format: date-time */
-            refunded_at: string;
+            /** Format: date */
+            refunded_on: string;
             /** Format: uuid */
             credit_id?: string | null;
             /** Format: uuid */
@@ -14600,7 +14605,7 @@ export interface components {
          *           "reason": "reason",
          *           "kind": "overpayment",
          *           "paid_from_account_id": "0192a3f0-1000-7000-8000-000000000005",
-         *           "refunded_at": "2026-03-01T09:00:00Z",
+         *           "refunded_on": "2026-03-01",
          *           "credit_id": null,
          *           "payment_id": null,
          *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000006",
@@ -14989,6 +14994,13 @@ export interface components {
             document_no?: string | null;
             /** Format: uuid */
             file_id?: string | null;
+            /** @description Makes this a monthly recurring expense in one atomic call (the first occurrence is posted now). */
+            recurring?: {
+                /** @enum {string} */
+                frequency: "monthly";
+                /** @description Day of the month; defaults to the day of `paid_on`. */
+                day?: number;
+            } | null;
         };
         /**
          * @example {
@@ -20904,7 +20916,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
         /** @description Puts the built-in open, in progress, done flow back. Custom statuses are removed, so tickets in them need replacements, under the same rules as `TicketWorkflowUpdate`. */
         TicketWorkflowRestore: {
             /** @description For every custom status that tickets use: the built-in status (by id) its tickets move to. An entry for a status that is not removed, or not in use, is 422 `unexpected`. */
@@ -26063,7 +26075,10 @@ export interface operations {
     };
     "money.createOpeningBalance": {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description When true, validate and return the row-level report without saving anything. */
+                dry_run?: components["parameters"]["DryRun"];
+            };
             header: {
                 /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
                 "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
@@ -26904,6 +26919,10 @@ export interface operations {
                 due_from?: string;
                 /** @description Filter by `due_to`. */
                 due_to?: string;
+                /** @description Only charges past their due date that are still open or partially paid. */
+                overdue?: boolean;
+                /** @description Debtor side of the unit (alias of `debtor_kind`). */
+                side?: string;
                 /** @description Page size. */
                 limit?: components["parameters"]["Limit"];
                 /** @description Opaque cursor from a previous page `next_cursor`. */

@@ -81,7 +81,8 @@ var Registered = []Field{
 // that adds its audited view.
 var PlainEntities = []string{"organization", "block", "unit", "allocation_key", "occupancy", "membership", "directory_consent",
 	"governance_settings", "meeting", "agenda_item", "poll", "attendance", "vote_count", "term_reminder", "facility", "facility_block", "booking",
-	"agent", "access_point", "agent_command"}
+	"agent", "access_point", "agent_command",
+	"fund", "account", "cash_box", "fiscal_year", "site_lock", "journal_entry", "opening_balance", "charge_plan", "charge_plan_rate", "charge", "budget", "late_fee_policy", "late_fee_waiver", "late_fee_freeze", "payment", "transfer", "refund", "bank_import", "bank_transaction", "expense", "bill", "collection_case", "dunning_stage"}
 
 // KnownEntity reports whether entity may store non-PII values in clear: it
 // has entries of its own in Registered, or is in PlainEntities.

@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/openbekci/openbekci/server/internal/core/access"
@@ -40,7 +41,7 @@ func Serve(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) e
 		return fmt.Errorf("listen on %s: %w", cfg.ListenAddr, err)
 	}
 
-	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm)
+	deps, err := apiDeps(cfg, log, rt.db, rt.idem, rt.files, rt.comm, rt.ops.late)
 	if err != nil {
 		_ = ln.Close()
 		rt.stopJobs(log)
@@ -189,14 +190,15 @@ func start(ctx context.Context, cfg Config, log *slog.Logger, withWorker bool) (
 		d.Close()
 		return nil, err
 	}
+	registerMoney, periodicMoney := moneyJobs(d, log)
 	acc, err := newAccess(cfg, log, d, comm)
 	if err != nil {
 		d.Close()
 		return nil, err
 	}
 	client, err := jobs.New(d.WorkerPool(), log, jobs.Options{Work: withWorker, PollOnly: pooler.Detected, Idempotency: idem, ExpireArchives: tenancy.ArchivePurger{DB: d}, Files: fs,
-		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) { registerGov(w); comm.RegisterWorkers(w); acc.Workers(w) },
-		Periodic: append(append(periodicGov, community.PeriodicJobs()...), access.PeriodicJobs()...)})
+		Notifications: ops.notifications, Tasks: ops.tasks(), Register: func(w *river.Workers) { registerGov(w); comm.RegisterWorkers(w); acc.Workers(w); registerMoney(w) },
+		Periodic: slices.Concat(periodicGov, community.PeriodicJobs(), access.PeriodicJobs(), periodicMoney)})
 	if err != nil {
 		d.Close()
 		return nil, err

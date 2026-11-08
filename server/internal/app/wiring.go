@@ -16,6 +16,7 @@ import (
 	"github.com/openbekci/openbekci/server/internal/core/governance"
 	"github.com/openbekci/openbekci/server/internal/core/identity"
 	"github.com/openbekci/openbekci/server/internal/core/instance"
+	"github.com/openbekci/openbekci/server/internal/core/moneyhooks"
 	"github.com/openbekci/openbekci/server/internal/core/people"
 	"github.com/openbekci/openbekci/server/internal/core/tenancy"
 	"github.com/openbekci/openbekci/server/internal/httpapi"
@@ -178,7 +179,7 @@ func newAccess(cfg Config, log *slog.Logger, d *db.DB, comm *community.Service) 
 
 // apiDeps wires the HTTP API's dependencies: instance info, identity
 // (sessions, sign-in methods) and the authenticator built on it.
-func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service) (httpapi.Deps, error) {
+func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs *files.Service, communitySvc *community.Service, notify jobs.Notifier) (httpapi.Deps, error) {
 	ident, err := newIdentity(cfg, log, d)
 	if err != nil {
 		return httpapi.Deps{}, err
@@ -188,6 +189,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 	if err != nil {
 		return httpapi.Deps{}, err
 	}
+	peopleSvc.SetMoneyHooks(moneyhooks.MoveOut{})
 	reg, err := permissions.NewRegistry()
 	if err != nil {
 		return httpapi.Deps{}, err
@@ -203,6 +205,7 @@ func apiDeps(cfg Config, log *slog.Logger, d *db.DB, idem idempotency.Store, fs 
 		Tenancy:     tenancy.NewService(d).WithArchiveKey(cfg.SecretKey),
 		People:      peopleSvc,
 		Community:   communitySvc,
+		Money:       newMoney(d, notify),
 		Audit:       audit.NewService(d),
 		Files:       fs,
 		Authenticator: httpapi.SessionAuthenticator{

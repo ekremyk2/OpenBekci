@@ -783,6 +783,15 @@ func (s *Service) MoveOutOccupancy(ctx context.Context, orgID, occID uuid.UUID, 
 			mid, orgID, occ.SiteID, occID, occ.UnitID, occ.PersonID, in.AsOf, in.OpenCharges, succ, uid, in.Notes); err != nil {
 			return err
 		}
+		if s.hooks != nil {
+			m, err := s.hooks.OnMoveOut(ctx, tx, MoveOutEvent{OrgID: orgID, SiteID: occ.SiteID, MoveOutID: mid, UnitID: occ.UnitID, PersonID: occ.PersonID, Side: occ.Side, AsOf: in.AsOf.Format(dateLayout), OpenCharges: in.OpenCharges})
+			if err != nil {
+				return err
+			}
+			if _, err := tx.Exec(ctx, `UPDATE move_out SET carried_amount_minor = $3, carried_currency = $4 WHERE org_id = $1 AND id = $2`, orgID, mid, m.CarriedMinor, m.Currency); err != nil {
+				return err
+			}
+		}
 		if out, err = scanMoveOut(tx.QueryRow(ctx, moveOutSelect+` WHERE m.org_id = $1 AND m.id = $2`, orgID, mid)); err != nil {
 			return err
 		}

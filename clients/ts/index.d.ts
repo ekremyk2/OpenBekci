@@ -6089,6 +6089,735 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/orgs/{org_id}/funds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List funds
+         * @description **Release 0.1.** Cursor-paginated list of funds.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listFunds"];
+        put?: never;
+        /**
+         * Create fund
+         * @description **Release 0.1.** Creates a fund.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["money.createFund"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/funds/{fund_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fund. */
+                fund_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get fund
+         * @description **Release 0.1.** Get fund.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getFund"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update fund
+         * @description **Release 0.1.** Update fund.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["money.updateFund"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List accounts
+         * @description **Release 0.1.** Cursor-paginated list of accounts.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listAccounts"];
+        put?: never;
+        /**
+         * Create account
+         * @description **Release 0.1.** Creates a account.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["money.createAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/accounts/{account_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the account. */
+                account_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get account
+         * @description **Release 0.1.** Get account.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getAccount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update account
+         * @description **Release 0.1.** Update account.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["money.updateAccount"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/cash-boxes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List cash boxes
+         * @description **Release 0.1.** Cursor-paginated list of cash boxs.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listCashBoxes"];
+        put?: never;
+        /**
+         * Create cash box
+         * @description **Release 0.1.** Creates a cash box.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["money.createCashBox"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/cash-boxes/{cash_box_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the cash box. */
+                cash_box_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get cash box
+         * @description **Release 0.1.** Get cash box.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getCashBox"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update cash box
+         * @description **Release 0.1.** Update cash box.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `version_conflict` (409), `conflict` (409).
+         */
+        patch: operations["money.updateCashBox"];
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/fiscal-years": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List fiscal years
+         * @description **Release 0.1.** Cursor-paginated list of fiscal years.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listFiscalYears"];
+        put?: never;
+        /**
+         * Create fiscal year
+         * @description **Release 0.1.** Creates a fiscal year.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["money.createFiscalYear"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fiscal year. */
+                fiscal_year_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get fiscal year
+         * @description **Release 0.1.** Get fiscal year.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getFiscalYear"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fiscal year. */
+                fiscal_year_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close a fiscal year
+         * @description **Release 0.1.** Close a fiscal year.
+         *
+         *     Permission: `money.lock`.
+         *
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
+         */
+        post: operations["money.closeFiscalYear"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/fiscal-years/{fiscal_year_id}:approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fiscal year. */
+                fiscal_year_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark a fiscal year approved
+         * @description **Release 0.1.** Records the assembly approval; with a `decision_id` from release 0.2.
+         *
+         *     Permission: `money.lock`.
+         *
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["money.approveFiscalYear"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/journal-entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List journal entries
+         * @description **Release 0.1.** List journal entries.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listJournalEntries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/journal-entries/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a journal entry
+         * @description **Release 0.1.** Get a journal entry.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getJournalEntry"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/journal-entries/{entry_id}:reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reverse a journal entry
+         * @description **Release 0.1.** Posts the mirror entry dated today with `reverses_entry_id`; the original document date is kept. Fails with `locked_period` if today is on or before the lock date, with `conflict` if already reversed.
+         *
+         *     Permission: `money.post`.
+         *
+         *     Problems: `locked_period` (409), `conflict` (409), `idempotency_mismatch` (422).
+         */
+        post: operations["money.reverseJournalEntry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/sites/{site_id}/lock-date": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the lock date
+         * @description **Release 0.1.** Get the lock date.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getLockDate"];
+        /**
+         * Set the lock date
+         * @description **Release 0.1.** Moving the lock date back (earlier) needs re-authentication and is audited.
+         *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
+         *     Permission: `money.lock`.
+         *
+         *     Sensitive: answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `reauth_required` (403), `locked_period` (409), `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["money.setLockDate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/charge-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List charge plans
+         * @description **Release 0.1.** Cursor-paginated list of charge plans.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listChargePlans"];
+        put?: never;
+        /**
+         * Create charge plan
+         * @description **Release 0.1.** Creates a charge plan.
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `conflict` (409).
+         */
+        post: operations["money.createChargePlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/charges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List charges
+         * @description **Release 0.1.** List charges.
+         *
+         *     Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+         *
+         *     Permission (any one of): `money.read`, `statements.read_own`.
+         */
+        get: operations["money.listCharges"];
+        put?: never;
+        /**
+         * Create a one-off charge
+         * @description **Release 0.1.** Create a one-off charge.
+         *
+         *     Permission: `money.post`.
+         *
+         *     Problems: `idempotency_mismatch` (422), `conflict` (409), `locked_period` (409).
+         */
+        post: operations["money.createCharge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List payments
+         * @description **Release 0.1.** List payments.
+         *
+         *     Residents (`statements.read_own`) get only their own side(s) of their own unit(s): the server restricts the result to the caller's sides (household: only with `may_see_money`; former occupants: their period) and ignores `person_id` of anyone else.
+         *
+         *     Permission (any one of): `money.read`, `statements.read_own`.
+         */
+        get: operations["money.listPayments"];
+        put?: never;
+        /**
+         * Record a payment
+         * @description **Release 0.1.** Cash (with a gap-free receipt number) or a bank transfer entered by hand. The response shows the allocation actually applied.
+         *
+         *     Cash collectors: a person bound to a cash box (a kapici or a board member, M5) holds `payments.record` only for payments recorded into that box (`asset_account_id` is their cash box account); anything else is 403 `insufficient_permission`. They see and void nothing else.
+         *
+         *     Permission: `payments.record`.
+         *
+         *     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+         *
+         *     `debtor` targets a unit side or a person; payments against a person settle carried debt oldest-first and never touch the unit's current occupants.
+         */
+        post: operations["money.createPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/payments/{payment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the payment. */
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        /**
+         * Get a payment
+         * @description **Release 0.1.** Get a payment.
+         *
+         *     Permission (any one of): `money.read`, `statements.read_own`.
+         */
+        get: operations["money.getPayment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/payments/{payment_id}:void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the payment. */
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Void a payment
+         * @description **Release 0.1.** Reverses the posting dated today with a reason; the receipt number stays used (gap-free, shown as voided).
+         *
+         *     Permission: `payments.record`.
+         *
+         *     Problems: `conflict` (409), `idempotency_mismatch` (422), `locked_period` (409).
+         */
+        post: operations["money.voidPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/late-fee-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Get the late-fee policy
+         * @description **Release 0.1.** Get the late-fee policy.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.getLateFeePolicy"];
+        /**
+         * Set the late-fee policy
+         * @description **Release 0.1.** Set the late-fee policy.
+         *
+         *     `If-Match` is required: send the `version` you last read (a stale one is 409 `version_conflict`, a missing one 422).
+         *
+         *     Permission: `money.manage`.
+         *
+         *     Problems: `validation_failed` (422), `conflict` (409), `version_conflict` (409).
+         */
+        put: operations["money.setLateFeePolicy"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/opening-balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * List opening balances
+         * @description **Release 0.1.** Cursor-paginated list of opening balances.
+         *
+         *     Permission: `money.read`.
+         */
+        get: operations["money.listOpeningBalances"];
+        put?: never;
+        /**
+         * Create opening balance
+         * @description **Release 0.1.** Creates a opening balance.
+         *
+         *     Permission: `money.post`.
+         *
+         *     Sensitive (M7, backend section 16): answers 403 `reauth_required` unless the session re-authenticated in the last 10 minutes (`POST /v1/auth/reauth`).
+         *
+         *     Problems: `locked_period` (409), `idempotency_mismatch` (422), `conflict` (409).
+         */
+        post: operations["money.createOpeningBalance"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/reports/debtors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Debtor list (borclu listesi)
+         * @description **Release 0.1.** Visible to manager, board and auditor; never public (M8). JSON by default; `format=csv|xlsx|pdf` downloads it.
+         *
+         *     Permission: `reports.debtors`.
+         */
+        get: operations["money.getDebtorReport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+                /** @description Id of the debtor kind. */
+                debtor_kind: "owner" | "tenant";
+            };
+            cookie?: never;
+        };
+        /**
+         * Statement of a unit side
+         * @description **Release 0.1.** JSON, or `format=pdf` for the printable statement. A former occupant sees only their own period (S7).
+         *
+         *     Permission (any one of): `statements.read`, `statements.read_own` (occupants: their own side and period only).
+         */
+        get: operations["money.getUnitStatement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -6480,7 +7209,7 @@ export interface components {
          * @description Open enum: every permission a role can hold (backend plan section 7).
          * @enum {string}
          */
-        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
+        Permission: "access.manage" | "access.open" | "access.read" | "access.view_events" | "announcements.publish" | "announcements.read" | "attendance.manage" | "audit.read" | "audit.report" | "bookings.create" | "bookings.manage" | "bookings.read" | "claims.decide" | "codes.read" | "collections.manage" | "dashboard.portfolio" | "dashboard.site" | "dashboard.staff" | "decisions.manage" | "deliveries.read" | "directory.read" | "documents.manage" | "documents.read" | "documents.read_addressed" | "documents.upload_own" | "exports.create" | "facilities.manage" | "files.manage" | "files.read" | "files.upload" | "gate.manage" | "gate.operate" | "invitations.household" | "invitations.manage" | "jobs.read" | "me.dashboard" | "me.manage" | "me.read" | "meetings.manage" | "meetings.read" | "memberships.manage" | "memberships.read" | "money.lock" | "money.manage" | "money.post" | "money.read" | "notifications.manage" | "notifications.read" | "occupancies.grant_money" | "occupancies.household" | "occupancies.manage" | "occupancies.read" | "org.manage" | "org.read" | "payments.declare" | "payments.record" | "people.erase" | "people.manage" | "people.move_out" | "people.national_id" | "people.read" | "platform.manage" | "polls.answer" | "reports.aggregate" | "reports.debtors" | "reports.read" | "roles.read" | "sessions.manage_own" | "sites.bank_details" | "sites.export" | "sites.manage" | "sites.offboard" | "sites.read" | "statements.read" | "statements.read_own" | "tickets.manage" | "tickets.open" | "tickets.read" | "tickets.read_assigned" | "tickets.work" | "units.import" | "units.manage" | "units.read" | "vehicles.manage" | "vehicles.read" | "vendors.manage" | "vendors.read" | "visitors.decide" | "visitors.manage" | "visitors.read";
         /**
          * @description One changed field. Personal data carries only `hash_before` and
          *     `hash_after` (`k1:` and 32 hex digits: a keyed HMAC of the canonical JSON value, so it
@@ -13045,6 +13774,1496 @@ export interface components {
             /** Format: int64 */
             max_uses?: number | null;
         };
+        /**
+         * @description Chart-of-accounts entry of a site.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "code": "code",
+         *       "name": "Ali Veli",
+         *       "type": "asset",
+         *       "subtype": null,
+         *       "fund_id": null,
+         *       "is_system": false,
+         *       "archived": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Account: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            code: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            type: "asset" | "liability" | "equity" | "income" | "expense";
+            /** @description Open: bank, cash_box, receivable_owner, receivable_tenant, person_receivable, prepayment_liability, deposit_liability, dues_contribution, late_fee_income, other_income, expense_category, opening_equity, prior_year_surplus, provision_severance, withholding_receivable and pack-defined values. */
+            subtype: string | null;
+            /** Format: uuid */
+            fund_id: string | null;
+            is_system: boolean;
+            archived: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        AccountCreate: {
+            /** Format: uuid */
+            site_id: string;
+            code: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            type: "asset" | "liability" | "equity" | "income" | "expense";
+            subtype?: string | null;
+            /** Format: uuid */
+            fund_id?: string | null;
+            archived?: boolean;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "code": "code",
+         *           "name": "Ali Veli",
+         *           "type": "asset",
+         *           "subtype": null,
+         *           "fund_id": null,
+         *           "is_system": false,
+         *           "archived": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        AccountList: {
+            items: components["schemas"]["Account"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        AccountUpdate: {
+            code?: string;
+            name?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            type?: "asset" | "liability" | "equity" | "income" | "expense";
+            subtype?: string | null;
+            /** Format: uuid */
+            fund_id?: string | null;
+            archived?: boolean;
+        };
+        /** @description Snapshot of how an allocated amount was derived (M2). */
+        AllocationBasis: {
+            key_code: string;
+            weight: number;
+            total_weight: number;
+            remainder_adjusted: boolean;
+        };
+        AllocationInput: {
+            /** Format: uuid */
+            charge_id: string;
+            amount: components["schemas"]["Money"];
+        };
+        /**
+         * @description An asset account bound to a collector (M5).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "collector_person_id": null,
+         *       "collector_display_name": null,
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        CashBox: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * Format: uuid
+             * @description The asset account created with the box.
+             */
+            account_id: string;
+            /** Format: uuid */
+            collector_person_id: string | null;
+            collector_display_name: string | null;
+            balance: components["schemas"]["Money"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        CashBoxCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /** Format: uuid */
+            collector_person_id?: string | null;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "account_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "collector_person_id": null,
+         *           "collector_display_name": null,
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        CashBoxList: {
+            items: components["schemas"]["CashBox"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        CashBoxUpdate: {
+            name?: string;
+            /** Format: uuid */
+            collector_person_id?: string | null;
+        };
+        /**
+         * @description A receivable of one unit side. Never edited: reverse or adjust with a reason.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "plan_id": null,
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "unit_door_number": "unit door number",
+         *       "debtor_kind": "tenant",
+         *       "debtor_person_id": null,
+         *       "debtor_display_name": null,
+         *       "charge_type": "dues",
+         *       "period": "2026-03",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "paid": {
+         *         "amount": 0,
+         *         "currency": "TRY"
+         *       },
+         *       "balance": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "due_date": "2026-03-05",
+         *       "description": null,
+         *       "allocation_basis": null,
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "status": "open",
+         *       "cancelled_reason": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "effective_debtor": {
+         *         "debtor_kind": "tenant",
+         *         "person_id": null,
+         *         "display_name": null,
+         *         "source": "plan_default"
+         *       }
+         *     }
+         */
+        Charge: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            plan_id: string | null;
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            /**
+             * Format: uuid
+             * @description Snapshot of the occupant on the due date; becomes the holder when open charges are carried to a person on move-out.
+             */
+            debtor_person_id: string | null;
+            debtor_display_name: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            charge_type: "dues" | "special_assessment" | "reserve_contribution" | "utility" | "booking_fee" | "legal_cost" | "deposit" | "adjustment" | "settlement";
+            /** @description The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates. */
+            period: string | null;
+            amount: components["schemas"]["Money"];
+            paid: components["schemas"]["Money"];
+            balance: components["schemas"]["Money"];
+            /** Format: date */
+            due_date: string;
+            description: string | null;
+            allocation_basis: components["schemas"]["AllocationBasis"] | null;
+            /** Format: uuid */
+            journal_entry_id: string;
+            /**
+             * @description Derived and rebuildable. Open enum.
+             * @enum {string}
+             */
+            status: "open" | "partially_paid" | "paid" | "cancelled";
+            cancelled_reason: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            effective_debtor: components["schemas"]["EffectiveDebtor"];
+        };
+        ChargeCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            unit_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind?: "owner" | "tenant";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            charge_type: "dues" | "special_assessment" | "reserve_contribution" | "utility" | "booking_fee" | "legal_cost" | "deposit" | "adjustment" | "settlement";
+            amount: components["schemas"]["Money"];
+            /** Format: date */
+            due_date: string;
+            description?: string | null;
+            /** Format: uuid */
+            fund_id?: string;
+            /** Format: uuid */
+            income_account_id?: string;
+            /** Format: uuid */
+            decision_id?: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "plan_id": null,
+         *           "unit_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "unit_door_number": "unit door number",
+         *           "debtor_kind": "tenant",
+         *           "debtor_person_id": null,
+         *           "debtor_display_name": null,
+         *           "charge_type": "dues",
+         *           "period": "2026-03",
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "paid": {
+         *             "amount": 0,
+         *             "currency": "TRY"
+         *           },
+         *           "balance": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "due_date": "2026-03-05",
+         *           "description": null,
+         *           "allocation_basis": null,
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "status": "open",
+         *           "cancelled_reason": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "effective_debtor": {
+         *             "debtor_kind": "tenant",
+         *             "person_id": null,
+         *             "display_name": null,
+         *             "source": "plan_default"
+         *           }
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        ChargeList: {
+            items: components["schemas"]["Charge"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description A dues or one-off charge plan. Charges are generated by an hourly, idempotent catch-up job on (plan, unit, period). Amounts change through rates.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "recurring",
+         *       "charge_type": "dues",
+         *       "default_debtor": "owner",
+         *       "frequency": "monthly",
+         *       "due_day": null,
+         *       "start": "2026-03-01",
+         *       "end": null,
+         *       "amount_mode": "per_unit",
+         *       "allocation_key_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "scope": {
+         *         "type": "site",
+         *         "id": null
+         *       },
+         *       "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "income_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *       "status": "active",
+         *       "decision_id": null,
+         *       "current_rate": {
+         *         "id": "0192a3f0-1000-7000-8000-000000000002",
+         *         "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *         "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *         "from": "2026-03-01",
+         *         "to": null,
+         *         "amount": {
+         *           "amount": 200000,
+         *           "currency": "TRY"
+         *         },
+         *         "decision_id": null,
+         *         "created_at": "2026-03-01T09:00:00Z",
+         *         "updated_at": "2026-03-01T09:00:00Z"
+         *       },
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        ChargePlan: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "recurring" | "one_off";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            charge_type: "dues" | "special_assessment" | "reserve_contribution" | "utility" | "booking_fee" | "legal_cost" | "deposit" | "adjustment" | "settlement";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_debtor: "owner" | "tenant";
+            /**
+             * @description Open enum. Generated charges carry the accrual month in `Charge.period` (`YYYY-MM`) whatever the frequency.
+             * @enum {string}
+             */
+            frequency: "monthly" | "quarterly" | "yearly" | "once";
+            /**
+             * Format: int64
+             * @description Day of month.
+             */
+            due_day: number | null;
+            /** Format: date */
+            start: string;
+            /** Format: date */
+            end: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            amount_mode: "per_unit" | "total_allocated";
+            /** Format: uuid */
+            allocation_key_id: string;
+            scope: components["schemas"]["ChargeScope"];
+            /** Format: uuid */
+            fund_id: string;
+            /** Format: uuid */
+            income_account_id: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "active" | "paused" | "ended";
+            /** Format: uuid */
+            decision_id: string | null;
+            current_rate: components["schemas"]["ChargePlanRate"] | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        /**
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "name": "Monthly dues",
+         *       "kind": "recurring",
+         *       "charge_type": "dues",
+         *       "start": "2026-01-01",
+         *       "amount_mode": "per_unit",
+         *       "allocation_key_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "scope": {
+         *         "type": "site",
+         *         "id": null
+         *       },
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       }
+         *     }
+         */
+        ChargePlanCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "recurring" | "one_off";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            charge_type: "dues" | "special_assessment" | "reserve_contribution" | "utility" | "booking_fee" | "legal_cost" | "deposit" | "adjustment" | "settlement";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            default_debtor?: "owner" | "tenant";
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            frequency?: "monthly" | "quarterly" | "yearly" | "once";
+            /** Format: int64 */
+            due_day?: number | null;
+            /** Format: date */
+            start: string;
+            /** Format: date */
+            end?: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            amount_mode: "per_unit" | "total_allocated";
+            /** Format: uuid */
+            allocation_key_id: string;
+            scope: components["schemas"]["ChargeScope"];
+            /** Format: uuid */
+            fund_id?: string;
+            /** Format: uuid */
+            income_account_id?: string;
+            /** Format: uuid */
+            decision_id?: string | null;
+            amount: components["schemas"]["Money"];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "recurring",
+         *           "charge_type": "dues",
+         *           "default_debtor": "owner",
+         *           "frequency": "monthly",
+         *           "due_day": null,
+         *           "start": "2026-03-01",
+         *           "end": null,
+         *           "amount_mode": "per_unit",
+         *           "allocation_key_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "scope": {
+         *             "type": "site",
+         *             "id": null
+         *           },
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "income_account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "status": "active",
+         *           "decision_id": null,
+         *           "current_rate": {
+         *             "id": "0192a3f0-1000-7000-8000-000000000002",
+         *             "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *             "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *             "from": "2026-03-01",
+         *             "to": null,
+         *             "amount": {
+         *               "amount": 200000,
+         *               "currency": "TRY"
+         *             },
+         *             "decision_id": null,
+         *             "created_at": "2026-03-01T09:00:00Z",
+         *             "updated_at": "2026-03-01T09:00:00Z"
+         *           },
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        ChargePlanList: {
+            items: components["schemas"]["ChargePlan"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description Effective-dated amount of a plan (M3).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "plan_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "from": "2026-03-01",
+         *       "to": null,
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "decision_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        ChargePlanRate: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            plan_id: string;
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string | null;
+            amount: components["schemas"]["Money"];
+            /** Format: uuid */
+            decision_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        ChargeScope: {
+            /** @enum {string} */
+            type: "site" | "block" | "unit_tag";
+            /**
+             * Format: uuid
+             * @description Block or unit tag id; null for `site`.
+             */
+            id: string | null;
+        };
+        /**
+         * @description Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.
+         * @example {
+         *       "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "debtor_kind": "tenant"
+         *     }
+         */
+        DebtorRef: {
+            /**
+             * Format: uuid
+             * @description Unit mode: the unit.
+             */
+            unit_id?: string;
+            /**
+             * @description Unit mode: the side of the unit that owes.
+             * @enum {string}
+             */
+            debtor_kind?: "owner" | "tenant";
+            /**
+             * Format: uuid
+             * @description Person mode: the person who owes; covers charges carried to them and charges keyed on them.
+             */
+            person_id?: string;
+        } & (unknown | unknown);
+        /** @description Debtor list; never public. */
+        DebtorReport: {
+            /** Format: date */
+            as_of: string;
+            rows: components["schemas"]["DebtorRow"][];
+            total_principal: components["schemas"]["Money"];
+            total_late_fee: components["schemas"]["Money"];
+            total: components["schemas"]["Money"];
+        };
+        DebtorRow: {
+            /** Format: uuid */
+            unit_id: string;
+            unit_door_number: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            /** Format: uuid */
+            debtor_person_id: string | null;
+            debtor_display_name: string | null;
+            principal: components["schemas"]["Money"];
+            late_fee: components["schemas"]["Money"];
+            total: components["schemas"]["Money"];
+            /** Format: int64 */
+            months_overdue: number;
+            in_collection: boolean;
+        };
+        /**
+         * @description Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.
+         * @example {
+         *       "debtor_kind": "tenant",
+         *       "person_id": null,
+         *       "display_name": null,
+         *       "source": "unit_override"
+         *     }
+         */
+        EffectiveDebtor: {
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            debtor_kind: "owner" | "tenant";
+            /**
+             * Format: uuid
+             * @description The person on the due date; null when the side is vacant.
+             */
+            person_id: string | null;
+            display_name: string | null;
+            /**
+             * @description Where the decision came from. Open enum.
+             * @enum {string}
+             */
+            source: "charge" | "unit_override" | "plan_default" | "carried";
+        };
+        /**
+         * @description A reporting group with an approval status; the lock date, not the year, blocks postings.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "start": "2026-03-01",
+         *       "end": "2026-03-01",
+         *       "status": "open",
+         *       "approved_by_decision_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        FiscalYear: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date */
+            start: string;
+            /** Format: date */
+            end: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "open" | "closed" | "approved";
+            /** Format: uuid */
+            approved_by_decision_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        FiscalYearClose: {
+            /**
+             * Format: uuid
+             * @description Approving decision (0.2).
+             */
+            decision_id?: string;
+        };
+        FiscalYearCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date */
+            start: string;
+            /** Format: date */
+            end: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "start": "2026-03-01",
+         *           "end": "2026-03-01",
+         *           "status": "open",
+         *           "approved_by_decision_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        FiscalYearList: {
+            items: components["schemas"]["FiscalYear"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description Operating, reserve (demirbas / yedek akce) or custom fund; every journal line carries one.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "name": "Ali Veli",
+         *       "kind": "operating",
+         *       "is_default": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "version": 1
+         *     }
+         */
+        Fund: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "operating" | "reserve" | "custom";
+            is_default: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on updates.
+             */
+            version: number;
+        };
+        FundCreate: {
+            /** Format: uuid */
+            site_id: string;
+            name: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "operating" | "reserve" | "custom";
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "name": "Ali Veli",
+         *           "kind": "operating",
+         *           "is_default": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "version": 1
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        FundList: {
+            items: components["schemas"]["Fund"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /** @description Partial update: send only the fields to change. The resource `version` goes in If-Match. */
+        FundUpdate: {
+            name?: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind?: "operating" | "reserve" | "custom";
+        };
+        /**
+         * @description Append-only; a correction is a new entry dated today that reverses this one.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "entry_date": "2026-03-01",
+         *       "document_date": "2026-03-01",
+         *       "fiscal_year_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "memo": null,
+         *       "source_type": "source type",
+         *       "source_id": null,
+         *       "posted_by": null,
+         *       "posted_at": "2026-03-01T09:00:00Z",
+         *       "reverses_entry_id": null,
+         *       "reversed_by_entry_id": null,
+         *       "lines": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *           "account_code": "account code",
+         *           "fund_id": "0192a3f0-1000-7000-8000-000000000008",
+         *           "debit": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "credit": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "unit_id": null,
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "block_id": null,
+         *           "vendor_id": null
+         *         }
+         *       ],
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        JournalEntry: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date */
+            entry_date: string;
+            /** Format: date */
+            document_date: string;
+            /** Format: uuid */
+            fiscal_year_id: string;
+            memo: string | null;
+            /** @description charge, payment, expense, transfer, refund, opening_balance, late_fee, reversal ... */
+            source_type: string;
+            /** Format: uuid */
+            source_id: string | null;
+            /** Format: uuid */
+            posted_by: string | null;
+            /** Format: date-time */
+            posted_at: string;
+            /** Format: uuid */
+            reverses_entry_id: string | null;
+            /** Format: uuid */
+            reversed_by_entry_id: string | null;
+            lines: components["schemas"]["JournalLine"][];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "entry_date": "2026-03-01",
+         *           "document_date": "2026-03-01",
+         *           "fiscal_year_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "memo": null,
+         *           "source_type": "source type",
+         *           "source_id": null,
+         *           "posted_by": null,
+         *           "posted_at": "2026-03-01T09:00:00Z",
+         *           "reverses_entry_id": null,
+         *           "reversed_by_entry_id": null,
+         *           "lines": [
+         *             {
+         *               "id": "0192a3f0-1000-7000-8000-000000000006",
+         *               "account_id": "0192a3f0-1000-7000-8000-000000000007",
+         *               "account_code": "account code",
+         *               "fund_id": "0192a3f0-1000-7000-8000-000000000008",
+         *               "debit": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "credit": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               },
+         *               "unit_id": null,
+         *               "debtor_kind": "owner",
+         *               "person_id": null,
+         *               "block_id": null,
+         *               "vendor_id": null
+         *             }
+         *           ],
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        JournalEntryList: {
+            items: components["schemas"]["JournalEntry"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        JournalLine: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            account_id: string;
+            account_code: string;
+            /** Format: uuid */
+            fund_id: string;
+            debit: components["schemas"]["Money"];
+            credit: components["schemas"]["Money"];
+            /** Format: uuid */
+            unit_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
+            /** Format: uuid */
+            person_id: string | null;
+            /** Format: uuid */
+            block_id: string | null;
+            /** Format: uuid */
+            vendor_id: string | null;
+        };
+        JournalReverse: {
+            reason: string;
+        };
+        LateFeePolicy: {
+            /** Format: uuid */
+            site_id: string;
+            /** @description Default 5; never above `max_rate_pct_per_month`. */
+            rate_pct_per_month: number;
+            /** @description Statutory maximum from the preset. */
+            max_rate_pct_per_month: number;
+            /** Format: int64 */
+            grace_days: number;
+            /** @description Fees never compound. */
+            simple: boolean;
+            /** @description Waivers above this need re-authentication. */
+            waiver_reauth_threshold: components["schemas"]["Money"] | null;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
+        };
+        LateFeePolicySet: {
+            rate_pct_per_month: number;
+            /** Format: int64 */
+            grace_days: number;
+            waiver_reauth_threshold?: components["schemas"]["Money"] | null;
+        };
+        LockDate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date */
+            lock_date: string | null;
+            /** Format: uuid */
+            changed_by: string | null;
+            /** Format: date-time */
+            changed_at: string | null;
+            /**
+             * Format: int64
+             * @description Optimistic-lock counter; send it back as If-Match on the next write.
+             */
+            version: number;
+        };
+        LockDateSet: {
+            /**
+             * Format: date
+             * @description Postings with `entry_date` on or before this date are rejected.
+             */
+            lock_date: string | null;
+        };
+        /**
+         * @description Opening position against the opening-equity account (M7).
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *       "as_of": "2026-03-01",
+         *       "kind": "unit_receivable",
+         *       "unit_id": null,
+         *       "debtor_kind": "owner",
+         *       "person_id": null,
+         *       "account_id": null,
+         *       "vendor_id": null,
+         *       "principal": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "late_fee": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "journal_entry_id": "0192a3f0-1000-7000-8000-000000000005",
+         *       "locked": false,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z",
+         *       "status": "active",
+         *       "voided_at": null,
+         *       "void_reason": null
+         *     }
+         */
+        OpeningBalance: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date */
+            as_of: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "unit_receivable" | "bank" | "cash" | "vendor";
+            /** Format: uuid */
+            unit_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
+            /** Format: uuid */
+            person_id: string | null;
+            /** Format: uuid */
+            account_id: string | null;
+            /** Format: uuid */
+            vendor_id: string | null;
+            principal: components["schemas"]["Money"];
+            late_fee: components["schemas"]["Money"];
+            /** Format: uuid */
+            journal_entry_id: string;
+            /** @description True once `as_of` is on or before the lock date. */
+            locked: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+            /**
+             * @description Open enum. A voided opening balance stays in the ledger with its reversal.
+             * @enum {string}
+             */
+            status: "active" | "voided";
+            /** Format: date-time */
+            voided_at: string | null;
+            void_reason: string | null;
+        };
+        OpeningBalanceCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: date */
+            as_of: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "unit_receivable" | "bank" | "cash" | "vendor";
+            /** Format: uuid */
+            unit_id?: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            debtor_kind?: "owner" | "tenant" | null;
+            /** Format: uuid */
+            person_id?: string | null;
+            /** Format: uuid */
+            account_id?: string | null;
+            /** Format: uuid */
+            vendor_id?: string | null;
+            principal: components["schemas"]["Money"];
+            late_fee?: components["schemas"]["Money"];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
+         *           "as_of": "2026-03-01",
+         *           "kind": "unit_receivable",
+         *           "unit_id": null,
+         *           "debtor_kind": "owner",
+         *           "person_id": null,
+         *           "account_id": null,
+         *           "vendor_id": null,
+         *           "principal": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "late_fee": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "journal_entry_id": "0192a3f0-1000-7000-8000-000000000005",
+         *           "locked": false,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z",
+         *           "status": "active",
+         *           "voided_at": null,
+         *           "void_reason": null
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        OpeningBalanceList: {
+            items: components["schemas"]["OpeningBalance"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        /**
+         * @description A payment. Default allocation: oldest first, principal before fee; over-payment becomes a prepayment credit.
+         * @example {
+         *       "id": "0192a3f0-1000-7000-8000-000000000003",
+         *       "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "payer_person_id": null,
+         *       "payer_display_name": null,
+         *       "unit_id": null,
+         *       "debtor_kind": null,
+         *       "method": "cash",
+         *       "gross": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "fee": {
+         *         "amount": 0,
+         *         "currency": "TRY"
+         *       },
+         *       "net": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "received_on": "2026-03-01",
+         *       "recorded_by": null,
+         *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "reference": null,
+         *       "note": null,
+         *       "status": "confirmed",
+         *       "receipt_no": "2026/0042",
+         *       "provider_txn_id": null,
+         *       "journal_entry_id": null,
+         *       "allocated": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "unallocated": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "allocations": [
+         *         {
+         *           "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "charge_description": null,
+         *           "amount": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           }
+         *         }
+         *       ],
+         *       "bank_transaction_id": null,
+         *       "created_at": "2026-03-01T09:00:00Z",
+         *       "updated_at": "2026-03-01T09:00:00Z"
+         *     }
+         */
+        Payment: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            org_id: string;
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            payer_person_id: string | null;
+            payer_display_name: string | null;
+            /** Format: uuid */
+            unit_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
+            /**
+             * @description `card:<provider>` values arrive in 0.4. Open enum.
+             * @enum {string}
+             */
+            method: "cash" | "bank_transfer" | "card";
+            gross: components["schemas"]["Money"];
+            fee: components["schemas"]["Money"];
+            net: components["schemas"]["Money"];
+            /** Format: date */
+            received_on: string;
+            /** Format: uuid */
+            recorded_by: string | null;
+            /** Format: uuid */
+            asset_account_id: string;
+            reference: string | null;
+            note: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            status: "pending_declared" | "confirmed" | "refunded" | "voided";
+            /** @description Gap-free per site per year. */
+            receipt_no: string | null;
+            provider_txn_id: string | null;
+            /** Format: uuid */
+            journal_entry_id: string | null;
+            allocated: components["schemas"]["Money"];
+            /** @description Becomes credit. */
+            unallocated: components["schemas"]["Money"];
+            allocations: components["schemas"]["PaymentAllocation"][];
+            /** Format: uuid */
+            bank_transaction_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        PaymentAllocation: {
+            /** Format: uuid */
+            charge_id: string;
+            charge_description: string | null;
+            amount: components["schemas"]["Money"];
+        };
+        /**
+         * @example {
+         *       "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "method": "cash",
+         *       "amount": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "received_on": "2026-03-05",
+         *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
+         *       "debtor": {
+         *         "unit_id": "0192a3f0-1000-7000-8000-000000000001",
+         *         "debtor_kind": "tenant"
+         *       }
+         *     }
+         */
+        PaymentCreate: {
+            /** Format: uuid */
+            site_id: string;
+            /** Format: uuid */
+            payer_person_id?: string;
+            /** @enum {string} */
+            method: "cash" | "bank_transfer";
+            /** @description Gross amount. */
+            amount: components["schemas"]["Money"];
+            /** Format: date */
+            received_on: string;
+            /**
+             * Format: uuid
+             * @description Bank account or the collector cash box account.
+             */
+            asset_account_id: string;
+            reference?: string;
+            note?: string;
+            /** @description Manual override; omitted: automatic oldest-first. */
+            allocations?: components["schemas"]["AllocationInput"][];
+            send_receipt?: components["schemas"]["ReceiptDelivery"];
+            /** @description Who the payment settles: a unit side or a person (carried debt). */
+            debtor: components["schemas"]["DebtorRef"];
+        };
+        /**
+         * @example {
+         *       "items": [
+         *         {
+         *           "id": "0192a3f0-1000-7000-8000-000000000003",
+         *           "org_id": "0192a3f0-1000-7000-8000-000000000001",
+         *           "site_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "payer_person_id": null,
+         *           "payer_display_name": null,
+         *           "unit_id": null,
+         *           "debtor_kind": null,
+         *           "method": "cash",
+         *           "gross": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "fee": {
+         *             "amount": 0,
+         *             "currency": "TRY"
+         *           },
+         *           "net": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "received_on": "2026-03-01",
+         *           "recorded_by": null,
+         *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000002",
+         *           "reference": null,
+         *           "note": null,
+         *           "status": "confirmed",
+         *           "receipt_no": "2026/0042",
+         *           "provider_txn_id": null,
+         *           "journal_entry_id": null,
+         *           "allocated": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "unallocated": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "allocations": [
+         *             {
+         *               "charge_id": "0192a3f0-1000-7000-8000-000000000001",
+         *               "charge_description": null,
+         *               "amount": {
+         *                 "amount": 200000,
+         *                 "currency": "TRY"
+         *               }
+         *             }
+         *           ],
+         *           "bank_transaction_id": null,
+         *           "created_at": "2026-03-01T09:00:00Z",
+         *           "updated_at": "2026-03-01T09:00:00Z"
+         *         }
+         *       ],
+         *       "next_cursor": null
+         *     }
+         */
+        PaymentList: {
+            items: components["schemas"]["Payment"][];
+            /** @description Pass as `cursor` for the next page; null on the last page. */
+            next_cursor: string | null;
+        };
+        PaymentVoid: {
+            reason: string;
+        };
+        ReceiptDelivery: {
+            channels: ("sms" | "email")[];
+        };
+        /** @description Hesap ekstresi with running balance and principal/fee split. Served with `Cache-Control: no-store`. */
+        Statement: {
+            /** @description Whose statement this is: a unit side or a person. */
+            debtor: components["schemas"]["DebtorRef"];
+            /** Format: date */
+            from: string;
+            /** Format: date */
+            to: string;
+            opening_balance: components["schemas"]["Money"];
+            lines: components["schemas"]["StatementLine"][];
+            closing_balance: components["schemas"]["Money"];
+            /** @description Fee accrued to date and not yet booked; included in `total_due`. */
+            accrued_late_fee: components["schemas"]["Money"];
+            total_due: components["schemas"]["Money"];
+            credit: components["schemas"]["Money"];
+        };
+        StatementLine: {
+            /** Format: date */
+            date: string;
+            /**
+             * @description Open enum.
+             * @enum {string}
+             */
+            kind: "opening" | "charge" | "payment" | "late_fee" | "credit" | "refund" | "adjustment" | "reversal";
+            description: string;
+            ref_type: string | null;
+            /** Format: uuid */
+            ref_id: string | null;
+            /**
+             * @description Open enum.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
+            debtor_display_name: string | null;
+            principal: components["schemas"]["Money"];
+            late_fee: components["schemas"]["Money"];
+            debit: components["schemas"]["Money"];
+            credit: components["schemas"]["Money"];
+            /** @description Running balance. */
+            balance: components["schemas"]["Money"];
+        };
         ReauthEmailCode: {
             /**
              * @description Always `email_code`. (enum property replaced by openapi-typescript)
@@ -13242,6 +15461,8 @@ export interface components {
         FileId: string;
         /** @description Guard session from `community.createGuardSession`. Every guard console operation that lists it needs it (only `community.createGuardSession` and `gate.listGuards` do not); the action is attributed to that guard (audit actor and `decided_by` fields); the guard must hold `gate.operate` on the site, and a token never grants more than the console login itself has. Without it the operation is 401 `guard_session_required`. An unknown, expired or ended token (also after the guard's PIN was reset) is 401 `guard_session_expired` (the console login is still valid, so the booth asks for the PIN again instead of signing the user out). A token from another console login session or another site is 403 `insufficient_permission`. Operations that do not list the header ignore it. */
         GuardSession: string;
+        /** @description Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it. */
+        Format: "json" | "csv" | "xlsx" | "pdf";
     };
     requestBodies: never;
     headers: never;
@@ -23019,6 +25240,1325 @@ export interface operations {
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
             429: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listFunds": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FundList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createFund": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FundCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fund"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getFund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fund. */
+                fund_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fund"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.updateFund": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fund. */
+                fund_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FundUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Fund"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listAccounts": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `type`. */
+                type?: string;
+                /** @description Filter by `subtype`. */
+                subtype?: string;
+                /** @description Free-text search. */
+                q?: string;
+                /** @description Filter by `archived`. */
+                archived?: boolean;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createAccount": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Account"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getAccount": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the account. */
+                account_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Account"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.updateAccount": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the account. */
+                account_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccountUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Account"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listCashBoxes": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashBoxList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createCashBox": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CashBoxCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashBox"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getCashBox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the cash box. */
+                cash_box_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashBox"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.updateCashBox": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the cash box. */
+                cash_box_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CashBoxUpdate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashBox"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listFiscalYears": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FiscalYearList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createFiscalYear": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FiscalYearCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FiscalYear"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getFiscalYear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fiscal year. */
+                fiscal_year_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FiscalYear"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.closeFiscalYear": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fiscal year. */
+                fiscal_year_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["FiscalYearClose"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FiscalYear"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.approveFiscalYear": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the fiscal year. */
+                fiscal_year_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["FiscalYearClose"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FiscalYear"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listJournalEntries": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Filter by `account_id`. */
+                account_id?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Filter by `source_type`. */
+                source_type?: string;
+                /** @description Filter by `source_id`. */
+                source_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JournalEntryList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getJournalEntry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JournalEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.reverseJournalEntry": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the entry. */
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JournalReverse"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JournalEntry"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getLockDate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LockDate"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.setLockDate": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the site. */
+                site_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LockDateSet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LockDate"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listChargePlans": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by `charge_type`. */
+                charge_type?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChargePlanList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createChargePlan": {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Client-generated unique key; replays within 7 days return the stored response. */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChargePlanCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChargePlan"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listCharges": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Debtor side of the unit: owner or tenant. */
+                debtor_kind?: string;
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Filter by `plan_id`. */
+                plan_id?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by month, `YYYY-MM`. */
+                period?: string;
+                /** @description Filter by `charge_type`. */
+                charge_type?: string;
+                /** @description Filter by `due_from`. */
+                due_from?: string;
+                /** @description Filter by `due_to`. */
+                due_to?: string;
+                /** @description Only charges past their due date that are still open or partially paid. */
+                overdue?: boolean;
+                /** @description Debtor side of the unit (alias of `debtor_kind`). */
+                side?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChargeList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createCharge": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChargeCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Charge"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listPayments": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Debtor side of the unit: owner or tenant. */
+                debtor_kind?: string;
+                /** @description Filter by person. */
+                person_id?: string;
+                /** @description Filter by `status`. */
+                status?: string;
+                /** @description Filter by `method`. */
+                method?: string;
+                /** @description Filter by `receipt_no`. */
+                receipt_no?: string;
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Filter by `asset_account_id`. */
+                asset_account_id?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createPayment": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getPayment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the payment. */
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.voidPayment": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the payment. */
+                payment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentVoid"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Payment"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getLateFeePolicy": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LateFeePolicy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.setLateFeePolicy": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+            };
+            header: {
+                /** @description The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`. */
+                "If-Match": components["parameters"]["IfMatch"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LateFeePolicySet"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LateFeePolicy"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.listOpeningBalances": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Filter by `kind`. */
+                kind?: string;
+                /** @description Filter by unit. */
+                unit_id?: string;
+                /** @description Evaluate as of this date (default today). */
+                as_of?: string;
+                /** @description Page size. */
+                limit?: components["parameters"]["Limit"];
+                /** @description Opaque cursor from a previous page `next_cursor`. */
+                cursor?: components["parameters"]["Cursor"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpeningBalanceList"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.createOpeningBalance": {
+        parameters: {
+            query?: {
+                /** @description When true, validate and return the row-level report without saving anything. */
+                dry_run?: components["parameters"]["DryRun"];
+            };
+            header: {
+                /** @description Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKeyRequired"];
+            };
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpeningBalanceCreate"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpeningBalance"];
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            409: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getDebtorReport": {
+        parameters: {
+            query: {
+                /** @description The site this resource belongs to. */
+                site_id: components["parameters"]["SiteIdRequired"];
+                /** @description Evaluate as of this date (default today). */
+                as_of?: string;
+                /** @description Filter by `block_id`. */
+                block_id?: string;
+                /** @description Filter by `min_months`. */
+                min_months?: number;
+                /** @description Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it. */
+                format?: components["parameters"]["Format"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebtorReport"];
+                    "text/csv": string;
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getUnitStatement": {
+        parameters: {
+            query?: {
+                /** @description Start of the range (inclusive). */
+                from?: string;
+                /** @description End of the range (inclusive). */
+                to?: string;
+                /** @description Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it. */
+                format?: components["parameters"]["Format"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+                /** @description Id of the unit. */
+                unit_id: string;
+                /** @description Id of the debtor kind. */
+                debtor_kind: "owner" | "tenant";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The report. JSON by default; `format` selects a CSV, XLSX or PDF download. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Statement"];
+                    "text/csv": string;
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };
     };

@@ -95,6 +95,19 @@ get:
         type: string
         format: date
       description: Filter by `due_to`.
+    - name: overdue
+      in: query
+      schema:
+        type: boolean
+      description: Only charges past their due date that are still open or partially paid.
+    - name: side
+      in: query
+      schema:
+        type: string
+        x-known-values:
+          - owner
+          - tenant
+      description: "Debtor side of the unit (alias of `debtor_kind`)."
     - $ref: ../../components/common.yaml#/parameters/Limit
     - $ref: ../../components/common.yaml#/parameters/Cursor
   responses:
