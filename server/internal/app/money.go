@@ -54,11 +54,15 @@ func (n *moneyNotifier) Enqueue(ctx context.Context, tx pgx.Tx, e ledger.Notific
 // newMoney builds the money services (phase C) served by the HTTP API.
 func newMoney(d *db.DB) httpapi.MoneyDeps {
 	tn := tenancy.NewService(d)
+	bill := billing.NewService(d, tn, nil)
+	pay := payments.NewService(d, nil, notifier)
 	return httpapi.MoneyDeps{
-		Ledger:   ledger.NewService(d, nil),
-		Billing:  billing.NewService(d, tn, nil),
-		Payments: payments.NewService(d, nil, notifier),
-		Reports:  reports.NewService(d, nil),
+		Ledger:      ledger.NewService(d, nil),
+		Billing:     bill,
+		Payments:    pay,
+		Reports:     reports.NewService(d, nil),
+		BankImport:  newBankImport(d, pay),
+		Collections: newCollections(d, bill),
 	}
 }
 
@@ -139,8 +143,10 @@ func moneyJobs(d *db.DB, log *slog.Logger) func(o *jobs.Options) {
 		o.Workers = func(ws *river.Workers) {
 			river.AddWorker(ws, &logNotifyWorker{log: log})
 			river.AddWorker(ws, &catchUpWorker{d: d, log: log})
+			collectJobs(ws, d, log)
 		}
 		o.Periodic = append(o.Periodic, river.NewPeriodicJob(river.PeriodicInterval(time.Hour),
 			func() (river.JobArgs, *river.InsertOpts) { return CatchUpArgs{}, nil }, &river.PeriodicJobOpts{RunOnStart: true}))
+		o.Periodic = append(o.Periodic, collectPeriodic()...)
 	}
 }

@@ -8,8 +8,10 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
 	"github.com/openbekci/openbekci/server/internal/core/billing"
+	"github.com/openbekci/openbekci/server/internal/core/collections"
 	"github.com/openbekci/openbekci/server/internal/core/ledger"
 	"github.com/openbekci/openbekci/server/internal/core/payments"
+	"github.com/openbekci/openbekci/server/internal/core/payments/bankimport"
 	"github.com/openbekci/openbekci/server/internal/core/reports"
 	"github.com/openbekci/openbekci/server/internal/httpapi/gen"
 	"github.com/openbekci/openbekci/server/internal/problem"
@@ -23,6 +25,9 @@ type MoneyDeps struct {
 	Billing  *billing.Service
 	Payments *payments.Service
 	Reports  *reports.Service
+	// BankImport and Collections are phase C3 (bank statement import, collections).
+	BankImport  *bankimport.Service
+	Collections *collections.Service
 }
 
 func (s *apiServer) lg() (*ledger.Service, error) {

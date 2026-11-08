@@ -4219,7 +4219,7 @@ export interface paths {
         put?: never;
         /**
          * Upload a bank statement
-         * @description **Release 0.1.** Parsing runs as a job; poll the import `status`. Manual matching only in 0.1.
+         * @description **Release 0.1.** Upload a CSV or XLSX statement (up to 10 MiB). The `core_csv` importer reads the columns `booked_on,amount,counterparty,description,reference` (Turkish numbers such as `1.234,50` and dates such as `05.03.2026` are understood); a typed `mapping` (a JSON `ColumnMapping`, targets `booked_on`, `amount`, `counterparty`, `description`, `reference`, `balance`) maps other layouts. Parsing happens within the request: a file that cannot be read is 422, rows that fail make the import `partial` and are listed in `error`. The same file cannot be imported twice into one account (409). Opening and closing balances are read from the `balance` column or sent as `opening_balance` and `closing_balance`. Each incoming line gets ranked suggestions (reference scheme `<door>-<period>`, payer name, amount); matching is always manual.
          *
          *     Permission: `money.post`.
          *
@@ -4842,6 +4842,36 @@ export interface paths {
          *     Permission: `money.read`.
          */
         get: operations["money.listDunningEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orgs/{org_id}/dunning-letter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        /**
+         * Download the ihtarname (warning letter) of an event or a debtor
+         * @description **Release 0.1.** A generic Turkish warning letter as a PDF (embedded font, with the debt breakdown). Two ways to ask:
+         *
+         *     - `event_id`: the letter of a dunning event; it is generated on first request and stored with the event.
+         *     - `site_id` plus a debtor (`unit_id` and `debtor_kind` together, or `person_id`): a letter generated on the spot as of `as_of` (default today); nothing is stored.
+         *
+         *     The PDF is kept with the event until the files module can file it into documents.
+         *
+         *     Permission: `collections.manage`.
+         */
+        get: operations["money.getDunningLetter"];
         put?: never;
         post?: never;
         delete?: never;
@@ -14060,7 +14090,6 @@ export interface components {
             asset_account_id: string;
             reference?: string;
             note?: string;
-            /** @description Manual override; omitted: automatic oldest-first. */
             allocations?: components["schemas"]["AllocationInput"][];
             send_receipt?: components["schemas"]["ReceiptDelivery"];
             /** @description Who the payment settles: a unit side or a person (carried debt). */
@@ -14454,6 +14483,7 @@ export interface components {
          *       "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *       "site_id": "0192a3f0-1000-7000-8000-000000000004",
          *       "importer": "importer",
+         *       "filename": "statement.csv",
          *       "file_id": "0192a3f0-1000-7000-8000-000000000005",
          *       "asset_account_id": "0192a3f0-1000-7000-8000-000000000006",
          *       "status": "parsing",
@@ -14482,8 +14512,13 @@ export interface components {
             /** Format: uuid */
             site_id: string;
             importer: string;
-            /** Format: uuid */
-            file_id: string;
+            /** @description The uploaded file name. */
+            filename: string;
+            /**
+             * Format: uuid
+             * @description The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB).
+             */
+            file_id: string | null;
             /** Format: uuid */
             asset_account_id: string;
             /**
@@ -14515,6 +14550,7 @@ export interface components {
          *           "org_id": "0192a3f0-1000-7000-8000-000000000003",
          *           "site_id": "0192a3f0-1000-7000-8000-000000000004",
          *           "importer": "importer",
+         *           "filename": "statement.csv",
          *           "file_id": "0192a3f0-1000-7000-8000-000000000005",
          *           "asset_account_id": "0192a3f0-1000-7000-8000-000000000006",
          *           "status": "parsing",
@@ -14552,6 +14588,25 @@ export interface components {
             ledger_closing: components["schemas"]["Money"];
             /** @description Statement movement minus ledger movement. */
             difference: components["schemas"]["Money"];
+            /** @description Closing minus opening when the statement has both balances, else the sum of its lines. */
+            statement_movement: components["schemas"]["Money"];
+            /** @description Movement of the bank account in the ledger over the statement period (all postings, not only matched lines). */
+            ledger_movement: components["schemas"]["Money"];
+            /** @description Sum of all statement lines. */
+            lines_total: components["schemas"]["Money"];
+            /** @description Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances. */
+            statement_check: components["schemas"]["Money"] | null;
+            /** @description Lines matched to a payment. */
+            matched_total: components["schemas"]["Money"];
+            /** @description Unmatched and suggested lines; with only matched payments posting to the account the difference equals this. */
+            unmatched_total: components["schemas"]["Money"];
+            ignored_total: components["schemas"]["Money"];
+            /** Format: int64 */
+            matched_count: number;
+            /** Format: int64 */
+            unmatched_count: number;
+            /** Format: int64 */
+            ignored_count: number;
         };
         MatchSuggestion: {
             /** Format: uuid */
@@ -14582,6 +14637,7 @@ export interface components {
          *       },
          *       "counterparty": null,
          *       "description": null,
+         *       "reference": null,
          *       "match_status": "unmatched",
          *       "payment_id": null,
          *       "expense_id": null,
@@ -14614,6 +14670,8 @@ export interface components {
             amount: components["schemas"]["Money"];
             counterparty: string | null;
             description: string | null;
+            /** @description The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it. */
+            reference: string | null;
             /**
              * @description Open enum.
              * @enum {string}
@@ -14644,6 +14702,7 @@ export interface components {
          *           },
          *           "counterparty": null,
          *           "description": null,
+         *           "reference": null,
          *           "match_status": "unmatched",
          *           "payment_id": null,
          *           "expense_id": null,
@@ -14672,15 +14731,16 @@ export interface components {
         BankTransactionMatch: {
             /** Format: uuid */
             payer_person_id?: string;
+            /** @description Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee. */
             allocations?: components["schemas"]["AllocationInput"][];
             /**
              * Format: uuid
-             * @description Confirm this declared payment with the line.
+             * @description Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
              */
             payment_id?: string;
             /**
              * Format: uuid
-             * @description For an outgoing line: link an expense.
+             * @description For an outgoing line: link an expense. Reserved for the expenses release; until then it is answered with 422 `unsupported` on `expense_id`.
              */
             expense_id?: string;
             /** @description Who the line pays; omitted when matching to `payment_id` or `expense_id`. */
@@ -15186,7 +15246,7 @@ export interface components {
             kind: "reminder" | "ihtarname";
             /** Format: int64 */
             days_after_due: number;
-            channels: ("in_app" | "email" | "sms")[];
+            channels: ("in_app" | "email" | "sms" | "letter")[];
             template_key: string | null;
             /** Format: int64 */
             position: number;
@@ -15212,7 +15272,7 @@ export interface components {
             kind: "reminder" | "ihtarname";
             /** Format: int64 */
             days_after_due: number;
-            channels?: ("in_app" | "email" | "sms")[];
+            channels?: ("in_app" | "email" | "sms" | "letter")[];
             template_key?: string | null;
             /** Format: int64 */
             position?: number;
@@ -15228,7 +15288,7 @@ export interface components {
             kind?: "reminder" | "ihtarname";
             /** Format: int64 */
             days_after_due?: number;
-            channels?: ("in_app" | "email" | "sms")[];
+            channels?: ("in_app" | "email" | "sms" | "letter")[];
             template_key?: string | null;
             /** Format: int64 */
             position?: number;
@@ -15272,7 +15332,7 @@ export interface components {
             debtors?: components["schemas"]["DebtorRef"][];
             min_balance?: components["schemas"]["Money"];
             /** @description Chosen by the sender (O5). */
-            channels: ("in_app" | "email" | "sms")[];
+            channels: ("in_app" | "email" | "sms" | "letter")[];
         };
         DunningRunPreview: {
             /** Format: int64 */
@@ -15310,6 +15370,12 @@ export interface components {
          *       "debtor_kind": "owner",
          *       "person_id": null,
          *       "stage_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "period": "2026-03",
+         *       "amount_due": {
+         *         "amount": 200000,
+         *         "currency": "TRY"
+         *       },
+         *       "has_letter": false,
          *       "sent_at": "2026-03-01T09:00:00Z",
          *       "channel": "in_app",
          *       "document_file_id": null,
@@ -15326,17 +15392,26 @@ export interface components {
             site_id: string;
             /** Format: uuid */
             run_id: string | null;
-            /** Format: uuid */
-            unit_id: string;
             /**
-             * @description Open enum.
-             * @enum {string}
+             * Format: uuid
+             * @description Null for a person debtor (carried debt).
              */
-            debtor_kind: "owner" | "tenant";
+            unit_id: string | null;
+            /**
+             * @description Open enum. Null for a person debtor.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
             /** Format: uuid */
             person_id: string | null;
             /** Format: uuid */
             stage_id: string;
+            /** @description The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel. */
+            period: string;
+            /** @description The overdue balance when the event was created. */
+            amount_due: components["schemas"]["Money"];
+            /** @description A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`. */
+            has_letter: boolean;
             /** Format: date-time */
             sent_at: string;
             /**
@@ -15363,6 +15438,12 @@ export interface components {
          *           "debtor_kind": "owner",
          *           "person_id": null,
          *           "stage_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "period": "2026-03",
+         *           "amount_due": {
+         *             "amount": 200000,
+         *             "currency": "TRY"
+         *           },
+         *           "has_letter": false,
          *           "sent_at": "2026-03-01T09:00:00Z",
          *           "channel": "in_app",
          *           "document_file_id": null,
@@ -15387,6 +15468,10 @@ export interface components {
          *       "unit_id": "0192a3f0-1000-7000-8000-000000000005",
          *       "debtor_kind": "owner",
          *       "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
+         *       "debtor": {
+         *         "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *         "debtor_kind": "owner"
+         *       },
          *       "opened_on": "2026-03-01",
          *       "lawyer": null,
          *       "file_no": null,
@@ -15409,15 +15494,23 @@ export interface components {
             org_id: string;
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
             /**
-             * @description Open enum.
-             * @enum {string}
+             * Format: uuid
+             * @description Null for a person debtor.
              */
-            debtor_kind: "owner" | "tenant";
-            /** Format: uuid */
-            debtor_person_id: string;
+            unit_id: string | null;
+            /**
+             * @description Open enum. Null for a person debtor.
+             * @enum {string|null}
+             */
+            debtor_kind: "owner" | "tenant" | null;
+            /**
+             * Format: uuid
+             * @description The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself.
+             */
+            debtor_person_id: string | null;
+            /** @description Whose debt this case is about, as it was opened. */
+            debtor: components["schemas"]["DebtorRef"];
             /** Format: date */
             opened_on: string;
             lawyer: string | null;
@@ -15444,15 +15537,8 @@ export interface components {
         CollectionCaseCreate: {
             /** Format: uuid */
             site_id: string;
-            /** Format: uuid */
-            unit_id: string;
-            /**
-             * @description Open enum.
-             * @enum {string}
-             */
-            debtor_kind: "owner" | "tenant";
-            /** Format: uuid */
-            debtor_person_id: string;
+            /** @description Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes. */
+            debtor: components["schemas"]["DebtorRef"];
             /** Format: date */
             opened_on: string;
             lawyer?: string | null;
@@ -15475,6 +15561,10 @@ export interface components {
          *           "unit_id": "0192a3f0-1000-7000-8000-000000000005",
          *           "debtor_kind": "owner",
          *           "debtor_person_id": "0192a3f0-1000-7000-8000-000000000006",
+         *           "debtor": {
+         *             "unit_id": "0192a3f0-1000-7000-8000-000000000005",
+         *             "debtor_kind": "owner"
+         *           },
          *           "opened_on": "2026-03-01",
          *           "lawyer": null,
          *           "file_no": null,
@@ -27714,9 +27804,14 @@ export interface operations {
                     importer: string;
                     /** Format: uuid */
                     asset_account_id: string;
+                    /** @description A JSON `ColumnMapping` (or just its `columns`) as text. */
                     mapping?: {
                         [key: string]: unknown;
                     };
+                    /** @description Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional. */
+                    opening_balance?: string;
+                    /** @description Statement closing balance as a decimal amount; optional. */
+                    closing_balance?: string;
                 };
             };
         };
@@ -28754,6 +28849,47 @@ export interface operations {
             };
             401: components["responses"]["Problem"];
             403: components["responses"]["Problem"];
+            422: components["responses"]["Problem"];
+            default: components["responses"]["Problem"];
+        };
+    };
+    "money.getDunningLetter": {
+        parameters: {
+            query?: {
+                /** @description The dunning event whose letter to return. */
+                event_id?: string;
+                /** @description Debtor mode - the site. */
+                site_id?: string;
+                /** @description Debtor mode, unit side: send with `debtor_kind`. */
+                unit_id?: string;
+                /** @description Debtor mode, unit side: owner or tenant. */
+                debtor_kind?: "owner" | "tenant";
+                /** @description Debtor mode, person: the person whose carried debt the letter is about. */
+                person_id?: string;
+                /** @description Evaluate as of this date (default today in the site timezone). */
+                as_of?: components["parameters"]["AsOfDate"];
+            };
+            header?: never;
+            path: {
+                /** @description Organization id. */
+                org_id: components["parameters"]["OrgId"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The letter. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Problem"];
+            403: components["responses"]["Problem"];
+            404: components["responses"]["Problem"];
             422: components["responses"]["Problem"];
             default: components["responses"]["Problem"];
         };

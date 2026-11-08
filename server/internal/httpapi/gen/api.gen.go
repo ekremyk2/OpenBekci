@@ -236,6 +236,54 @@ func (e AuthResultClient) Valid() bool {
 	}
 }
 
+// Defines values for BankStatementImportStatus.
+const (
+	BankStatementImportStatusFailed  BankStatementImportStatus = "failed"
+	BankStatementImportStatusParsing BankStatementImportStatus = "parsing"
+	BankStatementImportStatusPartial BankStatementImportStatus = "partial"
+	BankStatementImportStatusReady   BankStatementImportStatus = "ready"
+)
+
+// Valid indicates whether the value is a known member of the BankStatementImportStatus enum.
+func (e BankStatementImportStatus) Valid() bool {
+	switch e {
+	case BankStatementImportStatusFailed:
+		return true
+	case BankStatementImportStatusParsing:
+		return true
+	case BankStatementImportStatusPartial:
+		return true
+	case BankStatementImportStatusReady:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BankTransactionMatchStatus.
+const (
+	BankTransactionMatchStatusIgnored   BankTransactionMatchStatus = "ignored"
+	BankTransactionMatchStatusMatched   BankTransactionMatchStatus = "matched"
+	BankTransactionMatchStatusSuggested BankTransactionMatchStatus = "suggested"
+	BankTransactionMatchStatusUnmatched BankTransactionMatchStatus = "unmatched"
+)
+
+// Valid indicates whether the value is a known member of the BankTransactionMatchStatus enum.
+func (e BankTransactionMatchStatus) Valid() bool {
+	switch e {
+	case BankTransactionMatchStatusIgnored:
+		return true
+	case BankTransactionMatchStatusMatched:
+		return true
+	case BankTransactionMatchStatusSuggested:
+		return true
+	case BankTransactionMatchStatusUnmatched:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CarriedChargeOutcome.
 const (
 	CarriedChargeOutcomeCarriedToPerson CarriedChargeOutcome = "carried_to_person"
@@ -671,6 +719,42 @@ func (e ChargeScopeType) Valid() bool {
 	}
 }
 
+// Defines values for CollectionCaseDebtorKind.
+const (
+	CollectionCaseDebtorKindOwner  CollectionCaseDebtorKind = "owner"
+	CollectionCaseDebtorKindTenant CollectionCaseDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the CollectionCaseDebtorKind enum.
+func (e CollectionCaseDebtorKind) Valid() bool {
+	switch e {
+	case CollectionCaseDebtorKindOwner:
+		return true
+	case CollectionCaseDebtorKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CollectionCaseStatus.
+const (
+	CollectionCaseStatusClosed CollectionCaseStatus = "closed"
+	CollectionCaseStatusOpen   CollectionCaseStatus = "open"
+)
+
+// Valid indicates whether the value is a known member of the CollectionCaseStatus enum.
+func (e CollectionCaseStatus) Valid() bool {
+	switch e {
+	case CollectionCaseStatusClosed:
+		return true
+	case CollectionCaseStatusOpen:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CredentialsClient.
 const (
 	CredentialsClientMobile CredentialsClient = "mobile"
@@ -740,6 +824,198 @@ func (e DirectoryUnitKind) Valid() bool {
 	case DirectoryUnitKindOwner:
 		return true
 	case DirectoryUnitKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningEventChannel.
+const (
+	DunningEventChannelEmail  DunningEventChannel = "email"
+	DunningEventChannelInApp  DunningEventChannel = "in_app"
+	DunningEventChannelLetter DunningEventChannel = "letter"
+	DunningEventChannelSms    DunningEventChannel = "sms"
+)
+
+// Valid indicates whether the value is a known member of the DunningEventChannel enum.
+func (e DunningEventChannel) Valid() bool {
+	switch e {
+	case DunningEventChannelEmail:
+		return true
+	case DunningEventChannelInApp:
+		return true
+	case DunningEventChannelLetter:
+		return true
+	case DunningEventChannelSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningEventDebtorKind.
+const (
+	DunningEventDebtorKindOwner  DunningEventDebtorKind = "owner"
+	DunningEventDebtorKindTenant DunningEventDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the DunningEventDebtorKind enum.
+func (e DunningEventDebtorKind) Valid() bool {
+	switch e {
+	case DunningEventDebtorKindOwner:
+		return true
+	case DunningEventDebtorKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningRunRequestChannels.
+const (
+	DunningRunRequestChannelsEmail  DunningRunRequestChannels = "email"
+	DunningRunRequestChannelsInApp  DunningRunRequestChannels = "in_app"
+	DunningRunRequestChannelsLetter DunningRunRequestChannels = "letter"
+	DunningRunRequestChannelsSms    DunningRunRequestChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the DunningRunRequestChannels enum.
+func (e DunningRunRequestChannels) Valid() bool {
+	switch e {
+	case DunningRunRequestChannelsEmail:
+		return true
+	case DunningRunRequestChannelsInApp:
+		return true
+	case DunningRunRequestChannelsLetter:
+		return true
+	case DunningRunRequestChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningStageChannels.
+const (
+	DunningStageChannelsEmail  DunningStageChannels = "email"
+	DunningStageChannelsInApp  DunningStageChannels = "in_app"
+	DunningStageChannelsLetter DunningStageChannels = "letter"
+	DunningStageChannelsSms    DunningStageChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the DunningStageChannels enum.
+func (e DunningStageChannels) Valid() bool {
+	switch e {
+	case DunningStageChannelsEmail:
+		return true
+	case DunningStageChannelsInApp:
+		return true
+	case DunningStageChannelsLetter:
+		return true
+	case DunningStageChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningStageKind.
+const (
+	DunningStageKindIhtarname DunningStageKind = "ihtarname"
+	DunningStageKindReminder  DunningStageKind = "reminder"
+)
+
+// Valid indicates whether the value is a known member of the DunningStageKind enum.
+func (e DunningStageKind) Valid() bool {
+	switch e {
+	case DunningStageKindIhtarname:
+		return true
+	case DunningStageKindReminder:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningStageCreateChannels.
+const (
+	DunningStageCreateChannelsEmail  DunningStageCreateChannels = "email"
+	DunningStageCreateChannelsInApp  DunningStageCreateChannels = "in_app"
+	DunningStageCreateChannelsLetter DunningStageCreateChannels = "letter"
+	DunningStageCreateChannelsSms    DunningStageCreateChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the DunningStageCreateChannels enum.
+func (e DunningStageCreateChannels) Valid() bool {
+	switch e {
+	case DunningStageCreateChannelsEmail:
+		return true
+	case DunningStageCreateChannelsInApp:
+		return true
+	case DunningStageCreateChannelsLetter:
+		return true
+	case DunningStageCreateChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningStageCreateKind.
+const (
+	DunningStageCreateKindIhtarname DunningStageCreateKind = "ihtarname"
+	DunningStageCreateKindReminder  DunningStageCreateKind = "reminder"
+)
+
+// Valid indicates whether the value is a known member of the DunningStageCreateKind enum.
+func (e DunningStageCreateKind) Valid() bool {
+	switch e {
+	case DunningStageCreateKindIhtarname:
+		return true
+	case DunningStageCreateKindReminder:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningStageUpdateChannels.
+const (
+	DunningStageUpdateChannelsEmail  DunningStageUpdateChannels = "email"
+	DunningStageUpdateChannelsInApp  DunningStageUpdateChannels = "in_app"
+	DunningStageUpdateChannelsLetter DunningStageUpdateChannels = "letter"
+	DunningStageUpdateChannelsSms    DunningStageUpdateChannels = "sms"
+)
+
+// Valid indicates whether the value is a known member of the DunningStageUpdateChannels enum.
+func (e DunningStageUpdateChannels) Valid() bool {
+	switch e {
+	case DunningStageUpdateChannelsEmail:
+		return true
+	case DunningStageUpdateChannelsInApp:
+		return true
+	case DunningStageUpdateChannelsLetter:
+		return true
+	case DunningStageUpdateChannelsSms:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DunningStageUpdateKind.
+const (
+	DunningStageUpdateKindIhtarname DunningStageUpdateKind = "ihtarname"
+	DunningStageUpdateKindReminder  DunningStageUpdateKind = "reminder"
+)
+
+// Valid indicates whether the value is a known member of the DunningStageUpdateKind enum.
+func (e DunningStageUpdateKind) Valid() bool {
+	switch e {
+	case DunningStageUpdateKindIhtarname:
+		return true
+	case DunningStageUpdateKindReminder:
 		return true
 	default:
 		return false
@@ -1097,6 +1373,24 @@ func (e MagicLinkRequestClient) Valid() bool {
 	case MagicLinkRequestClientMobile:
 		return true
 	case MagicLinkRequestClientWeb:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MatchSuggestionDebtorKind.
+const (
+	MatchSuggestionDebtorKindOwner  MatchSuggestionDebtorKind = "owner"
+	MatchSuggestionDebtorKindTenant MatchSuggestionDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the MatchSuggestionDebtorKind enum.
+func (e MatchSuggestionDebtorKind) Valid() bool {
+	switch e {
+	case MatchSuggestionDebtorKindOwner:
+		return true
+	case MatchSuggestionDebtorKindTenant:
 		return true
 	default:
 		return false
@@ -2462,6 +2756,66 @@ func (e Format) Valid() bool {
 	}
 }
 
+// Defines values for MoneyGetDebtBreakdownParamsDebtorKind.
+const (
+	MoneyGetDebtBreakdownParamsDebtorKindOwner  MoneyGetDebtBreakdownParamsDebtorKind = "owner"
+	MoneyGetDebtBreakdownParamsDebtorKindTenant MoneyGetDebtBreakdownParamsDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the MoneyGetDebtBreakdownParamsDebtorKind enum.
+func (e MoneyGetDebtBreakdownParamsDebtorKind) Valid() bool {
+	switch e {
+	case MoneyGetDebtBreakdownParamsDebtorKindOwner:
+		return true
+	case MoneyGetDebtBreakdownParamsDebtorKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoneyGetDebtBreakdownParamsFormat.
+const (
+	MoneyGetDebtBreakdownParamsFormatCsv  MoneyGetDebtBreakdownParamsFormat = "csv"
+	MoneyGetDebtBreakdownParamsFormatJson MoneyGetDebtBreakdownParamsFormat = "json"
+	MoneyGetDebtBreakdownParamsFormatPdf  MoneyGetDebtBreakdownParamsFormat = "pdf"
+	MoneyGetDebtBreakdownParamsFormatXlsx MoneyGetDebtBreakdownParamsFormat = "xlsx"
+)
+
+// Valid indicates whether the value is a known member of the MoneyGetDebtBreakdownParamsFormat enum.
+func (e MoneyGetDebtBreakdownParamsFormat) Valid() bool {
+	switch e {
+	case MoneyGetDebtBreakdownParamsFormatCsv:
+		return true
+	case MoneyGetDebtBreakdownParamsFormatJson:
+		return true
+	case MoneyGetDebtBreakdownParamsFormatPdf:
+		return true
+	case MoneyGetDebtBreakdownParamsFormatXlsx:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoneyGetDunningLetterParamsDebtorKind.
+const (
+	MoneyGetDunningLetterParamsDebtorKindOwner  MoneyGetDunningLetterParamsDebtorKind = "owner"
+	MoneyGetDunningLetterParamsDebtorKindTenant MoneyGetDunningLetterParamsDebtorKind = "tenant"
+)
+
+// Valid indicates whether the value is a known member of the MoneyGetDunningLetterParamsDebtorKind enum.
+func (e MoneyGetDunningLetterParamsDebtorKind) Valid() bool {
+	switch e {
+	case MoneyGetDunningLetterParamsDebtorKindOwner:
+		return true
+	case MoneyGetDunningLetterParamsDebtorKindTenant:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for MoneyGetDebtorReportParamsFormat.
 const (
 	MoneyGetDebtorReportParamsFormatCsv  MoneyGetDebtorReportParamsFormat = "csv"
@@ -2864,6 +3218,120 @@ type BankDetailsUpdate struct {
 	ReferenceHint nullable.Nullable[string] `json:"reference_hint,omitempty"`
 }
 
+// BankImporter Example: {"default_mapping":{"columns":{},"date_format":null,"delimiter":null,"remember":null,"sheet":null},"formats":["formats"],"id":"id","name":"Ali Veli"}
+type BankImporter struct {
+	DefaultMapping nullable.Nullable[ColumnMapping] `json:"default_mapping,omitempty"`
+	Formats        []string                         `json:"formats"`
+
+	// Id `core_csv` or a pack importer id.
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// BankImporterList Example: {"items":[{"default_mapping":{"columns":{},"date_format":null,"delimiter":null,"remember":null,"sheet":null},"formats":["formats"],"id":"id","name":"Ali Veli"}],"next_cursor":null}
+type BankImporterList struct {
+	Items      []BankImporter            `json:"items"`
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// BankStatementImport An uploaded bank statement (M5).
+//
+// Example: {"asset_account_id":"0192a3f0-1000-7000-8000-000000000006","closing_balance":{"amount":200000,"currency":"TRY"},"created_at":"2026-03-01T09:00:00Z","error":null,"file_id":"0192a3f0-1000-7000-8000-000000000005","filename":"statement.csv","id":"0192a3f0-1000-7000-8000-000000000002","importer":"importer","opening_balance":{"amount":200000,"currency":"TRY"},"org_id":"0192a3f0-1000-7000-8000-000000000003","period_from":null,"period_to":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","status":"parsing","transaction_count":3,"unmatched_count":3,"updated_at":"2026-03-01T09:00:00Z"}
+type BankStatementImport struct {
+	AssetAccountId openapi_types.UUID        `json:"asset_account_id"`
+	ClosingBalance nullable.Nullable[Money]  `json:"closing_balance"`
+	CreatedAt      time.Time                 `json:"created_at"`
+	Error          nullable.Nullable[string] `json:"error"`
+
+	// FileId The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB).
+	FileId nullable.Nullable[openapi_types.UUID] `json:"file_id"`
+
+	// Filename The uploaded file name.
+	Filename       string                                `json:"filename"`
+	Id             openapi_types.UUID                    `json:"id"`
+	Importer       string                                `json:"importer"`
+	OpeningBalance nullable.Nullable[Money]              `json:"opening_balance"`
+	OrgId          openapi_types.UUID                    `json:"org_id"`
+	PeriodFrom     nullable.Nullable[openapi_types.Date] `json:"period_from"`
+	PeriodTo       nullable.Nullable[openapi_types.Date] `json:"period_to"`
+	SiteId         openapi_types.UUID                    `json:"site_id"`
+
+	// Status Open enum.
+	Status           BankStatementImportStatus `json:"status"`
+	TransactionCount int64                     `json:"transaction_count"`
+	UnmatchedCount   int64                     `json:"unmatched_count"`
+	UpdatedAt        time.Time                 `json:"updated_at"`
+}
+
+// BankStatementImportStatus Open enum.
+type BankStatementImportStatus string
+
+// BankStatementImportList Example: {"items":[{"asset_account_id":"0192a3f0-1000-7000-8000-000000000006","closing_balance":{"amount":200000,"currency":"TRY"},"created_at":"2026-03-01T09:00:00Z","error":null,"file_id":"0192a3f0-1000-7000-8000-000000000005","filename":"statement.csv","id":"0192a3f0-1000-7000-8000-000000000002","importer":"importer","opening_balance":{"amount":200000,"currency":"TRY"},"org_id":"0192a3f0-1000-7000-8000-000000000003","period_from":null,"period_to":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","status":"parsing","transaction_count":3,"unmatched_count":3,"updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type BankStatementImportList struct {
+	Items []BankStatementImport `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// BankTransaction A statement line. The raw payload is stripped after reconciliation.
+//
+// Example: {"amount":{"amount":200000,"currency":"TRY"},"booked_on":"2026-03-01","counterparty":null,"created_at":"2026-03-01T09:00:00Z","description":null,"expense_id":null,"id":"0192a3f0-1000-7000-8000-000000000002","import_id":"0192a3f0-1000-7000-8000-000000000005","match_status":"unmatched","org_id":"0192a3f0-1000-7000-8000-000000000003","payment_id":null,"reference":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","suggestions":[{"debtor_kind":"owner","person_id":null,"reason":"reason","score":1.5,"unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000006"}],"updated_at":"2026-03-01T09:00:00Z"}
+type BankTransaction struct {
+	// Amount Positive: money in; negative: money out.
+	Amount       Money                                 `json:"amount"`
+	BookedOn     openapi_types.Date                    `json:"booked_on"`
+	Counterparty nullable.Nullable[string]             `json:"counterparty"`
+	CreatedAt    time.Time                             `json:"created_at"`
+	Description  nullable.Nullable[string]             `json:"description"`
+	ExpenseId    nullable.Nullable[openapi_types.UUID] `json:"expense_id"`
+	Id           openapi_types.UUID                    `json:"id"`
+	ImportId     openapi_types.UUID                    `json:"import_id"`
+
+	// MatchStatus Open enum.
+	MatchStatus BankTransactionMatchStatus            `json:"match_status"`
+	OrgId       openapi_types.UUID                    `json:"org_id"`
+	PaymentId   nullable.Nullable[openapi_types.UUID] `json:"payment_id"`
+
+	// Reference The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it.
+	Reference   nullable.Nullable[string] `json:"reference"`
+	SiteId      openapi_types.UUID        `json:"site_id"`
+	Suggestions []MatchSuggestion         `json:"suggestions"`
+	UpdatedAt   time.Time                 `json:"updated_at"`
+}
+
+// BankTransactionMatchStatus Open enum.
+type BankTransactionMatchStatus string
+
+// BankTransactionList Example: {"items":[{"amount":{"amount":200000,"currency":"TRY"},"booked_on":"2026-03-01","counterparty":null,"created_at":"2026-03-01T09:00:00Z","description":null,"expense_id":null,"id":"0192a3f0-1000-7000-8000-000000000002","import_id":"0192a3f0-1000-7000-8000-000000000005","match_status":"unmatched","org_id":"0192a3f0-1000-7000-8000-000000000003","payment_id":null,"reference":null,"site_id":"0192a3f0-1000-7000-8000-000000000004","suggestions":[{"debtor_kind":"owner","person_id":null,"reason":"reason","score":1.5,"unit_door_number":"unit door number","unit_id":"0192a3f0-1000-7000-8000-000000000006"}],"updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type BankTransactionList struct {
+	Items []BankTransaction `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// BankTransactionMatch defines model for BankTransactionMatch.
+type BankTransactionMatch struct {
+	// Allocations Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee.
+	Allocations *[]AllocationInput `json:"allocations,omitempty"`
+
+	// Debtor Who the line pays; omitted when matching to `payment_id` or `expense_id`.
+	Debtor *DebtorRef `json:"debtor,omitempty"`
+
+	// ExpenseId For an outgoing line: link an expense. Reserved for the expenses release; until then it is answered with 422 `unsupported` on `expense_id`.
+	ExpenseId     *openapi_types.UUID `json:"expense_id,omitempty"`
+	PayerPersonId *openapi_types.UUID `json:"payer_person_id,omitempty"`
+
+	// PaymentId Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
+	PaymentId *openapi_types.UUID `json:"payment_id,omitempty"`
+}
+
+// BankTransactionReason defines model for BankTransactionReason.
+type BankTransactionReason struct {
+	Reason *string `json:"reason,omitempty"`
+}
+
 // Block A building within a site (S1).
 //
 // Example: {"created_at":"2026-03-01T09:00:00Z","id":"0192a3f0-1000-7000-8000-000000000002","is_default":false,"name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","updated_at":"2026-03-01T09:00:00Z","version":1}
@@ -3235,6 +3703,105 @@ type Codes struct {
 	TicketStatuses []CodeLabel `json:"ticket_statuses"`
 }
 
+// CollectionCase Legal collection; while open, late fees and reminders are frozen.
+//
+// Example: {"closed_on":null,"costs_charged":{"amount":200000,"currency":"TRY"},"created_at":"2026-03-01T09:00:00Z","debtor":{"debtor_kind":"owner","unit_id":"0192a3f0-1000-7000-8000-000000000005"},"debtor_kind":"owner","debtor_person_id":"0192a3f0-1000-7000-8000-000000000006","file_no":null,"id":"0192a3f0-1000-7000-8000-000000000002","lawyer":null,"notes":null,"opened_on":"2026-03-01","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","status":"open","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z","version":1}
+type CollectionCase struct {
+	ClosedOn nullable.Nullable[openapi_types.Date] `json:"closed_on"`
+
+	// CostsCharged Integer minor units with an ISO 4217 currency code.
+	CostsCharged Money     `json:"costs_charged"`
+	CreatedAt    time.Time `json:"created_at"`
+
+	// Debtor Whose debt this case is about, as it was opened.
+	Debtor DebtorRef `json:"debtor"`
+
+	// DebtorKind Open enum. Null for a person debtor.
+	DebtorKind nullable.Nullable[CollectionCaseDebtorKind] `json:"debtor_kind"`
+
+	// DebtorPersonId The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself.
+	DebtorPersonId nullable.Nullable[openapi_types.UUID] `json:"debtor_person_id"`
+	FileNo         nullable.Nullable[string]             `json:"file_no"`
+	Id             openapi_types.UUID                    `json:"id"`
+	Lawyer         nullable.Nullable[string]             `json:"lawyer"`
+	Notes          nullable.Nullable[string]             `json:"notes"`
+	OpenedOn       openapi_types.Date                    `json:"opened_on"`
+	OrgId          openapi_types.UUID                    `json:"org_id"`
+	SiteId         openapi_types.UUID                    `json:"site_id"`
+
+	// Status Open enum.
+	Status CollectionCaseStatus `json:"status"`
+
+	// UnitId Null for a person debtor.
+	UnitId    nullable.Nullable[openapi_types.UUID] `json:"unit_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// CollectionCaseDebtorKind Open enum. Null for a person debtor.
+type CollectionCaseDebtorKind string
+
+// CollectionCaseStatus Open enum.
+type CollectionCaseStatus string
+
+// CollectionCaseClose defines model for CollectionCaseClose.
+type CollectionCaseClose struct {
+	// Costs Legal costs charged back to the debtor side.
+	Costs *Money  `json:"costs,omitempty"`
+	Note  *string `json:"note,omitempty"`
+}
+
+// CollectionCaseCreate defines model for CollectionCaseCreate.
+type CollectionCaseCreate struct {
+	// Debtor Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes.
+	Debtor   DebtorRef                 `json:"debtor"`
+	FileNo   nullable.Nullable[string] `json:"file_no,omitempty"`
+	Lawyer   nullable.Nullable[string] `json:"lawyer,omitempty"`
+	Notes    nullable.Nullable[string] `json:"notes,omitempty"`
+	OpenedOn openapi_types.Date        `json:"opened_on"`
+	SiteId   openapi_types.UUID        `json:"site_id"`
+}
+
+// CollectionCaseList Example: {"items":[{"closed_on":null,"costs_charged":{"amount":200000,"currency":"TRY"},"created_at":"2026-03-01T09:00:00Z","debtor":{"debtor_kind":"owner","unit_id":"0192a3f0-1000-7000-8000-000000000005"},"debtor_kind":"owner","debtor_person_id":"0192a3f0-1000-7000-8000-000000000006","file_no":null,"id":"0192a3f0-1000-7000-8000-000000000002","lawyer":null,"notes":null,"opened_on":"2026-03-01","org_id":"0192a3f0-1000-7000-8000-000000000003","site_id":"0192a3f0-1000-7000-8000-000000000004","status":"open","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type CollectionCaseList struct {
+	Items []CollectionCase `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// CollectionCaseUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type CollectionCaseUpdate struct {
+	FileNo nullable.Nullable[string] `json:"file_no,omitempty"`
+	Lawyer nullable.Nullable[string] `json:"lawyer,omitempty"`
+	Notes  nullable.Nullable[string] `json:"notes,omitempty"`
+}
+
+// ColumnMapping Column mapping chosen in the import wizard.
+type ColumnMapping struct {
+	// Columns Target field name to source column header (or zero-based index as a string). The target names per import kind:
+	// `importUnits`: `block`, `door_number` (required), `legal_ref`, `type`, `area_m2`, `arsa_payi`, `owner_name`, `owner_phone`, `owner_email`, `owner_share_pct`, `owner_resides`, `tenant_name`, `tenant_phone`, `tenant_email`, `plates`, `opening_balance`, `opening_balance_side`, `opening_balance_date`;
+	// `importPeople`: the owner and tenant columns of `importUnits` plus `door_number`;
+	// `importAllocationKeyValues`: `door_number` (required), `value`;
+	// `importOpeningBalances`: `kind`, `unit`, `side`, `principal`, `late_fee`, `account_id`.
+	// The multipart `mapping` part is this object (or just its `columns`) as JSON text.
+	Columns map[string]string `json:"columns"`
+
+	// DateFormat For example `DD.MM.YYYY`.
+	DateFormat nullable.Nullable[string] `json:"date_format"`
+
+	// Delimiter CSV delimiter.
+	Delimiter nullable.Nullable[string] `json:"delimiter"`
+
+	// Remember Remember this mapping for the organization.
+	Remember nullable.Nullable[bool] `json:"remember"`
+
+	// Sheet XLSX sheet name.
+	Sheet nullable.Nullable[string] `json:"sheet"`
+}
+
 // Credentials What the caller proves. `method` is `password`, `sms_otp` or
 // `magic_link` (open on input; known values listed). `identifier` is an
 // email address or a phone number (E.164 or national format). `password`
@@ -3257,6 +3824,36 @@ type Credentials struct {
 
 // CredentialsClient `mobile` makes an emailed link use the `openbekci://` scheme.
 type CredentialsClient string
+
+// DebtBreakdown defines model for DebtBreakdown.
+type DebtBreakdown struct {
+	AsOf openapi_types.Date `json:"as_of"`
+
+	// Debtor Whose debt this is.
+	Debtor DebtorRef           `json:"debtor"`
+	Lines  []DebtBreakdownLine `json:"lines"`
+
+	// TotalLateFee Integer minor units with an ISO 4217 currency code.
+	TotalLateFee Money `json:"total_late_fee"`
+
+	// TotalPrincipal Integer minor units with an ISO 4217 currency code.
+	TotalPrincipal Money `json:"total_principal"`
+}
+
+// DebtBreakdownLine defines model for DebtBreakdownLine.
+type DebtBreakdownLine struct {
+	ChargeId openapi_types.UUID `json:"charge_id"`
+	DueDate  openapi_types.Date `json:"due_date"`
+
+	// LateFee Integer minor units with an ISO 4217 currency code.
+	LateFee Money `json:"late_fee"`
+
+	// Period The accrual month, `YYYY-MM` (pattern `^\d{4}-(0[1-9]|1[0-2])$`), for every plan frequency: a quarterly plan carries the first month of each quarter counted from its `start`, a yearly plan the month of its `start`, a one-off charge the month of its due date. There are no `YYYY-Qn` or `YYYY` period strings in the API; ranges use dates.
+	Period nullable.Nullable[string] `json:"period"`
+
+	// Principal Integer minor units with an ISO 4217 currency code.
+	Principal Money `json:"principal"`
+}
 
 // DebtorRef Who owes: a debtor key. Exactly one targeting mode. `(unit_id, debtor_kind)` addresses the open charges of one side of a unit; `person_id` addresses the personal receivable of a person (for example a former tenant whose open charges were carried to them on move-out, S7). Sending both modes, or a mode with a missing member, is 422 `validation_failed`.
 //
@@ -3385,6 +3982,165 @@ type DiscoveryDocument struct {
 	ServerVersion string `json:"server_version"`
 }
 
+// DunningEvent A reminder or notice sent to a unit side.
+//
+// Example: {"amount_due":{"amount":200000,"currency":"TRY"},"channel":"in_app","created_at":"2026-03-01T09:00:00Z","debtor_kind":"owner","document_file_id":null,"has_letter":false,"id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","period":"2026-03","person_id":null,"run_id":null,"sent_at":"2026-03-01T09:00:00Z","site_id":"0192a3f0-1000-7000-8000-000000000004","stage_id":"0192a3f0-1000-7000-8000-000000000006","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z"}
+type DunningEvent struct {
+	// AmountDue The overdue balance when the event was created.
+	AmountDue Money `json:"amount_due"`
+
+	// Channel Open enum.
+	Channel   DunningEventChannel `json:"channel"`
+	CreatedAt time.Time           `json:"created_at"`
+
+	// DebtorKind Open enum. Null for a person debtor.
+	DebtorKind     nullable.Nullable[DunningEventDebtorKind] `json:"debtor_kind"`
+	DocumentFileId nullable.Nullable[openapi_types.UUID]     `json:"document_file_id"`
+
+	// HasLetter A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`.
+	HasLetter bool               `json:"has_letter"`
+	Id        openapi_types.UUID `json:"id"`
+	OrgId     openapi_types.UUID `json:"org_id"`
+
+	// Period The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel.
+	Period   string                                `json:"period"`
+	PersonId nullable.Nullable[openapi_types.UUID] `json:"person_id"`
+	RunId    nullable.Nullable[openapi_types.UUID] `json:"run_id"`
+	SentAt   time.Time                             `json:"sent_at"`
+	SiteId   openapi_types.UUID                    `json:"site_id"`
+	StageId  openapi_types.UUID                    `json:"stage_id"`
+
+	// UnitId Null for a person debtor (carried debt).
+	UnitId    nullable.Nullable[openapi_types.UUID] `json:"unit_id"`
+	UpdatedAt time.Time                             `json:"updated_at"`
+}
+
+// DunningEventChannel Open enum.
+type DunningEventChannel string
+
+// DunningEventDebtorKind Open enum. Null for a person debtor.
+type DunningEventDebtorKind string
+
+// DunningEventList Example: {"items":[{"amount_due":{"amount":200000,"currency":"TRY"},"channel":"in_app","created_at":"2026-03-01T09:00:00Z","debtor_kind":"owner","document_file_id":null,"has_letter":false,"id":"0192a3f0-1000-7000-8000-000000000002","org_id":"0192a3f0-1000-7000-8000-000000000003","period":"2026-03","person_id":null,"run_id":null,"sent_at":"2026-03-01T09:00:00Z","site_id":"0192a3f0-1000-7000-8000-000000000004","stage_id":"0192a3f0-1000-7000-8000-000000000006","unit_id":"0192a3f0-1000-7000-8000-000000000005","updated_at":"2026-03-01T09:00:00Z"}],"next_cursor":null}
+type DunningEventList struct {
+	Items []DunningEvent `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// DunningRun defines model for DunningRun.
+type DunningRun struct {
+	CreatedAt  time.Time          `json:"created_at"`
+	EventCount int64              `json:"event_count"`
+	Id         openapi_types.UUID `json:"id"`
+	SiteId     openapi_types.UUID `json:"site_id"`
+	SmsCount   int64              `json:"sms_count"`
+	StageId    openapi_types.UUID `json:"stage_id"`
+}
+
+// DunningRunPreview defines model for DunningRunPreview.
+type DunningRunPreview struct {
+	RecipientCount int64 `json:"recipient_count"`
+
+	// SkippedFrozen Skipped: late fees and reminders are frozen (open collection case).
+	SkippedFrozen int64 `json:"skipped_frozen"`
+	SmsCount      int64 `json:"sms_count"`
+}
+
+// DunningRunRequest defines model for DunningRunRequest.
+type DunningRunRequest struct {
+	// Channels Chosen by the sender (O5).
+	Channels []DunningRunRequestChannels `json:"channels"`
+
+	// Debtors Restrict the run to these debtors; omitted: every debtor above `min_balance`. Person targets reach carried debt of former occupants.
+	Debtors *[]DebtorRef `json:"debtors,omitempty"`
+
+	// MinBalance Integer minor units with an ISO 4217 currency code.
+	MinBalance *Money             `json:"min_balance,omitempty"`
+	SiteId     openapi_types.UUID `json:"site_id"`
+	StageId    openapi_types.UUID `json:"stage_id"`
+}
+
+// DunningRunRequestChannels defines model for DunningRunRequest.Channels.
+type DunningRunRequestChannels string
+
+// DunningStage Site-defined collection stage: reminder 1 at N days, reminder 2, ihtarname.
+//
+// Example: {"channels":["in_app"],"created_at":"2026-03-01T09:00:00Z","days_after_due":1,"enabled":false,"id":"0192a3f0-1000-7000-8000-000000000002","kind":"reminder","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","position":1,"site_id":"0192a3f0-1000-7000-8000-000000000004","template_key":null,"updated_at":"2026-03-01T09:00:00Z","version":1}
+type DunningStage struct {
+	Channels     []DunningStageChannels `json:"channels"`
+	CreatedAt    time.Time              `json:"created_at"`
+	DaysAfterDue int64                  `json:"days_after_due"`
+	Enabled      bool                   `json:"enabled"`
+	Id           openapi_types.UUID     `json:"id"`
+
+	// Kind Open enum.
+	Kind        DunningStageKind          `json:"kind"`
+	Name        string                    `json:"name"`
+	OrgId       openapi_types.UUID        `json:"org_id"`
+	Position    int64                     `json:"position"`
+	SiteId      openapi_types.UUID        `json:"site_id"`
+	TemplateKey nullable.Nullable[string] `json:"template_key"`
+	UpdatedAt   time.Time                 `json:"updated_at"`
+
+	// Version Optimistic-lock counter; send it back as If-Match on updates.
+	Version int64 `json:"version"`
+}
+
+// DunningStageChannels Open enum.
+type DunningStageChannels string
+
+// DunningStageKind Open enum.
+type DunningStageKind string
+
+// DunningStageCreate defines model for DunningStageCreate.
+type DunningStageCreate struct {
+	Channels     *[]DunningStageCreateChannels `json:"channels,omitempty"`
+	DaysAfterDue int64                         `json:"days_after_due"`
+	Enabled      *bool                         `json:"enabled,omitempty"`
+
+	// Kind Open enum.
+	Kind        DunningStageCreateKind    `json:"kind"`
+	Name        string                    `json:"name"`
+	Position    *int64                    `json:"position,omitempty"`
+	SiteId      openapi_types.UUID        `json:"site_id"`
+	TemplateKey nullable.Nullable[string] `json:"template_key,omitempty"`
+}
+
+// DunningStageCreateChannels Open enum.
+type DunningStageCreateChannels string
+
+// DunningStageCreateKind Open enum.
+type DunningStageCreateKind string
+
+// DunningStageList Example: {"items":[{"channels":["in_app"],"created_at":"2026-03-01T09:00:00Z","days_after_due":1,"enabled":false,"id":"0192a3f0-1000-7000-8000-000000000002","kind":"reminder","name":"Ali Veli","org_id":"0192a3f0-1000-7000-8000-000000000003","position":1,"site_id":"0192a3f0-1000-7000-8000-000000000004","template_key":null,"updated_at":"2026-03-01T09:00:00Z","version":1}],"next_cursor":null}
+type DunningStageList struct {
+	Items []DunningStage `json:"items"`
+
+	// NextCursor Pass as `cursor` for the next page; null on the last page.
+	NextCursor nullable.Nullable[string] `json:"next_cursor"`
+}
+
+// DunningStageUpdate Partial update: send only the fields to change. The resource `version` goes in If-Match.
+type DunningStageUpdate struct {
+	Channels     *[]DunningStageUpdateChannels `json:"channels,omitempty"`
+	DaysAfterDue *int64                        `json:"days_after_due,omitempty"`
+	Enabled      *bool                         `json:"enabled,omitempty"`
+
+	// Kind Open enum.
+	Kind        *DunningStageUpdateKind   `json:"kind,omitempty"`
+	Name        *string                   `json:"name,omitempty"`
+	Position    *int64                    `json:"position,omitempty"`
+	TemplateKey nullable.Nullable[string] `json:"template_key,omitempty"`
+}
+
+// DunningStageUpdateChannels Open enum.
+type DunningStageUpdateChannels string
+
+// DunningStageUpdateKind Open enum.
+type DunningStageUpdateKind string
+
 // EffectiveDebtor Who will be (or was) charged and why: the result of the payer rules (M1). Resolution order: the one-off charge setting, then `Unit.payer_overrides[charge_type]`, then `ChargePlan.default_debtor`.
 //
 // Example: {"debtor_kind":"tenant","display_name":null,"person_id":null,"source":"unit_override"}
@@ -3510,6 +4266,43 @@ type HouseholdInvitationCreate struct {
 
 // HouseholdInvitationCreateChannel defines model for HouseholdInvitationCreate.Channel.
 type HouseholdInvitationCreateChannel string
+
+// ImportReconciliation defines model for ImportReconciliation.
+type ImportReconciliation struct {
+	// Difference Statement movement minus ledger movement.
+	Difference   Money              `json:"difference"`
+	IgnoredCount int64              `json:"ignored_count"`
+	IgnoredTotal Money              `json:"ignored_total"`
+	ImportId     openapi_types.UUID `json:"import_id"`
+
+	// LedgerClosing Integer minor units with an ISO 4217 currency code.
+	LedgerClosing Money `json:"ledger_closing"`
+
+	// LedgerMovement Movement of the bank account in the ledger over the statement period (all postings, not only matched lines).
+	LedgerMovement Money `json:"ledger_movement"`
+
+	// LedgerOpening Integer minor units with an ISO 4217 currency code.
+	LedgerOpening Money `json:"ledger_opening"`
+
+	// LinesTotal Sum of all statement lines.
+	LinesTotal   Money `json:"lines_total"`
+	MatchedCount int64 `json:"matched_count"`
+
+	// MatchedTotal Lines matched to a payment.
+	MatchedTotal Money `json:"matched_total"`
+
+	// StatementCheck Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances.
+	StatementCheck   nullable.Nullable[Money] `json:"statement_check"`
+	StatementClosing nullable.Nullable[Money] `json:"statement_closing"`
+
+	// StatementMovement Closing minus opening when the statement has both balances, else the sum of its lines.
+	StatementMovement Money                    `json:"statement_movement"`
+	StatementOpening  nullable.Nullable[Money] `json:"statement_opening"`
+	UnmatchedCount    int64                    `json:"unmatched_count"`
+
+	// UnmatchedTotal Unmatched and suggested lines; with only matched payments posting to the account the difference equals this.
+	UnmatchedTotal Money `json:"unmatched_total"`
+}
 
 // ImportReport Result of a bulk import. With `dry_run=true` nothing was saved.
 //
@@ -3847,6 +4640,22 @@ type MagicLinkRequest struct {
 
 // MagicLinkRequestClient `mobile` makes the link use the `openbekci://` scheme instead of the web URL.
 type MagicLinkRequestClient string
+
+// MatchSuggestion defines model for MatchSuggestion.
+type MatchSuggestion struct {
+	// DebtorKind Open enum.
+	DebtorKind MatchSuggestionDebtorKind             `json:"debtor_kind"`
+	PersonId   nullable.Nullable[openapi_types.UUID] `json:"person_id"`
+
+	// Reason For example `reference`, `payer_name`, `amount`.
+	Reason         string             `json:"reason"`
+	Score          float32            `json:"score"`
+	UnitDoorNumber string             `json:"unit_door_number"`
+	UnitId         openapi_types.UUID `json:"unit_id"`
+}
+
+// MatchSuggestionDebtorKind Open enum.
+type MatchSuggestionDebtorKind string
 
 // Me defines model for Me.
 type Me struct {
@@ -4420,7 +5229,6 @@ type PaymentAllocation struct {
 
 // PaymentCreate Example: {"amount":{"amount":200000,"currency":"TRY"},"asset_account_id":"0192a3f0-1000-7000-8000-000000000002","debtor":{"debtor_kind":"tenant","unit_id":"0192a3f0-1000-7000-8000-000000000001"},"method":"cash","received_on":"2026-03-05","site_id":"0192a3f0-1000-7000-8000-000000000002"}
 type PaymentCreate struct {
-	// Allocations Manual override; omitted: automatic oldest-first.
 	Allocations *[]AllocationInput `json:"allocations,omitempty"`
 
 	// Amount Gross amount.
@@ -5259,6 +6067,9 @@ type VendorUpdate struct {
 	TaxId                    nullable.Nullable[string]             `json:"tax_id,omitempty"`
 }
 
+// AsOfDate defines model for AsOfDate.
+type AsOfDate = openapi_types.Date
+
 // Cursor defines model for Cursor.
 type Cursor = string
 
@@ -5433,6 +6244,101 @@ type AuditListParams struct {
 	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
 }
 
+// MoneyListBankImportersParams defines parameters for MoneyListBankImporters.
+type MoneyListBankImportersParams struct {
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyListBankStatementImportsParams defines parameters for MoneyListBankStatementImports.
+type MoneyListBankStatementImportsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// AssetAccountId Filter by `asset_account_id`.
+	AssetAccountId *openapi_types.UUID `form:"asset_account_id,omitempty" json:"asset_account_id,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyCreateBankStatementImportMultipartBody defines parameters for MoneyCreateBankStatementImport.
+type MoneyCreateBankStatementImportMultipartBody struct {
+	AssetAccountId openapi_types.UUID `json:"asset_account_id"`
+
+	// ClosingBalance Statement closing balance as a decimal amount; optional.
+	ClosingBalance *string            `json:"closing_balance,omitempty"`
+	File           openapi_types.File `json:"file"`
+	Importer       string             `json:"importer"`
+
+	// Mapping A JSON `ColumnMapping` (or just its `columns`) as text.
+	Mapping *map[string]interface{} `json:"mapping,omitempty"`
+
+	// OpeningBalance Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional.
+	OpeningBalance *string            `json:"opening_balance,omitempty"`
+	SiteId         openapi_types.UUID `json:"site_id"`
+}
+
+// MoneyCreateBankStatementImportParams defines parameters for MoneyCreateBankStatementImport.
+type MoneyCreateBankStatementImportParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// MoneyListBankTransactionsParams defines parameters for MoneyListBankTransactions.
+type MoneyListBankTransactionsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// ImportId Filter by `import_id`.
+	ImportId *openapi_types.UUID `form:"import_id,omitempty" json:"import_id,omitempty"`
+
+	// MatchStatus Filter by `match_status`.
+	MatchStatus *string `form:"match_status,omitempty" json:"match_status,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+
+	// Q Free-text search.
+	Q *string `form:"q,omitempty" json:"q,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyIgnoreBankTransactionParams defines parameters for MoneyIgnoreBankTransaction.
+type MoneyIgnoreBankTransactionParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// MoneyMatchBankTransactionParams defines parameters for MoneyMatchBankTransaction.
+type MoneyMatchBankTransactionParams struct {
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// MoneyUnmatchBankTransactionParams defines parameters for MoneyUnmatchBankTransaction.
+type MoneyUnmatchBankTransactionParams struct {
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
 // TenancyListBlocksParams defines parameters for TenancyListBlocks.
 type TenancyListBlocksParams struct {
 	// SiteId The site this resource belongs to.
@@ -5574,6 +6480,69 @@ type CodesListCodesParams struct {
 	SiteId *SiteId `form:"site_id,omitempty" json:"site_id,omitempty"`
 }
 
+// MoneyListCollectionCasesParams defines parameters for MoneyListCollectionCases.
+type MoneyListCollectionCasesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// Status Filter by `status`.
+	Status *string `form:"status,omitempty" json:"status,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyCreateCollectionCaseParams defines parameters for MoneyCreateCollectionCase.
+type MoneyCreateCollectionCaseParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// MoneyUpdateCollectionCaseParams defines parameters for MoneyUpdateCollectionCase.
+type MoneyUpdateCollectionCaseParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// MoneyCloseCollectionCaseParams defines parameters for MoneyCloseCollectionCase.
+type MoneyCloseCollectionCaseParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// MoneyGetDebtBreakdownParams defines parameters for MoneyGetDebtBreakdown.
+type MoneyGetDebtBreakdownParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitId Filter by unit. Unit mode: send with the other.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// DebtorKind Debtor side of the unit: owner or tenant. Unit mode: send with the other.
+	DebtorKind *MoneyGetDebtBreakdownParamsDebtorKind `form:"debtor_kind,omitempty" json:"debtor_kind,omitempty"`
+
+	// PersonId Person mode: the person whose debt to break down (instead of `unit_id` + `debtor_kind`).
+	PersonId *openapi_types.UUID `form:"person_id,omitempty" json:"person_id,omitempty"`
+
+	// AsOf Evaluate as of this date (default today).
+	AsOf *openapi_types.Date `form:"as_of,omitempty" json:"as_of,omitempty"`
+
+	// Format Representation: `json` (default), or a download as `csv`, `xlsx` or `pdf` where the operation offers it.
+	Format *MoneyGetDebtBreakdownParamsFormat `form:"format,omitempty" json:"format,omitempty"`
+}
+
+// MoneyGetDebtBreakdownParamsDebtorKind defines parameters for MoneyGetDebtBreakdown.
+type MoneyGetDebtBreakdownParamsDebtorKind string
+
+// MoneyGetDebtBreakdownParamsFormat defines parameters for MoneyGetDebtBreakdown.
+type MoneyGetDebtBreakdownParamsFormat string
+
 // PeopleListDirectoryParams defines parameters for PeopleListDirectory.
 type PeopleListDirectoryParams struct {
 	// SiteId Restrict to one site. Omitted: all sites the caller may see in the organization.
@@ -5590,6 +6559,99 @@ type PeopleListDirectoryParams struct {
 
 	// Cursor Opaque cursor from a previous page `next_cursor`.
 	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyListDunningEventsParams defines parameters for MoneyListDunningEvents.
+type MoneyListDunningEventsParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// UnitId Filter by unit.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// DebtorKind Debtor side of the unit: owner or tenant.
+	DebtorKind *string `form:"debtor_kind,omitempty" json:"debtor_kind,omitempty"`
+
+	// StageId Filter by `stage_id`.
+	StageId *openapi_types.UUID `form:"stage_id,omitempty" json:"stage_id,omitempty"`
+
+	// From Start of the range (inclusive).
+	From *openapi_types.Date `form:"from,omitempty" json:"from,omitempty"`
+
+	// To End of the range (inclusive).
+	To *openapi_types.Date `form:"to,omitempty" json:"to,omitempty"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyGetDunningLetterParams defines parameters for MoneyGetDunningLetter.
+type MoneyGetDunningLetterParams struct {
+	// EventId The dunning event whose letter to return.
+	EventId *openapi_types.UUID `form:"event_id,omitempty" json:"event_id,omitempty"`
+
+	// SiteId Debtor mode - the site.
+	SiteId *openapi_types.UUID `form:"site_id,omitempty" json:"site_id,omitempty"`
+
+	// UnitId Debtor mode, unit side: send with `debtor_kind`.
+	UnitId *openapi_types.UUID `form:"unit_id,omitempty" json:"unit_id,omitempty"`
+
+	// DebtorKind Debtor mode, unit side: owner or tenant.
+	DebtorKind *MoneyGetDunningLetterParamsDebtorKind `form:"debtor_kind,omitempty" json:"debtor_kind,omitempty"`
+
+	// PersonId Debtor mode, person: the person whose carried debt the letter is about.
+	PersonId *openapi_types.UUID `form:"person_id,omitempty" json:"person_id,omitempty"`
+
+	// AsOf Evaluate as of this date (default today in the site timezone).
+	AsOf *AsOfDate `form:"as_of,omitempty" json:"as_of,omitempty"`
+}
+
+// MoneyGetDunningLetterParamsDebtorKind defines parameters for MoneyGetDunningLetter.
+type MoneyGetDunningLetterParamsDebtorKind string
+
+// MoneyCreateDunningRunParams defines parameters for MoneyCreateDunningRun.
+type MoneyCreateDunningRunParams struct {
+	// IdempotencyKey Client-generated unique key (8..128 chars); mandatory on this operation. A replay within 7 days returns the stored response; the same key with a different request is 422 `idempotency_mismatch`.
+	IdempotencyKey IdempotencyKeyRequired `json:"Idempotency-Key"`
+}
+
+// MoneyPreviewDunningRunParams defines parameters for MoneyPreviewDunningRun.
+type MoneyPreviewDunningRunParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// MoneyListDunningStagesParams defines parameters for MoneyListDunningStages.
+type MoneyListDunningStagesParams struct {
+	// SiteId The site this resource belongs to.
+	SiteId SiteIdRequired `form:"site_id" json:"site_id"`
+
+	// Limit Page size.
+	Limit *Limit `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Cursor Opaque cursor from a previous page `next_cursor`.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+}
+
+// MoneyCreateDunningStageParams defines parameters for MoneyCreateDunningStage.
+type MoneyCreateDunningStageParams struct {
+	// IdempotencyKey Client-generated unique key; replays within 7 days return the stored response.
+	IdempotencyKey *IdempotencyKey `json:"Idempotency-Key,omitempty"`
+}
+
+// MoneyDeleteDunningStageParams defines parameters for MoneyDeleteDunningStage.
+type MoneyDeleteDunningStageParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// MoneyUpdateDunningStageParams defines parameters for MoneyUpdateDunningStage.
+type MoneyUpdateDunningStageParams struct {
+	// IfMatch The `version` of the resource the client last read, as a quoted integer (`"3"`). A stale value is 409 `version_conflict`; a missing one is 422 `validation_failed`.
+	IfMatch IfMatch `json:"If-Match"`
 }
 
 // MoneyListFiscalYearsParams defines parameters for MoneyListFiscalYears.
@@ -6417,6 +7479,18 @@ type TenancyUpdateAllocationKeyJSONRequestBody = AllocationKeyUpdate
 // TenancyPutAllocationKeyValuesJSONRequestBody defines body for TenancyPutAllocationKeyValues for application/json ContentType.
 type TenancyPutAllocationKeyValuesJSONRequestBody = AllocationKeyValuesPut
 
+// MoneyCreateBankStatementImportMultipartRequestBody defines body for MoneyCreateBankStatementImport for multipart/form-data ContentType.
+type MoneyCreateBankStatementImportMultipartRequestBody MoneyCreateBankStatementImportMultipartBody
+
+// MoneyIgnoreBankTransactionJSONRequestBody defines body for MoneyIgnoreBankTransaction for application/json ContentType.
+type MoneyIgnoreBankTransactionJSONRequestBody = BankTransactionReason
+
+// MoneyMatchBankTransactionJSONRequestBody defines body for MoneyMatchBankTransaction for application/json ContentType.
+type MoneyMatchBankTransactionJSONRequestBody = BankTransactionMatch
+
+// MoneyUnmatchBankTransactionJSONRequestBody defines body for MoneyUnmatchBankTransaction for application/json ContentType.
+type MoneyUnmatchBankTransactionJSONRequestBody = BankTransactionReason
+
 // TenancyCreateBlockJSONRequestBody defines body for TenancyCreateBlock for application/json ContentType.
 type TenancyCreateBlockJSONRequestBody = BlockCreate
 
@@ -6434,6 +7508,27 @@ type MoneyCreateChargePlanJSONRequestBody = ChargePlanCreate
 
 // MoneyCreateChargeJSONRequestBody defines body for MoneyCreateCharge for application/json ContentType.
 type MoneyCreateChargeJSONRequestBody = ChargeCreate
+
+// MoneyCreateCollectionCaseJSONRequestBody defines body for MoneyCreateCollectionCase for application/json ContentType.
+type MoneyCreateCollectionCaseJSONRequestBody = CollectionCaseCreate
+
+// MoneyUpdateCollectionCaseJSONRequestBody defines body for MoneyUpdateCollectionCase for application/json ContentType.
+type MoneyUpdateCollectionCaseJSONRequestBody = CollectionCaseUpdate
+
+// MoneyCloseCollectionCaseJSONRequestBody defines body for MoneyCloseCollectionCase for application/json ContentType.
+type MoneyCloseCollectionCaseJSONRequestBody = CollectionCaseClose
+
+// MoneyCreateDunningRunJSONRequestBody defines body for MoneyCreateDunningRun for application/json ContentType.
+type MoneyCreateDunningRunJSONRequestBody = DunningRunRequest
+
+// MoneyPreviewDunningRunJSONRequestBody defines body for MoneyPreviewDunningRun for application/json ContentType.
+type MoneyPreviewDunningRunJSONRequestBody = DunningRunRequest
+
+// MoneyCreateDunningStageJSONRequestBody defines body for MoneyCreateDunningStage for application/json ContentType.
+type MoneyCreateDunningStageJSONRequestBody = DunningStageCreate
+
+// MoneyUpdateDunningStageJSONRequestBody defines body for MoneyUpdateDunningStage for application/json ContentType.
+type MoneyUpdateDunningStageJSONRequestBody = DunningStageUpdate
 
 // MoneyCreateFiscalYearJSONRequestBody defines body for MoneyCreateFiscalYear for application/json ContentType.
 type MoneyCreateFiscalYearJSONRequestBody = FiscalYearCreate
@@ -6926,6 +8021,39 @@ type ServerInterface interface {
 	// AuditList List the organization's audit events
 	// (GET /v1/orgs/{org_id}/audit)
 	AuditList(w http.ResponseWriter, r *http.Request, orgId OrgId, params AuditListParams)
+	// MoneyListBankImporters List bank statement importers
+	// (GET /v1/orgs/{org_id}/bank-importers)
+	MoneyListBankImporters(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankImportersParams)
+	// MoneyListBankStatementImports List bank statement imports
+	// (GET /v1/orgs/{org_id}/bank-statement-imports)
+	MoneyListBankStatementImports(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankStatementImportsParams)
+	// MoneyCreateBankStatementImport Upload a bank statement
+	// (POST /v1/orgs/{org_id}/bank-statement-imports)
+	MoneyCreateBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateBankStatementImportParams)
+	// MoneyDeleteBankStatementImport Discard a bank statement import
+	// (DELETE /v1/orgs/{org_id}/bank-statement-imports/{import_id})
+	MoneyDeleteBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID)
+	// MoneyGetBankStatementImport Get a bank statement import
+	// (GET /v1/orgs/{org_id}/bank-statement-imports/{import_id})
+	MoneyGetBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID)
+	// MoneyGetImportReconciliation Reconciliation balances of an import
+	// (GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation)
+	MoneyGetImportReconciliation(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID)
+	// MoneyListBankTransactions List bank transactions
+	// (GET /v1/orgs/{org_id}/bank-transactions)
+	MoneyListBankTransactions(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankTransactionsParams)
+	// MoneyGetBankTransaction Get a bank transaction
+	// (GET /v1/orgs/{org_id}/bank-transactions/{transaction_id})
+	MoneyGetBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID)
+	// MoneyIgnoreBankTransaction Ignore a line
+	// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore)
+	MoneyIgnoreBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyIgnoreBankTransactionParams)
+	// MoneyMatchBankTransaction Match a line to a unit side, payment or expense
+	// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match)
+	MoneyMatchBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyMatchBankTransactionParams)
+	// MoneyUnmatchBankTransaction Undo a match
+	// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch)
+	MoneyUnmatchBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyUnmatchBankTransactionParams)
 	// TenancyListBlocks List blocks
 	// (GET /v1/orgs/{org_id}/blocks)
 	TenancyListBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListBlocksParams)
@@ -6968,9 +8096,54 @@ type ServerInterface interface {
 	// CodesListCodes Labels for enums, error codes and site statuses
 	// (GET /v1/orgs/{org_id}/codes)
 	CodesListCodes(w http.ResponseWriter, r *http.Request, orgId OrgId, params CodesListCodesParams)
+	// MoneyListCollectionCases List collection cases
+	// (GET /v1/orgs/{org_id}/collection-cases)
+	MoneyListCollectionCases(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListCollectionCasesParams)
+	// MoneyCreateCollectionCase Create collection case
+	// (POST /v1/orgs/{org_id}/collection-cases)
+	MoneyCreateCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateCollectionCaseParams)
+	// MoneyGetCollectionCase Get collection case
+	// (GET /v1/orgs/{org_id}/collection-cases/{case_id})
+	MoneyGetCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID)
+	// MoneyUpdateCollectionCase Update collection case
+	// (PATCH /v1/orgs/{org_id}/collection-cases/{case_id})
+	MoneyUpdateCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID, params MoneyUpdateCollectionCaseParams)
+	// MoneyCloseCollectionCase Close a collection case
+	// (POST /v1/orgs/{org_id}/collection-cases/{case_id}:close)
+	MoneyCloseCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID, params MoneyCloseCollectionCaseParams)
+	// MoneyGetDebtBreakdown Debt breakdown for a unit side (ihtarname attachment)
+	// (GET /v1/orgs/{org_id}/debt-breakdown)
+	MoneyGetDebtBreakdown(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyGetDebtBreakdownParams)
 	// PeopleListDirectory List the resident directory
 	// (GET /v1/orgs/{org_id}/directory)
 	PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListDirectoryParams)
+	// MoneyListDunningEvents List sent reminders
+	// (GET /v1/orgs/{org_id}/dunning-events)
+	MoneyListDunningEvents(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListDunningEventsParams)
+	// MoneyGetDunningLetter Download the ihtarname (warning letter) of an event or a debtor
+	// (GET /v1/orgs/{org_id}/dunning-letter)
+	MoneyGetDunningLetter(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyGetDunningLetterParams)
+	// MoneyCreateDunningRun Send a reminder run
+	// (POST /v1/orgs/{org_id}/dunning-runs)
+	MoneyCreateDunningRun(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateDunningRunParams)
+	// MoneyPreviewDunningRun Preview a reminder run
+	// (POST /v1/orgs/{org_id}/dunning-runs:preview)
+	MoneyPreviewDunningRun(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyPreviewDunningRunParams)
+	// MoneyListDunningStages List dunning stages
+	// (GET /v1/orgs/{org_id}/dunning-stages)
+	MoneyListDunningStages(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListDunningStagesParams)
+	// MoneyCreateDunningStage Create dunning stage
+	// (POST /v1/orgs/{org_id}/dunning-stages)
+	MoneyCreateDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateDunningStageParams)
+	// MoneyDeleteDunningStage Delete dunning stage
+	// (DELETE /v1/orgs/{org_id}/dunning-stages/{stage_id})
+	MoneyDeleteDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID, params MoneyDeleteDunningStageParams)
+	// MoneyGetDunningStage Get dunning stage
+	// (GET /v1/orgs/{org_id}/dunning-stages/{stage_id})
+	MoneyGetDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID)
+	// MoneyUpdateDunningStage Update dunning stage
+	// (PATCH /v1/orgs/{org_id}/dunning-stages/{stage_id})
+	MoneyUpdateDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID, params MoneyUpdateDunningStageParams)
 	// MoneyListFiscalYears List fiscal years
 	// (GET /v1/orgs/{org_id}/fiscal-years)
 	MoneyListFiscalYears(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListFiscalYearsParams)
@@ -7484,6 +8657,72 @@ func (_ Unimplemented) AuditList(w http.ResponseWriter, r *http.Request, orgId O
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// MoneyListBankImporters List bank statement importers
+// (GET /v1/orgs/{org_id}/bank-importers)
+func (_ Unimplemented) MoneyListBankImporters(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankImportersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyListBankStatementImports List bank statement imports
+// (GET /v1/orgs/{org_id}/bank-statement-imports)
+func (_ Unimplemented) MoneyListBankStatementImports(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankStatementImportsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyCreateBankStatementImport Upload a bank statement
+// (POST /v1/orgs/{org_id}/bank-statement-imports)
+func (_ Unimplemented) MoneyCreateBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateBankStatementImportParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyDeleteBankStatementImport Discard a bank statement import
+// (DELETE /v1/orgs/{org_id}/bank-statement-imports/{import_id})
+func (_ Unimplemented) MoneyDeleteBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetBankStatementImport Get a bank statement import
+// (GET /v1/orgs/{org_id}/bank-statement-imports/{import_id})
+func (_ Unimplemented) MoneyGetBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetImportReconciliation Reconciliation balances of an import
+// (GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation)
+func (_ Unimplemented) MoneyGetImportReconciliation(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyListBankTransactions List bank transactions
+// (GET /v1/orgs/{org_id}/bank-transactions)
+func (_ Unimplemented) MoneyListBankTransactions(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankTransactionsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetBankTransaction Get a bank transaction
+// (GET /v1/orgs/{org_id}/bank-transactions/{transaction_id})
+func (_ Unimplemented) MoneyGetBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyIgnoreBankTransaction Ignore a line
+// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore)
+func (_ Unimplemented) MoneyIgnoreBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyIgnoreBankTransactionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyMatchBankTransaction Match a line to a unit side, payment or expense
+// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match)
+func (_ Unimplemented) MoneyMatchBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyMatchBankTransactionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyUnmatchBankTransaction Undo a match
+// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch)
+func (_ Unimplemented) MoneyUnmatchBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyUnmatchBankTransactionParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // TenancyListBlocks List blocks
 // (GET /v1/orgs/{org_id}/blocks)
 func (_ Unimplemented) TenancyListBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListBlocksParams) {
@@ -7568,9 +8807,99 @@ func (_ Unimplemented) CodesListCodes(w http.ResponseWriter, r *http.Request, or
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// MoneyListCollectionCases List collection cases
+// (GET /v1/orgs/{org_id}/collection-cases)
+func (_ Unimplemented) MoneyListCollectionCases(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListCollectionCasesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyCreateCollectionCase Create collection case
+// (POST /v1/orgs/{org_id}/collection-cases)
+func (_ Unimplemented) MoneyCreateCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateCollectionCaseParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetCollectionCase Get collection case
+// (GET /v1/orgs/{org_id}/collection-cases/{case_id})
+func (_ Unimplemented) MoneyGetCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyUpdateCollectionCase Update collection case
+// (PATCH /v1/orgs/{org_id}/collection-cases/{case_id})
+func (_ Unimplemented) MoneyUpdateCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID, params MoneyUpdateCollectionCaseParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyCloseCollectionCase Close a collection case
+// (POST /v1/orgs/{org_id}/collection-cases/{case_id}:close)
+func (_ Unimplemented) MoneyCloseCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID, params MoneyCloseCollectionCaseParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetDebtBreakdown Debt breakdown for a unit side (ihtarname attachment)
+// (GET /v1/orgs/{org_id}/debt-breakdown)
+func (_ Unimplemented) MoneyGetDebtBreakdown(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyGetDebtBreakdownParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // PeopleListDirectory List the resident directory
 // (GET /v1/orgs/{org_id}/directory)
 func (_ Unimplemented) PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListDirectoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyListDunningEvents List sent reminders
+// (GET /v1/orgs/{org_id}/dunning-events)
+func (_ Unimplemented) MoneyListDunningEvents(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListDunningEventsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetDunningLetter Download the ihtarname (warning letter) of an event or a debtor
+// (GET /v1/orgs/{org_id}/dunning-letter)
+func (_ Unimplemented) MoneyGetDunningLetter(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyGetDunningLetterParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyCreateDunningRun Send a reminder run
+// (POST /v1/orgs/{org_id}/dunning-runs)
+func (_ Unimplemented) MoneyCreateDunningRun(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateDunningRunParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyPreviewDunningRun Preview a reminder run
+// (POST /v1/orgs/{org_id}/dunning-runs:preview)
+func (_ Unimplemented) MoneyPreviewDunningRun(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyPreviewDunningRunParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyListDunningStages List dunning stages
+// (GET /v1/orgs/{org_id}/dunning-stages)
+func (_ Unimplemented) MoneyListDunningStages(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListDunningStagesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyCreateDunningStage Create dunning stage
+// (POST /v1/orgs/{org_id}/dunning-stages)
+func (_ Unimplemented) MoneyCreateDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateDunningStageParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyDeleteDunningStage Delete dunning stage
+// (DELETE /v1/orgs/{org_id}/dunning-stages/{stage_id})
+func (_ Unimplemented) MoneyDeleteDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID, params MoneyDeleteDunningStageParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyGetDunningStage Get dunning stage
+// (GET /v1/orgs/{org_id}/dunning-stages/{stage_id})
+func (_ Unimplemented) MoneyGetDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoneyUpdateDunningStage Update dunning stage
+// (PATCH /v1/orgs/{org_id}/dunning-stages/{stage_id})
+func (_ Unimplemented) MoneyUpdateDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID, params MoneyUpdateDunningStageParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -9546,6 +10875,663 @@ func (siw *ServerInterfaceWrapper) AuditList(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
+// MoneyListBankImporters operation middleware
+func (siw *ServerInterfaceWrapper) MoneyListBankImporters(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyListBankImportersParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyListBankImporters(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyListBankStatementImports operation middleware
+func (siw *ServerInterfaceWrapper) MoneyListBankStatementImports(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyListBankStatementImportsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "asset_account_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "asset_account_id", r.URL.Query(), &params.AssetAccountId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "asset_account_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "asset_account_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyListBankStatementImports(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyCreateBankStatementImport operation middleware
+func (siw *ServerInterfaceWrapper) MoneyCreateBankStatementImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyCreateBankStatementImportParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyCreateBankStatementImport(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyDeleteBankStatementImport operation middleware
+func (siw *ServerInterfaceWrapper) MoneyDeleteBankStatementImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "import_id" -------------
+	var importId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "import_id", chi.URLParam(r, "import_id"), &importId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "import_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyDeleteBankStatementImport(w, r, orgId, importId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetBankStatementImport operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetBankStatementImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "import_id" -------------
+	var importId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "import_id", chi.URLParam(r, "import_id"), &importId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "import_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetBankStatementImport(w, r, orgId, importId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetImportReconciliation operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetImportReconciliation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "import_id" -------------
+	var importId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "import_id", chi.URLParam(r, "import_id"), &importId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "import_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetImportReconciliation(w, r, orgId, importId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyListBankTransactions operation middleware
+func (siw *ServerInterfaceWrapper) MoneyListBankTransactions(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyListBankTransactionsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "import_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "import_id", r.URL.Query(), &params.ImportId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "import_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "import_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "match_status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "match_status", r.URL.Query(), &params.MatchStatus, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "match_status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "match_status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "q" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyListBankTransactions(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetBankTransaction operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetBankTransaction(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "transaction_id" -------------
+	var transactionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "transaction_id", chi.URLParam(r, "transaction_id"), &transactionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "transaction_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetBankTransaction(w, r, orgId, transactionId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyIgnoreBankTransaction operation middleware
+func (siw *ServerInterfaceWrapper) MoneyIgnoreBankTransaction(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "transaction_id" -------------
+	var transactionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "transaction_id", chi.URLParam(r, "transaction_id"), &transactionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "transaction_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyIgnoreBankTransactionParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyIgnoreBankTransaction(w, r, orgId, transactionId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyMatchBankTransaction operation middleware
+func (siw *ServerInterfaceWrapper) MoneyMatchBankTransaction(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "transaction_id" -------------
+	var transactionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "transaction_id", chi.URLParam(r, "transaction_id"), &transactionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "transaction_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyMatchBankTransactionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyMatchBankTransaction(w, r, orgId, transactionId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyUnmatchBankTransaction operation middleware
+func (siw *ServerInterfaceWrapper) MoneyUnmatchBankTransaction(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "transaction_id" -------------
+	var transactionId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "transaction_id", chi.URLParam(r, "transaction_id"), &transactionId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "transaction_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyUnmatchBankTransactionParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyUnmatchBankTransaction(w, r, orgId, transactionId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // TenancyListBlocks operation middleware
 func (siw *ServerInterfaceWrapper) TenancyListBlocks(w http.ResponseWriter, r *http.Request) {
 
@@ -10518,6 +12504,414 @@ func (siw *ServerInterfaceWrapper) CodesListCodes(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r)
 }
 
+// MoneyListCollectionCases operation middleware
+func (siw *ServerInterfaceWrapper) MoneyListCollectionCases(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyListCollectionCasesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyListCollectionCases(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyCreateCollectionCase operation middleware
+func (siw *ServerInterfaceWrapper) MoneyCreateCollectionCase(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyCreateCollectionCaseParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyCreateCollectionCase(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetCollectionCase operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetCollectionCase(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "case_id" -------------
+	var caseId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "case_id", chi.URLParam(r, "case_id"), &caseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "case_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetCollectionCase(w, r, orgId, caseId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyUpdateCollectionCase operation middleware
+func (siw *ServerInterfaceWrapper) MoneyUpdateCollectionCase(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "case_id" -------------
+	var caseId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "case_id", chi.URLParam(r, "case_id"), &caseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "case_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyUpdateCollectionCaseParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyUpdateCollectionCase(w, r, orgId, caseId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyCloseCollectionCase operation middleware
+func (siw *ServerInterfaceWrapper) MoneyCloseCollectionCase(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "case_id" -------------
+	var caseId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "case_id", chi.URLParam(r, "case_id"), &caseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "case_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyCloseCollectionCaseParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyCloseCollectionCase(w, r, orgId, caseId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetDebtBreakdown operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetDebtBreakdown(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyGetDebtBreakdownParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "debtor_kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "debtor_kind", r.URL.Query(), &params.DebtorKind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "debtor_kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "debtor_kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "person_id", r.URL.Query(), &params.PersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "as_of" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "as_of", r.URL.Query(), &params.AsOf, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "as_of"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "as_of", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "format" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "format", r.URL.Query(), &params.Format, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "format"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "format", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetDebtBreakdown(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // PeopleListDirectory operation middleware
 func (siw *ServerInterfaceWrapper) PeopleListDirectory(w http.ResponseWriter, r *http.Request) {
 
@@ -10603,6 +12997,629 @@ func (siw *ServerInterfaceWrapper) PeopleListDirectory(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PeopleListDirectory(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyListDunningEvents operation middleware
+func (siw *ServerInterfaceWrapper) MoneyListDunningEvents(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyListDunningEventsParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "debtor_kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "debtor_kind", r.URL.Query(), &params.DebtorKind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "debtor_kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "debtor_kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "stage_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "stage_id", r.URL.Query(), &params.StageId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "stage_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "stage_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyListDunningEvents(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetDunningLetter operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetDunningLetter(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyGetDunningLetterParams
+
+	// ------------- Optional query parameter "event_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "event_id", r.URL.Query(), &params.EventId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "event_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "event_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "unit_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "unit_id", r.URL.Query(), &params.UnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "unit_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "unit_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "debtor_kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "debtor_kind", r.URL.Query(), &params.DebtorKind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "debtor_kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "debtor_kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "person_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "person_id", r.URL.Query(), &params.PersonId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "person_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "person_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "as_of" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "as_of", r.URL.Query(), &params.AsOf, runtime.BindQueryParameterOptions{Type: "string", Format: "date"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "as_of"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "as_of", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetDunningLetter(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyCreateDunningRun operation middleware
+func (siw *ServerInterfaceWrapper) MoneyCreateDunningRun(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyCreateDunningRunParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKeyRequired
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyCreateDunningRun(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyPreviewDunningRun operation middleware
+func (siw *ServerInterfaceWrapper) MoneyPreviewDunningRun(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyPreviewDunningRunParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyPreviewDunningRun(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyListDunningStages operation middleware
+func (siw *ServerInterfaceWrapper) MoneyListDunningStages(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyListDunningStagesParams
+
+	// ------------- Required query parameter "site_id" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "site_id", r.URL.Query(), &params.SiteId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "site_id"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "site_id", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyListDunningStages(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyCreateDunningStage operation middleware
+func (siw *ServerInterfaceWrapper) MoneyCreateDunningStage(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyCreateDunningStageParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = &IdempotencyKey
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyCreateDunningStage(w, r, orgId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyDeleteDunningStage operation middleware
+func (siw *ServerInterfaceWrapper) MoneyDeleteDunningStage(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "stage_id" -------------
+	var stageId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "stage_id", chi.URLParam(r, "stage_id"), &stageId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "stage_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyDeleteDunningStageParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyDeleteDunningStage(w, r, orgId, stageId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyGetDunningStage operation middleware
+func (siw *ServerInterfaceWrapper) MoneyGetDunningStage(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "stage_id" -------------
+	var stageId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "stage_id", chi.URLParam(r, "stage_id"), &stageId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "stage_id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyGetDunningStage(w, r, orgId, stageId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoneyUpdateDunningStage operation middleware
+func (siw *ServerInterfaceWrapper) MoneyUpdateDunningStage(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "org_id" -------------
+	var orgId OrgId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "org_id", chi.URLParam(r, "org_id"), &orgId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "org_id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "stage_id" -------------
+	var stageId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "stage_id", chi.URLParam(r, "stage_id"), &stageId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "stage_id", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoneyUpdateDunningStageParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoneyUpdateDunningStage(w, r, orgId, stageId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -17278,6 +20295,84 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/orgs/{org_id}/units/{unit_id}/statements/{debtor_kind}", wrapper.MoneyGetUnitStatement)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bank-importers", wrapper.MoneyListBankImporters)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bank-statement-imports", wrapper.MoneyListBankStatementImports)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/bank-statement-imports", wrapper.MoneyCreateBankStatementImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/bank-statement-imports/{import_id}", wrapper.MoneyDeleteBankStatementImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bank-statement-imports/{import_id}", wrapper.MoneyGetBankStatementImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation", wrapper.MoneyGetImportReconciliation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bank-transactions", wrapper.MoneyListBankTransactions)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/bank-transactions/{transaction_id}", wrapper.MoneyGetBankTransaction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/bank-transactions/{transaction_id}:match", wrapper.MoneyMatchBankTransaction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch", wrapper.MoneyUnmatchBankTransaction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore", wrapper.MoneyIgnoreBankTransaction)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/dunning-stages", wrapper.MoneyListDunningStages)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/dunning-stages", wrapper.MoneyCreateDunningStage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/orgs/{org_id}/dunning-stages/{stage_id}", wrapper.MoneyDeleteDunningStage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/dunning-stages/{stage_id}", wrapper.MoneyGetDunningStage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/dunning-stages/{stage_id}", wrapper.MoneyUpdateDunningStage)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/dunning-runs:preview", wrapper.MoneyPreviewDunningRun)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/dunning-runs", wrapper.MoneyCreateDunningRun)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/dunning-events", wrapper.MoneyListDunningEvents)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/dunning-letter", wrapper.MoneyGetDunningLetter)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/collection-cases", wrapper.MoneyListCollectionCases)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/collection-cases", wrapper.MoneyCreateCollectionCase)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/collection-cases/{case_id}", wrapper.MoneyGetCollectionCase)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/v1/orgs/{org_id}/collection-cases/{case_id}", wrapper.MoneyUpdateCollectionCase)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/orgs/{org_id}/collection-cases/{case_id}:close", wrapper.MoneyCloseCollectionCase)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/orgs/{org_id}/debt-breakdown", wrapper.MoneyGetDebtBreakdown)
+	})
 
 	return r
 }
@@ -22508,6 +25603,1858 @@ func (response AuditListdefaultApplicationProblemPlusJSONResponse) VisitAuditLis
 	return err
 }
 
+type MoneyListBankImportersRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyListBankImportersParams
+}
+
+type MoneyListBankImportersResponseObject interface {
+	VisitMoneyListBankImportersResponse(w http.ResponseWriter) error
+}
+
+type MoneyListBankImporters200JSONResponse BankImporterList
+
+func (response MoneyListBankImporters200JSONResponse) VisitMoneyListBankImportersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankImporters401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyListBankImporters401ApplicationProblemPlusJSONResponse) VisitMoneyListBankImportersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankImporters403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankImporters403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListBankImporters403ResponseHeaders
+}
+
+func (response MoneyListBankImporters403ApplicationProblemPlusJSONResponse) VisitMoneyListBankImportersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankImportersdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankImportersdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyListBankImportersdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyListBankImportersdefaultApplicationProblemPlusJSONResponse) VisitMoneyListBankImportersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankStatementImportsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyListBankStatementImportsParams
+}
+
+type MoneyListBankStatementImportsResponseObject interface {
+	VisitMoneyListBankStatementImportsResponse(w http.ResponseWriter) error
+}
+
+type MoneyListBankStatementImports200JSONResponse BankStatementImportList
+
+func (response MoneyListBankStatementImports200JSONResponse) VisitMoneyListBankStatementImportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankStatementImports401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyListBankStatementImports401ApplicationProblemPlusJSONResponse) VisitMoneyListBankStatementImportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankStatementImports403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankStatementImports403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListBankStatementImports403ResponseHeaders
+}
+
+func (response MoneyListBankStatementImports403ApplicationProblemPlusJSONResponse) VisitMoneyListBankStatementImportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankStatementImports422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankStatementImports422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListBankStatementImports422ResponseHeaders
+}
+
+func (response MoneyListBankStatementImports422ApplicationProblemPlusJSONResponse) VisitMoneyListBankStatementImportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankStatementImportsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankStatementImportsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyListBankStatementImportsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyListBankStatementImportsdefaultApplicationProblemPlusJSONResponse) VisitMoneyListBankStatementImportsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImportRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyCreateBankStatementImportParams
+	Body   *multipart.Reader
+}
+
+type MoneyCreateBankStatementImportResponseObject interface {
+	VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error
+}
+
+type MoneyCreateBankStatementImport201JSONResponse BankStatementImport
+
+func (response MoneyCreateBankStatementImport201JSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImport401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyCreateBankStatementImport401ApplicationProblemPlusJSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImport403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateBankStatementImport403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateBankStatementImport403ResponseHeaders
+}
+
+func (response MoneyCreateBankStatementImport403ApplicationProblemPlusJSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImport409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateBankStatementImport409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateBankStatementImport409ResponseHeaders
+}
+
+func (response MoneyCreateBankStatementImport409ApplicationProblemPlusJSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImport413ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateBankStatementImport413ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateBankStatementImport413ResponseHeaders
+}
+
+func (response MoneyCreateBankStatementImport413ApplicationProblemPlusJSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(413)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImport422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateBankStatementImport422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateBankStatementImport422ResponseHeaders
+}
+
+func (response MoneyCreateBankStatementImport422ApplicationProblemPlusJSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateBankStatementImportdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateBankStatementImportdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyCreateBankStatementImportdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyCreateBankStatementImportdefaultApplicationProblemPlusJSONResponse) VisitMoneyCreateBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteBankStatementImportRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	ImportId openapi_types.UUID `json:"import_id"`
+}
+
+type MoneyDeleteBankStatementImportResponseObject interface {
+	VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error
+}
+
+type MoneyDeleteBankStatementImport204Response struct {
+}
+
+func (response MoneyDeleteBankStatementImport204Response) VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type MoneyDeleteBankStatementImport401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyDeleteBankStatementImport401ApplicationProblemPlusJSONResponse) VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteBankStatementImport403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteBankStatementImport403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteBankStatementImport403ResponseHeaders
+}
+
+func (response MoneyDeleteBankStatementImport403ApplicationProblemPlusJSONResponse) VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteBankStatementImport404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteBankStatementImport404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteBankStatementImport404ResponseHeaders
+}
+
+func (response MoneyDeleteBankStatementImport404ApplicationProblemPlusJSONResponse) VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteBankStatementImport409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteBankStatementImport409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteBankStatementImport409ResponseHeaders
+}
+
+func (response MoneyDeleteBankStatementImport409ApplicationProblemPlusJSONResponse) VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteBankStatementImportdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteBankStatementImportdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyDeleteBankStatementImportdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyDeleteBankStatementImportdefaultApplicationProblemPlusJSONResponse) VisitMoneyDeleteBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankStatementImportRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	ImportId openapi_types.UUID `json:"import_id"`
+}
+
+type MoneyGetBankStatementImportResponseObject interface {
+	VisitMoneyGetBankStatementImportResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetBankStatementImport200JSONResponse BankStatementImport
+
+func (response MoneyGetBankStatementImport200JSONResponse) VisitMoneyGetBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankStatementImport401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetBankStatementImport401ApplicationProblemPlusJSONResponse) VisitMoneyGetBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankStatementImport403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetBankStatementImport403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetBankStatementImport403ResponseHeaders
+}
+
+func (response MoneyGetBankStatementImport403ApplicationProblemPlusJSONResponse) VisitMoneyGetBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankStatementImport404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetBankStatementImport404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetBankStatementImport404ResponseHeaders
+}
+
+func (response MoneyGetBankStatementImport404ApplicationProblemPlusJSONResponse) VisitMoneyGetBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankStatementImportdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetBankStatementImportdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetBankStatementImportdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetBankStatementImportdefaultApplicationProblemPlusJSONResponse) VisitMoneyGetBankStatementImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetImportReconciliationRequestObject struct {
+	OrgId    OrgId              `json:"org_id"`
+	ImportId openapi_types.UUID `json:"import_id"`
+}
+
+type MoneyGetImportReconciliationResponseObject interface {
+	VisitMoneyGetImportReconciliationResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetImportReconciliation200JSONResponse ImportReconciliation
+
+func (response MoneyGetImportReconciliation200JSONResponse) VisitMoneyGetImportReconciliationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetImportReconciliation401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetImportReconciliation401ApplicationProblemPlusJSONResponse) VisitMoneyGetImportReconciliationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetImportReconciliation403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetImportReconciliation403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetImportReconciliation403ResponseHeaders
+}
+
+func (response MoneyGetImportReconciliation403ApplicationProblemPlusJSONResponse) VisitMoneyGetImportReconciliationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetImportReconciliation404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetImportReconciliation404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetImportReconciliation404ResponseHeaders
+}
+
+func (response MoneyGetImportReconciliation404ApplicationProblemPlusJSONResponse) VisitMoneyGetImportReconciliationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetImportReconciliationdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetImportReconciliationdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetImportReconciliationdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetImportReconciliationdefaultApplicationProblemPlusJSONResponse) VisitMoneyGetImportReconciliationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankTransactionsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyListBankTransactionsParams
+}
+
+type MoneyListBankTransactionsResponseObject interface {
+	VisitMoneyListBankTransactionsResponse(w http.ResponseWriter) error
+}
+
+type MoneyListBankTransactions200JSONResponse BankTransactionList
+
+func (response MoneyListBankTransactions200JSONResponse) VisitMoneyListBankTransactionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankTransactions401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyListBankTransactions401ApplicationProblemPlusJSONResponse) VisitMoneyListBankTransactionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankTransactions403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankTransactions403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListBankTransactions403ResponseHeaders
+}
+
+func (response MoneyListBankTransactions403ApplicationProblemPlusJSONResponse) VisitMoneyListBankTransactionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankTransactions422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankTransactions422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListBankTransactions422ResponseHeaders
+}
+
+func (response MoneyListBankTransactions422ApplicationProblemPlusJSONResponse) VisitMoneyListBankTransactionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListBankTransactionsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListBankTransactionsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyListBankTransactionsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyListBankTransactionsdefaultApplicationProblemPlusJSONResponse) VisitMoneyListBankTransactionsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankTransactionRequestObject struct {
+	OrgId         OrgId              `json:"org_id"`
+	TransactionId openapi_types.UUID `json:"transaction_id"`
+}
+
+type MoneyGetBankTransactionResponseObject interface {
+	VisitMoneyGetBankTransactionResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetBankTransaction200JSONResponse BankTransaction
+
+func (response MoneyGetBankTransaction200JSONResponse) VisitMoneyGetBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankTransaction401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetBankTransaction401ApplicationProblemPlusJSONResponse) VisitMoneyGetBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankTransaction403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetBankTransaction403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetBankTransaction403ResponseHeaders
+}
+
+func (response MoneyGetBankTransaction403ApplicationProblemPlusJSONResponse) VisitMoneyGetBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankTransaction404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetBankTransaction404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetBankTransaction404ResponseHeaders
+}
+
+func (response MoneyGetBankTransaction404ApplicationProblemPlusJSONResponse) VisitMoneyGetBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetBankTransactiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetBankTransactiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetBankTransactiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetBankTransactiondefaultApplicationProblemPlusJSONResponse) VisitMoneyGetBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransactionRequestObject struct {
+	OrgId         OrgId              `json:"org_id"`
+	TransactionId openapi_types.UUID `json:"transaction_id"`
+	Params        MoneyIgnoreBankTransactionParams
+	Body          *MoneyIgnoreBankTransactionJSONRequestBody
+}
+
+type MoneyIgnoreBankTransactionResponseObject interface {
+	VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error
+}
+
+type MoneyIgnoreBankTransaction200JSONResponse BankTransaction
+
+func (response MoneyIgnoreBankTransaction200JSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransaction401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyIgnoreBankTransaction401ApplicationProblemPlusJSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransaction403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyIgnoreBankTransaction403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyIgnoreBankTransaction403ResponseHeaders
+}
+
+func (response MoneyIgnoreBankTransaction403ApplicationProblemPlusJSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransaction404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyIgnoreBankTransaction404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyIgnoreBankTransaction404ResponseHeaders
+}
+
+func (response MoneyIgnoreBankTransaction404ApplicationProblemPlusJSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransaction409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyIgnoreBankTransaction409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyIgnoreBankTransaction409ResponseHeaders
+}
+
+func (response MoneyIgnoreBankTransaction409ApplicationProblemPlusJSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransaction422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyIgnoreBankTransaction422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyIgnoreBankTransaction422ResponseHeaders
+}
+
+func (response MoneyIgnoreBankTransaction422ApplicationProblemPlusJSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyIgnoreBankTransactiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyIgnoreBankTransactiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyIgnoreBankTransactiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyIgnoreBankTransactiondefaultApplicationProblemPlusJSONResponse) VisitMoneyIgnoreBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransactionRequestObject struct {
+	OrgId         OrgId              `json:"org_id"`
+	TransactionId openapi_types.UUID `json:"transaction_id"`
+	Params        MoneyMatchBankTransactionParams
+	Body          *MoneyMatchBankTransactionJSONRequestBody
+}
+
+type MoneyMatchBankTransactionResponseObject interface {
+	VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error
+}
+
+type MoneyMatchBankTransaction200JSONResponse BankTransaction
+
+func (response MoneyMatchBankTransaction200JSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransaction401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyMatchBankTransaction401ApplicationProblemPlusJSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransaction403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyMatchBankTransaction403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyMatchBankTransaction403ResponseHeaders
+}
+
+func (response MoneyMatchBankTransaction403ApplicationProblemPlusJSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransaction404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyMatchBankTransaction404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyMatchBankTransaction404ResponseHeaders
+}
+
+func (response MoneyMatchBankTransaction404ApplicationProblemPlusJSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransaction409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyMatchBankTransaction409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyMatchBankTransaction409ResponseHeaders
+}
+
+func (response MoneyMatchBankTransaction409ApplicationProblemPlusJSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransaction422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyMatchBankTransaction422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyMatchBankTransaction422ResponseHeaders
+}
+
+func (response MoneyMatchBankTransaction422ApplicationProblemPlusJSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyMatchBankTransactiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyMatchBankTransactiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyMatchBankTransactiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyMatchBankTransactiondefaultApplicationProblemPlusJSONResponse) VisitMoneyMatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransactionRequestObject struct {
+	OrgId         OrgId              `json:"org_id"`
+	TransactionId openapi_types.UUID `json:"transaction_id"`
+	Params        MoneyUnmatchBankTransactionParams
+	Body          *MoneyUnmatchBankTransactionJSONRequestBody
+}
+
+type MoneyUnmatchBankTransactionResponseObject interface {
+	VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error
+}
+
+type MoneyUnmatchBankTransaction200JSONResponse BankTransaction
+
+func (response MoneyUnmatchBankTransaction200JSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransaction401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyUnmatchBankTransaction401ApplicationProblemPlusJSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransaction403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUnmatchBankTransaction403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUnmatchBankTransaction403ResponseHeaders
+}
+
+func (response MoneyUnmatchBankTransaction403ApplicationProblemPlusJSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransaction404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUnmatchBankTransaction404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUnmatchBankTransaction404ResponseHeaders
+}
+
+func (response MoneyUnmatchBankTransaction404ApplicationProblemPlusJSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransaction409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUnmatchBankTransaction409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUnmatchBankTransaction409ResponseHeaders
+}
+
+func (response MoneyUnmatchBankTransaction409ApplicationProblemPlusJSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransaction422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUnmatchBankTransaction422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUnmatchBankTransaction422ResponseHeaders
+}
+
+func (response MoneyUnmatchBankTransaction422ApplicationProblemPlusJSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUnmatchBankTransactiondefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUnmatchBankTransactiondefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyUnmatchBankTransactiondefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyUnmatchBankTransactiondefaultApplicationProblemPlusJSONResponse) VisitMoneyUnmatchBankTransactionResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type TenancyListBlocksRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params TenancyListBlocksParams
@@ -24861,6 +29808,1101 @@ func (response CodesListCodesdefaultApplicationProblemPlusJSONResponse) VisitCod
 	return err
 }
 
+type MoneyListCollectionCasesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyListCollectionCasesParams
+}
+
+type MoneyListCollectionCasesResponseObject interface {
+	VisitMoneyListCollectionCasesResponse(w http.ResponseWriter) error
+}
+
+type MoneyListCollectionCases200JSONResponse CollectionCaseList
+
+func (response MoneyListCollectionCases200JSONResponse) VisitMoneyListCollectionCasesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListCollectionCases401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyListCollectionCases401ApplicationProblemPlusJSONResponse) VisitMoneyListCollectionCasesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListCollectionCases403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListCollectionCases403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListCollectionCases403ResponseHeaders
+}
+
+func (response MoneyListCollectionCases403ApplicationProblemPlusJSONResponse) VisitMoneyListCollectionCasesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListCollectionCases422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListCollectionCases422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListCollectionCases422ResponseHeaders
+}
+
+func (response MoneyListCollectionCases422ApplicationProblemPlusJSONResponse) VisitMoneyListCollectionCasesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListCollectionCasesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListCollectionCasesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyListCollectionCasesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyListCollectionCasesdefaultApplicationProblemPlusJSONResponse) VisitMoneyListCollectionCasesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateCollectionCaseRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyCreateCollectionCaseParams
+	Body   *MoneyCreateCollectionCaseJSONRequestBody
+}
+
+type MoneyCreateCollectionCaseResponseObject interface {
+	VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error
+}
+
+type MoneyCreateCollectionCase201JSONResponse CollectionCase
+
+func (response MoneyCreateCollectionCase201JSONResponse) VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateCollectionCase401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyCreateCollectionCase401ApplicationProblemPlusJSONResponse) VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateCollectionCase403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateCollectionCase403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateCollectionCase403ResponseHeaders
+}
+
+func (response MoneyCreateCollectionCase403ApplicationProblemPlusJSONResponse) VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateCollectionCase409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateCollectionCase409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateCollectionCase409ResponseHeaders
+}
+
+func (response MoneyCreateCollectionCase409ApplicationProblemPlusJSONResponse) VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateCollectionCase422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateCollectionCase422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateCollectionCase422ResponseHeaders
+}
+
+func (response MoneyCreateCollectionCase422ApplicationProblemPlusJSONResponse) VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateCollectionCasedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateCollectionCasedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyCreateCollectionCasedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyCreateCollectionCasedefaultApplicationProblemPlusJSONResponse) VisitMoneyCreateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetCollectionCaseRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	CaseId openapi_types.UUID `json:"case_id"`
+}
+
+type MoneyGetCollectionCaseResponseObject interface {
+	VisitMoneyGetCollectionCaseResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetCollectionCase200JSONResponse CollectionCase
+
+func (response MoneyGetCollectionCase200JSONResponse) VisitMoneyGetCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetCollectionCase401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetCollectionCase401ApplicationProblemPlusJSONResponse) VisitMoneyGetCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetCollectionCase403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetCollectionCase403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetCollectionCase403ResponseHeaders
+}
+
+func (response MoneyGetCollectionCase403ApplicationProblemPlusJSONResponse) VisitMoneyGetCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetCollectionCase404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetCollectionCase404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetCollectionCase404ResponseHeaders
+}
+
+func (response MoneyGetCollectionCase404ApplicationProblemPlusJSONResponse) VisitMoneyGetCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetCollectionCasedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetCollectionCasedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetCollectionCasedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetCollectionCasedefaultApplicationProblemPlusJSONResponse) VisitMoneyGetCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCaseRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	CaseId openapi_types.UUID `json:"case_id"`
+	Params MoneyUpdateCollectionCaseParams
+	Body   *MoneyUpdateCollectionCaseJSONRequestBody
+}
+
+type MoneyUpdateCollectionCaseResponseObject interface {
+	VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error
+}
+
+type MoneyUpdateCollectionCase200JSONResponse CollectionCase
+
+func (response MoneyUpdateCollectionCase200JSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCase401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyUpdateCollectionCase401ApplicationProblemPlusJSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCase403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateCollectionCase403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateCollectionCase403ResponseHeaders
+}
+
+func (response MoneyUpdateCollectionCase403ApplicationProblemPlusJSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCase404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateCollectionCase404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateCollectionCase404ResponseHeaders
+}
+
+func (response MoneyUpdateCollectionCase404ApplicationProblemPlusJSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCase409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateCollectionCase409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateCollectionCase409ResponseHeaders
+}
+
+func (response MoneyUpdateCollectionCase409ApplicationProblemPlusJSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCase422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateCollectionCase422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateCollectionCase422ResponseHeaders
+}
+
+func (response MoneyUpdateCollectionCase422ApplicationProblemPlusJSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateCollectionCasedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateCollectionCasedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyUpdateCollectionCasedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyUpdateCollectionCasedefaultApplicationProblemPlusJSONResponse) VisitMoneyUpdateCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCaseRequestObject struct {
+	OrgId  OrgId              `json:"org_id"`
+	CaseId openapi_types.UUID `json:"case_id"`
+	Params MoneyCloseCollectionCaseParams
+	Body   *MoneyCloseCollectionCaseJSONRequestBody
+}
+
+type MoneyCloseCollectionCaseResponseObject interface {
+	VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error
+}
+
+type MoneyCloseCollectionCase200JSONResponse CollectionCase
+
+func (response MoneyCloseCollectionCase200JSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCase401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyCloseCollectionCase401ApplicationProblemPlusJSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCase403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCloseCollectionCase403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCloseCollectionCase403ResponseHeaders
+}
+
+func (response MoneyCloseCollectionCase403ApplicationProblemPlusJSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCase404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCloseCollectionCase404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCloseCollectionCase404ResponseHeaders
+}
+
+func (response MoneyCloseCollectionCase404ApplicationProblemPlusJSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCase409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCloseCollectionCase409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCloseCollectionCase409ResponseHeaders
+}
+
+func (response MoneyCloseCollectionCase409ApplicationProblemPlusJSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCase422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCloseCollectionCase422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCloseCollectionCase422ResponseHeaders
+}
+
+func (response MoneyCloseCollectionCase422ApplicationProblemPlusJSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCloseCollectionCasedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCloseCollectionCasedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyCloseCollectionCasedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyCloseCollectionCasedefaultApplicationProblemPlusJSONResponse) VisitMoneyCloseCollectionCaseResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDebtBreakdownRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyGetDebtBreakdownParams
+}
+
+type MoneyGetDebtBreakdownResponseObject interface {
+	VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetDebtBreakdown200JSONResponse DebtBreakdown
+
+func (response MoneyGetDebtBreakdown200JSONResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDebtBreakdown200ApplicationpdfResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response MoneyGetDebtBreakdown200ApplicationpdfResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "application/pdf")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type MoneyGetDebtBreakdown200ApplicationvndOpenxmlformatsOfficedocumentSpreadsheetmlSheetResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response MoneyGetDebtBreakdown200ApplicationvndOpenxmlformatsOfficedocumentSpreadsheetmlSheetResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type MoneyGetDebtBreakdown200TextcsvResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response MoneyGetDebtBreakdown200TextcsvResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "text/csv")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type MoneyGetDebtBreakdown401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetDebtBreakdown401ApplicationProblemPlusJSONResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDebtBreakdown403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDebtBreakdown403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDebtBreakdown403ResponseHeaders
+}
+
+func (response MoneyGetDebtBreakdown403ApplicationProblemPlusJSONResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDebtBreakdown422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDebtBreakdown422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDebtBreakdown422ResponseHeaders
+}
+
+func (response MoneyGetDebtBreakdown422ApplicationProblemPlusJSONResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDebtBreakdowndefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDebtBreakdowndefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetDebtBreakdowndefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetDebtBreakdowndefaultApplicationProblemPlusJSONResponse) VisitMoneyGetDebtBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type PeopleListDirectoryRequestObject struct {
 	OrgId  OrgId `json:"org_id"`
 	Params PeopleListDirectoryParams
@@ -24986,6 +31028,1605 @@ type PeopleListDirectorydefaultApplicationProblemPlusJSONResponse struct {
 }
 
 func (response PeopleListDirectorydefaultApplicationProblemPlusJSONResponse) VisitPeopleListDirectoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningEventsRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyListDunningEventsParams
+}
+
+type MoneyListDunningEventsResponseObject interface {
+	VisitMoneyListDunningEventsResponse(w http.ResponseWriter) error
+}
+
+type MoneyListDunningEvents200JSONResponse DunningEventList
+
+func (response MoneyListDunningEvents200JSONResponse) VisitMoneyListDunningEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningEvents401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyListDunningEvents401ApplicationProblemPlusJSONResponse) VisitMoneyListDunningEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningEvents403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListDunningEvents403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListDunningEvents403ResponseHeaders
+}
+
+func (response MoneyListDunningEvents403ApplicationProblemPlusJSONResponse) VisitMoneyListDunningEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningEvents422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListDunningEvents422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListDunningEvents422ResponseHeaders
+}
+
+func (response MoneyListDunningEvents422ApplicationProblemPlusJSONResponse) VisitMoneyListDunningEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningEventsdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListDunningEventsdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyListDunningEventsdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyListDunningEventsdefaultApplicationProblemPlusJSONResponse) VisitMoneyListDunningEventsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningLetterRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyGetDunningLetterParams
+}
+
+type MoneyGetDunningLetterResponseObject interface {
+	VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetDunningLetter200ApplicationpdfResponse struct {
+	Body          io.Reader
+	ContentLength int64
+}
+
+func (response MoneyGetDunningLetter200ApplicationpdfResponse) VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error {
+
+	w.Header().Set("Content-Type", "application/pdf")
+	if response.ContentLength != 0 {
+		w.Header().Set("Content-Length", fmt.Sprint(response.ContentLength))
+	}
+	w.WriteHeader(200)
+
+	if closer, ok := response.Body.(io.ReadCloser); ok {
+		defer closer.Close()
+	}
+	_, err := io.Copy(w, response.Body)
+	return err
+}
+
+type MoneyGetDunningLetter401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetDunningLetter401ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningLetter403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningLetter403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDunningLetter403ResponseHeaders
+}
+
+func (response MoneyGetDunningLetter403ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningLetter404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningLetter404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDunningLetter404ResponseHeaders
+}
+
+func (response MoneyGetDunningLetter404ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningLetter422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningLetter422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDunningLetter422ResponseHeaders
+}
+
+func (response MoneyGetDunningLetter422ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningLetterdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningLetterdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetDunningLetterdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetDunningLetterdefaultApplicationProblemPlusJSONResponse) VisitMoneyGetDunningLetterResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRunRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyCreateDunningRunParams
+	Body   *MoneyCreateDunningRunJSONRequestBody
+}
+
+type MoneyCreateDunningRunResponseObject interface {
+	VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error
+}
+
+type MoneyCreateDunningRun201JSONResponse DunningRun
+
+func (response MoneyCreateDunningRun201JSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRun401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyCreateDunningRun401ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRun403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningRun403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningRun403ResponseHeaders
+}
+
+func (response MoneyCreateDunningRun403ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRun409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningRun409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningRun409ResponseHeaders
+}
+
+func (response MoneyCreateDunningRun409ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRun422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningRun422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningRun422ResponseHeaders
+}
+
+func (response MoneyCreateDunningRun422ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRun503ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningRun503ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningRun503ResponseHeaders
+}
+
+func (response MoneyCreateDunningRun503ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(503)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningRundefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningRundefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyCreateDunningRundefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyCreateDunningRundefaultApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyPreviewDunningRunRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyPreviewDunningRunParams
+	Body   *MoneyPreviewDunningRunJSONRequestBody
+}
+
+type MoneyPreviewDunningRunResponseObject interface {
+	VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error
+}
+
+type MoneyPreviewDunningRun200JSONResponse DunningRunPreview
+
+func (response MoneyPreviewDunningRun200JSONResponse) VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyPreviewDunningRun401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyPreviewDunningRun401ApplicationProblemPlusJSONResponse) VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyPreviewDunningRun403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyPreviewDunningRun403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyPreviewDunningRun403ResponseHeaders
+}
+
+func (response MoneyPreviewDunningRun403ApplicationProblemPlusJSONResponse) VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyPreviewDunningRun409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyPreviewDunningRun409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyPreviewDunningRun409ResponseHeaders
+}
+
+func (response MoneyPreviewDunningRun409ApplicationProblemPlusJSONResponse) VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyPreviewDunningRun422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyPreviewDunningRun422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyPreviewDunningRun422ResponseHeaders
+}
+
+func (response MoneyPreviewDunningRun422ApplicationProblemPlusJSONResponse) VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyPreviewDunningRundefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyPreviewDunningRundefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyPreviewDunningRundefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyPreviewDunningRundefaultApplicationProblemPlusJSONResponse) VisitMoneyPreviewDunningRunResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningStagesRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyListDunningStagesParams
+}
+
+type MoneyListDunningStagesResponseObject interface {
+	VisitMoneyListDunningStagesResponse(w http.ResponseWriter) error
+}
+
+type MoneyListDunningStages200JSONResponse DunningStageList
+
+func (response MoneyListDunningStages200JSONResponse) VisitMoneyListDunningStagesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningStages401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyListDunningStages401ApplicationProblemPlusJSONResponse) VisitMoneyListDunningStagesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningStages403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListDunningStages403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListDunningStages403ResponseHeaders
+}
+
+func (response MoneyListDunningStages403ApplicationProblemPlusJSONResponse) VisitMoneyListDunningStagesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningStages422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListDunningStages422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyListDunningStages422ResponseHeaders
+}
+
+func (response MoneyListDunningStages422ApplicationProblemPlusJSONResponse) VisitMoneyListDunningStagesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyListDunningStagesdefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyListDunningStagesdefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyListDunningStagesdefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyListDunningStagesdefaultApplicationProblemPlusJSONResponse) VisitMoneyListDunningStagesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningStageRequestObject struct {
+	OrgId  OrgId `json:"org_id"`
+	Params MoneyCreateDunningStageParams
+	Body   *MoneyCreateDunningStageJSONRequestBody
+}
+
+type MoneyCreateDunningStageResponseObject interface {
+	VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error
+}
+
+type MoneyCreateDunningStage201JSONResponse DunningStage
+
+func (response MoneyCreateDunningStage201JSONResponse) VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningStage401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyCreateDunningStage401ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningStage403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningStage403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningStage403ResponseHeaders
+}
+
+func (response MoneyCreateDunningStage403ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningStage409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningStage409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningStage409ResponseHeaders
+}
+
+func (response MoneyCreateDunningStage409ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningStage422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningStage422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyCreateDunningStage422ResponseHeaders
+}
+
+func (response MoneyCreateDunningStage422ApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyCreateDunningStagedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyCreateDunningStagedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyCreateDunningStagedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyCreateDunningStagedefaultApplicationProblemPlusJSONResponse) VisitMoneyCreateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteDunningStageRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	StageId openapi_types.UUID `json:"stage_id"`
+	Params  MoneyDeleteDunningStageParams
+}
+
+type MoneyDeleteDunningStageResponseObject interface {
+	VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error
+}
+
+type MoneyDeleteDunningStage204Response struct {
+}
+
+func (response MoneyDeleteDunningStage204Response) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type MoneyDeleteDunningStage401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyDeleteDunningStage401ApplicationProblemPlusJSONResponse) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteDunningStage403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteDunningStage403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteDunningStage403ResponseHeaders
+}
+
+func (response MoneyDeleteDunningStage403ApplicationProblemPlusJSONResponse) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteDunningStage404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteDunningStage404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteDunningStage404ResponseHeaders
+}
+
+func (response MoneyDeleteDunningStage404ApplicationProblemPlusJSONResponse) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteDunningStage409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteDunningStage409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteDunningStage409ResponseHeaders
+}
+
+func (response MoneyDeleteDunningStage409ApplicationProblemPlusJSONResponse) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteDunningStage422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteDunningStage422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyDeleteDunningStage422ResponseHeaders
+}
+
+func (response MoneyDeleteDunningStage422ApplicationProblemPlusJSONResponse) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyDeleteDunningStagedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyDeleteDunningStagedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyDeleteDunningStagedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyDeleteDunningStagedefaultApplicationProblemPlusJSONResponse) VisitMoneyDeleteDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningStageRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	StageId openapi_types.UUID `json:"stage_id"`
+}
+
+type MoneyGetDunningStageResponseObject interface {
+	VisitMoneyGetDunningStageResponse(w http.ResponseWriter) error
+}
+
+type MoneyGetDunningStage200JSONResponse DunningStage
+
+func (response MoneyGetDunningStage200JSONResponse) VisitMoneyGetDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningStage401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyGetDunningStage401ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningStage403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningStage403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDunningStage403ResponseHeaders
+}
+
+func (response MoneyGetDunningStage403ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningStage404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningStage404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyGetDunningStage404ResponseHeaders
+}
+
+func (response MoneyGetDunningStage404ApplicationProblemPlusJSONResponse) VisitMoneyGetDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyGetDunningStagedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyGetDunningStagedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyGetDunningStagedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyGetDunningStagedefaultApplicationProblemPlusJSONResponse) VisitMoneyGetDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(response.StatusCode)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStageRequestObject struct {
+	OrgId   OrgId              `json:"org_id"`
+	StageId openapi_types.UUID `json:"stage_id"`
+	Params  MoneyUpdateDunningStageParams
+	Body    *MoneyUpdateDunningStageJSONRequestBody
+}
+
+type MoneyUpdateDunningStageResponseObject interface {
+	VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error
+}
+
+type MoneyUpdateDunningStage200JSONResponse DunningStage
+
+func (response MoneyUpdateDunningStage200JSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStage401ApplicationProblemPlusJSONResponse struct {
+	ProblemApplicationProblemPlusJSONResponse
+}
+
+func (response MoneyUpdateDunningStage401ApplicationProblemPlusJSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStage403ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateDunningStage403ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateDunningStage403ResponseHeaders
+}
+
+func (response MoneyUpdateDunningStage403ApplicationProblemPlusJSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStage404ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateDunningStage404ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateDunningStage404ResponseHeaders
+}
+
+func (response MoneyUpdateDunningStage404ApplicationProblemPlusJSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStage409ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateDunningStage409ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateDunningStage409ResponseHeaders
+}
+
+func (response MoneyUpdateDunningStage409ApplicationProblemPlusJSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStage422ResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateDunningStage422ApplicationProblemPlusJSONResponse struct {
+	Body    Problem
+	Headers MoneyUpdateDunningStage422ResponseHeaders
+}
+
+func (response MoneyUpdateDunningStage422ApplicationProblemPlusJSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.Allow != nil {
+		w.Header().Set("Allow", fmt.Sprint(*response.Headers.Allow))
+	}
+	if response.Headers.WWWAuthenticate != nil {
+		w.Header().Set("WWW-Authenticate", fmt.Sprint(*response.Headers.WWWAuthenticate))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoneyUpdateDunningStagedefaultResponseHeaders struct {
+	Allow           *string
+	WWWAuthenticate *string
+	XRequestId      *string
+}
+
+type MoneyUpdateDunningStagedefaultApplicationProblemPlusJSONResponse struct {
+	Body       Problem
+	Headers    MoneyUpdateDunningStagedefaultResponseHeaders
+	StatusCode int
+}
+
+func (response MoneyUpdateDunningStagedefaultApplicationProblemPlusJSONResponse) VisitMoneyUpdateDunningStageResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -42535,6 +50176,39 @@ type StrictServerInterface interface {
 	// AuditList List the organization's audit events
 	// (GET /v1/orgs/{org_id}/audit)
 	AuditList(ctx context.Context, request AuditListRequestObject) (AuditListResponseObject, error)
+	// MoneyListBankImporters List bank statement importers
+	// (GET /v1/orgs/{org_id}/bank-importers)
+	MoneyListBankImporters(ctx context.Context, request MoneyListBankImportersRequestObject) (MoneyListBankImportersResponseObject, error)
+	// MoneyListBankStatementImports List bank statement imports
+	// (GET /v1/orgs/{org_id}/bank-statement-imports)
+	MoneyListBankStatementImports(ctx context.Context, request MoneyListBankStatementImportsRequestObject) (MoneyListBankStatementImportsResponseObject, error)
+	// MoneyCreateBankStatementImport Upload a bank statement
+	// (POST /v1/orgs/{org_id}/bank-statement-imports)
+	MoneyCreateBankStatementImport(ctx context.Context, request MoneyCreateBankStatementImportRequestObject) (MoneyCreateBankStatementImportResponseObject, error)
+	// MoneyDeleteBankStatementImport Discard a bank statement import
+	// (DELETE /v1/orgs/{org_id}/bank-statement-imports/{import_id})
+	MoneyDeleteBankStatementImport(ctx context.Context, request MoneyDeleteBankStatementImportRequestObject) (MoneyDeleteBankStatementImportResponseObject, error)
+	// MoneyGetBankStatementImport Get a bank statement import
+	// (GET /v1/orgs/{org_id}/bank-statement-imports/{import_id})
+	MoneyGetBankStatementImport(ctx context.Context, request MoneyGetBankStatementImportRequestObject) (MoneyGetBankStatementImportResponseObject, error)
+	// MoneyGetImportReconciliation Reconciliation balances of an import
+	// (GET /v1/orgs/{org_id}/bank-statement-imports/{import_id}/reconciliation)
+	MoneyGetImportReconciliation(ctx context.Context, request MoneyGetImportReconciliationRequestObject) (MoneyGetImportReconciliationResponseObject, error)
+	// MoneyListBankTransactions List bank transactions
+	// (GET /v1/orgs/{org_id}/bank-transactions)
+	MoneyListBankTransactions(ctx context.Context, request MoneyListBankTransactionsRequestObject) (MoneyListBankTransactionsResponseObject, error)
+	// MoneyGetBankTransaction Get a bank transaction
+	// (GET /v1/orgs/{org_id}/bank-transactions/{transaction_id})
+	MoneyGetBankTransaction(ctx context.Context, request MoneyGetBankTransactionRequestObject) (MoneyGetBankTransactionResponseObject, error)
+	// MoneyIgnoreBankTransaction Ignore a line
+	// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:ignore)
+	MoneyIgnoreBankTransaction(ctx context.Context, request MoneyIgnoreBankTransactionRequestObject) (MoneyIgnoreBankTransactionResponseObject, error)
+	// MoneyMatchBankTransaction Match a line to a unit side, payment or expense
+	// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:match)
+	MoneyMatchBankTransaction(ctx context.Context, request MoneyMatchBankTransactionRequestObject) (MoneyMatchBankTransactionResponseObject, error)
+	// MoneyUnmatchBankTransaction Undo a match
+	// (POST /v1/orgs/{org_id}/bank-transactions/{transaction_id}:unmatch)
+	MoneyUnmatchBankTransaction(ctx context.Context, request MoneyUnmatchBankTransactionRequestObject) (MoneyUnmatchBankTransactionResponseObject, error)
 	// TenancyListBlocks List blocks
 	// (GET /v1/orgs/{org_id}/blocks)
 	TenancyListBlocks(ctx context.Context, request TenancyListBlocksRequestObject) (TenancyListBlocksResponseObject, error)
@@ -42577,9 +50251,54 @@ type StrictServerInterface interface {
 	// CodesListCodes Labels for enums, error codes and site statuses
 	// (GET /v1/orgs/{org_id}/codes)
 	CodesListCodes(ctx context.Context, request CodesListCodesRequestObject) (CodesListCodesResponseObject, error)
+	// MoneyListCollectionCases List collection cases
+	// (GET /v1/orgs/{org_id}/collection-cases)
+	MoneyListCollectionCases(ctx context.Context, request MoneyListCollectionCasesRequestObject) (MoneyListCollectionCasesResponseObject, error)
+	// MoneyCreateCollectionCase Create collection case
+	// (POST /v1/orgs/{org_id}/collection-cases)
+	MoneyCreateCollectionCase(ctx context.Context, request MoneyCreateCollectionCaseRequestObject) (MoneyCreateCollectionCaseResponseObject, error)
+	// MoneyGetCollectionCase Get collection case
+	// (GET /v1/orgs/{org_id}/collection-cases/{case_id})
+	MoneyGetCollectionCase(ctx context.Context, request MoneyGetCollectionCaseRequestObject) (MoneyGetCollectionCaseResponseObject, error)
+	// MoneyUpdateCollectionCase Update collection case
+	// (PATCH /v1/orgs/{org_id}/collection-cases/{case_id})
+	MoneyUpdateCollectionCase(ctx context.Context, request MoneyUpdateCollectionCaseRequestObject) (MoneyUpdateCollectionCaseResponseObject, error)
+	// MoneyCloseCollectionCase Close a collection case
+	// (POST /v1/orgs/{org_id}/collection-cases/{case_id}:close)
+	MoneyCloseCollectionCase(ctx context.Context, request MoneyCloseCollectionCaseRequestObject) (MoneyCloseCollectionCaseResponseObject, error)
+	// MoneyGetDebtBreakdown Debt breakdown for a unit side (ihtarname attachment)
+	// (GET /v1/orgs/{org_id}/debt-breakdown)
+	MoneyGetDebtBreakdown(ctx context.Context, request MoneyGetDebtBreakdownRequestObject) (MoneyGetDebtBreakdownResponseObject, error)
 	// PeopleListDirectory List the resident directory
 	// (GET /v1/orgs/{org_id}/directory)
 	PeopleListDirectory(ctx context.Context, request PeopleListDirectoryRequestObject) (PeopleListDirectoryResponseObject, error)
+	// MoneyListDunningEvents List sent reminders
+	// (GET /v1/orgs/{org_id}/dunning-events)
+	MoneyListDunningEvents(ctx context.Context, request MoneyListDunningEventsRequestObject) (MoneyListDunningEventsResponseObject, error)
+	// MoneyGetDunningLetter Download the ihtarname (warning letter) of an event or a debtor
+	// (GET /v1/orgs/{org_id}/dunning-letter)
+	MoneyGetDunningLetter(ctx context.Context, request MoneyGetDunningLetterRequestObject) (MoneyGetDunningLetterResponseObject, error)
+	// MoneyCreateDunningRun Send a reminder run
+	// (POST /v1/orgs/{org_id}/dunning-runs)
+	MoneyCreateDunningRun(ctx context.Context, request MoneyCreateDunningRunRequestObject) (MoneyCreateDunningRunResponseObject, error)
+	// MoneyPreviewDunningRun Preview a reminder run
+	// (POST /v1/orgs/{org_id}/dunning-runs:preview)
+	MoneyPreviewDunningRun(ctx context.Context, request MoneyPreviewDunningRunRequestObject) (MoneyPreviewDunningRunResponseObject, error)
+	// MoneyListDunningStages List dunning stages
+	// (GET /v1/orgs/{org_id}/dunning-stages)
+	MoneyListDunningStages(ctx context.Context, request MoneyListDunningStagesRequestObject) (MoneyListDunningStagesResponseObject, error)
+	// MoneyCreateDunningStage Create dunning stage
+	// (POST /v1/orgs/{org_id}/dunning-stages)
+	MoneyCreateDunningStage(ctx context.Context, request MoneyCreateDunningStageRequestObject) (MoneyCreateDunningStageResponseObject, error)
+	// MoneyDeleteDunningStage Delete dunning stage
+	// (DELETE /v1/orgs/{org_id}/dunning-stages/{stage_id})
+	MoneyDeleteDunningStage(ctx context.Context, request MoneyDeleteDunningStageRequestObject) (MoneyDeleteDunningStageResponseObject, error)
+	// MoneyGetDunningStage Get dunning stage
+	// (GET /v1/orgs/{org_id}/dunning-stages/{stage_id})
+	MoneyGetDunningStage(ctx context.Context, request MoneyGetDunningStageRequestObject) (MoneyGetDunningStageResponseObject, error)
+	// MoneyUpdateDunningStage Update dunning stage
+	// (PATCH /v1/orgs/{org_id}/dunning-stages/{stage_id})
+	MoneyUpdateDunningStage(ctx context.Context, request MoneyUpdateDunningStageRequestObject) (MoneyUpdateDunningStageResponseObject, error)
 	// MoneyListFiscalYears List fiscal years
 	// (GET /v1/orgs/{org_id}/fiscal-years)
 	MoneyListFiscalYears(ctx context.Context, request MoneyListFiscalYearsRequestObject) (MoneyListFiscalYearsResponseObject, error)
@@ -43931,6 +51650,334 @@ func (sh *strictHandler) AuditList(w http.ResponseWriter, r *http.Request, orgId
 	}
 }
 
+// MoneyListBankImporters operation middleware
+func (sh *strictHandler) MoneyListBankImporters(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankImportersParams) {
+	var request MoneyListBankImportersRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyListBankImporters(ctx, request.(MoneyListBankImportersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyListBankImporters")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyListBankImportersResponseObject); ok {
+		if err := validResponse.VisitMoneyListBankImportersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyListBankStatementImports operation middleware
+func (sh *strictHandler) MoneyListBankStatementImports(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankStatementImportsParams) {
+	var request MoneyListBankStatementImportsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyListBankStatementImports(ctx, request.(MoneyListBankStatementImportsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyListBankStatementImports")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyListBankStatementImportsResponseObject); ok {
+		if err := validResponse.VisitMoneyListBankStatementImportsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyCreateBankStatementImport operation middleware
+func (sh *strictHandler) MoneyCreateBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateBankStatementImportParams) {
+	var request MoneyCreateBankStatementImportRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	if reader, err := r.MultipartReader(); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode multipart body: %w", err))
+		return
+	} else {
+		request.Body = reader
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyCreateBankStatementImport(ctx, request.(MoneyCreateBankStatementImportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyCreateBankStatementImport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyCreateBankStatementImportResponseObject); ok {
+		if err := validResponse.VisitMoneyCreateBankStatementImportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyDeleteBankStatementImport operation middleware
+func (sh *strictHandler) MoneyDeleteBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID) {
+	var request MoneyDeleteBankStatementImportRequestObject
+
+	request.OrgId = orgId
+	request.ImportId = importId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyDeleteBankStatementImport(ctx, request.(MoneyDeleteBankStatementImportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyDeleteBankStatementImport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyDeleteBankStatementImportResponseObject); ok {
+		if err := validResponse.VisitMoneyDeleteBankStatementImportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetBankStatementImport operation middleware
+func (sh *strictHandler) MoneyGetBankStatementImport(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID) {
+	var request MoneyGetBankStatementImportRequestObject
+
+	request.OrgId = orgId
+	request.ImportId = importId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetBankStatementImport(ctx, request.(MoneyGetBankStatementImportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetBankStatementImport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetBankStatementImportResponseObject); ok {
+		if err := validResponse.VisitMoneyGetBankStatementImportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetImportReconciliation operation middleware
+func (sh *strictHandler) MoneyGetImportReconciliation(w http.ResponseWriter, r *http.Request, orgId OrgId, importId openapi_types.UUID) {
+	var request MoneyGetImportReconciliationRequestObject
+
+	request.OrgId = orgId
+	request.ImportId = importId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetImportReconciliation(ctx, request.(MoneyGetImportReconciliationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetImportReconciliation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetImportReconciliationResponseObject); ok {
+		if err := validResponse.VisitMoneyGetImportReconciliationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyListBankTransactions operation middleware
+func (sh *strictHandler) MoneyListBankTransactions(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListBankTransactionsParams) {
+	var request MoneyListBankTransactionsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyListBankTransactions(ctx, request.(MoneyListBankTransactionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyListBankTransactions")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyListBankTransactionsResponseObject); ok {
+		if err := validResponse.VisitMoneyListBankTransactionsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetBankTransaction operation middleware
+func (sh *strictHandler) MoneyGetBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID) {
+	var request MoneyGetBankTransactionRequestObject
+
+	request.OrgId = orgId
+	request.TransactionId = transactionId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetBankTransaction(ctx, request.(MoneyGetBankTransactionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetBankTransaction")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetBankTransactionResponseObject); ok {
+		if err := validResponse.VisitMoneyGetBankTransactionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyIgnoreBankTransaction operation middleware
+func (sh *strictHandler) MoneyIgnoreBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyIgnoreBankTransactionParams) {
+	var request MoneyIgnoreBankTransactionRequestObject
+
+	request.OrgId = orgId
+	request.TransactionId = transactionId
+	request.Params = params
+
+	var body MoneyIgnoreBankTransactionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyIgnoreBankTransaction(ctx, request.(MoneyIgnoreBankTransactionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyIgnoreBankTransaction")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyIgnoreBankTransactionResponseObject); ok {
+		if err := validResponse.VisitMoneyIgnoreBankTransactionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyMatchBankTransaction operation middleware
+func (sh *strictHandler) MoneyMatchBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyMatchBankTransactionParams) {
+	var request MoneyMatchBankTransactionRequestObject
+
+	request.OrgId = orgId
+	request.TransactionId = transactionId
+	request.Params = params
+
+	var body MoneyMatchBankTransactionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyMatchBankTransaction(ctx, request.(MoneyMatchBankTransactionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyMatchBankTransaction")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyMatchBankTransactionResponseObject); ok {
+		if err := validResponse.VisitMoneyMatchBankTransactionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyUnmatchBankTransaction operation middleware
+func (sh *strictHandler) MoneyUnmatchBankTransaction(w http.ResponseWriter, r *http.Request, orgId OrgId, transactionId openapi_types.UUID, params MoneyUnmatchBankTransactionParams) {
+	var request MoneyUnmatchBankTransactionRequestObject
+
+	request.OrgId = orgId
+	request.TransactionId = transactionId
+	request.Params = params
+
+	var body MoneyUnmatchBankTransactionJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyUnmatchBankTransaction(ctx, request.(MoneyUnmatchBankTransactionRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyUnmatchBankTransaction")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyUnmatchBankTransactionResponseObject); ok {
+		if err := validResponse.VisitMoneyUnmatchBankTransactionResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // TenancyListBlocks operation middleware
 func (sh *strictHandler) TenancyListBlocks(w http.ResponseWriter, r *http.Request, orgId OrgId, params TenancyListBlocksParams) {
 	var request TenancyListBlocksRequestObject
@@ -44354,6 +52401,194 @@ func (sh *strictHandler) CodesListCodes(w http.ResponseWriter, r *http.Request, 
 	}
 }
 
+// MoneyListCollectionCases operation middleware
+func (sh *strictHandler) MoneyListCollectionCases(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListCollectionCasesParams) {
+	var request MoneyListCollectionCasesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyListCollectionCases(ctx, request.(MoneyListCollectionCasesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyListCollectionCases")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyListCollectionCasesResponseObject); ok {
+		if err := validResponse.VisitMoneyListCollectionCasesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyCreateCollectionCase operation middleware
+func (sh *strictHandler) MoneyCreateCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateCollectionCaseParams) {
+	var request MoneyCreateCollectionCaseRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body MoneyCreateCollectionCaseJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyCreateCollectionCase(ctx, request.(MoneyCreateCollectionCaseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyCreateCollectionCase")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyCreateCollectionCaseResponseObject); ok {
+		if err := validResponse.VisitMoneyCreateCollectionCaseResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetCollectionCase operation middleware
+func (sh *strictHandler) MoneyGetCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID) {
+	var request MoneyGetCollectionCaseRequestObject
+
+	request.OrgId = orgId
+	request.CaseId = caseId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetCollectionCase(ctx, request.(MoneyGetCollectionCaseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetCollectionCase")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetCollectionCaseResponseObject); ok {
+		if err := validResponse.VisitMoneyGetCollectionCaseResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyUpdateCollectionCase operation middleware
+func (sh *strictHandler) MoneyUpdateCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID, params MoneyUpdateCollectionCaseParams) {
+	var request MoneyUpdateCollectionCaseRequestObject
+
+	request.OrgId = orgId
+	request.CaseId = caseId
+	request.Params = params
+
+	var body MoneyUpdateCollectionCaseJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyUpdateCollectionCase(ctx, request.(MoneyUpdateCollectionCaseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyUpdateCollectionCase")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyUpdateCollectionCaseResponseObject); ok {
+		if err := validResponse.VisitMoneyUpdateCollectionCaseResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyCloseCollectionCase operation middleware
+func (sh *strictHandler) MoneyCloseCollectionCase(w http.ResponseWriter, r *http.Request, orgId OrgId, caseId openapi_types.UUID, params MoneyCloseCollectionCaseParams) {
+	var request MoneyCloseCollectionCaseRequestObject
+
+	request.OrgId = orgId
+	request.CaseId = caseId
+	request.Params = params
+
+	var body MoneyCloseCollectionCaseJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		if !errors.Is(err, io.EOF) {
+			sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+			return
+		}
+	} else {
+		request.Body = &body
+	}
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyCloseCollectionCase(ctx, request.(MoneyCloseCollectionCaseRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyCloseCollectionCase")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyCloseCollectionCaseResponseObject); ok {
+		if err := validResponse.VisitMoneyCloseCollectionCaseResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetDebtBreakdown operation middleware
+func (sh *strictHandler) MoneyGetDebtBreakdown(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyGetDebtBreakdownParams) {
+	var request MoneyGetDebtBreakdownRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetDebtBreakdown(ctx, request.(MoneyGetDebtBreakdownRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetDebtBreakdown")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetDebtBreakdownResponseObject); ok {
+		if err := validResponse.VisitMoneyGetDebtBreakdownResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // PeopleListDirectory operation middleware
 func (sh *strictHandler) PeopleListDirectory(w http.ResponseWriter, r *http.Request, orgId OrgId, params PeopleListDirectoryParams) {
 	var request PeopleListDirectoryRequestObject
@@ -44374,6 +52609,279 @@ func (sh *strictHandler) PeopleListDirectory(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PeopleListDirectoryResponseObject); ok {
 		if err := validResponse.VisitPeopleListDirectoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyListDunningEvents operation middleware
+func (sh *strictHandler) MoneyListDunningEvents(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListDunningEventsParams) {
+	var request MoneyListDunningEventsRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyListDunningEvents(ctx, request.(MoneyListDunningEventsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyListDunningEvents")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyListDunningEventsResponseObject); ok {
+		if err := validResponse.VisitMoneyListDunningEventsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetDunningLetter operation middleware
+func (sh *strictHandler) MoneyGetDunningLetter(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyGetDunningLetterParams) {
+	var request MoneyGetDunningLetterRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetDunningLetter(ctx, request.(MoneyGetDunningLetterRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetDunningLetter")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetDunningLetterResponseObject); ok {
+		if err := validResponse.VisitMoneyGetDunningLetterResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyCreateDunningRun operation middleware
+func (sh *strictHandler) MoneyCreateDunningRun(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateDunningRunParams) {
+	var request MoneyCreateDunningRunRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body MoneyCreateDunningRunJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyCreateDunningRun(ctx, request.(MoneyCreateDunningRunRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyCreateDunningRun")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyCreateDunningRunResponseObject); ok {
+		if err := validResponse.VisitMoneyCreateDunningRunResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyPreviewDunningRun operation middleware
+func (sh *strictHandler) MoneyPreviewDunningRun(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyPreviewDunningRunParams) {
+	var request MoneyPreviewDunningRunRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body MoneyPreviewDunningRunJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyPreviewDunningRun(ctx, request.(MoneyPreviewDunningRunRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyPreviewDunningRun")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyPreviewDunningRunResponseObject); ok {
+		if err := validResponse.VisitMoneyPreviewDunningRunResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyListDunningStages operation middleware
+func (sh *strictHandler) MoneyListDunningStages(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyListDunningStagesParams) {
+	var request MoneyListDunningStagesRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyListDunningStages(ctx, request.(MoneyListDunningStagesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyListDunningStages")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyListDunningStagesResponseObject); ok {
+		if err := validResponse.VisitMoneyListDunningStagesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyCreateDunningStage operation middleware
+func (sh *strictHandler) MoneyCreateDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, params MoneyCreateDunningStageParams) {
+	var request MoneyCreateDunningStageRequestObject
+
+	request.OrgId = orgId
+	request.Params = params
+
+	var body MoneyCreateDunningStageJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyCreateDunningStage(ctx, request.(MoneyCreateDunningStageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyCreateDunningStage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyCreateDunningStageResponseObject); ok {
+		if err := validResponse.VisitMoneyCreateDunningStageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyDeleteDunningStage operation middleware
+func (sh *strictHandler) MoneyDeleteDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID, params MoneyDeleteDunningStageParams) {
+	var request MoneyDeleteDunningStageRequestObject
+
+	request.OrgId = orgId
+	request.StageId = stageId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyDeleteDunningStage(ctx, request.(MoneyDeleteDunningStageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyDeleteDunningStage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyDeleteDunningStageResponseObject); ok {
+		if err := validResponse.VisitMoneyDeleteDunningStageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyGetDunningStage operation middleware
+func (sh *strictHandler) MoneyGetDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID) {
+	var request MoneyGetDunningStageRequestObject
+
+	request.OrgId = orgId
+	request.StageId = stageId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyGetDunningStage(ctx, request.(MoneyGetDunningStageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyGetDunningStage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyGetDunningStageResponseObject); ok {
+		if err := validResponse.VisitMoneyGetDunningStageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoneyUpdateDunningStage operation middleware
+func (sh *strictHandler) MoneyUpdateDunningStage(w http.ResponseWriter, r *http.Request, orgId OrgId, stageId openapi_types.UUID, params MoneyUpdateDunningStageParams) {
+	var request MoneyUpdateDunningStageRequestObject
+
+	request.OrgId = orgId
+	request.StageId = stageId
+	request.Params = params
+
+	var body MoneyUpdateDunningStageJSONRequestBody
+	if err := runtime.BindJSONBody(r, &body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoneyUpdateDunningStage(ctx, request.(MoneyUpdateDunningStageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoneyUpdateDunningStage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoneyUpdateDunningStageResponseObject); ok {
+		if err := validResponse.VisitMoneyUpdateDunningStageResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -47380,592 +55888,697 @@ func (sh *strictHandler) PlatformListAudit(w http.ResponseWriter, r *http.Reques
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

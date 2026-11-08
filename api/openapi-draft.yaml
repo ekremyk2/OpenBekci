@@ -10725,7 +10725,7 @@ paths:
       operationId: money.createBankStatementImport
       summary: Upload a bank statement
       description: |-
-        **Release 0.1.** Parsing runs as a job; poll the import `status`. Manual matching only in 0.1.
+        **Release 0.1.** Upload a CSV or XLSX statement (up to 10 MiB). The `core_csv` importer reads the columns `booked_on,amount,counterparty,description,reference` (Turkish numbers such as `1.234,50` and dates such as `05.03.2026` are understood); a typed `mapping` (a JSON `ColumnMapping`, targets `booked_on`, `amount`, `counterparty`, `description`, `reference`, `balance`) maps other layouts. Parsing happens within the request: a file that cannot be read is 422, rows that fail make the import `partial` and are listed in `error`. The same file cannot be imported twice into one account (409). Opening and closing balances are read from the `balance` column or sent as `opening_balance` and `closing_balance`. Each incoming line gets ranked suggestions (reference scheme `<door>-<period>`, payer name, amount); matching is always manual.
 
         Permission: `money.post`.
 
@@ -10769,6 +10769,13 @@ paths:
                 mapping:
                   type: object
                   additionalProperties: true
+                  description: A JSON `ColumnMapping` (or just its `columns`) as text.
+                opening_balance:
+                  type: string
+                  description: Statement opening balance as a decimal amount (`1.234,50`, `1234.50`); optional.
+                closing_balance:
+                  type: string
+                  description: Statement closing balance as a decimal amount; optional.
               required:
                 - site_id
                 - file
@@ -12397,6 +12404,86 @@ paths:
         '401':
           $ref: '#/components/responses/Problem'
         '403':
+          $ref: '#/components/responses/Problem'
+        '422':
+          $ref: '#/components/responses/Problem'
+        default:
+          $ref: '#/components/responses/Problem'
+  /v1/orgs/{org_id}/dunning-letter:
+    parameters:
+      - $ref: '#/components/parameters/OrgId'
+    get:
+      operationId: money.getDunningLetter
+      summary: Download the ihtarname (warning letter) of an event or a debtor
+      description: |-
+        **Release 0.1.** A generic Turkish warning letter as a PDF (embedded font, with the debt breakdown). Two ways to ask:
+
+        - `event_id`: the letter of a dunning event; it is generated on first request and stored with the event.
+        - `site_id` plus a debtor (`unit_id` and `debtor_kind` together, or `person_id`): a letter generated on the spot as of `as_of` (default today); nothing is stored.
+
+        The PDF is kept with the event until the files module can file it into documents.
+
+        Permission: `collections.manage`.
+      tags:
+        - money
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      x-openbekci-roles:
+        org_admin:
+          - collections.manage
+        site_manager:
+          - collections.manage
+        board_member:
+          - collections.manage
+      x-stability: stable
+      parameters:
+        - name: event_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: The dunning event whose letter to return.
+        - name: site_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Debtor mode - the site.
+        - name: unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Debtor mode, unit side: send with `debtor_kind`.'
+        - name: debtor_kind
+          in: query
+          schema:
+            type: string
+            enum:
+              - owner
+              - tenant
+          description: 'Debtor mode, unit side: owner or tenant.'
+        - name: person_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: 'Debtor mode, person: the person whose carried debt the letter is about.'
+        - $ref: '#/components/parameters/AsOfDate'
+      responses:
+        '200':
+          description: The letter.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Problem'
+        '403':
+          $ref: '#/components/responses/Problem'
+        '404':
           $ref: '#/components/responses/Problem'
         '422':
           $ref: '#/components/responses/Problem'
@@ -30930,7 +31017,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AllocationInput'
-          description: 'Manual override; omitted: automatic oldest-first.'
         send_receipt:
           $ref: '#/components/schemas/ReceiptDelivery'
         debtor:
@@ -31545,6 +31631,7 @@ components:
         - org_id
         - site_id
         - importer
+        - filename
         - file_id
         - asset_account_id
         - status
@@ -31569,9 +31656,14 @@ components:
           format: uuid
         importer:
           type: string
+        filename:
+          type: string
+          description: The uploaded file name.
         file_id:
           type: string
           format: uuid
+          nullable: true
+          description: The stored file; null until the files module holds statements (the bytes are kept with the import, up to 10 MiB).
         asset_account_id:
           type: string
           format: uuid
@@ -31622,6 +31714,7 @@ components:
         org_id: 0192a3f0-1000-7000-8000-000000000003
         site_id: 0192a3f0-1000-7000-8000-000000000004
         importer: importer
+        filename: statement.csv
         file_id: 0192a3f0-1000-7000-8000-000000000005
         asset_account_id: 0192a3f0-1000-7000-8000-000000000006
         status: parsing
@@ -31658,6 +31751,7 @@ components:
             org_id: 0192a3f0-1000-7000-8000-000000000003
             site_id: 0192a3f0-1000-7000-8000-000000000004
             importer: importer
+            filename: statement.csv
             file_id: 0192a3f0-1000-7000-8000-000000000005
             asset_account_id: 0192a3f0-1000-7000-8000-000000000006
             status: parsing
@@ -31684,6 +31778,16 @@ components:
         - ledger_opening
         - ledger_closing
         - difference
+        - statement_movement
+        - ledger_movement
+        - lines_total
+        - statement_check
+        - matched_total
+        - unmatched_total
+        - ignored_total
+        - matched_count
+        - unmatched_count
+        - ignored_count
       properties:
         import_id:
           type: string
@@ -31706,6 +31810,44 @@ components:
           allOf:
             - $ref: '#/components/schemas/Money'
           description: Statement movement minus ledger movement.
+        statement_movement:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Closing minus opening when the statement has both balances, else the sum of its lines.
+        ledger_movement:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Movement of the bank account in the ledger over the statement period (all postings, not only matched lines).
+        lines_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Sum of all statement lines.
+        statement_check:
+          type: object
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: 'Opening plus lines minus closing: 0 when the statement is internally consistent; null without both balances.'
+        matched_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Lines matched to a payment.
+        unmatched_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Unmatched and suggested lines; with only matched payments posting to the account the difference equals this.
+        ignored_total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+        matched_count:
+          type: integer
+          format: int64
+        unmatched_count:
+          type: integer
+          format: int64
+        ignored_count:
+          type: integer
+          format: int64
     MatchSuggestion:
       type: object
       required:
@@ -31749,6 +31891,7 @@ components:
         - amount
         - counterparty
         - description
+        - reference
         - match_status
         - payment_id
         - expense_id
@@ -31781,6 +31924,10 @@ components:
         description:
           type: string
           nullable: true
+        reference:
+          type: string
+          nullable: true
+          description: The payment reference text of the line. Residents are asked to write `<door>-<period>`, for example `A-12-2026-03`; the suggestion engine reads it.
         match_status:
           type: string
           description: Open enum.
@@ -31819,6 +31966,7 @@ components:
           currency: TRY
         counterparty: null
         description: null
+        reference: null
         match_status: unmatched
         payment_id: null
         expense_id: null
@@ -31857,6 +32005,7 @@ components:
               currency: TRY
             counterparty: null
             description: null
+            reference: null
             match_status: unmatched
             payment_id: null
             expense_id: null
@@ -31880,14 +32029,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AllocationInput'
+          description: 'Optional: the charges to pay, in order (only `charge_id` is used; the line amount is allocated to them in that order, the surplus becomes credit). Omitted: oldest debt first, principal before fee.'
         payment_id:
           type: string
           format: uuid
-          description: Confirm this declared payment with the line.
+          description: Confirm this declared payment (status `pending_declared`, same amount) with the line instead of creating one; its received date becomes the line date and its asset account the import account.
         expense_id:
           type: string
           format: uuid
-          description: 'For an outgoing line: link an expense.'
+          description: 'For an outgoing line: link an expense. Reserved for the expenses release; until then it is answered with 422 `unsupported` on `expense_id`.'
         debtor:
           allOf:
             - $ref: '#/components/schemas/DebtorRef'
@@ -32643,6 +32793,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
             x-open-enum: true
         template_key:
           type: string
@@ -32709,6 +32860,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
             x-open-enum: true
         template_key:
           type: string
@@ -32743,6 +32895,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
             x-open-enum: true
         template_key:
           type: string
@@ -32811,6 +32964,7 @@ components:
               - in_app
               - email
               - sms
+              - letter
           description: Chosen by the sender (O5).
     DunningRunPreview:
       type: object
@@ -32869,6 +33023,9 @@ components:
         - debtor_kind
         - person_id
         - stage_id
+        - period
+        - amount_due
+        - has_letter
         - sent_at
         - channel
         - document_file_id
@@ -32891,9 +33048,12 @@ components:
         unit_id:
           type: string
           format: uuid
+          nullable: true
+          description: Null for a person debtor (carried debt).
         debtor_kind:
           type: string
-          description: Open enum.
+          nullable: true
+          description: Open enum. Null for a person debtor.
           enum:
             - owner
             - tenant
@@ -32905,6 +33065,16 @@ components:
         stage_id:
           type: string
           format: uuid
+        period:
+          type: string
+          description: 'The delinquency the event belongs to: the month (`YYYY-MM`) of the oldest overdue charge. The stage job sends each stage once per debtor, period and channel.'
+        amount_due:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: The overdue balance when the event was created.
+        has_letter:
+          type: boolean
+          description: A letter (ihtarname) PDF is stored for the event; download it with `money.getDunningLetter`.
         sent_at:
           type: string
           format: date-time
@@ -32936,6 +33106,11 @@ components:
         debtor_kind: owner
         person_id: null
         stage_id: 0192a3f0-1000-7000-8000-000000000006
+        period: 2026-03
+        amount_due:
+          amount: 200000
+          currency: TRY
+        has_letter: false
         sent_at: '2026-03-01T09:00:00Z'
         channel: in_app
         document_file_id: null
@@ -32965,6 +33140,11 @@ components:
             debtor_kind: owner
             person_id: null
             stage_id: 0192a3f0-1000-7000-8000-000000000006
+            period: 2026-03
+            amount_due:
+              amount: 200000
+              currency: TRY
+            has_letter: false
             sent_at: '2026-03-01T09:00:00Z'
             channel: in_app
             document_file_id: null
@@ -32981,6 +33161,7 @@ components:
         - unit_id
         - debtor_kind
         - debtor_person_id
+        - debtor
         - opened_on
         - lawyer
         - file_no
@@ -33004,9 +33185,12 @@ components:
         unit_id:
           type: string
           format: uuid
+          nullable: true
+          description: Null for a person debtor.
         debtor_kind:
           type: string
-          description: Open enum.
+          nullable: true
+          description: Open enum. Null for a person debtor.
           enum:
             - owner
             - tenant
@@ -33014,6 +33198,12 @@ components:
         debtor_person_id:
           type: string
           format: uuid
+          nullable: true
+          description: 'The person who owes: resolved by the server from the unit side on the opening date (null when the side was vacant), or the person debtor itself.'
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: Whose debt this case is about, as it was opened.
         opened_on:
           type: string
           format: date
@@ -33056,6 +33246,9 @@ components:
         unit_id: 0192a3f0-1000-7000-8000-000000000005
         debtor_kind: owner
         debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+        debtor:
+          unit_id: 0192a3f0-1000-7000-8000-000000000005
+          debtor_kind: owner
         opened_on: '2026-03-01'
         lawyer: null
         file_no: null
@@ -33072,27 +33265,16 @@ components:
       type: object
       required:
         - site_id
-        - unit_id
-        - debtor_kind
-        - debtor_person_id
+        - debtor
         - opened_on
       properties:
         site_id:
           type: string
           format: uuid
-        unit_id:
-          type: string
-          format: uuid
-        debtor_kind:
-          type: string
-          description: Open enum.
-          enum:
-            - owner
-            - tenant
-          x-open-enum: true
-        debtor_person_id:
-          type: string
-          format: uuid
+        debtor:
+          allOf:
+            - $ref: '#/components/schemas/DebtorRef'
+          description: 'Whose debt: a unit side (starts a late fee freeze) or a person (carried debt). The server resolves the person who owes.'
         opened_on:
           type: string
           format: date
@@ -33140,6 +33322,9 @@ components:
             unit_id: 0192a3f0-1000-7000-8000-000000000005
             debtor_kind: owner
             debtor_person_id: 0192a3f0-1000-7000-8000-000000000006
+            debtor:
+              unit_id: 0192a3f0-1000-7000-8000-000000000005
+              debtor_kind: owner
             opened_on: '2026-03-01'
             lawyer: null
             file_no: null

@@ -360,6 +360,8 @@ paths:
     $ref: ./paths/money/dunning-runs.yaml
   /v1/orgs/{org_id}/dunning-events:
     $ref: ./paths/money/dunning-events.yaml
+  /v1/orgs/{org_id}/dunning-letter:
+    $ref: ./paths/money/dunning-letter.yaml
   /v1/orgs/{org_id}/collection-cases:
     $ref: ./paths/money/collection-cases.yaml
   /v1/orgs/{org_id}/collection-cases/{case_id}:

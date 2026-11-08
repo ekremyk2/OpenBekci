@@ -67,6 +67,50 @@ type AuditEvent struct {
 	At          pgtype.Timestamptz
 }
 
+type BankStatementImport struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	Importer       string
+	AssetAccountID pgtype.UUID
+	Filename       string
+	Content        []byte
+	ContentSha256  []byte
+	Mapping        []byte
+	Status         string
+	OpeningBalance pgtype.Int8
+	ClosingBalance pgtype.Int8
+	PeriodFrom     pgtype.Date
+	PeriodTo       pgtype.Date
+	Error          pgtype.Text
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type BankTransaction struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	ImportID     pgtype.UUID
+	LineNo       int32
+	BookedOn     pgtype.Date
+	Amount       int64
+	Counterparty pgtype.Text
+	Description  pgtype.Text
+	Reference    pgtype.Text
+	Raw          []byte
+	MatchStatus  string
+	Suggestions  []byte
+	PaymentID    pgtype.UUID
+	ExpenseID    pgtype.UUID
+	Note         pgtype.Text
+	MatchedBy    pgtype.UUID
+	MatchedAt    pgtype.Timestamptz
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+}
+
 type Block struct {
 	ID        pgtype.UUID
 	OrgID     pgtype.UUID
@@ -148,6 +192,28 @@ type ChargePlanRate struct {
 	CreatedAt  pgtype.Timestamptz
 }
 
+type CollectionCase struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	DebtorPersonID pgtype.UUID
+	OpenedOn       pgtype.Date
+	Lawyer         pgtype.Text
+	FileNo         pgtype.Text
+	Status         string
+	ClosedOn       pgtype.Date
+	CostsCharged   int64
+	CostChargeID   pgtype.UUID
+	FreezeID       pgtype.UUID
+	Notes          pgtype.Text
+	CreatedBy      pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	Version        int32
+}
+
 type DeliveryLog struct {
 	ID      pgtype.UUID
 	At      pgtype.Timestamptz
@@ -169,6 +235,54 @@ type DirectoryConsent struct {
 	CreatedAt  pgtype.Timestamptz
 	UpdatedAt  pgtype.Timestamptz
 	Version    int32
+}
+
+type DunningEvent struct {
+	ID             pgtype.UUID
+	OrgID          pgtype.UUID
+	SiteID         pgtype.UUID
+	RunID          pgtype.UUID
+	StageID        pgtype.UUID
+	Source         string
+	UnitID         pgtype.UUID
+	DebtorKind     pgtype.Text
+	PersonID       pgtype.UUID
+	DebtorKey      string
+	Period         string
+	Channel        string
+	AmountDue      int64
+	SentAt         pgtype.Timestamptz
+	Letter         []byte
+	DocumentFileID pgtype.UUID
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type DunningRun struct {
+	ID         pgtype.UUID
+	OrgID      pgtype.UUID
+	SiteID     pgtype.UUID
+	StageID    pgtype.UUID
+	EventCount int32
+	SmsCount   int32
+	CreatedBy  pgtype.UUID
+	CreatedAt  pgtype.Timestamptz
+}
+
+type DunningStage struct {
+	ID           pgtype.UUID
+	OrgID        pgtype.UUID
+	SiteID       pgtype.UUID
+	Name         string
+	Kind         string
+	DaysAfterDue int32
+	Channels     []string
+	TemplateKey  pgtype.Text
+	Position     int32
+	Enabled      bool
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	Version      int32
 }
 
 type Facility struct {
